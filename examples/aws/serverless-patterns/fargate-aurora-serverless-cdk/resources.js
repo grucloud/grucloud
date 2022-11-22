@@ -33,6 +33,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 1577,
+    }),
     dependencies: ({}) => ({
       subnet: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
       eip: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
@@ -42,6 +45,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 7280,
+    }),
     dependencies: ({}) => ({
       subnet: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
       eip: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",

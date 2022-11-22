@@ -20,6 +20,14 @@ describe.skip("RedshiftServerless", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("ResourcePolicy", () =>
+    pipe([
+      () => ({
+        groupType: "RedshiftServerless::ResourcePolicy",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it.skip("Snapshot", () =>
     pipe([
       () => ({

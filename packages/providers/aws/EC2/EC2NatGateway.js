@@ -1,118 +1,253 @@
 const {
   get,
   pipe,
-  filter,
   map,
-  or,
   tap,
   eq,
   not,
   pick,
   tryCatch,
+  assign,
+  omit,
 } = require("rubico");
-const { defaultsDeep, isEmpty, pluck, find, size } = require("rubico/x");
+const {
+  defaultsDeep,
+  pluck,
+  find,
+  size,
+  first,
+  callProp,
+  when,
+  unless,
+  isEmpty,
+} = require("rubico/x");
 const assert = require("assert");
 
+const { ipToInt32, ipDotFromInt32 } = require("@grucloud/core/ipUtils");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsNatGateway" });
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const {
-  getByIdCore,
-  findNameInTagsOrId,
-  buildTags,
-  findNamespaceInTags,
-} = require("../AwsCommon");
+const { findNameInTagsOrId, buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
-exports.EC2NatGateway = ({ spec, config }) => {
-  const ec2 = createEC2(config);
-  const client = AwsClient({ spec, config })(ec2);
+const { tagResource, untagResource, compareEC2 } = require("./EC2Common");
 
-  const findId = () => get("NatGatewayId");
-  const pickId = pick(["NatGatewayId"]);
+const findId = () => get("NatGatewayId");
+const pickId = pick(["NatGatewayId"]);
+const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 
-  const findName = findNameInTagsOrId({ findId });
+const getBaseIpFromCidr = pipe([callProp("split", "/"), first]);
 
-  //TODO handle deleting
-  const isInstanceDown = or([isEmpty, eq(get("State"), "deleted")]);
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeNatGateways-property
+const indexOfIpAddress = (cidrBlock) => (ipAddress) =>
+  pipe([
+    tap(() => {
+      assert(ipAddress);
+      assert(cidrBlock);
+    }),
+    () => cidrBlock,
+    getBaseIpFromCidr,
+    ipToInt32,
+    (cidrBlockNumber) => ipToInt32(ipAddress) - cidrBlockNumber,
+    tap((index) => {
+      assert(index > 0, `${ipAddress} below ${cidrBlock}`);
+    }),
+  ])();
 
-  const getList = client.getList({
+const ipFromIndex = ({ cidrBlock, index }) =>
+  pipe([
+    tap((params) => {
+      assert(cidrBlock);
+    }),
+    () => cidrBlock,
+    getBaseIpFromCidr,
+    ipToInt32,
+    (cidrBlockNumber) => cidrBlockNumber + index,
+    ipDotFromInt32,
+  ])();
+
+const getPrivateIp = pipe([
+  get("NatGatewayAddresses"),
+  first,
+  get("PrivateIp"),
+]);
+
+const decorate = ({ endpoint, lives, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+      assert(lives);
+      assert(config);
+    }),
+    assign({
+      SubnetCidrBlock: pipe([
+        get("SubnetId"),
+        (id) =>
+          lives.getById({
+            id,
+            providerName: config.providerName,
+            type: "Subnet",
+            group: "EC2",
+          }),
+        get("live.CidrBlock"),
+        tap((CidrBlock) => {
+          assert(CidrBlock);
+        }),
+      ]),
+    }),
+    assign({
+      PrivateIpAddressIndex: ({ NatGatewayAddresses, SubnetCidrBlock }) =>
+        pipe([
+          () => ({ NatGatewayAddresses }),
+          getPrivateIp,
+          unless(isEmpty, indexOfIpAddress(SubnetCidrBlock)),
+        ])(),
+    }),
+  ]);
+
+const disassociateAddress = ({ endpoint, live }) =>
+  pipe([
+    tap((params) => {
+      assert(live);
+      assert(endpoint);
+    }),
+    () => live,
+    get("NatGatewayAddresses"),
+    tap((NatGatewayAddresses) => {
+      logger.info(
+        `destroy nat #NatGatewayAddresses ${size(NatGatewayAddresses)}`
+      );
+    }),
+    map(
+      pipe([
+        ({ AllocationId }) => ({
+          Filters: [
+            {
+              Name: "allocation-id",
+              Values: [AllocationId],
+            },
+          ],
+        }),
+        endpoint().describeAddresses,
+        get("Addresses"),
+        map(
+          tryCatch(
+            pipe([pick(["AssociationId"]), endpoint().disassociateAddress]),
+            (error, address) =>
+              pipe([
+                tap(() => {
+                  logger.error(`error disassociateAddress  ${tos(error)}`);
+                }),
+                () => ({ error, address }),
+              ])()
+          )
+        ),
+      ])
+    ),
+  ])();
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
+exports.EC2NatGateway = () => ({
+  type: "NatGateway",
+  package: "ec2",
+  client: "EC2",
+  propertiesDefault: { ConnectivityType: "public" },
+  omitProperties: [
+    "CreateTime",
+    "DeleteTime",
+    "AllocationId",
+    "NatGatewayAddresses",
+    "NatGatewayId",
+    "SubnetId",
+    "State",
+    "VpcId",
+    "DeleteTime",
+    "FailureCode",
+    "FailureMessage",
+    "SubnetCidrBlock",
+  ],
+  compare: compareEC2({ filterAll: () => pipe([pick([])]) }),
+  dependencies: {
+    subnet: {
+      type: "Subnet",
+      group: "EC2",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("SubnetId"),
+    },
+    eip: {
+      type: "ElasticIpAddress",
+      group: "EC2",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("NatGatewayAddresses"),
+          pluck("AllocationId"),
+          map((AllocationId) =>
+            pipe([
+              () =>
+                lives.getByType({
+                  type: "ElasticIpAddress",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              find(eq(get("live.AllocationId"), AllocationId)),
+              get("id"),
+            ])()
+          ),
+          first,
+        ]),
+    },
+  },
+  findName: findNameInTagsOrId({ findId }),
+  findId,
+  ignoreErrorCodes: ["NatGatewayNotFound"],
+  getById: {
+    method: "describeNatGateways",
+    getField: "NatGateways",
+    pickId: ({ NatGatewayId }) => ({ NatGatewayIds: [NatGatewayId] }),
+    decorate,
+  },
+  getList: {
     method: "describeNatGateways",
     getParam: "NatGateways",
     filterResource: not(isInstanceDown),
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-  const getById = () =>
-    pipe([
-      ({ NatGatewayId }) => ({ id: NatGatewayId }),
-      getByIdCore({ fieldIds: "NatGatewayIds", getList }),
-    ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createNatGateway-property
-  const create = client.create({
+    decorate,
+  },
+  create: {
+    filterPayload: pipe([
+      when(
+        get("PrivateIpAddressIndex"),
+        ({ PrivateIpAddressIndex, SubnetCidrBlock, ...other }) => ({
+          PrivateIpAddress: ipFromIndex({
+            cidrBlock: SubnetCidrBlock,
+            index: PrivateIpAddressIndex,
+          }),
+          ...other,
+        })
+      ),
+      omit(["SubnetCidrBlock"]),
+    ]),
     method: "createNatGateway",
     pickCreated: () => get("NatGateway"),
-    isInstanceUp: eq(get("State"), "available"),
-    getById,
-  });
-
-  const disassociateAddress = (live) =>
-    pipe([
-      () => live,
-      get("NatGatewayAddresses"),
-      tap((NatGatewayAddresses) => {
-        logger.info(
-          `destroy nat #NatGatewayAddresses ${size(NatGatewayAddresses)}`
-        );
-      }),
-      map(
-        pipe([
-          ({ AllocationId }) => {
-            ec2().describeAddresses({
-              Filters: [
-                {
-                  Name: "allocation-id",
-                  Values: [AllocationId],
-                },
-              ],
-            });
-          },
-          get("Addresses"),
-          map(
-            tryCatch(
-              pipe([pick(["AssociationId"]), ec2().disassociateAddress]),
-              (error, address) =>
-                pipe([
-                  tap(() => {
-                    logger.error(`error disassociateAddress  ${tos(error)}`);
-                  }),
-                  () => ({ error, address }),
-                ])()
-            )
-          ),
-        ])
-      ),
-    ])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteNatGateway-property
-  const destroy = client.destroy({
-    pickId,
+    isInstanceUp: pipe([eq(get("State"), "available")]),
+    isInstanceError: pipe([eq(get("State"), "failed")]),
+    getErrorMessage: get("FailureMessage", "error"),
+  },
+  destroy: {
     preDestroy: disassociateAddress,
     method: "deleteNatGateway",
-    getById,
+    pickId,
     isInstanceDown,
-    ignoreErrorCodes: ["NatGatewayNotFound"],
-  });
-
-  const configDefault = ({
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) => ({
+    tagResource,
+    untagResource,
+  }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: { eip, subnet },
+    config,
   }) =>
     pipe([
       tap(() => {
@@ -123,6 +258,7 @@ exports.EC2NatGateway = ({ spec, config }) => {
       defaultsDeep({
         AllocationId: getField(eip, "AllocationId"),
         SubnetId: getField(subnet, "SubnetId"),
+        SubnetCidrBlock: getField(subnet, "CidrBlock"),
         TagSpecifications: [
           {
             ResourceType: "natgateway",
@@ -130,20 +266,5 @@ exports.EC2NatGateway = ({ spec, config }) => {
           },
         ],
       }),
-    ])();
-
-  return {
-    spec,
-    findId,
-    getByName,
-    getById,
-    findName,
-    findNamespace: findNamespaceInTags(config),
-    getList,
-    create,
-    destroy,
-    configDefault,
-    tagResource: tagResource({ endpoint: ec2 }),
-    untagResource: untagResource({ endpoint: ec2 }),
-  };
-};
+    ])(),
+});

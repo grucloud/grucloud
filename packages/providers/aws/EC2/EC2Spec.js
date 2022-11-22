@@ -57,6 +57,9 @@ const {
   hasDependency,
   findLiveById,
 } = require("@grucloud/core/generatorUtils");
+
+const { createAwsService } = require("../AwsService");
+
 const {
   EC2Instance,
   isOurMinionEC2Instance,
@@ -65,6 +68,7 @@ const {
 const {
   appendCidrSuffix,
   getLaunchTemplateIdFromTags,
+  compareEC2,
 } = require("./EC2Common");
 const {
   inferNameRouteTableArm,
@@ -162,13 +166,6 @@ const GROUP = "EC2";
 
 const getResourceNameFromTag = () =>
   pipe([get("Tags"), find(eq(get("Key"), "Name")), get("Value")]);
-
-const getTargetTags = pipe([get("TagSpecifications"), first, get("Tags")]);
-
-const compareEC2 = compareAws({
-  getTargetTags,
-  omitTargetKey: "TagSpecifications",
-});
 
 const findDefaultWithVpcDependency = ({ resources, dependencies }) =>
   pipe([
@@ -1246,54 +1243,7 @@ module.exports = pipe([
         },
       },
     },
-    {
-      type: "NatGateway",
-      Client: EC2NatGateway,
-      omitProperties: [
-        "CreateTime",
-        "NatGatewayAddresses",
-        "NatGatewayId",
-        "State",
-        "VpcId",
-        "ConnectivityType",
-        "DeleteTime",
-        "FailureCode",
-        "FailureMessage",
-        "AllocationId",
-      ],
-      filterLive: () => pick([]),
-      dependencies: {
-        subnet: {
-          type: "Subnet",
-          group: "EC2",
-          dependencyId: ({ lives, config }) => get("SubnetId"),
-        },
-        eip: {
-          type: "ElasticIpAddress",
-          group: "EC2",
-          dependencyId: ({ lives, config }) =>
-            pipe([
-              get("NatGatewayAddresses"),
-              pluck("AllocationId"),
-              map((AllocationId) =>
-                pipe([
-                  () =>
-                    lives.getByType({
-                      type: "ElasticIpAddress",
-                      group: "EC2",
-                      providerName: config.providerName,
-                    }),
-                  find(eq(get("live.AllocationId"), AllocationId)),
-                  get("id"),
-                ])()
-              ),
-              first,
-            ]),
-        },
-      },
-      //TODO remove ?
-      ignoreResource: () => get("isDefault"),
-    },
+    createAwsService(EC2NatGateway({})),
     {
       type: "Subnet",
       Client: EC2Subnet,

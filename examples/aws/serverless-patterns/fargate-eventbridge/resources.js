@@ -40,6 +40,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "VpcPublicSubnet1NATGateway4D7517AA",
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 6284,
+    }),
     dependencies: ({}) => ({
       subnet: "Vpc8378EB38::VpcPublicSubnet1Subnet5C2D37C4",
       eip: "VpcPublicSubnet1EIPD7E02669",
@@ -49,6 +52,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "VpcPublicSubnet2NATGateway9182C01D",
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 9826,
+    }),
     dependencies: ({}) => ({
       subnet: "Vpc8378EB38::VpcPublicSubnet2Subnet691E08A3",
       eip: "VpcPublicSubnet2EIP3C605A87",

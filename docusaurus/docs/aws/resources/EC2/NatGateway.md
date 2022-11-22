@@ -11,6 +11,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "nat-gateway",
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 826,
+    }),
     dependencies: () => ({
       subnet: "subnet-public-a",
       eip: "eip",
@@ -21,7 +24,7 @@ exports.createResources = () => [
 
 ### Examples
 
-- [VPC Module](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc)
+- [nat-gateway-private-ip](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/NatGateway/nat-gateway-private-ip)
 
 ### Properties
 

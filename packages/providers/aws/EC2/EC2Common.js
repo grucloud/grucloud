@@ -10,9 +10,16 @@ const {
   identity,
   find,
 } = require("rubico/x");
-const { createEndpoint } = require("../AwsCommon");
+const { createEndpoint, compareAws } = require("../AwsCommon");
 
 exports.createEC2 = createEndpoint("ec2", "EC2");
+
+const getTargetTags = pipe([get("TagSpecifications"), first, get("Tags")]);
+
+exports.compareEC2 = compareAws({
+  getTargetTags,
+  omitTargetKey: "TagSpecifications",
+});
 
 exports.findDependenciesVpc = ({ live }) => ({
   type: "Vpc",
