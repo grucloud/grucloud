@@ -15,11 +15,13 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { replaceWithName } = require("@grucloud/core/Common");
 
 const { buildTags, isAwsError, findNameInTagsOrId } = require("../AwsCommon");
-const { tagResource, untagResource } = require("./SecretsManagerCommon");
+const { Tagger } = require("./SecretsManagerCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const ignoreErrorMessages = [
   "You can't perform this operation on the secret because it was marked for deletion",
 ];
+
+const buildArn = () => get("ARN");
 
 const pickId = pipe([({ Name }) => ({ SecretId: Name })]);
 
@@ -52,15 +54,9 @@ const decorate =
   ({ endpoint }) =>
   (live) =>
     pipe([
-      tap((params) => {
-        assert(endpoint);
-      }),
       () => live,
       getSecretValue({ endpoint }),
       defaultsDeep(live),
-      tap((params) => {
-        assert(true);
-      }),
       ({ Name, ReplicationStatus, ...other }) => ({
         Name,
         AddReplicaRegions: ReplicationStatus,
@@ -118,9 +114,6 @@ exports.SecretsManagerSecret = ({ compare }) => ({
   }),
   filterLive: ({ lives, providerConfig }) =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       when(
         get("AddReplicaRegions"),
         assign({
@@ -223,8 +216,10 @@ exports.SecretsManagerSecret = ({ compare }) => ({
     isInstanceDown: pipe([() => true]),
   },
   getByName: getByNameCore,
-  tagResource: tagResource,
-  untagResource: untagResource,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
   configDefault: ({
     name,
     namespace,
