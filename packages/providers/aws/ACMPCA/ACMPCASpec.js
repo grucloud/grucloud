@@ -8,7 +8,7 @@ const { createAwsService } = require("../AwsService");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACMPCA.html
 
 //const { ACMPCACertificate } = require("./ACMPCACertificate");
-//const { ACMPCACertificateAuthority } = require("./ACMPCACertificateAuthority");
+const { ACMPCACertificateAuthority } = require("./ACMPCACertificateAuthority");
 //const { ACMPCACertificateAuthorityCertificate } = require("./ACMPCACertificateAuthorityCertificate");
 //const { ACMPCAPermisison } = require("./ACMPCAPermisison");
 //const { ACMPCAPolicy } = require("./ACMPCAPolicy");
@@ -20,7 +20,7 @@ const compare = compareAws({});
 module.exports = pipe([
   () => [
     // ACMPCACertificate({})
-    // ACMPCACertificateAuthority({})
+    ACMPCACertificateAuthority({ compare }),
     // ACMPCACertificateAuthorityCertificate({})
     // ACMPCAPermisison({})
     // ACMPCAPolicy({})
