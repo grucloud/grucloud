@@ -24,7 +24,7 @@ describe("SecretsManager", async function () {
     pipe([
       () => ({
         groupType: "SecretsManager::SecretRotation",
-        livesNotFound: ({ config }) => [{ Name: "my-secret" }],
+        livesNotFound: ({ config }) => [{ SecretId: "my-secret" }],
       }),
       awsResourceTest,
     ])());
