@@ -25,7 +25,7 @@ exports.ElastiCacheUser = () => ({
   type: "User",
   package: "elasticache",
   client: "ElastiCache",
-  inferName: get("properties.UserName"),
+  inferName: () => get("UserName"),
   findName: () => pipe([get("UserName")]),
   findId: () => pipe([get("UserId")]),
   managedByOther,

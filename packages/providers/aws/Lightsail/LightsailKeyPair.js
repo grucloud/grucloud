@@ -75,7 +75,7 @@ exports.LightsailKeyPair = () => ({
     "fingerprint",
     "location",
   ],
-  inferName: get("properties.keyPairName"),
+  inferName: () => get("keyPairName"),
   Client: ({ spec, config }) =>
     createAwsResource({
       model: model({ config }),

@@ -26,7 +26,7 @@ module.exports = pipe([
       type: "LogGroup",
       Client: CloudWatchLogGroup,
       pickPropertiesCreate: ["retentionInDays"],
-      inferName: get("properties.logGroupName"),
+      inferName: () => get("logGroupName"),
       compare: compareCloudWatchLog({
         filterAll: () => pipe([pick(["retentionInDays"])]),
       }),
@@ -48,10 +48,16 @@ module.exports = pipe([
         filterAll: () => pipe([pick([])]),
       }),
       filterLive: () => pipe([pick(["logStreamName"])]),
-      inferName: ({
-        properties: { logStreamName },
-        dependenciesSpec: { cloudWatchLogGroup },
-      }) => pipe([() => `${cloudWatchLogGroup}::${logStreamName}`])(),
+      inferName:
+        ({ dependenciesSpec: { cloudWatchLogGroup } }) =>
+        ({ logStreamName }) =>
+          pipe([
+            tap((params) => {
+              assert(cloudWatchLogGroup);
+              assert(logStreamName);
+            }),
+            () => `${cloudWatchLogGroup}::${logStreamName}`,
+          ])(),
       dependencies: {
         cloudWatchLogGroup: {
           type: "LogGroup",
@@ -85,10 +91,16 @@ module.exports = pipe([
         "logGroupName",
         "creationTime",
       ],
-      inferName: ({
-        properties: { filterName },
-        dependenciesSpec: { cloudWatchLogGroup },
-      }) => pipe([() => `${cloudWatchLogGroup}::${filterName}`])(),
+      inferName:
+        ({ dependenciesSpec: { cloudWatchLogGroup } }) =>
+        ({ filterName }) =>
+          pipe([
+            tap((params) => {
+              assert(cloudWatchLogGroup);
+              assert(filterName);
+            }),
+            () => `${cloudWatchLogGroup}::${filterName}`,
+          ])(),
       dependencies: {
         cloudWatchLogGroup: {
           type: "LogGroup",

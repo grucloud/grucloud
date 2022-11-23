@@ -72,21 +72,20 @@ module.exports = pipe([
     {
       type: "MountTarget",
       Client: EFSMountTarget,
-      inferName: ({
-        properties: { AvailabilityZoneName },
-        dependenciesSpec: { fileSystem },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(fileSystem);
-            assert(AvailabilityZoneName);
-          }),
-          () => AvailabilityZoneName,
-          last,
-          prepend("::"),
-          prepend(fileSystem),
-          prepend("mount-target::"),
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { fileSystem } }) =>
+        ({ AvailabilityZoneName }) =>
+          pipe([
+            tap(() => {
+              assert(fileSystem);
+              assert(AvailabilityZoneName);
+            }),
+            () => AvailabilityZoneName,
+            last,
+            prepend("::"),
+            prepend(fileSystem),
+            prepend("mount-target::"),
+          ])(),
       dependencies: {
         fileSystem: {
           type: "FileSystem",

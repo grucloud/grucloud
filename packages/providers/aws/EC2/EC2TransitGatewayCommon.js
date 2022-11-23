@@ -133,6 +133,7 @@ exports.inferNameRouteTableArm =
       transitGatewayRouteTable,
     },
   }) =>
+  () =>
     pipe([
       tap(() => {
         assert(

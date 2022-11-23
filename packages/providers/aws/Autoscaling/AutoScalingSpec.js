@@ -198,7 +198,7 @@ module.exports = pipe([
       //     Enabled: true,
       //   },
       // },
-      inferName: get("properties.LaunchConfigurationName"),
+      inferName: () => get("LaunchConfigurationName"),
       filterLive: () =>
         pipe([omitIfEmpty(["KernelId", "RamdiskId"]), DecodeUserData]),
       dependencies: {

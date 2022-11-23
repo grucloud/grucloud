@@ -16,7 +16,7 @@ module.exports = pipe([
     {
       type: "Project",
       Client: CodeBuildProject,
-      inferName: pipe([get("properties.name")]),
+      inferName: () => pipe([get("name")]),
       dependencies: {
         serviceRole: {
           type: "Role",

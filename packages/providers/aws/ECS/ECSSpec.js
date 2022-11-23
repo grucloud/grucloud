@@ -54,7 +54,7 @@ module.exports = pipe([
     {
       type: "CapacityProvider",
       Client: ECSCapacityProvider,
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       omitProperties: [
         "capacityProviderArn",
         "status",
@@ -79,7 +79,7 @@ module.exports = pipe([
     {
       type: "Cluster",
       Client: ECSCluster,
-      inferName: get("properties.clusterName"),
+      inferName: () => get("clusterName"),
       omitProperties: [
         "clusterArn",
         "status",
@@ -147,7 +147,7 @@ module.exports = pipe([
     {
       type: "TaskDefinition",
       Client: ECSTaskDefinition,
-      inferName: get("properties.family"),
+      inferName: () => get("family"),
       dependencies: {
         taskRole: {
           type: "Role",
@@ -279,7 +279,7 @@ module.exports = pipe([
     {
       type: "Service",
       Client: ECSService,
-      inferName: get("properties.serviceName"),
+      inferName: () => get("serviceName"),
       omitProperties: [
         "taskDefinition",
         "clusterArn",

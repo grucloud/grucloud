@@ -48,12 +48,13 @@ exports.RedshiftServerlessNamespace = ({ compare }) => ({
     "status",
     //"adminUserPassword",
   ],
-  inferName: pipe([
-    get("properties.namespaceName"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("namespaceName"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("namespaceName"),

@@ -38,7 +38,7 @@ module.exports = pipe([
         "VersionId",
         "Rules[].RuleId",
       ],
-      inferName: get("properties.BackupPlanName"),
+      inferName: () => get("BackupPlanName"),
       dependencies: {
         backupVaults: {
           type: "BackupVault",
@@ -75,7 +75,7 @@ module.exports = pipe([
         "SelectionId",
         "IamRoleArn",
       ],
-      inferName: get("properties.SelectionName"),
+      inferName: () => get("SelectionName"),
       dependencies: {
         backupPlan: {
           type: "BackupPlan",
@@ -105,7 +105,7 @@ module.exports = pipe([
         "MaxRetentionDays",
         "MinRetentionDays",
       ],
-      inferName: get("properties.BackupVaultName"),
+      inferName: () => get("BackupVaultName"),
       dependencies: {
         kmsKey: {
           type: "Key",
@@ -183,7 +183,7 @@ module.exports = pipe([
         "NumberOfControls",
         "CreationTime",
       ],
-      inferName: get("properties.FrameworkName"),
+      inferName: () => get("FrameworkName"),
     },
     {
       type: "GlobalSettings",
@@ -214,7 +214,7 @@ module.exports = pipe([
         "LastSuccessfulExecutionTime",
         "ReportSetting.NumberOfFrameworks",
       ],
-      inferName: get("properties.ReportPlanName"),
+      inferName: () => get("ReportPlanName"),
       dependencies: {
         s3Bucket: {
           type: "Bucket",

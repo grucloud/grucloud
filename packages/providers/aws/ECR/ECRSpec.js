@@ -24,7 +24,7 @@ module.exports = pipe([
     {
       type: "Repository",
       Client: EcrRepository,
-      inferName: get("properties.repositoryName"),
+      inferName: () => get("repositoryName"),
       compare: compareECR({
         filterLive: () =>
           pipe([
@@ -76,7 +76,7 @@ module.exports = pipe([
     {
       type: "Registry",
       Client: EcrRegistry,
-      inferName: () => "default",
+      inferName: () => () => "default",
       compare: compareECR({
         filterLive: () => pipe([omit(["registryId"])]),
       }),

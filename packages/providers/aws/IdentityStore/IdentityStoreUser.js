@@ -30,12 +30,13 @@ exports.IdentityStoreUser = () => ({
   propertiesDefault: {},
   omitProperties: ["UserId", "IdentityStoreId", "InstanceArn"],
   // TODO prefix with store name ?
-  inferName: pipe([
-    get("properties.UserName"),
-    tap((UserName) => {
-      assert(UserName);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("UserName"),
+      tap((UserName) => {
+        assert(UserName);
+      }),
+    ]),
   dependencies: {
     identityStore: {
       type: "Instance",

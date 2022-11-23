@@ -158,18 +158,18 @@ exports.MyModuleMyResource = () => ({
   client: "MyModule",
   propertiesDefault: {},
   omitProperties: [],
-  inferName: pipe([
-    get("properties.Name"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
 
   // inferName: ({
-  //   properties: { certificateName },
   //   dependenciesSpec: { loadBalancer },
   // }) =>
-  //   pipe([
+  //  ({ certificateName }) => pipe([
   //     tap((params) => {
   //       assert(loadBalancer);
   //       assert(certificateName);
@@ -177,10 +177,6 @@ exports.MyModuleMyResource = () => ({
   //     () => `${loadBalancer}::${certificateName}`,
   //   ])(),
 
-  // inferName: pipe([
-  //   get("dependenciesSpec"),
-  //   ({ staticIp, instance }) => `${staticIp}::${instance}`,
-  // ]),
   findName: () =>
     pipe([
       get("Name"),

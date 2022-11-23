@@ -149,37 +149,36 @@ module.exports = pipe([
         "Owner",
         "SubscriptionPrincipal",
       ],
-      inferName: ({
-        properties,
-        dependenciesSpec: { snsTopic, lambdaFunction, sqsQueue },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(snsTopic);
-            assert(properties);
-          }),
-          () => "subscription",
-          append("::"),
-          append(snsTopic),
-          append("::"),
-          switchCase([
-            () => lambdaFunction,
-            pipe([append(`lambda::${lambdaFunction}`)]),
-            () => sqsQueue,
-            pipe([append(`queue::${sqsQueue}`)]),
-            pipe([
-              append(properties.Protocol),
-              append("::"),
-              append(properties.Endpoint),
+      inferName:
+        ({ dependenciesSpec: { snsTopic, lambdaFunction, sqsQueue } }) =>
+        (properties) =>
+          pipe([
+            tap(() => {
+              assert(snsTopic);
+              assert(properties);
+            }),
+            () => "subscription",
+            append("::"),
+            append(snsTopic),
+            append("::"),
+            switchCase([
+              () => lambdaFunction,
+              pipe([append(`lambda::${lambdaFunction}`)]),
+              () => sqsQueue,
+              pipe([append(`queue::${sqsQueue}`)]),
+              pipe([
+                append(properties.Protocol),
+                append("::"),
+                append(properties.Endpoint),
+              ]),
+              // () => {
+              //   assert(false, "TODO: missing SNS deps");
+              // },
             ]),
-            // () => {
-            //   assert(false, "TODO: missing SNS deps");
-            // },
-          ]),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
       filterLive: ({ providerConfig }) =>
         pipe([
           tap((params) => {

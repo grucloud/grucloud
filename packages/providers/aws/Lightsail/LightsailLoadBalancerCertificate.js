@@ -73,18 +73,16 @@ exports.LightsailLoadBalancerCertificate = ({ compare }) => ({
     "subject",
     "location",
   ],
-  inferName: ({
-    properties: { certificateName },
-    dependenciesSpec: { loadBalancer },
-  }) =>
-    pipe([
-      tap((params) => {
-        assert(loadBalancer);
-        assert(certificateName);
-      }),
-      () => certificateName,
-      //() => `${loadBalancer}::${certificateName}`,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { loadBalancer } }) =>
+    ({ certificateName }) =>
+      pipe([
+        tap((params) => {
+          assert(loadBalancer);
+          assert(certificateName);
+        }),
+        () => certificateName,
+      ])(),
   dependencies: {
     loadBalancer: {
       type: "LoadBalancer",

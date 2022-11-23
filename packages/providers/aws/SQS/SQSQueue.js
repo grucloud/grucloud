@@ -88,7 +88,7 @@ exports.SQSQueue = () => ({
   ignoreErrorCodes,
   findName,
   findId,
-  inferName: get("properties.QueueName"),
+  inferName: () => get("QueueName"),
   propertiesDefault: {
     Attributes: {
       VisibilityTimeout: "30",

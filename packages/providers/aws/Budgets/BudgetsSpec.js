@@ -37,12 +37,13 @@ module.exports = pipe([
         "Notifications[].NotificationState",
       ],
       compare: compare({ filterAll: () => pipe([omit(["TimePeriod"])]) }),
-      inferName: pipe([
-        get("properties.BudgetName"),
-        tap((BudgetName) => {
-          assert(BudgetName);
-        }),
-      ]),
+      inferName: () =>
+        pipe([
+          get("BudgetName"),
+          tap((BudgetName) => {
+            assert(BudgetName);
+          }),
+        ]),
       dependencies: {
         snsTopics: {
           type: "Topic",

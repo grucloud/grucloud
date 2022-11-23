@@ -111,7 +111,7 @@ exports.LightsailInstance = ({ compare }) => ({
     "username",
     "metadataOptions",
   ],
-  inferName: get("properties.instanceName"),
+  inferName: () => get("instanceName"),
   compare: compare({
     filterAll: () => pipe([omit(["sshKeyName"])]),
   }),

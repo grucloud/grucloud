@@ -24,8 +24,7 @@ exports.FirewallPolicy = ({ compare }) => ({
     "ResourceNotFoundException",
     "InvalidFirewallPolicyID.NotFound",
   ],
-  inferName: ({ properties }) =>
-    pipe([() => properties, get("FirewallPolicyName")])(),
+  inferName: () => pipe([get("FirewallPolicyName")]),
   compare: compare({
     filterLive: () => pipe([omitEncryptionConfiguration]),
   }),

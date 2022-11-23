@@ -74,12 +74,13 @@ exports.LightsailLoadBalancerCertificateAttachment = ({ compare }) => ({
   type: "LoadBalancerCertificateAttachment",
   propertiesDefault: {},
   omitProperties: ["loadBalancerName"],
-  inferName: pipe([
-    get("dependencieSpec.certificate"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
+  inferName: ({ dependenciesSpec: { certificate } }) =>
+    pipe([
+      tap((params) => {
+        assert(certificate);
+      }),
+      () => certificate,
+    ]),
   cannotBeDeleted: () => () => true,
   dependencies: {
     loadBalancer: {

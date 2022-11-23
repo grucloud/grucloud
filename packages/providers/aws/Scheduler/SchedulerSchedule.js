@@ -100,7 +100,7 @@ exports.SchedulerSchedule = ({ compare }) => ({
     "Target.DeadLetterConfig.Arn",
     "Target.RoleArn",
   ],
-  inferName: get("properties.Name"),
+  inferName: () => get("Name"),
   // compare: compare({
   //   filterTarget: () => pipe([omit(["compare"])]),
   // }),

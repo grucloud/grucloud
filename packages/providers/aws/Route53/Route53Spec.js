@@ -99,36 +99,38 @@ module.exports = pipe([
         filterTarget: () => pipe([() => ({})]),
         filterLive: () => pipe([() => ({})]),
       }),
-      inferName: ({ properties, dependenciesSpec: { routingControl } }) =>
-        pipe([
-          () => properties,
-          get("HealthCheckConfig"),
-          switchCase([
-            ({ Type }) =>
+      inferName:
+        ({ dependenciesSpec: { routingControl } }) =>
+        (properties) =>
+          pipe([
+            () => properties,
+            get("HealthCheckConfig"),
+            switchCase([
+              ({ Type }) =>
+                pipe([
+                  () => [
+                    "HTTP",
+                    "HTTPS",
+                    "HTTP_STR_MATCH",
+                    "HTTPS_STR_MATCH",
+                    "TCP",
+                  ],
+                  includes(Type),
+                ])(),
+              ({ Type, FullyQualifiedDomainName, IPAddress }) =>
+                `heathcheck::${Type}::${FullyQualifiedDomainName || IPAddress}`,
+              //TODO
+              eq(get("Type"), "CALCULATED"),
+              pipe([get("ResourcePath"), prepend("heathcheck::CALCULATED::")]),
+              eq(get("Type"), "CLOUDWATCH_METRIC"),
               pipe([
-                () => [
-                  "HTTP",
-                  "HTTPS",
-                  "HTTP_STR_MATCH",
-                  "HTTPS_STR_MATCH",
-                  "TCP",
-                ],
-                includes(Type),
-              ])(),
-            ({ Type, FullyQualifiedDomainName, IPAddress }) =>
-              `heathcheck::${Type}::${FullyQualifiedDomainName || IPAddress}`,
-            //TODO
-            eq(get("Type"), "CALCULATED"),
-            pipe([get("ResourcePath"), prepend("heathcheck::CALCULATED::")]),
-            eq(get("Type"), "CLOUDWATCH_METRIC"),
-            pipe([
-              get("AlarmIdentifier.Name"),
-              prepend("heathcheck::CLOUDWATCH_METRIC::"),
+                get("AlarmIdentifier.Name"),
+                prepend("heathcheck::CLOUDWATCH_METRIC::"),
+              ]),
+              eq(get("Type"), "RECOVERY_CONTROL"),
+              () => `heathcheck::RECOVERY_CONTROL::${routingControl}`,
             ]),
-            eq(get("Type"), "RECOVERY_CONTROL"),
-            () => `heathcheck::RECOVERY_CONTROL::${routingControl}`,
-          ]),
-        ])(),
+          ])(),
       propertiesDefault: {
         HealthCheckConfig: {
           Inverted: false,
@@ -216,7 +218,7 @@ module.exports = pipe([
             omitHostedZoneConfigComment,
           ]),
       }),
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
           pick(["Name", "HostedZoneConfig.Comment"]),
@@ -246,55 +248,58 @@ module.exports = pipe([
       isOurMinion: () => true,
       compare: compareRoute53Record,
       omitProperties: [],
-      inferName: ({ properties, dependenciesSpec }) =>
-        pipe([
-          () => dependenciesSpec,
-          tap(() => {
-            assert(dependenciesSpec);
-          }),
-          switchCase([
-            get("vpcEndpoint"),
-            pipe([
-              () => `EC2::VpcEndpoint::${properties.Type}::${properties.Name}`,
-            ]),
-            get("elasticIpAddress"),
-            pipe([
-              get("elasticIpAddress", "noName"),
-              prepend("EC2::ElasticIpAddress::A::"),
-            ]),
-            get("certificate"),
-            pipe([get("certificate"), prepend(`ACM::Certificate::CNAME::`)]),
-            get("userPoolDomain"),
-            pipe([
+      inferName:
+        ({ dependenciesSpec }) =>
+        (properties) =>
+          pipe([
+            () => dependenciesSpec,
+            tap(() => {
+              assert(dependenciesSpec);
+            }),
+            switchCase([
+              get("vpcEndpoint"),
+              pipe([
+                () =>
+                  `EC2::VpcEndpoint::${properties.Type}::${properties.Name}`,
+              ]),
+              get("elasticIpAddress"),
+              pipe([
+                get("elasticIpAddress", "noName"),
+                prepend("EC2::ElasticIpAddress::A::"),
+              ]),
+              get("certificate"),
+              pipe([get("certificate"), prepend(`ACM::Certificate::CNAME::`)]),
               get("userPoolDomain"),
-              prepend("CognitoIdentityServiceProvider::UserPoolDomain::A::"),
-            ]),
-            get("loadBalancer"),
-            pipe([
+              pipe([
+                get("userPoolDomain"),
+                prepend("CognitoIdentityServiceProvider::UserPoolDomain::A::"),
+              ]),
               get("loadBalancer"),
-              prepend("ElasticLoadBalancingV2::LoadBalancer::A::"),
-            ]),
-            get("distribution"),
-            pipe([
+              pipe([
+                get("loadBalancer"),
+                prepend("ElasticLoadBalancingV2::LoadBalancer::A::"),
+              ]),
               get("distribution"),
-              prepend("CloudFront::Distribution::A::"),
-            ]),
-            get("apiGatewayV2DomainName"),
-            pipe([
+              pipe([
+                get("distribution"),
+                prepend("CloudFront::Distribution::A::"),
+              ]),
               get("apiGatewayV2DomainName"),
-              prepend("ApiGatewayV2::DomainName::A::"),
+              pipe([
+                get("apiGatewayV2DomainName"),
+                prepend("ApiGatewayV2::DomainName::A::"),
+              ]),
+              () => `${properties.Type}::${properties.Name}`,
             ]),
-            () => `${properties.Type}::${properties.Name}`,
-          ]),
-          prepend(`record::`),
-          when(
-            () => properties.SetIdentifier,
-            append(`::${properties.SetIdentifier}`)
-          ),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
+            prepend(`record::`),
+            when(
+              () => properties.SetIdentifier,
+              append(`::${properties.SetIdentifier}`)
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
           unless(
@@ -379,8 +384,10 @@ module.exports = pipe([
         },
       },
       omitProperties: ["HostedZoneId", "Name", "Owner", "VPC"],
-      inferName: ({ properties, dependenciesSpec: { hostedZone, vpc } }) =>
-        pipe([() => `zone-assoc::${hostedZone}::${vpc}`])(),
+      inferName:
+        ({ dependenciesSpec: { hostedZone, vpc } }) =>
+        () =>
+          pipe([() => `zone-assoc::${hostedZone}::${vpc}`])(),
       compare: compareRoute53({
         filterTarget: () => pipe([() => ({})]),
         filterLive: () => pipe([() => ({})]),
@@ -406,8 +413,10 @@ module.exports = pipe([
         },
       },
       omitProperties: ["HostedZoneId", "VPC"],
-      inferName: ({ properties, dependenciesSpec: { hostedZone, vpc } }) =>
-        pipe([() => `vpc-assoc-auth::${hostedZone}::${vpc}`])(),
+      inferName:
+        ({ dependenciesSpec: { hostedZone, vpc } }) =>
+        () =>
+          pipe([() => `vpc-assoc-auth::${hostedZone}::${vpc}`])(),
       compare: compareRoute53({
         filterTarget: () => pipe([() => ({})]),
         filterLive: () => pipe([() => ({})]),

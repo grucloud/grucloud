@@ -34,8 +34,7 @@ exports.Firewall = ({ compare }) => ({
   client: "NetworkFirewall",
   findName: () => get("FirewallName"),
   findId: () => pipe([get("FirewallArn")]),
-  inferName: ({ properties }) =>
-    pipe([() => properties, get("FirewallName")])(),
+  inferName: () => pipe([get("FirewallName")]),
   compare: compare({
     filterLive: () => pipe([omitEncryptionConfiguration]),
   }),

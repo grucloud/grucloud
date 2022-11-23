@@ -95,7 +95,7 @@ exports.LightsailDomain = ({ compare }) => ({
     //TODO,
     //"domainEntries[].id"
   ],
-  inferName: get("properties.domainName"),
+  inferName: () => get("domainName"),
   // compare: compare({
   //   filterTarget: () => pipe([omit(["compare"])]),
   // }),

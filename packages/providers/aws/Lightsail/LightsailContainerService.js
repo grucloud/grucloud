@@ -89,7 +89,7 @@ exports.LightsailContainerService = () => ({
     "privateDomainName",
     "nextDeployment",
   ],
-  inferName: get("properties.serviceName"),
+  inferName: () => get("serviceName"),
   dependencies: {
     certificate: {
       type: "Certificate",

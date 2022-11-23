@@ -155,12 +155,13 @@ exports.SSOAdminPermissionSet = ({}) => ({
     "InstanceArn",
     "AccountIds",
   ],
-  inferName: pipe([
-    get("properties.Name"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   dependencies: {
     identityStore: {
       type: "Instance",

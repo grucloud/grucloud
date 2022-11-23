@@ -28,13 +28,15 @@ exports.SecurityHubOrganizationAdminAccount = () => ({
   client: "SecurityHub",
   propertiesDefault: {},
   omitProperties: ["AdminAccountId", "Status"],
-  inferName: ({ dependenciesSpec: { accountDelegated } }) =>
-    pipe([
-      tap((params) => {
-        assert(accountDelegated);
-      }),
-      () => accountDelegated,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { accountDelegated } }) =>
+    () =>
+      pipe([
+        tap((params) => {
+          assert(accountDelegated);
+        }),
+        () => accountDelegated,
+      ])(),
   findName: ({ lives, config }) =>
     pipe([
       get("AdminAccountId"),

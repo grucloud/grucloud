@@ -93,7 +93,7 @@ exports.RDSClusterEndpoint = ({ compare }) => ({
     "DBClusterEndpointArn",
     "CustomEndpointType",
   ],
-  inferName: get("properties.DBClusterEndpointIdentifier"),
+  inferName: () => get("DBClusterEndpointIdentifier"),
   // compare: compare({
   //   filterTarget: () => pipe([omit(["compare"])]),
   // }),

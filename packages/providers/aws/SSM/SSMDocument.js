@@ -31,14 +31,13 @@ exports.SSMDocument = () => ({
   package: "ssm",
   client: "SSM",
   type: "Document",
-  inferName: ({ properties, dependenciesSpec }) =>
+  inferName: () =>
     pipe([
-      () => properties,
       get("Name"),
       tap((Name) => {
         assert(Name);
       }),
-    ])(),
+    ]),
   findName: () => get("Name"),
   findId: ({ config }) =>
     pipe([

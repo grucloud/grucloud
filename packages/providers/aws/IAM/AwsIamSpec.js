@@ -73,18 +73,20 @@ module.exports = pipe([
     {
       type: "OpenIDConnectProvider",
       Client: AwsIamOpenIDConnectProvider,
-      inferName: ({ properties, dependenciesSpec: { cluster } }) =>
-        pipe([
-          switchCase([
-            () => cluster,
-            () => `eks-cluster::${cluster}`,
-            pipe([
-              () => properties,
-              get("Url"),
-              callProp("replace", "https://", ""),
+      inferName:
+        ({ dependenciesSpec: { cluster } }) =>
+        (properties) =>
+          pipe([
+            switchCase([
+              () => cluster,
+              () => `eks-cluster::${cluster}`,
+              pipe([
+                () => properties,
+                get("Url"),
+                callProp("replace", "https://", ""),
+              ]),
             ]),
-          ]),
-        ])(),
+          ])(),
       compare: compareIAM({
         filterLive: () =>
           pipe([
@@ -114,26 +116,28 @@ module.exports = pipe([
               ])(),
         },
       },
-      inferName: ({ properties, dependenciesSpec }) =>
-        pipe([
-          () => dependenciesSpec,
-          tap((params) => {
-            assert(true);
-          }),
-          switchCase([
-            get("cluster"),
-            pipe([get("cluster"), prepend("eks-cluster::")]),
-            pipe([
-              () => properties,
-              get("Url"),
-              tap((Url) => {
-                assert(Url);
-              }),
-              callProp("replace", "https://", ""),
+      inferName:
+        ({ dependenciesSpec }) =>
+        (properties) =>
+          pipe([
+            () => dependenciesSpec,
+            tap((params) => {
+              assert(true);
+            }),
+            switchCase([
+              get("cluster"),
+              pipe([get("cluster"), prepend("eks-cluster::")]),
+              pipe([
+                () => properties,
+                get("Url"),
+                tap((Url) => {
+                  assert(Url);
+                }),
+                callProp("replace", "https://", ""),
+              ]),
             ]),
-          ]),
-          prepend("oidp::"),
-        ])(),
+            prepend("oidp::"),
+          ])(),
       hasNoProperty: ({ lives, resource }) =>
         pipe([
           () => resource,
@@ -143,7 +147,7 @@ module.exports = pipe([
     {
       type: "User",
       Client: AwsIamUser,
-      inferName: get("properties.UserName"),
+      inferName: () => get("UserName"),
       propertiesDefault: { Path: "/" },
       compare: compareIAM({
         filterLive: () =>
@@ -183,7 +187,7 @@ module.exports = pipe([
     {
       type: "Group",
       Client: AwsIamGroup,
-      inferName: get("properties.GroupName"),
+      inferName: () => get("GroupName"),
       propertiesDefault: { Path: "/" },
       isOurMinion: isOurMinionIamGroup,
       compare: compareIAM({
@@ -208,7 +212,7 @@ module.exports = pipe([
     {
       type: "Role",
       Client: AwsIamRole,
-      inferName: get("properties.RoleName"),
+      inferName: () => get("RoleName"),
       propertiesDefault: { Path: "/" },
       compare: compareIAM({
         filterAll: () => pipe([pick(["AssumeRolePolicyDocument"])]),
@@ -339,17 +343,13 @@ module.exports = pipe([
     {
       type: "Policy",
       Client: AwsIamPolicy,
-      inferName: ({ properties }) =>
+      inferName: () =>
         pipe([
-          tap((params) => {
-            assert(properties);
-          }),
-          () => properties,
           get("PolicyName"),
           tap((PolicyName) => {
             assert(PolicyName);
           }),
-        ])(),
+        ]),
       isOurMinion: isOurMinionIamPolicy,
       compare: compareIAM({
         filterAll: () =>

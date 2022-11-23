@@ -523,13 +523,17 @@ module.exports = pipe([
       type: "ClientVpnAuthorizationRule",
       Client: EC2ClientVpnAuthorizationRule,
       omitProperties: ["ClientVpnEndpointId", "Status"],
-      inferName: pipe([
-        ({
-          properties: { TargetNetworkCidr },
-          dependenciesSpec: { clientVpnEndpoint },
-        }) =>
-          `client-vpn-rule-assoc::${clientVpnEndpoint}::${TargetNetworkCidr}`,
-      ]),
+      inferName:
+        ({ dependenciesSpec: { clientVpnEndpoint } }) =>
+        ({ TargetNetworkCidr }) =>
+          pipe([
+            tap((params) => {
+              assert(clientVpnEndpoint);
+              assert(TargetNetworkCidr);
+            }),
+            () =>
+              `client-vpn-rule-assoc::${clientVpnEndpoint}::${TargetNetworkCidr}`,
+          ]),
       propertiesDefault: {},
       compare: compareEC2({ filterAll: () => pick([]) }),
       filterLive: () =>
@@ -697,14 +701,14 @@ module.exports = pipe([
         "Status",
         "SecurityGroups",
       ],
-      inferName: pipe([
-        get("dependenciesSpec"),
-        ({ clientVpnEndpoint, subnet }) =>
-          `client-vpn-target-assoc::${clientVpnEndpoint}::${subnet}`,
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
+      inferName: ({ dependenciesSpec: { clientVpnEndpoint, subnet } }) =>
+        pipe([
+          tap((params) => {
+            assert(clientVpnEndpoint);
+            assert(subnet);
+          }),
+          () => `client-vpn-target-assoc::${clientVpnEndpoint}::${subnet}`,
+        ]),
       propertiesDefault: {},
       compare: compareEC2({ filterAll: () => pick([]) }),
       dependencies: {
@@ -733,7 +737,13 @@ module.exports = pipe([
       Client: EC2DhcpOptionsAssociation,
       omitProperties: ["DhcpOptionsId", "VpcId"],
       inferName: ({ dependenciesSpec: { vpc, dhcpOptions } }) =>
-        pipe([() => `dhcp-options-assoc::${vpc}::${dhcpOptions}`])(),
+        pipe([
+          tap((params) => {
+            assert(vpc);
+            assert(dhcpOptions);
+          }),
+          () => `dhcp-options-assoc::${vpc}::${dhcpOptions}`,
+        ]),
       dependencies: {
         vpc: {
           type: "Vpc",
@@ -956,7 +966,7 @@ module.exports = pipe([
       type: "IpamPoolCidr",
       Client: EC2IpamPoolCidr,
       omitProperties: ["IpamPoolId", "State", "FailureReason"],
-      inferName: pipe([get("properties.Cidr")]),
+      inferName: () => pipe([get("Cidr")]),
       dependencies: {
         ipamPool: {
           type: "IpamPool",
@@ -1209,7 +1219,13 @@ module.exports = pipe([
       Client: EC2InternetGatewayAttachment,
       omitProperties: ["VpcId", "InternetGatewayId"],
       inferName: ({ dependenciesSpec: { vpc, internetGateway } }) =>
-        `ig-attach::${internetGateway}::${vpc}`,
+        pipe([
+          tap((params) => {
+            assert(vpc);
+            assert(internetGateway);
+          }),
+          () => `ig-attach::${internetGateway}::${vpc}`,
+        ]),
       dependencies: {
         vpc: {
           type: "Vpc",
@@ -1259,18 +1275,20 @@ module.exports = pipe([
             getResourceNameFromTag(),
           ]),
         ]),
-      inferName: ({ resourceName, properties, dependenciesSpec }) =>
-        pipe([
-          tap((params) => {
-            assert(dependenciesSpec.vpc);
-            assert(resourceName);
-          }),
-          () => resourceName,
-          callProp("split", "::"),
-          last,
-          prepend("::"),
-          prepend(dependenciesSpec.vpc),
-        ])(),
+      inferName:
+        ({ resourceName, dependenciesSpec: { vpc } }) =>
+        () =>
+          pipe([
+            tap((params) => {
+              assert(vpc);
+              assert(resourceName);
+            }),
+            () => resourceName,
+            callProp("split", "::"),
+            last,
+            prepend("::"),
+            prepend(vpc),
+          ])(),
       omitProperties: [
         "VpcId",
         "AvailabilityZoneId",
@@ -1363,18 +1381,20 @@ module.exports = pipe([
             getResourceNameFromTag(),
           ]),
         ]),
-      inferName: ({ resourceName, properties, dependenciesSpec }) =>
-        pipe([
-          tap((params) => {
-            assert(dependenciesSpec.vpc);
-            assert(resourceName);
-          }),
-          () => resourceName,
-          callProp("split", "::"),
-          last,
-          prepend("::"),
-          prepend(dependenciesSpec.vpc),
-        ])(),
+      inferName:
+        ({ resourceName, dependenciesSpec: { vpc } }) =>
+        () =>
+          pipe([
+            tap((params) => {
+              assert(vpc);
+              assert(resourceName);
+            }),
+            () => resourceName,
+            callProp("split", "::"),
+            last,
+            prepend("::"),
+            prepend(vpc),
+          ])(),
       omitProperties: [
         "VpcId",
         "Associations",
@@ -1418,14 +1438,14 @@ module.exports = pipe([
       })({
         filterLive: () => pipe([pick(["RouteTableId", "SubnetId"])]),
       }),
-      inferName: ({ properties, dependenciesSpec: { routeTable, subnet } }) =>
+      inferName: ({ dependenciesSpec: { routeTable, subnet } }) =>
         pipe([
           tap(() => {
             assert(routeTable);
             assert(subnet);
           }),
           () => `rt-assoc::${routeTable}::${subnet}`,
-        ])(),
+        ]),
       filterLive: () => pick([]),
       dependencies: {
         routeTable: {
@@ -1472,54 +1492,55 @@ module.exports = pipe([
       }),
       filterLive: () =>
         pipe([pick(["DestinationCidrBlock", "DestinationIpv6CidrBlock"])]),
-      inferName: ({
-        properties,
-        dependenciesSpec: {
-          coreNetwork,
-          ec2Instance,
-          egressOnlyInternetGateway,
-          ig,
-          natGateway,
-          prefixList,
-          transitGateway,
-          routeTable,
-          vpcEndpoint,
-          vpcPeeringConnection,
-          vpnGateway,
-        },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(routeTable);
-          }),
-          () => routeTable,
-          switchCase([
-            () => coreNetwork,
-            pipe([append("::core")]),
-            () => ig,
-            pipe([append("::igw")]),
-            () => natGateway,
-            pipe([append("::nat-gateway")]),
-            () => vpcEndpoint,
-            pipe([append(`::${vpcEndpoint}`)]),
-            () => transitGateway,
-            pipe([append(`::tgw`)]),
-            () => egressOnlyInternetGateway,
-            pipe([append(`::eogw`)]),
-            () => ec2Instance,
-            pipe([append(`::${ec2Instance}`)]),
-            () => vpcPeeringConnection,
-            pipe([append(`::pcx`)]),
-            () => vpnGateway,
-            pipe([append(`::vgw`)]),
-            pipe([append("::local")]),
-          ]),
-          switchCase([
-            () => prefixList,
-            append(`::${prefixList}`),
-            appendCidrSuffix(properties),
-          ]),
-        ])(),
+      inferName:
+        ({
+          dependenciesSpec: {
+            coreNetwork,
+            ec2Instance,
+            egressOnlyInternetGateway,
+            ig,
+            natGateway,
+            prefixList,
+            transitGateway,
+            routeTable,
+            vpcEndpoint,
+            vpcPeeringConnection,
+            vpnGateway,
+          },
+        }) =>
+        (properties) =>
+          pipe([
+            tap(() => {
+              assert(routeTable);
+            }),
+            () => routeTable,
+            switchCase([
+              () => coreNetwork,
+              pipe([append("::core")]),
+              () => ig,
+              pipe([append("::igw")]),
+              () => natGateway,
+              pipe([append("::nat-gateway")]),
+              () => vpcEndpoint,
+              pipe([append(`::${vpcEndpoint}`)]),
+              () => transitGateway,
+              pipe([append(`::tgw`)]),
+              () => egressOnlyInternetGateway,
+              pipe([append(`::eogw`)]),
+              () => ec2Instance,
+              pipe([append(`::${ec2Instance}`)]),
+              () => vpcPeeringConnection,
+              pipe([append(`::pcx`)]),
+              () => vpnGateway,
+              pipe([append(`::vgw`)]),
+              pipe([append("::local")]),
+            ]),
+            switchCase([
+              () => prefixList,
+              append(`::${prefixList}`),
+              appendCidrSuffix(properties),
+            ]),
+          ])(),
       dependencies: {
         coreNetwork: {
           type: "CoreNetwork",
@@ -1696,22 +1717,27 @@ module.exports = pipe([
         filterAll: () => pipe([omit(["VpcId", "OwnerId", "GroupId"])]),
       }),
       filterLive: () => pick(["GroupName", "Description"]),
-      inferName: ({ resourceName, properties, dependenciesSpec: { vpc } }) =>
-        pipe([
-          () => resourceName,
-          when(
-            isEmpty,
-            pipe([
-              () => "sg::",
-              when(() => vpc, append(`${vpc}::`)),
-              switchCase([
-                () => properties.GroupName,
-                append(properties.GroupName),
-                append("default"),
-              ]),
-            ])
-          ),
-        ])(),
+      inferName:
+        ({ resourceName, properties, dependenciesSpec: { vpc } }) =>
+        ({ GroupName }) =>
+          pipe([
+            tap((params) => {
+              assert(vpc);
+            }),
+            () => resourceName,
+            when(
+              isEmpty,
+              pipe([
+                () => "sg::",
+                when(() => vpc, append(`${vpc}::`)),
+                switchCase([
+                  () => GroupName,
+                  append(GroupName),
+                  append("default"),
+                ]),
+              ])
+            ),
+          ])(),
       dependencies: {
         vpc: {
           type: "Vpc",
@@ -1821,14 +1847,16 @@ module.exports = pipe([
         },
       },
       omitProperties: ["InstanceId", "AllocationId", "AssociationId"],
-      inferName: ({ properties, dependenciesSpec: { eip, instance } }) =>
-        pipe([
-          tap(() => {
-            assert(eip);
-          }),
-          () => `eip-attach::${eip}`,
-          when(() => instance, append(`::${instance}`)),
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { eip, instance } }) =>
+        () =>
+          pipe([
+            tap(() => {
+              assert(eip);
+            }),
+            () => `eip-attach::${eip}`,
+            when(() => instance, append(`::${instance}`)),
+          ])(),
     },
     {
       type: "Instance",
@@ -2260,7 +2288,7 @@ module.exports = pipe([
       type: "ManagedPrefixList",
       dependencies: {},
       Client: EC2ManagedPrefixList,
-      inferName: get("properties.PrefixListName"),
+      inferName: () => get("PrefixListName"),
       compare: compareEC2({
         filterAll: () => pipe([pick(["Entries", "MaxEntries"])]),
       }),
@@ -2287,7 +2315,7 @@ module.exports = pipe([
       dependencies: {},
       Client: EC2PlacementGroup,
       omitProperties: ["State", "GroupId", "GroupArn", "PartitionCount"],
-      inferName: pipe([get("properties.GroupName")]),
+      inferName: () => pipe([get("GroupName")]),
     },
     {
       type: "VpcEndpoint",
@@ -2353,27 +2381,29 @@ module.exports = pipe([
       Client: EC2VpcEndpoint,
       shortName: true,
       getResourceName: getResourceNameFromTag,
-      inferName: ({ resourceName, properties, dependenciesSpec }) =>
-        pipe([
-          tap((params) => {
-            assert(dependenciesSpec.vpc);
-          }),
-          () => "",
-          switchCase([
-            () => dependenciesSpec.firewall,
-            pipe([
-              append("vpce::"),
-              append(dependenciesSpec.firewall),
-              append("::"),
-              append(pipe([() => dependenciesSpec.subnets, first])()),
+      inferName:
+        ({ resourceName, dependenciesSpec }) =>
+        (properties) =>
+          pipe([
+            tap((params) => {
+              assert(dependenciesSpec.vpc);
+            }),
+            () => "",
+            switchCase([
+              () => dependenciesSpec.firewall,
+              pipe([
+                append("vpce::"),
+                append(dependenciesSpec.firewall),
+                append("::"),
+                append(pipe([() => dependenciesSpec.subnets, first])()),
+              ]),
+              pipe([
+                append(dependenciesSpec.vpc),
+                append("::"),
+                append(resourceName || properties.ServiceName),
+              ]),
             ]),
-            pipe([
-              append(dependenciesSpec.vpc),
-              append("::"),
-              append(resourceName || properties.ServiceName),
-            ]),
-          ]),
-        ])(),
+          ])(),
       omitProperties: [
         "VpcEndpointId",
         "VpcId",
@@ -2468,13 +2498,17 @@ module.exports = pipe([
           (code) => pipe([() => ["deleted", "failed"], includes(code)])(),
         ]),
 
-      inferName: ({ properties, dependenciesSpec: { vpc, vpcPeer } }) =>
-        pipe([
-          tap((params) => {
-            assert(properties);
-          }),
-          () => `vpc-peering::${vpc}::${vpcPeer}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { vpc, vpcPeer } }) =>
+        (properties) =>
+          pipe([
+            tap((params) => {
+              assert(vpc);
+              assert(vpcPeer);
+              assert(properties);
+            }),
+            () => `vpc-peering::${vpc}::${vpcPeer}`,
+          ])(),
       omitProperties: [
         "Status",
         "ExpirationTime",
@@ -2520,13 +2554,15 @@ module.exports = pipe([
     {
       type: "VpcPeeringConnectionAccepter",
       Client: EC2VpcPeeringConnectionAccepter,
-      inferName: ({ dependenciesSpec: { vpcPeeringConnection } }) =>
-        pipe([
-          tap((params) => {
-            assert(vpcPeeringConnection);
-          }),
-          () => `vpc-peering-accepter::${vpcPeeringConnection}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { vpcPeeringConnection } }) =>
+        () =>
+          pipe([
+            tap((params) => {
+              assert(vpcPeeringConnection);
+            }),
+            () => `vpc-peering-accepter::${vpcPeeringConnection}`,
+          ])(),
       omitProperties: [
         "Status",
         "VpcPeeringConnectionId",
@@ -2583,12 +2619,16 @@ module.exports = pipe([
         },
         ...transitGatewayAttachmentDependencies,
       },
-      inferName: ({ properties, dependenciesSpec }) =>
-        pipe([
-          () => ({ properties, dependenciesSpec }),
-          inferNameRouteTableArm({ prefix: "tgw-route" }),
-          append(`::${properties.DestinationCidrBlock}`),
-        ])(),
+      inferName:
+        ({ dependenciesSpec }) =>
+        (properties) =>
+          pipe([
+            () => properties,
+            inferNameRouteTableArm({ prefix: "tgw-route" })({
+              dependenciesSpec,
+            }),
+            append(`::${properties.DestinationCidrBlock}`),
+          ])(),
     },
     {
       type: "TransitGatewayRouteTable",
@@ -2610,15 +2650,17 @@ module.exports = pipe([
     {
       type: "TransitGatewayPeeringAttachment",
       Client: EC2TransitGatewayPeeringAttachment,
-      inferName: pipe([
-        get("dependenciesSpec"),
-        tap(({ transitGateway, transitGatewayPeer }) => {
-          assert(transitGateway);
-          assert(transitGatewayPeer);
-        }),
-        ({ transitGateway, transitGatewayPeer }) =>
-          `tgw-peering-attach::${transitGateway}::${transitGatewayPeer}`,
-      ]),
+      inferName:
+        ({ dependenciesSpec: { transitGateway, transitGatewayPeer } }) =>
+        () =>
+          pipe([
+            tap(() => {
+              assert(transitGateway);
+              assert(transitGatewayPeer);
+            }),
+            () =>
+              `tgw-peering-attach::${transitGateway}::${transitGatewayPeer}`,
+          ])(),
       // TODO remove this
       compare: compareEC2({
         filterTarget: () => pipe([pick([])]),
@@ -2802,8 +2844,10 @@ module.exports = pipe([
       ignoreResource: () => pipe([get("live"), eq(get("State"), "detached")]),
       omitProperties: ["VpnGatewayId", "VpcId", "State"],
       compare: compareEC2({ filterAll: () => pick([]) }),
-      inferName: ({ dependenciesSpec: { vpc, vpnGateway } }) =>
-        `vpn-gw-attach::${vpnGateway}::${vpc}`,
+      inferName:
+        ({ dependenciesSpec: { vpc, vpnGateway } }) =>
+        () =>
+          `vpn-gw-attach::${vpnGateway}::${vpc}`,
       dependencies: {
         vpc: {
           type: "Vpc",
@@ -2824,8 +2868,10 @@ module.exports = pipe([
       Client: EC2VpnGatewayRoutePropagation,
       omitProperties: ["GatewayId", "RouteTableId", "State"],
       compare: compareEC2({ filterAll: () => pick([]) }),
-      inferName: ({ dependenciesSpec: { routeTable, vpnGateway } }) =>
-        `vpn-gw-rt::${vpnGateway}::${routeTable}`,
+      inferName:
+        ({ dependenciesSpec: { routeTable, vpnGateway } }) =>
+        () =>
+          `vpn-gw-rt::${vpnGateway}::${routeTable}`,
       dependencies: {
         routeTable: {
           type: "RouteTable",
@@ -2892,10 +2938,10 @@ module.exports = pipe([
     {
       type: "VpnConnectionRoute",
       Client: EC2VpnConnectionRoute,
-      inferName: ({
-        properties: { DestinationCidrBlock },
-        dependenciesSpec: { vpnConnection },
-      }) => `vpn-conn-route::${vpnConnection}::${DestinationCidrBlock}`,
+      inferName:
+        ({ dependenciesSpec: { vpnConnection } }) =>
+        ({ DestinationCidrBlock }) =>
+          `vpn-conn-route::${vpnConnection}::${DestinationCidrBlock}`,
       omitProperties: ["VpnConnectionId", "State"],
       dependencies: {
         vpnConnection: {

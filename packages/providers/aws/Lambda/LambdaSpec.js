@@ -83,7 +83,7 @@ module.exports = pipe([
     {
       type: "Layer",
       Client: Layer,
-      inferName: get("properties.LayerName"),
+      inferName: () => get("LayerName"),
       compare: compareLayer,
       displayResource: () => pipe([omit(["Content.Data", "Content.ZipFile"])]),
       filterLive:
@@ -134,7 +134,7 @@ module.exports = pipe([
       type: "Function",
       Client: Function,
       compare: compareFunction,
-      inferName: get("properties.Configuration.FunctionName"),
+      inferName: () => get("Configuration.FunctionName"),
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
       ignoreResource: () =>
         pipe([
@@ -447,25 +447,25 @@ module.exports = pipe([
     {
       type: "EventSourceMapping",
       Client: EventSourceMapping,
-      inferName: ({
-        dependenciesSpec: { lambdaFunction, sqsQueue, kinesisStream },
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(lambdaFunction);
-            assert(sqsQueue || kinesisStream);
-          }),
-          switchCase([
-            () => sqsQueue,
-            () => sqsQueue,
-            () => kinesisStream,
-            () => kinesisStream,
-            () => {
-              assert(false, `missing EventSourceMapping dependency`);
-            },
-          ]),
-          prepend(`mapping::${lambdaFunction}::`),
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { lambdaFunction, sqsQueue, kinesisStream } }) =>
+        () =>
+          pipe([
+            tap((params) => {
+              assert(lambdaFunction);
+              assert(sqsQueue || kinesisStream);
+            }),
+            switchCase([
+              () => sqsQueue,
+              () => sqsQueue,
+              () => kinesisStream,
+              () => kinesisStream,
+              () => {
+                assert(false, `missing EventSourceMapping dependency`);
+              },
+            ]),
+            prepend(`mapping::${lambdaFunction}::`),
+          ])(),
       compare: compareLambda({
         filterTarget: () =>
           pipe([

@@ -21,7 +21,7 @@ exports.OrganisationsAccount = ({}) => ({
   managedByOther: () => () => true,
   cannotBeDeleted: () => () => true,
   omitProperties: ["Arn", "Id", "Status", "JoinedTimestamp", "JoinedMethod"],
-  inferName: get("properties.Name"),
+  inferName: () => get("Name"),
   findName: () => pipe([get("Name")]),
   findId: () => pipe([get("Id")]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#describeAccount-property

@@ -80,7 +80,7 @@ exports.LightsailLoadBalancer = () => ({
     "protocol",
     "location",
   ],
-  inferName: get("properties.loadBalancerName"),
+  inferName: () => get("loadBalancerName"),
   Client: ({ spec, config }) =>
     createAwsResource({
       model: model({ config }),

@@ -50,13 +50,15 @@ exports.FirewallLoggingConfiguration = ({ compare }) => ({
   findId: () => pipe([get("FirewallArn")]),
 
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  inferName: ({ properties, dependenciesSpec: { firewall } }) =>
-    pipe([
-      tap((params) => {
-        assert(firewall);
-      }),
-      () => firewall,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { firewall } }) =>
+    () =>
+      pipe([
+        tap((params) => {
+          assert(firewall);
+        }),
+        () => firewall,
+      ])(),
   omitProperties: ["FirewallArn"],
   filterLive: ({ resource, programOptions }) =>
     pipe([

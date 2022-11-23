@@ -63,7 +63,7 @@ exports.LightsailStaticIp = () => ({
     "ipAddress",
     "location",
   ],
-  inferName: get("properties.staticIpName"),
+  inferName: () => get("staticIpName"),
   Client: ({ spec, config }) =>
     createAwsResource({
       model: model({ config }),

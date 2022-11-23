@@ -35,14 +35,16 @@ exports.AmplifyBackendEnvironment = () => ({
     "createTime",
     "updateTime",
   ],
-  inferName: ({ properties: { environmentName }, dependenciesSpec: { app } }) =>
-    pipe([
-      tap((params) => {
-        assert(app);
-        assert(environmentName);
-      }),
-      () => `${app}::${environmentName}`,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { app } }) =>
+    ({ environmentName }) =>
+      pipe([
+        tap((params) => {
+          assert(app);
+          assert(environmentName);
+        }),
+        () => `${app}::${environmentName}`,
+      ])(),
   findName:
     ({ lives, config }) =>
     (live) =>

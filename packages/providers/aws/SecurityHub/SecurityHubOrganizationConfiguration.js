@@ -35,7 +35,7 @@ exports.SecurityHubOrganizationConfiguration = () => ({
   omitProperties: ["MemberAccountLimitReached"],
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
-  inferName: pipe([() => "default"]),
+  inferName: () => pipe([() => "default"]),
   findName: () => pipe([() => "default"]),
   findId: () => pipe([() => "default"]),
   ignoreErrorCodes,

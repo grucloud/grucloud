@@ -18,7 +18,7 @@ module.exports = pipe([
     //   Client: CURReportDefinition,
     //   propertiesDefault: {},
     //   omitProperties: [],
-    //   inferName: get("properties.ReportName"),
+    //   inferName: () => get("ReportName"),
     // },
   ],
   map(

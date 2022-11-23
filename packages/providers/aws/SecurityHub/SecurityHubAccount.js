@@ -33,7 +33,7 @@ exports.SecurityHubAccount = () => ({
   client: "SecurityHub",
   propertiesDefault: { Enable: true },
   omitProperties: [],
-  inferName: pipe([() => "default"]),
+  inferName: () => pipe([() => "default"]),
   findName: () => pipe([() => "default"]),
   findId: () => pipe([() => "default"]),
   ignoreErrorCodes: ["ResourceNotFoundException"],

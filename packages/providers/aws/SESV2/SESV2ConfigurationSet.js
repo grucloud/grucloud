@@ -35,12 +35,13 @@ exports.SESV2ConfigurationSet = ({ compare }) => ({
   client: "SESv2",
   propertiesDefault: {},
   omitProperties: [],
-  inferName: pipe([
-    get("properties.ConfigurationSetName"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("ConfigurationSetName"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("ConfigurationSetName"),

@@ -19,8 +19,7 @@ exports.FirewallRuleGroup = ({ compare }) => ({
   type: "RuleGroup",
   package: "network-firewall",
   client: "NetworkFirewall",
-  inferName: ({ properties }) =>
-    pipe([() => properties, get("RuleGroupName")])(),
+  inferName: () => pipe([get("RuleGroupName")]),
   findName: () => pipe([get("RuleGroupName")]),
   findId: () => pipe([get("RuleGroupArn")]),
   omitProperties: [

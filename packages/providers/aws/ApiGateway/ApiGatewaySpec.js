@@ -30,7 +30,7 @@ module.exports = pipe([
     {
       type: "Account",
       Client: Account,
-      inferName: () => "default",
+      inferName: () => () => "default",
       // TODO remove
       isOurMinion:
         ({ config }) =>
@@ -52,14 +52,14 @@ module.exports = pipe([
     {
       type: "ApiKey",
       Client: ApiKey,
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       omitProperties: ["id", "createdDate", "lastUpdatedDate", "stageKeys"],
       propertiesDefault: { enabled: true },
     },
     {
       type: "RestApi",
       Client: RestApi,
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       omitProperties: ["id", "createdDate", "deployments", "version"],
       propertiesDefault: { disableExecuteApiEndpoint: false },
       compare: compareAPIGateway({
@@ -190,17 +190,16 @@ module.exports = pipe([
         "restApiId",
         "restApiName",
       ],
-      inferName: ({
-        properties: { stageName },
-        dependenciesSpec: { restApi },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(stageName);
-            assert(restApi);
-          }),
-          () => `${restApi}::${stageName}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { restApi } }) =>
+        ({ stageName }) =>
+          pipe([
+            tap(() => {
+              assert(stageName);
+              assert(restApi);
+            }),
+            () => `${restApi}::${stageName}`,
+          ])(),
       propertiesDefault: { cacheClusterEnabled: false, tracingEnabled: false },
       compare: compareAPIGateway({
         filterLive: () => pipe([omitIfEmpty(["methodSettings"])]),
@@ -246,7 +245,7 @@ module.exports = pipe([
     {
       type: "Authorizer",
       Client: Authorizer,
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       omitProperties: ["id", "restApiId", "providerARNs"],
       dependencies: {
         restApi: {
@@ -273,7 +272,7 @@ module.exports = pipe([
       Client: UsagePlan,
       omitProperties: ["id"],
       propertiesDefault: {},
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
           assign({
@@ -324,7 +323,7 @@ module.exports = pipe([
       type: "UsagePlanKey",
       Client: UsagePlanKey,
       omitProperties: ["id", "keyId", "usagePlanId"],
-      inferName: pipe([get("properties.name")]),
+      inferName: () => pipe([get("name")]),
       propertiesDefault: { keyType: "API_KEY" },
       dependencies: {
         usagePlan: {

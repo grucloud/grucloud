@@ -19,7 +19,7 @@ module.exports = pipe([
       Client: AccountAlternateAccount,
       propertiesDefault: {},
       omitProperties: [],
-      inferName: pipe([get("properties.AlternateContactType")]),
+      inferName: () => pipe([get("AlternateContactType")]),
     },
   ],
   map(

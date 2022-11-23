@@ -25,7 +25,7 @@ module.exports = pipe([
     {
       type: "WebACL",
       Client: WAFV2WebACL,
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       omitProperties: omitPropertiesWebACL,
       compare: compareWAFV2({
         filterLive: () => pipe([filterDescription]),
@@ -35,7 +35,7 @@ module.exports = pipe([
     {
       type: "WebACLCloudFront",
       Client: WAFV2WebACLCloudFront,
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       omitProperties: omitPropertiesWebACL,
       compare: compareWAFV2({
         filterLive: () => pipe([filterDescription]),
@@ -46,16 +46,21 @@ module.exports = pipe([
       type: "WebACLAssociation",
       Client: WAFV2WebACLAssociation,
       omitProperties: ["ResourceArn", "WebACLArn"],
-      inferName: ({ dependenciesSpec: { webAcl, ...otherDeps } }) =>
-        pipe([
-          () => otherDeps,
-          values,
-          first,
-          tap((dep) => {
-            assert(dep);
-          }),
-          prepend(`webacl-assoc::${webAcl}::`),
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { webAcl, ...otherDeps } }) =>
+        () =>
+          pipe([
+            tap((params) => {
+              assert(webAcl);
+            }),
+            () => otherDeps,
+            values,
+            first,
+            tap((dep) => {
+              assert(dep);
+            }),
+            prepend(`webacl-assoc::${webAcl}::`),
+          ])(),
       dependencies: {
         webAcl: {
           type: "WebACL",

@@ -28,17 +28,16 @@ exports.ACMPCAPermission = ({ compare }) => ({
   client: "ACMPCA",
   propertiesDefault: {},
   omitProperties: ["CertificateAuthorityArn", "CreatedAt", "SourceAccount"],
-  inferName: ({
-    properties: { Principal },
-    dependenciesSpec: { certificateAuthority },
-  }) =>
-    pipe([
-      tap((params) => {
-        assert(certificateAuthority);
-        assert(Principal);
-      }),
-      () => `${certificateAuthority}::${Principal}`,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { certificateAuthority } }) =>
+    ({ Principal }) =>
+      pipe([
+        tap((params) => {
+          assert(certificateAuthority);
+          assert(Principal);
+        }),
+        () => `${certificateAuthority}::${Principal}`,
+      ])(),
   findName:
     ({ lives, config }) =>
     (live) =>

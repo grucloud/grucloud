@@ -31,14 +31,14 @@ module.exports = pipe([
     {
       type: "Connection",
       Client: AppRunnerConnection,
-      inferName: get("properties.ConnectionName"),
+      inferName: () => get("ConnectionName"),
       omitProperties: ["ConnectionArn", "Status", "CreatedAt"],
       filterLive: () => pipe([pick(["ConnectionName", "ProviderType"])]),
     },
     {
       type: "Service",
       Client: AppRunnerService,
-      inferName: get("properties.ServiceName"),
+      inferName: () => get("ServiceName"),
       dependencies: {
         accessRole: {
           type: "Role",
@@ -156,7 +156,7 @@ module.exports = pipe([
     {
       type: "VpcConnector",
       Client: AppRunnerVpcConnector,
-      inferName: get("properties.VpcConnectorName"),
+      inferName: () => get("VpcConnectorName"),
       omitProperties: [
         "VpcConnectorArn",
         "Status",
@@ -183,7 +183,7 @@ module.exports = pipe([
     {
       type: "VpcIngressConnection",
       Client: AppRunnerVpcIngressConnection,
-      inferName: get("properties.VpcIngressConnectionName"),
+      inferName: () => get("VpcIngressConnectionName"),
       omitProperties: [
         "VpcIngressConnectionArn",
         "Status",

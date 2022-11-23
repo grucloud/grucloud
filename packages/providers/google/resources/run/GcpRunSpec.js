@@ -13,8 +13,13 @@ module.exports = () =>
     {
       type: "Service",
       Client: GcpRunService,
-      inferName: ({ properties, dependencies }) =>
-        pipe([() => properties, get("metadata.name")])(),
+      inferName: () =>
+        pipe([
+          get("metadata.name"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
       filterLive: () =>
         pipe([
           omit(["metadata.uid"]),
@@ -71,15 +76,16 @@ module.exports = () =>
       dependencies: {
         service: { type: "Service", group: "run", parent: true },
       },
-      //TODO use dependenciesSpec
-      inferName: ({ properties, dependencies }) =>
-        pipe([
-          dependencies,
-          tap(({ service }) => {
-            assert(service);
-          }),
-          ({ service }) => `${service.name}::${properties.location}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { service } }) =>
+        ({ location }) =>
+          pipe([
+            tap(() => {
+              assert(service);
+              assert(location);
+            }),
+            () => `${service}::${location}`,
+          ])(),
       filterLive: () =>
         pipe([
           omit(["policy.etag", "service"]),

@@ -26,18 +26,17 @@ exports.Route53TrafficPolicyInstance = () => ({
   client: "Route53",
   propertiesDefault: {},
   omitProperties: ["Id", "HostedZoneId", "State", "Message", "TrafficPolicyId"],
-  inferName: ({
-    properties: { Name, TrafficPolicyType },
-    dependenciesSpec: { hostedZone },
-  }) =>
-    pipe([
-      tap((Name) => {
-        assert(hostedZone);
-        assert(Name);
-        assert(TrafficPolicyType);
-      }),
-      () => `${hostedZone}::${TrafficPolicyType}::${Name}`,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { hostedZone } }) =>
+    ({ Name, TrafficPolicyType }) =>
+      pipe([
+        tap((Name) => {
+          assert(hostedZone);
+          assert(Name);
+          assert(TrafficPolicyType);
+        }),
+        () => `${hostedZone}::${TrafficPolicyType}::${Name}`,
+      ])(),
   findName:
     ({ lives, config }) =>
     (live) =>

@@ -38,13 +38,15 @@ exports.SecurityHubMember = () => ({
     "MemberStatus",
     "UpdatedAt",
   ],
-  inferName: ({ dependenciesSpec: { account } }) =>
-    pipe([
-      tap((params) => {
-        assert(account);
-      }),
-      () => account,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { account } }) =>
+    () =>
+      pipe([
+        tap((params) => {
+          assert(account);
+        }),
+        () => account,
+      ])(),
   findName: ({ lives, config }) =>
     pipe([
       get("AccountId"),

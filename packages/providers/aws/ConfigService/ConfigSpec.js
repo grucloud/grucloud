@@ -34,14 +34,14 @@ module.exports = pipe([
         "ConfigRuleState",
         "CreatedBy",
       ],
-      inferName: get("properties.ConfigRuleName"),
+      inferName: () => get("ConfigRuleName"),
     },
     {
       type: "ConfigurationRecorder",
       Client: ConfigConfigurationRecorder,
       propertiesDefault: {},
       omitProperties: [],
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       dependencies: {
         iamRole: {
           type: "Role",
@@ -81,7 +81,13 @@ module.exports = pipe([
         "lastErrorMessage",
         "lastStatusChangeTime",
       ],
-      inferName: get("dependenciesSpec.deliveryChannel"),
+      inferName: ({ dependenciesSpec: { deliveryChannel } }) =>
+        pipe([
+          tap((params) => {
+            assert(deliveryChannel);
+          }),
+          () => deliveryChannel,
+        ]),
       compare: compare({}),
       dependencies: {
         deliveryChannel: {
@@ -108,7 +114,7 @@ module.exports = pipe([
         "Rules[].ComplianceType",
         "Rules[].Controls",
       ],
-      inferName: get("properties.ConformancePackName"),
+      inferName: () => get("ConformancePackName"),
       dependencies: {
         stack: {
           type: "Stack",
@@ -141,7 +147,7 @@ module.exports = pipe([
       Client: ConfigDeliveryChannel,
       propertiesDefault: {},
       omitProperties: ["s3BucketName", "snsTopicARN"],
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       dependencies: {
         configurationRecorder: {
           type: "ConfigurationRecorder",

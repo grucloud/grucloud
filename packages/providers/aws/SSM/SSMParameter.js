@@ -36,7 +36,7 @@ exports.SSMParameter = () => ({
         assert(ARN);
       }),
     ]),
-  inferName: get("properties.Name"),
+  inferName: () => get("Name"),
   ignoreResource: () =>
     pipe([get("name"), callProp("startsWith", "/cdk-bootstrap/")]),
   dependencies: {

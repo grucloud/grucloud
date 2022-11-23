@@ -15,7 +15,7 @@ module.exports = pipe([
     {
       type: "Pipeline",
       Client: CodePipelinePipeline,
-      inferName: pipe([get("properties.pipeline.name")]),
+      inferName: () => pipe([get("pipeline.name")]),
       dependencies: {
         role: {
           type: "Role",

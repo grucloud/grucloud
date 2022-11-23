@@ -26,7 +26,7 @@ module.exports = pipe([
         "MinimumEngineVersion",
         "UserNames",
       ],
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       dependencies: {
         users: {
           type: "User",
@@ -66,7 +66,7 @@ module.exports = pipe([
         "SecurityGroupIds",
         "NumberOfShards",
       ],
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       dependencies: {
         acl: {
           type: "ACL",
@@ -109,13 +109,13 @@ module.exports = pipe([
       type: "ParameterGroup",
       Client: MemoryDBParameterGroup,
       omitProperties: ["ARN"],
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
     },
     {
       type: "SubnetGroup",
       Client: MemoryDBSubnetGroup,
       omitProperties: ["ARN", "VpcId", "Subnets", "SubnetIds"],
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       dependencies: {
         subnets: {
           type: "Subnet",
@@ -136,7 +136,7 @@ module.exports = pipe([
         "MinimumEngineVersion",
         "Status",
       ],
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       environmentVariables: [
         {
           path: "AuthenticationMode.Passwords",

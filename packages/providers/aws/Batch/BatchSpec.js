@@ -36,7 +36,7 @@ module.exports = pipe([
         "computeResources.subnets",
         "uuid",
       ],
-      inferName: get("properties.computeEnvironmentName"),
+      inferName: () => get("computeEnvironmentName"),
       dependencies: {
         eksCluster: {
           type: "Cluster",
@@ -123,7 +123,7 @@ module.exports = pipe([
         "containerProperties.executionRoleArn",
         "latest",
       ],
-      inferName: get("properties.jobDefinitionName"),
+      inferName: () => get("jobDefinitionName"),
       dependencies: {
         roleExecution: {
           type: "Role",
@@ -150,7 +150,7 @@ module.exports = pipe([
         "jobQueueArn",
         "schedulingPolicyArn",
       ],
-      inferName: get("properties.jobQueueName"),
+      inferName: () => get("jobQueueName"),
       dependencies: {
         computeEnvironments: {
           type: "ComputeEnvironment",
@@ -192,7 +192,7 @@ module.exports = pipe([
       type: "SchedulingPolicy",
       Client: BatchSchedulingPolicy,
       omitProperties: ["arn"],
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
     },
   ],
   map(

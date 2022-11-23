@@ -37,30 +37,25 @@ const {
   assignHasDiff,
 } = require("@grucloud/core/Common");
 
-exports.inferNameNamespace = ({ properties }) =>
+exports.inferNameNamespace = () =>
   pipe([
-    tap(() => {
-      assert(properties);
-    }),
-    () => properties,
     get("metadata"),
+    tap((metadata) => {
+      assert(metadata);
+    }),
     ({ name, namespace = "default" }) => `${namespace}::${name}`,
     tap((params) => {
       assert(true);
     }),
-  ])();
+  ]);
 
-exports.inferNameNamespaceLess = ({ properties }) =>
+exports.inferNameNamespaceLess = () =>
   pipe([
-    tap(() => {
-      assert(properties);
-    }),
-    () => properties,
     get("metadata.name"),
     tap((name) => {
       assert(name);
     }),
-  ])();
+  ]);
 
 const getNamespace = pipe([
   switchCase([isEmpty, () => `default`, get("name")]),

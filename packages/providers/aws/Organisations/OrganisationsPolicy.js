@@ -52,12 +52,13 @@ exports.OrganisationsPolicy = ({}) => ({
   package: "organizations",
   client: "Organizations",
   ignoreErrorCodes: ["PolicyNotFoundException"],
-  inferName: pipe([
-    get("properties.Name"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("Name"),

@@ -28,12 +28,13 @@ exports.SecretsManagerSecretRotation = ({ compare }) => ({
   type: "SecretRotation",
   package: "secrets-manager",
   client: "SecretsManager",
-  inferName: pipe([
-    get("properties.SecretId"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("SecretId"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
   findName: () =>
     pipe([
       tap((params) => {

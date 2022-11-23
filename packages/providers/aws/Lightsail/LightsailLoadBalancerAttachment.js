@@ -64,10 +64,14 @@ exports.LightsailLoadBalancerAttachment = ({ compare }) => ({
   type: "LoadBalancerAttachment",
   propertiesDefault: {},
   omitProperties: ["loadBalancerName", "instanceName"],
-  inferName: pipe([
-    get("dependenciesSpec"),
-    ({ loadBalancer, instance }) => `${loadBalancer}::${instance}`,
-  ]),
+  inferName: ({ dependenciesSpec: { loadBalancer, instance } }) =>
+    pipe([
+      tap((params) => {
+        assert(loadBalancer);
+        assert(instance);
+      }),
+      () => `${loadBalancer}::${instance}`,
+    ]),
   dependencies: {
     loadBalancer: {
       type: "LoadBalancer",

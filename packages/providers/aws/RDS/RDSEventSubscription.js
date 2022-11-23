@@ -89,7 +89,7 @@ exports.RDSEventSubscription = ({ compare }) => ({
     "SourceIdsList",
     "EventSubscriptionArn",
   ],
-  inferName: get("properties.SubscriptionName"),
+  inferName: () => get("SubscriptionName"),
   // compare: compare({
   //   filterTarget: () => pipe([omit(["compare"])]),
   // }),

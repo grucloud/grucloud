@@ -93,7 +93,7 @@ exports.LightsailDisk = ({ compare }) => ({
   compare: compare({
     filterAll: () => pipe([omit(["path"])]),
   }),
-  inferName: get("properties.diskName"),
+  inferName: () => get("diskName"),
   filterLive: filterLiveDefault,
   Client: ({ spec, config }) =>
     createAwsResource({

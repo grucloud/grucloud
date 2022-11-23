@@ -34,7 +34,6 @@ const {
   getNamespace,
   displayNameResourceNamespace,
   displayNameNamespace,
-  inferNameNamespace,
 } = require("./K8sCommon");
 
 module.exports = K8sClient = ({

@@ -31,7 +31,7 @@ exports.ElastiCacheCacheCluster = () => ({
   findName: () => pipe([get("CacheClusterId")]),
   findId: () => pipe([get("CacheClusterId")]),
   managedByOther,
-  inferName: get("properties.CacheClusterId"),
+  inferName: () => get("CacheClusterId"),
   propertiesDefault: {
     AutoMinorVersionUpgrade: true,
     AuthTokenEnabled: false,

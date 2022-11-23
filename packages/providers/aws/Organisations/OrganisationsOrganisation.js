@@ -19,7 +19,7 @@ exports.OrganisationsOrganisation = ({}) => ({
   package: "organizations",
   client: "Organizations",
   ignoreErrorCodes: [],
-  inferName: get("properties.MasterAccountEmail"),
+  inferName: () => get("MasterAccountEmail"),
   findName: () => pipe([get("MasterAccountEmail")]),
   findId: () => pipe([get("Id")]),
   omitProperties: ["Arn", "Id", "MasterAccountArn", "MasterAccountId"],

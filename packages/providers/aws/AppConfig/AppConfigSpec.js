@@ -31,7 +31,7 @@ module.exports = pipe([
       type: "Application",
       Client: AppConfigApplication,
       omitProperties: ["Id"],
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
     },
     {
       type: "Deployment",
@@ -57,8 +57,10 @@ module.exports = pipe([
         "ConfigurationVersion",
         "Latest",
       ],
-      inferName: ({ properties, dependenciesSpec }) =>
-        `${dependenciesSpec.environment}`,
+      inferName:
+        ({ dependenciesSpec }) =>
+        () =>
+          `${dependenciesSpec.environment}`,
       dependencies: {
         configurationProfile: {
           type: "ConfigurationProfile",
@@ -91,14 +93,16 @@ module.exports = pipe([
       type: "DeploymentStrategy",
       Client: AppConfigDeploymentStrategy,
       omitProperties: ["Id"],
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
     },
     {
       type: "ConfigurationProfile",
       Client: AppConfigConfigurationProfile,
       omitProperties: ["Id", "ApplicationId"],
-      inferName: ({ properties, dependenciesSpec }) =>
-        `${dependenciesSpec.application}::${properties.Name}`,
+      inferName:
+        ({ dependenciesSpec }) =>
+        ({ Name }) =>
+          `${dependenciesSpec.application}::${Name}`,
       dependencies: {
         application: {
           type: "Application",
@@ -114,8 +118,10 @@ module.exports = pipe([
       Client: AppConfigEnvironment,
       propertiesDefault: { Monitors: [] },
       omitProperties: ["Id", "ApplicationId", "State"],
-      inferName: ({ properties, dependenciesSpec }) =>
-        `${dependenciesSpec.application}::${properties.Name}`,
+      inferName:
+        ({ dependenciesSpec }) =>
+        ({ Name }) =>
+          `${dependenciesSpec.application}::${Name}`,
       dependencies: {
         application: {
           type: "Application",
@@ -182,8 +188,10 @@ module.exports = pipe([
         "VersionNumber",
         "Latest",
       ],
-      inferName: ({ properties, dependenciesSpec }) =>
-        `${dependenciesSpec.configurationProfile}`,
+      inferName:
+        ({ dependenciesSpec }) =>
+        () =>
+          `${dependenciesSpec.configurationProfile}`,
       dependencies: {
         configurationProfile: {
           type: "ConfigurationProfile",

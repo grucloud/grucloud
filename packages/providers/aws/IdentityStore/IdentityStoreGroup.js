@@ -27,12 +27,13 @@ exports.IdentityStoreGroup = ({}) => ({
   type: "Group",
   propertiesDefault: {},
   omitProperties: ["GroupId", "IdentityStoreId", "InstanceArn"],
-  inferName: pipe([
-    get("properties.DisplayName"),
-    tap((GroupName) => {
-      assert(GroupName);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("DisplayName"),
+      tap((GroupName) => {
+        assert(GroupName);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("DisplayName"),

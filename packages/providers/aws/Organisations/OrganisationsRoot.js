@@ -7,7 +7,7 @@ exports.OrganisationsRoot = ({}) => ({
   package: "organizations",
   client: "Organizations",
   omitProperties: ["Arn", "Id"],
-  inferName: get("properties.Name"),
+  inferName: () => get("Name"),
   findName: () => pipe([get("Name")]),
   findId: () => pipe([get("Id")]),
   managedByOther: () => () => true,

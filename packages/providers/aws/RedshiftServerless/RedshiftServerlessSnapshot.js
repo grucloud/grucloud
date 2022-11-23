@@ -57,12 +57,13 @@ exports.RedshiftServerlessSnapshot = () => ({
     "totalBackupSizeInMegaBytes",
     "estimatedSecondsToCompletion",
   ],
-  inferName: pipe([
-    get("properties.snapshotName"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("snapshotName"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("snapshotName"),

@@ -42,12 +42,13 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
     "ConfigurationSetName",
     "DkimAttributes.Status",
   ],
-  inferName: pipe([
-    get("properties.EmailIdentity"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("EmailIdentity"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("EmailIdentity"),

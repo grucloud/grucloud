@@ -45,7 +45,7 @@ exports.ElastiCacheCacheParameterGroup = () => ({
   findName: () => pipe([get("CacheParameterGroupName")]),
   findId: () => pipe([get("CacheParameterGroupName")]),
   omitProperties: ["ARN", "IsGlobal"],
-  inferName: get("properties.CacheParameterGroupName"),
+  inferName: () => get("CacheParameterGroupName"),
   managedByOther,
   cannotBeDeleted: managedByOther,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#describeCacheParameterGroups-property

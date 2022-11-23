@@ -29,7 +29,7 @@ exports.ElastiCacheUserGroup = () => ({
     "MinimumEngineVersion",
     "ReplicationGroups",
   ],
-  inferName: get("properties.UserGroupId"),
+  inferName: () => get("UserGroupId"),
   findName: () => pipe([get("UserGroupId")]),
   findId: () => pipe([get("UserGroupId")]),
   dependencies: {

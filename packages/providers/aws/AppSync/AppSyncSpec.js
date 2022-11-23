@@ -81,7 +81,7 @@ module.exports = pipe([
     {
       type: "GraphqlApi",
       Client: AppSyncGraphqlApi,
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       omitProperties: [
         "apiId",
         "arn",
@@ -127,7 +127,7 @@ module.exports = pipe([
     {
       type: "DataSource",
       Client: AppSyncDataSource,
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       omitProperties: [
         "apiId",
         "serviceRoleArn",

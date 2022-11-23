@@ -42,7 +42,7 @@ module.exports = pipe([
         "resourceShareArn",
         "status",
       ],
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
     },
     {
       type: "PrincipalAssociation",
@@ -55,22 +55,21 @@ module.exports = pipe([
         ...PrincipalAssociationDependencies,
       },
       Client: RAMPrincipalAssociation,
-      inferName: ({
-        properties: { associatedEntity },
-        dependenciesSpec: { resourceShare, ...dependencies },
-      }) =>
-        pipe([
-          tap((params) => {
-            // assert(associatedEntity);
-            assert(resourceShare);
-            assert(dependencies);
-          }),
-          () => dependencies,
-          values,
-          first,
-          when(isEmpty, () => associatedEntity),
-          prepend(`ram-principal-assoc::${resourceShare}::`),
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { resourceShare, ...dependencies } }) =>
+        ({ associatedEntity }) =>
+          pipe([
+            tap((params) => {
+              // assert(associatedEntity);
+              assert(resourceShare);
+              assert(dependencies);
+            }),
+            () => dependencies,
+            values,
+            first,
+            when(isEmpty, () => associatedEntity),
+            prepend(`ram-principal-assoc::${resourceShare}::`),
+          ])(),
       omitProperties: [
         "creationTime",
         "lastUpdatedTime",
@@ -102,34 +101,36 @@ module.exports = pipe([
         ...RamResourceDependencies,
       },
       Client: RAMResourceAssociation,
-      inferName: ({
-        dependenciesSpec: {
-          resourceShare,
-          subnet,
-          ipamPool,
-          resolverRule,
-          transitGateway,
-        },
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(resourceShare);
-          }),
-          () => `ram-resource-assoc::${resourceShare}::`,
-          switchCase([
-            () => subnet,
-            append(subnet),
-            () => ipamPool,
-            append(ipamPool),
-            () => resolverRule,
-            append(resolverRule),
-            () => transitGateway,
-            append(transitGateway),
-            () => {
-              assert(false, "missing RAMResourceAssociation dependencies");
-            },
-          ]),
-        ])(),
+      inferName:
+        ({
+          dependenciesSpec: {
+            resourceShare,
+            subnet,
+            ipamPool,
+            resolverRule,
+            transitGateway,
+          },
+        }) =>
+        () =>
+          pipe([
+            tap((params) => {
+              assert(resourceShare);
+            }),
+            () => `ram-resource-assoc::${resourceShare}::`,
+            switchCase([
+              () => subnet,
+              append(subnet),
+              () => ipamPool,
+              append(ipamPool),
+              () => resolverRule,
+              append(resolverRule),
+              () => transitGateway,
+              append(transitGateway),
+              () => {
+                assert(false, "missing RAMResourceAssociation dependencies");
+              },
+            ]),
+          ])(),
       omitProperties: [
         "associatedEntity",
         "creationTime",

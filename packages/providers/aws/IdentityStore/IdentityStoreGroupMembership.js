@@ -33,14 +33,16 @@ exports.IdentityStoreGroupMembership = ({ compare }) => ({
     "MembershipId",
     "MemberId",
   ],
-  inferName: ({ dependenciesSpec: { group, user } }) =>
-    pipe([
-      tap((params) => {
-        assert(group);
-        assert(user);
-      }),
-      () => `membership::${group}::${user}`,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { group, user } }) =>
+    () =>
+      pipe([
+        tap((params) => {
+          assert(group);
+          assert(user);
+        }),
+        () => `membership::${group}::${user}`,
+      ])(),
   findName:
     ({ lives, config }) =>
     (live) =>

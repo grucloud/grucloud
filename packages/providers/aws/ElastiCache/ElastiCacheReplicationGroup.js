@@ -105,7 +105,7 @@ exports.ElastiCacheReplicationGroup = () => ({
     "NotificationTopicArn",
     "MultiAZ",
   ],
-  inferName: get("properties.ReplicationGroupId"),
+  inferName: () => get("ReplicationGroupId"),
   //TODO check all deps
   dependencies: {
     ...cloudWatchLogGroupsDeps,

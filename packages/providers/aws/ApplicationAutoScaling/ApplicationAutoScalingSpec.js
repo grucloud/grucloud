@@ -46,11 +46,11 @@ module.exports = pipe([
       Client: ApplicationAutoScalingPolicy,
       propertiesDefault: {},
       omitProperties: ["Alarms", "PolicyARN", "CreationTime"],
-      inferName: pipe([
-        get("properties"),
-        ({ ResourceId, ScalableDimension, PolicyName }) =>
-          `${ResourceId}::${ScalableDimension}::${PolicyName}`,
-      ]),
+      inferName: () =>
+        pipe([
+          ({ ResourceId, ScalableDimension, PolicyName }) =>
+            `${ResourceId}::${ScalableDimension}::${PolicyName}`,
+        ]),
       dependencies: {
         target: {
           type: "Target",
@@ -68,11 +68,11 @@ module.exports = pipe([
       Client: ApplicationAutoScalingTarget,
       propertiesDefault: {},
       omitProperties: ["RoleARN", "CreationTime", "SuspendedState"],
-      inferName: pipe([
-        get("properties"),
-        ({ ResourceId, ScalableDimension }) =>
-          `${ResourceId}::${ScalableDimension}`,
-      ]),
+      inferName: () =>
+        pipe([
+          ({ ResourceId, ScalableDimension }) =>
+            `${ResourceId}::${ScalableDimension}`,
+        ]),
       dependencies: {
         role: {
           type: "Role",

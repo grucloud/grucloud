@@ -26,7 +26,7 @@ exports.CognitoIdentityServiceProviderUserPoolDomain = () => ({
   type: "UserPoolDomain",
   package: "cognito-identity-provider",
   client: "CognitoIdentityProvider",
-  inferName: get("properties.Domain"),
+  inferName: () => get("Domain"),
   findName: () =>
     pipe([
       get("Domain"),

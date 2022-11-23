@@ -28,7 +28,13 @@ exports.SecretsManagerResourcePolicy = () => ({
   findName: () => pipe([get("Name")]),
   findId: () => pipe([get("ARN")]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  inferName: get("dependenciesSpec.secret"),
+  inferName: ({ dependenciesSpec: { secret } }) =>
+    pipe([
+      tap((params) => {
+        assert(secret);
+      }),
+      () => secret,
+    ]),
   dependencies: {
     secret: {
       type: "Secret",
