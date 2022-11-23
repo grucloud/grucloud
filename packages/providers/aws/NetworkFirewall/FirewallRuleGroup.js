@@ -1,17 +1,48 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, omit } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
+
 const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./NetworkFirewallCommon");
+const {
+  tagResource,
+  untagResource,
+  omitEncryptionConfiguration,
+} = require("./NetworkFirewallCommon");
 
 const pickId = pipe([pick(["RuleGroupArn"])]);
 
-const createModel = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkRuleGroup.html
+exports.FirewallRuleGroup = ({ compare }) => ({
+  type: "RuleGroup",
   package: "network-firewall",
   client: "NetworkFirewall",
+  inferName: ({ properties }) =>
+    pipe([() => properties, get("RuleGroupName")])(),
+  findName: () => pipe([get("RuleGroupName")]),
+  findId: () => pipe([get("RuleGroupArn")]),
+  omitProperties: [
+    "ConsumedCapacity",
+    "LastModifiedTime",
+    "RuleGroupArn",
+    "RuleGroupStatus",
+    "RuleGroupId",
+    "NumberOfAssociations",
+    "UpdateToken",
+  ],
+  compare: compare({
+    filterLive: () => pipe([omitEncryptionConfiguration]),
+  }),
+  filterLive: () => pipe([omitEncryptionConfiguration]),
+  dependencies: {
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      dependencyId: ({ lives, config }) => get("EncryptionConfiguration.KeyId"),
+    },
+  },
   ignoreErrorCodes: [
     "ResourceNotFoundException",
     "InvalidRuleGroupID.NotFound",
@@ -22,13 +53,8 @@ const createModel = ({ config }) => ({
     pickId,
     decorate:
       ({ endpoint, live }) =>
-      ({ RuleGroup, RuleGroupResponse }) =>
-        pipe([
-          () => ({ RuleGroup, ...RuleGroupResponse }),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
+      ({ RuleGroup, RuleGroupResponse, UpdateToken }) =>
+        pipe([() => ({ RuleGroup, ...RuleGroupResponse, UpdateToken })])(),
   },
   getList: {
     method: "listRuleGroups",
@@ -44,13 +70,17 @@ const createModel = ({ config }) => ({
   },
   create: {
     method: "createRuleGroup",
-    pickCreated: ({ payload }) =>
+    pickCreated: ({ payload }) => pipe([get("RuleGroupResponse")]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkFirewall.html#updateRuleGroup-property
+  update: {
+    method: "updateRuleGroup",
+    filterParams: ({ payload, diff, live }) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("RuleGroupResponse"),
-      ]),
+        () => payload,
+        defaultsDeep({ UpdateToken: live.UpdateToken }),
+        defaultsDeep(pickId(live)),
+      ])(),
   },
   destroy: {
     method: "deleteRuleGroup",
@@ -59,30 +89,28 @@ const createModel = ({ config }) => ({
       "Unable to delete the object because it is still in use",
     ],
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkRuleGroup.html
-exports.FirewallRuleGroup = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagResource: tagResource,
+  untagResource: untagResource,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { kmsKey },
     config,
-    findName: () => pipe([get("RuleGroupName")]),
-    findId: () => pipe([get("RuleGroupArn")]),
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      //TODO
-      dependencies: { kmsKey },
-    }) =>
-      pipe([
-        () => otherProps,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+      }),
+      when(
+        () => kmsKey,
         defaultsDeep({
-          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-        }),
-      ])(),
-  });
+          EncryptionConfiguration: {
+            KeyId: getField(kmsKey, "Arn"),
+          },
+        })
+      ),
+    ])(),
+});
