@@ -1,8 +1,10 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, tryCatch } = require("rubico");
-const { defaultsDeep, identity, unless, isEmpty, find } = require("rubico/x");
+const { pipe, tap, get, pick, eq, tryCatch, not } = require("rubico");
+const { defaultsDeep, unless, isEmpty, find } = require("rubico/x");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { getByNameCore } = require("@grucloud/core/Common");
+const { managedByOtherAccount } = require("./ACMPCACommon");
 
 const pickId = pipe([
   tap(({ CertificateAuthorityArn, Principal, SourceAccount }) => {
@@ -71,6 +73,7 @@ exports.ACMPCAPermission = ({ compare }) => ({
           assert(id);
         }),
       ])(),
+  managedByOther: managedByOtherAccount,
   ignoreErrorCodes: ["ResourceNotFoundException"],
   dependencies: {
     certificateAuthority: {
@@ -101,6 +104,7 @@ exports.ACMPCAPermission = ({ compare }) => ({
           pick(["CertificateAuthorityArn"]),
           endpoint().listPermissions,
           get("Permissions"),
+          // TODO source
           find(eq(get("Principal"), live.Principal)),
           unless(isEmpty, decorate({ endpoint, live })),
         ]),
@@ -139,7 +143,7 @@ exports.ACMPCAPermission = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACMPCA.html#createPermission-property
   create: {
     method: "createPermission",
-    pickCreated: ({ payload }) => pipe([identity]),
+    pickCreated: ({ payload }) => pipe([() => payload]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACMPCA.html#deletePermission-property
   destroy: {
@@ -150,8 +154,21 @@ exports.ACMPCAPermission = ({ compare }) => ({
   configDefault: ({
     name,
     namespace,
-    properties: { ...otherProps },
-    dependencies: {},
+    properties,
+    dependencies: { certificateAuthority },
     config,
-  }) => pipe([() => otherProps, defaultsDeep({})])(),
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(certificateAuthority);
+        assert(properties.Principal);
+      }),
+      () => properties,
+      defaultsDeep({
+        CertificateAuthorityArn: getField(
+          certificateAuthority,
+          "CertificateAuthorityArn"
+        ),
+      }),
+    ])(),
 });

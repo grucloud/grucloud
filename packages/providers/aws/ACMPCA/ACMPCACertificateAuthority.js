@@ -5,7 +5,7 @@ const { defaultsDeep, identity } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./ACMPCACommon");
+const { Tagger, managedByOtherAccount } = require("./ACMPCACommon");
 
 const buildArn = () =>
   pipe([
@@ -81,6 +81,7 @@ exports.ACMPCACertificateAuthority = ({ compare }) => ({
       }),
     ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  managedByOther: managedByOtherAccount,
   compare: compare({ filterAll: () => pipe([pick(pickProperties)]) }),
   filterLive: ({}) =>
     pipe([

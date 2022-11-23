@@ -49,11 +49,17 @@ describe("ACMPCA", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Policy", () =>
+  it("Policy", () =>
     pipe([
       () => ({
         groupType: "ACMPCA::Policy",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            ResourceArn: `arn:aws:acm-pca:${
+              config.region
+            }:${config.accountId()}:certificate-authority/12345678-1234-1234-1234-123456789012`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

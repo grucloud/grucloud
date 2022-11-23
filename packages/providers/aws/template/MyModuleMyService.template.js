@@ -103,7 +103,7 @@ const decorate = ({ endpoint }) =>
       assert(endpoint);
     }),
     //({ name, ...other }) => ({ loadBalancerName: name, ...other }),
-    //assign({ MyJSON: pipe([get("MyJSON", JSON.parse)]) }),
+    //assign({ MyJSON: pipe([get("MyJSON"), JSON.parse]) }),
     //assignTags({ endpoint }),
     //liveToTags
     //assignArn({ config }),
@@ -114,7 +114,7 @@ const decorate = ({ endpoint }) =>
 
 // const managedByOther = () => pipe([eq(get("Type"), "managed")]);
 
-// const managedByOther =() => pipe([
+// const managedByOther = () => pipe([
 //   get("CacheParameterGroupName"),
 //   callProp("startsWith", "default."),
 // ]);
