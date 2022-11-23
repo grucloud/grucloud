@@ -106,7 +106,7 @@ const GROUPS = [
   ["WAFV2", "waf"],
 ];
 
-const mapRegionService = { "us-east-1": ["RedshiftServerless"] };
+const mapRegionService = { "us-east-1": ["RedshiftServerless", "OpenSearch"] };
 
 const GROUPS_MISSING = [
   "CloudWatchLogs", // missing from the list provider by AWS

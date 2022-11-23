@@ -4,11 +4,11 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("OpenSearch", async function () {
-  it.skip("Domain", () =>
+  it("Domain", () =>
     pipe([
       () => ({
         groupType: "OpenSearch::Domain",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ DomainName: "d123" }],
       }),
       awsResourceTest,
     ])());
