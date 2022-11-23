@@ -34,11 +34,18 @@ describe("ACMPCA", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Permisison", () =>
+  it("Permission", () =>
     pipe([
       () => ({
-        groupType: "ACMPCA::Permisison",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "ACMPCA::Permission",
+        livesNotFound: ({ config }) => [
+          {
+            CertificateAuthorityArn: `arn:aws:acm-pca:${
+              config.region
+            }:${config.accountId()}:certificate-authority/12345678-1234-1234-1234-123456789012`,
+            Principal: "acm.amazonaws.com",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

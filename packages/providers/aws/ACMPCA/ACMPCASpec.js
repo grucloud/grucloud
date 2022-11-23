@@ -10,7 +10,7 @@ const { createAwsService } = require("../AwsService");
 //const { ACMPCACertificate } = require("./ACMPCACertificate");
 const { ACMPCACertificateAuthority } = require("./ACMPCACertificateAuthority");
 //const { ACMPCACertificateAuthorityCertificate } = require("./ACMPCACertificateAuthorityCertificate");
-//const { ACMPCAPermisison } = require("./ACMPCAPermisison");
+const { ACMPCAPermission } = require("./ACMPCAPermission");
 //const { ACMPCAPolicy } = require("./ACMPCAPolicy");
 
 const GROUP = "ACMPCA";
@@ -22,7 +22,7 @@ module.exports = pipe([
     // ACMPCACertificate({})
     ACMPCACertificateAuthority({ compare }),
     // ACMPCACertificateAuthorityCertificate({})
-    // ACMPCAPermisison({})
+    ACMPCAPermission({}),
     // ACMPCAPolicy({})
   ],
   map(createAwsService),

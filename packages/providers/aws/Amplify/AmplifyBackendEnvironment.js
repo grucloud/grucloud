@@ -60,6 +60,7 @@ exports.AmplifyBackendEnvironment = () => ({
             id,
             type: "App",
             group: "Amplify",
+            providerName: config.providerName,
           }),
         get("name"),
         tap((name) => {
