@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-rds-postgres",
-  "version": "10.2.0",
+  "version": "10.3.0",
   "description": "",
   "private": true,
   "main": "iac.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^10.2.0",
-    "@grucloud/provider-aws": "^10.2.0",
+    "@grucloud/core": "^10.3.0",
+    "@grucloud/provider-aws": "^10.3.0",
     "pg": "^8.6.0",
     "rubico": "^1.6.26"
   },

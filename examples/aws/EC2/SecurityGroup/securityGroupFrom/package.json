@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-security-group-from",
-  "version": "10.2.0",
+  "version": "10.3.0",
   "description": "Example of EC2 Security Group referencing a readonly security group",
   "main": "iac.js",
   "private": true,
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^10.2.0",
-    "@grucloud/provider-aws": "^10.2.0",
+    "@grucloud/core": "^10.3.0",
+    "@grucloud/provider-aws": "^10.3.0",
     "rubico": "^1.6.27"
   },
   "devDependencies": {
