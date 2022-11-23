@@ -53,8 +53,8 @@ const dependenciesPoliciesKind = [
 ];
 
 const compareLambda = compareAws({});
-const findId = get("live.Configuration.FunctionArn");
-const findName = get("live.Configuration.FunctionName");
+const findId = () => get("Configuration.FunctionArn");
+const findName = () => get("Configuration.FunctionName");
 
 const pickId = pipe([
   ({ Configuration: { FunctionArn } }) => ({
@@ -73,22 +73,24 @@ exports.Function = ({ spec, config }) => {
   const lambda = createLambda(config);
   const client = AwsClient({ spec, config })(lambda);
 
-  const managedByOther = ({ live, lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          type: "Stack",
-          group: "CloudFormation",
-          providerName: config.providerName,
-        }),
-      any(
-        pipe([
-          get("name"),
-          append("-AWS"),
-          (stackName) => live.Configuration.FunctionName.includes(stackName),
-        ])
-      ),
-    ])();
+  const managedByOther =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () =>
+          lives.getByType({
+            type: "Stack",
+            group: "CloudFormation",
+            providerName: config.providerName,
+          }),
+        any(
+          pipe([
+            get("name"),
+            append("-AWS"),
+            (stackName) => live.Configuration.FunctionName.includes(stackName),
+          ])
+        ),
+      ])();
 
   const findDependencyPolicyCommon = ({
     type,

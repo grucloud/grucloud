@@ -95,8 +95,8 @@ const decorateLive =
       () => ({
         memoFindName: memoize(
           pipe([
-            () => ({ live, lives, config }),
-            client.findName,
+            () => live,
+            client.findName({ lives, config }),
             tap((name) => {
               if (!isString(name)) {
                 logger.error(
@@ -113,7 +113,8 @@ const decorateLive =
         ),
         memoFindId: memoize(
           pipe([
-            () => client.findId({ live, lives, config }),
+            () => live,
+            client.findId({ lives, config }),
             tap((id) => {
               if (!isString(id)) {
                 assert(
@@ -126,17 +127,18 @@ const decorateLive =
           defaultMemoizeResolver
         ),
         memoFindMeta: memoize(
-          pipe([() => client.findMeta({ live, lives, config })]),
+          pipe([() => live, client.findMeta({ lives, config })]),
           defaultMemoizeResolver
         ),
         memoIsDefault: memoize(
-          pipe([() => client.isDefault({ live, lives, config })]),
+          pipe([() => live, client.isDefault({ lives, config })]),
           defaultMemoizeResolver
         ),
-        memoFindNamespace: memoize(
-          pipe([() => client.findNamespace({ live, lives, config })]),
-          defaultMemoizeResolver
-        ),
+        //TODO
+        // memoFindNamespace: memoize(
+        //   pipe([() => live, client.findNamespace({ lives, config })]),
+        //   defaultMemoizeResolver
+        // ),
         memoDependencies: memoize(
           pipe([
             () =>
@@ -231,7 +233,7 @@ const decorateLive =
         memoFindId,
         memoFindMeta,
         memoIsDefault,
-        memoFindNamespace,
+        //memoFindNamespace,
         memoDependencies,
       }) => ({
         groupType: client.spec.groupType,
@@ -252,7 +254,9 @@ const decorateLive =
           return memoIsDefault();
         },
         get namespace() {
-          return memoFindNamespace();
+          return "";
+          //TODO
+          //return memoFindNamespace();
         },
         displayResource() {
           return client.spec.displayResource({ lives, config })(live);
@@ -289,36 +293,41 @@ const decorateLive =
       tap((resource) =>
         Object.defineProperty(resource, "managedByUs", {
           enumerable: true,
-          get: () =>
-            client.isOurMinion({
-              uri: resource.uri,
-              resource,
-              live,
-              lives,
-              config,
+          get: pipe([
+            () =>
+              client.isOurMinion({
+                uri: resource.uri,
+                resource,
+                lives,
+                config,
+              })(live),
+            tap((params) => {
+              assert(true);
             }),
+          ]),
         })
       ),
       tap((resource) =>
         Object.defineProperty(resource, "cannotBeDeleted", {
           enumerable: true,
-          get: () =>
-            client.cannotBeDeleted({
-              resource,
-              live,
-              lives,
-              config,
+          get: pipe([
+            tap((params) => {
+              assert(
+                isFunction(client.cannotBeDeleted({ resource, lives, config })),
+                `no cannotBeDeleted for ${client.spec.groupType}`
+              );
             }),
+            () => live,
+            client.cannotBeDeleted({ resource, lives, config }),
+          ]),
         })
       ),
       tap((resource) =>
         Object.defineProperty(resource, "managedByOther", {
           enumerable: true,
           get: pipe([
-            () => client.managedByOther({ resource, live, lives, config }),
-            tap((params) => {
-              assert(true);
-            }),
+            () => live,
+            client.managedByOther({ resource, lives, config }),
           ]),
         })
       ),
@@ -402,14 +411,17 @@ const createClient = ({
         }),
         get("name"),
       ]),
-      findMeta: () => undefined,
+      findMeta: () => () => undefined,
       findDependencies: () => [],
-      findNamespace: () => "",
+      findNamespace: () => () => "",
       findNamespaceFromTarget: get("namespace"),
-      cannotBeDeleted: () => false,
-      isDefault: () => false,
-      managedByOther: () => false,
-      isOurMinion: ({ uri, resource, live, lives }) => !!getResource(resource),
+      cannotBeDeleted: () => (live) => false,
+      isDefault: () => (live) => false,
+      managedByOther: () => (live) => false,
+      isOurMinion:
+        ({ uri, resource, lives }) =>
+        (live) =>
+          !!getResource(resource),
       configDefault: get("properties"),
       isInstanceUp: not(isEmpty),
       isInstanceError: () => false,
@@ -421,12 +433,9 @@ const createClient = ({
       //getList: ({ getList }) => provider.getListHof({ getList, spec }),
       cannotBeDeleted:
         ({ cannotBeDeleted }) =>
-        ({ live, resource, lives }) =>
+        ({ resource, lives }) =>
           cannotBeDeleted({
-            live,
             lives,
-            //TODO
-            //resources: provider.getResourcesByType(spec),
             resources: getResourcesByType(spec),
             resource,
             config,

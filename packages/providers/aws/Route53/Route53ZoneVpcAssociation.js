@@ -38,8 +38,8 @@ const createModel = ({ config }) => ({
 
 // Do not manage the first vpc association with this hosted zone,
 const managedByOther =
-  ({ config }) =>
-  ({ live, lives }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       () => live,
       or([
@@ -61,8 +61,8 @@ const managedByOther =
     ])();
 
 const cannotBeDeleted =
-  ({ config }) =>
-  ({ live, lives }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       () => live,
       or([
@@ -81,15 +81,16 @@ const cannotBeDeleted =
       ]),
     ])();
 
-const findId = pipe([
-  get("live"),
-  tap(({ HostedZoneId, VPC }) => {
-    assert(VPC);
-    assert(VPC.VPCId);
-    assert(HostedZoneId);
-  }),
-  ({ HostedZoneId, VPC: { VPCId } }) => `zone-assoc::${HostedZoneId}::${VPCId}`,
-]);
+const findId = () =>
+  pipe([
+    tap(({ HostedZoneId, VPC }) => {
+      assert(VPC);
+      assert(VPC.VPCId);
+      assert(HostedZoneId);
+    }),
+    ({ HostedZoneId, VPC: { VPCId } }) =>
+      `zone-assoc::${HostedZoneId}::${VPCId}`,
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html
 exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
@@ -97,49 +98,51 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    managedByOther: managedByOther({ config }),
-    cannotBeDeleted: cannotBeDeleted({ config }),
-    findName: ({ live, lives }) =>
-      pipe([
-        () => live,
-        fork({
-          vpc: pipe([
-            get("VPC.VPCId"),
-            tap((id) => {
-              assert(id);
-            }),
-            (id) =>
-              lives.getById({
-                id,
-                type: "Vpc",
-                group: "EC2",
+    managedByOther: managedByOther,
+    cannotBeDeleted: cannotBeDeleted,
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () => live,
+          fork({
+            vpc: pipe([
+              get("VPC.VPCId"),
+              tap((id) => {
+                assert(id);
               }),
-            get("name"),
-          ]),
-          hostedZone: pipe([
-            get("HostedZoneId"),
-            tap((id) => {
-              assert(id);
-            }),
-            (id) =>
-              pipe([
-                () =>
-                  lives.getById({
-                    id,
-                    type: "HostedZone",
-                    group: "Route53",
-                    providerName: config.providerName,
-                  }),
-                get("name", id),
-              ])(),
-          ]),
-        }),
-        tap(({ vpc, hostedZone }) => {
-          assert(vpc);
-          assert(hostedZone);
-        }),
-        ({ vpc, hostedZone }) => `zone-assoc::${hostedZone}::${vpc}`,
-      ])(),
+              (id) =>
+                lives.getById({
+                  id,
+                  type: "Vpc",
+                  group: "EC2",
+                }),
+              get("name"),
+            ]),
+            hostedZone: pipe([
+              get("HostedZoneId"),
+              tap((id) => {
+                assert(id);
+              }),
+              (id) =>
+                pipe([
+                  () =>
+                    lives.getById({
+                      id,
+                      type: "HostedZone",
+                      group: "Route53",
+                      providerName: config.providerName,
+                    }),
+                  get("name", id),
+                ])(),
+            ]),
+          }),
+          tap(({ vpc, hostedZone }) => {
+            assert(vpc);
+            assert(hostedZone);
+          }),
+          ({ vpc, hostedZone }) => `zone-assoc::${hostedZone}::${vpc}`,
+        ])(),
     findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZonesByVPC-property
     getList:

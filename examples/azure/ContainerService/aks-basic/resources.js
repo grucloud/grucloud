@@ -17,7 +17,7 @@ exports.createResources = () => [
         type: "SystemAssigned",
       },
       properties: {
-        kubernetesVersion: "1.24.0",
+        kubernetesVersion: "1.24.6",
         dnsPrefix: "cluster-dns",
         agentPoolProfiles: [
           {
@@ -56,9 +56,7 @@ exports.createResources = () => [
             },
           },
           natGatewayProfile: {
-            managedOutboundIPProfile: {
-              count: 1,
-            },
+            idleTimeoutInMinutes: 4,
           },
           podCidrs: ["10.244.0.0/16"],
           serviceCidrs: ["10.0.0.0/16"],

@@ -11,15 +11,17 @@ const {
   untagResource,
 } = require("./ApiGatewayCommon");
 
+const findId =
+  ({ config }) =>
+  ({ ApiId }) =>
+    `arn:aws:execute-api:${config.region}:${config.accountId()}:${ApiId}`;
+
+const findName = () => get("Name");
+const pickId = pick(["ApiId"]);
+
 exports.Api = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);
   const client = AwsClient({ spec, config })(apiGateway);
-
-  const findId = ({ live }) =>
-    `arn:aws:execute-api:${config.region}:${config.accountId()}:${live.ApiId}`;
-
-  const findName = get("live.Name");
-  const pickId = pick(["ApiId"]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApi-property
   const getById = client.getById({

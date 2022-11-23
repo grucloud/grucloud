@@ -15,6 +15,7 @@ exports.createResources = () => [
       },
       properties: {
         singlePlacementGroup: true,
+        orchestrationMode: "Uniform",
         upgradePolicy: {
           mode: "Manual",
           rollingUpgradePolicy: {
@@ -70,6 +71,7 @@ exports.createResources = () => [
                 properties: {
                   primary: true,
                   enableAcceleratedNetworking: false,
+                  disableTcpStateTracking: false,
                   networkSecurityGroup: {
                     id: getId({
                       type: "NetworkSecurityGroup",

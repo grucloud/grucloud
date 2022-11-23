@@ -434,7 +434,7 @@ exports.hasKeyValueInTags = hasKeyValueInTags;
 
 const hasKeyInTags =
   ({ key }) =>
-  ({ live }) =>
+  (live) =>
     pipe([
       tap(() => {
         assert(key);
@@ -467,8 +467,8 @@ const findValueInTags = ({ key }) =>
 exports.findValueInTags = findValueInTags;
 
 const findEksCluster =
-  ({ config, key = "aws:eks:cluster-name" }) =>
-  ({ live, lives }) =>
+  ({ lives, config, key = "aws:eks:cluster-name" }) =>
+  (live) =>
     pipe([
       tap(() => {
         assert(lives, "lives");
@@ -495,12 +495,12 @@ const findNamespaceEksCluster =
         assert(lives, "lives");
         assert(live, "live");
       }),
-      () => ({ live, lives }),
-      findEksCluster({ config, key }),
+      () => live,
+      findEksCluster({ config, lives, key }),
       tap((param) => {
         assert(true);
       }),
-      unless(isEmpty, findNamespaceInTagsObject(config)),
+      unless(isEmpty, () => findNamespaceInTagsObject({ config })(live)),
       tap((namespace) => {
         //  logger.debug(`findNamespace`, namespace);
       }),
@@ -727,10 +727,10 @@ exports.tagsRemoveFromDescription = pipe([
     assert(true);
   }),
 ]);
-
+//TODO
 const findNamespaceInTags =
-  (config) =>
-  ({ live }) =>
+  ({ config }) =>
+  (live) =>
     pipe([
       tap(() => {
         assert(live);
@@ -744,8 +744,8 @@ const findNamespaceInTags =
 exports.findNamespaceInTags = findNamespaceInTags;
 
 const findNamespaceInTagsObject =
-  (config) =>
-  ({ live } = {}) =>
+  ({ config }) =>
+  (live) =>
     pipe([
       tap(() => {
         assert(config.namespaceKey);
@@ -774,7 +774,7 @@ const findNameInKeyCloudFormation = pipe([
 //TODO params for key and value
 const findNameInTags =
   ({ tags = "Tags" } = {}) =>
-  ({ live }) =>
+  (live) =>
     pipe([
       tap(() => {
         if (!live) {
@@ -804,7 +804,8 @@ exports.findNameInTags = findNameInTags;
 
 exports.findNameInTagsOrId =
   ({ findId, tags }) =>
-  ({ live, lives, config }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       tap(() => {
         //TODO move assert up
@@ -815,9 +816,9 @@ exports.findNameInTagsOrId =
           assert(live);
         }
       }),
-      () => ({ live }),
+      () => live,
       findNameInTags({ tags }),
-      when(isEmpty, pipe([() => findId({ live, lives, config })])),
+      when(isEmpty, pipe([() => live, findId({ lives, config })])),
       tap((name) => {
         if (!name) {
           assert(name, `cannot find name or id for ${tos(live)}`);

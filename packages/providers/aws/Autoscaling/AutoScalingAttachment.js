@@ -19,38 +19,44 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
   const autoScaling = createAutoScaling(config);
 
   const client = AwsClient({ spec, config })(autoScaling);
-  const findId = get("live.TargetGroupARN");
+  const findId = () => get("TargetGroupARN");
 
-  const findName = ({ live, lives }) =>
-    pipe([
-      () =>
-        lives.getById({
-          id: live.TargetGroupARN,
-          providerName: config.providerName,
-          type: "TargetGroup",
-          group: "ElasticLoadBalancingV2",
+  const findName =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () =>
+          lives.getById({
+            id: live.TargetGroupARN,
+            providerName: config.providerName,
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+          }),
+        get("name", live.TargetGroupARN),
+        tap((targetGroupName) => {
+          assert(targetGroupName);
         }),
-      get("name", live.TargetGroupARN),
-      tap((targetGroupName) => {
-        assert(targetGroupName);
-      }),
-      (targetGroupName) => `attachment::${live.name}::${targetGroupName}`,
-    ])();
+        (targetGroupName) => `attachment::${live.name}::${targetGroupName}`,
+      ])();
 
-  const managedByOther = ({ live, lives }) =>
-    pipe([
-      tap((params) => {
-        assert(live.TargetGroupARN);
-      }),
-      () =>
-        lives.getById({
-          id: live.TargetGroupARN,
-          providerName: config.providerName,
-          type: "TargetGroup",
-          group: "ElasticLoadBalancingV2",
+  const managedByOther =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        tap((params) => {
+          assert(config);
+          assert(live);
+          assert(live.TargetGroupARN);
         }),
-      get("managedByOther"),
-    ])();
+        () =>
+          lives.getById({
+            id: live.TargetGroupARN,
+            providerName: config.providerName,
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+          }),
+        get("managedByOther"),
+      ])();
 
   const getList = client.getListWithParent({
     parent: { type: "AutoScalingGroup", group: "AutoScaling" },

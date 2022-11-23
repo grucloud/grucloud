@@ -41,44 +41,45 @@ const roleAssignmentFilterDep =
       ),
     ])();
 
-const roleAssignmentManagedByOther =
-  ({ config }) =>
-  ({ lives }) =>
-    pipe([
-      tap((params) => {
-        assert(config.objectId);
-      }),
-      or([
-        not(eq(get("live.properties.principalId"), config.objectId)),
-        // and([
-        //   eq(get("live.properties.principalType"), "ServicePrincipal"),
-        //   not(get("live.properties.principalName")),
-        // ]),
-        pipe([
-          // dependency scope starting with mc_ , mamaged by the aks cluster
-          tap((params) => {
-            assert(true);
-          }),
-          get("id"),
-          includes("resourceGroups/MC_"),
-        ]),
-        pipe([
-          get("live.properties.scope"),
-          callProp("toUpperCase"),
-          (scope) =>
-            pipe([
-              () => lives,
-              not(any(eq(pipe([get("id"), callProp("toUpperCase")]), scope))),
-            ])(),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+const roleAssignmentManagedByOther = ({ lives, config }) =>
+  pipe([
+    tap((params) => {
+      assert(config.objectId);
+      assert(lives);
+    }),
+    or([
+      not(eq(get("properties.principalId"), config.objectId)),
+      // and([
+      //   eq(get("live.properties.principalType"), "ServicePrincipal"),
+      //   not(get("live.properties.principalName")),
+      // ]),
+      pipe([
+        // dependency scope starting with mc_ , mamaged by the aks cluster
+        tap((params) => {
+          assert(true);
+        }),
+        get("id"),
+        includes("resourceGroups/MC_"),
       ]),
-      tap((params) => {
-        assert(true);
-      }),
-    ]);
+      pipe([
+        get("properties.scope"),
+        callProp("toUpperCase"),
+        (scope) =>
+          pipe([
+            () => lives.getByProvider(config),
+            pluck("resources"),
+            flatten,
+            not(any(eq(pipe([get("id"), callProp("toUpperCase")]), scope))),
+          ])(),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+    ]),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
 exports.fnSpecs = ({ config }) =>
   pipe([
@@ -86,8 +87,8 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "RoleDefinition",
         hideResource: () => pipe([eq(get("properties.type"), "BuiltInRole")]),
-        managedByOther: pipe([eq(get("live.properties.type"), "BuiltInRole")]),
-        findName: pipe([get("live.properties.roleName")]),
+        managedByOther: () => pipe([eq(get("properties.type"), "BuiltInRole")]),
+        findName: () => pipe([get("properties.roleName")]),
       },
       {
         type: "RoleAssignment",
@@ -153,8 +154,8 @@ exports.fnSpecs = ({ config }) =>
             }),
           },
         },
-        cannotBeDeleted: roleAssignmentManagedByOther({ config }),
-        ignoreResource: roleAssignmentManagedByOther({ config }),
+        managedByOther: roleAssignmentManagedByOther,
+        cannotBeDeleted: roleAssignmentManagedByOther,
         decorate:
           ({ axios, lives }) =>
           (live) =>
@@ -182,7 +183,8 @@ exports.fnSpecs = ({ config }) =>
               set(
                 "properties.principalName",
                 pipe([
-                  () => lives.getByProvider(config),
+                  () => config,
+                  lives.getByProvider,
                   pluck("resources"),
                   flatten,
                   find(

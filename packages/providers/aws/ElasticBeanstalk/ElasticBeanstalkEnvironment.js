@@ -68,15 +68,15 @@ exports.ElasticBeanstalkEnvironment = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([
-      get("live"),
-      ({ ApplicationName, EnvironmentName }) =>
-        `${ApplicationName}::${EnvironmentName}`,
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
-    findId: pipe([get("live.EnvironmentArn")]),
+    findName: () =>
+      pipe([
+        ({ ApplicationName, EnvironmentName }) =>
+          `${ApplicationName}::${EnvironmentName}`,
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+    findId: () => pipe([get("EnvironmentArn")]),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRServerless.html#describeEnvironments-property
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

@@ -48,8 +48,8 @@ exports.Inspector2DelegatedAdminAccount = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([() => "default"]),
-    findId: pipe([() => "default"]),
+    findName: () => pipe([() => "default"]),
+    findId: () => pipe([() => "default"]),
     //TODO
     update:
       ({ endpoint }) =>

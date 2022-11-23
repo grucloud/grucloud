@@ -28,39 +28,39 @@ exports.EC2RouteTable = ({ spec, config }) => {
   const endpoint = createEC2(config);
   const client = AwsClient({ spec, config })(endpoint);
 
-  const findId = get("live.RouteTableId");
+  const findId = () => get("RouteTableId");
   const pickId = pick(["RouteTableId"]);
 
-  const isDefault = ({ live, lives }) =>
-    pipe([() => live, get("Associations"), any(get("Main"))])();
+  const isDefault = () => pipe([get("Associations"), any(get("Main"))]);
 
-  const findName = pipe([
-    fork({
-      vpcName: ({ live, lives, config }) =>
-        pipe([
-          () =>
-            lives.getById({
-              id: live.VpcId,
-              type: "Vpc",
-              group: "EC2",
-              providerName: config.providerName,
+  const findName = ({ lives, config }) =>
+    pipe([
+      fork({
+        vpcName: (live) =>
+          pipe([
+            () =>
+              lives.getById({
+                id: live.VpcId,
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            get("name"),
+            tap((name) => {
+              assert(
+                name,
+                `no vpc name in route table id ${live.RouteTableId}, VpcId: ${live.VpcId}`
+              );
             }),
-          get("name"),
-          tap((name) => {
-            assert(
-              name,
-              `no vpc name in route table id ${live.RouteTableId}, VpcId: ${live.VpcId}`
-            );
-          }),
-        ])(),
-      rtbName: switchCase([
-        isDefault,
-        pipe([() => "rt-default"]),
-        findNameInTagsOrId({ findId }),
-      ]),
-    }),
-    ({ vpcName, rtbName }) => `${vpcName}::${rtbName}`,
-  ]);
+          ])(),
+        rtbName: switchCase([
+          isDefault({ lives, config }),
+          pipe([() => "rt-default"]),
+          findNameInTagsOrId({ findId })({ lives, config }),
+        ]),
+      }),
+      ({ vpcName, rtbName }) => `${vpcName}::${rtbName}`,
+    ]);
 
   const routesDelete = ({ live }) =>
     pipe([
@@ -192,7 +192,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
     managedByOther: isDefault,
     findId,
     findName,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace: findNamespaceInTags,
     getByName,
     getById,
     cannotBeDeleted,

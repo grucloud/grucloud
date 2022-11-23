@@ -31,11 +31,11 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.VpcPeeringConnectionId")]);
+const findId = () => pipe([get("VpcPeeringConnectionId")]);
 
 const findName =
-  ({ config }) =>
-  ({ live, lives }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       () => live.VpcPeeringConnectionId,
       (id) =>
@@ -61,9 +61,9 @@ exports.EC2VpcPeeringConnectionAccepter = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: findName({ config }),
+    findName,
     findId,
-    cannotBeDeleted: () => true,
+    cannotBeDeleted: () => () => true,
     getByName: getByNameCore,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#acceptVpcPeeringConnection-property
     create:

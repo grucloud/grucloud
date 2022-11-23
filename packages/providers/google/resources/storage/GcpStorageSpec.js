@@ -34,35 +34,37 @@ module.exports = () =>
     },
     {
       type: "BucketAccessControl",
-      managedByOther: () => true,
-      findName: pipe([
-        get("live"),
-        tap(({ bucket, entity }) => {
-          assert(bucket);
-        }),
-        ({ bucket, entity }) => `${bucket}::${entity}`,
-      ]),
+      managedByOther: () => () => true,
+      findName: () =>
+        pipe([
+          tap(({ bucket, entity }) => {
+            assert(bucket);
+          }),
+          ({ bucket, entity }) => `${bucket}::${entity}`,
+        ]),
     },
     {
       type: "DefaultObjectAccessControl",
-      cannotBeDeleted: () => true,
-      managedByOther: () => true,
-      findId: pipe([
-        get("live.entity"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findName: pipe([
-        get("live.entity"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
+      cannotBeDeleted: () => () => true,
+      managedByOther: () => () => true,
+      findId: () =>
+        pipe([
+          get("entity"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findName: () =>
+        pipe([
+          get("entity"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
     },
     {
       type: "ObjectAccessControl",
-      managedByOther: () => true,
+      managedByOther: () => () => true,
       pathLiveFromParent: ({ live }) =>
         pipe([
           tap((params) => {
@@ -71,10 +73,10 @@ module.exports = () =>
           }),
           () => `b/${live.bucket}/o/${live.name}/acl`,
         ]),
-      findName: pipe([
-        get("live"),
-        ({ bucket, object, entity }) => `${bucket}::${object}::${entity}`,
-      ]),
+      findName: () =>
+        pipe([
+          ({ bucket, object, entity }) => `${bucket}::${object}::${entity}`,
+        ]),
     },
     {
       type: "Object",

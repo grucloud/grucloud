@@ -47,32 +47,34 @@ exports.EC2SecurityGroup = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const findName = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        assert(live.GroupName);
-      }),
-      () =>
-        lives.getById({
-          id: live.VpcId,
-          type: "Vpc",
-          group: "EC2",
-          providerName,
+  const findName =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(lives);
+          assert(live.GroupName);
         }),
-      tap((vpc) => {
-        //assert(vpc);
-      }),
-      get("name", live.VpcId),
-      tap((vpcName) => {
-        assert(vpcName);
-      }),
-      append("::"),
-      append(live.GroupName),
-      prepend("sg::"),
-    ])();
+        () =>
+          lives.getById({
+            id: live.VpcId,
+            type: "Vpc",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
+        tap((vpc) => {
+          //assert(vpc);
+        }),
+        get("name", live.VpcId),
+        tap((vpcName) => {
+          assert(vpcName);
+        }),
+        append("::"),
+        append(live.GroupName),
+        prepend("sg::"),
+      ])();
 
-  const findId = get("live.GroupId");
+  const findId = () => get("GroupId");
   const pickId = pick(["GroupId"]);
 
   const findNamespace = (param) =>
@@ -171,30 +173,32 @@ exports.EC2SecurityGroup = ({ spec, config }) => {
     ignoreErrorCodes: ["InvalidGroup.NotFound"],
   });
 
-  const cannotBeDeleted = pipe([
-    get("live"),
-    or([
-      eq(get("GroupName"), "default"),
-      //pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
-    ]),
-  ]);
+  const cannotBeDeleted = () =>
+    pipe([
+      or([
+        eq(get("GroupName"), "default"),
+        //pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
+      ]),
+    ]);
+
   const isDefault = cannotBeDeleted;
 
-  const managedByOther = or([
-    hasKeyInTags({
-      key: "aws:eks:cluster-name",
-    }),
-    hasKeyInTags({
-      key: "elbv2.k8s.aws/cluster",
-    }),
-    hasKeyInTags({
-      key: "AWSServiceName",
-    }),
-    hasKeyInTags({
-      key: "elasticbeanstalk:",
-    }),
-    isDefault,
-  ]);
+  const managedByOther = ({ lives, config }) =>
+    or([
+      hasKeyInTags({
+        key: "aws:eks:cluster-name",
+      }),
+      hasKeyInTags({
+        key: "elbv2.k8s.aws/cluster",
+      }),
+      hasKeyInTags({
+        key: "AWSServiceName",
+      }),
+      hasKeyInTags({
+        key: "elasticbeanstalk:",
+      }),
+      isDefault({ lives, config }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
   const create = client.create({

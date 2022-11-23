@@ -1,13 +1,22 @@
 const { pipe, tap, flatMap, filter, eq, get, map } = require("rubico");
-const { find, includes, append, callProp, unless } = require("rubico/x");
+const {
+  find,
+  includes,
+  append,
+  callProp,
+  unless,
+  isEmpty,
+} = require("rubico/x");
 
 const assert = require("assert");
 const AwsServicesAvailability = require("./AwsServicesAvailability.json");
+
 const GROUPS = [
   ["Account", "account"],
   ["AccessAnalyzer", "accessanalyzer"],
   ["ACM", "acm"],
   ["ACMPCA", "acm-pca"],
+  ["Amplify", "amplify"],
   ["ApiGateway", "apigateway"],
   ["ApiGatewayV2", "apigatewayv2"],
   ["AppConfig", "appconfig"],
@@ -80,6 +89,7 @@ const GROUPS = [
   ["Route53Resolver", "route53resolver"],
   ["Route53RecoveryControlConfig", "route53-recovery-control-config"],
   ["S3", "s3"],
+  ["Scheduler", "scheduler"],
   ["Schemas", "schemas"],
   ["SecretsManager", "secretsmanager"],
   ["SecurityHub", "securityhub"],
@@ -96,9 +106,10 @@ const GROUPS = [
   ["WAFV2", "waf"],
 ];
 
+const mapRegionService = { "us-east-1": ["RedshiftServerless"] };
+
 const GROUPS_MISSING = [
   "CloudWatchLogs", // missing from the list provider by AWS
-  //"Scheduler", Not yet available from SSM
   // "DirectoryService" Not available from SSM
 ];
 const GROUPS_GLOBAL = [
@@ -108,6 +119,17 @@ const GROUPS_GLOBAL = [
   "Route53RecoveryReadiness",
   "GlobalAccelerator",
 ];
+
+const appendMissingServices = ({ region }) =>
+  pipe([
+    tap((params) => {
+      assert(region);
+    }),
+    unless(
+      () => isEmpty(mapRegionService[region]),
+      append(mapRegionService[region])
+    ),
+  ]);
 
 const findServicesPerRegion = ({ region = "us-east-1" }) =>
   pipe([
@@ -137,23 +159,12 @@ exports.fnSpecs = (config) =>
         }),
         () => GROUPS,
         filter(([group, client]) =>
-          pipe([
-            tap((params) => {
-              assert(client);
-            }),
-            () => servicesPerRegion,
-            tap((params) => {
-              assert(true);
-            }),
-            includes(client),
-          ])()
+          pipe([() => servicesPerRegion, includes(client)])()
         ),
-        tap((params) => {
-          assert(true);
-        }),
         map(([group]) => group),
         append(GROUPS_MISSING),
         unless(() => config.noGlobalEndpoint, append(GROUPS_GLOBAL)),
+        appendMissingServices(config),
         callProp("sort", (a, b) => a.localeCompare(b)),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
       ])(),

@@ -35,7 +35,7 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const managedByOther = pipe([get("live.isSystemDisk")]);
+const managedByOther = () => pipe([get("isSystemDisk")]);
 
 const model = ({ config }) => ({
   package: "lightsail",
@@ -100,20 +100,20 @@ exports.LightsailDisk = ({ compare }) => ({
       model: model({ config }),
       spec,
       config,
-      findName: pipe([
-        get("live"),
-        get("diskName"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("diskName"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () =>
+        pipe([
+          get("diskName"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findId: () =>
+        pipe([
+          get("diskName"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       getByName: ({ getById }) =>
         pipe([({ name }) => ({ diskName: name }), getById({})]),
       ...Tagger({ buildArn: buildArn(config) }),

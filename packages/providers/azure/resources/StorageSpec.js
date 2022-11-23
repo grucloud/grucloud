@@ -74,9 +74,9 @@ exports.fnSpecs = ({ config }) =>
           pipe([
             () => ({
               spec,
-              findId: pipe([get("live.id")]),
-              findName: pipe([get("live.storageAccountName")]),
-              cannotBeDeleted: () => true,
+              findId: () => pipe([get("id")]),
+              findName: () => pipe([get("storageAccountName")]),
+              cannotBeDeleted: () => () => true,
               findDependencies: ({ live, lives }) => [
                 findDependenciesResourceGroup({ live, lives, config }),
                 {
@@ -193,16 +193,17 @@ exports.fnSpecs = ({ config }) =>
           pipe([
             () => ({
               spec,
-              findId: pipe([
-                get("live.id"),
-                tap((id) => {
-                  assert(id);
-                }),
-              ]),
-              findName: pipe([
-                get("live"),
-                ({ name, containerName }) => `${containerName}::${name}`,
-              ]),
+              findId: () =>
+                pipe([
+                  get("id"),
+                  tap((id) => {
+                    assert(id);
+                  }),
+                ]),
+              findName: () =>
+                pipe([
+                  ({ name, containerName }) => `${containerName}::${name}`,
+                ]),
               findDependencies: ({ live, lives }) => [
                 findDependenciesResourceGroup({ live, lives, config }),
                 // {

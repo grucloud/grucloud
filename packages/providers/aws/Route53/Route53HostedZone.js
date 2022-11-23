@@ -64,13 +64,13 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const octalReplace = pipe([callProp("replaceAll", "\\052", "*")]);
 
-const findId = pipe([
-  get("live"),
-  get("HostedZoneId"),
-  tap((id) => {
-    assert(id);
-  }),
-]);
+const findId = () =>
+  pipe([
+    get("HostedZoneId"),
+    tap((id) => {
+      assert(id);
+    }),
+  ]);
 
 const pickId = pick(["Id"]);
 
@@ -148,7 +148,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(route53);
 
   //Check for the final dot
-  const findName = get("live.Name");
+  const findName = () => get("Name");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
   const getList = client.getList({
@@ -485,7 +485,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace: findNamespaceInTags,
     tagResource: tagResource({ ResourceType })({ endpoint: route53 }),
     untagResource: untagResource({ ResourceType })({ endpoint: route53 }),
   };

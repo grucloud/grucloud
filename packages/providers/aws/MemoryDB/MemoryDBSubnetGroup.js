@@ -57,8 +57,8 @@ exports.MemoryDBSubnetGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Name")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Name")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([
         ({ name }) => ({

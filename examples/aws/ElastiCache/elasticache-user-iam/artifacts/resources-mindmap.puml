@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project elasticache-user-iam
+skinparam monochrome true
++ Infra
+++ aws
++++ ElastiCache
+++++ User (1)
+@endmindmap

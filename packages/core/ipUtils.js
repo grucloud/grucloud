@@ -10,6 +10,8 @@ const ipToInt32 = pipe([
 ]);
 
 exports.ipToInt32 = ipToInt32;
+exports.ipDotFromInt32 = (ipInt) =>
+  `${ipInt >>> 24}.${(ipInt >> 16) & 255}.${(ipInt >> 8) & 255}.${ipInt & 255}`;
 
 // https://www.terraform.io/language/functions/cidrsubnet
 

@@ -50,7 +50,7 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.LinkId")]);
+const findId = () => pipe([get("LinkId")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html
 exports.NetworkManagerLink = ({ spec, config }) =>

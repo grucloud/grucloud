@@ -81,10 +81,7 @@ const decorate = ({ endpoint, live }) =>
     }),
   ]);
 
-const cannotBeDeleted = pipe([
-  get("live"),
-  eq(get("Name"), "AdministratorAccess"),
-]);
+const cannotBeDeleted = () => pipe([eq(get("Name"), "AdministratorAccess")]);
 
 const createInlinePolicy = ({ endpoint, live }) =>
   pipe([
@@ -206,20 +203,20 @@ exports.SSOAdminPermissionSet = ({}) => ({
   },
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
-  findName: pipe([
-    get("live"),
-    get("Name"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("PermissionSetArn"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("PermissionSetArn"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#getPermissionSet-property
   getById: {

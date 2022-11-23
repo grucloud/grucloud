@@ -103,17 +103,18 @@ exports.CodeDeployDeploymentGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([
-      get("live"),
-      ({ applicationName, deploymentGroupName }) =>
-        `${applicationName}::${deploymentGroupName}`,
-    ]),
-    findId: pipe([
-      get("live.deploymentGroupId"),
-      tap((id) => {
-        assert(id);
-      }),
-    ]),
+    findName: () =>
+      pipe([
+        ({ applicationName, deploymentGroupName }) =>
+          `${applicationName}::${deploymentGroupName}`,
+      ]),
+    findId: () =>
+      pipe([
+        get("deploymentGroupId"),
+        tap((id) => {
+          assert(id);
+        }),
+      ]),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeDeploy.html#listDeploymentGroups-property
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

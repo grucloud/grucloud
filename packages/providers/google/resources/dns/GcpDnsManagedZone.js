@@ -95,7 +95,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
       recordSet: [],
     })(properties);
 
-  const findName = get("live.name");
+  const findName = () => get("name");
   const findId = findName;
 
   const axios = createAxiosMakerGoogle({

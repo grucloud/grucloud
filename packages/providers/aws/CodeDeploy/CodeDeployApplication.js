@@ -71,8 +71,8 @@ exports.CodeDeployApplication = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.applicationName")]),
-    findId: pipe([get("live.applicationId")]),
+    findName: () => pipe([get("applicationName")]),
+    findId: () => pipe([get("applicationId")]),
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ applicationName: name }), getById({})]),
     tagResource: tagResource({ buildArn: buildArn({ config }) }),

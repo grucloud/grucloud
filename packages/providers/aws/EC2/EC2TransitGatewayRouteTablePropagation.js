@@ -37,15 +37,15 @@ const createModel = ({ config }) => ({
   destroy: { method: "disableTransitGatewayRouteTablePropagation", pickId },
 });
 
-const findId = pipe([
-  get("live"),
-  tap(({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) => {
-    assert(TransitGatewayRouteTableId);
-    assert(TransitGatewayAttachmentId);
-  }),
-  ({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) =>
-    `${TransitGatewayRouteTableId}::${TransitGatewayAttachmentId}`,
-]);
+const findId = () =>
+  pipe([
+    tap(({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) => {
+      assert(TransitGatewayRouteTableId);
+      assert(TransitGatewayAttachmentId);
+    }),
+    ({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) =>
+      `${TransitGatewayRouteTableId}::${TransitGatewayAttachmentId}`,
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2TransitGatewayRouteTablePropagation = ({ spec, config }) =>
@@ -63,7 +63,6 @@ exports.EC2TransitGatewayRouteTablePropagation = ({ spec, config }) =>
     ],
     findName: findNameRouteTableArm({
       prefix: "tgw-rtb-propagation",
-      config,
     }),
     findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getTransitGatewayRouteTablePropagations-property

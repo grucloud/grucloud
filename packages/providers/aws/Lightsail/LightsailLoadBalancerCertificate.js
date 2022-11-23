@@ -4,7 +4,7 @@ const { defaultsDeep, find, unless, isEmpty } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
 
-const findName = pipe([get("live"), get("certificateName")]);
+const findName = () => pipe([get("certificateName")]);
 
 const pickId = pipe([
   tap(({ loadBalancerName, certificateName }) => {

@@ -59,8 +59,8 @@ exports.CloudWatchDashboard = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.DashboardName")]),
-    findId: pipe([get("live.DashboardArn")]),
+    findName: () => pipe([get("DashboardName")]),
+    findId: () => pipe([get("DashboardArn")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ DashboardName: name }), getById({})]),
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>

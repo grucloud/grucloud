@@ -12,8 +12,8 @@ exports.EC2ClientKeyPair = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const findName = get("live.KeyName");
-  const findId = get("live.KeyPairId");
+  const findName = () => get("KeyName");
+  const findId = () => get("KeyPairId");
   const pickId = pick(["KeyName"]);
 
   const getList = client.getList({

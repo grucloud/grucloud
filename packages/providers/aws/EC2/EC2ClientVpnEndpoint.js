@@ -8,7 +8,7 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
-const findId = pipe([get("live.ClientVpnEndpointId")]);
+const findId = () => pipe([get("ClientVpnEndpointId")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -48,7 +48,7 @@ exports.EC2ClientVpnEndpoint = ({ spec, config }) =>
     config,
     findName: findNameInTagsOrId({ findId }),
     findId,
-    cannotBeDeleted: eq(get("live.Status.Code"), "deleted"),
+    cannotBeDeleted: () => eq(get("Status.Code"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

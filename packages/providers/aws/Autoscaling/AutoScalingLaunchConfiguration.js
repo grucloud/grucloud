@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, switchCase, pick, map, assign } = require("rubico");
-const { defaultsDeep, isEmpty, callProp } = require("rubico/x");
+const { pipe, tap, get, pick, map, assign } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -19,8 +19,8 @@ const {
 const ignoreErrorMessages = ["Launch configuration name not found"];
 const ResourceType = "launch-configuration";
 
-const findName = get("live.LaunchConfigurationName");
-const findId = get("live.LaunchConfigurationARN");
+const findName = () => get("LaunchConfigurationName");
+const findId = () => get("LaunchConfigurationARN");
 
 const pickId = pipe([pick(["LaunchConfigurationName"])]);
 

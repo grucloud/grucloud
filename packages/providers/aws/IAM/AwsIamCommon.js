@@ -39,7 +39,7 @@ exports.dependenciesPoliciesKind = [
   { type: "AccessPoint", group: "EFS" },
   { type: "EventBus", group: "CloudWatchEvents" },
   { type: "StateMachine", group: "StepFunctions" },
-  { type: "LogGroup", group: "CloudWatchLogs" },
+  //{ type: "LogGroup", group: "CloudWatchLogs" },
   { type: "Secret", group: "SecretsManager" },
   { type: "Parameter", group: "SSM" },
   { type: "Organisation", group: "Organisations" },

@@ -22,23 +22,26 @@ const { tos } = require("@grucloud/core/tos");
 const { axiosErrorToJSON, logError } = require("@grucloud/core/Common");
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
-const findName = get("live.role");
+const findName = () => get("role");
 const findId = findName;
 
-const isOurMinionIamBinding = ({ live, resources }) =>
-  pipe([
-    tap(() => {
-      assert(live, "live");
-      assert(Array.isArray(resources), "resources");
-    }),
-    () => resources,
-    any(pipe([get("name"), (name) => isDeepEqual(name, findName({ live }))])),
-    tap((isOur) => {
-      logger.debug(`isOurMinionIamBinding: ${findName({ live })}: ${isOur}`);
-    }),
-  ])();
+const isOurMinionIamBinding =
+  ({ resources }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(live, "live");
+        assert(Array.isArray(resources), "resources");
+      }),
+      () => resources,
+      any(pipe([get("name"), (name) => isDeepEqual(name, findName({})(live))])),
+      tap((isOur) => {
+        logger.debug(`isOurMinionIamBinding: ${findName({})(live)}: ${isOur}`);
+      }),
+    ])();
 
-const cannotBeDeleted = not(isOurMinionIamBinding);
+const cannotBeDeleted = ({ resources }) =>
+  not(isOurMinionIamBinding({ resources }));
 
 exports.isOurMinionIamBinding = isOurMinionIamBinding;
 

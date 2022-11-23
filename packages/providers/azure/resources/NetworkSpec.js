@@ -814,8 +814,9 @@ exports.fnSpecs = ({ config }) => {
 
       {
         type: "Subnet",
-        isDefault: () => false,
-        managedByOther: () => false,
+        // TODO do we need this ?
+        isDefault: () => () => false,
+        managedByOther: () => () => false,
         omitProperties: [
           "properties.routeTable",
           "properties.networkSecurityGroup",
@@ -921,8 +922,8 @@ exports.fnSpecs = ({ config }) => {
         group: "Network",
         type: "NetworkWatcher",
         ignoreResource: () => () => true,
-        managedByOther: () => true,
-        cannotBeDeleted: () => true,
+        managedByOther: () => () => true,
+        cannotBeDeleted: () => () => true,
       },
       {
         type: "VirtualNetworkGateway",

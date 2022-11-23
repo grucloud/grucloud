@@ -7,30 +7,41 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html
 
-//const { RedshiftServerlessEndpointAccess } = require("./RedshiftServerlessEndpointAccess");
-//const { RedshiftServerlessNamespace} = require("./RedshiftServerlessNamespace");
-//const { RedshiftServerlessSnapshot } = require("./RedshiftServerlessSnapshot");
-//const { RedshiftServerlessUsageLimit } = require("./RedshiftServerlessUsageLimit");
-//const { RedshiftServerlessWorkgroup } = require("./RedshiftServerlessWorkgroup");
+const {
+  RedshiftServerlessEndpointAccess,
+} = require("./RedshiftServerlessEndpointAccess");
+const {
+  RedshiftServerlessNamespace,
+} = require("./RedshiftServerlessNamespace");
+const { RedshiftServerlessSnapshot } = require("./RedshiftServerlessSnapshot");
+//const { RedshiftServerlessResourcePolicy } = require("./RedshiftServerlessResourcePolicy");
+
+const {
+  RedshiftServerlessUsageLimit,
+} = require("./RedshiftServerlessUsageLimit");
+const {
+  RedshiftServerlessWorkgroup,
+} = require("./RedshiftServerlessWorkgroup");
 
 const GROUP = "RedshiftServerless";
 
-const tagKeys = "tags";
-const compare = compareAws({ tagKeys, key: "key" });
+const tagsKey = "tags";
+const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
-    // RedshiftServerlessEndpointAccess({})
-    // RedshiftServerlessNamespace({})
-    // RedshiftServerlessSnapshot({})
-    // RedshiftServerlessUsageLimit({})
-    // RedshiftServerlessWorkgroup({})
+    RedshiftServerlessEndpointAccess({}),
+    RedshiftServerlessNamespace({ compare }),
+    RedshiftServerlessSnapshot({}),
+    // RedshiftServerlessResourcePolicy({})
+    RedshiftServerlessUsageLimit({}),
+    RedshiftServerlessWorkgroup({}),
   ],
   map(createAwsService),
   map(
     defaultsDeep({
       group: GROUP,
-      tagKeys,
+      tagsKey,
       compare: compare({}),
     })
   ),

@@ -45,8 +45,8 @@ exports.AppRunnerConnection = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ConnectionName")]),
-    findId: pipe([get("live.ConnectionArn")]),
+    findName: () => pipe([get("ConnectionName")]),
+    findId: () => pipe([get("ConnectionArn")]),
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ ConnectionName: name }), getById({})]),
     tagResource: tagResource({

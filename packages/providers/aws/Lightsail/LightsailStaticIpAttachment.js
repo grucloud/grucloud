@@ -13,13 +13,13 @@ const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
 
-const findName = pipe([
-  get("live"),
-  get("staticIpName"),
-  tap((name) => {
-    assert(name);
-  }),
-]);
+const findName = () =>
+  pipe([
+    get("staticIpName"),
+    tap((name) => {
+      assert(name);
+    }),
+  ]);
 
 const pickId = pipe([
   tap((params) => {

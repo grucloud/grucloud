@@ -37,6 +37,7 @@ const { findIdsByPath } = require("@grucloud/core/Common");
 
 const {
   isInstanceUp: isInstanceUpDefault,
+  isInstanceDown: isInstanceDownDefault,
   AZURE_MANAGEMENT_BASE_URL,
   isSubstituable,
   configDefaultGeneric,
@@ -134,8 +135,8 @@ const onCreateFilterPayload = pipe([
 //TODO remove
 const specDefault = {
   operations: { getAll: {} },
-  cannotBeDeleted: () => false,
-  managedByOther: () => false,
+  cannotBeDeleted: () => () => false,
+  managedByOther: () => () => false,
 };
 
 const substituteDependency =
@@ -240,6 +241,7 @@ exports.AzClient = ({
   lives,
   spec,
   isInstanceUp = isInstanceUpDefault,
+  isInstanceDown = isInstanceDownDefault,
   config,
   findTargetId = ({ path }) =>
     (result) =>
@@ -571,20 +573,22 @@ exports.AzClient = ({
     verbUpdate: verbUpdateFromMethods(methods),
     onCreateFilterPayload,
     isInstanceUp,
+    isInstanceDown,
     isDefault: spec.isDefault,
-    cannotBeDeleted: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      or([
-        managedByOther,
-        cannotBeDeleted,
-        pipe([() => methods, get("delete"), isEmpty]),
+    cannotBeDeleted: ({ lives, config }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        or([
+          managedByOther({ lives, config }),
+          cannotBeDeleted({ lives, config }),
+          pipe([() => methods, get("delete"), isEmpty]),
+        ]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
     managedByOther,
     axios,
   });

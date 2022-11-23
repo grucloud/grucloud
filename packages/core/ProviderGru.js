@@ -180,7 +180,7 @@ exports.ProviderGru = ({
           fn: () =>
             client.destroy({
               live,
-              id: client.findId({ live, lives }), // TODO remove id, only use live
+              id: client.findId({ lives, config: getProviderConfig() })(live), // TODO remove id, only use live
               name: resource.name,
               resource,
               lives,

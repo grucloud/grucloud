@@ -14,7 +14,7 @@ const {
   untagResource,
 } = require("./ECSCommon");
 
-const findId = get("live.containerInstanceArn");
+const findId = () => get("containerInstanceArn");
 const findName = findNameInTagsOrId({ findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
@@ -92,8 +92,8 @@ exports.ECSContainerInstance = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    managedByOther: () => true,
-    cannotBeDeleted: () => true,
+    managedByOther: () => () => true,
+    cannotBeDeleted: () => () => true,
     tagResource: tagResource({ ecs }),
     untagResource: untagResource({ ecs }),
   };

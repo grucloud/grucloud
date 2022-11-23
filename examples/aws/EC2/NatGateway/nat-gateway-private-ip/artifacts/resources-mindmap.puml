@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project nat-gateway-private-ip
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NatGateway (1)
+++++ Subnet (1)
+++++ RouteTable (1)
+++++ RouteTableAssociation (1)
+++++ ElasticIpAddress (1)
+@endmindmap

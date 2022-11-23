@@ -27,20 +27,20 @@ exports.CognitoIdentityServiceProviderUserPoolDomain = () => ({
   package: "cognito-identity-provider",
   client: "CognitoIdentityProvider",
   inferName: get("properties.Domain"),
-  findName: pipe([
-    get("live"),
-    get("Domain"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("Domain"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("Domain"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("Domain"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   omitProperties: [
     "AWSAccountId",
     "CloudFrontDistribution",

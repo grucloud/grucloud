@@ -8,20 +8,22 @@ const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findName = ({ live, lives, config }) =>
-  pipe([
-    () => [
-      findNameInTags({}),
-      get("live.Description"),
-      // TODO add locale ?
-      pipe([({ live }) => "ipam-pool"]),
-    ],
-    map((fn) => fn({ live, lives, config })),
-    find(not(isEmpty)),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
+const findName =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      () => [
+        findNameInTags({}),
+        get("Description"),
+        // TODO add locale ?
+        pipe([({ live }) => "ipam-pool"]),
+      ],
+      map((fn) => fn(live)),
+      find(not(isEmpty)),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -74,7 +76,7 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.IpamPoolId")]);
+const findId = () => pipe([get("IpamPoolId")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2IpamPool = ({ spec, config }) =>

@@ -19,9 +19,9 @@ exports.tagResource =
   ({ live }) =>
     pipe([
       tap((params) => {
-        assert(findId({ live }));
+        assert(findId(live));
       }),
-      (Tags) => ({ ResourceARN: findId({ live }), Tags }),
+      (Tags) => ({ ResourceARN: findId(live), Tags }),
       endpoint().tagResource,
     ]);
 
@@ -32,9 +32,9 @@ exports.untagResource =
   ({ live }) =>
     pipe([
       tap((params) => {
-        assert(findId({ live }));
+        assert(findId(live));
       }),
-      (TagKeys) => ({ ResourceARN: findId({ live }), TagKeys }),
+      (TagKeys) => ({ ResourceARN: findId(live), TagKeys }),
       endpoint().untagResource,
     ]);
 
@@ -43,8 +43,7 @@ const assignTags = ({ findId, endpoint }) =>
   pipe([
     assign({
       Tags: pipe([
-        (live) => ({ live }),
-        findId,
+        findId(),
         (ResourceARN) => ({ ResourceARN }),
         endpoint().listTagsForResource,
         get("TagInfoForResource.TagList"),
@@ -54,7 +53,7 @@ const assignTags = ({ findId, endpoint }) =>
 
 exports.assignTags = assignTags;
 
-const findId = pipe([get("live.ARN")]);
+const findId = () => pipe([get("ARN")]);
 
 const decorate =
   ({ Scope }) =>

@@ -81,20 +81,20 @@ exports.LightsailKeyPair = () => ({
       model: model({ config }),
       spec,
       config,
-      findName: pipe([
-        get("live"),
-        get("keyPairName"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("keyPairName"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () =>
+        pipe([
+          get("keyPairName"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findId: () =>
+        pipe([
+          get("keyPairName"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       getByName: ({ getById }) =>
         pipe([({ name }) => ({ keyPairName: name }), getById({})]),
       ...Tagger({ buildArn: buildArn(config) }),

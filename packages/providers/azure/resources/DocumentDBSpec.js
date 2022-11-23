@@ -4,10 +4,8 @@ const { defaultsDeep, callProp, last, identity } = require("rubico/x");
 
 const group = "DocumentDB";
 
-const SqlResourceSqlRoleDefinitionManagedByOther = eq(
-  get("live.properties.type"),
-  "BuiltInRole"
-);
+const SqlResourceSqlRoleDefinitionManagedByOther = () =>
+  eq(get("properties.type"), "BuiltInRole");
 
 exports.fnSpecs = ({ config }) =>
   pipe([

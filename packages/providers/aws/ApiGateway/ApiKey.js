@@ -7,8 +7,8 @@ const { createAwsResource } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
 
-const findName = get("live.name");
-const findId = get("live.id");
+const findName = () => get("name");
+const findId = () => get("id");
 const pickId = ({ id }) => ({ apiKey: id });
 
 const buildArn =

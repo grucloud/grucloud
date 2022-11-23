@@ -49,19 +49,20 @@ const {
 const ignoreErrorCodes = ["NoSuchDistribution"];
 //TODO look in spec.type instead
 const RESOURCE_TYPE = "Distribution";
-const findId = get("live.ARN");
-const findName = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  get("live.Origins.Items"),
-  first,
-  get("Id"),
-  tap((Id) => {
-    assert(Id);
-    logger.debug(`Distribution findName ${Id}`);
-  }),
-]);
+const findId = () => get("ARN");
+const findName = () =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("Origins.Items"),
+    first,
+    get("Id"),
+    tap((Id) => {
+      assert(Id);
+      logger.debug(`Distribution findName ${Id}`);
+    }),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.CloudFrontDistribution = ({ spec, config }) => {
@@ -289,7 +290,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace: findNamespaceInTags,
     getByName,
     getById,
     findName,

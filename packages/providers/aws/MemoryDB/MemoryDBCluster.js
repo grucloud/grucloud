@@ -54,8 +54,8 @@ exports.MemoryDBCluster = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.ARN")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("ARN")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([
         ({ name }) => ({

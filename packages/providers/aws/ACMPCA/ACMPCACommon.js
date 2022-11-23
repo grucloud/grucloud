@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, assign, get } = require("rubico");
+const { pipe, tap, get, not, eq } = require("rubico");
 
 const { createTagger } = require("../AwsTagger");
 
@@ -10,3 +10,12 @@ exports.Tagger = createTagger({
   TagsKey: "Tags",
   UnTagsKey: "Tags",
 });
+
+exports.managedByOtherAccount = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+      assert(config.accountId());
+    }),
+    not(eq(get("SourceAccount"), config.accountId())),
+  ]);

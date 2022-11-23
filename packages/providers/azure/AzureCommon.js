@@ -215,6 +215,13 @@ const isInstanceUp = switchCase([
 
 exports.isInstanceUp = isInstanceUp;
 
+const isInstanceDown = or([
+  isEmpty,
+  eq(get("properties.provisioningState"), "ScheduledForDelete"),
+]);
+
+exports.isInstanceDown = isInstanceDown;
+
 const configDefaultDependenciesId = ({ dependencies, spec }) =>
   pipe([
     tap(() => {

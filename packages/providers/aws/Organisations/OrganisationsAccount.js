@@ -3,7 +3,6 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
 const { buildTags } = require("../AwsCommon");
 
 const pickId = pipe([
@@ -13,10 +12,18 @@ const pickId = pipe([
   }),
 ]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html
+exports.OrganisationsAccount = ({}) => ({
+  type: "Account",
   package: "organizations",
   client: "Organizations",
   ignoreErrorCodes: ["AccountNotFoundException"],
+  managedByOther: () => () => true,
+  cannotBeDeleted: () => () => true,
+  omitProperties: ["Arn", "Id", "Status", "JoinedTimestamp", "JoinedMethod"],
+  inferName: get("properties.Name"),
+  findName: () => pipe([get("Name")]),
+  findId: () => pipe([get("Id")]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#describeAccount-property
   getById: {
     method: "describeAccount",
@@ -41,12 +48,7 @@ const model = ({ config }) => ({
         }),
         get("CreateAccountStatus"),
       ]),
-    isInstanceUp: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      () => true,
-    ]),
+    isInstanceUp: pipe([() => true]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#closeAccount-property
   destroy: {
@@ -54,34 +56,23 @@ const model = ({ config }) => ({
     pickId,
     isInstanceDown: () => true,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html
-exports.OrganisationsAccount = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    managedByOther: () => true,
-    cannotBeDeleted: () => true,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Id")]),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-      ])(),
-  });
+      }),
+    ])(),
+});

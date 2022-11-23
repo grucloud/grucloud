@@ -1,23 +1,12 @@
 const assert = require("assert");
 const { pipe, tap, get, map } = require("rubico");
-const { defaultsDeep, pluck, unless, isEmpty } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
-//const { tagResource, untagResource } = require("./ApiGatewayCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = pipe([get("live.id")]);
-
-// const buildResourceArn = ({ config }) =>
-//   pipe([
-//     tap(({ usagePlanId, keyId }) => {
-//       assert(usagePlanId);
-//       assert(keyId);
-//     }),
-//     ({ usagePlanId, keyId }) =>
-//       `arn:aws:apigateway:${config.region}::/usageplans/${usagePlanId}/keys/${keyId}`,
-//   ]);
+const findId = () => pipe([get("id")]);
 
 const pickId = pipe([
   tap(({ usagePlanId, keyId }) => {
@@ -69,7 +58,7 @@ exports.UsagePlanKey = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.name")]),
+    findName: () => pipe([get("name")]),
     findId,
     getByName: getByNameCore,
     getList: ({ client }) =>

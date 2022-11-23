@@ -41,20 +41,20 @@ exports.SESV2ConfigurationSet = ({ compare }) => ({
       assert(Name);
     }),
   ]),
-  findName: pipe([
-    get("live"),
-    get("ConfigurationSetName"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("ConfigurationSetName"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("ConfigurationSetName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("ConfigurationSetName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   ignoreErrorCodes: ["NotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#getConfigurationSet-property
   getById: {

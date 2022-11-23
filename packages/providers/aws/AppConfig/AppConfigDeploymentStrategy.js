@@ -23,10 +23,8 @@ const decorate = ({ endpoint, config }) =>
     assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
-const managedByOther = pipe([
-  get("live.Name"),
-  callProp("startsWith", "AppConfig."),
-]);
+const managedByOther = () =>
+  pipe([get("Name"), callProp("startsWith", "AppConfig.")]);
 
 const model = ({ config }) => ({
   package: "appconfig",
@@ -66,8 +64,8 @@ exports.AppConfigDeploymentStrategy = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Id")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Id")]),
     managedByOther,
     cannotBeDeleted: managedByOther,
     getByName: getByNameCore,

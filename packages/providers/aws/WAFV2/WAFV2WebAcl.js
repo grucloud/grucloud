@@ -11,7 +11,7 @@ const {
   createModelWebAcls,
 } = require("./WAFV2Common");
 
-const findId = pipe([get("live.ARN")]);
+const findId = () => pipe([get("ARN")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html
 exports.WAFV2WebACL = ({ spec, config }) =>
@@ -19,16 +19,16 @@ exports.WAFV2WebACL = ({ spec, config }) =>
     model: createModelWebAcls({ config, Scope: "REGIONAL" }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
+    findName: () => pipe([get("Name")]),
     findId,
     getByName: getByNameCore,
-    tagResource: tagResource({ findId }),
-    untagResource: untagResource({ findId }),
+    tagResource: tagResource({ findId: findId() }),
+    untagResource: untagResource({ findId: findId() }),
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
-          Tags: buildTags({ name, config, namespace, userTags: Tags }),
+          Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
       ])(),
   });

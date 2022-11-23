@@ -51,7 +51,7 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.DeviceId")]);
+const findId = () => pipe([get("DeviceId")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html
 exports.NetworkManagerDevice = ({ spec, config }) =>

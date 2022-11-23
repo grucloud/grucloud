@@ -45,7 +45,7 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.VpnConnectionId")]);
+const findId = () => pipe([get("VpnConnectionId")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2VpnConnection = ({ spec, config }) =>
@@ -55,7 +55,7 @@ exports.EC2VpnConnection = ({ spec, config }) =>
     config,
     findName: findNameInTagsOrId({ findId }),
     findId,
-    cannotBeDeleted: eq(get("live.State"), "deleted"),
+    cannotBeDeleted: () => eq(get("State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

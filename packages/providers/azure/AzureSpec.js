@@ -191,57 +191,61 @@ const filterLiveDependencyArray =
     ])();
 
 const buildDefaultSpec = fork({
-  isDefault: () => eq(get("live.name"), "default"),
-  managedByOther: () => eq(get("live.name"), "default"),
+  isDefault: () => () => eq(get("name"), "default"),
+  managedByOther: () => () => eq(get("name"), "default"),
   ignoreResource: () => () => pipe([get("isDefault")]),
-  findName: ({ methods, dependencies }) =>
-    pipe([
-      tap((params) => {
-        assert(methods);
-        assert(dependencies);
-      }),
-      fork({
-        path: pipe([() => methods, get("get.path"), callProp("split", "/")]),
-        id: pipe([get("live.id"), callProp("split", "/")]),
-        lives: get("lives"),
-      }),
-      ({ path, id }) =>
-        pipe([
-          () => path,
-          reduce(
-            (acc, value, index) =>
-              pipe([
-                () => acc,
-                when(
-                  and([
-                    () => isSubstituable(value),
-                    not(eq(value, "{subscriptionId}")),
-                    not(eq(value, "{scope}")),
-                  ]),
-                  pipe([
-                    () => id[index + size(id) - size(path)],
-                    tap((depName) => {
-                      assert(depName, `path ${path} id:${id}  `);
-                    }),
-                    when(
-                      pipe([
-                        () => ["resourceGroup"],
-                        any((type) => pipe([() => value, includes(type)])()),
-                      ]),
-                      callProp("toLowerCase")
-                    ),
-                    (depName) => [...acc, depName],
-                  ])
-                ),
-              ])(),
-            []
-          ),
-        ])(),
-      callProp("join", "::"),
-      tap((name) => {
-        assert(name, "missing name");
-      }),
-    ]),
+  findName:
+    ({ methods, dependencies }) =>
+    ({ lives }) =>
+    (live) =>
+      pipe([
+        tap((params) => {
+          assert(methods);
+          assert(dependencies);
+        }),
+        () => live,
+        fork({
+          path: pipe([() => methods, get("get.path"), callProp("split", "/")]),
+          id: pipe([get("id"), callProp("split", "/")]),
+          lives: () => lives,
+        }),
+        ({ path, id }) =>
+          pipe([
+            () => path,
+            reduce(
+              (acc, value, index) =>
+                pipe([
+                  () => acc,
+                  when(
+                    and([
+                      () => isSubstituable(value),
+                      not(eq(value, "{subscriptionId}")),
+                      not(eq(value, "{scope}")),
+                    ]),
+                    pipe([
+                      () => id[index + size(id) - size(path)],
+                      tap((depName) => {
+                        assert(depName, `path ${path} id:${id}  `);
+                      }),
+                      when(
+                        pipe([
+                          () => ["resourceGroup"],
+                          any((type) => pipe([() => value, includes(type)])()),
+                        ]),
+                        callProp("toLowerCase")
+                      ),
+                      (depName) => [...acc, depName],
+                    ])
+                  ),
+                ])(),
+              []
+            ),
+          ])(),
+        callProp("join", "::"),
+        tap((name) => {
+          assert(name, "missing name");
+        }),
+      ])(),
   inferName:
     ({ dependencies }) =>
     (resource) =>

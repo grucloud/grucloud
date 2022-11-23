@@ -47,128 +47,130 @@ exports.EC2Route = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const findId = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(live.RouteTableId);
-      }),
-      () =>
-        lives.getById({
-          type: "RouteTable",
-          group: "EC2",
-          providerName: config.providerName,
-          id: live.RouteTableId,
+  const findId =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(live.RouteTableId);
         }),
-      tap((routeTable) => {
-        assert(routeTable, `no rtb ${live.RouteTableId}`);
-      }),
-      get("name", "no-route-table-id"),
-      switchCase([
-        () => live.CoreNetworkArn,
-        append("::core-network"),
-        // Nat Gateway
-        () => live.NatGatewayId,
-        append("::nat-gateway"),
-        // Local route
-        () => live.GatewayId === "local",
-        append("::local"),
-        // VpnGateway
-        pipe([
-          () => live,
-          get("GatewayId", ""),
-          callProp("startsWith", "vgw-"),
-        ]),
-        pipe([append("::vgw")]),
-        // Internet Gateway
-        pipe([
-          () => live,
-          get("GatewayId", ""),
-          callProp("startsWith", "igw-"),
-        ]),
-        pipe([append("::igw")]),
-        // Vpc Endpoint
-        pipe([
-          () => live,
-          get("GatewayId", ""),
-          callProp("startsWith", "vpce-"),
-        ]),
-        (rt) =>
+        () =>
+          lives.getById({
+            type: "RouteTable",
+            group: "EC2",
+            providerName: config.providerName,
+            id: live.RouteTableId,
+          }),
+        tap((routeTable) => {
+          assert(routeTable, `no rtb ${live.RouteTableId}`);
+        }),
+        get("name", "no-route-table-id"),
+        switchCase([
+          () => live.CoreNetworkArn,
+          append("::core-network"),
+          // Nat Gateway
+          () => live.NatGatewayId,
+          append("::nat-gateway"),
+          // Local route
+          () => live.GatewayId === "local",
+          append("::local"),
+          // VpnGateway
           pipe([
-            () =>
-              lives.getById({
-                type: "VpcEndpoint",
-                group: "EC2",
-                providerName: config.providerName,
-                id: live.GatewayId,
-              }),
-            get("name", live.GatewayId),
-            prepend(`${rt}::`),
-          ])(),
-        // Instance
-        () => live.InstanceId,
-        (rt) =>
-          pipe([
-            () =>
-              lives.getById({
-                type: "Instance",
-                group: "EC2",
-                providerName: config.providerName,
-                id: live.InstanceId,
-              }),
-            get("name", live.InstanceId),
-            prepend(`${rt}::`),
-          ])(),
-        // Vpc Peering Connection
-        () => live.VpcPeeringConnectionId,
-        pipe([append(`::pcx`)]),
-        // Network Interface
-        () => live.NetworkInterfaceId,
-        pipe([append(`::eni`)]),
-        // Transit Gateway
-        () => live.TransitGatewayId,
-        pipe([append(`::tgw`)]),
-        // Egress Only Internet Gateway
-        () => live.EgressOnlyInternetGatewayId,
-        pipe([append(`::eogw`)]),
-        // Other
-        () => {
-          assert(false, "invalid route target");
-        },
-      ]),
-      switchCase([
-        pipe([
-          () => live,
-          and([
-            get("DestinationPrefixListId"),
-            not(pipe([get("GatewayId", ""), callProp("startsWith", "vpce")])),
+            () => live,
+            get("GatewayId", ""),
+            callProp("startsWith", "vgw-"),
           ]),
-        ]),
-        (id) =>
+          pipe([append("::vgw")]),
+          // Internet Gateway
           pipe([
-            () =>
-              lives.getById({
-                id: live.DestinationPrefixListId,
-                type: "ManagedPrefixList",
-                group: "EC2",
-                providerName: config.providerName,
+            () => live,
+            get("GatewayId", ""),
+            callProp("startsWith", "igw-"),
+          ]),
+          pipe([append("::igw")]),
+          // Vpc Endpoint
+          pipe([
+            () => live,
+            get("GatewayId", ""),
+            callProp("startsWith", "vpce-"),
+          ]),
+          (rt) =>
+            pipe([
+              () =>
+                lives.getById({
+                  type: "VpcEndpoint",
+                  group: "EC2",
+                  providerName: config.providerName,
+                  id: live.GatewayId,
+                }),
+              get("name", live.GatewayId),
+              prepend(`${rt}::`),
+            ])(),
+          // Instance
+          () => live.InstanceId,
+          (rt) =>
+            pipe([
+              () =>
+                lives.getById({
+                  type: "Instance",
+                  group: "EC2",
+                  providerName: config.providerName,
+                  id: live.InstanceId,
+                }),
+              get("name", live.InstanceId),
+              prepend(`${rt}::`),
+            ])(),
+          // Vpc Peering Connection
+          () => live.VpcPeeringConnectionId,
+          pipe([append(`::pcx`)]),
+          // Network Interface
+          () => live.NetworkInterfaceId,
+          pipe([append(`::eni`)]),
+          // Transit Gateway
+          () => live.TransitGatewayId,
+          pipe([append(`::tgw`)]),
+          // Egress Only Internet Gateway
+          () => live.EgressOnlyInternetGatewayId,
+          pipe([append(`::eogw`)]),
+          // Other
+          () => {
+            assert(false, "invalid route target");
+          },
+        ]),
+        switchCase([
+          pipe([
+            () => live,
+            and([
+              get("DestinationPrefixListId"),
+              not(pipe([get("GatewayId", ""), callProp("startsWith", "vpce")])),
+            ]),
+          ]),
+          (id) =>
+            pipe([
+              () =>
+                lives.getById({
+                  id: live.DestinationPrefixListId,
+                  type: "ManagedPrefixList",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name"),
+              tap((name) => {
+                assert(name);
               }),
-            get("name"),
-            tap((name) => {
-              assert(name);
-            }),
-            prepend(`${id}::`),
-          ])(),
-        appendCidrSuffix(live),
-      ]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+              prepend(`${id}::`),
+            ])(),
+          appendCidrSuffix(live),
+        ]),
+        tap((params) => {
+          assert(true);
+        }),
+      ])();
 
-  const findName = (params) => {
-    const fns = [findId];
+  const findName = (params) => (live) => {
+    const fns = [findId(params)];
     for (fn of fns) {
-      const name = fn(params);
+      const name = fn(live);
       if (!isEmpty(name)) {
         return name;
       }
@@ -176,8 +178,7 @@ exports.EC2Route = ({ spec, config }) => {
     assert(false, "should have a name");
   };
 
-  const isDefault = ({ live, lives }) =>
-    pipe([() => live, eq(get("GatewayId"), "local")])();
+  const isDefault = () => pipe([eq(get("GatewayId"), "local")]);
 
   const findRoute = ({
     CoreNetworkArn,
@@ -239,7 +240,7 @@ exports.EC2Route = ({ spec, config }) => {
     ]),
     method: "describeRouteTables",
     getField: "RouteTables",
-    decorate: pipe([get("live"), findRoute]),
+    decorate: ({ live }) => pipe([findRoute(live)]),
     ignoreErrorCodes,
   });
 
@@ -343,6 +344,7 @@ exports.EC2Route = ({ spec, config }) => {
         shouldRetryOnExceptionCodes: [
           "InvalidTransitGatewayID.NotFound",
           "InvalidGatewayID.NotFound",
+          "InvalidVpcEndpointId.NotFound",
         ],
         shouldRetryOnExceptionMessages: [
           "VPC Endpoints of this type cannot be used as route targets",

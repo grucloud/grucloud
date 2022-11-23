@@ -58,51 +58,54 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findNameInDependency = ({ live, lives, config }) =>
-  pipe([
-    tap((params) => {
-      assert(config);
-    }),
-    () => live,
-    fork({
-      tgwName: pipe([
-        get("TransitGatewayId"),
-        tap((TransitGatewayId) => {
-          assert(TransitGatewayId);
-        }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "TransitGateway",
-            group: "EC2",
-            providerName: config.providerName,
+const findNameInDependency =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(config);
+      }),
+      () => live,
+      fork({
+        tgwName: pipe([
+          get("TransitGatewayId"),
+          tap((TransitGatewayId) => {
+            assert(TransitGatewayId);
           }),
-        get("name", live.TransitGatewayId),
-      ]),
-      vpcName: pipe([
-        get("VpcId"),
-        tap((VpcId) => {
-          assert(VpcId);
-        }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "Vpc",
-            group: "EC2",
-            providerName: config.providerName,
+          (id) =>
+            lives.getById({
+              id,
+              type: "TransitGateway",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("name", live.TransitGatewayId),
+        ]),
+        vpcName: pipe([
+          get("VpcId"),
+          tap((VpcId) => {
+            assert(VpcId);
           }),
-        get("name", live.VpcId),
-      ]),
-    }),
-    ({ tgwName, vpcName }) => `tgw-vpc-attach::${tgwName}::${vpcName}`,
-  ])();
+          (id) =>
+            lives.getById({
+              id,
+              type: "Vpc",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("name", live.VpcId),
+        ]),
+      }),
+      ({ tgwName, vpcName }) => `tgw-vpc-attach::${tgwName}::${vpcName}`,
+    ])();
 
-const findId = pipe([
-  get("live.TransitGatewayAttachmentId"),
-  tap((TransitGatewayAttachmentId) => {
-    assert(TransitGatewayAttachmentId);
-  }),
-]);
+const findId = () =>
+  pipe([
+    get("TransitGatewayAttachmentId"),
+    tap((TransitGatewayAttachmentId) => {
+      assert(TransitGatewayAttachmentId);
+    }),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
@@ -119,9 +122,8 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
         TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
       }),
     ]),
-
     findId,
-    cannotBeDeleted: eq(get("live.State"), "deleted"),
+    cannotBeDeleted: () => eq(get("State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

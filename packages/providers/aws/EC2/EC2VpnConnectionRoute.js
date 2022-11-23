@@ -55,11 +55,11 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live"),
-  ({ VpnConnectionId, DestinationCidrBlock }) =>
-    `vpn-conn-route::${VpnConnectionId}::${DestinationCidrBlock}`,
-]);
+const findId = () =>
+  pipe([
+    ({ VpnConnectionId, DestinationCidrBlock }) =>
+      `vpn-conn-route::${VpnConnectionId}::${DestinationCidrBlock}`,
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2VpnConnectionRoute = ({ spec, config }) =>
@@ -67,31 +67,33 @@ exports.EC2VpnConnectionRoute = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          vpnConnection: pipe([
-            () =>
-              lives.getById({
-                id: live.VpnConnectionId,
-                type: "VpnConnection",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name", live.VpnConnectionId),
-          ]),
-        }),
-        tap(({ vpnConnection }) => {
-          assert(vpnConnection);
-        }),
-        ({ vpnConnection }) =>
-          `vpn-conn-route::${vpnConnection}::${live.DestinationCidrBlock}`,
-      ])(),
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          fork({
+            vpnConnection: pipe([
+              () =>
+                lives.getById({
+                  id: live.VpnConnectionId,
+                  type: "VpnConnection",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.VpnConnectionId),
+            ]),
+          }),
+          tap(({ vpnConnection }) => {
+            assert(vpnConnection);
+          }),
+          ({ vpnConnection }) =>
+            `vpn-conn-route::${vpnConnection}::${live.DestinationCidrBlock}`,
+        ])(),
     findId,
     pickId,
     getList:
       ({ endpoint }) =>
-      ({ lives }) =>
+      ({ lives, config }) =>
         pipe([
           () =>
             lives.getByType({

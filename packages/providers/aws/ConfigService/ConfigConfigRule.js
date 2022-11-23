@@ -6,13 +6,13 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
 
-const managedByOther = pipe([
-  get("live"),
-  or([
-    eq(get("Source.Owner"), "AWS"),
-    eq(get("CreatedBy"), "securityhub.amazonaws.com"),
-  ]),
-]);
+const managedByOther = () =>
+  pipe([
+    or([
+      eq(get("Source.Owner"), "AWS"),
+      eq(get("CreatedBy"), "securityhub.amazonaws.com"),
+    ]),
+  ]);
 
 const pickId = pipe([
   tap(({ ConfigRuleName }) => {
@@ -67,8 +67,8 @@ exports.ConfigConfigRule = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ConfigRuleName")]),
-    findId: pipe([get("live.ConfigRuleName")]),
+    findName: () => pipe([get("ConfigRuleName")]),
+    findId: () => pipe([get("ConfigRuleName")]),
     getByName: getByNameCore,
     managedByOther,
     cannotBeDeleted: managedByOther,

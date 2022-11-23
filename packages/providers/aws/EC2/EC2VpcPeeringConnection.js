@@ -26,12 +26,13 @@ const isInstanceDown = pipe([
   tap(({ Status }) => {
     logger.debug(`isInstanceDown State: ${JSON.stringify(Status)}`);
   }),
+  // TODO isEmpty not needed
   or([isEmpty, eq(get("Status.Code"), "deleted")]),
 ]);
 
 const managedByOther =
-  ({ config }) =>
-  ({ live, lives }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       () => live,
       get("AccepterVpcInfo.VpcId"),
@@ -97,11 +98,11 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.VpcPeeringConnectionId")]);
+const findId = () => pipe([get("VpcPeeringConnectionId")]);
 
 const findName =
-  ({ config }) =>
-  ({ live, lives }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       () => live,
       tap((params) => {
@@ -150,10 +151,10 @@ exports.EC2VpcPeeringConnection = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    managedByOther: managedByOther({ config }),
-    findName: findName({ config }),
+    managedByOther,
+    findName,
     findId,
-    cannotBeDeleted: eq(get("live.Status.Code"), "failed"),
+    cannotBeDeleted: () => eq(get("Status.Code"), "failed"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

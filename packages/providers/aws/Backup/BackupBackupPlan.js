@@ -61,8 +61,8 @@ exports.BackupBackupPlan = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.BackupPlanName")]),
-    findId: pipe([get("live.BackupPlanId")]),
+    findName: () => pipe([get("BackupPlanName")]),
+    findId: () => pipe([get("BackupPlanId")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

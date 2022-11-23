@@ -15,13 +15,13 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
-const findId = get("live.PrefixListId");
+const findId = () => get("PrefixListId");
 const pickId = pick(["PrefixListId"]);
-const findName = get("live.PrefixListName");
+const findName = () => get("PrefixListName");
 
 const ignoreErrorCodes = ["InvalidPrefixListID.NotFound"];
 
-const cannotBeDeleted = eq(get("live.OwnerId"), "AWS");
+const cannotBeDeleted = () => eq(get("OwnerId"), "AWS");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getManagedPrefixListEntries-property
 const decorate = ({ endpoint }) =>

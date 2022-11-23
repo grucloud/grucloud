@@ -1,9 +1,15 @@
 const assert = require("assert");
-const { pipe, map, tap, omit, assign, get } = require("rubico");
-const { defaultsDeep, when, size } = require("rubico/x");
+const { pipe, map, tap } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
-const { compareAws, assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
+const { createAwsService } = require("../AwsService");
+
 const { SecretsManagerSecret } = require("./SecretsManagerSecret");
+const {
+  SecretsManagerSecretRotation,
+} = require("./SecretsManagerSecretRotation");
+
 const {
   SecretsManagerResourcePolicy,
 } = require("./SecretsManagerResourcePolicy");
@@ -11,89 +17,21 @@ const {
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecretsManager.html
 const GROUP = "SecretsManager";
 
-const compareSecretsManager = compareAws({});
+const compare = compareAws({});
 
 module.exports = pipe([
   () => [
-    {
-      type: "Secret",
-      Client: SecretsManagerSecret,
-      dependencies: {
-        kmsKey: {
-          type: "Key",
-          group: "KMS",
-          dependencyId: ({ lives, config }) => get("KmsKeyId"),
-        },
-      },
-      inferName: get("properties.Name"),
-      ignoreResource: () => pipe([get("live.OwningService")]),
-      omitProperties: [
-        "ARN",
-        "CreatedDate",
-        "LastAccessedDate",
-        "LastChangedDate",
-        "SecretVersionsToStages",
-        "SecretString.DBClusterIdentifier",
-        "SecretString.host",
-      ],
-      compare: compareSecretsManager({
-        filterAll: () => pipe([omit(["SecretString", "SecretBinary"])]),
-      }),
-      filterLive: ({ providerConfig }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          //TODO create function with various password keys
-          assign({
-            SecretString: pipe([
-              get("SecretString"),
-              when(
-                get("password"),
-                assign({
-                  password: pipe([
-                    get("password"),
-                    (password) => () =>
-                      `generatePassword({length:${size(password)}})`,
-                  ]),
-                })
-              ),
-            ]),
-          }),
-          ({ Name, ...other }) => ({ Name, ...other }),
-        ]),
-    },
-    {
-      type: "ResourcePolicy",
-      Client: SecretsManagerResourcePolicy,
-      inferName: get("dependenciesSpec.secret"),
-      dependencies: {
-        secret: {
-          type: "Secret",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) => get("ARN"),
-        },
-      },
-      omitProperties: ["ARN", "Name"],
-      compare: compareSecretsManager({
-        filterAll: () => pipe([omit(["SecretId", "Name"])]),
-      }),
-      filterLive: ({ lives, providerConfig }) =>
-        pipe([
-          assign({
-            ResourcePolicy: pipe([
-              get("ResourcePolicy"),
-              assignPolicyAccountAndRegion({ providerConfig, lives }),
-            ]),
-          }),
-        ]),
-    },
+    SecretsManagerSecret({ compare }),
+    SecretsManagerSecretRotation({}),
+    SecretsManagerResourcePolicy({ compare }),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compareSecretsManager({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

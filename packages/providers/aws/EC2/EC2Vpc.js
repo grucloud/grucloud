@@ -40,16 +40,17 @@ exports.EC2Vpc = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const isDefault = get("live.IsDefault");
+  const isDefault = () => get("IsDefault");
   const cannotBeDeleted = isDefault;
   const managedByOther = isDefault;
 
-  const findId = get("live.VpcId");
-  const findName = switchCase([
-    get("live.IsDefault"),
-    () => "vpc-default",
-    findNameInTagsOrId({ findId }),
-  ]);
+  const findId = () => get("VpcId");
+  const findName = ({ lives, config }) =>
+    switchCase([
+      get("IsDefault"),
+      () => "vpc-default",
+      findNameInTagsOrId({ findId })({ lives, config }),
+    ]);
 
   const pickId = pick(["VpcId"]);
 
@@ -391,7 +392,7 @@ exports.EC2Vpc = ({ spec, config }) => {
     cannotBeDeleted,
     findId,
     getById,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace: findNamespaceInTags,
     getByName,
     findName,
     getList,

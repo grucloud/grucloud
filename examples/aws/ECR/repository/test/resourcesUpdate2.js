@@ -40,8 +40,8 @@ exports.createResources = () => [
   {
     type: "Repository",
     group: "ECR",
-    name: "starhackit/lb",
     properties: ({ config }) => ({
+      repositoryName: "starhackit/lb",
       imageTagMutability: "MUTABLE",
       imageScanningConfiguration: {
         scanOnPush: false,

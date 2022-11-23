@@ -6,7 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { createAwsResource } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = pipe([get("live.filterName")]);
+const findId = () => pipe([get("filterName")]);
 
 const findDependenciesSubscriptionFilter =
   ({ type, group }) =>
@@ -88,8 +88,10 @@ exports.CloudWatchSubscriptionFilter = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([() => `${live.logGroupName}::${live.filterName}`])(),
+    findName:
+      () =>
+      ({ logGroupName, filterName }) =>
+        pipe([() => `${logGroupName}::${filterName}`])(),
     findId,
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

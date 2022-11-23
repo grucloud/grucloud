@@ -53,8 +53,8 @@ exports.CURReportDefinition = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ReportName")]),
-    findId: pipe([get("live.ReportName")]),
+    findName: () => pipe([get("ReportName")]),
+    findId: () => pipe([get("ReportName")]),
     getByName: getByNameCore,
     getById:
       ({ endpoint }) =>

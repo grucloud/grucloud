@@ -16,9 +16,9 @@ const {
 
 const ignoreErrorCodes = ["DBClusterNotFoundFault", ""];
 
-const findId = get("live.DBClusterArn");
+const findId = () => get("DBClusterArn");
 const pickId = pipe([pick(["DBClusterIdentifier"])]);
-const findName = get("live.DBClusterIdentifier");
+const findName = () => get("DBClusterIdentifier");
 const isInstanceUp = pipe([eq(get("Status"), "available")]);
 
 exports.DBCluster = ({ spec, config }) => {

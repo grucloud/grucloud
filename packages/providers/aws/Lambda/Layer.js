@@ -18,8 +18,8 @@ const {
   computeHash256,
 } = require("./LambdaCommon");
 
-const findId = get("live.LayerVersionArn");
-const findName = get("live.LayerName");
+const findId = () => get("LayerVersionArn");
+const findName = () => get("LayerName");
 const pickId = pick(["LayerName"]);
 
 exports.Layer = ({ spec, config }) => {

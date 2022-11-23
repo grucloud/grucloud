@@ -12,26 +12,26 @@ const {
 } = require("./EC2TransitGatewayCommon");
 
 //TODO cannotBeDelete State = Deleted
-const findId = pipe([
-  get("live"),
-  tap(
+const findId = () =>
+  pipe([
+    tap(
+      ({
+        TransitGatewayAttachmentId,
+        TransitGatewayRouteTableId,
+        DestinationCidrBlock,
+      }) => {
+        assert(TransitGatewayAttachmentId);
+        assert(TransitGatewayRouteTableId);
+        assert(DestinationCidrBlock);
+      }
+    ),
     ({
       TransitGatewayAttachmentId,
       TransitGatewayRouteTableId,
       DestinationCidrBlock,
-    }) => {
-      assert(TransitGatewayAttachmentId);
-      assert(TransitGatewayRouteTableId);
-      assert(DestinationCidrBlock);
-    }
-  ),
-  ({
-    TransitGatewayAttachmentId,
-    TransitGatewayRouteTableId,
-    DestinationCidrBlock,
-  }) =>
-    `${TransitGatewayAttachmentId}::${TransitGatewayRouteTableId}::${DestinationCidrBlock}`,
-]);
+    }) =>
+      `${TransitGatewayAttachmentId}::${TransitGatewayRouteTableId}::${DestinationCidrBlock}`,
+  ]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -107,21 +107,22 @@ exports.EC2TransitGatewayRoute = ({ spec, config }) =>
               ])(),
         }),
       ]),
-    findName: ({ live, lives }) =>
-      pipe([
-        tap((params) => {
-          assert(live.DestinationCidrBlock);
-        }),
-        () => ({ live, lives }),
-        findNameRouteTableArm({
-          prefix: "tgw-route",
-          config,
-        }),
-        append(`::${live.DestinationCidrBlock}`),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          tap((params) => {
+            assert(live.DestinationCidrBlock);
+          }),
+          () => live,
+          findNameRouteTableArm({
+            prefix: "tgw-route",
+          })({ lives, config }),
+          append(`::${live.DestinationCidrBlock}`),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
     findId,
     getByName: getByNameCore,
     tagResource: tagResource,

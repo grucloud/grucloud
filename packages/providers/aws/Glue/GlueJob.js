@@ -8,12 +8,13 @@ const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource, assignTags } = require("./GlueCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
-const findId = pipe([
-  tap((params) => {
-    assert(params);
-  }),
-  get("live.Name"),
-]);
+const findId = () =>
+  pipe([
+    tap((params) => {
+      assert(params);
+    }),
+    get("Name"),
+  ]);
 
 const buildArn =
   ({ config }) =>
@@ -88,7 +89,7 @@ exports.GlueJob = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
+    findName: () => pipe([get("Name")]),
     findId,
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ Name: name }), getById({})]),

@@ -44,7 +44,7 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.SiteId")]);
+const findId = () => pipe([get("SiteId")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html
 exports.NetworkManagerSite = ({ spec, config }) =>

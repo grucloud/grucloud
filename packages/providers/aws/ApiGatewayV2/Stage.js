@@ -19,27 +19,29 @@ exports.Stage = ({ spec, config }) => {
   const buildResourceArn = ({ ApiId, StageName }) =>
     `arn:aws:apigateway:${config.region}::/apis/${ApiId}/stages/${StageName}`;
 
-  const findId = pipe([get("live"), buildResourceArn]);
+  const findId = () => pipe([buildResourceArn]);
 
-  const findName = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(live.ApiId);
-        assert(live.StageName);
-      }),
-      () =>
-        lives.getByType({
-          type: "Api",
-          group: "ApiGatewayV2",
-          providerName: config.providerName,
+  const findName =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(live.ApiId);
+          assert(live.StageName);
         }),
-      find(eq(get("live.ApiId"), live.ApiId)),
-      get("name"),
-      tap((name) => {
-        assert(name);
-      }),
-      append(`::${live.StageName}`),
-    ])();
+        () =>
+          lives.getByType({
+            type: "Api",
+            group: "ApiGatewayV2",
+            providerName: config.providerName,
+          }),
+        find(eq(get("live.ApiId"), live.ApiId)),
+        get("name"),
+        tap((name) => {
+          assert(name);
+        }),
+        append(`::${live.StageName}`),
+      ])();
 
   const pickId = pick(["ApiId", "StageName"]);
 

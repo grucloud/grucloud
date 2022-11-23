@@ -21,7 +21,7 @@ const LogStreamNameManagedByOther = [
   "eni-",
   "log_stream_created_by_aws_to_validate_log_delivery_subscriptions",
 ];
-const findId = pipe([get("live.arn")]);
+const findId = () => pipe([get("arn")]);
 
 const logGroupNameFromArn = pipe([
   get("arn"),
@@ -38,22 +38,22 @@ const logStreamNameFromArn = pipe([
   }),
 ]);
 
-const managedByOther = pipe([
-  get("live"),
-  or([
-    ({ logStreamName }) =>
-      pipe([
-        () => LogStreamNameManagedByOther,
-        any((prefix) => logStreamName.includes(prefix)),
-      ])(),
-    ({ arn }) =>
-      pipe([
-        () => LogGroupNameManagedByOther,
-        map(prepend("log-group:")),
-        any((prefix) => arn.includes(prefix)),
-      ])(),
-  ]),
-]);
+const managedByOther = () =>
+  pipe([
+    or([
+      ({ logStreamName }) =>
+        pipe([
+          () => LogStreamNameManagedByOther,
+          any((prefix) => logStreamName.includes(prefix)),
+        ])(),
+      ({ arn }) =>
+        pipe([
+          () => LogGroupNameManagedByOther,
+          map(prepend("log-group:")),
+          any((prefix) => arn.includes(prefix)),
+        ])(),
+    ]),
+  ]);
 
 const createModel = ({ config }) => ({
   package: "cloudwatch-logs",
@@ -104,12 +104,14 @@ exports.CloudWatchLogStream = ({ spec, config }) =>
     spec,
     config,
     managedByOther,
-    findName: ({ live, lives }) =>
-      pipe([
-        () => live,
-        logGroupNameFromArn,
-        (logGroupName) => `${logGroupName}::${live.logStreamName}`,
-      ])(),
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          () => live,
+          logGroupNameFromArn,
+          (logGroupName) => `${logGroupName}::${live.logStreamName}`,
+        ])(),
     findId,
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

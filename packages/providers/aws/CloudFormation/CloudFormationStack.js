@@ -8,8 +8,8 @@ const { createCloudFormation } = require("./CloudFormationCommon");
 const ignoreErrorCodes = ["NoSuchCloudFormationOriginAccessIdentity"];
 const ignoreErrorMessages = ["does not exist"];
 
-const findName = pipe([get("live.StackName")]);
-const findId = get("live.StackId");
+const findName = () => pipe([get("StackName")]);
+const findId = () => get("StackId");
 
 //TODO managedByOther
 // Description DO NOT MODIFY THIS STACK!

@@ -116,26 +116,28 @@ exports.Stage = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        tap(() => {
-          assert(live.restApiId);
-          assert(live.stageName);
-        }),
-        () =>
-          lives.getById({
-            id: live.restApiId,
-            type: "RestApi",
-            group: "APIGateway",
-            providerName: config.providerName,
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          tap(() => {
+            assert(live.restApiId);
+            assert(live.stageName);
           }),
-        get("name"),
-        tap((name) => {
-          assert(name);
-        }),
-        append(`::${live.stageName}`),
-      ])(),
-    findId: pipe([get("live"), buildArn({ config })]),
+          () =>
+            lives.getById({
+              id: live.restApiId,
+              type: "RestApi",
+              group: "APIGateway",
+              providerName: config.providerName,
+            }),
+          get("name"),
+          tap((name) => {
+            assert(name);
+          }),
+          append(`::${live.stageName}`),
+        ])(),
+    findId: () => pipe([buildArn({ config })]),
     getByName: getByNameCore,
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

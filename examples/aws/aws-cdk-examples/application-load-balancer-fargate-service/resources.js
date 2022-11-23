@@ -38,6 +38,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 714,
+    }),
     dependencies: ({}) => ({
       subnet:
         "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",

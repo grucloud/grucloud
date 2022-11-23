@@ -4,13 +4,13 @@ const { defaultsDeep, identity } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
 
-const findName = pipe([
-  get("live"),
-  get("instanceName"),
-  tap((params) => {
-    assert(true);
-  }),
-]);
+const findName = () =>
+  pipe([
+    get("instanceName"),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
 const pickId = pipe([
   tap(({ instanceName }) => {

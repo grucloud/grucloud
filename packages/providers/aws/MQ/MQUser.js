@@ -42,11 +42,9 @@ exports.MQUser = ({ spec, config }) =>
     spec,
     config,
     //TODO find broker name from id
-    findName: pipe([get("live.Username")]),
-    findId: pipe([
-      get("live"),
-      ({ BrokerId, Username }) => `${BrokerId}::${Username}`,
-    ]),
+    findName: () => pipe([get("Username")]),
+    findId: () =>
+      pipe([({ BrokerId, Username }) => `${BrokerId}::${Username}`]),
     getByName: getByNameCore,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MQ.html#listUsers-property
     getList: ({ client, endpoint, getById, config }) =>

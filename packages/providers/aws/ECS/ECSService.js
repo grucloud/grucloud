@@ -12,8 +12,8 @@ const {
   untagResource,
 } = require("./ECSCommon");
 
-const findId = get("live.serviceArn");
-const findName = get("live.serviceName");
+const findId = () => get("serviceArn");
+const findName = () => get("serviceName");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSService = ({ spec, config }) => {

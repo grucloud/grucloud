@@ -16,7 +16,7 @@ const decorate = ({ endpoint, live }) =>
 
 const pickId = pipe([pick(["BackupVaultName"])]);
 
-const managedByOther = eq(get("live.BackupVaultName"), "Default");
+const managedByOther = () => eq(get("BackupVaultName"), "Default");
 
 const model = ({ config }) => ({
   package: "backup",
@@ -75,8 +75,8 @@ exports.BackupBackupVault = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.BackupVaultName")]),
-    findId: pipe([get("live.BackupVaultName")]),
+    findName: () => pipe([get("BackupVaultName")]),
+    findId: () => pipe([get("BackupVaultName")]),
     managedByOther,
     cannotBeDeleted: managedByOther,
     getByName: getByNameCore,

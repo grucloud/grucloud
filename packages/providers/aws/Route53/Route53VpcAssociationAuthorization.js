@@ -32,56 +32,56 @@ exports.Route53VpcAssociationAuthorization = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        () => live,
-        fork({
-          vpcName: pipe([
-            get("VPC.VPCId"),
-            tap((id) => {
-              assert(id);
-            }),
-            (id) =>
-              pipe([
-                () =>
-                  lives.getById({
-                    id,
-                    type: "Vpc",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
-                get("name", id),
-              ])(),
-          ]),
-          hostedZoneName: pipe([
-            get("HostedZoneId"),
-            tap((id) => {
-              assert(id);
-            }),
-            (id) =>
-              lives.getById({
-                id,
-                type: "HostedZone",
-                group: "Route53",
-                providerName: config.providerName,
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () => live,
+          fork({
+            vpcName: pipe([
+              get("VPC.VPCId"),
+              tap((id) => {
+                assert(id);
               }),
-            get("name"),
-          ]),
-        }),
-        tap(({ vpcName, hostedZoneName }) => {
-          assert(vpcName);
-          assert(hostedZoneName);
-        }),
-        ({ hostedZoneName, vpcName }) =>
-          `vpc-assoc-auth::${hostedZoneName}::${vpcName}`,
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-    findId: pipe([
-      get("live"),
-      ({ HostedZoneId, VPC: { VPCId } }) => `${HostedZoneId}::${VPCId}`,
-    ]),
+              (id) =>
+                pipe([
+                  () =>
+                    lives.getById({
+                      id,
+                      type: "Vpc",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
+                  get("name", id),
+                ])(),
+            ]),
+            hostedZoneName: pipe([
+              get("HostedZoneId"),
+              tap((id) => {
+                assert(id);
+              }),
+              (id) =>
+                lives.getById({
+                  id,
+                  type: "HostedZone",
+                  group: "Route53",
+                  providerName: config.providerName,
+                }),
+              get("name"),
+            ]),
+          }),
+          tap(({ vpcName, hostedZoneName }) => {
+            assert(vpcName);
+            assert(hostedZoneName);
+          }),
+          ({ hostedZoneName, vpcName }) =>
+            `vpc-assoc-auth::${hostedZoneName}::${vpcName}`,
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+    findId: () =>
+      pipe([({ HostedZoneId, VPC: { VPCId } }) => `${HostedZoneId}::${VPCId}`]),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listVPCAssociationAuthorizations-property
     getList: ({ client, endpoint, config }) =>
       pipe([

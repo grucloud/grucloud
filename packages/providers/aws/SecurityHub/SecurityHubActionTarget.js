@@ -32,20 +32,20 @@ exports.SecurityHubActionTarget = () => ({
       assert(Name);
     }),
   ]),
-  findName: pipe([
-    get("live"),
-    get("Name"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("ActionTargetArn"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("ActionTargetArn"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   dependencies: {
     securityHubAccount: {
       type: "Account",

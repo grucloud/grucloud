@@ -271,20 +271,24 @@ const pathUpdateDefault =
         assert(true);
       }),
     ])();
-const isDefaultDefault = pipe([
-  tap(({ live }) => {
-    assert(live);
-  }),
-  get("live.name", ""),
-  callProp("startsWith", "default"),
-]);
 
-const cannotBeDeletedDefault = ({ spec, config }) =>
-  or([
-    //
-    pipe([() => spec, not(get("methods.delete"))]),
-    isDefaultDefault,
+const isDefaultDefault = () =>
+  pipe([
+    tap((live) => {
+      assert(live);
+    }),
+    get("name", ""),
+    callProp("startsWith", "default"),
   ]);
+
+const cannotBeDeletedDefault =
+  ({ spec }) =>
+  ({ config }) =>
+    or([
+      //
+      pipe([() => spec, not(get("methods.delete"))]),
+      isDefaultDefault({ config }),
+    ]);
 
 const findDependenciesFromCreate = ({ spec, live, lives }) =>
   pipe([
@@ -334,12 +338,13 @@ const findDependenciesDefault =
       filter(not(isEmpty)),
     ])();
 
-const findIdDefault = pipe([
-  get("live.id"),
-  tap((id) => {
-    assert(id);
-  }),
-]);
+const findIdDefault = () =>
+  pipe([
+    get("id"),
+    tap((id) => {
+      assert(id);
+    }),
+  ]);
 
 const configDefaultDependenciesId = ({ dependencies, spec }) =>
   pipe([
@@ -422,7 +427,7 @@ module.exports = GoogleClient = ({
   isDefault = isDefaultDefault,
   managedByOther = isDefaultDefault,
   onResponseList = onResponseListDefault,
-  cannotBeDeleted = cannotBeDeletedDefault({ spec, config }),
+  cannotBeDeleted = cannotBeDeletedDefault({ spec }),
   onCreateExpectedException = pipe([
     tap((error) => {
       logger.info(`onCreateExpectedException ${util.inspect(error)}`);

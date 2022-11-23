@@ -64,8 +64,8 @@ exports.RedshiftCluster = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ClusterIdentifier")]),
-    findId: pipe([get("live.ClusterIdentifier")]),
+    findName: () => pipe([get("ClusterIdentifier")]),
+    findId: () => pipe([get("ClusterIdentifier")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([
         ({ name }) => ({

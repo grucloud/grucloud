@@ -15,53 +15,62 @@ exports.EC2NetworkInterface = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
   const awsSecurityGroup = EC2SecurityGroup({ config, spec });
-  const findId = get("live.NetworkInterfaceId");
+  const findId = () => get("NetworkInterfaceId");
   const pickId = pick(["NetworkInterfaceId"]);
 
-  const findName = ({ live, lives }) =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      () => live,
-      get("Attachment.InstanceId"),
-      (id) =>
-        lives.getById({
-          providerName: config.providerName,
-          type: "Instance",
-          group: "EC2",
-          id,
+  const findName =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        tap((params) => {
+          assert(config);
+          assert(live.NetworkInterfaceId);
         }),
-      get("name"),
-      switchCase([isEmpty, () => live.NetworkInterfaceId, prepend("eni::")]),
-    ])();
-
-  const findNamespace = ({ live, lives }) =>
-    pipe([
-      () => live,
-      get("Groups"),
-      first,
-      get("GroupId"),
-      (GroupId) =>
-        lives.getById({
-          providerName: config.providerName,
-          type: "SecurityGroup",
-          group: "EC2",
-          id: GroupId,
-        }),
-      unless(
-        isEmpty,
-        pipe([
-          tap(({ live }) => {
-            assert(live);
+        () => live,
+        get("Attachment.InstanceId"),
+        (id) =>
+          lives.getById({
+            providerName: config.providerName,
+            type: "Instance",
+            group: "EC2",
+            id,
           }),
-          ({ live }) => awsSecurityGroup.findNamespace({ live, lives }),
-        ])
-      ),
-      tap((namespace) => {
-        logger.debug(`findNamespace ${namespace}`);
-      }),
-    ])();
+        tap((params) => {
+          assert(true);
+        }),
+        get("name"),
+        switchCase([isEmpty, () => live.NetworkInterfaceId, prepend("eni::")]),
+      ])();
+
+  const findNamespace =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        get("Groups"),
+        first,
+        get("GroupId"),
+        (GroupId) =>
+          lives.getById({
+            providerName: config.providerName,
+            type: "SecurityGroup",
+            group: "EC2",
+            id: GroupId,
+          }),
+        unless(
+          isEmpty,
+          pipe([
+            tap(({ live }) => {
+              assert(live);
+            }),
+            get("live"),
+            awsSecurityGroup.findNamespace({ lives, config }),
+          ])
+        ),
+        tap((namespace) => {
+          logger.debug(`findNamespace ${namespace}`);
+        }),
+      ])();
 
   const getList = client.getList({
     method: "describeNetworkInterfaces",
@@ -78,8 +87,8 @@ exports.EC2NetworkInterface = ({ spec, config }) => {
 
   return {
     spec,
-    managedByOther: () => true,
-    cannotBeDeleted: () => true,
+    managedByOther: () => () => true,
+    cannotBeDeleted: () => () => true,
     findNamespace,
     //getById,
     findId,

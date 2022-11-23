@@ -31,22 +31,24 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.IpamId")]);
+const findId = () => pipe([get("IpamId")]);
 
-const findName = ({ live, lives, config }) =>
-  pipe([
-    () => [
-      findNameInTags({}),
-      get("live.Description"),
-      // TODO add region ?
-      () => "ipam",
-    ],
-    map((fn) => fn({ live, lives, config })),
-    find(not(isEmpty)),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
+const findName =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      () => [
+        findNameInTags({}),
+        get("Description"),
+        // TODO add region ?
+        () => "ipam",
+      ],
+      map((fn) => fn(live)),
+      find(not(isEmpty)),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2Ipam = ({ spec, config }) =>

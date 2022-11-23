@@ -24,6 +24,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: ({ config }) => `pg-nat-public1-${config.region}a`,
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 3210,
+    }),
     dependencies: ({ config }) => ({
       subnet: `pg-vpc::pg-subnet-public1-${config.region}a`,
       eip: `pg-eip-${config.region}a`,
@@ -239,7 +242,7 @@ exports.createResources = () => [
       DBClusterIdentifier: "database-1",
       Engine: "aurora-postgresql",
       EngineVersion: "13.6",
-      MasterUsername: process.env.DATABASE_1_MASTER_USERNAME,
+      MasterUsername: "MyUserNameDB",
       PreferredBackupWindow: "09:29-09:59",
       PreferredMaintenanceWindow: "sun:07:52-sun:08:22",
       IAMDatabaseAuthenticationEnabled: false,
@@ -251,7 +254,6 @@ exports.createResources = () => [
         MinCapacity: 0.5,
         MaxCapacity: 1,
       },
-      MasterUserPassword: process.env.DATABASE_1_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
       dbSubnetGroup: "default-vpc-07c0392e5e3359f2e",
@@ -291,9 +293,6 @@ exports.createResources = () => [
       PerformanceInsightsEnabled: true,
       PerformanceInsightsRetentionPeriod: 7,
       EnablePerformanceInsights: true,
-      MasterUsername: process.env.DATABASE_1_INSTANCE_1_MASTER_USERNAME,
-      MasterUserPassword:
-        process.env.DATABASE_1_INSTANCE_1_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
       dbSubnetGroup: "default-vpc-07c0392e5e3359f2e",

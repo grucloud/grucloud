@@ -15,10 +15,7 @@ const { createAwsResource } = require("../AwsClient");
 
 const resourceTypesAll = ["ECR", "EC2"];
 
-const cannotBeDeleted = pipe([
-  get("live"),
-  eq(get("state.status"), "DISABLED"),
-]);
+const cannotBeDeleted = () => pipe([eq(get("state.status"), "DISABLED")]);
 
 const model = ({ config }) => ({
   package: "inspector2",
@@ -71,8 +68,8 @@ exports.Inspector2Enabler = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([() => "default"]),
-    findId: pipe([() => "default"]),
+    findName: () => pipe([() => "default"]),
+    findId: () => pipe([() => "default"]),
     cannotBeDeleted,
     getList: ({ endpoint, getById }) =>
       pipe([getById({}), (result) => [result]]),

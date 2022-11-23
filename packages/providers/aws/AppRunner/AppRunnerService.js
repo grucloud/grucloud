@@ -53,8 +53,8 @@ exports.AppRunnerService = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ServiceName")]),
-    findId: pipe([get("live.ServiceArn")]),
+    findName: () => pipe([get("ServiceName")]),
+    findId: () => pipe([get("ServiceArn")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

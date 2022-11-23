@@ -12,11 +12,17 @@ describe("ACMPCA", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("CertificateAuthority", () =>
+  it("CertificateAuthority", () =>
     pipe([
       () => ({
         groupType: "ACMPCA::CertificateAuthority",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            CertificateAuthorityArn: `arn:aws:acm-pca:${
+              config.region
+            }:${config.accountId()}:certificate-authority/12345678-1234-1234-1234-123456789012`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -28,19 +34,32 @@ describe("ACMPCA", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Permisison", () =>
+  it("Permission", () =>
     pipe([
       () => ({
-        groupType: "ACMPCA::Permisison",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "ACMPCA::Permission",
+        livesNotFound: ({ config }) => [
+          {
+            CertificateAuthorityArn: `arn:aws:acm-pca:${
+              config.region
+            }:${config.accountId()}:certificate-authority/12345678-1234-1234-1234-123456789012`,
+            Principal: "acm.amazonaws.com",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Policy", () =>
+  it("Policy", () =>
     pipe([
       () => ({
         groupType: "ACMPCA::Policy",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            ResourceArn: `arn:aws:acm-pca:${
+              config.region
+            }:${config.accountId()}:certificate-authority/12345678-1234-1234-1234-123456789012`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

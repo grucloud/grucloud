@@ -7,13 +7,13 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
-const findId = get("live.DeploymentId");
+const findId = () => get("DeploymentId");
 const pickId = pick(["ApiId", "DeploymentId"]);
-const findName = pipe([
-  get("live"),
-  //TODO Stage ?
-  ({ ApiName }) => `deployment::${ApiName}`,
-]);
+const findName = () =>
+  pipe([
+    //TODO Stage ?
+    ({ ApiName }) => `deployment::${ApiName}`,
+  ]);
 
 exports.Deployment = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);

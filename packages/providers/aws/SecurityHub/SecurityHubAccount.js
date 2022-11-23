@@ -34,8 +34,8 @@ exports.SecurityHubAccount = () => ({
   propertiesDefault: { Enable: true },
   omitProperties: [],
   inferName: pipe([() => "default"]),
-  findName: pipe([() => "default"]),
-  findId: pipe([() => "default"]),
+  findName: () => pipe([() => "default"]),
+  findId: () => pipe([() => "default"]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
   getById:
     ({ endpoint }) =>

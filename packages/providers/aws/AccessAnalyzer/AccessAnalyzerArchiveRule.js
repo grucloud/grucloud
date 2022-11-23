@@ -35,13 +35,14 @@ const model = ({ config }) => ({
   },
 });
 
-const findName = pipe([
-  get("live"),
-  tap(({ analyzerName }) => {
-    assert(analyzerName);
-  }),
-  ({ analyzerName, ruleName }) => `${analyzerName}::${ruleName}`,
-]);
+const findName = () =>
+  pipe([
+    tap(({ analyzerName, ruleName }) => {
+      assert(analyzerName);
+      assert(ruleName);
+    }),
+    ({ analyzerName, ruleName }) => `${analyzerName}::${ruleName}`,
+  ]);
 
 exports.AccessAnalyzerArchiveRule = ({ spec, config }) =>
   createAwsResource({

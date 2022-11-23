@@ -9,6 +9,7 @@ const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EFSCommon");
 
 const pickId = pipe([pick(["AccessPointId"])]);
+const findId = () => pipe([get("AccessPointArn")]);
 
 const model = {
   package: "efs",
@@ -37,8 +38,8 @@ exports.EFSAccessPoint = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: findNameInTagsOrId({ findId: get("live.AccessPointId") }),
-    findId: pipe([get("live.AccessPointArn")]),
+    findName: findNameInTagsOrId({ findId: () => get("AccessPointId") }),
+    findId,
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

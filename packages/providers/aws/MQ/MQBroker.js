@@ -78,8 +78,8 @@ exports.MQBroker = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.BrokerName")]),
-    findId: pipe([get("live.BrokerId")]),
+    findName: () => pipe([get("BrokerName")]),
+    findId: () => pipe([get("BrokerId")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

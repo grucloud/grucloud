@@ -8,26 +8,26 @@ const { createAwsResource } = require("../AwsClient");
 const { diffToPatch } = require("./ApiGatewayCommon");
 const { differenceObject } = require("@grucloud/core/Common");
 
-const findName = () => "default";
+const findName = () => () => "default";
 const findId = findName;
 
 const pickId = () => ({});
 
-const isDefault = pipe([not(get("live.cloudwatchRoleArn"))]);
+const isDefault = () => pipe([not(get("cloudwatchRoleArn"))]);
 
-const cannotBeDeleted = pipe([
-  get("live"),
-  differenceObject({
-    apiKeyVersion: "4",
-    cloudwatchRoleArn: undefined,
-    features: ["UsagePlans"],
-    throttleSettings: {
-      burstLimit: 5000,
-      rateLimit: 10000,
-    },
-  }),
-  isEmpty,
-]);
+const cannotBeDeleted = () =>
+  pipe([
+    differenceObject({
+      apiKeyVersion: "4",
+      cloudwatchRoleArn: undefined,
+      features: ["UsagePlans"],
+      throttleSettings: {
+        burstLimit: 5000,
+        rateLimit: 10000,
+      },
+    }),
+    isEmpty,
+  ]);
 
 const model = ({ config }) => ({
   package: "api-gateway",

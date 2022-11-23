@@ -11,7 +11,7 @@ const {
   assignTags,
 } = require("./Route53RecoveryControlConfigCommon");
 
-const findId = pipe([get("live.ControlPanelArn")]);
+const findId = () => pipe([get("ControlPanelArn")]);
 
 const pickId = pipe([
   pick(["ControlPanelArn"]),
@@ -22,17 +22,11 @@ const pickId = pipe([
 
 const decorate = ({ endpoint }) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    assignTags({ endpoint, findId }),
-    tap((params) => {
-      assert(true);
-    }),
+    assignTags({ endpoint, findId: findId() }),
     ({ Name, ...other }) => ({ ControlPanelName: Name, ...other }),
   ]);
 
-const managedByOther = pipe([get("live.DefaultControlPanel")]);
+const managedByOther = () => pipe([get("DefaultControlPanel")]);
 
 const model = ({ config }) => ({
   package: "route53-recovery-control-config",
@@ -69,7 +63,7 @@ exports.Route53RecoveryControlConfigControlPanel = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ControlPanelName")]),
+    findName: () => pipe([get("ControlPanelName")]),
     findId,
     managedByOther,
     cannotBeDeleted: managedByOther,
@@ -105,8 +99,8 @@ exports.Route53RecoveryControlConfigControlPanel = ({ spec, config }) =>
           }),
       ])(),
     getByName: getByNameCore,
-    tagResource: tagResource({ findId }),
-    untagResource: untagResource({ findId }),
+    tagResource: tagResource({ findId: findId() }),
+    untagResource: untagResource({ findId: findId() }),
     configDefault: ({
       name,
       namespace,

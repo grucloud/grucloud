@@ -8,7 +8,7 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "WebAppHostNameBinding",
         ignoreResource: () => () => true,
-        cannotBeDeleted: () => true,
+        cannotBeDeleted: () => () => true,
       },
       {
         type: "AppServicePlan",

@@ -38,39 +38,41 @@ exports.Route53TrafficPolicyInstance = () => ({
       }),
       () => `${hostedZone}::${TrafficPolicyType}::${Name}`,
     ])(),
-  findName: ({ live, lives, config }) =>
-    pipe([
-      tap(() => {
-        assert(config);
-        assert(live.HostedZoneId);
-        assert(live.TrafficPolicyType);
-        assert(live.Name);
-      }),
-      () => live,
-      get("HostedZoneId"),
-      (id) =>
-        lives.getById({
-          id,
-          type: "HostedZone",
-          group: "Route53",
-          providerName: config.providerName,
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(config);
+          assert(live.HostedZoneId);
+          assert(live.TrafficPolicyType);
+          assert(live.Name);
         }),
-      get("name"),
-      tap((name) => {
-        assert(name);
+        () => live,
+        get("HostedZoneId"),
+        (id) =>
+          lives.getById({
+            id,
+            type: "HostedZone",
+            group: "Route53",
+            providerName: config.providerName,
+          }),
+        get("name"),
+        tap((name) => {
+          assert(name);
+        }),
+        append(`::`),
+        append(live.TrafficPolicyType),
+        append(`::`),
+        append(live.Name),
+      ])(),
+  findId: () =>
+    pipe([
+      get("Id"),
+      tap((id) => {
+        assert(id);
       }),
-      append(`::`),
-      append(live.TrafficPolicyType),
-      append(`::`),
-      append(live.Name),
-    ])(),
-  findId: pipe([
-    get("live"),
-    get("Id"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+    ]),
   ignoreErrorCodes: ["NoSuchTrafficPolicyInstance"],
   dependencies: {
     hostedZone: {

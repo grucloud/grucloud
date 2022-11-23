@@ -45,9 +45,8 @@ exports.SecurityHubMember = () => ({
       }),
       () => account,
     ])(),
-  findName: ({ live, lives, config }) =>
+  findName: ({ lives, config }) =>
     pipe([
-      () => live,
       get("AccountId"),
       tap((id) => {
         assert(id);
@@ -62,14 +61,14 @@ exports.SecurityHubMember = () => ({
       tap((name) => {
         assert(name);
       }),
-    ])(),
-  findId: pipe([
-    get("live"),
-    get("AccountId"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+    ]),
+  findId: () =>
+    pipe([
+      get("AccountId"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   dependencies: {
     account: {
       type: "Account",

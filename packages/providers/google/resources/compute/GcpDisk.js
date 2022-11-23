@@ -32,26 +32,28 @@ exports.GcpDisk = ({ spec, config }) => {
 
   const isInstanceUp = eq(get("status"), "READY");
 
-  const managedByOther = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        assert(live);
-      }),
-      () =>
-        lives.getByType({
-          type: "Instance",
-          group: "compute",
-          providerName: config.providerName,
+  const managedByOther =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(lives);
+          assert(live);
         }),
-      any(
-        pipe([
-          get("live.disks"),
-          find(eq(get("source"), live.selfLink)),
-          get("boot"),
-        ])
-      ),
-    ])();
+        () =>
+          lives.getByType({
+            type: "Instance",
+            group: "compute",
+            providerName: config.providerName,
+          }),
+        any(
+          pipe([
+            get("live.disks"),
+            find(eq(get("source"), live.selfLink)),
+            get("boot"),
+          ])
+        ),
+      ])();
 
   return GoogleClient({
     spec,

@@ -25,10 +25,8 @@ exports.GcpRunServiceIamMember = ({ spec, config }) => {
   assert(config.stage);
   const { projectId, region, providerName } = config;
 
-  const findName = pipe([
-    get("live"),
-    ({ service, location }) => `${service}::${location}`,
-  ]);
+  const findName = () =>
+    pipe([({ service, location }) => `${service}::${location}`]);
   const findId = findName;
 
   const getByName = ({ name }) =>
@@ -174,6 +172,6 @@ exports.GcpRunServiceIamMember = ({ spec, config }) => {
     create,
     update,
     findDependencies,
-    cannotBeDeleted: () => true,
+    cannotBeDeleted: () => () => true,
   };
 };

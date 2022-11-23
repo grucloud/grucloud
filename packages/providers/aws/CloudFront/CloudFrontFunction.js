@@ -89,11 +89,9 @@ exports.CloudFrontFunction = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: pipe([
-      get("live"),
-      ({ Name, FunctionMetadata: { Stage } }) => `${Name}::${Stage}`,
-    ]),
-    findId: pipe([get("live.FunctionMetadata.FunctionARN")]),
+    findName: () =>
+      pipe([({ Name, FunctionMetadata: { Stage } }) => `${Name}::${Stage}`]),
+    findId: () => pipe([get("FunctionMetadata.FunctionARN")]),
     getByName: ({ getById }) =>
       pipe([
         get("name"),

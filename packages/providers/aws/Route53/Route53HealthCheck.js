@@ -66,51 +66,53 @@ exports.Route53HealthCheck = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        () => live,
-        get("HealthCheckConfig"),
-        switchCase([
-          ({ Type }) =>
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () => live,
+          get("HealthCheckConfig"),
+          switchCase([
+            ({ Type }) =>
+              pipe([
+                () => [
+                  "HTTP",
+                  "HTTPS",
+                  "HTTP_STR_MATCH",
+                  "HTTPS_STR_MATCH",
+                  "TCP",
+                ],
+                includes(Type),
+              ])(),
+            ({ Type, FullyQualifiedDomainName, IPAddress }) =>
+              `heathcheck::${Type}::${FullyQualifiedDomainName || IPAddress}`,
+            //TODO
+            eq(get("Type"), "CALCULATED"),
+            pipe([get("ResourcePath"), prepend("heathcheck::CALCULATED::")]),
+            eq(get("Type"), "CLOUDWATCH_METRIC"),
             pipe([
-              () => [
-                "HTTP",
-                "HTTPS",
-                "HTTP_STR_MATCH",
-                "HTTPS_STR_MATCH",
-                "TCP",
-              ],
-              includes(Type),
-            ])(),
-          ({ Type, FullyQualifiedDomainName, IPAddress }) =>
-            `heathcheck::${Type}::${FullyQualifiedDomainName || IPAddress}`,
-          //TODO
-          eq(get("Type"), "CALCULATED"),
-          pipe([get("ResourcePath"), prepend("heathcheck::CALCULATED::")]),
-          eq(get("Type"), "CLOUDWATCH_METRIC"),
-          pipe([
-            get("AlarmIdentifier.Name"),
-            prepend("heathcheck::CLOUDWATCH_METRIC::"),
+              get("AlarmIdentifier.Name"),
+              prepend("heathcheck::CLOUDWATCH_METRIC::"),
+            ]),
+            eq(get("Type"), "RECOVERY_CONTROL"),
+            ({ RoutingControlArn }) =>
+              pipe([
+                () =>
+                  lives.getById({
+                    id: RoutingControlArn,
+                    type: "RoutingControl",
+                    group: "Route53RecoveryControlConfig",
+                    config: config.providerName,
+                  }),
+                get("name"),
+                prepend("heathcheck::RECOVERY_CONTROL::"),
+              ])(),
           ]),
-          eq(get("Type"), "RECOVERY_CONTROL"),
-          ({ RoutingControlArn }) =>
-            pipe([
-              () =>
-                lives.getById({
-                  id: RoutingControlArn,
-                  type: "RoutingControl",
-                  group: "Route53RecoveryControlConfig",
-                  config: config.providerName,
-                }),
-              get("name"),
-              prepend("heathcheck::RECOVERY_CONTROL::"),
-            ])(),
-        ]),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-    findId: pipe([get("live.Id")]),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+    findId: () => pipe([get("Id")]),
     getByName: getByNameCore,
     tagResource: tagResource({ ResourceType }),
     untagResource: untagResource({ ResourceType }),

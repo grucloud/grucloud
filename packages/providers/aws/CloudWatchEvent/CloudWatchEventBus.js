@@ -10,11 +10,12 @@ const {
   untagResource,
 } = require("./CloudWatchEventCommon");
 
-const findId = get("live.Arn");
+const findId = () => get("Arn");
 const pickId = pick(["Name"]);
-const findName = get("live.Name", "default");
 
-const isDefault = eq(get("live.Name"), "default");
+const findName = () => get("Name", "default");
+
+const isDefault = () => eq(get("Name"), "default");
 
 const buildArn =
   ({ config }) =>

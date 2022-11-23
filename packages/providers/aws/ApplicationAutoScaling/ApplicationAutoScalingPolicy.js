@@ -56,12 +56,12 @@ exports.ApplicationAutoScalingPolicy = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([
-      get("live"),
-      ({ ResourceId, ScalableDimension, PolicyName }) =>
-        `${ResourceId}::${ScalableDimension}::${PolicyName}`,
-    ]),
-    findId: pipe([get("live.PolicyARN")]),
+    findName: () =>
+      pipe([
+        ({ ResourceId, ScalableDimension, PolicyName }) =>
+          `${ResourceId}::${ScalableDimension}::${PolicyName}`,
+      ]),
+    findId: () => pipe([get("PolicyARN")]),
     getByName: getByNameCore,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#describeScalingPolicies-property
     getList: ({ endpoint }) =>
@@ -94,6 +94,7 @@ exports.ApplicationAutoScalingPolicy = ({ spec, config }) =>
           ])
         ),
       ]),
+    // TODO Tag
     configDefault: ({
       name,
       namespace,

@@ -7,12 +7,13 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
-const findId = pipe([
-  get("live.GroupId"),
-  tap((GroupId) => {
-    assert(GroupId);
-  }),
-]);
+const findId = () =>
+  pipe([
+    get("GroupId"),
+    tap((GroupId) => {
+      assert(GroupId);
+    }),
+  ]);
 
 const pickId = pipe([
   tap(({ GroupName }) => {
@@ -59,7 +60,7 @@ exports.EC2PlacementGroup = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: get("live.GroupName"),
+    findName: () => get("GroupName"),
     findId,
     getByName: getByNameCore,
     tagResource: tagResource,

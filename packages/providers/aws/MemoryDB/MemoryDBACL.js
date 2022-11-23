@@ -11,7 +11,7 @@ const { tagResource, untagResource, assignTags } = require("./MemoryDBCommon");
 
 const pickId = pipe([({ Name }) => ({ ACLName: Name })]);
 
-const managedByOther = pipe([eq(get("live.Name"), "open-access")]);
+const managedByOther = () => pipe([eq(get("Name"), "open-access")]);
 
 const model = ({ config }) => ({
   package: "memorydb",
@@ -60,8 +60,8 @@ exports.MemoryDBACL = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Name")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Name")]),
     managedByOther,
     cannotBeDeleted: managedByOther,
     getByName: ({ getList, endpoint, getById }) =>

@@ -98,7 +98,7 @@ exports.createResources = () => [
     group: "ElastiCache",
     properties: ({}) => ({
       CacheParameterGroupName: "my-parameter-group",
-      CacheParameterGroupFamily: "redis6.x",
+      CacheParameterGroupFamily: "redis7",
       Description: "My Parameter Group",
       Tags: [
         {
@@ -171,10 +171,10 @@ exports.createResources = () => [
       UserName: "myuser",
       Engine: "redis",
       AccessString: "on ~* +@all",
-      Authentication: {
+      AuthenticationMode: {
         Type: "password",
-        Passwords: JSON.parse(process.env.MYUSER_ELASTICACHE_USER_PASSWORDS),
       },
+      Passwords: JSON.parse(process.env.MYUSER_ELASTICACHE_USER_PASSWORDS),
     }),
   },
   {

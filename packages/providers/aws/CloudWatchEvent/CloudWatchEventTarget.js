@@ -180,24 +180,22 @@ const EventTargetDependencies = {
 
 exports.EventTargetDependencies = EventTargetDependencies;
 
-const findId = get("live.Id");
+const findId = () => get("Id");
 
-const findName = pipe([
-  get("live"),
-  ({ Id, Rule }) => `target::${Rule}::${Id}`,
-]);
+const findName = () => pipe([({ Id, Rule }) => `target::${Rule}::${Id}`]);
 
 exports.CloudWatchEventTarget = ({ spec, config }) => {
   const cloudWatchEvents = createCloudWatchEvents(config);
   const client = AwsClient({ spec, config })(cloudWatchEvents);
 
-  const managedByOther = pipe([
-    get("live.Arn"),
-    or([
-      callProp("startsWith", "arn:aws:autoscaling"),
-      callProp("startsWith", "arn:aws:inspector2"),
-    ]),
-  ]);
+  const managedByOther = () =>
+    pipe([
+      get("Arn"),
+      or([
+        callProp("startsWith", "arn:aws:autoscaling"),
+        callProp("startsWith", "arn:aws:inspector2"),
+      ]),
+    ]);
 
   const decorate = ({ parent }) =>
     pipe([

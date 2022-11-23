@@ -8,10 +8,7 @@ const { createAwsResource } = require("../AwsClient");
 
 const { Tagger } = require("./RDSCommon");
 
-const managedByOther = pipe([
-  get("live"),
-  eq(get("DBSubnetGroupName"), "default"),
-]);
+const managedByOther = () => pipe([eq(get("DBSubnetGroupName"), "default")]);
 
 const buildArn = () =>
   pipe([
@@ -114,20 +111,20 @@ exports.RDSDBSubnetGroup = ({ compare }) => ({
       spec,
       config,
       managedByOther,
-      findName: pipe([
-        get("live"),
-        get("DBSubnetGroupName"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("DBSubnetGroupName"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () =>
+        pipe([
+          get("DBSubnetGroupName"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findId: () =>
+        pipe([
+          get("DBSubnetGroupName"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       getByName: ({ getById }) =>
         pipe([({ name }) => ({ DBSubnetGroupName: name }), getById({})]),
       ...Tagger({ buildArn: buildArn(config) }),

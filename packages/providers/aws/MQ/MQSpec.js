@@ -79,7 +79,8 @@ module.exports = pipe([
           path: "Users[].Password",
           suffix: "PASSWORD",
           array: true,
-          handledByResource: true,
+          rejectEnvironmentVariable: () => () => true,
+          writeInEnvFile: () => () => true,
         },
       ],
       filterLive:

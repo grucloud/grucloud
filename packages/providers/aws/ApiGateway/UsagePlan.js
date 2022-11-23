@@ -1,12 +1,12 @@
 const assert = require("assert");
 const { pipe, tap, get, map } = require("rubico");
-const { defaultsDeep, pluck, unless, isEmpty } = require("rubico/x");
+const { defaultsDeep, unless, isEmpty } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
 const { Tagger } = require("./ApiGatewayCommon");
 const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
 
-const findId = pipe([get("live.id")]);
+const findId = () => pipe([get("id")]);
 
 const buildArn =
   ({ config }) =>
@@ -79,7 +79,7 @@ exports.UsagePlan = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.name")]),
+    findName: () => pipe([get("name")]),
     findId,
     getByName: getByNameCore,
     ...Tagger({ buildArn: buildArn({ config }) }),

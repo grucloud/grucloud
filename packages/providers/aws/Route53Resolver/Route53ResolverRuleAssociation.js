@@ -7,8 +7,8 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { createAwsResource } = require("../AwsClient");
 
 const cannotBeDeleted =
-  ({ config }) =>
-  ({ live, lives }) =>
+  ({ config, lives }) =>
+  (live) =>
     pipe([
       () =>
         lives.getByType({
@@ -67,39 +67,41 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    cannotBeDeleted: cannotBeDeleted({ config }),
-    managedByOther: cannotBeDeleted({ config }),
-    findName: ({ live, lives }) =>
-      pipe([
-        () => live,
-        fork({
-          vpcName: pipe([
-            () =>
-              lives.getById({
-                id: live.VPCId,
-                type: "Vpc",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name", live.VPCId),
-          ]),
-          ruleName: pipe([
-            () =>
-              lives.getByType({
-                type: "Rule",
-                group: "Route53Resolver",
-                providerName: config.providerName,
-              }),
-            find(eq(get("live.Id"), live.ResolverRuleId)),
-            get("name", live.ResolverRuleId),
-          ]),
-        }),
-        ({ vpcName, ruleName }) => `rule-assoc::${ruleName}::${vpcName}`,
-        tap((Name) => {
-          assert(Name);
-        }),
-      ])(),
-    findId: pipe([get("live.Id")]),
+    cannotBeDeleted: cannotBeDeleted,
+    managedByOther: cannotBeDeleted,
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          () => live,
+          fork({
+            vpcName: pipe([
+              () =>
+                lives.getById({
+                  id: live.VPCId,
+                  type: "Vpc",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.VPCId),
+            ]),
+            ruleName: pipe([
+              () =>
+                lives.getByType({
+                  type: "Rule",
+                  group: "Route53Resolver",
+                  providerName: config.providerName,
+                }),
+              find(eq(get("live.Id"), live.ResolverRuleId)),
+              get("name", live.ResolverRuleId),
+            ]),
+          }),
+          ({ vpcName, ruleName }) => `rule-assoc::${ruleName}::${vpcName}`,
+          tap((Name) => {
+            assert(Name);
+          }),
+        ])(),
+    findId: () => pipe([get("Id")]),
     // listResolverRuleAssociations with Name as a filter does not work
     getByName: getByNameCore,
     configDefault: ({

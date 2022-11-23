@@ -4,15 +4,16 @@ const { defaultsDeep, isDeepEqual } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
 
-const cannotBeDeleted = pipe([
-  get("live"),
-  get("autoEnable"),
-  (autoEnable) =>
-    isDeepEqual(autoEnable, {
-      ec2: false,
-      ecr: false,
-    }),
-]);
+const cannotBeDeleted = () =>
+  pipe([
+    get("autoEnable"),
+    (autoEnable) =>
+      isDeepEqual(autoEnable, {
+        ec2: false,
+        ecr: false,
+      }),
+  ]);
+
 const model = ({ config }) => ({
   package: "inspector2",
   client: "Inspector2",
@@ -48,8 +49,8 @@ exports.Inspector2OrganizationConfiguration = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([() => "default"]),
-    findId: pipe([() => "default"]),
+    findName: () => pipe([() => "default"]),
+    findId: () => pipe([() => "default"]),
     cannotBeDeleted,
     getList: ({ endpoint, getById }) =>
       pipe([getById({}), (result) => [result]]),

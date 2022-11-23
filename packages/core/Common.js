@@ -271,7 +271,7 @@ exports.getByNameCore =
       }),
       find(
         pipe([
-          (live) => findName({ live, lives, config }),
+          findName({ lives, config }),
           tap((currentName) => {
             logger.debug(`getByNameCore ${name}: findName: ${currentName}`);
           }),

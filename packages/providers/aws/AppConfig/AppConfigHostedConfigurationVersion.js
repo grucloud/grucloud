@@ -63,23 +63,25 @@ exports.AppConfigHostedConfigurationVersion = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () =>
+            lives.getById({
+              id: live.ConfigurationProfileId,
+              type: "ConfigurationProfile",
+              group: "AppConfig",
+              providerName: config.providerName,
+            }),
+          get("name", live.ConfigurationProfileId),
+          unless(() => live.Latest, append(`::${live.VersionNumber}`)),
+        ])(),
+    findId: () =>
       pipe([
-        () =>
-          lives.getById({
-            id: live.ConfigurationProfileId,
-            type: "ConfigurationProfile",
-            group: "AppConfig",
-            providerName: config.providerName,
-          }),
-        get("name", live.ConfigurationProfileId),
-        unless(() => live.Latest, append(`::${live.VersionNumber}`)),
-      ])(),
-    findId: pipe([
-      get("live"),
-      ({ ApplicationId, ConfigurationProfileId }) =>
-        `${ApplicationId}::${ConfigurationProfileId}`,
-    ]),
+        ({ ApplicationId, ConfigurationProfileId }) =>
+          `${ApplicationId}::${ConfigurationProfileId}`,
+      ]),
     getByName: getByNameCore,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#listHostedConfigurationVersions-property
     getList: ({ client, endpoint, getById, config }) =>
@@ -125,6 +127,7 @@ exports.AppConfigHostedConfigurationVersion = ({ spec, config }) =>
     untagResource: untagResource({
       buildArn: buildArn(config),
     }),
+    // TODO Tags
     configDefault: ({
       name,
       namespace,

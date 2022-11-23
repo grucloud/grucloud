@@ -52,10 +52,10 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live"),
-  ({ RouteTableId, GatewayId }) => `vpn-gw-rt::${GatewayId}::${RouteTableId}`,
-]);
+const findId = () =>
+  pipe([
+    ({ RouteTableId, GatewayId }) => `vpn-gw-rt::${GatewayId}::${RouteTableId}`,
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2VpnGatewayRoutePropagation = ({ spec, config }) =>
@@ -63,40 +63,42 @@ exports.EC2VpnGatewayRoutePropagation = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          routeTable: pipe([
-            () =>
-              lives.getById({
-                id: live.RouteTableId,
-                type: "RouteTable",
-                group: "EC2",
-                providerName: config.providerName,
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          fork({
+            routeTable: pipe([
+              () =>
+                lives.getById({
+                  id: live.RouteTableId,
+                  type: "RouteTable",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.RouteTableId),
+            ]),
+            vpnGateway: pipe([
+              tap((params) => {
+                assert(live.GatewayId);
               }),
-            get("name", live.RouteTableId),
-          ]),
-          vpnGateway: pipe([
-            tap((params) => {
-              assert(live.GatewayId);
-            }),
-            () =>
-              lives.getById({
-                id: live.GatewayId,
-                type: "VpnGateway",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
-        }),
-        tap(({ routeTable, vpnGateway }) => {
-          assert(routeTable);
-          assert(vpnGateway);
-        }),
-        ({ routeTable, vpnGateway }) =>
-          `vpn-gw-rt::${vpnGateway}::${routeTable}`,
-      ])(),
+              () =>
+                lives.getById({
+                  id: live.GatewayId,
+                  type: "VpnGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name"),
+            ]),
+          }),
+          tap(({ routeTable, vpnGateway }) => {
+            assert(routeTable);
+            assert(vpnGateway);
+          }),
+          ({ routeTable, vpnGateway }) =>
+            `vpn-gw-rt::${vpnGateway}::${routeTable}`,
+        ])(),
     findId,
     pickId,
     getList:

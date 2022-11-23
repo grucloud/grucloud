@@ -38,7 +38,7 @@ exports.GcpDomain = ({ spec, config }) => {
       recordSet: [],
     })(properties);
 
-  const findName = get("live.name");
+  const findName = () => get("name");
   const findId = findName;
 
   const axios = createAxiosMakerGoogle({
@@ -106,6 +106,6 @@ exports.GcpDomain = ({ spec, config }) => {
     getById,
     isDownById,
     findId,
-    cannotBeDeleted: () => true,
+    cannotBeDeleted: () => () => true,
   };
 };

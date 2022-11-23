@@ -9,19 +9,19 @@ const { createAwsService } = require("../AwsService");
 
 //const { GrafanaLicenseAssociation } = require("./GrafanaLicenseAssociation");
 //const { GrafanaRoleAssociation } = require("./GrafanaRoleAssociation");
-//const { GrafanaWorkspace } = require("./GrafanaWorkspace");
+const { GrafanaWorkspace } = require("./GrafanaWorkspace");
 //const { GrafanaWorkspaceApiKey } = require("./GrafanaWorkspaceApiKey");
 //const { GrafanaWorkspaceSamlConfiguration } = require("./GrafanaWorkspaceSamlConfiguration");
 
 const GROUP = "Grafana";
-
-const compare = compareAws({});
+const tagsKey = "tags";
+const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
     // GrafanaLicenseAssociation({})
     // GrafanaRoleAssociation({})
-    // GrafanaWorkspace({})
+    GrafanaWorkspace({}),
     // GrafanaWorkspaceApiKey({})
     // GrafanaWorkspaceSamlConfiguration({})
   ],
@@ -29,6 +29,7 @@ module.exports = pipe([
   map(
     defaultsDeep({
       group: GROUP,
+      tagsKey,
       compare: compare({}),
     })
   ),

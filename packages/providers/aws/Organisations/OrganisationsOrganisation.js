@@ -2,8 +2,6 @@ const assert = require("assert");
 const { pipe, tap, get, assign } = require("rubico");
 const { defaultsDeep, pluck } = require("rubico/x");
 
-const { createAwsResource } = require("../AwsClient");
-
 const decorate = ({ endpoint }) =>
   pipe([
     assign({
@@ -15,10 +13,18 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html
+exports.OrganisationsOrganisation = ({}) => ({
+  type: "Organisation",
   package: "organizations",
   client: "Organizations",
   ignoreErrorCodes: [],
+  inferName: get("properties.MasterAccountEmail"),
+  findName: () => pipe([get("MasterAccountEmail")]),
+  findId: () => pipe([get("Id")]),
+  omitProperties: ["Arn", "Id", "MasterAccountArn", "MasterAccountId"],
+  managedByOther: () => () => true,
+  cannotBeDeleted: () => () => true,
   getById: {
     method: "describeOrganization",
     getField: "Organization",
@@ -40,32 +46,19 @@ const model = ({ config }) => ({
     method: "deleteOrganization",
     pickId: pipe([() => undefined]),
   },
+  //TODO
+  getByName: ({ getList, endpoint }) =>
+    pipe([
+      getList,
+      tap((params) => {
+        assert(true);
+      }),
+      //first,
+    ]),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) => pipe([() => otherProps, defaultsDeep({})])(),
 });
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html
-exports.OrganisationsOrganisation = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    //TODO
-    managedByOther: () => true,
-    cannotBeDeleted: () => true,
-    findName: pipe([get("live.MasterAccountEmail")]),
-    findId: pipe([get("live.Id")]),
-    //TODO
-    getByName: ({ getList, endpoint }) =>
-      pipe([
-        getList,
-        tap((params) => {
-          assert(true);
-        }),
-        //first,
-      ]),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) => pipe([() => otherProps, defaultsDeep({})])(),
-  });

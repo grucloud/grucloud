@@ -14,7 +14,6 @@ const { defaultsDeep, forEach, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamUser" });
 const {
-  findNameInTagsOrId,
   findNamespaceInTags,
   throwIfNotAwsError,
   buildTags,
@@ -44,9 +43,9 @@ exports.AwsIamUser = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
 
-  const findId = get("live.Arn");
+  const findId = () => get("Arn");
   const pickId = pick(["UserName"]);
-  const findName = get("live.UserName");
+  const findName = () => get("UserName");
 
   const fetchLoginProfile = tryCatch(
     pipe([pick(["UserName"]), iam().getLoginProfile, get("LoginProfile")]),
@@ -295,7 +294,7 @@ exports.AwsIamUser = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace: findNamespaceInTags,
     tagResource: tagResource({ iam }),
     untagResource: untagResource({ iam }),
   };

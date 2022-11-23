@@ -20,8 +20,8 @@ const ignoreErrorCodes = [
   "LoadBalancerNotFoundException",
 ];
 
-const findName = get("live.Name");
-const findId = get("live.LoadBalancerArn");
+const findName = () => get("Name");
+const findId = () => get("LoadBalancerArn");
 const pickId = pick(["LoadBalancerArn"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
@@ -53,14 +53,15 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       assignTags({ endpoint }),
     ]);
 
-  const managedByOther = or([
-    hasKeyInTags({
-      key: "elbv2.k8s.aws/cluster",
-    }),
-    hasKeyInTags({
-      key: "elasticbeanstalk:environment-id",
-    }),
-  ]);
+  const managedByOther = () =>
+    or([
+      hasKeyInTags({
+        key: "elbv2.k8s.aws/cluster",
+      }),
+      hasKeyInTags({
+        key: "elasticbeanstalk:environment-id",
+      }),
+    ]);
 
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,

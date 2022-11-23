@@ -29,80 +29,83 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findNameInDependency = ({ live, lives, config }) =>
-  pipe([
-    tap((params) => {
-      assert(config);
-    }),
-    () => live,
-    fork({
-      tgwName: pipe([
-        get("TransitGatewayId"),
-        tap((TransitGatewayId) => {
-          assert(TransitGatewayId);
-        }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "TransitGateway",
-            group: "EC2",
-            providerName: config.providerName,
+const findNameInDependency =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(config);
+      }),
+      () => live,
+      fork({
+        tgwName: pipe([
+          get("TransitGatewayId"),
+          tap((TransitGatewayId) => {
+            assert(TransitGatewayId);
           }),
-        get("name", live.TransitGatewayId),
-      ]),
-      resourceName: pipe([
-        switchCase([
-          eq(get("ResourceType"), "vpn"),
-          pipe([
-            ({ ResourceId }) =>
-              lives.getById({
-                id: ResourceId,
-                type: "VpnConnection",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name", live.ResourceId),
-            prepend("vpn::"),
-          ]),
-          eq(get("ResourceType"), "vpc"),
-          pipe([
-            ({ ResourceId }) =>
-              lives.getById({
-                id: ResourceId,
-                type: "Vpc",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name", live.ResourceId),
-            prepend("vpc::"),
-          ]),
-          eq(get("ResourceType"), "peering"),
-          pipe([
-            ({ ResourceId }) =>
-              lives.getById({
-                id: ResourceId,
-                type: "TransitGateway",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name", live.ResourceId),
-            prepend("tgw::"),
-          ]),
-          ({ ResourceType }) => {
-            assert(false, `ResourceType '${ResourceType}' not handled`);
-          },
+          (id) =>
+            lives.getById({
+              id,
+              type: "TransitGateway",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("name", live.TransitGatewayId),
         ]),
-      ]),
-    }),
-    ({ tgwName, resourceName }) => `tgw-attach::${tgwName}::${resourceName}`,
-  ])();
+        resourceName: pipe([
+          switchCase([
+            eq(get("ResourceType"), "vpn"),
+            pipe([
+              ({ ResourceId }) =>
+                lives.getById({
+                  id: ResourceId,
+                  type: "VpnConnection",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.ResourceId),
+              prepend("vpn::"),
+            ]),
+            eq(get("ResourceType"), "vpc"),
+            pipe([
+              ({ ResourceId }) =>
+                lives.getById({
+                  id: ResourceId,
+                  type: "Vpc",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.ResourceId),
+              prepend("vpc::"),
+            ]),
+            eq(get("ResourceType"), "peering"),
+            pipe([
+              ({ ResourceId }) =>
+                lives.getById({
+                  id: ResourceId,
+                  type: "TransitGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.ResourceId),
+              prepend("tgw::"),
+            ]),
+            ({ ResourceType }) => {
+              assert(false, `ResourceType '${ResourceType}' not handled`);
+            },
+          ]),
+        ]),
+      }),
+      ({ tgwName, resourceName }) => `tgw-attach::${tgwName}::${resourceName}`,
+    ])();
 
-const findId = pipe([
-  get("live.TransitGatewayAttachmentId"),
-  tap((TransitGatewayAttachmentId) => {
-    assert(TransitGatewayAttachmentId);
-  }),
-]);
+const findId = () =>
+  pipe([
+    get("TransitGatewayAttachmentId"),
+    tap((TransitGatewayAttachmentId) => {
+      assert(TransitGatewayAttachmentId);
+    }),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2TransitGatewayAttachment = ({ spec, config }) =>
@@ -112,6 +115,6 @@ exports.EC2TransitGatewayAttachment = ({ spec, config }) =>
     config,
     findName: findNameInTagsOrId({ findId: findNameInDependency }),
     findId,
-    cannotBeDeleted: () => true,
-    managedByOther: () => true,
+    cannotBeDeleted: () => () => true,
+    managedByOther: () => () => true,
   });

@@ -13,16 +13,16 @@ const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
 
-const findName = pipe([
-  get("live"),
-  tap((params) => {
-    assert(true);
-  }),
-  get("diskName"),
-  tap((name) => {
-    assert(name);
-  }),
-]);
+const findName = () =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("diskName"),
+    tap((name) => {
+      assert(name);
+    }),
+  ]);
 
 const pickId = pipe([
   tap(({ diskName }) => {
@@ -105,9 +105,12 @@ exports.LightsailDiskAttachment = ({ compare }) => ({
       getByName: ({ getById }) =>
         pipe([({ name }) => ({ diskName: name }), getById({})]),
       getList:
-        ({ client, endpoint, getById, config }) =>
-        ({ lives }) =>
+        ({ client, endpoint, getById }) =>
+        ({ lives, config }) =>
           pipe([
+            tap((params) => {
+              assert(config);
+            }),
             () =>
               lives.getByType({
                 providerName: config.providerName,

@@ -50,7 +50,7 @@ module.exports = K8sClient = ({
   displayNameResource = displayNameResourceNamespace,
   displayName = displayNameNamespace,
   isInstanceUp = not(isEmpty),
-  cannotBeDeleted = () => false,
+  cannotBeDeleted = () => () => false,
   findDependencies,
 }) => {
   assert(spec);
@@ -75,7 +75,7 @@ module.exports = K8sClient = ({
       get("metadata.name"),
     ])();
 
-  const findName = ({ live }) =>
+  const findName = () => (live) =>
     pipe([
       tap(() => {
         assert(live, `findName: no live`);
@@ -96,7 +96,7 @@ module.exports = K8sClient = ({
       }),
     ])();
 
-  const findMeta = ({ live }) =>
+  const findMeta = () => (live) =>
     pipe([
       tap(() => {
         if (!live) {
@@ -104,7 +104,7 @@ module.exports = K8sClient = ({
         }
       }),
       () => live,
-      get("metadata"),
+      get("metadata", {}),
       tap((metadata) => {
         assert(metadata);
       }),
@@ -112,7 +112,7 @@ module.exports = K8sClient = ({
 
   const findId = findName;
 
-  const findNamespace = ({ live }) =>
+  const findNamespace = () => (live) =>
     pipe([
       tap(() => {
         assert(live, `findNamespace: no live`);
@@ -226,7 +226,7 @@ module.exports = K8sClient = ({
     getByKey({
       resolvePath: pathGetStatus || pathGet,
       name: findNameShort({ live }),
-      namespace: get("namespace")(findMeta({ live })),
+      namespace: get("namespace")(findMeta()(live)),
     });
 
   const isUpById = pipe([getById, isInstanceUp]);
@@ -341,7 +341,7 @@ module.exports = K8sClient = ({
         }),
         () => ({
           name: findNameShort({ live }),
-          namespace: findMeta({ live }).namespace,
+          namespace: findMeta()(live).namespace,
         }),
         tap((params) => {
           logger.info(`destroy k8s ${JSON.stringify({ params })}`);

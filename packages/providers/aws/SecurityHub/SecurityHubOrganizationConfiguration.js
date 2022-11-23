@@ -19,11 +19,11 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const cannotBeDeleted = pipe([
-  get("live"),
-  pick(keys(configurationDefault)),
-  (value) => isDeepEqual(value, configurationDefault),
-]);
+const cannotBeDeleted = () =>
+  pipe([
+    pick(keys(configurationDefault)),
+    (value) => isDeepEqual(value, configurationDefault),
+  ]);
 const ignoreErrorMessages = ["is not an administrator for this organization"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html
@@ -36,8 +36,8 @@ exports.SecurityHubOrganizationConfiguration = () => ({
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
   inferName: pipe([() => "default"]),
-  findName: pipe([() => "default"]),
-  findId: pipe([() => "default"]),
+  findName: () => pipe([() => "default"]),
+  findId: () => pipe([() => "default"]),
   ignoreErrorCodes,
   ignoreErrorMessages,
   dependencies: {

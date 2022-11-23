@@ -77,12 +77,9 @@ exports.SNSTopic = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: pipe([
-      get("live.Attributes.TopicArn"),
-      callProp("split", ":"),
-      last,
-    ]),
-    findId: pipe([get("live.Attributes.TopicArn")]),
+    findName: () =>
+      pipe([get("Attributes.TopicArn"), callProp("split", ":"), last]),
+    findId: () => pipe([get("Attributes.TopicArn")]),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

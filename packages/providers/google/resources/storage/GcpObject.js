@@ -25,11 +25,8 @@ const { buildLabel } = require("../../GoogleCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpObject" });
 const { tos } = require("@grucloud/core/tos");
 
-const findName = pipe([
-  get("live"),
-  ({ bucket, name }) => `${bucket}::${name}`,
-]);
-const findId = get("live.id");
+const findName = () => pipe([({ bucket, name }) => `${bucket}::${name}`]);
+const findId = () => get("id");
 const findTargetId = () => get("id");
 
 const objectPath = ({ bucket, name }) =>

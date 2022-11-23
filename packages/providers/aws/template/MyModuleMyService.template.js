@@ -103,7 +103,7 @@ const decorate = ({ endpoint }) =>
       assert(endpoint);
     }),
     //({ name, ...other }) => ({ loadBalancerName: name, ...other }),
-    //assign({ MyJSON: pipe([get("MyJSON", JSON.parse)]) }),
+    //assign({ MyJSON: pipe([get("MyJSON"), JSON.parse]) }),
     //assignTags({ endpoint }),
     //liveToTags
     //assignArn({ config }),
@@ -112,15 +112,15 @@ const decorate = ({ endpoint }) =>
 // managedByOther
 ////////////////////
 
-// const managedByOther = pipe([eq(get("live.Type"), "managed")]);
+// const managedByOther = () => pipe([eq(get("Type"), "managed")]);
 
-// const managedByOther = pipe([
-//   get("live.CacheParameterGroupName"),
+// const managedByOther = () => pipe([
+//   get("CacheParameterGroupName"),
 //   callProp("startsWith", "default."),
 // ]);
 
-// const managedByOther = ({ live, lives }) =>
-//   pipe([
+// const managedByOther = ({  lives }) =>
+//   live => pipe([
 //     () =>
 //       lives.getById({
 //         type: "LoadBalancer",
@@ -135,10 +135,9 @@ const decorate = ({ endpoint }) =>
 // cannotBeDeleted
 ////////////////////
 
-//  const cannotBeDeleted = pipe([get("live"), eq(get("status"), "INACTIVE")]);
+//  const cannotBeDeleted = () => pipe([ eq(get("status"), "INACTIVE")]);
 
-// const cannotBeDeleted = pipe([
-//   get("live"),
+// const cannotBeDeleted = ()=> pipe([
 //   get("autoEnable"),
 //   (autoEnable) =>
 //     isDeepEqual(autoEnable, {
@@ -147,8 +146,8 @@ const decorate = ({ endpoint }) =>
 //     }),
 // ]);
 
-// const cannotBeDeleted = pipe([
-//   get("live.Path"),
+// const cannotBeDeleted = ()=> pipe([
+//   get("Path"),
 //   or([includes("/aws-service-role"), includes("/aws-reserved/")]),
 // ]);
 
@@ -182,16 +181,16 @@ exports.MyModuleMyResource = () => ({
   //   get("dependenciesSpec"),
   //   ({ staticIp, instance }) => `${staticIp}::${instance}`,
   // ]),
-  findName: pipe([
-    get("live"),
-    get("Name"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
   // Find name from dependencies
-  // findName: ({ live, lives, config }) =>
-  //   pipe([
+  // findName: ({  lives, config }) =>
+  //   live => pipe([
   //     () => live,
   //     fork({
   //       vpc: pipe([
@@ -231,15 +230,14 @@ exports.MyModuleMyResource = () => ({
   //     }),
   //     ({ vpc, hostedZone }) => `zone-assoc::${hostedZone}::${vpc}`,
   //   ])(),
-  findId: pipe([
-    get("live"),
-    get("Arn"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
-  // findId: pipe([
-  //   get("live"),
+  findId: () =>
+    pipe([
+      get("Arn"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  // findId:()=> pipe([
   //   ({ resourceShareArn, associatedEntity }) =>
   //     `${resourceShareArn}::${associatedEntity}`,
   // ]),
@@ -347,8 +345,8 @@ exports.MyModuleMyResource = () => ({
 
     method: "listMyResources",
     getParam: "MyResources",
-    decorate,
-    //decorate: ({ getById }) => pipe([getById]),
+    decorate: ({ getById }) => pipe([getById]),
+    //decorate,
     //decorate: ({ getById }) => pipe([(name) => ({ name }), getById]),
   },
   //  getList for child resource

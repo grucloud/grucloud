@@ -79,8 +79,8 @@ exports.MSKConfiguration = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Arn")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Arn")]),
     getByName: getByNameCore,
     configDefault: ({
       name,

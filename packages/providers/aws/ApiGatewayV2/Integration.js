@@ -23,7 +23,7 @@ const { AwsClient } = require("../AwsClient");
 const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 const { createLambda } = require("../Lambda/LambdaCommon");
 
-const findId = get("live.IntegrationId");
+const findId = () => get("IntegrationId");
 
 const lambdaUriToName = pipe([
   callProp("split", ":"),
@@ -60,9 +60,8 @@ exports.Integration = ({ spec, config }) => {
   const lambda = createLambda(config);
   const client = AwsClient({ spec, config })(apiGateway);
 
-  const findName = ({ live, lives }) =>
+  const findName = ({ lives, config }) =>
     pipe([
-      () => live,
       fork({
         apiName: pipe([({ ApiName }) => `integration::${ApiName}::`]),
         integration: switchCase([
@@ -80,7 +79,7 @@ exports.Integration = ({ spec, config }) => {
         ]),
       }),
       ({ apiName, integration }) => `${apiName}${integration}`,
-    ])();
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getIntegration-property
   const getById = client.getById({

@@ -32,18 +32,18 @@ const createModel = ({ config }) => ({
   destroy: { method: "disassociateTransitGatewayRouteTable", pickId },
 });
 
-const findId = pipe([
-  get("live"),
-  tap(({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) => {
-    assert(TransitGatewayRouteTableId);
-    assert(TransitGatewayAttachmentId);
-  }),
-  ({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) =>
-    `${TransitGatewayAttachmentId}::${TransitGatewayRouteTableId}`,
-  tap((params) => {
-    assert(true);
-  }),
-]);
+const findId = () =>
+  pipe([
+    tap(({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) => {
+      assert(TransitGatewayRouteTableId);
+      assert(TransitGatewayAttachmentId);
+    }),
+    ({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) =>
+      `${TransitGatewayAttachmentId}::${TransitGatewayRouteTableId}`,
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2TransitGatewayRouteTableAssociation = ({ spec, config }) =>
@@ -61,9 +61,7 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ spec, config }) =>
     ],
     findName: findNameRouteTableArm({
       prefix: "tgw-rtb-assoc",
-      config,
     }),
-
     findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayAttachments-property
     getList: ({ endpoint }) =>

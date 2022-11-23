@@ -35,20 +35,20 @@ exports.SecurityHubStandardsSubscription = () => ({
       assert(Name);
     }),
   ]),
-  findName: pipe([
-    get("live"),
-    get("StandardsArn"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("StandardsSubscriptionArn"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("StandardsArn"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("StandardsSubscriptionArn"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   dependencies: {
     securityHubAccount: {
       type: "Account",

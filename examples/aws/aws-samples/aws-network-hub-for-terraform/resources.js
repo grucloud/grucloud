@@ -312,6 +312,7 @@ exports.createResources = () => [
           Value: "internet",
         },
       ],
+      PrivateIpAddressIndex: 28,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_vpc::inspection_internet_${config.region}a`,
@@ -333,6 +334,7 @@ exports.createResources = () => [
           Value: "internet",
         },
       ],
+      PrivateIpAddressIndex: 19,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_vpc::inspection_internet_${config.region}b`,
@@ -354,6 +356,7 @@ exports.createResources = () => [
           Value: "internet",
         },
       ],
+      PrivateIpAddressIndex: 21,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_vpc::inspection_internet_${config.region}c`,
@@ -2557,6 +2560,14 @@ exports.createResources = () => [
       ],
       FeatureSet: "ALL",
       MasterAccountEmail: "frederic.heem@gmail.com",
+      serviceAccessPrincipals: [
+        "inspector2.amazonaws.com",
+        "member.org.stacksets.cloudformation.amazonaws.com",
+        "ram.amazonaws.com",
+        "securityhub.amazonaws.com",
+        "ssm.amazonaws.com",
+        "sso.amazonaws.com",
+      ],
     }),
   },
   {

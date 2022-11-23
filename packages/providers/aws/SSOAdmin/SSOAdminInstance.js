@@ -13,7 +13,7 @@ const decorate = ({ endpoint, index }) =>
     defaultsDeep({ Index: index }),
   ]);
 
-const cannotBeDeleted = () => true;
+const cannotBeDeleted = () => () => true;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html
 exports.SSOAdminInstance = ({ compare }) => ({
@@ -32,6 +32,6 @@ exports.SSOAdminInstance = ({ compare }) => ({
   inferName: pipe([() => defaultName]),
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
-  findName: ({ live, lives }) => pipe([() => defaultName])(),
-  findId: pipe([get("live"), get("InstanceArn")]),
+  findName: () => pipe([() => defaultName]),
+  findId: () => pipe([get("InstanceArn")]),
 });

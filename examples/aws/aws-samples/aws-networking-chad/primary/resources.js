@@ -59,6 +59,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: ({ config }) => `${config.region}-prod-main-vpc-${config.region}b`,
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 2891,
+    }),
     dependencies: ({ config }) => ({
       subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}b`,
       eip: "eipalloc-07215ec254b042c43",
@@ -68,6 +71,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: ({ config }) => `${config.region}-prod-main-vpc-${config.region}c`,
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 452,
+    }),
     dependencies: ({ config }) => ({
       subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}c`,
       eip: "eipalloc-0d6a81d53afa01aaf",
@@ -77,6 +83,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: ({ config }) => `${config.region}-prod-main-vpc-${config.region}d`,
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 2251,
+    }),
     dependencies: ({ config }) => ({
       subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
       eip: "eipalloc-09cfdc6821b875944",

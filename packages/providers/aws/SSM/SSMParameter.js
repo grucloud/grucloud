@@ -28,13 +28,14 @@ exports.SSMParameter = () => ({
   type: "Parameter",
   package: "ssm",
   client: "SSM",
-  findName: get("live.Name"),
-  findId: pipe([
-    get("live.ARN"),
-    tap((ARN) => {
-      assert(ARN);
-    }),
-  ]),
+  findName: () => get("Name"),
+  findId: () =>
+    pipe([
+      get("ARN"),
+      tap((ARN) => {
+        assert(ARN);
+      }),
+    ]),
   inferName: get("properties.Name"),
   ignoreResource: () =>
     pipe([get("name"), callProp("startsWith", "/cdk-bootstrap/")]),

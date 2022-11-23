@@ -14,9 +14,9 @@ const {
   omitAllocatedStorage,
 } = require("./RDSCommon");
 
-const findId = get("live.DBInstanceArn");
+const findId = () => get("DBInstanceArn");
 const pickId = pipe([pick(["DBInstanceIdentifier"])]);
-const findName = get("live.DBInstanceIdentifier");
+const findName = () => get("DBInstanceIdentifier");
 const isInstanceUp = pipe([eq(get("DBInstanceStatus"), "available")]);
 
 const ignoreErrorCodes = [
@@ -188,7 +188,6 @@ exports.DBInstance = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    //findDependencies,
     tagResource: tagResource({ endpoint: rds }),
     untagResource: untagResource({ endpoint: rds }),
   };

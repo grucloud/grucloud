@@ -4,11 +4,11 @@ const { defaultsDeep, find } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
 
-const findName = pipe([
-  get("live"),
-  ({ loadBalancerName, instanceName }) =>
-    `${loadBalancerName}::${instanceName}`,
-]);
+const findName = () =>
+  pipe([
+    ({ loadBalancerName, instanceName }) =>
+      `${loadBalancerName}::${instanceName}`,
+  ]);
 
 const pickId = pipe([
   tap(({ loadBalancerName, instanceName }) => {

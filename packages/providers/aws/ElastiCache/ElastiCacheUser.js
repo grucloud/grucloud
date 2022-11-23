@@ -1,29 +1,62 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, pick } = require("rubico");
-const { defaultsDeep, when, identity } = require("rubico/x");
+const { defaultsDeep, identity } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const {
-  tagResource,
-  untagResource,
-  assignTags,
-} = require("./ElastiCacheCommon");
+const { Tagger, assignTags } = require("./ElastiCacheCommon");
 
 const pickId = pipe([pick(["UserId"])]);
 const buildArn = () => pipe([get("ARN")]);
 
-const managedByOther = pipe([eq(get("live.UserName"), "default")]);
+const managedByOther = () => pipe([eq(get("UserName"), "default")]);
 
 const decorate = ({ endpoint }) =>
-  pipe([assignTags({ endpoint, buildArn: buildArn() })]);
+  pipe([
+    ({ Authentication, ...other }) => ({
+      ...other,
+      AuthenticationMode: Authentication,
+    }),
+    assignTags({ endpoint, buildArn: buildArn() }),
+  ]);
 
-const model = ({ config }) => ({
+exports.ElastiCacheUser = () => ({
+  type: "User",
   package: "elasticache",
   client: "ElastiCache",
+  inferName: get("properties.UserName"),
+  findName: () => pipe([get("UserName")]),
+  findId: () => pipe([get("UserId")]),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   ignoreErrorCodes: ["UserNotFound", "UserNotFoundFault"],
+  omitProperties: [
+    "ARN",
+    "Status",
+    "UserGroupIds",
+    "AuthenticationMode.PasswordCount",
+    "MinimumEngineVersion",
+  ],
+  environmentVariables: [
+    {
+      path: "Passwords",
+      suffix: "ELASTICACHE_USER_PASSWORDS",
+      array: true,
+      rejectEnvironmentVariable: () =>
+        pipe([eq(get("AuthenticationMode.Type"), "iam")]),
+    },
+  ],
+  // compare: compare({
+  //   filterAll: () => pipe([omit(["Authentication"])]),
+  // }),
+  filterLiveExtra: () =>
+    pipe([
+      when(
+        eq(get("Authentication.Type"), "no-password"),
+        omit(["Authentication"])
+      ),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#describeUsers-property
   getById: {
     method: "describeUsers",
@@ -42,12 +75,6 @@ const model = ({ config }) => ({
     method: "createUser",
     pickCreated: ({ payload }) => pipe([identity]),
     isInstanceUp: pipe([eq(get("Status"), "active")]),
-    filterPayload: pipe([
-      ({ Authentication: { Passwords }, ...other }) => ({
-        ...other,
-        Passwords,
-      }),
-    ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#updateUser-property
   update: {
@@ -60,39 +87,27 @@ const model = ({ config }) => ({
     method: "deleteUser",
     pickId,
   },
-});
-
-exports.ElastiCacheUser = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: pipe([get("live.UserName")]),
-    findId: pipe([get("live.UserId")]),
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-      ])(),
-  });
+      }),
+    ])(),
+});

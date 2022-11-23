@@ -34,11 +34,11 @@ const { configProviderDefault } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const { createKMS, tagResource, untagResource } = require("./KMSCommon");
 
-const findId = get("live.Arn");
+const findId = () => get("Arn");
 const pickId = pick(["KeyId"]);
 
 const findNameInTags = pipe([
-  get("live.Tags"),
+  get("Tags"),
   find(eq(get("TagKey"), configProviderDefault.nameKey)),
   get("TagValue"),
   tap((params) => {
@@ -46,10 +46,10 @@ const findNameInTags = pipe([
   }),
 ]);
 
-const findNames = [findNameInTags, get("live.Alias"), get("live.KeyId")];
+const findNames = [findNameInTags, get("Alias"), get("KeyId")];
 
-const findName = (item) =>
-  pipe([() => findNames, map((fn) => fn(item)), find(not(isEmpty))])();
+const findName = () => (live) =>
+  pipe([() => findNames, map((fn) => fn(live)), find(not(isEmpty))])();
 
 exports.KmsKey = ({ spec, config }) => {
   const kms = createKMS(config);
@@ -270,17 +270,20 @@ exports.KmsKey = ({ spec, config }) => {
       }),
     ])();
 
-  const isDefault = pipe([
-    or([
-      pipe([get("live.Alias", ""), callProp("startsWith", "alias/aws/")]),
-      pipe([get("live.Description"), callProp("startsWith", "Default ")]),
-    ]),
-  ]);
+  const isDefault = () =>
+    pipe([
+      or([
+        pipe([get("Alias", ""), callProp("startsWith", "alias/aws/")]),
+        pipe([get("Description"), callProp("startsWith", "Default ")]),
+      ]),
+    ]);
 
-  const cannotBeDeleted = or([
-    eq(get("live.KeyState"), "PendingDeletion"),
-    isDefault,
-  ]);
+  const cannotBeDeleted = () =>
+    or([
+      //
+      eq(get("KeyState"), "PendingDeletion"),
+      isDefault(),
+    ]);
 
   return {
     spec,

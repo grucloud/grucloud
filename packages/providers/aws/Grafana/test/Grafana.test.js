@@ -20,15 +20,15 @@ describe("Grafana", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Workspace", () =>
+  it("Workspace", () =>
     pipe([
       () => ({
         groupType: "Grafana::Workspace",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ workspaceId: "g-1234567890" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("WorkspaceApiKey  ", () =>
+  it.skip("WorkspaceApiKey", () =>
     pipe([
       () => ({
         groupType: "Grafana::WorkspaceApiKey",

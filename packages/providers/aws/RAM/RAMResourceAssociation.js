@@ -64,11 +64,13 @@ const RamResourceDependencies = {
 exports.RamResourceDependencies = RamResourceDependencies;
 
 const findNameByDependency =
-  ({ live, lives, config }) =>
+  ({ lives, config }) =>
+  (live) =>
   ({ type, group, arnKey }) =>
     pipe([
       tap((params) => {
         assert(arnKey);
+        assert(live);
         assert(live.associatedEntity);
       }),
       () => lives.getByType({ type, group, providerName: config.providerName }),
@@ -79,12 +81,17 @@ const findNameByDependency =
       get("name"),
     ])();
 
-const findResoureName = ({ live, lives, config }) =>
-  pipe([
-    () => RamResourceDependencies,
-    map(pipe([findNameByDependency({ live, lives, config })])),
-    find(not(isEmpty)),
-  ])();
+const findResourceName =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(live);
+      }),
+      () => RamResourceDependencies,
+      map(pipe([findNameByDependency({ lives, config })(live)])),
+      find(not(isEmpty)),
+    ])();
 
 const associatedEntityArn = ({ resourceDependencies }) =>
   pipe([
@@ -154,18 +161,20 @@ exports.RAMResourceAssociation = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () => live,
+          findResourceName({ lives, config }),
+          (resourceName) =>
+            `ram-resource-assoc::${live.resourceShareName}::${resourceName}`,
+        ])(),
+    findId: () =>
       pipe([
-        () => ({ live, lives, config }),
-        findResoureName,
-        (resourceName) =>
-          `ram-resource-assoc::${live.resourceShareName}::${resourceName}`,
-      ])(),
-    findId: pipe([
-      get("live"),
-      ({ resourceShareArn, associatedEntity }) =>
-        `${resourceShareArn}::${associatedEntity}`,
-    ]),
+        ({ resourceShareArn, associatedEntity }) =>
+          `${resourceShareArn}::${associatedEntity}`,
+      ]),
     getByName: ({ getList, endpoint }) =>
       pipe([
         ({ name }) => ({ name, resourceShareStatus: "ACTIVE" }),

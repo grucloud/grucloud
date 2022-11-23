@@ -39,18 +39,16 @@ exports.SSMDocument = () => ({
         assert(Name);
       }),
     ])(),
-  findName: get("live.Name"),
-  findId: ({ config, live }) =>
+  findName: () => get("Name"),
+  findId: ({ config }) =>
     pipe([
       tap((params) => {
         assert(config);
       }),
-
-      () => live,
       get("Name"),
       (Name) =>
         `arn:aws:ssm:${config.region}:${config.accountId()}:document/${Name}`,
-    ])(),
+    ]),
   omitProperties: [
     "Content.assumeRole",
     "Owner",

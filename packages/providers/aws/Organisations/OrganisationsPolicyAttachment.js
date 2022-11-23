@@ -5,11 +5,9 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
-
 const managedByOther =
-  ({ config }) =>
-  ({ live, lives }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       () => live,
       get("PolicyId"),
@@ -31,38 +29,22 @@ const pickId = pipe([
   pick(["PolicyId", "TargetId"]),
 ]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html
+exports.OrganisationsPolicyAttachment = () => ({
+  type: "PolicyAttachment",
   package: "organizations",
   client: "Organizations",
   ignoreErrorCodes: ["PolicyNotFoundException"],
-  // TODO add getById
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#attachPolicy-property
-  create: {
-    method: "attachPolicy",
-    pickCreated: ({ payload }) => pipe([() => payload]),
-    shouldRetryOnExceptionMessages: [
-      "AWS Organizations can't complete your request because it conflicts with another attempt to modify the same entity",
-    ],
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#detachPolicy-property
-  destroy: {
-    method: "detachPolicy",
-    pickId,
-    shouldRetryOnExceptionMessages: [
-      "AWS Organizations can't complete your request because it conflicts with another attempt to modify the same entity",
-    ],
-  },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html
-exports.OrganisationsPolicyAttachment = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    managedByOther: managedByOther({ config }),
-    cannotBeDeleted: managedByOther({ config }),
-    findName: ({ live, lives }) =>
+  managedByOther,
+  cannotBeDeleted: managedByOther,
+  inferName: pipe([
+    get("dependenciesSpec"),
+    ({ policy, account, root, organisationalUnit }) =>
+      `policy-attach::${policy}::${account || root || organisationalUnit}`,
+  ]),
+  findName:
+    ({ lives, config }) =>
+    (live) =>
       pipe([
         () => live,
         fork({
@@ -127,49 +109,88 @@ exports.OrganisationsPolicyAttachment = ({ spec, config }) =>
         }),
         ({ policy, target }) => `policy-attach::${policy}::${target}`,
       ])(),
-    findId: pipe([
-      get("live"),
-      ({ PolicyId, TargetId }) => `${PolicyId}::${TargetId}`,
+  findId: () => pipe([({ PolicyId, TargetId }) => `${PolicyId}::${TargetId}`]),
+  omitProperties: ["TargetId", "PolicyId", "Type", "Arn", "Name"],
+  dependencies: {
+    policy: {
+      type: "Policy",
+      group: "Organisations",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("PolicyId"),
+    },
+    account: {
+      type: "Account",
+      group: "Organisations",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("TargetId"),
+    },
+    root: {
+      type: "Root",
+      group: "Organisations",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("TargetId"),
+    },
+    organisationalUnit: {
+      type: "OrganisationalUnit",
+      group: "Organisations",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("TargetId"),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listTargetsForPolicy-property
+  getList: ({ client, config }) =>
+    pipe([
+      client.getListWithParent({
+        parent: { type: "Policy", group: "Organisations" },
+        config,
+        pickKey: pick(["PolicyId"]),
+        method: "listTargetsForPolicy",
+        getParam: "Targets",
+        decorate:
+          ({ lives, parent: { PolicyId } }) =>
+          (live) =>
+            pipe([() => live, defaultsDeep({ PolicyId })])(),
+      }),
     ]),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listTargetsForPolicy-property
-    getList: ({ client }) =>
-      pipe([
-        client.getListWithParent({
-          parent: { type: "Policy", group: "Organisations" },
-          config,
-          pickKey: pick(["PolicyId"]),
-          method: "listTargetsForPolicy",
-          getParam: "Targets",
-          decorate:
-            ({ lives, parent: { PolicyId } }) =>
-            (live) =>
-              pipe([() => live, defaultsDeep({ PolicyId })])(),
-        }),
+  create: {
+    method: "attachPolicy",
+    pickCreated: ({ payload }) => pipe([() => payload]),
+    shouldRetryOnExceptionMessages: [
+      "AWS Organizations can't complete your request because it conflicts with another attempt to modify the same entity",
+    ],
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#detachPolicy-property
+  destroy: {
+    method: "detachPolicy",
+    pickId,
+    shouldRetryOnExceptionMessages: [
+      "AWS Organizations can't complete your request because it conflicts with another attempt to modify the same entity",
+    ],
+  },
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties,
+    dependencies: { policy, account, root, organisationalUnit },
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(policy);
+      }),
+      () => ({
+        PolicyId: getField(policy, "PolicyId"),
+      }),
+      switchCase([
+        () => account,
+        defaultsDeep({ TargetId: getField(account, "Id") }),
+        () => root,
+        defaultsDeep({ TargetId: getField(root, "Id") }),
+        () => organisationalUnit,
+        defaultsDeep({ TargetId: getField(organisationalUnit, "Id") }),
+        () => {
+          assert(false, "missing target");
+        },
       ]),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties,
-      dependencies: { policy, account, root, organisationalUnit },
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(policy);
-        }),
-        () => ({
-          PolicyId: getField(policy, "PolicyId"),
-        }),
-        switchCase([
-          () => account,
-          defaultsDeep({ TargetId: getField(account, "Id") }),
-          () => root,
-          defaultsDeep({ TargetId: getField(root, "Id") }),
-          () => organisationalUnit,
-          defaultsDeep({ TargetId: getField(organisationalUnit, "Id") }),
-          () => {
-            assert(false, "missing target");
-          },
-        ]),
-      ])(),
-  });
+    ])(),
+});

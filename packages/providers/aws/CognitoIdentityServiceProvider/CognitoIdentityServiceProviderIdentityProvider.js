@@ -34,20 +34,20 @@ exports.CognitoIdentityServiceProviderIdentityProvider = () => ({
       dependencyId: () => get("UserPoolId"),
     },
   },
-  findName: pipe([
-    get("live"),
-    get("ProviderName"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("ProviderName"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("ProviderName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("ProviderName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   omitProperties: [],
   propertiesDefault: {},
   dependencies: {

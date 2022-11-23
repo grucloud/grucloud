@@ -15,38 +15,41 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const findId = get("live.RouteTableAssociationId");
+  const findId = () => get("RouteTableAssociationId");
 
-  const findName = ({ live, lives }) =>
-    pipe([
-      fork({
-        routeTableName: pipe([
-          () =>
-            lives.getById({
-              id: live.RouteTableId,
-              providerName: config.providerName,
-              type: "RouteTable",
-              group: "EC2",
-            }),
-          get("name"),
-        ]),
-        subnetName: pipe([
-          () =>
-            lives.getById({
-              id: live.SubnetId,
-              providerName: config.providerName,
-              type: "Subnet",
-              group: "EC2",
-            }),
-          get("name"),
-        ]),
-      }),
-      ({ routeTableName, subnetName }) =>
-        `rt-assoc::${routeTableName}::${subnetName}`,
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+  const findName =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        fork({
+          routeTableName: pipe([
+            () =>
+              lives.getById({
+                id: live.RouteTableId,
+                providerName: config.providerName,
+                type: "RouteTable",
+                group: "EC2",
+              }),
+            get("name"),
+          ]),
+          subnetName: pipe([
+            () =>
+              lives.getById({
+                id: live.SubnetId,
+                providerName: config.providerName,
+                type: "Subnet",
+                group: "EC2",
+              }),
+            get("name"),
+          ]),
+        }),
+        ({ routeTableName, subnetName }) =>
+          `rt-assoc::${routeTableName}::${subnetName}`,
+        tap((params) => {
+          assert(true);
+        }),
+      ])();
 
   const getList = ({ lives }) =>
     pipe([

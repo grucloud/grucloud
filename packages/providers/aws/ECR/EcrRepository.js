@@ -7,8 +7,8 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createECR, tagResource, untagResource } = require("./ECRCommon");
 
-const findName = get("live.repositoryName");
-const findId = get("live.repositoryArn");
+const findName = () => get("repositoryName");
+const findId = () => get("repositoryArn");
 const pickId = pick(["repositoryName", "registryId"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html

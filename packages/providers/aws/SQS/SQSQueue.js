@@ -31,7 +31,7 @@ const buildArn = () =>
     }),
   ]);
 
-const findId = get("live.Attributes.QueueArn");
+const findId = () => get("Attributes.QueueArn");
 const pickId = pipe([pick(["QueueUrl"])]);
 
 const queueUrlToName = pipe([
@@ -46,7 +46,7 @@ const queueUrlToName = pipe([
   }),
 ]);
 
-const findName = pipe([get("live"), queueUrlToName]);
+const findName = () => pipe([queueUrlToName]);
 
 const ignoreErrorCodes = [
   "AWS.SimpleQueueService.NonExistentQueue",

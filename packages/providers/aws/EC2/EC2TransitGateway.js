@@ -81,12 +81,13 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live.TransitGatewayId"),
-  tap((TransitGatewayId) => {
-    assert(TransitGatewayId);
-  }),
-]);
+const findId = () =>
+  pipe([
+    get("TransitGatewayId"),
+    tap((TransitGatewayId) => {
+      assert(TransitGatewayId);
+    }),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2TransitGateway = ({ spec, config }) =>
@@ -102,7 +103,7 @@ exports.EC2TransitGateway = ({ spec, config }) =>
       ({ TransitGatewayId }) => ({ TransitGatewayIds: [TransitGatewayId] }),
     ]),
     findId,
-    cannotBeDeleted: eq(get("live.State"), "deleted"),
+    cannotBeDeleted: () => eq(get("State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

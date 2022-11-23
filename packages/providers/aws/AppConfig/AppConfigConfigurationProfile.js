@@ -73,19 +73,21 @@ exports.AppConfigConfigurationProfile = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        () =>
-          lives.getById({
-            id: live.ApplicationId,
-            type: "Application",
-            group: "AppConfig",
-            providerName: config.providerName,
-          }),
-        get("name", live.ApplicationId),
-        append(`::${live.Name}`),
-      ])(),
-    findId: pipe([get("live.Id")]),
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () =>
+            lives.getById({
+              id: live.ApplicationId,
+              type: "Application",
+              group: "AppConfig",
+              providerName: config.providerName,
+            }),
+          get("name", live.ApplicationId),
+          append(`::${live.Name}`),
+        ])(),
+    findId: () => pipe([get("Id")]),
     getByName: getByNameCore,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#listConfigurationProfiles-property
     getList: ({ client, endpoint, getById, config }) =>

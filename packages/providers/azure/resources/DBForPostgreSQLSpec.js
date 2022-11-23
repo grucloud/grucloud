@@ -21,12 +21,7 @@ exports.fnSpecs = ({ config }) =>
             last,
             or([callProp("startsWith", "azure_"), eq(identity, "postgres")]),
           ]),
-        cannotBeDeleted: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => true,
-        ]),
+        cannotBeDeleted: () => pipe([() => true]),
       },
       {
         type: "FlexibleServer",

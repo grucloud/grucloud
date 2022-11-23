@@ -3,10 +3,8 @@ const { pipe, eq, get, tap, pick, map, filter, not, any } = require("rubico");
 const { callProp } = require("rubico/x");
 
 exports.fnSpecs = ({ config }) => {
-  const isDefaultResourceGroup = pipe([
-    get("live.name"),
-    callProp("startsWith", "DefaultResourceGroup"),
-  ]);
+  const isDefaultResourceGroup = () =>
+    pipe([get("name"), callProp("startsWith", "DefaultResourceGroup")]);
 
   return pipe([
     () => [

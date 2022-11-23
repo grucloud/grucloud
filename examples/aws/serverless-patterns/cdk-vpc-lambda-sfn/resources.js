@@ -34,6 +34,9 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) =>
       `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 5,
+    }),
     dependencies: ({ config }) => ({
       subnet: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
       eip: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,

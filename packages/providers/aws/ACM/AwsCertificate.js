@@ -7,7 +7,7 @@ const crypto = require("crypto");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { buildTags, findNamespaceInTags } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./ACMCommon");
 
@@ -101,14 +101,12 @@ exports.AwsCertificate = ({ spec, config }) =>
     model: createModel({ config }),
     config,
     spec,
-    findName: get("live.DomainName"),
-    findId: get("live.CertificateArn"),
-
+    findName: () => get("DomainName"),
+    findId: () => get("CertificateArn"),
     getByName: getByNameCore,
-    cannotBeDeleted: () => true,
+    cannotBeDeleted: () => () => true,
     tagResource,
     untagResource,
-    findNamespace: findNamespaceInTags(config),
     create: ({ endpoint, getById }) =>
       pipe([
         get("payload"),

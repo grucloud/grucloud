@@ -7,8 +7,8 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
-const findId = get("live.AuthorizerId");
-const findName = get("live.Name");
+const findId = () => get("AuthorizerId");
+const findName = () => get("Name");
 const pickId = pick(["ApiId", "AuthorizerId"]);
 
 exports.Authorizer = ({ spec, config }) => {

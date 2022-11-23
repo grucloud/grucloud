@@ -30,10 +30,7 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const managedByOther = pipe([
-  get("live"),
-  not(get("DBClusterEndpointIdentifier")),
-]);
+const managedByOther = () => pipe([not(get("DBClusterEndpointIdentifier"))]);
 
 const model = ({ config }) => ({
   package: "rds",
@@ -114,14 +111,14 @@ exports.RDSClusterEndpoint = ({ compare }) => ({
       config,
       managedByOther,
       cannotBeDeleted: managedByOther,
-      findName: pipe([get("live"), findNameClusterEndpoint]),
-      findId: pipe([
-        get("live"),
-        findNameClusterEndpoint,
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () => pipe([findNameClusterEndpoint]),
+      findId: () =>
+        pipe([
+          findNameClusterEndpoint,
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       getByName: ({ getById }) =>
         pipe([
           ({ name }) => ({ DBClusterEndpointIdentifier: name }),

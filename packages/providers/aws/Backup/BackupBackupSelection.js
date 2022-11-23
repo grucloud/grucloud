@@ -64,8 +64,8 @@ exports.BackupBackupSelection = ({ spec, config }) =>
     spec,
     config,
     //TODO prefix with backup plan name
-    findName: pipe([get("live"), get("SelectionName")]),
-    findId: pipe([get("live.SelectionId")]),
+    findName: () => pipe([get("SelectionName")]),
+    findId: () => pipe([get("SelectionId")]),
     getByName: getByNameCore,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#listBackupSelections-property
     getList: ({ client, endpoint, getById, config }) =>

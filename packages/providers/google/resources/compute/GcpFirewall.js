@@ -43,6 +43,6 @@ exports.GcpFirewall = ({ spec, config }) => {
     config,
     configDefault,
     findDependencies,
-    cannotBeDeleted: eq(get("live.name"), "default"),
+    cannotBeDeleted: () => eq(get("name"), "default"),
   });
 };

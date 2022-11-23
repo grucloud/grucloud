@@ -43,8 +43,8 @@ exports.BackupBackupVaultPolicy = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live"), get("BackupVaultName")]),
-    findId: pipe([get("live.BackupVaultName")]),
+    findName: () => pipe([get("BackupVaultName")]),
+    findId: () => pipe([get("BackupVaultName")]),
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ BackupVaultName: name }), getById({})]),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#listBackupSelections-property

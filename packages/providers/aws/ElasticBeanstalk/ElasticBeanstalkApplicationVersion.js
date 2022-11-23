@@ -70,12 +70,12 @@ exports.ElasticBeanstalkApplicationVersion = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([
-      get("live"),
-      ({ ApplicationName, VersionLabel }) =>
-        `${ApplicationName}::${VersionLabel}`,
-    ]),
-    findId: pipe([get("live.ApplicationVersionArn")]),
+    findName: () =>
+      pipe([
+        ({ ApplicationName, VersionLabel }) =>
+          `${ApplicationName}::${VersionLabel}`,
+      ]),
+    findId: () => pipe([get("ApplicationVersionArn")]),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRServerless.html#describeApplicationVersions-property
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

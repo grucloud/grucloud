@@ -66,6 +66,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: ({ config }) => `inspection-vpc-${config.region}a`,
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 87,
+    }),
     dependencies: ({ config }) => ({
       subnet: `inspection-vpc::inspection-vpc-public-subnet-${config.region}a`,
       eip: `inspection-vpc-${config.region}a`,

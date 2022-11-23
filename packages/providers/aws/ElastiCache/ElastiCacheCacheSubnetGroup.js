@@ -1,34 +1,43 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, pick, assign, map } = require("rubico");
-const { defaultsDeep, callProp, identity } = require("rubico/x");
+const { defaultsDeep, pluck } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const {
-  tagResource,
-  untagResource,
-  assignTags,
-} = require("./ElastiCacheCommon");
+const { Tagger, assignTags } = require("./ElastiCacheCommon");
 
 const pickId = pipe([pick(["CacheSubnetGroupName"])]);
 const buildArn = () => pipe([get("ARN")]);
 
-const managedByOther = pipe([
-  get("live"),
-  eq(get("CacheSubnetGroupName"), "default"),
-]);
+const managedByOther = () => pipe([eq(get("CacheSubnetGroupName"), "default")]);
 
 //
 const decorate = ({ endpoint }) =>
   pipe([assignTags({ endpoint, buildArn: buildArn() })]);
 
-const model = ({ config }) => ({
+exports.ElastiCacheCacheSubnetGroup = () => ({
+  type: "CacheSubnetGroup",
   package: "elasticache",
   client: "ElastiCache",
   ignoreErrorCodes: ["CacheSubnetGroupNotFoundFault"],
+  inferName: get("properties.CacheSubnetGroupName"),
+  findName: () => pipe([get("CacheSubnetGroupName")]),
+  findId: () => pipe([get("CacheSubnetGroupName")]),
+  propertiesDefault: { SupportedNetworkTypes: ["ipv4"] },
+  omitProperties: ["ARN", "VpcId", "Subnets", "SubnetIds"],
+  dependencies: {
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("Subnets"), pluck("SubnetIdentifier")]),
+    },
+  },
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#describeCacheSubnetGroups-property
   getById: {
     method: "describeCacheSubnetGroups",
@@ -57,48 +66,36 @@ const model = ({ config }) => ({
     method: "deleteCacheSubnetGroup",
     pickId,
   },
-});
-
-exports.ElastiCacheCacheSubnetGroup = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { subnets },
     config,
-    findName: pipe([get("live.CacheSubnetGroupName")]),
-    findId: pipe([get("live.CacheSubnetGroupName")]),
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { subnets },
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(subnets);
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(subnets);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
-        }),
-        assign({
-          SubnetIds: pipe([
-            () => subnets,
-            map((subnet) => getField(subnet, "SubnetId")),
-          ]),
-        }),
-      ])(),
-  });
+      }),
+      assign({
+        SubnetIds: pipe([
+          () => subnets,
+          map((subnet) => getField(subnet, "SubnetId")),
+        ]),
+      }),
+    ])(),
+});

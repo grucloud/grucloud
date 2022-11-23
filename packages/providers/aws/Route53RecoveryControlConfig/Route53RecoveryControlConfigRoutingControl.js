@@ -6,7 +6,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 
-const findId = pipe([get("live.RoutingControlArn")]);
+const findId = () => pipe([get("RoutingControlArn")]);
 
 const pickId = pipe([
   pick(["RoutingControlArn"]),
@@ -52,7 +52,7 @@ exports.Route53RecoveryControlConfigRoutingControl = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.RoutingControlName")]),
+    findName: () => pipe([get("RoutingControlName")]),
     findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listRoutingControls-property
     getList: ({ client, endpoint, getById, config }) =>

@@ -12,7 +12,7 @@ exports.EC2ElasticIpAddress = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const findId = get("live.AllocationId");
+  const findId = () => get("AllocationId");
   const pickId = pick(["AllocationId"]);
 
   const findName = findNameInTagsOrId({ findId });
@@ -69,7 +69,7 @@ exports.EC2ElasticIpAddress = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace: findNamespaceInTags,
     getById,
     getByName,
     findName,

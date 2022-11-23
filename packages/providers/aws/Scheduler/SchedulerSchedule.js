@@ -194,20 +194,20 @@ exports.SchedulerSchedule = ({ compare }) => ({
       model: model({ config }),
       spec,
       config,
-      findName: pipe([
-        get("live"),
-        get("Name"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("Name"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () =>
+        pipe([
+          get("Name"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findId: () =>
+        pipe([
+          get("Name"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       getByName: getByNameCore,
       ...Tagger({ buildArn: buildArn(config) }),
       configDefault: ({

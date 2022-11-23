@@ -40,7 +40,7 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const cannotBeDeleted = pipe([get("live"), eq(get("Name"), "default")]);
+const cannotBeDeleted = () => pipe([eq(get("Name"), "default")]);
 
 const model = ({ config }) => ({
   package: "scheduler",
@@ -87,20 +87,20 @@ exports.SchedulerScheduleGroup = ({ compare }) => ({
       config,
       managedByOther: cannotBeDeleted,
       cannotBeDeleted,
-      findName: pipe([
-        get("live"),
-        get("Name"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("Name"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () =>
+        pipe([
+          get("Name"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findId: () =>
+        pipe([
+          get("Name"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       getByName: ({ getById }) =>
         pipe([({ name }) => ({ Name: name }), getById({})]),
       ...Tagger({ buildArn: buildArn(config) }),

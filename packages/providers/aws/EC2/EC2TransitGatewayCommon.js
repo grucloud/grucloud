@@ -43,8 +43,9 @@ exports.findDependenciesTgwAttachment = ({ live, lives, config }) =>
   ])();
 
 exports.findNameRouteTableArm =
-  ({ prefix, config }) =>
-  ({ live, lives }) =>
+  ({ prefix }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       fork({
         transitGatewayPeeringAttachment: pipe([
