@@ -139,13 +139,11 @@ exports.EC2InternetGateway = ({ spec, config }) => {
         }),
     ])();
 
-  const detachInternetGateways = ({ live }) =>
+  const detachInternetGateways = ({ endpoint }) =>
     pipe([
       tap(() => {
         assert(true);
       }),
-      () => live,
-
       getById({}),
       tap((params) => {
         assert(true);
@@ -178,7 +176,7 @@ exports.EC2InternetGateway = ({ spec, config }) => {
       tap.if(any(get("error")), (results) => {
         throw results;
       }),
-    ])();
+    ]);
 
   const destroy = client.destroy({
     preDestroy: detachInternetGateways,

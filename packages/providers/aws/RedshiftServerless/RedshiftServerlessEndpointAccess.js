@@ -49,12 +49,13 @@ exports.RedshiftServerlessEndpointAccess = () => ({
     "vpcSecurityGroupIds",
     "port",
   ],
-  inferName: pipe([
-    get("properties.endpointName"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("endpointName"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("endpointName"),

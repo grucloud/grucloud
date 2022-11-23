@@ -85,12 +85,13 @@ exports.GrafanaWorkspace = () => ({
     "workspaceOrganizationalUnits",
     "authentication.samlConfigurationStatus",
   ],
-  inferName: pipe([
-    get("properties.name"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("workspaceName"),

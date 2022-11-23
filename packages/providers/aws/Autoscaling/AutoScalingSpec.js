@@ -147,17 +147,16 @@ module.exports = pipe([
         filterTarget: () => pipe([pick([])]),
         filterLive: () => pipe([pick([])]),
       }),
-      inferName: ({
-        properties,
-        dependenciesSpec: { autoScalingGroup, targetGroup },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(autoScalingGroup);
-            assert(targetGroup);
-          }),
-          () => `attachment::${autoScalingGroup}::${targetGroup}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { autoScalingGroup, targetGroup } }) =>
+        () =>
+          pipe([
+            tap(() => {
+              assert(autoScalingGroup);
+              assert(targetGroup);
+            }),
+            () => `attachment::${autoScalingGroup}::${targetGroup}`,
+          ])(),
       filterLive: () => pipe([pick([])]),
       dependencies: {
         autoScalingGroup: {
@@ -198,7 +197,7 @@ module.exports = pipe([
       //     Enabled: true,
       //   },
       // },
-      inferName: get("properties.LaunchConfigurationName"),
+      inferName: () => get("LaunchConfigurationName"),
       filterLive: () =>
         pipe([omitIfEmpty(["KernelId", "RamdiskId"]), DecodeUserData]),
       dependencies: {

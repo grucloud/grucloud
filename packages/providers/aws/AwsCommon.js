@@ -863,99 +863,100 @@ exports.revokeSecurityGroupIngress =
       )
     )();
 
-exports.removeRoleFromInstanceProfile =
-  ({ iam }) =>
-  (params) =>
-    tryCatch(
-      pipe([() => params, iam().removeRoleFromInstanceProfile]),
-      switchCase([
-        //TODO use throwIfNotAwsError
-        isAwsError("NoSuchEntityException"),
-        () => undefined,
-        (error) => {
-          logger.error(`iam role removeRoleFromInstanceProfile ${tos(error)}`);
-          throw Error(error.message);
-        },
-      ])
-    )();
+exports.removeRoleFromInstanceProfile = ({ endpoint }) =>
+  tryCatch(
+    pipe([endpoint().removeRoleFromInstanceProfile]),
+    switchCase([
+      //TODO use throwIfNotAwsError
+      isAwsError("NoSuchEntityException"),
+      () => undefined,
+      (error) => {
+        logger.error(`iam role removeRoleFromInstanceProfile ${tos(error)}`);
+        throw Error(error.message);
+      },
+    ])
+  );
 
-exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
-  pipe([
-    tap(() => {
-      assert(ec2);
-      assert(Name);
-      assert(Array.isArray(Values));
-    }),
-    () => ({
-      Filters: [{ Name, Values }],
-    }),
-    ec2().describeNetworkInterfaces,
-    get("NetworkInterfaces", []),
-    tap((NetworkInterfaces) => {
-      logger.debug(
-        `#NetworkInterfaces ${JSON.stringify(NetworkInterfaces, null, 4)}`
-      );
-    }),
-    forEach(
-      pipe([
-        ({ NetworkInterfaceId, Attachment }) =>
-          retryCall({
-            name: `detachNetworkInterface NetworkInterfaceId ${NetworkInterfaceId}, AttachmentId: ${Attachment?.AttachmentId}`,
-            fn: pipe([
-              // detachNetworkInterface
-              () => Attachment,
-              get("AttachmentId"),
-              unless(
-                isEmpty,
-                tryCatch(
-                  pipe([
-                    (AttachmentId) => ({
-                      AttachmentId,
-                      Force: true,
-                    }),
-                    ec2().detachNetworkInterface,
-                  ]),
-                  // Ignore error
-                  (error) => {
+exports.destroyNetworkInterfaces =
+  ({ endpoint }) =>
+  ({ Name, Values }) =>
+    pipe([
+      tap(() => {
+        assert(endpoint);
+        assert(Name);
+        assert(Array.isArray(Values));
+      }),
+      () => ({
+        Filters: [{ Name, Values }],
+      }),
+      endpoint().describeNetworkInterfaces,
+      get("NetworkInterfaces", []),
+      tap((NetworkInterfaces) => {
+        logger.debug(
+          `#NetworkInterfaces ${JSON.stringify(NetworkInterfaces, null, 4)}`
+        );
+      }),
+      forEach(
+        pipe([
+          ({ NetworkInterfaceId, Attachment }) =>
+            retryCall({
+              name: `detachNetworkInterface NetworkInterfaceId ${NetworkInterfaceId}, AttachmentId: ${Attachment?.AttachmentId}`,
+              fn: pipe([
+                // detachNetworkInterface
+                () => Attachment,
+                get("AttachmentId"),
+                unless(
+                  isEmpty,
+                  tryCatch(
+                    pipe([
+                      (AttachmentId) => ({
+                        AttachmentId,
+                        Force: true,
+                      }),
+                      endpoint().detachNetworkInterface,
+                    ]),
+                    // Ignore error
+                    (error) => {
+                      logger.info(
+                        `detachNetworkInterface shouldRetryOnException: error: ${error.name}`
+                      );
+                    }
+                  )
+                ),
+                // deleteNetworkInterface
+                () => ({ NetworkInterfaceId }),
+                endpoint().deleteNetworkInterface,
+              ]),
+              isExpectedResult: () => true,
+              config: { retryDelay: 10e3, retryCount: 45 * 6 },
+              isExpectedException: pipe([
+                or([isAwsError("InvalidNetworkInterfaceID.NotFound")]),
+              ]),
+              shouldRetryOnException: ({ error, name }) =>
+                pipe([
+                  tap(() => {
                     logger.info(
-                      `detachNetworkInterface shouldRetryOnException: error: ${error.name}`
+                      `deleteNetworkInterface shouldRetryOnException: ${name}, error: ${util.inspect(
+                        error
+                      )}`
                     );
-                  }
-                )
-              ),
-              // deleteNetworkInterface
-              () => ({ NetworkInterfaceId }),
-              ec2().deleteNetworkInterface,
-            ]),
-            isExpectedResult: () => true,
-            config: { retryDelay: 10e3, retryCount: 45 * 6 },
-            isExpectedException: pipe([
-              or([isAwsError("InvalidNetworkInterfaceID.NotFound")]),
-            ]),
-            shouldRetryOnException: ({ error, name }) =>
-              pipe([
-                tap(() => {
-                  logger.info(
-                    `deleteNetworkInterface shouldRetryOnException: ${name}, error: ${util.inspect(
-                      error
-                    )}`
-                  );
-                }),
-                () => error,
-                switchCase([
-                  or([
-                    isAwsError("InvalidParameterValue"),
-                    isAwsError("OperationNotPermitted"),
-                    isAwsError("InvalidNetworkInterface.InUse"),
+                  }),
+                  () => error,
+                  // TODO isAwsErrors
+                  switchCase([
+                    or([
+                      isAwsError("InvalidParameterValue"),
+                      isAwsError("OperationNotPermitted"),
+                      isAwsError("InvalidNetworkInterface.InUse"),
+                    ]),
+                    () => true,
+                    () => false,
                   ]),
-                  () => true,
-                  () => false,
-                ]),
-              ])(),
-          }),
-      ])
-    ),
-  ])();
+                ])(),
+            }),
+        ])
+      ),
+    ])();
 
 exports.lambdaAddPermission = ({ lambda, lambdaFunction, SourceArn }) =>
   pipe([

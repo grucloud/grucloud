@@ -155,12 +155,13 @@ exports.SSOAdminPermissionSet = ({}) => ({
     "InstanceArn",
     "AccountIds",
   ],
-  inferName: pipe([
-    get("properties.Name"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   dependencies: {
     identityStore: {
       type: "Instance",
@@ -258,36 +259,38 @@ exports.SSOAdminPermissionSet = ({}) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#deletePermissionSet-property
   destroy: {
-    preDestroy: ({ endpoint, live }) =>
-      pipe([
-        () => live,
-        get("AccountIds"),
-        map(
-          pipe([
-            (AccountId) => ({
-              AccountId,
-              PermissionSetArn: live.PermissionSetArn,
-              InstanceArn: live.InstanceArn,
-            }),
-            endpoint().listAccountAssignments,
-            get("AccountAssignments"),
-            map(
-              pipe([
-                ({ AccountId, ...other }) => ({
-                  TargetId: AccountId,
-                  ...other,
-                }),
-                defaultsDeep({
-                  PermissionSetArn: live.PermissionSetArn,
-                  InstanceArn: live.InstanceArn,
-                  TargetType: "AWS_ACCOUNT",
-                }),
-                endpoint().deleteAccountAssignment,
-              ])
-            ),
-          ])
-        ),
-      ])(),
+    preDestroy:
+      ({ endpoint }) =>
+      (live) =>
+        pipe([
+          () => live,
+          get("AccountIds"),
+          map(
+            pipe([
+              (AccountId) => ({
+                AccountId,
+                PermissionSetArn: live.PermissionSetArn,
+                InstanceArn: live.InstanceArn,
+              }),
+              endpoint().listAccountAssignments,
+              get("AccountAssignments"),
+              map(
+                pipe([
+                  ({ AccountId, ...other }) => ({
+                    TargetId: AccountId,
+                    ...other,
+                  }),
+                  defaultsDeep({
+                    PermissionSetArn: live.PermissionSetArn,
+                    InstanceArn: live.InstanceArn,
+                    TargetType: "AWS_ACCOUNT",
+                  }),
+                  endpoint().deleteAccountAssignment,
+                ])
+              ),
+            ])
+          ),
+        ])(),
     method: "deletePermissionSet",
     pickId,
   },

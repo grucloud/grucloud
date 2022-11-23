@@ -106,12 +106,15 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     getById,
   });
 
-  const deleteAutoScalingGroup = ({ live, lives }) =>
+  const deleteAutoScalingGroup = ({ lives, config }) =>
     pipe([
-      () => live,
+      tap((params) => {
+        assert(lives);
+        assert(config);
+      }),
       get("autoScalingGroupProvider.autoScalingGroupArn"),
       destroyAutoScalingGroupById({ autoScalingGroup, lives, config }),
-    ])();
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCapacityProvider-property
   const destroy = client.destroy({
@@ -125,6 +128,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     ignoreErrorMessages: [
       "The specified capacity provider does not exist. Specify a valid name or ARN and try again.",
     ],
+    config,
   });
 
   // TODO isIn

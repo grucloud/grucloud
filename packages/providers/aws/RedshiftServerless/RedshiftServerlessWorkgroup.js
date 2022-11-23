@@ -77,12 +77,13 @@ exports.RedshiftServerlessWorkgroup = () => ({
     "subnetIds",
     "workgroupId",
   ],
-  inferName: pipe([
-    get("properties.workgroupName"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("workgroupName"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("workgroupName"),

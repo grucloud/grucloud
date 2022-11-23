@@ -81,7 +81,7 @@ module.exports = pipe([
     {
       type: "GraphqlApi",
       Client: AppSyncGraphqlApi,
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       omitProperties: [
         "apiId",
         "arn",
@@ -127,7 +127,7 @@ module.exports = pipe([
     {
       type: "DataSource",
       Client: AppSyncDataSource,
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       omitProperties: [
         "apiId",
         "serviceRoleArn",
@@ -249,14 +249,16 @@ module.exports = pipe([
     {
       type: "Resolver",
       Client: AppSyncResolver,
-      inferName: ({ properties: { typeName, fieldName } }) =>
-        pipe([
-          tap((params) => {
-            assert(typeName);
-            assert(fieldName);
-          }),
-          () => `resolver::${typeName}::${fieldName}`,
-        ])(),
+      inferName:
+        () =>
+        ({ typeName, fieldName }) =>
+          pipe([
+            tap((params) => {
+              assert(typeName);
+              assert(fieldName);
+            }),
+            () => `resolver::${typeName}::${fieldName}`,
+          ])(),
       omitProperties: ["arn", "resolverArn"],
       compare: compareAppSync({
         filterLive: () =>

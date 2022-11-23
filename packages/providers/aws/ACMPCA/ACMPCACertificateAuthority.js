@@ -71,7 +71,7 @@ exports.ACMPCACertificateAuthority = ({ compare }) => ({
     "FailureReason",
     "RestorableUntil",
   ],
-  inferName: pipe([get("properties"), findNameFromLive]),
+  inferName: () => pipe([findNameFromLive]),
   findName: () => pipe([findNameFromLive]),
   findId: () =>
     pipe([

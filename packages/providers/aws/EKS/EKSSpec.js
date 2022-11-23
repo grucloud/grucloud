@@ -25,12 +25,13 @@ module.exports = pipe([
   () => [
     {
       type: "Cluster",
-      inferName: pipe([
-        get("properties.name"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
+      inferName: () =>
+        pipe([
+          get("name"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
       Client: EKSCluster,
       dependencies: {
         subnets: {
@@ -126,7 +127,7 @@ module.exports = pipe([
     },
     {
       type: "NodeGroup",
-      inferName: get("properties.nodegroupName"),
+      inferName: () => get("nodegroupName"),
       dependencies: {
         cluster: {
           type: "Cluster",

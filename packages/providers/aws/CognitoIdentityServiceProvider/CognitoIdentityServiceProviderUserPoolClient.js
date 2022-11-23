@@ -25,7 +25,7 @@ exports.CognitoIdentityServiceProviderUserPoolClient = () => ({
   type: "UserPoolClient",
   package: "cognito-identity-provider",
   client: "CognitoIdentityProvider",
-  inferName: get("properties.ClientName"),
+  inferName: () => get("ClientName"),
   findName: () =>
     pipe([
       get("ClientName"),

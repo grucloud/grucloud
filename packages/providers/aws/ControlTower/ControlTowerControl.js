@@ -32,17 +32,16 @@ exports.ControlTowerControl = () => ({
   client: "ControlTower",
   propertiesDefault: {},
   omitProperties: ["targetIdentifier"],
-  inferName: ({
-    properties: { controlIdentifier },
-    dependenciesSpec: { organisationalUnit },
-  }) =>
-    pipe([
-      tap((params) => {
-        assert(organisationalUnit);
-        assert(controlIdentifier);
-      }),
-      () => `${organisationalUnit}::${controlIdentifier}`,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { organisationalUnit } }) =>
+    ({ controlIdentifier }) =>
+      pipe([
+        tap((params) => {
+          assert(organisationalUnit);
+          assert(controlIdentifier);
+        }),
+        () => `${organisationalUnit}::${controlIdentifier}`,
+      ])(),
   findName:
     ({ lives, config }) =>
     (live) =>

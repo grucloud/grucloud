@@ -53,9 +53,8 @@ const model = ({ config }) => ({
   destroy: {
     method: "deleteBackupVault",
     pickId,
-    preDestroy: ({ endpoint, live, getById }) =>
+    preDestroy: ({ endpoint, getById }) =>
       pipe([
-        () => live,
         pick(["BackupVaultName"]),
         endpoint().listRecoveryPointsByBackupVault,
         get("RecoveryPoints"),
@@ -66,7 +65,7 @@ const model = ({ config }) => ({
             endpoint().deleteRecoveryPoint,
           ])
         ),
-      ])(),
+      ]),
   },
 });
 

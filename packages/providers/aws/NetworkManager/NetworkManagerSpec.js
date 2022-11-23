@@ -129,14 +129,15 @@ module.exports = pipe([
       type: "TransitGatewayRegistration",
       Client: NetworkManagerTransitGatewayRegistration,
       omitProperties: ["GlobalNetworkId", "TransitGatewayArn", "State"],
-      inferName: pipe([
-        get("dependenciesSpec"),
-        ({ globalNetwork, transitGateway }) =>
-          `tgw-assoc::${globalNetwork}::${transitGateway}`,
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
+      inferName: ({ dependenciesSpec: { coreNetwork, vpc } }) =>
+        pipe([
+          tap(() => {
+            assert(globalNetwork);
+            assert(transitGateway);
+          }),
+          () => `tgw-assoc::${globalNetwork}::${transitGateway}`,
+        ]),
+
       dependencies: {
         globalNetwork: {
           type: "GlobalNetwork",
@@ -174,14 +175,14 @@ module.exports = pipe([
         "ResourceArn",
         "AttachmentPolicyRuleNumber",
       ],
-      inferName: pipe([
-        get("dependenciesSpec"),
-        tap(({ coreNetwork, vpc }) => {
-          assert(coreNetwork);
-          assert(vpc);
-        }),
-        ({ coreNetwork, vpc }) => `vpc-attach::::${coreNetwork}::${vpc}`,
-      ]),
+      inferName: ({ dependenciesSpec: { coreNetwork, vpc } }) =>
+        pipe([
+          tap(() => {
+            assert(coreNetwork);
+            assert(vpc);
+          }),
+          () => `vpc-attach::::${coreNetwork}::${vpc}`,
+        ]),
       dependencies: {
         coreNetwork: {
           type: "CoreNetwork",

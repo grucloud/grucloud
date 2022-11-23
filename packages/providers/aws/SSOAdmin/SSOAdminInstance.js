@@ -29,7 +29,7 @@ exports.SSOAdminInstance = ({ compare }) => ({
   },
   propertiesDefault: {},
   omitProperties: ["IdentityStoreId", "InstanceArn", "Index", "IsDefault"],
-  inferName: pipe([() => defaultName]),
+  inferName: () => pipe([() => defaultName]),
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
   findName: () => pipe([() => defaultName]),

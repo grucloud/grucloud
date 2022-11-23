@@ -46,26 +46,26 @@ module.exports = pipe([
         filterLive: () => pipe([pick([])]),
       }),
       ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
-      inferName: pipe([
-        get("properties"),
-        switchCase([
-          get("certificateFile"),
-          pipe([
+      inferName: () =>
+        pipe([
+          switchCase([
             get("certificateFile"),
-            (certificateFile) => fs.readFileSync(certificateFile, "utf-8"),
-            getCommonNameFromCertificate,
-            tap((CN) => {
-              assert(CN);
-            }),
-          ]),
-          pipe([
-            get("DomainName"),
-            tap((DomainName) => {
-              assert(DomainName);
-            }),
+            pipe([
+              get("certificateFile"),
+              (certificateFile) => fs.readFileSync(certificateFile, "utf-8"),
+              getCommonNameFromCertificate,
+              tap((CN) => {
+                assert(CN);
+              }),
+            ]),
+            pipe([
+              get("DomainName"),
+              tap((DomainName) => {
+                assert(DomainName);
+              }),
+            ]),
           ]),
         ]),
-      ]),
       filterLive: () =>
         pipe([
           pick(["DomainName", "SubjectAlternativeNames"]),

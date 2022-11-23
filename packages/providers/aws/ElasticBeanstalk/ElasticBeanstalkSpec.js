@@ -28,7 +28,7 @@ module.exports = pipe([
         "DateUpdated",
         "Versions",
       ],
-      inferName: get("properties.ApplicationName"),
+      inferName: () => get("ApplicationName"),
       propertiesDefault: {},
       dependencies: {
         serviceRole: {
@@ -50,10 +50,10 @@ module.exports = pipe([
         //TODO
         //"ApplicationName",
       ],
-      inferName: ({
-        properties: { VersionLabel },
-        dependenciesSpec: { application },
-      }) => pipe([() => `${application}::${VersionLabel}`])(),
+      inferName:
+        ({ dependenciesSpec: { application } }) =>
+        ({ VersionLabel }) =>
+          pipe([() => `${application}::${VersionLabel}`])(),
       propertiesDefault: {},
       dependencies: {
         application: {
@@ -85,16 +85,15 @@ module.exports = pipe([
         "ApplicationName",
         "PlatformArn",
       ],
-      inferName: ({
-        properties: { EnvironmentName },
-        dependenciesSpec: { application },
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(application);
-          }),
-          () => `${application}::${EnvironmentName}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { application } }) =>
+        ({ EnvironmentName }) =>
+          pipe([
+            tap((params) => {
+              assert(application);
+            }),
+            () => `${application}::${EnvironmentName}`,
+          ])(),
       propertiesDefault: { AbortableOperationInProgress: false },
       dependencies: {
         application: {

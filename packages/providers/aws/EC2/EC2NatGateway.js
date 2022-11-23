@@ -104,13 +104,12 @@ const decorate = ({ endpoint, lives, config }) =>
     }),
   ]);
 
-const disassociateAddress = ({ endpoint, live }) =>
+const disassociateAddress = ({ endpoint }) =>
   pipe([
     tap((params) => {
       assert(live);
       assert(endpoint);
     }),
-    () => live,
     get("NatGatewayAddresses"),
     tap((NatGatewayAddresses) => {
       logger.info(
@@ -143,7 +142,7 @@ const disassociateAddress = ({ endpoint, live }) =>
         ),
       ])
     ),
-  ])();
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
 exports.EC2NatGateway = () => ({

@@ -36,14 +36,16 @@ exports.AmplifyWebhook = () => ({
     "createTime",
     "updateTime",
   ],
-  inferName: ({ properties: { webhookUrl }, dependenciesSpec: { app } }) =>
-    pipe([
-      tap((params) => {
-        assert(app);
-        assert(domainName);
-      }),
-      () => `${app}::${webhookUrl}`,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { app } }) =>
+    ({ webhookUrl }) =>
+      pipe([
+        tap((params) => {
+          assert(app);
+          assert(domainName);
+        }),
+        () => `${app}::${webhookUrl}`,
+      ])(),
   findName:
     ({ lives, config }) =>
     ({ appName, webhookUrl }) =>

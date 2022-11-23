@@ -16,7 +16,7 @@ module.exports = pipe([
     {
       type: "Job",
       Client: GlueJob,
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       omitProperties: [
         "CreatedOn",
         "LastModifiedOn",

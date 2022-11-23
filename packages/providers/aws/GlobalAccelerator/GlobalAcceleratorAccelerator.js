@@ -79,20 +79,22 @@ const model = ({ config }) => ({
   destroy: {
     method: "deleteAccelerator",
     pickId,
-    preDestroy: ({ endpoint, live, getById }) =>
-      pipe([
-        () => ({
-          AcceleratorArn: live.AcceleratorArn,
-          Enabled: false,
-        }),
-        endpoint().updateAccelerator,
-        () =>
-          retryCall({
-            name: `describeAccelerator`,
-            fn: pipe([() => live, getById]),
-            isExpectedResult: eq(get("Status"), "DEPLOYED"),
+    preDestroy:
+      ({ endpoint, getById }) =>
+      (live) =>
+        pipe([
+          () => ({
+            AcceleratorArn: live.AcceleratorArn,
+            Enabled: false,
           }),
-      ])(),
+          endpoint().updateAccelerator,
+          () =>
+            retryCall({
+              name: `describeAccelerator`,
+              fn: pipe([() => live, getById]),
+              isExpectedResult: eq(get("Status"), "DEPLOYED"),
+            }),
+        ])(),
   },
 });
 

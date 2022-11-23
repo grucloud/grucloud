@@ -18,7 +18,7 @@ module.exports = pipe([
     {
       type: "LoadBalancer",
       Client: ELBLoadBalancerV2,
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       dependencies: {
         subnets: {
           type: "Subnet",
@@ -50,7 +50,7 @@ module.exports = pipe([
     {
       type: "TargetGroup",
       Client: ELBTargetGroup,
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       dependencies: {
         vpc: {
           type: "Vpc",
@@ -117,18 +117,17 @@ module.exports = pipe([
       compare: compareELB({
         filterLive: () => pipe([omitIfEmpty(["AlpnPolicy", "Certificates"])]),
       }),
-      inferName: ({
-        properties: { Protocol, Port },
-        dependenciesSpec: { loadBalancer },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(loadBalancer);
-            assert(Protocol);
-            assert(Port);
-          }),
-          () => `listener::${loadBalancer}::${Protocol}::${Port}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { loadBalancer } }) =>
+        ({ Protocol, Port }) =>
+          pipe([
+            tap(() => {
+              assert(loadBalancer);
+              assert(Protocol);
+              assert(Port);
+            }),
+            () => `listener::${loadBalancer}::${Protocol}::${Port}`,
+          ])(),
       filterLive: pipe([
         ({ resource }) =>
           (live) =>
@@ -198,17 +197,16 @@ module.exports = pipe([
             }),
           ]),
       }),
-      inferName: ({
-        properties: { Priority },
-        dependenciesSpec: { listener },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(listener);
-            assert(Priority);
-          }),
-          () => `rule::${listener}::${Priority}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { listener } }) =>
+        ({ Priority }) =>
+          pipe([
+            tap(() => {
+              assert(listener);
+              assert(Priority);
+            }),
+            () => `rule::${listener}::${Priority}`,
+          ])(),
       filterLive: pipe([
         ({ resource }) =>
           (live) =>

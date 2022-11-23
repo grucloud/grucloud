@@ -16,6 +16,19 @@ describe("NetworkFirewall", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("LoggingConfiguration", () =>
+    pipe([
+      () => ({
+        groupType: "NetworkFirewall::LoggingConfiguration",
+        livesNotFound: ({ config }) => [
+          {
+            FirewallPolicyArn: `arn:aws:network-firewall:us-east-1:${config.accountId()}:firewall-policy/blabla`,
+            LoggingConfiguration: { LogDestinationConfigs: "qq" },
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Policy", () =>
     pipe([
       () => ({

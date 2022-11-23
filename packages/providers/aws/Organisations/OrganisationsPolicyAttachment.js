@@ -37,11 +37,16 @@ exports.OrganisationsPolicyAttachment = () => ({
   ignoreErrorCodes: ["PolicyNotFoundException"],
   managedByOther,
   cannotBeDeleted: managedByOther,
-  inferName: pipe([
-    get("dependenciesSpec"),
-    ({ policy, account, root, organisationalUnit }) =>
-      `policy-attach::${policy}::${account || root || organisationalUnit}`,
-  ]),
+  inferName: ({
+    dependenciesSpec: { policy, account, root, organisationalUnit },
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(policy);
+      }),
+      () =>
+        `policy-attach::${policy}::${account || root || organisationalUnit}`,
+    ]),
   findName:
     ({ lives, config }) =>
     (live) =>

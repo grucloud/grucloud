@@ -60,21 +60,23 @@ exports.EKSCluster = ({ spec, config }) => {
       ),
     ])();
 
-  const kubeConfigRemove = ({ arn }) =>
-    pipe([
-      tap(() => {
-        //assert(arn);
-        logger.debug(`kubeConfigRemove: ${arn}`);
-      }),
-      tap.if(
-        () => !process.env.CONTINUOUS_INTEGRATION && arn,
-        pipe([
-          () =>
-            `kubectl config delete-context ${arn}; kubectl config delete-cluster ${arn}`,
-          shellRun,
-        ])
-      ),
-    ])();
+  const kubeConfigRemove =
+    ({ endpoint }) =>
+    ({ arn }) =>
+      pipe([
+        tap(() => {
+          //assert(arn);
+          logger.debug(`kubeConfigRemove: ${arn}`);
+        }),
+        tap.if(
+          () => !process.env.CONTINUOUS_INTEGRATION && arn,
+          pipe([
+            () =>
+              `kubectl config delete-context ${arn}; kubectl config delete-cluster ${arn}`,
+            shellRun,
+          ])
+        ),
+      ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property
 

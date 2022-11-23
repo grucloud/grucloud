@@ -1,5 +1,6 @@
 const assert = require("assert");
-const { tap, pipe } = require("rubico");
+const { tap, pipe, eq, get, omit } = require("rubico");
+const { when } = require("rubico/x");
 
 const { createTagger } = require("../AwsTagger");
 
@@ -31,3 +32,9 @@ exports.untagResource =
       (TagKeys) => ({ ResourceArn: id, TagKeys }),
       endpoint().untagResource,
     ]);
+
+// put it in decorate
+exports.omitEncryptionConfiguration = when(
+  eq(get("EncryptionConfiguration.Type"), "AWS_OWNED_KMS_KEY"),
+  omit(["EncryptionConfiguration"])
+);

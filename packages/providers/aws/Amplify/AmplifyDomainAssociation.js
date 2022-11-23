@@ -35,14 +35,16 @@ exports.AmplifyDomainAssociation = () => ({
     "domainStatus",
     "certificateVerificationDNSRecord",
   ],
-  inferName: ({ properties: { domainName }, dependenciesSpec: { app } }) =>
-    pipe([
-      tap((params) => {
-        assert(app);
-        assert(domainName);
-      }),
-      () => `${app}::${domainName}`,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { app } }) =>
+    ({ domainName }) =>
+      pipe([
+        tap((params) => {
+          assert(app);
+          assert(domainName);
+        }),
+        () => `${app}::${domainName}`,
+      ])(),
   findName:
     ({ lives, config }) =>
     ({ appName, domainName }) =>

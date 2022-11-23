@@ -85,7 +85,7 @@ exports.AthenaWorkGroup = ({ compare }) => ({
   type: "WorkGroup",
   propertiesDefault: {},
   omitProperties: ["CreationTime"],
-  inferName: get("properties.WorkGroup"),
+  inferName: () => get("WorkGroup"),
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
   dependencies: {

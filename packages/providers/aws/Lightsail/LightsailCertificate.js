@@ -72,7 +72,7 @@ const model = ({ config }) => ({
 exports.LightsailCertificate = () => ({
   type: "Certificate",
   propertiesDefault: {},
-  inferName: get("properties.certificateName"),
+  inferName: () => get("certificateName"),
   omitProperties: [
     "createdAt",
     "arn",

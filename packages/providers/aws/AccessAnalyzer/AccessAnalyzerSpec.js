@@ -25,24 +25,23 @@ module.exports = pipe([
         "status",
         "statusReason",
       ],
-      inferName: get("properties.analyzerName"),
+      inferName: () => get("analyzerName"),
     },
     {
       type: "ArchiveRule",
       Client: AccessAnalyzerArchiveRule,
       propertiesDefault: {},
       omitProperties: ["createdAt", "updatedAt", "analyzerName"],
-      inferName: ({
-        properties: { ruleName },
-        dependenciesSpec: { analyzer },
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(analyzer);
-            assert(ruleName);
-          }),
-          () => `${analyzer}::${ruleName}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { analyzer } }) =>
+        ({ ruleName }) =>
+          pipe([
+            tap((params) => {
+              assert(analyzer);
+              assert(ruleName);
+            }),
+            () => `${analyzer}::${ruleName}`,
+          ])(),
       dependencies: {
         analyzer: {
           type: "Analyzer",

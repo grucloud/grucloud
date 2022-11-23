@@ -33,7 +33,7 @@ exports.SecurityHubInsight = () => ({
   client: "SecurityHub",
   propertiesDefault: {},
   omitProperties: ["InsightArn"],
-  inferName: pipe([get("properties"), extractName]),
+  inferName: () => pipe([extractName]),
   findName: () => pipe([extractName]),
   findId: () =>
     pipe([

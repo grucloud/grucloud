@@ -54,8 +54,8 @@ const createModel = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#deleteCoreNetwork-property
   destroy: {
     // TODO
-    // preDestroy: ({ endpoint, live }) =>
-    //   pipe([
+    // preDestroy: ({ endpoint,  }) =>
+    //   live => pipe([
     //     tap((params) => {
     //       assert(true);
     //     }),

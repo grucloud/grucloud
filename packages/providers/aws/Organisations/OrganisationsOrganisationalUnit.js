@@ -73,7 +73,7 @@ exports.OrganisationsOrganisationalUnit = ({}) => ({
     },
   },
   omitProperties: ["Id", "Arn", "ParentId"],
-  inferName: get("properties.Name"),
+  inferName: () => get("Name"),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#describeOrganizationalUnit-property
   getById: {
     method: "describeOrganizationalUnit",

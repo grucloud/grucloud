@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, any, assign, pick, omit } = require("rubico");
-const { defaultsDeep, forEach, callProp } = require("rubico/x");
+const { defaultsDeep, forEach, size } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -116,49 +116,56 @@ exports.AwsIamGroup = ({ spec, config }) => {
       updateAttachedPolicies({ name, diff }),
     ])();
 
-  const removeUserFromGroup = ({ GroupName }) =>
-    pipe([
-      () => ({
-        GroupName,
-        MaxItems: 1e3,
-      }),
-      iam().getGroup,
-      get("Users"),
-      tap((Users = []) => {
-        logger.info(`removeUserFromGroup #users ${Users.length}`);
-      }),
-      forEach(({ UserName }) =>
-        iam().removeUserFromGroup({
+  const removeUserFromGroup =
+    ({ endpoint }) =>
+    ({ GroupName }) =>
+      pipe([
+        tap((params) => {
+          assert(GroupName);
+        }),
+        () => ({
           GroupName,
-          UserName,
-        })
-      ),
-    ])();
+          MaxItems: 1e3,
+        }),
+        endpoint().getGroup,
+        get("Users"),
+        tap((Users = []) => {
+          logger.info(`removeUserFromGroup #users ${size(Users)}`);
+        }),
+        forEach(({ UserName }) =>
+          endpoint().removeUserFromGroup({
+            GroupName,
+            UserName,
+          })
+        ),
+      ])();
 
-  const detachGroupPolicy = ({ GroupName }) =>
-    pipe([
-      tap(() => {
-        assert(GroupName);
-      }),
-      () => ({ GroupName, MaxItems: 1e3 }),
-      iam().listAttachedGroupPolicies,
-      get("AttachedPolicies"),
-      forEach(({ PolicyArn }) => {
-        iam().detachGroupPolicy({
-          PolicyArn,
-          GroupName,
-        });
-      }),
-    ])();
+  const detachGroupPolicy =
+    ({ endpoint }) =>
+    ({ GroupName }) =>
+      pipe([
+        tap(() => {
+          assert(GroupName);
+        }),
+        () => ({ GroupName, MaxItems: 1e3 }),
+        endpoint().listAttachedGroupPolicies,
+        get("AttachedPolicies"),
+        forEach(({ PolicyArn }) => {
+          endpoint().detachGroupPolicy({
+            PolicyArn,
+            GroupName,
+          });
+        }),
+      ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteGroup-property
   const destroy = client.destroy({
     pickId,
-    preDestroy: pipe([
-      get("live"),
-      tap(detachGroupPolicy),
-      tap(removeUserFromGroup),
-    ]),
+    preDestroy: ({ endpoint }) =>
+      pipe([
+        tap(detachGroupPolicy({ endpoint })),
+        tap(removeUserFromGroup({ endpoint })),
+      ]),
     method: "deleteGroup",
     ignoreErrorCodes,
     getById,

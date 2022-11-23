@@ -29,7 +29,7 @@ module.exports = pipe([
     {
       type: "Cell",
       Client: Route53RecoveryReadinessCell,
-      inferName: get("properties.CellName"),
+      inferName: () => get("CellName"),
       dependencies: {
         cells: {
           type: "Cell",
@@ -75,7 +75,7 @@ module.exports = pipe([
             ]),
         },
       },
-      inferName: pipe([get("properties.ReadinessCheckName")]),
+      inferName: () => pipe([get("ReadinessCheckName")]),
       omitProperties: ["ReadinessCheckArn", "ResourceSetName"],
     },
     {
@@ -89,7 +89,7 @@ module.exports = pipe([
           dependencyIds: ({ lives, config }) => get("Cells"),
         },
       },
-      inferName: get("properties.RecoveryGroupName"),
+      inferName: () => get("RecoveryGroupName"),
       omitProperties: ["RecoveryGroupArn", "Cells"],
     },
     {
@@ -105,7 +105,7 @@ module.exports = pipe([
         // },
         ...ResourceSetDependencies,
       },
-      inferName: get("properties.ResourceSetName"),
+      inferName: () => get("ResourceSetName"),
       omitProperties: ["ResourceSetArn"],
       filterLive:
         ({ lives, providerConfig }) =>

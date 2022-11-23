@@ -182,21 +182,23 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
         }),
         ({ ETag }) => ({ IfMatch: ETag, Id: live.Id }),
       ])(),
-    preDestroy: ({ name, live }) =>
-      pipe([
-        () =>
-          update({
-            id: live.Id,
-            name,
-            payload: {
-              DistributionConfig: {
-                ...live,
-                Enabled: false,
-                CallerReference: getNewCallerReference(),
+    preDestroy:
+      ({ name }) =>
+      (live) =>
+        pipe([
+          () =>
+            update({
+              id: live.Id,
+              name,
+              payload: {
+                DistributionConfig: {
+                  ...live,
+                  Enabled: false,
+                  CallerReference: getNewCallerReference(),
+                },
               },
-            },
-          }),
-      ])(),
+            }),
+        ])(),
     method: "deleteDistribution",
     isExpectedResult: () => true,
     shouldRetryOnExceptionCodes: ["DistributionNotDisabled"],

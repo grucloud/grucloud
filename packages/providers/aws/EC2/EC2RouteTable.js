@@ -62,7 +62,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
       ({ vpcName, rtbName }) => `${vpcName}::${rtbName}`,
     ]);
 
-  const routesDelete = ({ live }) =>
+  const routesDelete = () => (live) =>
     pipe([
       () => live,
       get("Routes"),

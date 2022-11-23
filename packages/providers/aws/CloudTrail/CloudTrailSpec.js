@@ -38,7 +38,7 @@ module.exports = pipe([
         "LogFileValidationEnabled",
         "HasInsightSelectors",
       ],
-      inferName: pipe([get("properties.Name")]),
+      inferName: () => pipe([get("Name")]),
       compare: compareCloudTrail({
         filterLive: () => pipe([filterEventSelector]),
       }),
@@ -83,7 +83,7 @@ module.exports = pipe([
     {
       type: "EventDataStore",
       Client: CloudTrailEventDataStore,
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       omitProperties: [],
       // compare: compareCloudTrail({
       //   filterTarget: () => pipe([defaultsDeep({ EventBusName: "default" })]),

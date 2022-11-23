@@ -119,19 +119,18 @@ exports.SSOAdminAccountAssignment = ({ compare }) => ({
     "PrincipalId",
     "PrincipalType",
   ],
-  inferName: ({
-    properties: { PrincipalId },
-    dependenciesSpec: { permissionSet, targetAccount, user, group },
-  }) =>
-    pipe([
-      tap((params) => {
-        assert(permissionSet);
-        assert(targetAccount);
-        assert(user || group || PrincipalId);
-      }),
-      () => `${permissionSet}::${targetAccount}::${user ? user : group}`,
-      prepend("assignment::"),
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { permissionSet, targetAccount, user, group } }) =>
+    ({ PrincipalId }) =>
+      pipe([
+        tap((params) => {
+          assert(permissionSet);
+          assert(targetAccount);
+          assert(user || group || PrincipalId);
+        }),
+        () => `${permissionSet}::${targetAccount}::${user ? user : group}`,
+        prepend("assignment::"),
+      ])(),
   dependencies: {
     identityStore: {
       type: "Instance",

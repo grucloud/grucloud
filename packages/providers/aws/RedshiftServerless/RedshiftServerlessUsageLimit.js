@@ -26,14 +26,16 @@ exports.RedshiftServerlessUsageLimit = () => ({
   client: "RedshiftServerless",
   propertiesDefault: {},
   omitProperties: ["usageLimitArn", "usageLimitId", "resourceArn"],
-  inferName: ({ properties: { usageType }, dependenciesSpec: { workgroup } }) =>
-    pipe([
-      tap((params) => {
-        assert(workgroup);
-        assert(usageType);
-      }),
-      () => `usage-limit::${workgroup}::${usageType}`,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { workgroup } }) =>
+    ({ usageType }) =>
+      pipe([
+        tap((params) => {
+          assert(workgroup);
+          assert(usageType);
+        }),
+        () => `usage-limit::${workgroup}::${usageType}`,
+      ])(),
   findName:
     ({ lives, config }) =>
     (live) =>

@@ -26,12 +26,13 @@ exports.Route53TrafficPolicy = () => ({
   client: "Route53",
   propertiesDefault: {},
   omitProperties: ["Id", "Version"],
-  inferName: pipe([
-    get("properties.Name"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("Name"),

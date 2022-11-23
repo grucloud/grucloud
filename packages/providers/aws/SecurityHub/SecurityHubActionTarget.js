@@ -26,12 +26,13 @@ exports.SecurityHubActionTarget = () => ({
   client: "SecurityHub",
   propertiesDefault: {},
   omitProperties: ["ActionTargetArn"],
-  inferName: pipe([
-    get("properties.Name"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("Name"),

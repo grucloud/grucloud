@@ -18,7 +18,7 @@ module.exports = pipe([
     {
       type: "Connection",
       Client: CodeStarConnectionsConnection,
-      inferName: pipe([get("properties.ConnectionName")]),
+      inferName: () => pipe([get("ConnectionName")]),
       omitProperties: [
         "ConnectionArn",
         "ConnectionStatus",

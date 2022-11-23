@@ -10,7 +10,7 @@ const {
   pick,
   omit,
 } = require("rubico");
-const { defaultsDeep, forEach, pluck } = require("rubico/x");
+const { defaultsDeep, forEach, pluck, size } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamUser" });
 const {
@@ -200,83 +200,102 @@ exports.AwsIamUser = ({ spec, config }) => {
   const update = async ({ name, diff }) =>
     pipe([updateAttachedPolicies({ name, diff })])();
 
-  const destroyAccessKey = ({ UserName }) =>
-    pipe([
-      () => iam().listAccessKeys({ UserName }),
-      get("AccessKeyMetadata"),
-      forEach(({ AccessKeyId }) => {
-        iam().deleteAccessKey({
-          AccessKeyId,
-          UserName,
-        });
-      }),
-    ])();
+  const destroyAccessKey =
+    ({ endpoint }) =>
+    ({ UserName }) =>
+      pipe([
+        () => endpoint().listAccessKeys({ UserName }),
+        get("AccessKeyMetadata"),
+        forEach(({ AccessKeyId }) => {
+          endpoint().deleteAccessKey({
+            AccessKeyId,
+            UserName,
+          });
+        }),
+      ])();
 
-  const removeUserFromGroup = ({ UserName }) =>
-    pipe([
-      () => iam().listGroupsForUser({ UserName }),
-      get("Groups"),
-      tap((Groups = []) => {
-        logger.debug(`removeUserFromGroup: ${Groups.length}`);
-      }),
-      forEach(({ GroupName }) => {
-        iam().removeUserFromGroup({
-          GroupName,
-          UserName,
-        });
-      }),
-    ])();
+  const removeUserFromGroup =
+    ({ endpoint }) =>
+    ({ UserName }) =>
+      pipe([
+        tap((params) => {
+          assert(UserName);
+        }),
+        () => ({ UserName }),
+        endpoint().listGroupsForUser,
+        get("Groups"),
+        tap((Groups = []) => {
+          logger.debug(`removeUserFromGroup: ${size(Groups)}`);
+        }),
+        forEach(({ GroupName }) => {
+          endpoint().removeUserFromGroup({
+            GroupName,
+            UserName,
+          });
+        }),
+      ])();
 
-  const detachUserPolicy = ({ UserName }) =>
-    pipe([
-      () => iam().listAttachedUserPolicies({ UserName, MaxItems: 1e3 }),
-      get("AttachedPolicies"),
-      tap((AttachedPolicies = []) => {
-        logger.debug(`detachUserPolicy: ${AttachedPolicies.length}`);
-      }),
-      forEach(({ PolicyArn }) => {
-        iam().detachUserPolicy({
-          PolicyArn,
-          UserName,
-        });
-      }),
-    ])();
+  const detachUserPolicy =
+    ({ endpoint }) =>
+    ({ UserName }) =>
+      pipe([
+        () => ({ UserName, MaxItems: 1e3 }),
+        endpoint().listAttachedUserPolicies,
+        get("AttachedPolicies"),
+        tap((AttachedPolicies = []) => {
+          logger.debug(`detachUserPolicy: ${AttachedPolicies.length}`);
+        }),
+        forEach(({ PolicyArn }) => {
+          endpoint().detachUserPolicy({
+            PolicyArn,
+            UserName,
+          });
+        }),
+      ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUserPolicy-property
-  const deleteUserPolicy = ({ UserName }) =>
-    pipe([
-      () => iam().listUserPolicies({ UserName, MaxItems: 1e3 }),
-      get("PolicyNames"),
-      tap((PolicyNames = []) => {
-        logger.debug(`deleteUserPolicy: ${PolicyNames.length}`);
-      }),
-      forEach((PolicyName) => {
-        iam().deleteUserPolicy({
-          PolicyName,
-          UserName,
-        });
-      }),
-    ])();
+  const deleteUserPolicy =
+    ({ endpoint }) =>
+    ({ UserName }) =>
+      pipe([
+        () => ({ UserName, MaxItems: 1e3 }),
+        endpoint().listUserPolicies,
+        get("PolicyNames"),
+        tap((PolicyNames = []) => {
+          logger.debug(`deleteUserPolicy: ${PolicyNames.length}`);
+        }),
+        forEach((PolicyName) => {
+          endpoint().deleteUserPolicy({
+            PolicyName,
+            UserName,
+          });
+        }),
+      ])();
 
-  const deleteLoginProfile = ({ UserName }) =>
-    tryCatch(
-      pipe([() => ({ UserName }), iam().deleteLoginProfile]),
-      throwIfNotAwsError("NoSuchEntityException")
-    )();
+  const deleteLoginProfile =
+    ({ endpoint }) =>
+    ({ UserName }) =>
+      tryCatch(
+        pipe([() => ({ UserName }), endpoint().deleteLoginProfile]),
+        throwIfNotAwsError("NoSuchEntityException")
+      )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
   const destroy = client.destroy({
     pickId,
-    preDestroy: pipe([
-      get("live"),
-      pick(["UserName"]),
-      fork({
-        userFromGroup: removeUserFromGroup,
-        deletePolicy: pipe([tap(detachUserPolicy), deleteUserPolicy]),
-        loginProfile: deleteLoginProfile,
-        accessKey: destroyAccessKey,
-      }),
-    ]),
+    preDestroy: ({ endpoint }) =>
+      pipe([
+        pick(["UserName"]),
+        fork({
+          userFromGroup: removeUserFromGroup({ endpoint }),
+          deletePolicy: pipe([
+            tap(detachUserPolicy({ endpoint })),
+            deleteUserPolicy({ endpoint }),
+          ]),
+          loginProfile: deleteLoginProfile({ endpoint }),
+          accessKey: destroyAccessKey({ endpoint }),
+        }),
+      ]),
     method: "deleteUser",
     ignoreErrorCodes,
     getById,

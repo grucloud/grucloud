@@ -38,7 +38,7 @@ module.exports = pipe([
         "VersionId",
         "Rules[].RuleId",
       ],
-      inferName: get("properties.BackupPlanName"),
+      inferName: () => get("BackupPlanName"),
       dependencies: {
         backupVaults: {
           type: "BackupVault",
@@ -75,7 +75,7 @@ module.exports = pipe([
         "SelectionId",
         "IamRoleArn",
       ],
-      inferName: get("properties.SelectionName"),
+      inferName: () => get("SelectionName"),
       dependencies: {
         backupPlan: {
           type: "BackupPlan",
@@ -105,7 +105,7 @@ module.exports = pipe([
         "MaxRetentionDays",
         "MinRetentionDays",
       ],
-      inferName: get("properties.BackupVaultName"),
+      inferName: () => get("BackupVaultName"),
       dependencies: {
         kmsKey: {
           type: "Key",
@@ -120,7 +120,8 @@ module.exports = pipe([
       Client: BackupBackupVaultLockConfiguration,
       propertiesDefault: {},
       omitProperties: ["BackupVaultName"],
-      inferName: get("dependenciesSpec.backupVault"),
+      inferName: ({ dependenciesSpec: { backupVault } }) =>
+        pipe([() => backupVault]),
       dependencies: {
         backupVault: {
           type: "BackupVault",
@@ -134,7 +135,9 @@ module.exports = pipe([
       type: "BackupVaultNotification",
       Client: BackupBackupVaultNotification,
       omitProperties: ["BackupVaultName", "BackupVaultArn", "SNSTopicArn"],
-      inferName: get("dependenciesSpec.backupVault"),
+
+      inferName: ({ dependenciesSpec: { backupVault } }) =>
+        pipe([() => backupVault]),
       dependencies: {
         backupVault: {
           type: "BackupVault",
@@ -153,7 +156,8 @@ module.exports = pipe([
       type: "BackupVaultPolicy",
       Client: BackupBackupVaultPolicy,
       omitProperties: ["BackupVaultName", "BackupVaultArn"],
-      inferName: get("dependenciesSpec.backupVault"),
+      inferName: ({ dependenciesSpec: { backupVault } }) =>
+        pipe([() => backupVault]),
       dependencies: {
         backupVault: {
           type: "BackupVault",
@@ -183,14 +187,14 @@ module.exports = pipe([
         "NumberOfControls",
         "CreationTime",
       ],
-      inferName: get("properties.FrameworkName"),
+      inferName: () => get("FrameworkName"),
     },
     {
       type: "GlobalSettings",
       Client: BackupGlobalSettings,
       propertiesDefault: {},
       omitProperties: ["LastUpdateTime"],
-      inferName: () => "global",
+      inferName: () => () => "global",
       ignoreResource: () =>
         pipe([get("live"), eq(get("isCrossAccountBackupEnabled"), "false")]),
     },
@@ -199,7 +203,7 @@ module.exports = pipe([
       Client: BackupRegionSettings,
       propertiesDefault: {},
       omitProperties: [],
-      inferName: () => "region",
+      inferName: () => () => "region",
       ignoreResource: () => true,
     },
     {
@@ -214,7 +218,7 @@ module.exports = pipe([
         "LastSuccessfulExecutionTime",
         "ReportSetting.NumberOfFrameworks",
       ],
-      inferName: get("properties.ReportPlanName"),
+      inferName: () => get("ReportPlanName"),
       dependencies: {
         s3Bucket: {
           type: "Bucket",

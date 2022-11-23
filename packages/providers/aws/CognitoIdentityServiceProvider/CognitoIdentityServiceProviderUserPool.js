@@ -52,12 +52,13 @@ exports.CognitoIdentityServiceProviderUserPool = () => ({
   type: "UserPool",
   package: "cognito-identity-provider",
   client: "CognitoIdentityProvider",
-  inferName: pipe([
-    get("properties.PoolName"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("PoolName"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("PoolName"),

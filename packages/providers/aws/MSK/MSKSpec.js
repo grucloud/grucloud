@@ -25,7 +25,7 @@ module.exports = pipe([
         "Revision",
       ],
       propertiesDefault: {},
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       filterLive: ({ lives, providerConfig }) =>
         pipe([omitIfEmpty(["KafkaVersions"])]),
     },
@@ -41,7 +41,7 @@ module.exports = pipe([
         "CurrentVersion",
       ],
       propertiesDefault: {},
-      inferName: get("properties.ClusterName"),
+      inferName: () => get("ClusterName"),
       dependencies: {
         subnets: {
           type: "Subnet",

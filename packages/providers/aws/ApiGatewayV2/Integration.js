@@ -118,9 +118,8 @@ exports.Integration = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#removePermission-property
-  const lambdaRemovePermission = ({ live }) =>
+  const lambdaRemovePermission = ({ endpoint }) =>
     pipe([
-      () => live,
       tap.if(
         and([
           eq(get("IntegrationType"), "AWS_PROXY"),
@@ -143,7 +142,7 @@ exports.Integration = ({ spec, config }) => {
           ),
         ])
       ),
-    ])();
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteIntegration-property
   const destroy = client.destroy({

@@ -16,7 +16,7 @@ module.exports = pipe([
     {
       type: "Stream",
       Client: KinesisStream,
-      inferName: get("properties.StreamName"),
+      inferName: () => get("StreamName"),
       omitProperties: [
         "StreamARN",
         "StreamCreationTimestamp",

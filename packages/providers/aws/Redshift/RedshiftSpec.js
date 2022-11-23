@@ -73,7 +73,7 @@ module.exports = pipe([
         "VpcSecurityGroupIds", //TODO
         "TotalStorageCapacityInMegaBytes",
       ],
-      inferName: get("properties.ClusterIdentifier"),
+      inferName: () => get("ClusterIdentifier"),
       dependencies: {
         clusterSubnetGroup: {
           type: "ClusterSubnetGroup",
@@ -144,13 +144,13 @@ module.exports = pipe([
       type: "ClusterParameterGroup",
       Client: RedshiftClusterParameterGroup,
       omitProperties: [],
-      inferName: get("properties.ParameterGroupName"),
+      inferName: () => get("ParameterGroupName"),
     },
     {
       type: "ClusterSubnetGroup",
       Client: RedshiftClusterSubnetGroup,
       omitProperties: ["VpcId", "SubnetGroupStatus", "Subnets", "SubnetIds"],
-      inferName: get("properties.ClusterSubnetGroupName"),
+      inferName: () => get("ClusterSubnetGroupName"),
       dependencies: {
         subnets: {
           type: "Subnet",

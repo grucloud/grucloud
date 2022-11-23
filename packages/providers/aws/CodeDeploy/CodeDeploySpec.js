@@ -20,18 +20,18 @@ module.exports = pipe([
     {
       type: "Application",
       Client: CodeDeployApplication,
-      inferName: pipe([get("properties.applicationName")]),
+      inferName: () => pipe([get("applicationName")]),
       omitProperties: ["applicationId", "createTime", "linkedToGitHub"],
       propertiesDefault: {},
     },
     {
       type: "DeploymentGroup",
       Client: CodeDeployDeploymentGroup,
-      inferName: pipe([
-        get("properties"),
-        ({ applicationName, deploymentGroupName }) =>
-          `${applicationName}::${deploymentGroupName}`,
-      ]),
+      inferName: () =>
+        pipe([
+          ({ applicationName, deploymentGroupName }) =>
+            `${applicationName}::${deploymentGroupName}`,
+        ]),
       dependencies: {
         application: {
           type: "Application",

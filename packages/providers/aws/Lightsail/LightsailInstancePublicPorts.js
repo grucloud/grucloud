@@ -67,7 +67,13 @@ exports.LightsailInstancePublicPorts = ({ compare }) => ({
   type: "InstancePublicPorts",
   propertiesDefault: {},
   omitProperties: ["instanceName", "portInfos[].state"],
-  inferName: pipe([get("dependenciesSpec.instance")]),
+  inferName: ({ dependenciesSpec: { instance } }) =>
+    pipe([
+      tap((params) => {
+        assert(instance);
+      }),
+      () => instance,
+    ]),
   dependencies: {
     instance: {
       type: "Instance",

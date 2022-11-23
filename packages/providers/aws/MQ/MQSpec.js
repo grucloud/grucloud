@@ -32,7 +32,7 @@ module.exports = pipe([
         "Logs.GeneralLogGroup",
       ],
       propertiesDefault: {},
-      inferName: get("properties.BrokerName"),
+      inferName: () => get("BrokerName"),
       dependencies: {
         configuration: {
           type: "Configuration",
@@ -136,7 +136,7 @@ module.exports = pipe([
         "Revision",
       ],
       propertiesDefault: {},
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
     },
   ],
   map(

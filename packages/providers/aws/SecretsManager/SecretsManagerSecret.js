@@ -69,7 +69,7 @@ exports.SecretsManagerSecret = ({ compare }) => ({
   type: "Secret",
   package: "secrets-manager",
   client: "SecretsManager",
-  inferName: get("properties.Name"),
+  inferName: () => get("Name"),
   findName: findNameInTagsOrId({ findId: () => get("Name") }),
   findId: () => pipe([get("ARN")]),
   managedByOther,

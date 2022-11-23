@@ -236,14 +236,15 @@ exports.KmsKey = ({ spec, config }) => {
     ])();
 
   const destroy = client.destroy({
-    postDestroy: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      pickId,
-      defaultsDeep({ PendingWindowInDays: 7 }),
-      (params) => kms().scheduleKeyDeletion(params),
-    ]),
+    postDestroy: ({ endpoint }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        pickId,
+        defaultsDeep({ PendingWindowInDays: 7 }),
+        endpoint().scheduleKeyDeletion,
+      ]),
     pickId,
     method: "disableKey",
     getById,

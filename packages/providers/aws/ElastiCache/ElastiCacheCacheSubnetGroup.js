@@ -22,7 +22,7 @@ exports.ElastiCacheCacheSubnetGroup = () => ({
   package: "elasticache",
   client: "ElastiCache",
   ignoreErrorCodes: ["CacheSubnetGroupNotFoundFault"],
-  inferName: get("properties.CacheSubnetGroupName"),
+  inferName: () => get("CacheSubnetGroupName"),
   findName: () => pipe([get("CacheSubnetGroupName")]),
   findId: () => pipe([get("CacheSubnetGroupName")]),
   propertiesDefault: { SupportedNetworkTypes: ["ipv4"] },

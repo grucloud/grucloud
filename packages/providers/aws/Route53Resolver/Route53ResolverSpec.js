@@ -45,12 +45,13 @@ module.exports = pipe([
         "IpAddresses[].Status",
         "IpAddresses[].StatusMessage",
       ],
-      inferName: pipe([
-        get("properties.Name"),
-        tap((Name) => {
-          assert(Name);
-        }),
-      ]),
+      inferName: () =>
+        pipe([
+          get("Name"),
+          tap((Name) => {
+            assert(Name);
+          }),
+        ]),
       dependencies: {
         securityGroups: {
           type: "SecurityGroup",
@@ -127,12 +128,13 @@ module.exports = pipe([
         "CreationTime",
         "ModificationTime",
       ],
-      inferName: pipe([
-        get("properties.Name"),
-        tap((Name) => {
-          assert(Name);
-        }),
-      ]),
+      inferName: () =>
+        pipe([
+          get("Name"),
+          tap((Name) => {
+            assert(Name);
+          }),
+        ]),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
           tap((params) => {
@@ -196,8 +198,16 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) => get("VPCId"),
         },
       },
-      inferName: ({ properties, dependenciesSpec: { resolverRule, vpc } }) =>
-        pipe([() => `rule-assoc::${resolverRule}::${vpc}`])(),
+      inferName:
+        ({ dependenciesSpec: { resolverRule, vpc } }) =>
+        () =>
+          pipe([
+            tap((params) => {
+              assert(resolverRule);
+              assert(vpc);
+            }),
+            () => `rule-assoc::${resolverRule}::${vpc}`,
+          ])(),
       omitProperties: [
         "Id",
         "Status",

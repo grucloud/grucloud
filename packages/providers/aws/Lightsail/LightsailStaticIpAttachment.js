@@ -75,7 +75,13 @@ exports.LightsailStaticIpAttachment = ({ compare }) => ({
   type: "StaticIpAttachment",
   propertiesDefault: {},
   omitProperties: ["staticIpName", "instanceName"],
-  inferName: pipe([get("dependenciesSpec.staticIp")]),
+  inferName: ({ dependenciesSpec: { staticIp } }) =>
+    pipe([
+      tap((params) => {
+        assert(staticIp);
+      }),
+      () => staticIp,
+    ]),
   dependencies: {
     staticIp: {
       type: "StaticIp",

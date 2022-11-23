@@ -25,7 +25,7 @@ exports.CognitoIdentityServiceProviderIdentityProvider = () => ({
   type: "IdentityProvider",
   package: "cognito-identity-provider",
   client: "CognitoIdentityProvider",
-  inferName: get("properties.ProviderName"),
+  inferName: () => get("ProviderName"),
   dependencies: {
     userPool: {
       type: "UserPool",

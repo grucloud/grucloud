@@ -37,14 +37,16 @@ exports.AmplifyBranch = () => ({
     "activeJobId",
     "backendEnvironmentArn",
   ],
-  inferName: ({ properties: { branchName }, dependenciesSpec: { app } }) =>
-    pipe([
-      tap((params) => {
-        assert(app);
-        assert(branchName);
-      }),
-      () => `${app}::${branchName}`,
-    ])(),
+  inferName:
+    ({ dependenciesSpec: { app } }) =>
+    ({ branchName }) =>
+      pipe([
+        tap((params) => {
+          assert(app);
+          assert(branchName);
+        }),
+        () => `${app}::${branchName}`,
+      ])(),
   findName:
     ({ lives, config }) =>
     (live) =>

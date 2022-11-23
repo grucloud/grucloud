@@ -23,7 +23,7 @@ module.exports = pipe([
         "createdAt",
         "updatedAt",
       ],
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       propertiesDefault: {
         autoStartConfiguration: {
           enabled: true,

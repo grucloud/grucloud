@@ -1,21 +1,113 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, omit } = require("rubico");
+const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep, pluck } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./NetworkFirewallCommon");
+const {
+  tagResource,
+  untagResource,
+  omitEncryptionConfiguration,
+} = require("./NetworkFirewallCommon");
 
 const pickId = pipe([pick(["FirewallPolicyArn"])]);
 
-const createModel = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkFirewallPolicy.html
+exports.FirewallPolicy = ({ compare }) => ({
+  type: "Policy",
   package: "network-firewall",
   client: "NetworkFirewall",
+  findName: () => pipe([get("FirewallPolicyName")]),
+  findId: () => pipe([get("FirewallPolicyArn")]),
   ignoreErrorCodes: [
     "ResourceNotFoundException",
     "InvalidFirewallPolicyID.NotFound",
   ],
+  inferName: () => pipe([get("FirewallPolicyName")]),
+  compare: compare({
+    filterLive: () => pipe([omitEncryptionConfiguration]),
+  }),
+  omitProperties: [
+    "ConsumedStatefulRuleCapacity",
+    "ConsumedStatelessRuleCapacity",
+    "FirewallPolicyArn",
+    "FirewallPolicyId",
+    "FirewallPolicyStatus",
+    "LastModifiedTime",
+    "NumberOfAssociations",
+  ],
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      omitEncryptionConfiguration,
+      assign({
+        FirewallPolicy: pipe([
+          get("FirewallPolicy"),
+          assign({
+            StatefulRuleGroupReferences: pipe([
+              get("StatefulRuleGroupReferences"),
+              map(
+                pipe([
+                  assign({
+                    ResourceArn: pipe([
+                      get("ResourceArn"),
+                      replaceWithName({
+                        groupType: "NetworkFirewall::RuleGroup",
+                        path: "id",
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  }),
+                ])
+              ),
+            ]),
+            StatelessRuleGroupReferences: pipe([
+              get("StatelessRuleGroupReferences"),
+              map(
+                pipe([
+                  assign({
+                    ResourceArn: pipe([
+                      get("ResourceArn"),
+                      replaceWithName({
+                        groupType: "NetworkFirewall::RuleGroup",
+                        path: "id",
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  }),
+                ])
+              ),
+            ]),
+          }),
+        ]),
+      }),
+    ]),
+  dependencies: {
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      dependencyId: ({ lives, config }) => get("EncryptionConfiguration.KeyId"),
+    },
+    ruleGroups: {
+      type: "RuleGroup",
+      group: "NetworkFirewall",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("FirewallPolicy"),
+          ({
+            StatefulRuleGroupReferences = [],
+            StatelessRuleGroupReferences = [],
+          }) => [
+            ...StatefulRuleGroupReferences,
+            ...StatelessRuleGroupReferences,
+          ],
+          pluck("ResourceArn"),
+        ]),
+    },
+  },
   getById: {
     method: "describeFirewallPolicy",
     decorate:
@@ -54,30 +146,21 @@ const createModel = ({ config }) => ({
       "Unable to delete the object because it is still in use",
     ],
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkFirewallPolicy.html
-exports.FirewallPolicy = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagResource: tagResource,
+  untagResource: untagResource,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    //TODO
+    dependencies: { kmskey },
     config,
-    findName: () => pipe([get("FirewallPolicyName")]),
-    findId: () => pipe([get("FirewallPolicyArn")]),
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      //TODO
-      dependencies: { kmskey },
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+      }),
+    ])(),
+});

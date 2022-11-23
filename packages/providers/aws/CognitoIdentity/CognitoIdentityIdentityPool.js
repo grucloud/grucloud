@@ -78,12 +78,13 @@ exports.CognitoIdentityIdentityPool = ({ compare }) => ({
   client: "CognitoIdentity",
   propertiesDefault: {},
   omitProperties: ["IdentityPoolId", "Arn"],
-  inferName: pipe([
-    get("properties.IdentityPoolName"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("IdentityPoolName"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("IdentityPoolName"),

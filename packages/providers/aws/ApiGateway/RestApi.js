@@ -520,25 +520,27 @@ const model = ({ config }) => ({
       ]),
   },
   update: {
-    preUpdate: ({ name, payload, live, diff, programOptions }) =>
-      pipe([
-        () => diff,
-        when(
-          or([
-            get("liveDiff.updated.schema"),
-            get("liveDiff.added.schema"),
-            get("liveDiff.deleted.schema"),
-          ]),
-          pipe([
-            //TODO
-            () => ({ restApiId: live.id, ...payload.deployment }),
-            tap(() => {
-              logger.info(`createDeployment ${name}`);
-            }),
-            endpoint().createDeployment,
-          ])
-        ),
-      ]),
+    preUpdate:
+      ({ name, payload, diff, programOptions }) =>
+      (live) =>
+        pipe([
+          () => diff,
+          when(
+            or([
+              get("liveDiff.updated.schema"),
+              get("liveDiff.added.schema"),
+              get("liveDiff.deleted.schema"),
+            ]),
+            pipe([
+              //TODO
+              () => ({ restApiId: live.id, ...payload.deployment }),
+              tap(() => {
+                logger.info(`createDeployment ${name}`);
+              }),
+              endpoint().createDeployment,
+            ])
+          ),
+        ])(),
     method: "updateRestApi",
     filterParams: ({ payload, live, diff }) =>
       pipe([

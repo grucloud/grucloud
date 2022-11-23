@@ -16,7 +16,7 @@ module.exports = pipe([
     {
       type: "Table",
       Client: DynamoDBTable,
-      inferName: get("properties.TableName"),
+      inferName: () => get("TableName"),
       omitProperties: [
         "TableSizeBytes",
         "ItemCount",
@@ -86,11 +86,14 @@ module.exports = pipe([
       type: "KinesisStreamingDestination",
       Client: DynamoDBKinesisStreamingDestination,
       omitProperties: ["TableName", "StreamArn", "DestinationStatus"],
-      inferName: pipe([
-        get("dependenciesSpec"),
-        ({ table, kinesisStream }) =>
-          `table-kinesis-stream::${table}::${kinesisStream}`,
-      ]),
+      inferName: ({ dependenciesSpec: { table, kinesisStream } }) =>
+        pipe([
+          tap((params) => {
+            assert(table);
+            assert(kinesisStream);
+          }),
+          () => `table-kinesis-stream::${table}::${kinesisStream}`,
+        ]),
       dependencies: {
         table: {
           type: "Table",

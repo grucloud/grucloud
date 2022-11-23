@@ -115,10 +115,8 @@ exports.addIcmpPorts = addIcmpPorts;
 
 exports.inferNameSecurityGroupRule =
   ({ kind }) =>
-  ({
-    properties: { ...IpPermission },
-    dependenciesSpec: { securityGroup, securityGroupFrom },
-  }) =>
+  ({ dependenciesSpec: { securityGroup, securityGroupFrom } }) =>
+  ({ ...IpPermission }) =>
     pipe([
       tap(() => {
         assert(securityGroup);

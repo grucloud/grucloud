@@ -195,11 +195,12 @@ exports.EC2Vpc = ({ spec, config }) => {
       ),
     ])();
 
-  const destroySubnets = ({ VpcId }) =>
-    pipe([
-      // Get the subnets belonging to this Vpc
-      () =>
-        ec2().describeSubnets({
+  const destroySubnets =
+    ({ endpoint }) =>
+    ({ VpcId }) =>
+      pipe([
+        // Get the subnets belonging to this Vpc
+        () => ({
           Filters: [
             {
               Name: "vpc-id",
@@ -207,38 +208,41 @@ exports.EC2Vpc = ({ spec, config }) => {
             },
           ],
         }),
-      get("Subnets"),
-      // Loop through the subnets
-      filter(not(get("DefaultForAz"))),
-      map(
-        tryCatch(
-          pipe([
-            tap(({ SubnetId }) => {
-              logger.debug(`destroy vpc, deleteSubnet SubnetId: ${SubnetId}`);
-            }),
-            ({ SubnetId }) => ec2().deleteSubnet({ SubnetId }),
-          ]),
-          (error, subnet) =>
+        endpoint().describeSubnets,
+        get("Subnets"),
+        // Loop through the subnets
+        filter(not(get("DefaultForAz"))),
+        map(
+          tryCatch(
             pipe([
-              tap(() => {
-                logger.error(
-                  `deleteSubnet: ${tos(subnet)}, error ${tos(error)}`
-                );
+              tap(({ SubnetId }) => {
+                logger.debug(`destroy vpc, deleteSubnet SubnetId: ${SubnetId}`);
               }),
-              () => ({ error, subnet }),
-            ])()
-        )
-      ),
-    ])();
+              pick(["SubnetId"]),
+              endpoint().deleteSubnet,
+            ]),
+            (error, subnet) =>
+              pipe([
+                tap(() => {
+                  logger.error(
+                    `deleteSubnet: ${tos(subnet)}, error ${tos(error)}`
+                  );
+                }),
+                () => ({ error, subnet }),
+              ])()
+          )
+        ),
+      ])();
 
-  const destroySecurityGroup = ({ VpcId }) =>
-    pipe([
-      tap(() => {
-        logger.debug(`vpc destroySecurityGroup: VpcId: ${VpcId}`);
-      }),
-      // Get the security groups belonging to this Vpc
-      () =>
-        ec2().describeSecurityGroups({
+  const destroySecurityGroup =
+    ({ endpoint }) =>
+    ({ VpcId }) =>
+      pipe([
+        tap(() => {
+          logger.debug(`vpc destroySecurityGroup: VpcId: ${VpcId}`);
+        }),
+        // Get the security groups belonging to this Vpc
+        () => ({
           Filters: [
             {
               Name: "vpc-id",
@@ -246,47 +250,47 @@ exports.EC2Vpc = ({ spec, config }) => {
             },
           ],
         }),
-      get("SecurityGroups"),
-      // remove the default security groups
-      filter(not(eq(get("GroupName"), "default"))),
-      tap((securityGroups) => {
-        logger.info(
-          `vpc destroySecurityGroup: VpcId: ${VpcId} #securityGroups ${size(
-            securityGroups
-          )}`
-        );
-      }),
-      map(
-        tryCatch(
-          pipe([
-            tap(({ GroupId }) => {
-              logger.debug(`destroySecurityGroup: GroupId: ${GroupId}`);
-            }),
-            ({ GroupId }) =>
-              ec2().deleteSecurityGroup({
-                GroupId,
-              }),
-          ]),
-          (error, securityGroup) =>
+        endpoint().describeSecurityGroups,
+        get("SecurityGroups"),
+        // remove the default security groups
+        filter(not(eq(get("GroupName"), "default"))),
+        tap((securityGroups) => {
+          logger.info(
+            `vpc destroySecurityGroup: VpcId: ${VpcId} #securityGroups ${size(
+              securityGroups
+            )}`
+          );
+        }),
+        map(
+          tryCatch(
             pipe([
-              tap(() => {
-                logger.error(
-                  `deleteSecurityGroup: ${tos(securityGroup)}, error ${tos(
-                    error
-                  )}`
-                );
+              tap(({ GroupId }) => {
+                logger.debug(`destroySecurityGroup: GroupId: ${GroupId}`);
               }),
-              () => ({ error, securityGroup }),
-            ])()
-        )
-      ),
-    ])();
+              pick(["GroupId"]),
+              endpoint().deleteSecurityGroup,
+            ]),
+            (error, securityGroup) =>
+              pipe([
+                tap(() => {
+                  logger.error(
+                    `deleteSecurityGroup: ${tos(securityGroup)}, error ${tos(
+                      error
+                    )}`
+                  );
+                }),
+                () => ({ error, securityGroup }),
+              ])()
+          )
+        ),
+      ])();
 
-  const destroyRouteTables = ({ VpcId }) =>
-    pipe([
-      // Get the route tables belonging to this Vpc
-      () =>
-        ec2().describeRouteTables({
+  const destroyRouteTables =
+    ({ endpoint }) =>
+    ({ VpcId }) =>
+      pipe([
+        // Get the route tables belonging to this Vpc
+        () => ({
           Filters: [
             {
               Name: "vpc-id",
@@ -294,48 +298,47 @@ exports.EC2Vpc = ({ spec, config }) => {
             },
           ],
         }),
-      get("RouteTables"),
-      // Loop through the route tables
-      tap((RouteTables) => {
-        logger.debug(`destroy vpc, RouteTables: ${tos(RouteTables)}`);
-      }),
-      filter(pipe([get("Associations"), isEmpty])),
-      map(
-        tryCatch(
-          pipe([
-            tap(({ RouteTableId }) => {
-              logger.debug(
-                `destroy vpc, deleteRouteTable RouteTableId: ${tos(
-                  RouteTableId
-                )})}`
-              );
-            }),
-            ({ RouteTableId }) =>
-              ec2().deleteRouteTable({
-                RouteTableId,
-              }),
-          ]),
-          (error, routeTable) =>
+        endpoint().describeRouteTables,
+        get("RouteTables"),
+        // Loop through the route tables
+        tap((RouteTables) => {
+          logger.debug(`destroy vpc, RouteTables: ${tos(RouteTables)}`);
+        }),
+        filter(pipe([get("Associations"), isEmpty])),
+        map(
+          tryCatch(
             pipe([
-              tap(() => {
-                logger.error(
-                  `deleteRouteTable: ${tos(routeTable)}, error ${tos(error)}`
+              tap(({ RouteTableId }) => {
+                logger.debug(
+                  `destroy vpc, deleteRouteTable RouteTableId: ${tos(
+                    RouteTableId
+                  )})}`
                 );
               }),
-              () => ({ error, routeTable }),
-            ])()
-        )
-      ),
-    ])();
+              pick(["RouteTableId"]),
+              endpoint().deleteRouteTable,
+            ]),
+            (error, routeTable) =>
+              pipe([
+                tap(() => {
+                  logger.error(
+                    `deleteRouteTable: ${tos(routeTable)}, error ${tos(error)}`
+                  );
+                }),
+                () => ({ error, routeTable }),
+              ])()
+          )
+        ),
+      ])();
 
   const destroy = client.destroy({
     pickId,
-    preDestroy: pipe([
-      get("live"),
-      tap(destroySubnets),
-      tap(destroySecurityGroup),
-      tap(destroyRouteTables),
-    ]),
+    preDestroy: ({ endpoint }) =>
+      pipe([
+        tap(destroySubnets({ endpoint })),
+        tap(destroySecurityGroup({ endpoint })),
+        tap(destroyRouteTables({ endpoint })),
+      ]),
     method: "deleteVpc",
     getById,
     ignoreErrorCodes: ["InvalidVpcID.NotFound"],
@@ -346,6 +349,7 @@ exports.EC2Vpc = ({ spec, config }) => {
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: { ipamPoolIpv4, ipamPoolIpv6 },
+    config,
   }) =>
     pipe([
       () => otherProps,

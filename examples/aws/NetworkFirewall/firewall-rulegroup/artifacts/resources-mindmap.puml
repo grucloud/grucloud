@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project firewall-rulegroup
+skinparam monochrome true
++ Infra
+++ aws
++++ NetworkFirewall
+++++ RuleGroup (1)
+@endmindmap

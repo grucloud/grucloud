@@ -88,12 +88,13 @@ exports.RDSDBSubnetGroup = ({ compare }) => ({
     "DBSubnetGroupArn",
     "SubnetIds",
   ],
-  inferName: pipe([
-    get("properties.DBSubnetGroupName"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("DBSubnetGroupName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
   // compare: compare({
   //   filterTarget: () => pipe([omit(["compare"])]),
   // }),

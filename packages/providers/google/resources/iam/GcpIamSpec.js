@@ -45,7 +45,7 @@ module.exports = () =>
     {
       type: "ServiceAccount",
       Client: GcpServiceAccount,
-      inferName: pipe([get("properties.accountId")]),
+      inferName: () => pipe([get("accountId")]),
       //TODO remove
       methods: {
         get: {
@@ -105,7 +105,7 @@ module.exports = () =>
       dependencies: {
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       },
-      inferName: pipe([get("properties.role")]),
+      inferName: () => pipe([get("role")]),
       Client: GcpIamBinding,
       isOurMinion: isOurMinionIamBinding,
       compare: compareGoogle({

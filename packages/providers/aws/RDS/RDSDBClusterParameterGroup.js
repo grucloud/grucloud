@@ -102,7 +102,7 @@ exports.RDSDBClusterParameterGroup = ({ compare }) => ({
     "DBClusterParameterGroupArn",
     "SubnetIds",
   ],
-  inferName: get("properties.DBClusterParameterGroupName"),
+  inferName: () => get("DBClusterParameterGroupName"),
   // compare: compare({
   //   filterTarget: () => pipe([omit(["compare"])]),
   // }),

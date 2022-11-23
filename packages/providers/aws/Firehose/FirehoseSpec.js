@@ -35,7 +35,7 @@ module.exports = pipe([
     {
       type: "DeliveryStream",
       Client: FirehoseDeliveryStream,
-      inferName: get("properties.DeliveryStreamName"),
+      inferName: () => get("DeliveryStreamName"),
       omitProperties: [],
       propertiesDefault: {},
       compare: compareAws({ filterTarget: () => pipe([omit([])]) }),

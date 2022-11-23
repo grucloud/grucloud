@@ -23,7 +23,7 @@ module.exports = pipe([
     {
       type: "DelegatedAdminAccount",
       Client: Inspector2DelegatedAdminAccount,
-      inferName: () => "default",
+      inferName: () => () => "default",
       omitProperties: ["status", "delegatedAdminAccountId"],
       dependencies: {
         account: {
@@ -37,7 +37,7 @@ module.exports = pipe([
       type: "Enabler",
       Client: Inspector2Enabler,
       ignoreResource: () => pipe([get("live.resourceTypes"), isEmpty]),
-      inferName: () => "default",
+      inferName: () => () => "default",
       compare: compareInspector2({
         filterAll: () => pipe([omit(["accountIds"])]),
       }),
@@ -46,7 +46,7 @@ module.exports = pipe([
     {
       type: "OrganizationConfiguration",
       Client: Inspector2OrganizationConfiguration,
-      inferName: () => "default",
+      inferName: () => () => "default",
       omitProperties: ["maxAccountLimitReached"],
       ignoreResource: () =>
         pipe([

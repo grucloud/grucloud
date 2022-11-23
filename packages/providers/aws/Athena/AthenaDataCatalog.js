@@ -81,7 +81,7 @@ exports.AthenaDataCatalog = ({ compare }) => ({
   type: "DataCatalog",
   propertiesDefault: {},
   omitProperties: [],
-  inferName: get("properties.Name"),
+  inferName: () => get("Name"),
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
   Client: ({ spec, config }) =>

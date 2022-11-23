@@ -48,7 +48,7 @@ module.exports = pipe([
     {
       type: "DomainName",
       Client: DomainName,
-      inferName: get("properties.DomainName"),
+      inferName: () => get("DomainName"),
       propertiesDefault: {
         ApiMappingSelectionExpression: "$request.basepath",
       },
@@ -78,7 +78,7 @@ module.exports = pipe([
         DisableExecuteApiEndpoint: false,
         RouteSelectionExpression: "$request.method $request.path",
       },
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       omitProperties: [
         "ApiEndpoint",
         "ApiId",
@@ -96,14 +96,16 @@ module.exports = pipe([
     {
       type: "Stage",
       Client: Stage,
-      inferName: ({ properties: { StageName }, dependenciesSpec: { api } }) =>
-        pipe([
-          tap(() => {
-            assert(StageName);
-            assert(api);
-          }),
-          () => `${api}::${StageName}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { api } }) =>
+        ({ StageName }) =>
+          pipe([
+            tap(() => {
+              assert(StageName);
+              assert(api);
+            }),
+            () => `${api}::${StageName}`,
+          ])(),
       propertiesDefault: {
         RouteSettings: {},
         DefaultRouteSettings: {
@@ -138,7 +140,7 @@ module.exports = pipe([
     {
       type: "Authorizer",
       Client: Authorizer,
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       omitProperties: ["AuthorizerId", "ApiName"],
       filterLive: () =>
         pipe([
@@ -196,17 +198,16 @@ module.exports = pipe([
     {
       type: "ApiMapping",
       Client: ApiMapping,
-      inferName: ({
-        properties: { ApiMappingKey },
-        dependenciesSpec: { domainName, stage },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(domainName);
-            assert(stage);
-          }),
-          () => `apimapping::${domainName}::${stage}::${ApiMappingKey}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { domainName, stage } }) =>
+        ({ ApiMappingKey }) =>
+          pipe([
+            tap(() => {
+              assert(domainName);
+              assert(stage);
+            }),
+            () => `apimapping::${domainName}::${stage}::${ApiMappingKey}`,
+          ])(),
       omitProperties: ["ApiMappingId", "ApiName"],
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
       dependencies: {
@@ -245,7 +246,6 @@ module.exports = pipe([
       type: "Integration",
       Client: Integration,
       inferName: ({
-        properties,
         dependenciesSpec: { api, lambdaFunction, listener, eventBus },
       }) =>
         pipe([
@@ -266,7 +266,7 @@ module.exports = pipe([
                 append(`::NO-INTEGRATION`),
               ]),
             ])(),
-        ])(),
+        ]),
       propertiesDefault: { TimeoutInMillis: 30e3, Description: "" },
       omitProperties: [
         "RouteId",
@@ -358,14 +358,16 @@ module.exports = pipe([
         AuthorizationType: "NONE",
         RequestModels: {},
       },
-      inferName: ({ properties: { RouteKey }, dependenciesSpec: { api } }) =>
-        pipe([
-          tap((params) => {
-            assert(RouteKey);
-            assert(api);
-          }),
-          () => `route::${api}::${RouteKey}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { api } }) =>
+        ({ RouteKey }) =>
+          pipe([
+            tap((params) => {
+              assert(RouteKey);
+              assert(api);
+            }),
+            () => `route::${api}::${RouteKey}`,
+          ])(),
       omitProperties: ["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"],
       dependencies: {
         api: {
@@ -398,13 +400,13 @@ module.exports = pipe([
           get("ids"),
           isEmpty,
         ]),
-      inferName: ({ properties, dependenciesSpec: { api } }) =>
+      inferName: ({ dependenciesSpec: { api } }) =>
         pipe([
           tap((params) => {
             assert(api);
           }),
           () => `deployment::${api}`,
-        ])(),
+        ]),
       omitProperties: [
         "StageName",
         "CreatedDate",
@@ -456,7 +458,7 @@ module.exports = pipe([
     {
       type: "VpcLink",
       Client: ApiGatewayV2VpcLink,
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       dependencies: {
         subnets: {
           type: "Subnet",

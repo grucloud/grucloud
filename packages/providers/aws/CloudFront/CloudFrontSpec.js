@@ -124,9 +124,8 @@ module.exports = () =>
         },
       },
       Client: CloudFrontDistribution,
-      inferName: ({ properties }) =>
+      inferName: () =>
         pipe([
-          () => properties,
           tap((params) => {
             assert(true);
           }),
@@ -137,7 +136,7 @@ module.exports = () =>
             assert(Id);
             logger.debug(`CloudFrontDistribution inferName ${Id}`);
           }),
-        ])(),
+        ]),
       isOurMinion,
       propertiesDefault: {
         OriginGroups: { Quantity: 0, Items: [] },
@@ -312,8 +311,7 @@ module.exports = () =>
       type: "CachePolicy",
       Client: CloudFrontCachePolicy,
       omitProperties: ["CachePolicy.Id", "CachePolicy.LastModifiedTime"],
-      inferName: ({ properties }) =>
-        pipe([() => properties, get("CachePolicy.CachePolicyConfig.Name")])(),
+      inferName: () => pipe([get("CachePolicy.CachePolicyConfig.Name")]),
       filterLive: ({ lives }) =>
         pipe([
           tap((params) => {
@@ -332,12 +330,16 @@ module.exports = () =>
         "FunctionMetadata.CreatedTime",
         "FunctionMetadata.LastModifiedTime",
       ],
-      inferName: ({
-        properties: {
-          Name,
-          FunctionMetadata: { Stage },
-        },
-      }) => pipe([() => `${Name}::${Stage}`])(),
+      inferName:
+        () =>
+        ({ Name, FunctionMetadata: { Stage } }) =>
+          pipe([
+            tap((params) => {
+              assert(Name);
+              assert(Stage);
+            }),
+            () => `${Name}::${Stage}`,
+          ])(),
       filterLive: ({ lives }) =>
         pipe([
           tap((params) => {

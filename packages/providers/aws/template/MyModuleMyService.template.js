@@ -158,18 +158,18 @@ exports.MyModuleMyResource = () => ({
   client: "MyModule",
   propertiesDefault: {},
   omitProperties: [],
-  inferName: pipe([
-    get("properties.Name"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
 
   // inferName: ({
-  //   properties: { certificateName },
   //   dependenciesSpec: { loadBalancer },
   // }) =>
-  //   pipe([
+  //  ({ certificateName }) => pipe([
   //     tap((params) => {
   //       assert(loadBalancer);
   //       assert(certificateName);
@@ -177,10 +177,6 @@ exports.MyModuleMyResource = () => ({
   //     () => `${loadBalancer}::${certificateName}`,
   //   ])(),
 
-  // inferName: pipe([
-  //   get("dependenciesSpec"),
-  //   ({ staticIp, instance }) => `${staticIp}::${instance}`,
-  // ]),
   findName: () =>
     pipe([
       get("Name"),
@@ -491,8 +487,8 @@ exports.MyModuleMyResource = () => ({
   //     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#deleteMyResource-property
   destroy: {
-    // preDestroy: ({ endpoint, live }) =>
-    //   pipe([
+    // preDestroy: ({ endpoint }) =>
+    //   live => pipe([
     //     () => live,
     //     get("apiStages"),
     //     map(({ apiId, stage }) => ({
@@ -511,13 +507,14 @@ exports.MyModuleMyResource = () => ({
     //       ])
     //     ),
     //   ])(),
-    // postDestroy: pipe([
+    // postDestroy: ({ endpoint }) =>
+    // pipe([
     //   tap((params) => {
     //     assert(true);
     //   }),
     //   pickId,
     //   defaultsDeep({ PendingWindowInDays: 7 }),
-    //   (params) => kms().scheduleKeyDeletion(params),
+    //   endpoint().scheduleKeyDeletion,
     // ]),
     method: "deleteMyResource",
     pickId,

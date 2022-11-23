@@ -29,12 +29,13 @@ exports.CognitoIdentityIdentityPoolRolesAttachments = ({ compare }) => ({
   client: "CognitoIdentity",
   propertiesDefault: {},
   omitProperties: ["IdentityPoolId"],
-  inferName: pipe([
-    get("dependenciesSpec.identityPool"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: ({ dependenciesSpec: { identityPool } }) =>
+    pipe([
+      tap((params) => {
+        assert(identityPool);
+      }),
+      () => identityPool,
+    ]),
   findName:
     ({ lives, config }) =>
     (live) =>

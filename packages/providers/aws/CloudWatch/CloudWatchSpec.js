@@ -46,7 +46,7 @@ module.exports = pipe([
     {
       type: "Dashboard",
       Client: CloudWatchDashboard,
-      inferName: get("properties.DashboardName"),
+      inferName: () => get("DashboardName"),
       omitProperties: ["DashboardArn"],
       propertiesDefault: {},
       filterLive: ({ lives, providerConfig }) =>
@@ -59,7 +59,7 @@ module.exports = pipe([
     {
       type: "MetricAlarm",
       Client: CloudWatchMetricAlarm,
-      inferName: get("properties.AlarmName"),
+      inferName: () => get("AlarmName"),
       omitProperties: [
         "AlarmArn",
         "AlarmConfigurationUpdatedTimestamp",

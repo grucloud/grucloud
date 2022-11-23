@@ -131,17 +131,20 @@ exports.ResourceMaker = ({
           }),
           () => resourceName,
           resourceNameToString,
-          (resourceNameString) => ({
-            resourceName: resourceNameString,
-            properties: properties({
-              config,
-              getId,
-              generatePassword: generator.generate,
-            }),
-            dependenciesSpec: dependencies({ config }),
-            dependencies: getDependencies(),
-          }),
-          spec.inferName,
+          (resourceNameString) =>
+            pipe([
+              () =>
+                properties({
+                  config,
+                  getId,
+                  generatePassword: generator.generate,
+                }),
+              spec.inferName({
+                resourceName: resourceNameString,
+                dependenciesSpec: dependencies({ config }),
+                dependencies: getDependencies(),
+              }),
+            ])(),
           tap((name) => {
             assert(name, `empty inferName for ${spec.groupType}`);
           }),

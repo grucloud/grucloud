@@ -34,13 +34,13 @@ exports.SecurityHubFindingAggregator = () => ({
   client: "SecurityHub",
   propertiesDefault: {},
   omitProperties: ["FindingAggregatorArn"],
-  inferName: pipe([
-    get("properties"),
-    extractName,
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      extractName,
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       extractName,

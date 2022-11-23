@@ -357,50 +357,54 @@ exports.AwsIamRole = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteRole-property
   const destroy = client.destroy({
     pickId,
-    preDestroy: ({ live }) =>
-      pipe([
-        () => live,
-        ({ RoleName }) =>
-          pipe([
-            () =>
-              iam().listInstanceProfilesForRole({ RoleName, MaxItems: 1e3 }),
-            get("InstanceProfiles"),
-            forEach(
-              tryCatch(
-                ({ InstanceProfileName }) =>
-                  removeRoleFromInstanceProfile({ iam })({
+    preDestroy:
+      ({ endpoint }) =>
+      (live) =>
+        pipe([
+          () => live,
+          ({ RoleName }) =>
+            pipe([
+              () => ({ RoleName, MaxItems: 1e3 }),
+              endpoint().listInstanceProfilesForRole,
+              get("InstanceProfiles"),
+              forEach(
+                tryCatch(
+                  ({ InstanceProfileName }) => ({
                     RoleName,
                     InstanceProfileName,
                   }),
-                (error, { InstanceProfileName }) =>
-                  pipe([
-                    tap(() => {
-                      logger.error(
-                        `error removeRoleFromInstanceProfile ${RoleName}, ${error}`
-                      );
-                    }),
-                    () => ({ error, RoleName, InstanceProfileName }),
-                  ])()
-              )
-            ),
-            () => iam().listAttachedRolePolicies({ RoleName, MaxItems: 1e3 }),
-            get("AttachedPolicies"),
-            forEach(({ PolicyArn }) => {
-              iam().detachRolePolicy({
-                PolicyArn,
-                RoleName,
-              });
-            }),
-            () => iam().listRolePolicies({ RoleName, MaxItems: 1e3 }),
-            get("PolicyNames"),
-            forEach((PolicyName) => {
-              iam().deleteRolePolicy({
-                PolicyName,
-                RoleName,
-              });
-            }),
-          ])(),
-      ])(),
+                  removeRoleFromInstanceProfile({ endpoint }),
+                  (error, { InstanceProfileName }) =>
+                    pipe([
+                      tap(() => {
+                        logger.error(
+                          `error removeRoleFromInstanceProfile ${RoleName}, ${error}`
+                        );
+                      }),
+                      () => ({ error, RoleName, InstanceProfileName }),
+                    ])()
+                )
+              ),
+              () => ({ RoleName, MaxItems: 1e3 }),
+              endpoint().listAttachedRolePolicies,
+              get("AttachedPolicies"),
+              forEach(({ PolicyArn }) => {
+                endpoint().detachRolePolicy({
+                  PolicyArn,
+                  RoleName,
+                });
+              }),
+              () => ({ RoleName, MaxItems: 1e3 }),
+              endpoint().listRolePolicies,
+              get("PolicyNames"),
+              forEach((PolicyName) => {
+                endpoint().deleteRolePolicy({
+                  PolicyName,
+                  RoleName,
+                });
+              }),
+            ])(),
+        ])(),
     method: "deleteRole",
     ignoreErrorCodes,
     shouldRetryOnExceptionCodes: ["DeleteConflictException"],

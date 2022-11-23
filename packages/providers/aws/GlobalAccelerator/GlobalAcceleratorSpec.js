@@ -33,7 +33,7 @@ module.exports = pipe([
         "Events",
         "IpSets",
       ],
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       dependencies: {
         s3Bucket: {
           type: "Bucket",
@@ -58,10 +58,10 @@ module.exports = pipe([
         "EndpointConfigurations[].HealthState",
         "EndpointConfigurations[].HealthReason",
       ],
-      inferName: ({
-        properties: { EndpointGroupRegion },
-        dependenciesSpec: { listener },
-      }) => pipe([() => `${listener}::${EndpointGroupRegion}`])(),
+      inferName:
+        ({ dependenciesSpec: { listener } }) =>
+        ({ EndpointGroupRegion }) =>
+          pipe([() => `${listener}::${EndpointGroupRegion}`])(),
       dependencies: {
         listener: {
           type: "Listener",
@@ -136,14 +136,13 @@ module.exports = pipe([
       Client: GlobalAcceleratorListener,
       propertiesDefault: { ClientAffinity: "NONE" },
       omitProperties: ["AcceleratorArn", "ListenerArn"],
-      inferName: ({
-        properties: { Protocol, PortRanges },
-        dependenciesSpec: { accelerator },
-      }) =>
-        pipe([
-          () =>
-            `${accelerator}::${Protocol}::${PortRanges[0].FromPort}::${PortRanges[0].ToPort}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { accelerator } }) =>
+        ({ Protocol, PortRanges }) =>
+          pipe([
+            () =>
+              `${accelerator}::${Protocol}::${PortRanges[0].FromPort}::${PortRanges[0].ToPort}`,
+          ])(),
       dependencies: {
         accelerator: {
           type: "Accelerator",

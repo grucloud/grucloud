@@ -72,12 +72,12 @@ const buildDefaultSpec = fork({
       ])(),
   inferName:
     ({ dependencies }) =>
-    (resource) =>
+    ({ dependenciesSpec }) =>
+    ({ name }) =>
       pipe([
         tap(() => {
           assert(dependencies);
-          assert(resource);
-          assert(resource.dependenciesSpec);
+          assert(dependenciesSpec);
         }),
         () => dependencies,
         map.entries(([key, dep]) => [key, { varName: key, ...dep }]),
@@ -89,7 +89,7 @@ const buildDefaultSpec = fork({
           () => "",
           ({ varName }) =>
             pipe([
-              () => resource.dependenciesSpec,
+              () => dependenciesSpec,
               get(varName),
               tap((name) => {
                 assert(name);
@@ -97,7 +97,7 @@ const buildDefaultSpec = fork({
               append("::"),
             ])(),
         ]),
-        append(resource.properties.name),
+        append(name),
       ])(),
   Client:
     ({ dependencies }) =>

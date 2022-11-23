@@ -40,7 +40,7 @@ module.exports = pipe([
     {
       type: "StateMachine",
       Client: StepFunctionsStateMachine,
-      inferName: get("properties.name"),
+      inferName: () => get("name"),
       omitProperties: ["roleArn", "creationDate", "stateMachineArn", "status"],
       propertiesDefault: {
         type: "STANDARD",

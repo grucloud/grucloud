@@ -89,7 +89,7 @@ exports.LightsailDatabase = ({ compare }) => ({
     "pendingModifiedValues",
     "latestRestorableTime",
   ],
-  inferName: get("properties.relationalDatabaseName"),
+  inferName: () => get("relationalDatabaseName"),
   environmentVariables: [
     { path: "masterUsername", suffix: "MASTER_USERNAME" },
     { path: "masterUserPassword", suffix: "MASTER_USER_PASSWORD" },

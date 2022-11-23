@@ -50,7 +50,7 @@ exports.ACMPCAPolicy = ({ compare }) => ({
         assert(certificateAuthority);
       }),
       () => `${certificateAuthority}`,
-    ])(),
+    ]),
   findName:
     ({ lives, config }) =>
     (live) =>

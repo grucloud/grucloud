@@ -76,7 +76,7 @@ exports.SchedulerScheduleGroup = ({ compare }) => ({
   type: "ScheduleGroup",
   propertiesDefault: {},
   omitProperties: ["Arn", "CreationDate", "LastModificationDate", "State"],
-  inferName: get("properties.Name"),
+  inferName: () => get("Name"),
   // compare: compare({
   //   filterAll: () => pipe([() => ({})]),
   // }),

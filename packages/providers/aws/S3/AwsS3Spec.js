@@ -175,7 +175,7 @@ module.exports = pipe([
             ]),
           ]),
       }),
-      inferName: get("properties.Name"),
+      inferName: () => get("Name"),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
           tap((params) => {

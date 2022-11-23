@@ -58,13 +58,13 @@ module.exports = pipe([
     {
       type: "Cluster",
       Client: Route53RecoveryControlConfigCluster,
-      inferName: pipe([get("properties.ClusterName")]),
+      inferName: () => pipe([get("ClusterName")]),
       omitProperties: ["ClusterArn", "Status", "ClusterEndpoints"],
     },
     {
       type: "ControlPanel",
       Client: Route53RecoveryControlConfigControlPanel,
-      inferName: pipe([get("properties.ControlPanelName")]),
+      inferName: () => pipe([get("ControlPanelName")]),
       dependencies: {
         cluster: {
           type: "Cluster",
@@ -84,7 +84,7 @@ module.exports = pipe([
     {
       type: "RoutingControl",
       Client: Route53RecoveryControlConfigRoutingControl,
-      inferName: pipe([get("properties.RoutingControlName")]),
+      inferName: () => pipe([get("RoutingControlName")]),
       dependencies: {
         controlPanel: {
           type: "ControlPanel",
@@ -112,18 +112,18 @@ module.exports = pipe([
     {
       type: "SafetyRule",
       Client: Route53RecoveryControlConfigSafetyRule,
-      inferName: pipe([
-        get("properties"),
-        switchCase([
-          get("AssertionRule.Name"),
-          get("AssertionRule.Name"),
-          get("GatingRule.Name"),
-          get("GatingRule.Name"),
-          (properties) => {
-            assert(false, `no AssertionRule or GatingRule`);
-          },
+      inferName: () =>
+        pipe([
+          switchCase([
+            get("AssertionRule.Name"),
+            get("AssertionRule.Name"),
+            get("GatingRule.Name"),
+            get("GatingRule.Name"),
+            (properties) => {
+              assert(false, `no AssertionRule or GatingRule`);
+            },
+          ]),
         ]),
-      ]),
       dependencies: {
         controlPanel: {
           type: "ControlPanel",
