@@ -233,15 +233,17 @@ exports.AwsIamPolicy = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicyVersion-property
   const update = client.update({
-    preUpdate: ({ live: { Arn, Versions } }) =>
-      pipe([
-        () => Versions,
-        filter(not(get("IsDefaultVersion"))),
-        tap.if(
-          gte(size, 4),
-          pipe([last, deletePolicyVersion({ PolicyArn: Arn })])
-        ),
-      ]),
+    preUpdate:
+      ({ endpoint }) =>
+      ({ Arn, Versions }) =>
+        pipe([
+          () => Versions,
+          filter(not(get("IsDefaultVersion"))),
+          tap.if(
+            gte(size, 4),
+            pipe([last, deletePolicyVersion({ endpoint, PolicyArn: Arn })])
+          ),
+        ]),
     pickId,
     method: "createPolicyVersion",
     filterParams: ({ payload, live }) =>
@@ -257,57 +259,59 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deletePolicy-property
-  const detatchPolicy = ({ live: { Arn: PolicyArn } }) =>
-    pipe([
-      tap(() => {
-        assert(PolicyArn);
-      }),
-      () =>
-        iam().listEntitiesForPolicy({
+  const detatchPolicy =
+    ({ endpoint }) =>
+    ({ Arn: PolicyArn }) =>
+      pipe([
+        tap(() => {
+          assert(PolicyArn);
+        }),
+        () => ({
           PolicyArn,
         }),
-      tap((result) => {
-        //logger.debug(`listEntitiesForPolicy ${tos(result)}`);
-      }),
-      fork({
-        PolicyUsers: pipe([
-          get("PolicyUsers"),
-          tap((policyUsers) => {
-            //logger.debug(`destroy detachUserPolicy ${tos(policyUsers)}`);
-          }),
-          map(({ UserName }) =>
-            iam().detachUserPolicy({
-              PolicyArn,
-              UserName,
-            })
-          ),
-        ]),
-        PolicyGroups: pipe([
-          get("PolicyGroups"),
-          tap((policyGroups) => {
-            //logger.debug(`destroy detachGroupPolicy ${tos(policyGroups)}`);
-          }),
-          map(({ GroupName }) =>
-            iam().detachGroupPolicy({
-              PolicyArn,
-              GroupName,
-            })
-          ),
-        ]),
-        PolicyRoles: pipe([
-          get("PolicyRoles"),
-          tap((policyRoles) => {
-            //logger.debug(`destroy detachRolePolicy ${tos(policyRoles)}`);
-          }),
-          map(({ RoleName }) =>
-            iam().detachRolePolicy({
-              PolicyArn,
-              RoleName,
-            })
-          ),
-        ]),
-      }),
-    ])();
+        endpoint().listEntitiesForPolicy,
+        tap((result) => {
+          //logger.debug(`listEntitiesForPolicy ${tos(result)}`);
+        }),
+        fork({
+          PolicyUsers: pipe([
+            get("PolicyUsers"),
+            tap((policyUsers) => {
+              //logger.debug(`destroy detachUserPolicy ${tos(policyUsers)}`);
+            }),
+            map(({ UserName }) =>
+              endpoint().detachUserPolicy({
+                PolicyArn,
+                UserName,
+              })
+            ),
+          ]),
+          PolicyGroups: pipe([
+            get("PolicyGroups"),
+            tap((policyGroups) => {
+              //logger.debug(`destroy detachGroupPolicy ${tos(policyGroups)}`);
+            }),
+            map(({ GroupName }) =>
+              endpoint().detachGroupPolicy({
+                PolicyArn,
+                GroupName,
+              })
+            ),
+          ]),
+          PolicyRoles: pipe([
+            get("PolicyRoles"),
+            tap((policyRoles) => {
+              //logger.debug(`destroy detachRolePolicy ${tos(policyRoles)}`);
+            }),
+            map(({ RoleName }) =>
+              endpoint().detachRolePolicy({
+                PolicyArn,
+                RoleName,
+              })
+            ),
+          ]),
+        }),
+      ])();
 
   const deletePolicyVersion = ({ PolicyArn }) =>
     tryCatch(
@@ -327,18 +331,24 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       ])
     );
 
-  const detatchPolicyVersions = ({ live: { Arn: PolicyArn, Versions = [] } }) =>
-    pipe([
-      tap(() => {
-        assert(PolicyArn);
-      }),
-      () => Versions,
-      filter(not(get("IsDefaultVersion"))),
-      map(deletePolicyVersion({ PolicyArn })),
-    ])();
+  const detatchPolicyVersions =
+    ({ endpoint }) =>
+    ({ Arn: PolicyArn, Versions = [] }) =>
+      pipe([
+        tap(() => {
+          assert(PolicyArn);
+        }),
+        () => Versions,
+        filter(not(get("IsDefaultVersion"))),
+        map(deletePolicyVersion({ endpoint, PolicyArn })),
+      ])();
 
   const destroy = client.destroy({
-    preDestroy: pipe([tap(detatchPolicy), tap(detatchPolicyVersions)]),
+    preDestroy: ({ endpoint }) =>
+      pipe([
+        tap(detatchPolicy({ endpoint })),
+        tap(detatchPolicyVersions({ endpoint })),
+      ]),
     pickId,
     method: "deletePolicy",
     getById,

@@ -48,26 +48,28 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteUsagePlan-property
   destroy: {
-    preDestroy: ({ endpoint, live }) =>
-      pipe([
-        () => live,
-        get("apiStages"),
-        map(({ apiId, stage }) => ({
-          op: "remove",
-          path: "/apiStages",
-          value: `${apiId}:${stage}`,
-        })),
-        unless(
-          isEmpty,
-          pipe([
-            (patchOperations) => ({
-              usagePlanId: live.id,
-              patchOperations,
-            }),
-            endpoint().updateUsagePlan,
-          ])
-        ),
-      ])(),
+    preDestroy:
+      ({ endpoint }) =>
+      (live) =>
+        pipe([
+          () => live,
+          get("apiStages"),
+          map(({ apiId, stage }) => ({
+            op: "remove",
+            path: "/apiStages",
+            value: `${apiId}:${stage}`,
+          })),
+          unless(
+            isEmpty,
+            pipe([
+              (patchOperations) => ({
+                usagePlanId: live.id,
+                patchOperations,
+              }),
+              endpoint().updateUsagePlan,
+            ])
+          ),
+        ])(),
     method: "deleteUsagePlan",
     pickId,
   },

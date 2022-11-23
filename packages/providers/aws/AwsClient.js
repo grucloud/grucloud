@@ -516,8 +516,8 @@ const AwsClient =
 
     const update =
       ({
-        preUpdate = ({ live }) => identity,
-        postUpdate = ({ live }) => identity,
+        preUpdate = () => identity,
+        postUpdate = () => identity,
         method,
         config,
         pickId = () => ({}),
@@ -558,7 +558,8 @@ const AwsClient =
             //   })}`
             // );
           }),
-          preUpdate({ name, live, payload, diff, programOptions }),
+          () => live,
+          preUpdate({ name, payload, diff, programOptions }),
           () => filterParams({ pickId, extraParam, payload, diff, live }),
           tap((params) => {
             assert(true);
@@ -657,8 +658,8 @@ const AwsClient =
 
     const destroy =
       ({
-        preDestroy = () => {},
-        postDestroy = () => {},
+        preDestroy = () => identity,
+        postDestroy = () => identity,
         pickId,
         enhanceParams = () => identity,
         extraParam = {},
@@ -698,15 +699,14 @@ const AwsClient =
           }),
           tryCatch(
             pipe([
-              tap(() =>
-                preDestroy({
-                  name,
-                  live,
-                  lives,
-                  endpoint,
-                  getById: getById ? getById({ lives, config }) : undefined,
-                })
-              ),
+              () => live,
+              preDestroy({
+                name,
+                lives,
+                config,
+                endpoint,
+                getById: getById ? getById({ lives, config }) : undefined,
+              }),
               () => live,
               tap((params) => {
                 assert(true);
@@ -726,7 +726,7 @@ const AwsClient =
                     () => params,
                     endpoint()[method],
                     () => live,
-                    tap(postDestroy),
+                    tap(postDestroy({ name, endpoint, lives, config })),
                     when(
                       () => isFunction(getById),
                       () =>

@@ -487,8 +487,8 @@ exports.MyModuleMyResource = () => ({
   //     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#deleteMyResource-property
   destroy: {
-    // preDestroy: ({ endpoint, live }) =>
-    //   pipe([
+    // preDestroy: ({ endpoint }) =>
+    //   live => pipe([
     //     () => live,
     //     get("apiStages"),
     //     map(({ apiId, stage }) => ({
@@ -507,13 +507,14 @@ exports.MyModuleMyResource = () => ({
     //       ])
     //     ),
     //   ])(),
-    // postDestroy: pipe([
+    // postDestroy: ({ endpoint }) =>
+    // pipe([
     //   tap((params) => {
     //     assert(true);
     //   }),
     //   pickId,
     //   defaultsDeep({ PendingWindowInDays: 7 }),
-    //   (params) => kms().scheduleKeyDeletion(params),
+    //   endpoint().scheduleKeyDeletion,
     // ]),
     method: "deleteMyResource",
     pickId,

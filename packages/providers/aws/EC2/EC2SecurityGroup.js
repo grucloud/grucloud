@@ -260,31 +260,38 @@ exports.EC2SecurityGroup = ({ spec, config }) => {
       }),
     ])();
 
-  const revokeIngressRules = ({ live }) =>
-    pipe([
-      tap(() => {
-        logger.debug(`revokeIngressRules`);
-      }),
-      () => live.IpPermissions,
-      filter(pipe([get("UserIdGroupPairs"), not(isEmpty)])),
-      map(
-        pipe([
-          omit(["IpRanges", "Ipv6Ranges", "PrefixListIds"]),
-          (ipPermission) => ({
-            GroupId: live.GroupId,
-            IpPermissions: [ipPermission],
-          }),
-          revokeSecurityGroupIngress({ ec2 }),
-        ])
-      ),
-    ])();
+  const revokeIngressRules =
+    ({ endpoint }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          logger.debug(`revokeIngressRules`);
+        }),
+        () => live,
+        get("IpPermissions"),
+        filter(pipe([get("UserIdGroupPairs"), not(isEmpty)])),
+        map(
+          pipe([
+            omit(["IpRanges", "Ipv6Ranges", "PrefixListIds"]),
+            (ipPermission) => ({
+              GroupId: live.GroupId,
+              IpPermissions: [ipPermission],
+            }),
+            revokeSecurityGroupIngress({ endpoint, ec2 }),
+          ])
+        ),
+      ])();
 
   const destroy = client.destroy({
-    preDestroy: pipe([
-      tap(revokeIngressRules),
-      ({ live: { GroupId } }) =>
-        destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [GroupId] }),
-    ]),
+    preDestroy: ({ endpoint }) =>
+      pipe([
+        tap(revokeIngressRules({ endpoint })),
+        ({ GroupId }) => ({
+          Name: "group-id",
+          Values: [GroupId],
+        }),
+        destroyNetworkInterfaces({ endpoint }),
+      ]),
     pickId,
     method: "deleteSecurityGroup",
     getById,

@@ -47,20 +47,22 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#deleteJobQueue-property
   destroy: {
-    preDestroy: ({ endpoint, live, getById }) =>
-      pipe([
-        () => ({
-          jobQueue: live.jobQueueName,
-          state: "DISABLED",
-        }),
-        endpoint().updateJobQueue,
-        () =>
-          retryCall({
-            name: `describeJobQueues`,
-            fn: pipe([() => live, getById]),
-            isExpectedResult: eq(get("status"), "VALID"),
+    preDestroy:
+      ({ endpoint, getById }) =>
+      (live) =>
+        pipe([
+          () => ({
+            jobQueue: live.jobQueueName,
+            state: "DISABLED",
           }),
-      ])(),
+          endpoint().updateJobQueue,
+          () =>
+            retryCall({
+              name: `describeJobQueues`,
+              fn: pipe([() => live, getById]),
+              isExpectedResult: eq(get("status"), "VALID"),
+            }),
+        ])(),
     method: "deleteJobQueue",
     pickId: ({ jobQueueName }) => ({
       jobQueue: jobQueueName,

@@ -186,20 +186,19 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteInstanceProfile-property
   const destroy = client.destroy({
     pickId,
-    preDestroy: ({ live }) =>
+    preDestroy: ({ endpoint }) =>
       pipe([
-        () => live,
         ({ Roles, InstanceProfileName }) =>
           pipe([
             () => Roles,
             forEach(({ RoleName }) =>
-              removeRoleFromInstanceProfile({ iam })({
+              removeRoleFromInstanceProfile({ endpoint })({
                 RoleName,
                 InstanceProfileName,
               })
             ),
           ])(),
-      ])(),
+      ]),
     method: "deleteInstanceProfile",
     ignoreErrorCodes,
     getById,

@@ -340,37 +340,40 @@ exports.Route53HostedZone = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
   const destroy = client.destroy({
     pickId,
-    preDestroy: ({ live }) =>
-      pipe([
-        () => live,
-        ({ Id: HostedZoneId }) =>
-          pipe([
-            () => ({
-              HostedZoneId,
-            }),
-            route53().listResourceRecordSets,
-            get("ResourceRecordSets"),
-            tap((ResourceRecordSet) => {
-              logger.debug(`destroy ${tos(ResourceRecordSet)}`);
-            }),
-            filter(canDeleteRecord(live.Name)),
-            map((ResourceRecordSet) => ({
-              Action: "DELETE",
-              ResourceRecordSet: filterEmptyResourceRecords(ResourceRecordSet),
-            })),
-            tap((Changes) => {
-              //logger.debug(`destroy ${tos(Changes)}`);
-            }),
-            tap.if(not(isEmpty), (Changes) =>
-              route53().changeResourceRecordSets({
+    preDestroy:
+      ({ endpoint }) =>
+      (live) =>
+        pipe([
+          () => live,
+          ({ Id: HostedZoneId }) =>
+            pipe([
+              () => ({
                 HostedZoneId,
-                ChangeBatch: {
-                  Changes,
-                },
-              })
-            ),
-          ])(),
-      ])(),
+              }),
+              endpoint().listResourceRecordSets,
+              get("ResourceRecordSets"),
+              tap((ResourceRecordSet) => {
+                logger.debug(`destroy ${tos(ResourceRecordSet)}`);
+              }),
+              filter(canDeleteRecord(live.Name)),
+              map((ResourceRecordSet) => ({
+                Action: "DELETE",
+                ResourceRecordSet:
+                  filterEmptyResourceRecords(ResourceRecordSet),
+              })),
+              tap((Changes) => {
+                //logger.debug(`destroy ${tos(Changes)}`);
+              }),
+              tap.if(not(isEmpty), (Changes) =>
+                endpoint().changeResourceRecordSets({
+                  HostedZoneId,
+                  ChangeBatch: {
+                    Changes,
+                  },
+                })
+              ),
+            ])(),
+        ])(),
     method: "deleteHostedZone",
     getById,
     ignoreErrorCodes: ["NoSuchHostedZone"],

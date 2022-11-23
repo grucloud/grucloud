@@ -491,9 +491,8 @@ exports.Function = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
   const destroy = client.destroy({
-    preDestroy: ({ name, live }) =>
+    preDestroy: ({ name }) =>
       pipe([
-        () => live,
         when(
           get("FunctionUrlConfig"),
           pipe([
@@ -502,7 +501,7 @@ exports.Function = ({ spec, config }) => {
             lambda().deleteFunctionUrlConfig,
           ])
         ),
-      ])(),
+      ]),
     pickId,
     method: "deleteFunction",
     getById,

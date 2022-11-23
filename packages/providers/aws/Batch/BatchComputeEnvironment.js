@@ -65,29 +65,31 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#deleteComputeEnvironment-property
   destroy: {
-    preDestroy: ({ endpoint, live, getById }) =>
-      pipe([
-        () => live,
-        unless(
-          eq(get("state"), "DISABLED"),
-          pipe([
-            () => ({
-              computeEnvironment: live.computeEnvironmentName,
-              state: "DISABLED",
-            }),
-            endpoint().updateComputeEnvironment,
-            () =>
-              retryCall({
-                name: `describeComputeEnvironments`,
-                fn: pipe([() => live, getById]),
-                isExpectedResult: or([
-                  eq(get("status"), "VALID"),
-                  eq(get("status"), "INVALID"),
-                ]),
+    preDestroy:
+      ({ endpoint, getById }) =>
+      (live) =>
+        pipe([
+          () => live,
+          unless(
+            eq(get("state"), "DISABLED"),
+            pipe([
+              () => ({
+                computeEnvironment: live.computeEnvironmentName,
+                state: "DISABLED",
               }),
-          ])
-        ),
-      ])(),
+              endpoint().updateComputeEnvironment,
+              () =>
+                retryCall({
+                  name: `describeComputeEnvironments`,
+                  fn: pipe([() => live, getById]),
+                  isExpectedResult: or([
+                    eq(get("status"), "VALID"),
+                    eq(get("status"), "INVALID"),
+                  ]),
+                }),
+            ])
+          ),
+        ])(),
     method: "deleteComputeEnvironment",
     pickId: ({ computeEnvironmentName }) => ({
       computeEnvironment: computeEnvironmentName,

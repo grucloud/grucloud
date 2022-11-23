@@ -249,14 +249,16 @@ module.exports = pipe([
     {
       type: "Resolver",
       Client: AppSyncResolver,
-      inferName: ({ properties: { typeName, fieldName } }) =>
-        pipe([
-          tap((params) => {
-            assert(typeName);
-            assert(fieldName);
-          }),
-          () => `resolver::${typeName}::${fieldName}`,
-        ])(),
+      inferName:
+        () =>
+        ({ typeName, fieldName }) =>
+          pipe([
+            tap((params) => {
+              assert(typeName);
+              assert(fieldName);
+            }),
+            () => `resolver::${typeName}::${fieldName}`,
+          ])(),
       omitProperties: ["arn", "resolverArn"],
       compare: compareAppSync({
         filterLive: () =>

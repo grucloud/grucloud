@@ -117,6 +117,7 @@ exports.ECSCluster = ({ spec, config }) => {
     namespace,
     properties: { tags, ...otherProps },
     dependencies: { capacityProviders = [], kmsKey },
+    config,
   }) =>
     pipe([
       () => otherProps,
@@ -152,9 +153,11 @@ exports.ECSCluster = ({ spec, config }) => {
     getById,
   });
 
-  const destroyAutoScalingGroup = ({ live, lives }) =>
+  const destroyAutoScalingGroup = ({ endpoint, lives, config }) =>
     pipe([
-      () => live,
+      tap((params) => {
+        assert(lives);
+      }),
       get("capacityProviders"),
       map((name) =>
         pipe([
@@ -169,33 +172,35 @@ exports.ECSCluster = ({ spec, config }) => {
           destroyAutoScalingGroupById({ autoScalingGroup, lives, config }),
         ])()
       ),
-    ])();
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listContainerInstances-property
-  const deregisterContainerInstance = ({ live }) =>
-    tryCatch(
-      pipe([
-        () => ({ cluster: live.clusterName }),
-        ecs().listContainerInstances,
-        get("containerInstanceArns"),
-        tap((containerInstanceArns) => {
-          logger.debug(
-            `deregisterContainerInstance #size ${size(containerInstanceArns)}`
-          );
-        }),
-        map(
-          pipe([
-            (containerInstance) => ({
-              cluster: live.clusterName,
-              containerInstance,
-              force: true,
-            }),
-            ecs().deregisterContainerInstance,
-          ])
-        ),
-      ]),
-      throwIfNotAwsError("ClusterNotFoundException")
-    )();
+  const deregisterContainerInstance =
+    ({ endpoint }) =>
+    (live) =>
+      tryCatch(
+        pipe([
+          () => ({ cluster: live.clusterName }),
+          endpoint().listContainerInstances,
+          get("containerInstanceArns"),
+          tap((containerInstanceArns) => {
+            logger.debug(
+              `deregisterContainerInstance #size ${size(containerInstanceArns)}`
+            );
+          }),
+          map(
+            pipe([
+              (containerInstance) => ({
+                cluster: live.clusterName,
+                containerInstance,
+                force: true,
+              }),
+              endpoint().deregisterContainerInstance,
+            ])
+          ),
+        ]),
+        throwIfNotAwsError("ClusterNotFoundException")
+      )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCluster-property
   //TODO update
@@ -217,10 +222,11 @@ exports.ECSCluster = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCluster-property
   const destroy = client.destroy({
     pickId: ({ clusterName }) => ({ cluster: clusterName }),
-    preDestroy: pipe([
-      tap(deregisterContainerInstance),
-      tap(destroyAutoScalingGroup),
-    ]),
+    preDestroy: ({ endpoint, lives, config }) =>
+      pipe([
+        tap(deregisterContainerInstance({ endpoint, lives, config })),
+        tap(destroyAutoScalingGroup({ endpoint, lives, config })),
+      ]),
     method: "deleteCluster",
     //TODO no or
     isInstanceDown: or([isEmpty, eq(get("status"), "INACTIVE")]),

@@ -147,17 +147,16 @@ module.exports = pipe([
         filterTarget: () => pipe([pick([])]),
         filterLive: () => pipe([pick([])]),
       }),
-      inferName: ({
-        properties,
-        dependenciesSpec: { autoScalingGroup, targetGroup },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(autoScalingGroup);
-            assert(targetGroup);
-          }),
-          () => `attachment::${autoScalingGroup}::${targetGroup}`,
-        ])(),
+      inferName:
+        ({ dependenciesSpec: { autoScalingGroup, targetGroup } }) =>
+        () =>
+          pipe([
+            tap(() => {
+              assert(autoScalingGroup);
+              assert(targetGroup);
+            }),
+            () => `attachment::${autoScalingGroup}::${targetGroup}`,
+          ])(),
       filterLive: () => pipe([pick([])]),
       dependencies: {
         autoScalingGroup: {

@@ -120,7 +120,8 @@ module.exports = pipe([
       Client: BackupBackupVaultLockConfiguration,
       propertiesDefault: {},
       omitProperties: ["BackupVaultName"],
-      inferName: get("dependenciesSpec.backupVault"),
+      inferName: ({ dependenciesSpec: { backupVault } }) =>
+        pipe([() => backupVault]),
       dependencies: {
         backupVault: {
           type: "BackupVault",
@@ -134,7 +135,9 @@ module.exports = pipe([
       type: "BackupVaultNotification",
       Client: BackupBackupVaultNotification,
       omitProperties: ["BackupVaultName", "BackupVaultArn", "SNSTopicArn"],
-      inferName: get("dependenciesSpec.backupVault"),
+
+      inferName: ({ dependenciesSpec: { backupVault } }) =>
+        pipe([() => backupVault]),
       dependencies: {
         backupVault: {
           type: "BackupVault",
@@ -153,7 +156,8 @@ module.exports = pipe([
       type: "BackupVaultPolicy",
       Client: BackupBackupVaultPolicy,
       omitProperties: ["BackupVaultName", "BackupVaultArn"],
-      inferName: get("dependenciesSpec.backupVault"),
+      inferName: ({ dependenciesSpec: { backupVault } }) =>
+        pipe([() => backupVault]),
       dependencies: {
         backupVault: {
           type: "BackupVault",
@@ -190,7 +194,7 @@ module.exports = pipe([
       Client: BackupGlobalSettings,
       propertiesDefault: {},
       omitProperties: ["LastUpdateTime"],
-      inferName: () => "global",
+      inferName: () => () => "global",
       ignoreResource: () =>
         pipe([get("live"), eq(get("isCrossAccountBackupEnabled"), "false")]),
     },
@@ -199,7 +203,7 @@ module.exports = pipe([
       Client: BackupRegionSettings,
       propertiesDefault: {},
       omitProperties: [],
-      inferName: () => "region",
+      inferName: () => () => "region",
       ignoreResource: () => true,
     },
     {

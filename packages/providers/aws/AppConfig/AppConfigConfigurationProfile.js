@@ -47,9 +47,8 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#deleteConfigurationProfile-property
   destroy: {
-    preDestroy: ({ endpoint, live }) =>
+    preDestroy: ({ endpoint }) =>
       pipe([
-        () => live,
         ({ Id, ApplicationId }) => ({
           ConfigurationProfileId: Id,
           ApplicationId,
@@ -62,7 +61,7 @@ const model = ({ config }) => ({
             endpoint().deleteHostedConfigurationVersion,
           ])
         ),
-      ])(),
+      ]),
     method: "deleteConfigurationProfile",
     pickId,
   },

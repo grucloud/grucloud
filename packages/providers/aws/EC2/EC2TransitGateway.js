@@ -10,13 +10,16 @@ const { tagResource, untagResource } = require("./EC2Common");
 
 const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 
-const deleteTransitGatewayPeeringAttachment = ({ endpoint, live }) =>
+const deleteTransitGatewayPeeringAttachment = ({ endpoint }) =>
   pipe([
-    () => ({
+    tap(({ TransitGatewayId }) => {
+      assert(TransitGatewayId);
+    }),
+    ({ TransitGatewayId }) => ({
       Filters: [
         {
           Name: "transit-gateway-id",
-          Values: [live.TransitGatewayId],
+          Values: [TransitGatewayId],
         },
       ],
     }),
