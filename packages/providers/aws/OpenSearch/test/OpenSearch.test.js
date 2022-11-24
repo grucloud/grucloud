@@ -12,14 +12,6 @@ describe("OpenSearch", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("DomainPolicy", () =>
-    pipe([
-      () => ({
-        groupType: "OpenSearch::DomainPolicy",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
   it.skip("DomainSamlOption", () =>
     pipe([
       () => ({
@@ -41,6 +33,14 @@ describe("OpenSearch", async function () {
       () => ({
         groupType: "OpenSearch::OutboundConnection",
         livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it("VpcEndpoint", () =>
+    pipe([
+      () => ({
+        groupType: "OpenSearch::VpcEndpoint",
+        livesNotFound: ({ config }) => [{ VpcEndpointId: "aos-12345" }],
       }),
       awsResourceTest,
     ])());

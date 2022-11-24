@@ -11,7 +11,7 @@ List of resources for provider aws:
 * ACM: 
 [Certificate](./resources/ACM/Certificate.md)
 * ACMPCA: 
-[CertificateAuthority](./resources/ACMPCA/CertificateAuthority.md)
+[CertificateAuthority](./resources/ACMPCA/CertificateAuthority.md), [Permission](./resources/ACMPCA/Permission.md), [Policy](./resources/ACMPCA/Policy.md)
 * Amplify: 
 [App](./resources/Amplify/App.md), [BackendEnvironment](./resources/Amplify/BackendEnvironment.md), [Branch](./resources/Amplify/Branch.md), [DomainAssociation](./resources/Amplify/DomainAssociation.md), [Webhook](./resources/Amplify/Webhook.md)
 * APIGateway: 
@@ -113,7 +113,7 @@ List of resources for provider aws:
 * MSK: 
 [Configuration](./resources/MSK/Configuration.md), [ClusterV2](./resources/MSK/ClusterV2.md)
 * NetworkFirewall: 
-[Firewall](./resources/NetworkFirewall/Firewall.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md)
+[Firewall](./resources/NetworkFirewall/Firewall.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md)
 * NetworkManager: 
 [GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Site](./resources/NetworkManager/Site.md), [Device](./resources/NetworkManager/Device.md), [Link](./resources/NetworkManager/Link.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md), [VpcAttachment](./resources/NetworkManager/VpcAttachment.md)
 * Organisations: 
