@@ -203,12 +203,11 @@ exports.findInStatement =
       filter(not(isEmpty)),
       map((arn) =>
         pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type,
-              group,
-            }),
+          lives.getByType({
+            providerName: config.providerName,
+            type,
+            group,
+          }),
           find(({ id }) =>
             pipe([
               () => arn,

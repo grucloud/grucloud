@@ -312,11 +312,10 @@ exports.isOurMinion = ({ live, lives, config }) =>
         not(isEmpty),
         ({ kind, uid }) =>
           pipe([
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                type: kind,
-              }),
+            lives.getByType({
+              providerName: config.providerName,
+              type: kind,
+            }),
             find(eq(get("live.metadata.uid"), uid)),
             get("managedByUs"),
             tap((result) => {

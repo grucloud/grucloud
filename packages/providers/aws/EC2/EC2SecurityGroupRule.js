@@ -51,13 +51,12 @@ const protocolFromToPortToName = ({ IpProtocol, FromPort, ToPort }) =>
 
 const groupNameFromId = ({ GroupId, lives, config }) =>
   pipe([
-    () =>
-      lives.getById({
-        id: GroupId,
-        providerName: config.providerName,
-        type: "SecurityGroup",
-        group: "EC2",
-      }),
+    () => GroupId,
+    lives.getById({
+      providerName: config.providerName,
+      type: "SecurityGroup",
+      group: "EC2",
+    }),
     get("name"),
     tap((name) => {
       if (!name) {
@@ -68,7 +67,7 @@ const groupNameFromId = ({ GroupId, lives, config }) =>
               providerName: config.providerName,
               type: "SecurityGroup",
               group: "EC2",
-            })
+            })()
           )
         );
         assert(name, `cannot find ${GroupId}`);
@@ -184,13 +183,12 @@ const SecurityGroupRuleBase = ({ config }) => {
               () => IsEgress,
               and([
                 pipe([
-                  () =>
-                    lives.getById({
-                      type: "SecurityGroup",
-                      group: "EC2",
-                      providerName: config.providerName,
-                      id: live.GroupId,
-                    }),
+                  get("GroupId"),
+                  lives.getById({
+                    type: "SecurityGroup",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
                   get("managedByOther"),
                 ]),
               ]),
@@ -273,13 +271,13 @@ const SecurityGroupRuleBase = ({ config }) => {
     ({ lives, config }) =>
     (live) =>
       pipe([
-        () =>
-          lives.getById({
-            id: live.GroupId,
-            type: "SecurityGroup",
-            group: "EC2",
-            providerName: config.providerName,
-          }),
+        () => live,
+        get("GroupId"),
+        lives.getById({
+          type: "SecurityGroup",
+          group: "EC2",
+          providerName: config.providerName,
+        }),
         get("namespace"),
       ])();
 
@@ -312,12 +310,11 @@ const SecurityGroupRuleBase = ({ config }) => {
     ({ IsEgress = false }) =>
     ({ resources = [], lives } = {}) =>
       pipe([
-        () =>
-          lives.getByType({
-            type: "SecurityGroup",
-            group: "EC2",
-            providerName: config.providerName,
-          }),
+        lives.getByType({
+          type: "SecurityGroup",
+          group: "EC2",
+          providerName: config.providerName,
+        }),
         pluck("live"),
         securityGroupToRules({ IsEgress }),
         tap((rules) => {

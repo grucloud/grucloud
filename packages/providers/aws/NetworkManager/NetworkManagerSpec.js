@@ -152,12 +152,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "TransitGateway",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "TransitGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
                 find(eq(get("live.TransitGatewayArn"), live.TransitGatewayArn)),
                 get("id"),
               ])(),
@@ -205,12 +204,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "Vpc",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "Vpc",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
                 find(eq(get("live.VpcArn"), live.ResourceArn)),
                 get("id"),
                 tap((id) => {

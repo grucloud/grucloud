@@ -45,12 +45,11 @@ const managedByOther =
       or([
         get("Owner.OwningService"),
         pipe([
-          () =>
-            lives.getById({
-              id: live.HostedZoneId,
-              type: "HostedZone",
-              group: "Route53",
-            }),
+          get("HostedZoneId"),
+          lives.getById({
+            type: "HostedZone",
+            group: "Route53",
+          }),
           get("dependencies"),
           find(eq(get("type"), "Vpc")),
           get("ids"),
@@ -68,12 +67,11 @@ const cannotBeDeleted =
       or([
         get("Owner.OwningService"),
         pipe([
-          () =>
-            lives.getById({
-              id: live.HostedZoneId,
-              type: "HostedZone",
-              group: "Route53",
-            }),
+          get("HostedZoneId"),
+          lives.getById({
+            type: "HostedZone",
+            group: "Route53",
+          }),
           get("live.VpcAssociations"),
           first,
           and([eq(get("VPCId"), live.VPC.VPCId)]),
@@ -111,12 +109,10 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
               tap((id) => {
                 assert(id);
               }),
-              (id) =>
-                lives.getById({
-                  id,
-                  type: "Vpc",
-                  group: "EC2",
-                }),
+              lives.getById({
+                type: "Vpc",
+                group: "EC2",
+              }),
               get("name"),
             ]),
             hostedZone: pipe([
@@ -126,13 +122,12 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
               }),
               (id) =>
                 pipe([
-                  () =>
-                    lives.getById({
-                      id,
-                      type: "HostedZone",
-                      group: "Route53",
-                      providerName: config.providerName,
-                    }),
+                  () => id,
+                  lives.getById({
+                    type: "HostedZone",
+                    group: "Route53",
+                    providerName: config.providerName,
+                  }),
                   get("name", id),
                 ])(),
             ]),
@@ -149,12 +144,11 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
       ({ endpoint }) =>
       ({ lives }) =>
         pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type: "Vpc",
-              group: "EC2",
-            }),
+          lives.getByType({
+            providerName: config.providerName,
+            type: "Vpc",
+            group: "EC2",
+          }),
           flatMap(({ id }) =>
             pipe([
               () => ({

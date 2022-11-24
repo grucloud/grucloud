@@ -28,12 +28,11 @@ exports.GcpBackendBucket = ({ spec, config }) => {
         get("bucketName"),
         (bucketName) => [
           pipe([
-            () =>
-              lives.getByType({
-                type: "Bucket",
-                group: "storage",
-                providerName,
-              }),
+            lives.getByType({
+              type: "Bucket",
+              group: "storage",
+              providerName,
+            }),
             find(eq(get("live.name"), bucketName)),
             get("id"),
           ])(),

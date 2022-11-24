@@ -101,13 +101,12 @@ module.exports = pipe([
           parent: true,
           dependencyId: ({ lives, config }) =>
             pipe([
-              (live) =>
-                lives.getByName({
-                  name: live.TableName,
-                  type: "Table",
-                  group: "DynamoDB",
-                  providerName: config.providerName,
-                }),
+              get("TableName"),
+              lives.getByName({
+                type: "Table",
+                group: "DynamoDB",
+                providerName: config.providerName,
+              }),
               get("id"),
               tap((id) => {
                 assert(id);

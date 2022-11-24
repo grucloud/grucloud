@@ -60,13 +60,11 @@ module.exports = pipe([
                     map(
                       pipe([
                         get("configuration.ProjectName"),
-                        (name) =>
-                          lives.getByName({
-                            name,
-                            type: "Project",
-                            group: "CodeBuild",
-                            providerName: config.providerName,
-                          }),
+                        lives.getByName({
+                          type: "Project",
+                          group: "CodeBuild",
+                          providerName: config.providerName,
+                        }),
                         get("id"),
                       ])
                     ),
@@ -90,13 +88,11 @@ module.exports = pipe([
                     map(
                       pipe([
                         get("configuration.RepositoryName"),
-                        (name) =>
-                          lives.getByName({
-                            name,
-                            type: "Repository",
-                            group: "ECR",
-                            providerName: config.providerName,
-                          }),
+                        lives.getByName({
+                          type: "Repository",
+                          group: "ECR",
+                          providerName: config.providerName,
+                        }),
                         get("id"),
                       ])
                     ),

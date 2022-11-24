@@ -36,23 +36,23 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
         pipe([
           fork({
             vpc: pipe([
-              () =>
-                lives.getById({
-                  id: live.VpcId,
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => live,
+              get("VpcId"),
+              lives.getById({
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.VpcId),
             ]),
             dhcpOptions: pipe([
-              () =>
-                lives.getById({
-                  id: live.DhcpOptionsId,
-                  type: "DhcpOptions",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => live,
+              get("DhcpOptionsId"),
+              lives.getById({
+                type: "DhcpOptions",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.DhcpOptionsId),
             ]),
           }),
@@ -68,27 +68,25 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
       ({ endpoint }) =>
       ({ lives, config }) =>
         pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type: "Vpc",
-              group: "EC2",
-            }),
+          lives.getByType({
+            providerName: config.providerName,
+            type: "Vpc",
+            group: "EC2",
+          }),
           pluck("live"),
           filter(
             and([
               get("DhcpOptionsId"),
-              not(({ DhcpOptionsId }) =>
+              not(
                 pipe([
-                  () =>
-                    lives.getById({
-                      id: DhcpOptionsId,
-                      providerName: config.providerName,
-                      type: "DhcpOptions",
-                      group: "EC2",
-                    }),
+                  get("DhcpOptionsId"),
+                  lives.getById({
+                    providerName: config.providerName,
+                    type: "DhcpOptions",
+                    group: "EC2",
+                  }),
                   get("managedByOther"),
-                ])()
+                ])
               ),
             ])
           ),

@@ -36,13 +36,11 @@ const managedByOther =
     pipe([
       () => live,
       get("AccepterVpcInfo.VpcId"),
-      (id) =>
-        lives.getById({
-          id,
-          type: "Vpc",
-          group: "EC2",
-          providerName: config.providerName,
-        }),
+      lives.getById({
+        type: "Vpc",
+        group: "EC2",
+        providerName: config.providerName,
+      }),
       eq(get("providerName"), config.providerName),
     ])();
 
@@ -113,13 +111,12 @@ const findName =
           get("RequesterVpcInfo.VpcId"),
           (id) =>
             pipe([
-              () =>
-                lives.getById({
-                  id,
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => id,
+              lives.getById({
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", id),
             ])(),
         ]),
@@ -127,13 +124,12 @@ const findName =
           get("AccepterVpcInfo.VpcId"),
           (id) =>
             pipe([
-              () =>
-                lives.getById({
-                  id,
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => id,
+              lives.getById({
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", id),
             ])(),
         ]),

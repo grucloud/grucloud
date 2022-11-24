@@ -40,13 +40,12 @@ const findName =
       () => live.VpcPeeringConnectionId,
       (id) =>
         pipe([
-          () =>
-            lives.getById({
-              id,
-              type: "VpcPeeringConnection",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
+          () => id,
+          lives.getById({
+            type: "VpcPeeringConnection",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
           get("name", id),
         ])(),
       tap((vpcPeeringConnection) => {

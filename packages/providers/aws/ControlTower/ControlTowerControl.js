@@ -51,12 +51,10 @@ exports.ControlTowerControl = () => ({
         tap((id) => {
           assert(id);
         }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "OrganisationalUnit",
-            group: "Organisations",
-          }),
+        lives.getById({
+          type: "OrganisationalUnit",
+          group: "Organisations",
+        }),
         get("name"),
         (organisationalUnit) =>
           `${organisationalUnit}::${live.controlIdentifier}`,

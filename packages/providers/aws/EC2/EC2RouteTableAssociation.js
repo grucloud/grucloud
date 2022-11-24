@@ -24,23 +24,21 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
         () => live,
         fork({
           routeTableName: pipe([
-            () =>
-              lives.getById({
-                id: live.RouteTableId,
-                providerName: config.providerName,
-                type: "RouteTable",
-                group: "EC2",
-              }),
+            get("RouteTableId"),
+            lives.getById({
+              providerName: config.providerName,
+              type: "RouteTable",
+              group: "EC2",
+            }),
             get("name"),
           ]),
           subnetName: pipe([
-            () =>
-              lives.getById({
-                id: live.SubnetId,
-                providerName: config.providerName,
-                type: "Subnet",
-                group: "EC2",
-              }),
+            get("SubnetId"),
+            lives.getById({
+              providerName: config.providerName,
+              type: "Subnet",
+              group: "EC2",
+            }),
             get("name"),
           ]),
         }),
@@ -56,12 +54,11 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList rt assoc`);
       }),
-      () =>
-        lives.getByType({
-          type: "RouteTable",
-          group: "EC2",
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type: "RouteTable",
+        group: "EC2",
+        providerName: config.providerName,
+      }),
       flatMap(pipe([get("live.Associations"), filter(not(get("Main")))])),
     ])();
 

@@ -43,50 +43,45 @@ const findNameInDependency =
           tap((TransitGatewayId) => {
             assert(TransitGatewayId);
           }),
-          (id) =>
-            lives.getById({
-              id,
-              type: "TransitGateway",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
+          lives.getById({
+            type: "TransitGateway",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
           get("name", live.TransitGatewayId),
         ]),
         resourceName: pipe([
           switchCase([
             eq(get("ResourceType"), "vpn"),
             pipe([
-              ({ ResourceId }) =>
-                lives.getById({
-                  id: ResourceId,
-                  type: "VpnConnection",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("ResourceId"),
+              lives.getById({
+                type: "VpnConnection",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.ResourceId),
               prepend("vpn::"),
             ]),
             eq(get("ResourceType"), "vpc"),
             pipe([
-              ({ ResourceId }) =>
-                lives.getById({
-                  id: ResourceId,
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("ResourceId"),
+              lives.getById({
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.ResourceId),
               prepend("vpc::"),
             ]),
             eq(get("ResourceType"), "peering"),
             pipe([
-              ({ ResourceId }) =>
-                lives.getById({
-                  id: ResourceId,
-                  type: "TransitGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("ResourceId"),
+              lives.getById({
+                type: "TransitGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.ResourceId),
               prepend("tgw::"),
             ]),

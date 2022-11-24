@@ -60,13 +60,11 @@ exports.ACMPCAPolicy = ({ compare }) => ({
         tap((id) => {
           assert(id);
         }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "CertificateAuthority",
-            group: "ACMPCA",
-            providerName: config.providerName,
-          }),
+        lives.getById({
+          type: "CertificateAuthority",
+          group: "ACMPCA",
+          providerName: config.providerName,
+        }),
         get("name"),
         tap((name) => {
           assert(name);

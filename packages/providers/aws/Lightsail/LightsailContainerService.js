@@ -99,13 +99,11 @@ exports.LightsailContainerService = () => ({
           get("publicDomainNames"),
           map(
             pipe([
-              (publicDomainName) =>
-                lives.getByName({
-                  name: publicDomainName,
-                  type: "Certificate",
-                  group: "Lightsail",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "Certificate",
+                group: "Lightsail",
+                providerName: config.providerName,
+              }),
               get("id"),
               tap((id) => {
                 assert(id);

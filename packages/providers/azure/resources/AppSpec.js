@@ -33,12 +33,11 @@ exports.fnSpecs = ({ config }) =>
                     tap((params) => {
                       assert(customerId);
                     }),
-                    () =>
-                      lives.getByType({
-                        providerName: config.providerName,
-                        type: "Workspace",
-                        group: "OperationalInsights",
-                      }),
+                    lives.getByType({
+                      providerName: config.providerName,
+                      type: "Workspace",
+                      group: "OperationalInsights",
+                    }),
                     find(eq(get("live.properties.customerId"), customerId)),
                     get("id"),
                   ])(),

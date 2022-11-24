@@ -140,7 +140,7 @@ const pathListDefaultWithDeps = ({ lives, spec, config }) =>
         providerName: config.providerName,
         type,
         group,
-      }),
+      })(),
     tap((params) => {
       assert(true);
     }),
@@ -305,12 +305,11 @@ const findDependenciesFromCreate = ({ spec, live, lives }) =>
         findIdsByPath({ pathId }),
         map((selfLink) =>
           pipe([
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                group,
-                type,
-              }),
+            lives.getByType({
+              providerName: config.providerName,
+              group,
+              type,
+            }),
             find(eq(get("live.selfLink"), selfLink)),
             get("id"),
           ])()

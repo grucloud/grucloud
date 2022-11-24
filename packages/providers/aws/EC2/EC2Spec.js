@@ -259,13 +259,12 @@ const getIpPermissions =
               callProp("split", "::"),
               ([sg, vpcName]) =>
                 pipe([
-                  () =>
-                    lives.getByName({
-                      name: vpcName,
-                      type: "Vpc",
-                      group: "EC2",
-                      providerName: config.providerName,
-                    }),
+                  () => vpcName,
+                  lives.getByName({
+                    type: "Vpc",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])(),
               tap((vpcName) => {
@@ -461,12 +460,11 @@ module.exports = pipe([
                 tap((params) => {
                   assert(IpAddress);
                 }),
-                () =>
-                  lives.getByType({
-                    providerType: "azure",
-                    type: "PublicIPAddress",
-                    group: "Network",
-                  }),
+                lives.getByType({
+                  providerType: "azure",
+                  type: "PublicIPAddress",
+                  group: "Network",
+                }),
                 find(eq(get("live.properties.ipAddress"), IpAddress)),
                 get("id"),
               ])(),
@@ -482,12 +480,11 @@ module.exports = pipe([
                 tap((params) => {
                   assert(IpAddress);
                 }),
-                () =>
-                  lives.getByType({
-                    providerType: "google",
-                    type: "Address",
-                    group: "compute",
-                  }),
+                lives.getByType({
+                  providerType: "google",
+                  type: "Address",
+                  group: "compute",
+                }),
                 find(eq(get("live.address"), IpAddress)),
                 get("id"),
               ])(),
@@ -500,12 +497,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             ({ IpAddress }) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    providerType: "azure",
-                    type: "VirtualNetworkGateway",
-                    group: "Network",
-                  }),
+                lives.getByType({
+                  providerType: "azure",
+                  type: "VirtualNetworkGateway",
+                  group: "Network",
+                }),
                 find(
                   pipe([
                     get("live.properties.bgpSettings.bgpPeeringAddresses"),
@@ -644,13 +640,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("ConnectionLogOptions.CloudwatchLogGroup"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  providerName: config.providerName,
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                }),
+              lives.getByName({
+                providerName: config.providerName,
+                type: "LogGroup",
+                group: "CloudWatchLogs",
+              }),
               get("id"),
             ]),
         },
@@ -662,7 +656,6 @@ module.exports = pipe([
         //       get("ConnectionLogOptions.CloudwatchLogStream"),
         //       (logStream) =>
         //         pipe([
-        //           () =>
         //             lives.getByType({
         //               providerName: config.providerName,
         //               type: "LogStream",
@@ -898,12 +891,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "Ipam",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "Ipam",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
                 find(eq(get("live.IpamArn"), live.IpamArn)),
                 get("id"),
               ])(),
@@ -947,12 +939,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "IpamScope",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "IpamScope",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
                 find(eq(get("live.IpamScopeArn"), live.IpamScopeArn)),
                 get("id"),
                 tap((id) => {
@@ -995,13 +986,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("Attachment.InstanceId"),
-              (id) =>
-                lives.getById({
-                  providerName: config.providerName,
-                  type: "Instance",
-                  group: "EC2",
-                  id,
-                }),
+              lives.getById({
+                providerName: config.providerName,
+                type: "Instance",
+                group: "EC2",
+              }),
               get("id"),
               tap((params) => {
                 assert(true);
@@ -1120,12 +1109,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "IpamPool",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "IpamPool",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
                 find(
                   and([
                     eq(get("live.AddressFamily"), "ipv4"),
@@ -1571,13 +1559,12 @@ module.exports = pipe([
           parentForName: true,
           dependencyId: ({ lives, config }) =>
             pipe([
-              (live) =>
-                lives.getById({
-                  id: live.GatewayId,
-                  type: "InternetGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("GatewayId"),
+              lives.getById({
+                type: "InternetGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -1621,13 +1608,12 @@ module.exports = pipe([
           parentForName: true,
           dependencyId: ({ lives, config }) =>
             pipe([
-              (live) =>
-                lives.getById({
-                  id: live.GatewayId,
-                  type: "VpcEndpoint",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("GatewayId"),
+              lives.getById({
+                type: "VpcEndpoint",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -1645,13 +1631,12 @@ module.exports = pipe([
           parentForName: true,
           dependencyId: ({ lives, config }) =>
             pipe([
-              (live) =>
-                lives.getById({
-                  id: live.GatewayId,
-                  type: "VpnGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("GatewayId"),
+              lives.getById({
+                type: "VpnGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -2047,13 +2032,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("KeyName"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  type: "KeyPair",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "KeyPair",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -2080,17 +2063,12 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("Placement.GroupName"),
-              (name) =>
-                pipe([
-                  () =>
-                    lives.getByName({
-                      name,
-                      type: "PlacementGroup",
-                      group: "EC2",
-                      providerName: config.providerName,
-                    }),
-                  get("id"),
-                ])(),
+              lives.getByName({
+                type: "PlacementGroup",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+              get("id"),
             ]),
         },
       },
@@ -2193,13 +2171,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("LaunchTemplateData.KeyName"),
-              (KeyName) =>
-                lives.getByName({
-                  name: KeyName,
-                  type: "KeyPair",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "KeyPair",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -2217,13 +2193,11 @@ module.exports = pipe([
                 pipe([
                   () => live,
                   get("LaunchTemplateData.IamInstanceProfile.Name"),
-                  (name) =>
-                    lives.getByName({
-                      name,
-                      type: "InstanceProfile",
-                      group: "IAM",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByName({
+                    type: "InstanceProfile",
+                    group: "IAM",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])(),
               ],
@@ -2254,17 +2228,12 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("LaunchTemplateData.Placement.GroupName"),
-              (name) =>
-                pipe([
-                  () =>
-                    lives.getByName({
-                      name,
-                      type: "PlacementGroup",
-                      group: "EC2",
-                      providerName: config.providerName,
-                    }),
-                  get("id"),
-                ])(),
+              lives.getByName({
+                type: "PlacementGroup",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+              get("id"),
             ]),
         },
       },

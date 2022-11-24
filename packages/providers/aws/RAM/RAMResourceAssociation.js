@@ -13,7 +13,7 @@ const findDependencyFromEntity =
       tap((params) => {
         assert(arnKey);
       }),
-      () => lives.getByType({ type, group, providerName: config.providerName }),
+      lives.getByType({ type, group, providerName: config.providerName }),
       find(eq(get(`live.${arnKey}`), live.associatedEntity)),
       get("id"),
     ])();
@@ -73,7 +73,7 @@ const findNameByDependency =
         assert(live);
         assert(live.associatedEntity);
       }),
-      () => lives.getByType({ type, group, providerName: config.providerName }),
+      lives.getByType({ type, group, providerName: config.providerName }),
       find(eq(get(`live.${arnKey}`), live.associatedEntity)),
       tap((params) => {
         assert(true);

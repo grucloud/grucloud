@@ -17,12 +17,11 @@ const findDependencyDimension =
       pluck("Value"),
       (id) =>
         pipe([
-          () =>
-            lives.getByType({
-              type,
-              group,
-              providerName: config.providerName,
-            }),
+          lives.getByType({
+            type,
+            group,
+            providerName: config.providerName,
+          }),
           find(pipe([get("id"), callProp("endsWith", id)])),
           get("id"),
         ])(),

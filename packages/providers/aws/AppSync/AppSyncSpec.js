@@ -234,13 +234,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("dynamodbConfig.tableName"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  type: "Table",
-                  group: "DynamoDB",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "Table",
+                group: "DynamoDB",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -302,13 +300,12 @@ module.exports = pipe([
           group: "AppSync",
           dependencyId: ({ lives, config }) =>
             pipe([
-              (live) =>
-                lives.getByName({
-                  name: live.dataSourceName,
-                  type: "DataSource",
-                  group: "AppSync",
-                  providerName: config.providerName,
-                }),
+              get("dataSourceName"),
+              lives.getByName({
+                type: "DataSource",
+                group: "AppSync",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },

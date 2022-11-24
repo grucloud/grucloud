@@ -240,12 +240,12 @@ module.exports = pipe([
                     assert(LogStreamName);
                   }),
                   ({ LogGroupName, LogStreamName }) =>
-                    lives.getByName({
-                      name: `${LogGroupName}::${LogStreamName}`,
-                      providerName: config.providerName,
-                      type: "LogStream",
-                      group: "CloudWatchLogs",
-                    }),
+                    `${LogGroupName}::${LogStreamName}`,
+                  lives.getByName({
+                    providerName: config.providerName,
+                    type: "LogStream",
+                    group: "CloudWatchLogs",
+                  }),
                   get("id"),
                 ])
               ),

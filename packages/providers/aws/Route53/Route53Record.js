@@ -87,12 +87,11 @@ const Route53RecordDependencies = {
         get("ResourceRecords"),
         map(({ Value }) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "ElasticIpAddress",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
+            lives.getByType({
+              type: "ElasticIpAddress",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
             find(eq(get("live.PublicIp"), Value)),
             pick(["id", "name"]),
           ])()
@@ -112,12 +111,11 @@ const Route53RecordDependencies = {
         removeLastCharacter,
         (DNSName) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "LoadBalancer",
-                group: "ElasticLoadBalancingV2",
-                providerName: config.providerName,
-              }),
+            lives.getByType({
+              type: "LoadBalancer",
+              group: "ElasticLoadBalancingV2",
+              providerName: config.providerName,
+            }),
             find(({ live }) => pipe([() => DNSName, includes(live.DNSName)])()),
             pick(["id", "name"]),
           ])(),
@@ -132,12 +130,11 @@ const Route53RecordDependencies = {
       ({ lives, config }) =>
       (live) =>
         pipe([
-          () =>
-            lives.getByType({
-              type: "Certificate",
-              group: "ACM",
-              providerName: config.providerName,
-            }),
+          lives.getByType({
+            type: "Certificate",
+            group: "ACM",
+            providerName: config.providerName,
+          }),
           find(
             and([
               eq(
@@ -161,12 +158,11 @@ const Route53RecordDependencies = {
         removeLastCharacter,
         (DNSName) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "Distribution",
-                group: "CloudFront",
-                providerName: config.providerName,
-              }),
+            lives.getByType({
+              type: "Distribution",
+              group: "CloudFront",
+              providerName: config.providerName,
+            }),
             find(eq(get("live.DomainName"), DNSName)),
             pick(["id", "name"]),
           ])(),
@@ -183,12 +179,11 @@ const Route53RecordDependencies = {
         removeLastCharacter,
         (DNSName) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "UserPoolDomain",
-                group: "CognitoIdentityServiceProvider",
-                providerName: config.providerName,
-              }),
+            lives.getByType({
+              type: "UserPoolDomain",
+              group: "CognitoIdentityServiceProvider",
+              providerName: config.providerName,
+            }),
             find(({ live }) =>
               pipe([
                 () => DNSName,
@@ -211,12 +206,11 @@ const Route53RecordDependencies = {
         removeLastCharacter,
         (DNSName) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "DomainName",
-                group: "ApiGatewayV2",
-                providerName: config.providerName,
-              }),
+            lives.getByType({
+              type: "DomainName",
+              group: "ApiGatewayV2",
+              providerName: config.providerName,
+            }),
             find(
               eq(
                 get("live.DomainNameConfigurations[0].ApiGatewayDomainName"),
@@ -238,12 +232,11 @@ const Route53RecordDependencies = {
         removeLastCharacter,
         (DNSName) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "VpcEndpoint",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
+            lives.getByType({
+              type: "VpcEndpoint",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
             tap((params) => {
               assert(true);
             }),
@@ -338,8 +331,7 @@ exports.Route53Record = ({ spec, config }) => {
         logger.info(`getList record`);
         assert(lives);
       }),
-      () =>
-        lives.getByType({ providerName, type: "HostedZone", group: "Route53" }),
+      lives.getByType({ providerName, type: "HostedZone", group: "Route53" }),
       flatMap((hostedZone) =>
         pipe([
           () => hostedZone,
@@ -687,13 +679,11 @@ exports.Route53Record = ({ spec, config }) => {
           assert(HostedZoneId);
         }),
         get("HostedZoneId"),
-        (id) =>
-          lives.getById({
-            id,
-            type: "HostedZone",
-            group: "Route53",
-            providerName: config.providerName,
-          }),
+        lives.getById({
+          type: "HostedZone",
+          group: "Route53",
+          providerName: config.providerName,
+        }),
         tap.if(isEmpty, () => {
           logger.error(`missing hostedZone ${live.HostedZoneId} in cache`);
         }),

@@ -17,13 +17,11 @@ const getNameFromSource = ({ lives, config, type, group }) =>
     tap((id) => {
       assert(id);
     }),
-    (id) =>
-      lives.getById({
-        providerName: config.providerName,
-        id,
-        type,
-        group,
-      }),
+    lives.getById({
+      providerName: config.providerName,
+      type,
+      group,
+    }),
     get("name"),
   ]);
 
@@ -39,13 +37,11 @@ const findName =
       fork({
         functionName: pipe([
           get("FunctionArn"),
-          (id) =>
-            lives.getById({
-              providerName: config.providerName,
-              id,
-              type: "Function",
-              group: "Lambda",
-            }),
+          lives.getById({
+            providerName: config.providerName,
+            type: "Function",
+            group: "Lambda",
+          }),
           get("name"),
         ]),
         sqsQueueName: getNameFromSource({

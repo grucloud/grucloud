@@ -33,7 +33,7 @@ const isDefault =
   ({ lives, config: { providerName } }) =>
   (live) =>
     pipe([
-      () => lives.getByType({ type: "Vpc", group: "EC2", providerName }),
+      lives.getByType({ type: "Vpc", group: "EC2", providerName }),
       find(get("isDefault")),
       switchCase([
         eq(get("live.VpcId"), findVpcId(live)),

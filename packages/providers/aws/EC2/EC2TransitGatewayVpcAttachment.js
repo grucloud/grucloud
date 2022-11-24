@@ -72,13 +72,11 @@ const findNameInDependency =
           tap((TransitGatewayId) => {
             assert(TransitGatewayId);
           }),
-          (id) =>
-            lives.getById({
-              id,
-              type: "TransitGateway",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
+          lives.getById({
+            type: "TransitGateway",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
           get("name", live.TransitGatewayId),
         ]),
         vpcName: pipe([
@@ -86,13 +84,11 @@ const findNameInDependency =
           tap((VpcId) => {
             assert(VpcId);
           }),
-          (id) =>
-            lives.getById({
-              id,
-              type: "Vpc",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
+          lives.getById({
+            type: "Vpc",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
           get("name", live.VpcId),
         ]),
       }),

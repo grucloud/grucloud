@@ -135,13 +135,13 @@ module.exports = pipe([
           parent: true,
           dependencyId: ({ lives, config }) =>
             pipe([
-              (live) =>
-                lives.getByName({
-                  name: live.clusterName,
-                  type: "Cluster",
-                  group: "EKS",
-                  providerName: config.providerName,
-                }),
+              get("clusterName"),
+              lives.getByName({
+                name: live.clusterName,
+                type: "Cluster",
+                group: "EKS",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -170,12 +170,11 @@ module.exports = pipe([
               pluck("name"),
               map((name) =>
                 pipe([
-                  () =>
-                    lives.getByType({
-                      type: "AutoScalingGroup",
-                      group: "AutoScaling",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByType({
+                    type: "AutoScalingGroup",
+                    group: "AutoScaling",
+                    providerName: config.providerName,
+                  }),
                   find(eq(get("live.AutoScalingGroupName"), name)),
                   get("id"),
                 ])()

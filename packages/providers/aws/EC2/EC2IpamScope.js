@@ -68,12 +68,11 @@ exports.EC2IpamScope = ({ spec, config }) =>
           get("IsDefault"),
           (live) =>
             pipe([
-              () =>
-                lives.getByType({
-                  type: "Ipam",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              lives.getByType({
+                type: "Ipam",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               find(eq(get("live.IpamArn"), live.IpamArn)),
               get("name", live.IpamArn),
               tap((name) => {

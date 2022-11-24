@@ -16,12 +16,11 @@ const dependencyIdFileSystem =
   ({ lives, config }) =>
   (live) =>
     pipe([
-      () =>
-        lives.getByType({
-          type: "FileSystem",
-          group: "EFS",
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type: "FileSystem",
+        group: "EFS",
+        providerName: config.providerName,
+      }),
       find(eq(get("live.FileSystemId"), live.FileSystemId)),
       get("id"),
     ])();

@@ -77,13 +77,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("AlarmIdentifier.Name"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  type: "Alarm",
-                  group: "CloudWatch",
-                  config: config.providerName,
-                }),
+              lives.getByName({
+                type: "Alarm",
+                group: "CloudWatch",
+                config: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -155,12 +153,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "Domain",
-                    group: "Route53Domains",
-                    providerName: config.providerNames,
-                  }),
+                lives.getByType({
+                  type: "Domain",
+                  group: "Route53Domains",
+                  providerName: config.providerNames,
+                }),
                 find(
                   pipe([
                     get("live.DomainName"),
@@ -182,12 +179,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "HostedZone",
-                    group: "Route53",
-                    providerName: config.providerNames,
-                  }),
+                lives.getByType({
+                  type: "HostedZone",
+                  group: "Route53",
+                  providerName: config.providerNames,
+                }),
                 filter(not(eq(get("live.Name"), live.Name))),
                 filter(
                   pipe([

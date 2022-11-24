@@ -101,12 +101,11 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
         get("Url"),
         (Url) =>
           pipe([
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                type: "Cluster",
-                group: "EKS",
-              }),
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Cluster",
+              group: "EKS",
+            }),
             find(eq(get("live.identity.oidc.issuer"), `https://${Url}`)),
             get("name"),
             switchCase([

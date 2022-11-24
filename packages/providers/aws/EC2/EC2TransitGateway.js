@@ -46,7 +46,7 @@ const deleteTransitGatewayPeeringAttachment = ({ endpoint }) =>
           }),
       ])()
     ),
-  ])();
+  ]);
 
 const createModel = ({ config }) => ({
   package: "ec2",

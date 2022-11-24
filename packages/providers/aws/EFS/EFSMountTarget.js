@@ -35,12 +35,11 @@ exports.EFSMountTarget = ({ spec, config }) =>
           tap(() => {
             assert(live.FileSystemId);
           }),
-          () =>
-            lives.getByType({
-              type: "FileSystem",
-              group: "EFS",
-              providerName: config.providerName,
-            }),
+          lives.getByType({
+            type: "FileSystem",
+            group: "EFS",
+            providerName: config.providerName,
+          }),
           find(eq(get("live.FileSystemId"), live.FileSystemId)),
           get("name"),
           tap((name) => {

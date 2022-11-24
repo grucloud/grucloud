@@ -109,29 +109,28 @@ exports.WAFV2WebACLAssociation = ({ spec, config }) =>
           tap((params) => {
             assert(true);
           }),
+          () => live,
           fork({
             webACLName: pipe([
-              () =>
-                lives.getById({
-                  id: live.WebACLArn,
-                  type: "WebACL",
-                  group: "WAFv2",
-                  providerName: config.providerName,
-                }),
+              get("WebACLArn"),
+              lives.getById({
+                type: "WebACL",
+                group: "WAFv2",
+                providerName: config.providerName,
+              }),
               get("name", live.WebACLArn),
             ]),
             resourceName: pipe([
               () => WebAclDependencies,
               values,
-              map(
+              map(({ type, group }) =>
                 pipe([
-                  ({ type, group }) =>
-                    lives.getById({
-                      id: live.ResourceArn,
-                      type,
-                      group,
-                      providerName: config.providerName,
-                    }),
+                  () => live.ResourceArn,
+                  lives.getById({
+                    type,
+                    group,
+                    providerName: config.providerName,
+                  }),
                   get("name"),
                 ])
               ),
@@ -158,12 +157,11 @@ exports.WAFV2WebACLAssociation = ({ spec, config }) =>
           values,
           flatMap(({ type, group, buildArn }) =>
             pipe([
-              () =>
-                lives.getByType({
-                  providerName: config.providerName,
-                  type,
-                  group,
-                }),
+              lives.getByType({
+                providerName: config.providerName,
+                type,
+                group,
+              }),
               map(
                 pipe([
                   get("live"),

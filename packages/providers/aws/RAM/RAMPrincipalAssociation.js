@@ -22,11 +22,10 @@ const findAssociatedEntity =
         assert(live);
         assert(live.associatedEntity);
       }),
-      () =>
-        lives.getByType({
-          type,
-          group,
-        }),
+      lives.getByType({
+        type,
+        group,
+      }),
       find(eq(get("live.Arn"), live.associatedEntity)),
       get("id"),
     ])();
@@ -149,12 +148,11 @@ exports.RAMPrincipalAssociation = ({ spec, config }) =>
           when(
             isEmpty,
             pipe([
-              () =>
-                lives.getById({
-                  id: live.associatedEntity,
-                  type: "User",
-                  group: "IAM",
-                }),
+              () => live.associatedEntity,
+              lives.getById({
+                type: "User",
+                group: "IAM",
+              }),
               get("name"),
             ])
           ),

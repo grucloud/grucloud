@@ -403,12 +403,11 @@ const VirtualMachineDependencySshPublicKey = ({
     get(publicKeysPath),
     map(({ keyData }) =>
       pipe([
-        () =>
-          lives.getByType({
-            providerName: config.providerName,
-            type: "SshPublicKey",
-            group: "Compute",
-          }),
+        lives.getByType({
+          providerName: config.providerName,
+          type: "SshPublicKey",
+          group: "Compute",
+        }),
         find(eq(get("live.properties.publicKey"), keyData)),
         get("id"),
       ])()
@@ -471,13 +470,12 @@ exports.fnSpecs = ({ config }) =>
           ({ lives, config }) =>
           (live) =>
             pipe([
-              () =>
-                lives.getById({
-                  id: live.managedBy,
-                  type: "VirtualMachine",
-                  group: "Compute",
-                  providerName: config.providerName,
-                }),
+              () => live.managedBy,
+              lives.getById({
+                type: "VirtualMachine",
+                group: "Compute",
+                providerName: config.providerName,
+              }),
               get("live.properties.storageProfile.osDisk.managedDisk.id", ""),
               eq(
                 callProp("toUpperCase"),
@@ -511,12 +509,11 @@ exports.fnSpecs = ({ config }) =>
                 get("properties.activeKey.keyUrl"),
                 (keyUrl) =>
                   pipe([
-                    () =>
-                      lives.getByType({
-                        type: "Key",
-                        group: "KeyVault",
-                        providerName: config.providerName,
-                      }),
+                    lives.getByType({
+                      type: "Key",
+                      group: "KeyVault",
+                      providerName: config.providerName,
+                    }),
                     find(
                       pipe([
                         get("live.properties.keyUri"),

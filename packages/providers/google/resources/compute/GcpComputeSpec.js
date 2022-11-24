@@ -153,12 +153,11 @@ module.exports = pipe([
                 tap((params) => {
                   assert(IPAddress);
                 }),
-                () =>
-                  lives.getByType({
-                    providerName: config.providerName,
-                    type: "Address",
-                    group: "compute",
-                  }),
+                lives.getByType({
+                  providerName: config.providerName,
+                  type: "Address",
+                  group: "compute",
+                }),
                 find(eq(get("live.address"), IPAddress)),
                 get("id"),
               ])(),
@@ -377,12 +376,11 @@ module.exports = pipe([
                 tap((params) => {
                   assert(peerIp);
                 }),
-                () =>
-                  lives.getByType({
-                    providerType: "aws",
-                    type: "VpnConnection",
-                    group: "EC2",
-                  }),
+                lives.getByType({
+                  providerType: "aws",
+                  type: "VpnConnection",
+                  group: "EC2",
+                }),
                 find(
                   pipe([
                     get("live.Options.TunnelOptions"),
@@ -404,12 +402,11 @@ module.exports = pipe([
                 tap((params) => {
                   assert(peerIp);
                 }),
-                () =>
-                  lives.getByType({
-                    providerType: "azure",
-                    type: "VirtualNetworkGateway",
-                    group: "Network",
-                  }),
+                lives.getByType({
+                  providerType: "azure",
+                  type: "VirtualNetworkGateway",
+                  group: "Network",
+                }),
                 find(
                   pipe([
                     get("live.properties.bgpSettings.bgpPeeringAddresses"),

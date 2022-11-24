@@ -168,12 +168,11 @@ exports.Route53HostedZone = ({ spec, config }) => {
           when(
             any(get("HostedZoneConfig.PrivateZone")),
             pipe([
-              () =>
-                lives.getByType({
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              lives.getByType({
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               callProp("sort", (a, b) => a.name.localeCompare(b.name)),
               pluck("live"),
               flatMap(({ VpcId /*Region */ }) =>

@@ -245,12 +245,11 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
         assert(resultCreate);
         assert(lives);
       }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: RESOURCE_TYPE,
-          group: "CloudFront",
-        }),
+      lives.getByType({
+        providerName: config.providerName,
+        type: RESOURCE_TYPE,
+        group: "CloudFront",
+      }),
       tap((distributions) => {
         logger.info(`onDeployed ${tos({ distributions })}`);
       }),

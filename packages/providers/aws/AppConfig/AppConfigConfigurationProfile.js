@@ -76,13 +76,13 @@ exports.AppConfigConfigurationProfile = ({ spec, config }) =>
       ({ lives, config }) =>
       (live) =>
         pipe([
-          () =>
-            lives.getById({
-              id: live.ApplicationId,
-              type: "Application",
-              group: "AppConfig",
-              providerName: config.providerName,
-            }),
+          () => live,
+          get("ApplicationId"),
+          lives.getById({
+            type: "Application",
+            group: "AppConfig",
+            providerName: config.providerName,
+          }),
           get("name", live.ApplicationId),
           append(`::${live.Name}`),
         ])(),

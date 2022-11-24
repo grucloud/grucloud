@@ -11,13 +11,11 @@ const managedByOther =
     pipe([
       () => live,
       get("PolicyId"),
-      (id) =>
-        lives.getById({
-          id,
-          type: "Policy",
-          group: "Organisations",
-          providerName: config.providerName,
-        }),
+      lives.getById({
+        type: "Policy",
+        group: "Organisations",
+        providerName: config.providerName,
+      }),
       get("live.AwsManaged"),
     ])();
 
@@ -55,13 +53,11 @@ exports.OrganisationsPolicyAttachment = () => ({
         fork({
           policy: pipe([
             get("PolicyId"),
-            (id) =>
-              lives.getById({
-                id,
-                type: "Policy",
-                group: "Organisations",
-                providerName: config.providerName,
-              }),
+            lives.getById({
+              type: "Policy",
+              group: "Organisations",
+              providerName: config.providerName,
+            }),
             get("name", live.PolicyId),
           ]),
           target: pipe([
@@ -69,37 +65,31 @@ exports.OrganisationsPolicyAttachment = () => ({
               eq(get("Type"), "ACCOUNT"),
               pipe([
                 get("TargetId"),
-                (id) =>
-                  lives.getById({
-                    id,
-                    type: "Account",
-                    group: "Organisations",
-                    providerName: config.providerName,
-                  }),
+                lives.getById({
+                  type: "Account",
+                  group: "Organisations",
+                  providerName: config.providerName,
+                }),
                 get("name"),
               ]),
               eq(get("Type"), "ROOT"),
               pipe([
                 get("TargetId"),
-                (id) =>
-                  lives.getById({
-                    id,
-                    type: "Root",
-                    group: "Organisations",
-                    providerName: config.providerName,
-                  }),
+                lives.getById({
+                  type: "Root",
+                  group: "Organisations",
+                  providerName: config.providerName,
+                }),
                 get("name"),
               ]),
               eq(get("Type"), "ORGANIZATIONAL_UNIT"),
               pipe([
                 get("TargetId"),
-                (id) =>
-                  lives.getById({
-                    id,
-                    type: "OrganisationalUnit",
-                    group: "Organisations",
-                    providerName: config.providerName,
-                  }),
+                lives.getById({
+                  type: "OrganisationalUnit",
+                  group: "Organisations",
+                  providerName: config.providerName,
+                }),
                 get("name"),
               ]),
               () => {

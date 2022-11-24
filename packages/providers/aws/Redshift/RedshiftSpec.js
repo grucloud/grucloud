@@ -108,12 +108,11 @@ module.exports = pipe([
               get("ElasticIpStatus.ElasticIp"),
               (ElasticIp) =>
                 pipe([
-                  () =>
-                    lives.getByType({
-                      type: "ElasticIpAddress",
-                      group: "EC2",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByType({
+                    type: "ElasticIpAddress",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
                   find(eq(get("live.PublicIp"), ElasticIp)),
                   get("id"),
                 ])(),

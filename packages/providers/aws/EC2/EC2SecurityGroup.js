@@ -55,13 +55,13 @@ exports.EC2SecurityGroup = ({ spec, config }) => {
           assert(lives);
           assert(live.GroupName);
         }),
-        () =>
-          lives.getById({
-            id: live.VpcId,
-            type: "Vpc",
-            group: "EC2",
-            providerName: config.providerName,
-          }),
+        () => live,
+        get("VpcId"),
+        lives.getById({
+          type: "Vpc",
+          group: "EC2",
+          providerName: config.providerName,
+        }),
         tap((vpc) => {
           //assert(vpc);
         }),

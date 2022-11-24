@@ -37,13 +37,13 @@ exports.ELBRule = ({ spec, config }) => {
           assert(lives);
           assert(live.ListenerArn);
         }),
-        () =>
-          lives.getById({
-            type: "Listener",
-            group: "ElasticLoadBalancingV2",
-            id: live.ListenerArn,
-            providerName: config.providerName,
-          }),
+        () => live,
+        get("ListenerArn"),
+        lives.getById({
+          type: "Listener",
+          group: "ElasticLoadBalancingV2",
+          providerName: config.providerName,
+        }),
         tap((listener) => {
           assert(listener);
         }),
@@ -71,13 +71,13 @@ exports.ELBRule = ({ spec, config }) => {
               assert(lives);
               assert(live.ListenerArn);
             }),
-            () =>
-              lives.getById({
-                type: "Listener",
-                group: "ElasticLoadBalancingV2",
-                providerName: config.providerName,
-                id: live.ListenerArn,
-              }),
+            () => live,
+            get("ListenerArn"),
+            lives.getById({
+              type: "Listener",
+              group: "ElasticLoadBalancingV2",
+              providerName: config.providerName,
+            }),
             tap((listener) => {
               assert(listener);
             }),
@@ -85,13 +85,11 @@ exports.ELBRule = ({ spec, config }) => {
             tap((LoadBalancerArn) => {
               assert(LoadBalancerArn);
             }),
-            (LoadBalancerArn) =>
-              lives.getById({
-                type: "LoadBalancer",
-                group: "ElasticLoadBalancingV2",
-                providerName: config.providerName,
-                id: LoadBalancerArn,
-              }),
+            lives.getById({
+              type: "LoadBalancer",
+              group: "ElasticLoadBalancingV2",
+              providerName: config.providerName,
+            }),
             get("managedByOther"),
           ])(),
       ]),
@@ -103,13 +101,11 @@ exports.ELBRule = ({ spec, config }) => {
       pipe([
         () => live,
         get("ListenerArn"),
-        (ListenerArn) =>
-          lives.getById({
-            providerName: config.providerName,
-            type: "Listener",
-            group: "ElasticLoadBalancingV2",
-            id: ListenerArn,
-          }),
+        lives.getById({
+          providerName: config.providerName,
+          type: "Listener",
+          group: "ElasticLoadBalancingV2",
+        }),
         tap((listener) => {
           assert(listener);
         }),

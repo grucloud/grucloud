@@ -49,14 +49,14 @@ exports.ApiMapping = ({ spec, config }) => {
           assign({
             ApiName: pipe([
               ({ ApiId }) =>
-                lives.getById({
-                  id: `arn:aws:execute-api:${
-                    config.region
-                  }:${config.accountId()}:${ApiId}`,
-                  providerName: config.providerName,
-                  type: "Api",
-                  group: "ApiGatewayV2",
-                }),
+                `arn:aws:execute-api:${
+                  config.region
+                }:${config.accountId()}:${ApiId}`,
+              lives.getById({
+                providerName: config.providerName,
+                type: "Api",
+                group: "ApiGatewayV2",
+              }),
               get("name"),
             ]),
           }),

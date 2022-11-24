@@ -70,12 +70,11 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
         pluck("network"),
         map((network) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "Network",
-                group: "compute",
-                providerName,
-              }),
+            lives.getByType({
+              type: "Network",
+              group: "compute",
+              providerName,
+            }),
             find(eq(get("live.selfLink"), network)),
             get("id"),
           ])()
@@ -91,12 +90,11 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
         pluck("subnetwork"),
         map((network) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "Subnetwork",
-                group: "compute",
-                providerName,
-              }),
+            lives.getByType({
+              type: "Subnetwork",
+              group: "compute",
+              providerName,
+            }),
             find(eq(get("live.selfLink"), network)),
             get("id"),
           ])()
@@ -112,12 +110,11 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
         pluck("source"),
         map((source) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "Disk",
-                group: "compute",
-                providerName,
-              }),
+            lives.getByType({
+              type: "Disk",
+              group: "compute",
+              providerName,
+            }),
             find(eq(get("live.selfLink"), source)),
             get("id"),
           ])()
@@ -135,12 +132,11 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
         pluck("natIP"),
         map((natIP) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "Address",
-                group: "compute",
-                providerName,
-              }),
+            lives.getByType({
+              type: "Address",
+              group: "compute",
+              providerName,
+            }),
             find(eq(get("live.address"), natIP)),
             get("id"),
           ])()

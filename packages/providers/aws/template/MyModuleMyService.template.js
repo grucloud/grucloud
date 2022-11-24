@@ -121,13 +121,13 @@ const decorate = ({ endpoint }) =>
 
 // const managedByOther = ({  lives }) =>
 //   live => pipe([
-//     () =>
-//       lives.getById({
-//         type: "LoadBalancer",
-//         group: "ElasticLoadBalancingV2",
-//         providerName: config.providerName,
-//         id: live.LoadBalancerArn,
-//       }),
+//     () => live,
+//     get("LoadBalancerArn"),
+//     lives.getById({
+//       type: "LoadBalancer",
+//       group: "ElasticLoadBalancingV2",
+//       providerName: config.providerName,
+//     }),
 //     get("managedByOther"),
 //   ])();
 
@@ -194,11 +194,9 @@ exports.MyModuleMyResource = () => ({
   //         tap((id) => {
   //           assert(id);
   //         }),
-  //         (id) =>
-  //           lives.getById({
-  //             id,
-  //             type: "Vpc",
-  //             group: "EC2",
+  //         lives.getById({
+  //           type: "Vpc",
+  //           group: "EC2",
   //           }),
   //         get("name"),
   //       ]),
@@ -209,13 +207,12 @@ exports.MyModuleMyResource = () => ({
   //         }),
   //         (id) =>
   //           pipe([
-  //             () =>
-  //               lives.getById({
-  //                 id,
-  //                 type: "HostedZone",
-  //                 group: "Route53",
-  //                 providerName: config.providerName,
-  //               }),
+  //             () => id,
+  //             lives.getById({
+  //               type: "HostedZone",
+  //               group: "Route53",
+  //               providerName: config.providerName,
+  //             }),
   //             get("name", id),
   //           ])(),
   //       ]),
@@ -265,25 +262,6 @@ exports.MyModuleMyResource = () => ({
   //     list: true,
   //     dependencyIds: ({ lives, config }) => get("VpcSubnetIds"),
   //   },
-  //   table: {
-  //     type: "Table",
-  //     group: "DynamoDB",
-  //     parent: true,
-  //     dependencyId: ({ lives, config }) =>
-  //       pipe([
-  //         (live) =>
-  //           lives.getByName({
-  //             name: live.TableName,
-  //             type: "Table",
-  //             group: "DynamoDB",
-  //             providerName: config.providerName,
-  //           }),
-  //         get("id"),
-  //         tap((id) => {
-  //           assert(id);
-  //         }),
-  //       ]),
-  //   },
   //   stage: {
   //     type: "Stage",
   //     group: "ApiGatewayV2",
@@ -292,7 +270,6 @@ exports.MyModuleMyResource = () => ({
   //       ({ lives, config }) =>
   //       (live) =>
   //         pipe([
-  //           () =>
   //             lives.getByType({
   //               providerName: config.providerName,
   //               type: "Stage",

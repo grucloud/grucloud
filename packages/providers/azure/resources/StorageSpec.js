@@ -89,13 +89,12 @@ exports.fnSpecs = ({ config }) =>
               update: upsert({ config }),
               getByName: ({ lives, name }) =>
                 pipe([
-                  () =>
-                    lives.getByName({
-                      name,
-                      type: "StorageAccount",
-                      group: "Storage",
-                      providerName: config.providerName,
-                    }),
+                  () => name,
+                  lives.getByName({
+                    type: "StorageAccount",
+                    group: "Storage",
+                    providerName: config.providerName,
+                  }),
                   tap((storageAccount) => {
                     assert(storageAccount);
                   }),
@@ -103,12 +102,11 @@ exports.fnSpecs = ({ config }) =>
                 ])(),
               getList: ({ lives }) =>
                 pipe([
-                  () =>
-                    lives.getByType({
-                      type: "StorageAccount",
-                      group: "Storage",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByType({
+                    type: "StorageAccount",
+                    group: "Storage",
+                    providerName: config.providerName,
+                  }),
                   map.pool(10, getBlobServiceProperties),
                 ])(),
             }),
@@ -244,13 +242,11 @@ exports.fnSpecs = ({ config }) =>
                   callProp("split", "::"),
                   callProp("slice", 0, -2),
                   callProp("join", "::"),
-                  (name) =>
-                    lives.getByName({
-                      name,
-                      type: "StorageAccount",
-                      group: "Storage",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByName({
+                    type: "StorageAccount",
+                    group: "Storage",
+                    providerName: config.providerName,
+                  }),
                   tap((storageAccount) => {
                     assert(storageAccount);
                   }),
@@ -274,12 +270,11 @@ exports.fnSpecs = ({ config }) =>
                 ])(),
               getList: ({ lives }) =>
                 pipe([
-                  () =>
-                    lives.getByType({
-                      type: "BlobContainer",
-                      group: "Storage",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByType({
+                    type: "BlobContainer",
+                    group: "Storage",
+                    providerName: config.providerName,
+                  }),
                   map.pool(10, getBlobsByContainer({ config, lives })),
                   flatten,
                 ])(),

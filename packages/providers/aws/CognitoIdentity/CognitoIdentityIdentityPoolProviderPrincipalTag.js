@@ -55,13 +55,11 @@ exports.CognitoIdentityIdentityPoolProviderPrincipalTag = ({ compare }) => ({
         tap((id) => {
           assert(id);
         }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "IdentityPool",
-            group: "Cognito",
-            providerName: config.providerName,
-          }),
+        lives.getById({
+          type: "IdentityPool",
+          group: "Cognito",
+          providerName: config.providerName,
+        }),
         get("name"),
         tap((name) => {
           assert(name);
@@ -88,12 +86,11 @@ exports.CognitoIdentityIdentityPoolProviderPrincipalTag = ({ compare }) => ({
         ({ lives, config }) =>
         (live) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "UserPool",
-                group: "CognitoIdentityServiceProvider",
-                providerName: config.providerName,
-              }),
+            lives.getByType({
+              type: "UserPool",
+              group: "CognitoIdentityServiceProvider",
+              providerName: config.providerName,
+            }),
             find(eq(get("live.ProviderName"), live.IdentityProviderName)),
             get("id"),
             tap((id) => {
@@ -115,12 +112,11 @@ exports.CognitoIdentityIdentityPoolProviderPrincipalTag = ({ compare }) => ({
     ({ client, endpoint, getById }) =>
     ({ lives, config }) =>
       pipe([
-        () =>
-          lives.getByType({
-            type: "IdentityPool",
-            group: "Cognito",
-            providerName: config.providerName,
-          }),
+        lives.getByType({
+          type: "IdentityPool",
+          group: "Cognito",
+          providerName: config.providerName,
+        }),
         flatMap(
           pipe([
             get("live"),

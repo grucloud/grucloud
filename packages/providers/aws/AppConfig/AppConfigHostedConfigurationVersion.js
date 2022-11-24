@@ -67,13 +67,13 @@ exports.AppConfigHostedConfigurationVersion = ({ spec, config }) =>
       ({ lives, config }) =>
       (live) =>
         pipe([
-          () =>
-            lives.getById({
-              id: live.ConfigurationProfileId,
-              type: "ConfigurationProfile",
-              group: "AppConfig",
-              providerName: config.providerName,
-            }),
+          () => live,
+          get("ConfigurationProfileId"),
+          lives.getById({
+            type: "ConfigurationProfile",
+            group: "AppConfig",
+            providerName: config.providerName,
+          }),
           get("name", live.ConfigurationProfileId),
           unless(() => live.Latest, append(`::${live.VersionNumber}`)),
         ])(),

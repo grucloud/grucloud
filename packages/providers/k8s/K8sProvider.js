@@ -80,11 +80,10 @@ const findDependenciesService = ({ live, lives, config }) =>
     get("spec.selector.matchLabels.app"),
     (label) =>
       pipe([
-        () =>
-          lives.getByType({
-            providerName: config.providerName,
-            type: "Service",
-          }),
+        lives.getByType({
+          providerName: config.providerName,
+          type: "Service",
+        }),
         pluck("live"),
         filter(eq(get("spec.selector.app"), label)),
         pluck("metadata"),

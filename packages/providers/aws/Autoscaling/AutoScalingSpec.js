@@ -80,13 +80,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("LaunchConfigurationName"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  providerName: config.providerName,
-                  type: "LaunchConfiguration",
-                  group: "AutoScaling",
-                }),
+              lives.getByName({
+                providerName: config.providerName,
+                type: "LaunchConfiguration",
+                group: "AutoScaling",
+              }),
               get("id"),
             ]),
         },
@@ -212,23 +210,19 @@ module.exports = pipe([
                 () => undefined,
                 callProp("startsWith", "arn"),
                 pipe([
-                  (IamInstanceProfile) =>
-                    lives.getById({
-                      id: IamInstanceProfile,
-                      type: "InstanceProfile",
-                      group: "IAM",
-                      providerName: config.providerName,
-                    }),
+                  lives.getById({
+                    type: "InstanceProfile",
+                    group: "IAM",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ]),
                 pipe([
-                  (IamInstanceProfile) =>
-                    lives.getByName({
-                      name: IamInstanceProfile,
-                      type: "InstanceProfile",
-                      group: "IAM",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByName({
+                    type: "InstanceProfile",
+                    group: "IAM",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ]),
               ]),

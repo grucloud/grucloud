@@ -160,13 +160,11 @@ module.exports = pipe([
               flattenObject({ filterKey: (key) => key === "credentials" }),
               map(
                 pipe([
-                  (id) =>
-                    lives.getById({
-                      id,
-                      type: "Role",
-                      group: "IAM",
-                      providerName: config.providerName,
-                    }),
+                  lives.getById({
+                    type: "Role",
+                    group: "IAM",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])
               ),
@@ -306,12 +304,12 @@ module.exports = pipe([
               map(({ apiId, stage }) =>
                 pipe([
                   () =>
-                    lives.getById({
-                      id: `arn:aws:apigateway:${config.region}::/restapis/${apiId}/stages/${stage}`,
-                      type: "Stage",
-                      group: "APIGateway",
-                      providerName: config.providerName,
-                    }),
+                    `arn:aws:apigateway:${config.region}::/restapis/${apiId}/stages/${stage}`,
+                  lives.getById({
+                    type: "Stage",
+                    group: "APIGateway",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])()
               ),

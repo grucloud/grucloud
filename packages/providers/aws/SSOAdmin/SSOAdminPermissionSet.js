@@ -189,13 +189,11 @@ exports.SSOAdminPermissionSet = ({}) => ({
           map(
             pipe([
               get("Name"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  type: "Policy",
-                  group: "IAM",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "Policy",
+                group: "IAM",
+                providerName: config.providerName,
+              }),
               get("id"),
             ])
           ),

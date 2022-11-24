@@ -291,8 +291,7 @@ const AwsClient =
             assert(lives);
             assert(config);
           }),
-          () =>
-            lives.getByType({ providerName: config.providerName, type, group }),
+          lives.getByType({ providerName: config.providerName, type, group }),
           tap((parents) => {
             logger.info(`getListWithParent ${type} #parents: ${size(parents)}`);
           }),

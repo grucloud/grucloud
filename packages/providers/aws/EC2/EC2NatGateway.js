@@ -81,13 +81,11 @@ const decorate = ({ endpoint, lives, config }) =>
     assign({
       SubnetCidrBlock: pipe([
         get("SubnetId"),
-        (id) =>
-          lives.getById({
-            id,
-            providerName: config.providerName,
-            type: "Subnet",
-            group: "EC2",
-          }),
+        lives.getById({
+          providerName: config.providerName,
+          type: "Subnet",
+          group: "EC2",
+        }),
         get("live.CidrBlock"),
         tap((CidrBlock) => {
           assert(CidrBlock);
@@ -181,12 +179,11 @@ exports.EC2NatGateway = () => ({
           pluck("AllocationId"),
           map((AllocationId) =>
             pipe([
-              () =>
-                lives.getByType({
-                  type: "ElasticIpAddress",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              lives.getByType({
+                type: "ElasticIpAddress",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               find(eq(get("live.AllocationId"), AllocationId)),
               get("id"),
             ])()

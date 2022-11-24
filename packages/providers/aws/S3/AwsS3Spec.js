@@ -82,13 +82,11 @@ module.exports = pipe([
                 pipe([
                   callProp("split", " "),
                   last,
-                  (id) =>
-                    lives.getById({
-                      id,
-                      type: "OriginAccessIdentity",
-                      group: "CloudFront",
-                      providerName: config.providerName,
-                    }),
+                  lives.getById({
+                    type: "OriginAccessIdentity",
+                    group: "CloudFront",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])
               ),

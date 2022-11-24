@@ -48,12 +48,11 @@ const getPrincipalName =
           get("PrincipalId"),
           (PrincipalId) =>
             pipe([
-              () =>
-                lives.getByType({
-                  type: "User",
-                  group: "IdentityStore",
-                  providerName: config.providerName,
-                }),
+              lives.getByType({
+                type: "User",
+                group: "IdentityStore",
+                providerName: config.providerName,
+              }),
               find(eq(get("live.UserId"), PrincipalId)),
               get("name"),
             ])(),
@@ -62,12 +61,11 @@ const getPrincipalName =
         pipe([
           (PrincipalId) =>
             pipe([
-              () =>
-                lives.getByType({
-                  type: "Group",
-                  group: "IdentityStore",
-                  providerName: config.providerName,
-                }),
+              lives.getByType({
+                type: "Group",
+                group: "IdentityStore",
+                providerName: config.providerName,
+              }),
               find(eq(get("live.GroupId"), PrincipalId)),
               get("name"),
             ])(),
@@ -192,13 +190,11 @@ exports.SSOAdminAccountAssignment = ({ compare }) => ({
             tap((id) => {
               assert(id);
             }),
-            (id) =>
-              lives.getById({
-                id,
-                type: "PermissionSet",
-                group: "SSOAdmin",
-                providerName: config.providerName,
-              }),
+            lives.getById({
+              type: "PermissionSet",
+              group: "SSOAdmin",
+              providerName: config.providerName,
+            }),
             get("name", live.PermissionSetArn),
           ]),
           accountName: pipe([
@@ -206,13 +202,11 @@ exports.SSOAdminAccountAssignment = ({ compare }) => ({
             tap((id) => {
               assert(id);
             }),
-            (id) =>
-              lives.getById({
-                id,
-                type: "Account",
-                group: "Organisations",
-                providerName: config.providerName,
-              }),
+            lives.getById({
+              type: "Account",
+              group: "Organisations",
+              providerName: config.providerName,
+            }),
             get("name", live.TargetId),
           ]),
           principalName: pipe([
@@ -257,12 +251,11 @@ exports.SSOAdminAccountAssignment = ({ compare }) => ({
         tap((params) => {
           assert(config);
         }),
-        () =>
-          lives.getByType({
-            providerName: config.providerName,
-            type: "PermissionSet",
-            group: "SSOAdmin",
-          }),
+        lives.getByType({
+          providerName: config.providerName,
+          type: "PermissionSet",
+          group: "SSOAdmin",
+        }),
         flatMap(({ live }) =>
           pipe([
             () => live,

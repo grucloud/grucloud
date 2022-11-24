@@ -48,12 +48,10 @@ exports.RedshiftServerlessUsageLimit = () => ({
         tap((id) => {
           assert(id);
         }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "Workgroup",
-            group: "RedshiftServerless",
-          }),
+        lives.getById({
+          type: "Workgroup",
+          group: "RedshiftServerless",
+        }),
         get("name"),
         (workgroup) => `usage-limit::${workgroup}::${live.usageType}`,
       ])(),
@@ -85,12 +83,11 @@ exports.RedshiftServerlessUsageLimit = () => ({
     ({ endpoint }) =>
     ({ lives, config }) =>
       pipe([
-        () =>
-          lives.getByType({
-            type: "Workgroup",
-            group: "RedshiftServerless",
-            providerName: config.providerName,
-          }),
+        lives.getByType({
+          type: "Workgroup",
+          group: "RedshiftServerless",
+          providerName: config.providerName,
+        }),
         flatMap(({ live }) =>
           pipe([
             tap((params) => {

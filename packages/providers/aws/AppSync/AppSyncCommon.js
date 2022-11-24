@@ -25,12 +25,11 @@ exports.findDependenciesGraphqlId =
       tap(() => {
         assert(live.apiId);
       }),
-      () =>
-        lives.getByType({
-          type: "GraphqlApi",
-          group: "AppSync",
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type: "GraphqlApi",
+        group: "AppSync",
+        providerName: config.providerName,
+      }),
       find(eq(get("live.apiId"), live.apiId)),
       get("id"),
     ])();
@@ -43,12 +42,11 @@ exports.findDependenciesGraphqlApi = ({ live, lives, config }) => ({
       tap(() => {
         assert(live.apiId);
       }),
-      () =>
-        lives.getByType({
-          type: "GraphqlApi",
-          group: "AppSync",
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type: "GraphqlApi",
+        group: "AppSync",
+        providerName: config.providerName,
+      }),
       find(eq(get("live.apiId"), live.apiId)),
       get("id"),
     ])(),

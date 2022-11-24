@@ -45,13 +45,11 @@ exports.CognitoIdentityIdentityPoolRolesAttachments = ({ compare }) => ({
         tap((id) => {
           assert(id);
         }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "IdentityPool",
-            group: "Cognito",
-            providerName: config.providerName,
-          }),
+        lives.getById({
+          type: "IdentityPool",
+          group: "Cognito",
+          providerName: config.providerName,
+        }),
         get("name"),
         tap((name) => {
           assert(name);

@@ -86,14 +86,13 @@ exports.ResourceMaker = ({
         assert(name);
         assert(path);
       }),
-      () =>
-        provider.lives.getByName({
-          name,
-          group,
-          type,
-          //TODO
-          //providerName: config.providerName,
-        }),
+      () => name,
+      provider.lives.getByName({
+        group,
+        type,
+        //TODO
+        //providerName: config.providerName,
+      }),
       tap((params) => {
         assert(true);
       }),
@@ -250,13 +249,11 @@ exports.ResourceMaker = ({
       tap((params) => {
         assert(true);
       }),
-      (name) =>
-        provider.lives.getByName({
-          name,
-          providerName: provider.name,
-          type,
-          group,
-        }),
+      provider.lives.getByName({
+        providerName: provider.name,
+        type,
+        group,
+      }),
       tap((xxx) => {
         assert(true);
       }),
@@ -583,12 +580,11 @@ exports.ResourceMaker = ({
         switchCase([
           () => filterLives,
           pipe([
-            () =>
-              provider.lives.getByType({
-                type,
-                group,
-                providerName: provider.name,
-              }),
+            provider.lives.getByType({
+              type,
+              group,
+              providerName: provider.name,
+            }),
             tap((resources) => {
               logger.debug(
                 `resolveConfig ${type} #resources ${size(resources)}`

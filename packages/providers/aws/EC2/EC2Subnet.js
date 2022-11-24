@@ -133,13 +133,13 @@ exports.EC2Subnet = ({ spec, config }) => {
       fork({
         vpcName: (live) =>
           pipe([
-            () =>
-              lives.getById({
-                id: live.VpcId,
-                type: "Vpc",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
+            () => live,
+            get("VpcId"),
+            lives.getById({
+              type: "Vpc",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
             get("name", live.VpcId),
             tap((name) => {
               assert(name, "no vpc name in subnet");
