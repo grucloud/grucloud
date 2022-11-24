@@ -3,7 +3,7 @@ const assert = require("assert");
 const { createTagger } = require("../AwsTagger");
 
 exports.Tagger = createTagger({
-  methodTagResource: "tagResource ",
+  methodTagResource: "tagResource",
   methodUnTagResource: "untagResource",
   ResourceArn: "resourceArn",
   TagsKey: "tags",

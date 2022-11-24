@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project appflow-s3-s3
+skinparam monochrome true
++ Infra
+++ aws
++++ Appflow
+++++ Flow (1)
++++ S3
+++++ Bucket (2)
+@endmindmap

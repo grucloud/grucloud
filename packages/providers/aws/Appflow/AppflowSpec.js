@@ -7,23 +7,27 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Appflow.html
 
-//const { AppflowFlow } = require("./AppflowFlow");
-//const { AppflowConnectorProfile } = require("./AppflowConnectorProfile");
+const { AppflowFlow } = require("./AppflowFlow");
+const { AppflowConnectorProfile } = require("./AppflowConnectorProfile");
 
 const GROUP = "Appflow";
-
-const compare = compareAws({});
+const tagsKey = "tags";
+const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
-    // AppflowFlow({})
-    // AppflowConnectorProfile({})
+    //
+    AppflowFlow({}),
+    AppflowConnectorProfile({}),
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        tagsKey,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

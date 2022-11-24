@@ -4,19 +4,19 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Appflow", async function () {
-  it.skip("Flow", () =>
+  it("Flow", () =>
     pipe([
       () => ({
         groupType: "Appflow::Flow",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ flowName: "123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("ConnectorProfile", () =>
+  it("ConnectorProfile", () =>
     pipe([
       () => ({
         groupType: "Appflow::ConnectorProfile",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ connectorProfileName: "m123" }],
       }),
       awsResourceTest,
     ])());
