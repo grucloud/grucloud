@@ -104,7 +104,7 @@ const decorate = ({ endpoint, lives, config }) =>
 
 const disassociateAddress = ({ endpoint }) =>
   pipe([
-    tap((params) => {
+    tap((live) => {
       assert(live);
       assert(endpoint);
     }),

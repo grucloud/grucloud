@@ -1,10 +1,10 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, map } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, eq, pick, assign, map, omit } = require("rubico");
+const { defaultsDeep, when, callProp } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { buildTags } = require("../AwsCommon");
-const { replaceWithName } = require("@grucloud/core/Common");
+const { buildTags, assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { replaceWithName, compare } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./OpenSearchCommon");
 
@@ -50,14 +50,47 @@ const decorate = ({ endpoint }) =>
       assign({ AccessPolicies: pipe([get("AccessPolicies"), JSON.parse]) })
     ),
     assignTags({ endpoint }),
+    when(eq(get("CognitoOptions.Enabled"), false), omit(["CognitoOptions"])),
+    when(
+      eq(get("DomainEndpointOptions.CustomEndpointEnabled"), false),
+      omit(["DomainEndpointOptions"])
+    ),
+    when(
+      pipe([get("AutoTuneOptions.State"), callProp("startsWith", "ENABLE")]),
+      defaultsDeep({ AutoTuneOptions: { DesiredState: "ENABLED" } })
+    ),
   ]);
 
+const rejectEnvironmentVariable = () =>
+  pipe([get("AdvancedSecurityOptions.MasterUserOptions.MasterUserARN")]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html
-exports.OpenSearchDomain = () => ({
+exports.OpenSearchDomain = ({ compare }) => ({
   type: "Domain",
   package: "opensearch",
   client: "OpenSearch",
-  propertiesDefault: {},
+  propertiesDefault: {
+    AdvancedOptions: {
+      "indices.fielddata.cache.size": "20",
+      "indices.query.bool.max_clause_count": "1024",
+      override_main_response_version: "false",
+      "rest.action.multi.allow_explicit_index": "true",
+    },
+    EncryptionAtRestOptions: {
+      Enabled: true,
+    },
+    EBSOptions: {
+      EBSEnabled: true,
+      Iops: 3000,
+      Throughput: 125,
+      VolumeSize: 10,
+      VolumeType: "gp3",
+    },
+    NodeToNodeEncryptionOptions: {
+      Enabled: true,
+    },
+    SnapshotOptions: {},
+  },
   omitProperties: [
     "DomainId",
     "ARN",
@@ -72,6 +105,9 @@ exports.OpenSearchDomain = () => ({
     "CognitoOptions.IdentityPoolId",
     "CognitoOptions.RoleArn",
     "ChangeProgressDetails",
+    "ServiceSoftwareOptions",
+    "EncryptionAtRestOptions.KmsKeyId",
+    "AutoTuneOptions.State",
   ],
   inferName: () =>
     pipe([
@@ -94,7 +130,25 @@ exports.OpenSearchDomain = () => ({
         assert(id);
       }),
     ]),
+  environmentVariables: [
+    {
+      path: "AdvancedSecurityOptions.MasterUserOptions.MasterUserName",
+      suffix: "MASTER_USERNAME",
+      rejectEnvironmentVariable,
+    },
+    {
+      path: "AdvancedSecurityOptions.MasterUserOptions.MasterUserPassword",
+      suffix: "MASTER_USER_PASSWORD",
+      rejectEnvironmentVariable,
+    },
+  ],
   dependencies: {
+    certificate: {
+      type: "Certificate",
+      group: "ACM",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("DomainEndpointOptions.CustomEndpointCertificateArn")]),
+    },
     cloudWatchLogGroups: {
       type: "LogGroup",
       group: "CloudWatchLogs",
@@ -121,12 +175,18 @@ exports.OpenSearchDomain = () => ({
       group: "Cognito",
       dependencyId: ({ lives, config }) => get("CognitoOptions.UserPoolId"),
     },
+    iamUser: {
+      type: "User",
+      group: "IAM",
+      dependencyId: ({ lives, config }) =>
+        get("AdvancedSecurityOptions.MasterUserOptions.MasterUserARN"),
+    },
     kmsKey: {
       type: "Key",
       group: "KMS",
       excludeDefaultDependencies: true,
       dependencyId: ({ lives, config }) =>
-        get("EncryptionAtRestOptions.KmsKeyId"),
+        pipe([get("EncryptionAtRestOptions.KmsKeyId")]),
     },
     securityGroups: {
       type: "SecurityGroup",
@@ -144,28 +204,31 @@ exports.OpenSearchDomain = () => ({
     },
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#getDomain-property
+  compare: compare({
+    filterTarget: () => omit(["AdvancedSecurityOptions.MasterUserOptions"]),
+  }),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#describeDomain-property
   getById: {
     method: "describeDomain",
     getField: "DomainStatus",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#listDomains-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#describeDomains-property
   getList: {
-    enhanceParams: () => () => ({ DomainNames: [] }),
-    method: "describeDomains",
-    getParam: "DomainStatusList",
-    decorate,
+    enhanceParams: () => () => ({ EngineType: "OpenSearch" }),
+    method: "listDomainNames",
+    getParam: "DomainNames",
+    decorate: ({ getById }) => pipe([getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#createDomain-property
   create: {
     filterPayload: pipe([tagsToPayload, accessPoliciesStringify]),
     method: "createDomain",
     pickCreated: ({ payload }) => pipe([() => payload]),
-    isInstanceUp: pipe([get("Created")]),
+    isInstanceUp: pipe([eq(get("Processing"), false)]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#updateDomain-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#updateDomainConfig-property
   update: {
     method: "updateDomainConfig",
     filterParams: ({ pickId, payload, diff, live }) =>
@@ -175,30 +238,41 @@ exports.OpenSearchDomain = () => ({
   destroy: {
     method: "deleteDomain",
     pickId,
-    isInstanceDown: pipe([get("Deleted")]),
   },
   getByName: ({ getById }) =>
     pipe([({ name }) => ({ DomainName: name }), getById({})]),
   filterLive: ({ lives, providerConfig }) =>
     pipe([
-      assign({
-        LogPublishingOptions: pipe([
-          get("LogPublishingOptions"),
-          map(
-            assign({
-              CloudWatchLogsLogGroupArn: pipe([
-                get("CloudWatchLogsLogGroupArn"),
-                replaceWithName({
-                  groupType: "CloudWatchLogs::LogGroup",
-                  path: "id",
-                  providerConfig,
-                  lives,
-                }),
-              ]),
-            })
-          ),
-        ]),
-      }),
+      when(
+        get("AccessPolicies"),
+        assign({
+          AccessPolicies: pipe([
+            get("AccessPolicies"),
+            assignPolicyAccountAndRegion({ providerConfig, lives }),
+          ]),
+        })
+      ),
+      when(
+        get("LogPublishingOptions"),
+        assign({
+          LogPublishingOptions: pipe([
+            get("LogPublishingOptions"),
+            map(
+              assign({
+                CloudWatchLogsLogGroupArn: pipe([
+                  get("CloudWatchLogsLogGroupArn"),
+                  replaceWithName({
+                    groupType: "CloudWatchLogs::LogGroup",
+                    path: "id",
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        })
+      ),
     ]),
   tagger: ({ config }) =>
     Tagger({
@@ -209,11 +283,14 @@ exports.OpenSearchDomain = () => ({
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: {
-      subnets,
-      securityGroups,
+      certificate,
       cognitoUserPool,
       cognitoIdentityPool,
       cognitoIamRole,
+      iamUser,
+      kmsKey,
+      subnets,
+      securityGroups,
     },
     config,
   }) =>
@@ -222,6 +299,17 @@ exports.OpenSearchDomain = () => ({
       defaultsDeep({
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
+      when(
+        () => certificate,
+        defaultsDeep({
+          DomainEndpointOptions: {
+            CustomEndpointCertificateArn: getField(
+              certificate,
+              "CertificateArn"
+            ),
+          },
+        })
+      ),
       when(
         () => cognitoIamRole,
         defaultsDeep({
@@ -242,6 +330,16 @@ exports.OpenSearchDomain = () => ({
         () => cognitoUserPool,
         defaultsDeep({
           CognitoOptions: { UserId: getField(cognitoUserPool, "Id") },
+        })
+      ),
+      when(
+        () => iamUser,
+        defaultsDeep({
+          AdvancedSecurityOptions: {
+            MasterUserOptions: {
+              MasterUserARN: getField(iamUser, "Arn"),
+            },
+          },
         })
       ),
       when(

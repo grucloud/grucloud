@@ -235,7 +235,12 @@ exports.MyModuleMyResource = () => ({
   //     `${resourceShareArn}::${associatedEntity}`,
   // ]),
   // environmentVariables: [
-  //   { path: "masterUsername", suffix: "MASTER_USERNAME" },
+  //   {
+  //     path: "masterUsername",
+  //     suffix: "MASTER_USERNAME",
+  //     rejectEnvironmentVariable: () =>
+  //       pipe([get("AuthParameters.ApiKeyAuthParameters")]),
+  //   },
   //   { path: "masterUserPassword", suffix: "MASTER_USER_PASSWORD" },
   // ],
 

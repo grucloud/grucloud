@@ -17,7 +17,7 @@ const { OpenSearchDomain } = require("./OpenSearchDomain");
 
 module.exports = pipe([
   () => [
-    OpenSearchDomain({}),
+    OpenSearchDomain({ compare }),
     // OpenSearchDomainPolicy({})
     // OpenSearchDomainSamlOption({})
     // OpenSearchInboundConnectionAccepter({})
