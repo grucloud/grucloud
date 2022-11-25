@@ -3,8 +3,6 @@ const { pipe, tap, get, tryCatch, pick, map, filter, not } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pipe([
   pick(["AccountId", "AlternateContactType"]),
   tap(({ AlternateContactType }) => {
@@ -12,10 +10,16 @@ const pickId = pipe([
   }),
 ]);
 
-const model = ({ config }) => ({
+exports.AccountAlternateAccount = () => ({
+  type: "AlternateAccount",
   package: "account",
   client: "Account",
   ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
+  propertiesDefault: {},
+  omitProperties: [],
+  inferName: () => pipe([get("AlternateContactType")]),
+  findName: () => pipe([get("AlternateContactType")]),
+  findId: () => pipe([get("AlternateContactType")]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Account.html#getAlternateContact-property
   getById: {
     pickId,
@@ -37,44 +41,35 @@ const model = ({ config }) => ({
     method: "deleteAlternateContact",
     pickId,
   },
-});
-
-exports.AccountAlternateAccount = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () => pipe([get("AlternateContactType")]),
-    findId: () => pipe([get("AlternateContactType")]),
-    getList: ({ endpoint }) =>
-      pipe([
-        () => ["BILLING", "OPERATIONS", "SECURITY"],
-        map(
-          tryCatch(
+  getList: ({ endpoint }) =>
+    pipe([
+      () => ["BILLING", "OPERATIONS", "SECURITY"],
+      map(
+        tryCatch(
+          pipe([
+            (AlternateContactType) => ({
+              AlternateContactType,
+            }),
+            endpoint().getAlternateContact,
+            get("AlternateContact"),
+          ]),
+          // TODO throw if not  "ResourceNotFoundException" or "AccessDeniedException",
+          (error) =>
             pipe([
-              (AlternateContactType) => ({
-                AlternateContactType,
+              tap((params) => {
+                assert(error);
               }),
-              endpoint().getAlternateContact,
-              get("AlternateContact"),
-            ]),
-            // TODO throw if not  "ResourceNotFoundException" or "AccessDeniedException",
-            (error) =>
-              pipe([
-                tap((params) => {
-                  assert(error);
-                }),
-                () => undefined,
-              ])()
-          )
-        ),
-        filter(not(isEmpty)),
-      ]),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: {},
-    }) => pipe([() => otherProps])(),
-  });
+              () => undefined,
+            ])()
+        )
+      ),
+      filter(not(isEmpty)),
+    ]),
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: {},
+  }) => pipe([() => otherProps])(),
+});

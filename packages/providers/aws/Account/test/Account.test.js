@@ -13,4 +13,12 @@ describe("Account", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("ContactInformation", () =>
+    pipe([
+      () => ({
+        groupType: "Account::ContactInformation",
+        skipDelete: true,
+      }),
+      awsResourceTest,
+    ])());
 });
