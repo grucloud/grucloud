@@ -25,7 +25,13 @@ module.exports = pipe([
         "status",
         "statusReason",
       ],
-      inferName: () => get("analyzerName"),
+      inferName: () =>
+        pipe([
+          get("analyzerName"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
     },
     {
       type: "ArchiveRule",
