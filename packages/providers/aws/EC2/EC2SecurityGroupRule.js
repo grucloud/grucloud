@@ -156,63 +156,75 @@ const findName =
       }),
     ])();
 
-const SecurityGroupRuleBase = ({ config }) => {
-  const ec2 = createEC2(config);
-  const isDefault =
-    ({ IsEgress }) =>
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        tap(() => {
-          assert(live.GroupId);
-          assert(lives.getById);
-        }),
-        () => live,
-        or([
-          // Elastic Beanstalk
-          pipe([get("GroupName"), callProp("startsWith", "awseb-")]),
+const isDefault =
+  ({ IsEgress }) =>
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(live.GroupId);
+        assert(lives.getById);
+      }),
+      () => live,
+      or([
+        // Elastic Beanstalk
+        pipe([get("GroupName"), callProp("startsWith", "awseb-")]),
+        // Directory Service
+        pipe([
+          get("GroupName"),
           and([
-            pipe([
-              get("UserIdGroupPairs"),
-              and([
-                lte(size, 1),
-                pipe([first, or([isEmpty, eq(get("GroupId"), live.GroupId)])]),
-              ]),
-            ]),
-            or([
-              () => IsEgress,
-              and([
-                pipe([
-                  get("GroupId"),
-                  lives.getById({
-                    type: "SecurityGroup",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
-                  get("managedByOther"),
-                ]),
-              ]),
-            ]),
-            // Ingress
-            pipe([
-              pick(["IpProtocol", "FromPort", "ToPort"]),
-              (IpPermission) =>
-                isDeepEqual(IpPermission, {
-                  IpProtocol: "-1",
-                }),
+            callProp("startsWith", "d-"),
+            callProp("endsWith", "_controllers"),
+          ]),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        and([
+          pipe([
+            get("UserIdGroupPairs"),
+            and([
+              lte(size, 1),
+              pipe([first, or([isEmpty, eq(get("GroupId"), live.GroupId)])]),
             ]),
           ]),
+          or([
+            () => IsEgress,
+            and([
+              pipe([
+                get("GroupId"),
+                lives.getById({
+                  type: "SecurityGroup",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+                get("managedByOther"),
+              ]),
+            ]),
+          ]),
+          // Ingress
+          pipe([
+            pick(["IpProtocol", "FromPort", "ToPort"]),
+            (IpPermission) =>
+              isDeepEqual(IpPermission, {
+                IpProtocol: "-1",
+              }),
+          ]),
         ]),
-        tap((result) => {
-          // logger.debug(
-          //   `securityGroupRule IsEgress: ${IsEgress}, ${tos(
-          //     live
-          //   )} isDefault ${result}`
-          // );
-        }),
-      ])();
+      ]),
+      tap((result) => {
+        // logger.debug(
+        //   `securityGroupRule IsEgress: ${IsEgress}, ${tos(
+        //     live
+        //   )} isDefault ${result}`
+        // );
+      }),
+    ])();
 
-  const managedByOther = isDefault;
+const managedByOther = isDefault;
+
+const SecurityGroupRuleBase = ({ config }) => {
+  const ec2 = createEC2(config);
 
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([

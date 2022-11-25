@@ -8,8 +8,10 @@ const { createAwsService } = require("../AwsService");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectoryService.html
 
 //const { DirectoryServiceConditionalForwarder } = require("./DirectoryServiceConditionalForwarder");
-//const { DirectoryServiceDirectory } = require("./DirectoryServiceDirectory");
-//const { DirectoryServiceLogSubscription } = require("./DirectoryServiceLogSubscription");
+const { DirectoryServiceDirectory } = require("./DirectoryServiceDirectory");
+// const {
+//   DirectoryServiceLogSubscription,
+// } = require("./DirectoryServiceLogSubscription");
 //const { DirectoryServiceRegion } = require("./DirectoryServiceRegion");
 //const { DirectoryServiceSharedDirectory } = require("./DirectoryServiceSharedDirectory");
 //const { DirectoryServiceSharedDirectoryAccepter } = require("./DirectoryServiceSharedDirectoryAccepter");
@@ -21,17 +23,19 @@ const compare = compareAws({});
 module.exports = pipe([
   () => [
     // DirectoryServiceConditionalForwarder({})
-    // DirectoryServiceDirectory({})
+    DirectoryServiceDirectory({ compare }),
     // DirectoryServiceLogSubscription({})
     // DirectoryServiceRegion({})
     // DirectoryServiceSharedDirectory({})
     // DirectoryServiceSharedDirectoryAccepter({})
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

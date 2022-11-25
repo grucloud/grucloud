@@ -33,6 +33,9 @@ const decorate = ({ endpoint }) =>
       CertificateAuthorityType: Type,
       ...other,
     }),
+    // TODO GetCertificateAuthorityCsr
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACMPCA.html#getCertificateAuthorityCsr-property
+    // handle AccessDeniedException
   ]);
 
 const pickProperties = [

@@ -432,7 +432,7 @@ const AwsClient =
                 tap((params) => {
                   assert(true);
                 }),
-                endpoint()[method],
+                endpoint()[isFunction(method) ? method()(payload) : method],
                 tap((params) => {
                   logger.debug(
                     `create ${groupType}, name: ${name}, response: ${JSON.stringify(

@@ -39,6 +39,37 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
 const { AwsClient } = require("../AwsClient");
 const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
+const cannotBeDeleted = () =>
+  pipe([
+    or([
+      eq(get("GroupName"), "default"),
+      //pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
+    ]),
+  ]);
+
+const isDefault = cannotBeDeleted;
+
+const managedByOther = ({ lives, config }) =>
+  or([
+    pipe([
+      get("Description"),
+      callProp("startsWith", "AWS created security group"),
+    ]), // Directory Service
+    hasKeyInTags({
+      key: "aws:eks:cluster-name",
+    }),
+    hasKeyInTags({
+      key: "elbv2.k8s.aws/cluster",
+    }),
+    hasKeyInTags({
+      key: "AWSServiceName",
+    }),
+    hasKeyInTags({
+      key: "elasticbeanstalk:",
+    }),
+    isDefault({ lives, config }),
+  ]);
+
 exports.EC2SecurityGroup = ({ spec, config }) => {
   const { managedByDescription, providerName } = config;
   assert(managedByDescription);
@@ -172,33 +203,6 @@ exports.EC2SecurityGroup = ({ spec, config }) => {
     getField: "SecurityGroups",
     ignoreErrorCodes: ["InvalidGroup.NotFound"],
   });
-
-  const cannotBeDeleted = () =>
-    pipe([
-      or([
-        eq(get("GroupName"), "default"),
-        //pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
-      ]),
-    ]);
-
-  const isDefault = cannotBeDeleted;
-
-  const managedByOther = ({ lives, config }) =>
-    or([
-      hasKeyInTags({
-        key: "aws:eks:cluster-name",
-      }),
-      hasKeyInTags({
-        key: "elbv2.k8s.aws/cluster",
-      }),
-      hasKeyInTags({
-        key: "AWSServiceName",
-      }),
-      hasKeyInTags({
-        key: "elasticbeanstalk:",
-      }),
-      isDefault({ lives, config }),
-    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
   const create = client.create({

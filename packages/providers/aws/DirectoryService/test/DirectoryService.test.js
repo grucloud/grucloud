@@ -12,11 +12,11 @@ describe("DirectoryService", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Directory", () =>
+  it("Directory", () =>
     pipe([
       () => ({
         groupType: "DirectoryService::Directory",
-        livesNotFound: ({ config }) => [{ DirectoryId: "d123" }],
+        livesNotFound: ({ config }) => [{ DirectoryId: "d-1234567890" }],
       }),
       awsResourceTest,
     ])());
