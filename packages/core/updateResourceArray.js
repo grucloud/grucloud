@@ -37,12 +37,12 @@ exports.updateResourceArray =
             pipe([
               () => arrayDiff,
               filter(get("removed")),
-              map(
+              map.series(
                 pipe([get("value"), map.series(onRemove({ endpoint, live }))])
               ),
               () => arrayDiff,
               filter(get("added")),
-              map(
+              map.series(
                 pipe([
                   get("value"),
                   map.series(onAdd({ endpoint, live, payload })),
