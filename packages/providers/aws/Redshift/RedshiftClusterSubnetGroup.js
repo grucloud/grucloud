@@ -16,6 +16,9 @@ const pickId = pipe([
   pick(["ClusterSubnetGroupName"]),
 ]);
 
+const managedByOther = () =>
+  pipe([eq(get("ClusterSubnetGroupName"), "default")]);
+
 const model = ({ config }) => ({
   package: "redshift",
   client: "Redshift",
@@ -65,6 +68,8 @@ exports.RedshiftClusterSubnetGroup = ({ spec, config }) =>
     config,
     findName: () => pipe([get("ClusterSubnetGroupName")]),
     findId: () => pipe([get("ClusterSubnetGroupName")]),
+    managedByOther,
+    cannotBeDeleted: managedByOther,
     getByName: ({ getList, endpoint, getById }) =>
       pipe([
         ({ name }) => ({

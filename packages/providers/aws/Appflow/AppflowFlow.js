@@ -29,6 +29,7 @@ const decorate = ({ endpoint }) =>
       assert(endpoint);
     }),
     omitIfEmpty([
+      "metadataCatalogConfig.glueDataCatalog",
       "metadataCatalogConfig",
       "triggerConfig.triggerProperties.Scheduled",
       "triggerConfig.triggerProperties",

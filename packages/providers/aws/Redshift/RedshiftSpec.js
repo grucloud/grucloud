@@ -27,8 +27,6 @@ module.exports = pipe([
       propertiesDefault: {
         AvailabilityZoneRelocationStatus: "disabled",
         PreferredMaintenanceWindow: "wed:04:30-wed:05:00",
-        DBName: "dev",
-        MasterUsername: "awsuser",
         AutomatedSnapshotRetentionPeriod: 1,
         ManualSnapshotRetentionPeriod: -1,
         DeferredMaintenanceWindows: [],
@@ -40,6 +38,7 @@ module.exports = pipe([
       },
       compare: compare({ filterTarget: () => omit(["MasterUserPassword"]) }),
       omitProperties: [
+        "Arn",
         "ElasticResizeNumberOfNodeOptions",
         "ClusterStatus",
         "ClusterAvailabilityStatus",
@@ -68,6 +67,7 @@ module.exports = pipe([
         "ClusterVersion",
         "ClusterRevisionNumber",
         "NextMaintenanceWindowStartTime",
+        // TODO remove all ClusterParameterGroups ?
         "ClusterParameterGroups[].ParameterApplyStatus",
         "ResizeInfo",
         "VpcSecurityGroupIds", //TODO
@@ -78,6 +78,7 @@ module.exports = pipe([
         clusterSubnetGroup: {
           type: "ClusterSubnetGroup",
           group: GROUP,
+          excludeDefaultDependencies: true,
           dependencyId: ({ lives, config }) => get("ClusterSubnetGroupName"),
         },
         clusterParameterGroups: {

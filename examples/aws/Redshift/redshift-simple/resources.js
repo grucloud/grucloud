@@ -85,6 +85,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       ClusterIdentifier: "redshift-cluster-1",
       NodeType: "dc2.large",
+      MasterUsername: "awsuser",
+      DBName: "dev",
       ClusterParameterGroups: [
         {
           ParameterGroupName: "group-1",

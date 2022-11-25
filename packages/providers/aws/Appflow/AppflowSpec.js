@@ -17,8 +17,8 @@ const compare = compareAws({ tagsKey, key: "key" });
 module.exports = pipe([
   () => [
     //
-    AppflowFlow({}),
-    AppflowConnectorProfile({}),
+    AppflowFlow({ compare }),
+    AppflowConnectorProfile({ compare }),
   ],
   map(
     pipe([

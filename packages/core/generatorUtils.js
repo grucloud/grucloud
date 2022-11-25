@@ -154,7 +154,13 @@ const findDependencyNames = ({
   ])();
 
 const envVarName = ({ name, suffix }) =>
-  `${snakeCase(name).toUpperCase()}_${snakeCase(suffix).toUpperCase()}`;
+  pipe([
+    tap((params) => {
+      assert(suffix);
+      assert(name);
+    }),
+    () => `${snakeCase(name).toUpperCase()}_${snakeCase(suffix).toUpperCase()}`,
+  ])();
 
 exports.envVarName = envVarName;
 

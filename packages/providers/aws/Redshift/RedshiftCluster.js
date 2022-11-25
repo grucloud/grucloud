@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map, assign, or } = require("rubico");
+const { pipe, tap, get, pick, eq, map, assign, or, omit } = require("rubico");
 const { defaultsDeep, when, first } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -11,6 +11,32 @@ const { tagResource, untagResource } = require("./RedshiftCommon");
 
 const pickId = pipe([pick(["ClusterIdentifier"])]);
 
+// arn:aws:redshift:us-east-2:123456789:cluster:t1
+const buildArn = ({ accountId, region }) =>
+  pipe([
+    tap(({ ClusterIdentifier }) => {
+      assert(ClusterIdentifier);
+      assert(region);
+    }),
+    ({ ClusterIdentifier }) =>
+      `arn:aws:redshift:${region}:${accountId()}:cluster:${ClusterIdentifier}`,
+  ]);
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    assign({ Arn: pipe([buildArn(config)]) }),
+    when(
+      eq(get("NumberOfNodes"), 1),
+      pipe([
+        omit(["NumberOfNodes"]),
+        defaultsDeep({ ClusterType: "single-node" }),
+      ])
+    ),
+  ]);
+
 const model = ({ config }) => ({
   package: "redshift",
   client: "Redshift",
@@ -20,11 +46,13 @@ const model = ({ config }) => ({
     method: "describeClusters",
     getField: "Clusters",
     pickId,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#describeClusters-property
   getList: {
     method: "describeClusters",
     getParam: "Clusters",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#createCluster-property
   create: {
@@ -51,13 +79,6 @@ const model = ({ config }) => ({
     extraParam: { SkipFinalClusterSnapshot: true },
   },
 });
-
-// arn:aws:redshift:us-east-2:123456789:cluster:t1
-const buildArn = ({ accountId, region }) =>
-  pipe([
-    ({ ClusterIdentifier }) =>
-      `arn:aws:redshift:${region}:${accountId()}:cluster:${ClusterIdentifier}`,
-  ]);
 
 exports.RedshiftCluster = ({ spec, config }) =>
   createAwsResource({
@@ -112,6 +133,7 @@ exports.RedshiftCluster = ({ spec, config }) =>
         iamRoles,
         vpcSecurityGroups,
       },
+      config,
     }) =>
       pipe([
         () => otherProps,

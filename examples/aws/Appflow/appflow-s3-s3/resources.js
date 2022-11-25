@@ -28,7 +28,6 @@ exports.createResources = () => [
         },
       ],
       flowName: "appflow-S3-S3",
-      metadataCatalogConfig: {},
       schemaVersion: 1,
       sourceFlowConfig: {
         connectorType: "S3",

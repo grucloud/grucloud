@@ -1,21 +1,22 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map, fork, flatMap } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  eq,
+  map,
+  fork,
+  flatMap,
+  not,
+  assign,
+  omit,
+} = require("rubico");
 const { defaultsDeep, prepend, callProp, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { buildTags } = require("../AwsCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
-
-const { Tagger } = require("./AppflowCommon");
-
-const buildArn = () =>
-  pipe([
-    get("connectorProfileArn"),
-    tap((arn) => {
-      assert(arn);
-    }),
-  ]);
 
 const pickId = pipe([
   tap(({ connectorProfileName }) => {
@@ -28,6 +29,10 @@ const decorate = ({ endpoint }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
+    }),
+    ({ connectorProfileProperties, ...other }) => ({
+      ...other,
+      connectorProfileConfig: connectorProfileProperties,
     }),
   ]);
 
@@ -66,13 +71,13 @@ const connectorCredentials = [
 
 const createEnvironmentVariables = pipe([
   () => connectorCredentials,
-  map(({ name, keys }) =>
+  flatMap(({ name, keys }) =>
     pipe([
       tap((params) => {
         assert(name);
       }),
       () => keys,
-      flatMap(
+      map(
         pipe([
           fork({
             path: pipe([
@@ -94,10 +99,15 @@ const createEnvironmentVariables = pipe([
 ]);
 
 const rejectEnvironmentVariable = (service) => () =>
-  pipe([get(`connectorProfileConfig.connectorProfileCredentials.${service}`)]);
+  pipe([
+    tap((params) => {
+      assert(service);
+    }),
+    not(eq(get("connectorType"), service)),
+  ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConnectorProfile.html
-exports.AppflowConnectorProfile = () => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Appflow.html
+exports.AppflowConnectorProfile = ({ compare }) => ({
   type: "ConnectorProfile",
   package: "appflow",
   client: "Appflow",
@@ -108,6 +118,7 @@ exports.AppflowConnectorProfile = () => ({
     "credentialsArn",
     "lastUpdatedAt",
     "privateConnectionProvisioningState",
+    "kmsArn",
   ],
   inferName: () =>
     pipe([
@@ -135,18 +146,42 @@ exports.AppflowConnectorProfile = () => ({
       type: "Key",
       group: "KMS",
       excludeDefaultDependencies: true,
-      dependencyId: ({ lives, config }) => get("kmsArn"), // TODO
+      dependencyId: ({ lives, config }) => get("kmsArn"),
     },
-    // s3BucketDestination: {
-    //   type: "S3",
-    //   group: "Bucket",
-    //   dependencyId: ({ lives, config }) =>
-    //     pipe([get("destination_ConnectorProfile_config.s3.bucket")]), // TODO
-    // },
+    iamRoleRedshift: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get(
+            "connectorProfileConfig.connectorProfileProperties.Redshift.roleArn"
+          ),
+        ]),
+    },
+    s3BucketRedshift: {
+      type: "Bucket",
+      group: "S3",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get(
+            "connectorProfileConfig.connectorProfileProperties.Redshift.bucketName"
+          ),
+          lives.getByName({
+            type: "Bucket",
+            group: "S3",
+            providerName: config.providerName,
+          }),
+          get("id"),
+        ]),
+    },
   },
+  compare: compare({
+    filterTarget: () =>
+      pipe([omit(["connectorProfileConfig.connectorProfileCredentials"])]),
+  }),
   environmentVariables: createEnvironmentVariables(),
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConnectorProfile.html#getConnectorProfile-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Appflow.html#getConnectorProfile-property
   getById: {
     method: "describeConnectorProfiles",
     getField: "connectorProfileDetails",
@@ -160,82 +195,69 @@ exports.AppflowConnectorProfile = () => ({
     ]),
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConnectorProfile.html#listConnectorProfiles-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Appflow.html#listConnectorProfiles-property
   getList: {
     method: "describeConnectorProfiles",
     getParam: "connectorProfileDetails",
-    //decorate: ({ getById }) => pipe([getById]),
     decorate,
-    //decorate: ({ getById }) => pipe([(name) => ({ name }), getById]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConnectorProfile.html#createConnectorProfile-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Appflow.html#createConnectorProfile-property
   create: {
     method: "createConnectorProfile",
     pickCreated: ({ payload }) => pipe([identity]),
-    // isInstanceUp: pipe([eq(get("ConnectorProfileStatus"), "OPERATIONAL")]),
-    // isInstanceError: pipe([eq(get("ConnectorProfileStatus"), "ACTION_NEEDED")]),
-    // getErrorMessage: get("StatusMessage", "error"),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConnectorProfile.html#updateConnectorProfile-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Appflow.html#updateConnectorProfile-property
   update: {
     method: "updateConnectorProfile",
     filterParams: ({ pickId, payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConnectorProfile.html#deleteConnectorProfile-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Appflow.html#deleteConnectorProfile-property
   destroy: {
     method: "deleteConnectorProfile",
     pickId: pipe([pickId, defaultsDeep({ forceDelete: true })]),
-    // isInstanceDown: pipe([eq(get("status"), "INACTIVE")]),
-    // ignoreErrorCodes: ["ClusterNotFoundException"],
-    // ignoreErrorMessages: [
-    //   "The specified cluster is inactive. Specify an active cluster and try again.",
-    // ],
-    // shouldRetryOnExceptionCodes: [],
-    // shouldRetryOnExceptionMessages: [],
   },
   getByName: getByNameCore,
-  // getByName: ({ getById }) =>
-  //   pipe([({ name }) => ({ ConnectionName: name }), getById({})]),
-
-  // filterLive: ({ lives, providerConfig }) =>
-  //   pipe([
-  //     assign({
-  //       apiStages: pipe([
-  //         get("apiStages"),
-  //         map(
-  //           assign({
-  //             apiId: pipe([
-  //               get("apiId"),
-  //               replaceWithName({
-  //                 groupType: "APIGateway::RestApi",
-  //                 path: "id",
-  //                 pathLive: "live.id",
-  //                 providerConfig,
-  //                 lives,
-  //               }),
-  //             ]),
-  //           })
-  //         ),
-  //       ]),
-  //     }),
-  //   ]),
-  tagger: ({ config }) =>
-    Tagger({
-      buildArn: buildArn({ config }),
-    }),
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        connectorProfileConfig: pipe([
+          get("connectorProfileConfig"),
+          assign({
+            connectorProfileProperties: pipe([
+              get("connectorProfileProperties"),
+              when(
+                get("Redshift"),
+                assign({
+                  Redshift: pipe([
+                    get("Redshift"),
+                    assign({
+                      roleArn: pipe([
+                        get("roleArn"),
+                        replaceWithName({
+                          groupType: "IAM::Role",
+                          path: "id",
+                          providerConfig,
+                          lives,
+                        }),
+                      ]),
+                    }),
+                  ]),
+                })
+              ),
+            ]),
+          }),
+        ]),
+      }),
+    ]),
   configDefault: ({
-    name,
-    namespace,
     properties: { tags, ...otherProps },
     dependencies: { kmsKey },
     config,
   }) =>
     pipe([
       () => otherProps,
-      defaultsDeep({
-        tags: buildTags({ name, config, namespace, UserTags: tags }),
-      }),
+      defaultsDeep({}),
       when(
         () => kmsKey,
         defaultsDeep({
