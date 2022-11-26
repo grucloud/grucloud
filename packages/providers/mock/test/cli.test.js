@@ -161,7 +161,7 @@ describe("cli", function () {
       },
     });
   });
-  it("--infra infraNoInfra.js", async function () {
+  it.skip("--infra infraNoInfra.js", async function () {
     await main({
       argv: [
         "node",

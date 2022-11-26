@@ -1,7 +1,6 @@
 const assert = require("assert");
 const {
   pipe,
-  set,
   get,
   tap,
   eq,

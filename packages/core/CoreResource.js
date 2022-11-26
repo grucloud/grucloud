@@ -17,7 +17,6 @@ const {
   or,
   transform,
   fork,
-  set,
 } = require("rubico");
 
 const {
@@ -138,6 +137,9 @@ exports.ResourceMaker = ({
                   getId,
                   generatePassword: generator.generate,
                 }),
+              tap((params) => {
+                assert(true);
+              }),
               spec.inferName({
                 resourceName: resourceNameString,
                 dependenciesSpec: dependencies({ config }),

@@ -5,11 +5,19 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { assignPolicyAccountAndRegion } = require("../AwsCommon");
 
 const { buildTags } = require("../AwsCommon");
-const { tagResource, untagResource } = require("./SNSCommon");
+const { Tagger } = require("./SNSCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const pickId = pipe([get("Attributes"), pick(["TopicArn"])]);
 
 // TODO managedByOther "Attributes.Owner",
+
+const buildArn = () =>
+  pipe([
+    get("Attributes.TopicArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
 
 const omitDefaultPolicy = pipe([
   when(
@@ -118,6 +126,10 @@ exports.SNSTopic = ({ compare }) => ({
   }),
   filterLive: ({ providerConfig, lives }) =>
     pipe([
+      tap((params) => {
+        assert(true);
+      }),
+
       assign({
         Attributes: pipe([
           get("Attributes"),
@@ -129,6 +141,9 @@ exports.SNSTopic = ({ compare }) => ({
           }),
           omitDefaultPolicy,
         ]),
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#getTopicAttributes-property
@@ -163,8 +178,10 @@ exports.SNSTopic = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#deleteTopic-property
   destroy: { method: "deleteTopic", pickId },
   getByName: getByNameCore,
-  tagResource: tagResource,
-  untagResource: untagResource,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn(config),
+    }),
   configDefault: ({
     name,
     namespace,

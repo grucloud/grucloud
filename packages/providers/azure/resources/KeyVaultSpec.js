@@ -9,7 +9,6 @@ const {
   pick,
   omit,
   eq,
-  set,
 } = require("rubico");
 const {
   defaultsDeep,
