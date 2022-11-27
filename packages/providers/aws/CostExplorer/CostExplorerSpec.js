@@ -7,7 +7,7 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CostExplorer.html
 
-//const { CostExplorerAnomalyMonitor } = require("./CostExplorerAnomalyMonitor");
+const { CostExplorerAnomalyMonitor } = require("./CostExplorerAnomalyMonitor");
 //const { CostExplorerAnomalySubscription} = require("./CostExplorerAnomalySubscription");
 //const { CostExplorerCostAllocationTag } = require("./CostExplorerCostAllocationTag");
 //const { CostExplorerCostCategory } = require("./CostExplorerCostCategory");
@@ -17,16 +17,18 @@ const compare = compareAws({});
 
 module.exports = pipe([
   () => [
-    // CostExplorerAnomalyMonitor({})
+    CostExplorerAnomalyMonitor({}),
     // CostExplorerAnomalySubscription({})
     // CostExplorerCostAllocationTag({})
     // CostExplorerCostCategory({})
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

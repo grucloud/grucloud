@@ -4,11 +4,15 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("CostExplorer", async function () {
-  it.skip("AnomalyMonitor", () =>
+  it("AnomalyMonitor", () =>
     pipe([
       () => ({
         groupType: "CostExplorer::AnomalyMonitor",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            MonitorArn: `arn:aws:ce::${config.accountId()}:anomalymonitor/abcecedc-f3e2-4e6d-b2b8-63028730a499`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

@@ -333,8 +333,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      subscriptionRole: "role-sns-to-firehose",
       snsTopic: "my-topic",
+      subscriptionRole: "role-sns-to-firehose",
       firehoseDeliveryStream: "PUT-HTP-4G0uP",
     }),
   },
