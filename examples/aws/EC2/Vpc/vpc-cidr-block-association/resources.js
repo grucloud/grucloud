@@ -10,6 +10,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/24",
       DnsHostnames: true,
+      AmazonProvidedIpv6CidrBlock: true,
     }),
   },
   {
@@ -39,6 +40,26 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       routeTable: `vpc::rtb-private1-${config.region}a`,
       subnet: `vpc::subnet-private1-${config.region}a`,
+    }),
+  },
+  {
+    type: "VpcIpv4CidrBlockAssociation",
+    group: "EC2",
+    properties: ({}) => ({
+      CidrBlock: "10.1.0.0/24",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "VpcIpv4CidrBlockAssociation",
+    group: "EC2",
+    properties: ({}) => ({
+      CidrBlock: "10.2.0.0/24",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
     }),
   },
 ];

@@ -30,7 +30,6 @@ const {
   prepend,
   defaultsDeep,
   when,
-  isDeepEqual,
   callProp,
   identity,
   flatten,
@@ -39,7 +38,6 @@ const {
   omitIfEmpty,
   replaceWithName,
   differenceObject,
-  cidrToSubnetMaskLength,
 } = require("@grucloud/core/Common");
 const {
   compareAws,
@@ -128,6 +126,11 @@ const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { EC2NetworkInterface } = require("./EC2NetworkInterface");
 const { EC2NetworkAcl } = require("./EC2NetworkAcl");
+
+const {
+  EC2VpcIpv4CidrBlockAssociation,
+} = require("./EC2VpcIpv4CidrBlockAssociation");
+
 const { EC2VpcPeeringConnection } = require("./EC2VpcPeeringConnection");
 const { EC2PlacementGroup } = require("./EC2PlacementGroup");
 const {
@@ -1084,119 +1087,8 @@ module.exports = pipe([
         ])(),
       filterLive: () => pipe([pick(["Device", "DeleteOnTermination"])]),
     },
-    {
-      type: "Vpc",
-      //TODO only for delete
-      //dependsOnDelete: ["IAM::User", "IAM::Group"],
-      Client: EC2Vpc,
-      omitProperties: [
-        "DhcpOptionsId",
-        "State",
-        "OwnerId",
-        "InstanceTenancy",
-        "Ipv6CidrBlockAssociationSet",
-        "CidrBlockAssociationSet",
-        "IsDefault",
-        "VpcId",
-        "VpcArn",
-        "Ipv4IpamPoolId",
-      ],
-      dependencies: {
-        ipamPoolIpv4: {
-          type: "IpamPool",
-          group: "EC2",
-          dependencyId:
-            ({ lives, config }) =>
-            (live) =>
-              pipe([
-                lives.getByType({
-                  type: "IpamPool",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
-                find(
-                  and([
-                    eq(get("live.AddressFamily"), "ipv4"),
-                    pipe([
-                      get("live.Allocations"),
-                      find(eq(get("ResourceId"), live.VpcId)),
-                    ]),
-                  ])
-                ),
-                get("live.IpamPoolId"),
-              ])(),
-        },
-        // TODO ipamPoolIpv6
-        // ipamPoolIpv6: {
-        //   type: "IpamPool",
-        //   group: "EC2",
-        //   filterDependency:
-        //     ({ resource }) =>
-        //     (dependency) =>
-        //       pipe([
-        //         () => resource,
-        //         get("live.Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock"),
-        //       ])(),
-        //},
-      },
-      propertiesDefault: { DnsSupport: true, DnsHostnames: false },
-      compare: compareEC2({
-        filterAll: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["CidrBlock"]),
-          ]),
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit([
-              "AmazonProvidedIpv6CidrBlock",
-              "Ipv4NetmaskLength",
-              // TODO
-              "Ipv6NetmaskLength",
-            ]),
-          ]),
-      }),
-      filterLive: ({ resource }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          when(
-            pipe([
-              () => resource.dependencies,
-              find(eq(get("groupType"), "EC2::IpamPool")),
-              get("ids"),
-              not(isEmpty),
-            ]),
-            pipe([
-              when(
-                get("CidrBlock"),
-                assign({
-                  Ipv4NetmaskLength: pipe([
-                    get("CidrBlock"),
-                    cidrToSubnetMaskLength,
-                  ]),
-                })
-              ),
-              omit(["CidrBlock"]),
-            ])
-          ),
-          // TODO ipv6
-          when(
-            pipe([
-              get("Ipv6CidrBlockAssociationSet"),
-              first,
-              eq(get("Ipv6Pool"), "Amazon"),
-            ]),
-            assign({ AmazonProvidedIpv6CidrBlock: () => true })
-          ),
-        ]),
-    },
+    createAwsService(EC2Vpc({ compare: compareEC2 })),
+
     {
       type: "InternetGateway",
       Client: EC2InternetGateway,
@@ -1792,14 +1684,6 @@ module.exports = pipe([
     },
     {
       type: "ElasticIpAddress",
-      // TODO
-      // dependencies: {
-      //   internetGateway: {
-      //     type: "InternetGateway",
-      //     group: "EC2",
-      //     dependencyId: ({ lives, config }) => get(""),
-      //   },
-      // },
       Client: EC2ElasticIpAddress,
       omitProperties: [
         "InstanceId",
@@ -2458,6 +2342,7 @@ module.exports = pipe([
           unless(isEmpty, () => `\n`),
         ])(),
     },
+    createAwsService(EC2VpcIpv4CidrBlockAssociation({ compare: compareEC2 })),
     {
       type: "VpcPeeringConnection",
       Client: EC2VpcPeeringConnection,

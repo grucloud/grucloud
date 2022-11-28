@@ -12,6 +12,7 @@ const {
   assign,
   pick,
   omit,
+  and,
 } = require("rubico");
 const {
   isEmpty,
@@ -20,103 +21,345 @@ const {
   when,
   prepend,
   callProp,
+  first,
+  find,
 } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "Vpc" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { getByNameCore } = require("@grucloud/core/Common");
 const {
-  getByIdCore,
-  buildTags,
-  findNamespaceInTags,
-  findNameInTagsOrId,
-  arnFromId,
-} = require("../AwsCommon");
+  getByNameCore,
+  cidrToSubnetMaskLength,
+} = require("@grucloud/core/Common");
+const { buildTags, findNameInTagsOrId, arnFromId } = require("../AwsCommon");
 
-const { AwsClient } = require("../AwsClient");
-const { createEC2, tagResource, untagResource } = require("./EC2Common");
+const { tagResource, untagResource } = require("./EC2Common");
 
-exports.EC2Vpc = ({ spec, config }) => {
-  const ec2 = createEC2(config);
-  const client = AwsClient({ spec, config })(ec2);
+const isDefault = () => get("IsDefault");
+const cannotBeDeleted = isDefault;
+const managedByOther = isDefault;
 
-  const isDefault = () => get("IsDefault");
-  const cannotBeDeleted = isDefault;
-  const managedByOther = isDefault;
+const findId = () => get("VpcId");
+const findName = ({ lives, config }) =>
+  switchCase([
+    get("IsDefault"),
+    () => "vpc-default",
+    findNameInTagsOrId({ findId })({ lives, config }),
+  ]);
 
-  const findId = () => get("VpcId");
-  const findName = ({ lives, config }) =>
-    switchCase([
-      get("IsDefault"),
-      () => "vpc-default",
-      findNameInTagsOrId({ findId })({ lives, config }),
-    ]);
+const pickId = pick(["VpcId"]);
 
-  const pickId = pick(["VpcId"]);
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    assign({
+      DnsSupport: pipe([
+        ({ VpcId }) => ({
+          VpcId,
+          Attribute: "enableDnsSupport",
+        }),
+        endpoint().describeVpcAttribute,
+        get("EnableDnsSupport.Value"),
+      ]),
+      DnsHostnames: pipe([
+        ({ VpcId }) => ({
+          VpcId,
+          Attribute: "enableDnsHostnames",
+        }),
+        endpoint().describeVpcAttribute,
+        get("EnableDnsHostnames.Value"),
+      ]),
+      VpcArn: pipe([
+        get("VpcId"),
+        prepend("vpc/"),
+        arnFromId({ service: "ec2", config }),
+      ]),
+    }),
+  ]);
 
-  const decorate = ({ config }) =>
+const destroySubnets =
+  ({ endpoint }) =>
+  ({ VpcId }) =>
+    pipe([
+      // Get the subnets belonging to this Vpc
+      () => ({
+        Filters: [
+          {
+            Name: "vpc-id",
+            Values: [VpcId],
+          },
+        ],
+      }),
+      endpoint().describeSubnets,
+      get("Subnets"),
+      // Loop through the subnets
+      filter(not(get("DefaultForAz"))),
+      map(
+        tryCatch(
+          pipe([
+            tap(({ SubnetId }) => {
+              logger.debug(`destroy vpc, deleteSubnet SubnetId: ${SubnetId}`);
+            }),
+            pick(["SubnetId"]),
+            endpoint().deleteSubnet,
+          ]),
+          (error, subnet) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `deleteSubnet: ${tos(subnet)}, error ${tos(error)}`
+                );
+              }),
+              () => ({ error, subnet }),
+            ])()
+        )
+      ),
+    ])();
+
+const destroySecurityGroup =
+  ({ endpoint }) =>
+  ({ VpcId }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`vpc destroySecurityGroup: VpcId: ${VpcId}`);
+      }),
+      // Get the security groups belonging to this Vpc
+      () => ({
+        Filters: [
+          {
+            Name: "vpc-id",
+            Values: [VpcId],
+          },
+        ],
+      }),
+      endpoint().describeSecurityGroups,
+      get("SecurityGroups"),
+      // remove the default security groups
+      filter(not(eq(get("GroupName"), "default"))),
+      tap((securityGroups) => {
+        logger.info(
+          `vpc destroySecurityGroup: VpcId: ${VpcId} #securityGroups ${size(
+            securityGroups
+          )}`
+        );
+      }),
+      map(
+        tryCatch(
+          pipe([
+            tap(({ GroupId }) => {
+              logger.debug(`destroySecurityGroup: GroupId: ${GroupId}`);
+            }),
+            pick(["GroupId"]),
+            endpoint().deleteSecurityGroup,
+          ]),
+          (error, securityGroup) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `deleteSecurityGroup: ${tos(securityGroup)}, error ${tos(
+                    error
+                  )}`
+                );
+              }),
+              () => ({ error, securityGroup }),
+            ])()
+        )
+      ),
+    ])();
+
+const destroyRouteTables =
+  ({ endpoint }) =>
+  ({ VpcId }) =>
+    pipe([
+      // Get the route tables belonging to this Vpc
+      () => ({
+        Filters: [
+          {
+            Name: "vpc-id",
+            Values: [VpcId],
+          },
+        ],
+      }),
+      endpoint().describeRouteTables,
+      get("RouteTables"),
+      // Loop through the route tables
+      tap((RouteTables) => {
+        logger.debug(`destroy vpc, RouteTables: ${tos(RouteTables)}`);
+      }),
+      filter(pipe([get("Associations"), isEmpty])),
+      map(
+        tryCatch(
+          pipe([
+            tap(({ RouteTableId }) => {
+              logger.debug(
+                `destroy vpc, deleteRouteTable RouteTableId: ${tos(
+                  RouteTableId
+                )})}`
+              );
+            }),
+            pick(["RouteTableId"]),
+            endpoint().deleteRouteTable,
+          ]),
+          (error, routeTable) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `deleteRouteTable: ${tos(routeTable)}, error ${tos(error)}`
+                );
+              }),
+              () => ({ error, routeTable }),
+            ])()
+        )
+      ),
+    ])();
+
+exports.EC2Vpc = ({ compare }) => ({
+  type: "Vpc",
+  package: "ec2",
+  client: "EC2",
+  findName,
+  findId,
+  cannotBeDeleted,
+  managedByOther,
+  isDefault,
+  omitProperties: [
+    "DhcpOptionsId",
+    "State",
+    "OwnerId",
+    "InstanceTenancy",
+    "Ipv6CidrBlockAssociationSet",
+    "CidrBlockAssociationSet",
+    "IsDefault",
+    "VpcId",
+    "VpcArn",
+    "Ipv4IpamPoolId",
+  ],
+  dependencies: {
+    ipamPoolIpv4: {
+      type: "IpamPool",
+      group: "EC2",
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              type: "IpamPool",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+            find(
+              and([
+                eq(get("live.AddressFamily"), "ipv4"),
+                pipe([
+                  get("live.Allocations"),
+                  find(eq(get("ResourceId"), live.VpcId)),
+                ]),
+              ])
+            ),
+            get("live.IpamPoolId"),
+          ])(),
+    },
+    // TODO ipamPoolIpv6
+    // ipamPoolIpv6: {
+    //   type: "IpamPool",
+    //   group: "EC2",
+    //   filterDependency:
+    //     ({ resource }) =>
+    //     (dependency) =>
+    //       pipe([
+    //         () => resource,
+    //         get("live.Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock"),
+    //       ])(),
+    //},
+  },
+  propertiesDefault: { DnsSupport: true, DnsHostnames: false },
+
+  compare: compare({
+    filterAll: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        omit(["CidrBlock"]),
+      ]),
+    filterTarget: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        omit([
+          "AmazonProvidedIpv6CidrBlock",
+          "Ipv4NetmaskLength",
+          // TODO
+          "Ipv6NetmaskLength",
+        ]),
+      ]),
+  }),
+  filterLive: ({ resource }) =>
     pipe([
       tap((params) => {
-        assert(config);
+        assert(true);
       }),
-      assign({
-        DnsSupport: pipe([
-          ({ VpcId }) =>
-            ec2().describeVpcAttribute({
-              VpcId,
-              Attribute: "enableDnsSupport",
-            }),
-          get("EnableDnsSupport.Value"),
+      when(
+        pipe([
+          () => resource.dependencies,
+          find(eq(get("groupType"), "EC2::IpamPool")),
+          get("ids"),
+          not(isEmpty),
         ]),
-        DnsHostnames: pipe([
-          ({ VpcId }) =>
-            ec2().describeVpcAttribute({
-              VpcId,
-              Attribute: "enableDnsHostnames",
-            }),
-          get("EnableDnsHostnames.Value"),
+        pipe([
+          when(
+            get("CidrBlock"),
+            assign({
+              Ipv4NetmaskLength: pipe([
+                get("CidrBlock"),
+                cidrToSubnetMaskLength,
+              ]),
+            })
+          ),
+          omit(["CidrBlock"]),
+        ])
+      ),
+      // TODO ipv6
+      when(
+        pipe([
+          get("Ipv6CidrBlockAssociationSet"),
+          first,
+          eq(get("Ipv6Pool"), "Amazon"),
         ]),
-        VpcArn: pipe([
-          get("VpcId"),
-          prepend("vpc/"),
-          arnFromId({ service: "ec2", config }),
-        ]),
-      }),
-    ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property
-  const getList = client.getList({
+        assign({ AmazonProvidedIpv6CidrBlock: () => true })
+      ),
+    ]),
+  getById: {
     method: "describeVpcs",
-    getParam: "Vpcs",
-    decorate,
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
-  const getById = () =>
-    pipe([
+    getField: "Vpcs",
+    pickId: pipe([
       tap(({ VpcId }) => {
         assert(VpcId);
       }),
-      ({ VpcId }) => ({ id: VpcId }),
-      getByIdCore({ fieldIds: "VpcIds", getList }),
-    ]);
-
-  const isInstanceUp = eq(get("State"), "available");
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
-  const create = client.create({
+      ({ VpcId }) => ({ VpcIds: [VpcId] }),
+    ]),
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property
+  getList: {
+    method: "describeVpcs",
+    getParam: "Vpcs",
+    decorate,
+  },
+  create: {
     method: "createVpc",
-    isInstanceUp,
+    isInstanceUp: eq(get("State"), "available"),
     filterPayload: omit(["DnsHostnames", "DnsSupport"]),
     pickCreated: () => get("Vpc"),
-    getById,
     // IPAM error
     shouldRetryOnExceptionMessages: [
       "The allocation size is too big for the pool",
     ],
     postCreate:
-      ({ payload }) =>
+      ({ endpoint, payload }) =>
       ({ VpcId }) =>
         pipe([
           tap(() => {
@@ -136,7 +379,7 @@ exports.EC2Vpc = ({ spec, config }) => {
                 },
                 VpcId,
               }),
-              ec2().modifyVpcAttribute,
+              endpoint().modifyVpcAttribute,
             ])
           ),
           tap.if(
@@ -151,187 +394,51 @@ exports.EC2Vpc = ({ spec, config }) => {
                 },
                 VpcId,
               }),
-              ec2().modifyVpcAttribute,
+              endpoint().modifyVpcAttribute,
             ])
           ),
         ])(),
-  });
-
-  const update = async ({ diff, payload, live }) =>
-    pipe([
-      tap((params) => {
-        assert(live.VpcId);
-      }),
-      () => diff,
-      tap.if(
-        pipe([
-          get("liveDiff.updated"),
-          callProp("hasOwnProperty", "DnsSupport"),
-        ]),
-        pipe([
-          () => ({
-            EnableDnsSupport: {
-              Value: payload.DnsSupport,
-            },
-            VpcId: live.VpcId,
-          }),
-          ec2().modifyVpcAttribute,
-        ])
-      ),
-      tap.if(
-        pipe([
-          get("liveDiff.updated"),
-          callProp("hasOwnProperty", "DnsHostnames"),
-        ]),
-        pipe([
-          () => ({
-            EnableDnsHostnames: {
-              Value: payload.DnsHostnames,
-            },
-            VpcId: live.VpcId,
-          }),
-          ec2().modifyVpcAttribute,
-        ])
-      ),
-    ])();
-
-  const destroySubnets =
+  },
+  update:
     ({ endpoint }) =>
-    ({ VpcId }) =>
+    async ({ diff, payload, live }) =>
       pipe([
-        // Get the subnets belonging to this Vpc
-        () => ({
-          Filters: [
-            {
-              Name: "vpc-id",
-              Values: [VpcId],
-            },
-          ],
+        tap((params) => {
+          assert(live.VpcId);
         }),
-        endpoint().describeSubnets,
-        get("Subnets"),
-        // Loop through the subnets
-        filter(not(get("DefaultForAz"))),
-        map(
-          tryCatch(
-            pipe([
-              tap(({ SubnetId }) => {
-                logger.debug(`destroy vpc, deleteSubnet SubnetId: ${SubnetId}`);
-              }),
-              pick(["SubnetId"]),
-              endpoint().deleteSubnet,
-            ]),
-            (error, subnet) =>
-              pipe([
-                tap(() => {
-                  logger.error(
-                    `deleteSubnet: ${tos(subnet)}, error ${tos(error)}`
-                  );
-                }),
-                () => ({ error, subnet }),
-              ])()
-          )
+        () => diff,
+        tap.if(
+          pipe([
+            get("liveDiff.updated"),
+            callProp("hasOwnProperty", "DnsSupport"),
+          ]),
+          pipe([
+            () => ({
+              EnableDnsSupport: {
+                Value: payload.DnsSupport,
+              },
+              VpcId: live.VpcId,
+            }),
+            endpoint().modifyVpcAttribute,
+          ])
         ),
-      ])();
-
-  const destroySecurityGroup =
-    ({ endpoint }) =>
-    ({ VpcId }) =>
-      pipe([
-        tap(() => {
-          logger.debug(`vpc destroySecurityGroup: VpcId: ${VpcId}`);
-        }),
-        // Get the security groups belonging to this Vpc
-        () => ({
-          Filters: [
-            {
-              Name: "vpc-id",
-              Values: [VpcId],
-            },
-          ],
-        }),
-        endpoint().describeSecurityGroups,
-        get("SecurityGroups"),
-        // remove the default security groups
-        filter(not(eq(get("GroupName"), "default"))),
-        tap((securityGroups) => {
-          logger.info(
-            `vpc destroySecurityGroup: VpcId: ${VpcId} #securityGroups ${size(
-              securityGroups
-            )}`
-          );
-        }),
-        map(
-          tryCatch(
-            pipe([
-              tap(({ GroupId }) => {
-                logger.debug(`destroySecurityGroup: GroupId: ${GroupId}`);
-              }),
-              pick(["GroupId"]),
-              endpoint().deleteSecurityGroup,
-            ]),
-            (error, securityGroup) =>
-              pipe([
-                tap(() => {
-                  logger.error(
-                    `deleteSecurityGroup: ${tos(securityGroup)}, error ${tos(
-                      error
-                    )}`
-                  );
-                }),
-                () => ({ error, securityGroup }),
-              ])()
-          )
+        tap.if(
+          pipe([
+            get("liveDiff.updated"),
+            callProp("hasOwnProperty", "DnsHostnames"),
+          ]),
+          pipe([
+            () => ({
+              EnableDnsHostnames: {
+                Value: payload.DnsHostnames,
+              },
+              VpcId: live.VpcId,
+            }),
+            endpoint().modifyVpcAttribute,
+          ])
         ),
-      ])();
-
-  const destroyRouteTables =
-    ({ endpoint }) =>
-    ({ VpcId }) =>
-      pipe([
-        // Get the route tables belonging to this Vpc
-        () => ({
-          Filters: [
-            {
-              Name: "vpc-id",
-              Values: [VpcId],
-            },
-          ],
-        }),
-        endpoint().describeRouteTables,
-        get("RouteTables"),
-        // Loop through the route tables
-        tap((RouteTables) => {
-          logger.debug(`destroy vpc, RouteTables: ${tos(RouteTables)}`);
-        }),
-        filter(pipe([get("Associations"), isEmpty])),
-        map(
-          tryCatch(
-            pipe([
-              tap(({ RouteTableId }) => {
-                logger.debug(
-                  `destroy vpc, deleteRouteTable RouteTableId: ${tos(
-                    RouteTableId
-                  )})}`
-                );
-              }),
-              pick(["RouteTableId"]),
-              endpoint().deleteRouteTable,
-            ]),
-            (error, routeTable) =>
-              pipe([
-                tap(() => {
-                  logger.error(
-                    `deleteRouteTable: ${tos(routeTable)}, error ${tos(error)}`
-                  );
-                }),
-                () => ({ error, routeTable }),
-              ])()
-          )
-        ),
-      ])();
-
-  const destroy = client.destroy({
+      ])(),
+  destroy: {
     pickId,
     preDestroy: ({ endpoint }) =>
       pipe([
@@ -340,11 +447,14 @@ exports.EC2Vpc = ({ spec, config }) => {
         tap(destroyRouteTables({ endpoint })),
       ]),
     method: "deleteVpc",
-    getById,
     ignoreErrorCodes: ["InvalidVpcID.NotFound"],
-  });
-
-  const configDefault = async ({
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) => ({
+    tagResource,
+    untagResource,
+  }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
@@ -387,24 +497,5 @@ exports.EC2Vpc = ({ spec, config }) => {
           }),
         ])
       ),
-    ])();
-
-  return {
-    spec,
-    isDefault,
-    managedByOther,
-    cannotBeDeleted,
-    findId,
-    getById,
-    findNamespace: findNamespaceInTags,
-    getByName,
-    findName,
-    getList,
-    create,
-    update,
-    destroy,
-    configDefault,
-    tagResource: tagResource({ endpoint: ec2 }),
-    untagResource: untagResource({ endpoint: ec2 }),
-  };
-};
+    ])(),
+});

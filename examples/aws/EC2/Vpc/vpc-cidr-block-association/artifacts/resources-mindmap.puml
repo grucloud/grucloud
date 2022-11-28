@@ -8,4 +8,5 @@ skinparam monochrome true
 ++++ Subnet (1)
 ++++ RouteTable (1)
 ++++ RouteTableAssociation (1)
+++++ VpcIpv4CidrBlockAssociation (2)
 @endmindmap
