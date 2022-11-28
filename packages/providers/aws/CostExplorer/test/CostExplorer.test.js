@@ -16,11 +16,15 @@ describe("CostExplorer", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("AnomalySubscription", () =>
+  it("AnomalySubscription", () =>
     pipe([
       () => ({
         groupType: "CostExplorer::AnomalySubscription",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            SubscriptionArn: `arn:aws:ce::${config.accountId()}:anomalysubscription/ee065538-d146-47ba-8c1f-e2ac6077f064`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -32,11 +36,15 @@ describe("CostExplorer", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("CostCategory", () =>
+  it("CostCategory", () =>
     pipe([
       () => ({
         groupType: "CostExplorer::CostCategory",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            CostCategoryArn: `arn:aws:ce::${config.accountId()}:costcategory/72cf8715-0107-4df5-bb56-c336b1514af4`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

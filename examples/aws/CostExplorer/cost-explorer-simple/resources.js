@@ -18,4 +18,69 @@ exports.createResources = () => [
       ],
     }),
   },
+  {
+    type: "AnomalySubscription",
+    group: "CostExplorer",
+    properties: ({}) => ({
+      Frequency: "DAILY",
+      Subscribers: [
+        {
+          Address: "fred@grucloud.com",
+          Type: "EMAIL",
+        },
+      ],
+      SubscriptionName: "team",
+      Threshold: 60,
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      anomalyMonitors: ["my-anomaly-monitor"],
+    }),
+  },
+  {
+    type: "CostCategory",
+    group: "CostExplorer",
+    properties: ({ getId }) => ({
+      EffectiveStart: "2022-11-01T00:00:00Z",
+      Name: "dev",
+      RuleVersion: "CostCategoryExpression.v1",
+      Rules: [
+        {
+          Rule: {
+            Dimensions: {
+              Key: "LINKED_ACCOUNT",
+              MatchOptions: ["EQUALS"],
+              Values: [
+                `${getId({
+                  type: "Account",
+                  group: "Organisations",
+                  name: "test account",
+                })}`,
+              ],
+            },
+          },
+          Type: "REGULAR",
+          Value: "5",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      accounts: ["test account"],
+    }),
+  },
+  {
+    type: "Account",
+    group: "Organisations",
+    name: "test account",
+    readOnly: true,
+    properties: ({}) => ({
+      Email: "test@grucloud.com",
+      Name: "test account",
+    }),
+  },
 ];

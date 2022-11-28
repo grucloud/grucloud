@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project vpc-cidr-block-association
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (1)
+++++ RouteTable (1)
+++++ RouteTableAssociation (1)
+@endmindmap

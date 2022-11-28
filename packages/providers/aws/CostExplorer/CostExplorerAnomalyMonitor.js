@@ -5,7 +5,7 @@ const { defaultsDeep, identity } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./CostExplorerCommon");
+const { Tagger, assignTags } = require("./CostExplorerCommon");
 
 const buildArn = () =>
   pipe([
@@ -21,18 +21,6 @@ const pickId = pipe([
   }),
   pick(["MonitorArn"]),
 ]);
-
-const assignTags = ({ buildArn, endpoint }) =>
-  pipe([
-    assign({
-      Tags: pipe([
-        buildArn(),
-        (ResourceArn) => ({ ResourceArn }),
-        endpoint().listTagsForResource,
-        get("ResourceTags"),
-      ]),
-    }),
-  ]);
 
 const decorate = ({ endpoint }) => pipe([assignTags({ buildArn, endpoint })]);
 
@@ -70,7 +58,7 @@ exports.CostExplorerAnomalyMonitor = () => ({
         assert(id);
       }),
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["UnknownMonitorException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CostExplorer.html#getAnomalyMonitor-property
   getById: {
     method: "getAnomalyMonitors",
