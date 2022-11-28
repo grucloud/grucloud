@@ -275,7 +275,7 @@ exports.EC2Vpc = ({ compare }) => ({
     //},
   },
   propertiesDefault: { DnsSupport: true, DnsHostnames: false },
-
+  ignoreErrorCodes: ["InvalidVpcID.NotFound"],
   compare: compare({
     filterAll: () =>
       pipe([
@@ -447,7 +447,6 @@ exports.EC2Vpc = ({ compare }) => ({
         tap(destroyRouteTables({ endpoint })),
       ]),
     method: "deleteVpc",
-    ignoreErrorCodes: ["InvalidVpcID.NotFound"],
   },
   getByName: getByNameCore,
   tagger: ({ config }) => ({
