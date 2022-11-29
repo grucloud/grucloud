@@ -11,6 +11,7 @@ exports.createAwsService = ({
   omitProperties,
   inferName,
   dependencies,
+  isDefault,
   cannotBeDeleted,
   managedByOther,
   filterLive,
@@ -61,6 +62,7 @@ exports.createAwsService = ({
           getById,
           spec,
           config,
+          isDefault,
           cannotBeDeleted,
           managedByOther,
           findName,
@@ -71,11 +73,7 @@ exports.createAwsService = ({
           destroy,
           getByName,
           configDefault,
-
           ...tagger({ config }),
         }),
-    }),
-    tap((params) => {
-      assert(true);
     }),
   ])();

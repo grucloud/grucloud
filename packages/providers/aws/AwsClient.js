@@ -181,6 +181,7 @@ const AwsClient =
           "AccessDeniedException",
           "InvalidAccessException",
           "BadRequestException",
+          "ResourceNotFoundException",
         ],
         getById,
       }) =>
@@ -829,6 +830,7 @@ exports.createAwsResource = ({
   findId,
   managedByOther,
   tagResource,
+  isDefault,
   untagResource,
   cannotBeDeleted,
   findNamespace,
@@ -859,6 +861,7 @@ exports.createAwsResource = ({
               findName,
               findId,
               findDependencies,
+              isDefault,
               cannotBeDeleted,
               managedByOther,
               findNamespace,

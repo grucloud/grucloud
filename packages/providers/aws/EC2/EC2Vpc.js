@@ -35,7 +35,7 @@ const { buildTags, findNameInTagsOrId, arnFromId } = require("../AwsCommon");
 
 const { tagResource, untagResource } = require("./EC2Common");
 
-const isDefault = () => get("IsDefault");
+const isDefault = () => pipe([get("IsDefault")]);
 const cannotBeDeleted = isDefault;
 const managedByOther = isDefault;
 

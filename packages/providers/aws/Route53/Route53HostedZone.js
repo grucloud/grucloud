@@ -140,6 +140,12 @@ const decorate = ({ endpoint }) =>
       ]),
     }),
     ({ Config, ...other }) => ({ ...other, HostedZoneConfig: Config }),
+    // arn:aws:route53:::hostedzone/hosted-zone-id
+    assign({
+      Arn: pipe([
+        ({ HostedZoneId }) => `arn:aws:route53:::hostedzone/${HostedZoneId}`,
+      ]),
+    }),
   ]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53HostedZone = ({ spec, config }) => {

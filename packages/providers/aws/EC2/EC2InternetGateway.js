@@ -10,7 +10,7 @@ const {
   pick,
   not,
 } = require("rubico");
-const { find, defaultsDeep, first, pluck, isEmpty, when } = require("rubico/x");
+const { find, defaultsDeep, first, isEmpty, when } = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "InternetGateway" });
@@ -34,9 +34,9 @@ const isDefault =
   (live) =>
     pipe([
       lives.getByType({ type: "Vpc", group: "EC2", providerName }),
-      find(get("isDefault")),
+      find(get("live.IsDefault")),
       switchCase([
-        eq(get("live.VpcId"), findVpcId(live)),
+        eq(get("live.VpcId", ""), findVpcId(live)),
         () => true,
         () => false,
       ]),

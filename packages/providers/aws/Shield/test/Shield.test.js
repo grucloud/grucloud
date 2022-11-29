@@ -4,11 +4,13 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Shield", async function () {
-  it.skip("Protection", () =>
+  it("Protection", () =>
     pipe([
       () => ({
         groupType: "Shield::Protection",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ProtectionId: "p123456789p123456789p123456789p12345" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -24,22 +26,6 @@ describe("Shield", async function () {
     pipe([
       () => ({
         groupType: "ProtectionHealthCheckAssociation",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("WorkspaceApiKey  ", () =>
-    pipe([
-      () => ({
-        groupType: "Shield::WorkspaceApiKey",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("WorkspaceSamlConfiguration", () =>
-    pipe([
-      () => ({
-        groupType: "Shield::WorkspaceSamlConfiguration",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,

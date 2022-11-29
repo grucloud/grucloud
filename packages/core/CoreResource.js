@@ -117,7 +117,6 @@ exports.ResourceMaker = ({
       tap((params) => {
         assert(true);
       }),
-      //
       switchCase([
         () => spec.inferName,
         pipe([
@@ -126,6 +125,16 @@ exports.ResourceMaker = ({
               spec.inferName,
               `resource ${spec.type} without name must implement 'inferName'`
             );
+            // assert(
+            //   isFunction(
+            //     spec.inferName({
+            //       resourceName: resourceNameToString(resourceName),
+            //       dependenciesSpec: dependencies({ config }),
+            //       dependencies: getDependencies(),
+            //     })
+            //   ),
+            //   `spec.inferName should return a function for  ${spec.groupType}`
+            // );
           }),
           () => resourceName,
           resourceNameToString,

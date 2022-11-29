@@ -206,6 +206,7 @@ module.exports = pipe([
             pipe([get("VpcAssociations"), first, get("VPCId")]),
         },
       },
+      omitProperties: ["Arn"],
       Client: Route53HostedZone,
       compare: compareRoute53({
         filterAll: () =>

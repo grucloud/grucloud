@@ -1077,18 +1077,17 @@ module.exports = pipe([
       compare: compareAws({ getLiveTags: () => [], getTargetTags: () => [] })({
         filterAll: () => pipe([pick([])]),
       }),
-      inferName: ({ properties, dependenciesSpec: { volume, instance } }) =>
+      inferName: ({ dependenciesSpec: { volume, instance } }) =>
         pipe([
           tap(() => {
             assert(volume);
             assert(instance);
           }),
           () => `vol-attachment::${volume}::${instance}`,
-        ])(),
+        ]),
       filterLive: () => pipe([pick(["Device", "DeleteOnTermination"])]),
     },
     createAwsService(EC2Vpc({ compare: compareEC2 })),
-
     {
       type: "InternetGateway",
       Client: EC2InternetGateway,
@@ -1682,22 +1681,7 @@ module.exports = pipe([
       dependencies: securityGroupRuleDependencies,
       inferName: inferNameSecurityGroupRule({ kind: "egress" }),
     },
-    {
-      type: "ElasticIpAddress",
-      Client: EC2ElasticIpAddress,
-      omitProperties: [
-        "InstanceId",
-        "PublicIp",
-        "AllocationId",
-        "AssociationId",
-        "NetworkInterfaceId",
-        "NetworkInterfaceOwnerId",
-        "PrivateIpAddress",
-        "PublicIpv4Pool",
-        "NetworkBorderGroup",
-      ],
-      filterLive: () => pick([]),
-    },
+    createAwsService(EC2ElasticIpAddress({ compare: compareEC2 })),
     {
       type: "ElasticIpAddressAssociation",
       Client: EC2ElasticIpAddressAssociation,
