@@ -6,35 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./ShieldCommon");
-
-const shieldDependencies = {
-  cloudFrontDistribution: {
-    type: "Distribution",
-    group: "CloudFront",
-    arnKey: "ARN",
-  },
-  ec2ElasticIpAddress: {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    arnKey: "Arn",
-  },
-  elbv2LoadBalancer: {
-    type: "LoadBalancer",
-    group: "ElasticLoadBalancingV2",
-    arnKey: "LoadBalancerArn",
-  },
-  globalAccelerator: {
-    type: "Accelerator",
-    group: "GlobalAccelerator",
-    arnKey: "AcceleratorArn",
-  },
-  route53HostedZone: {
-    type: "HostedZone",
-    group: "Route53",
-    arnKey: "Arn",
-  },
-};
+const { Tagger, shieldDependencies } = require("./ShieldCommon");
 
 const buildShieldDependencies = pipe([
   () => shieldDependencies,

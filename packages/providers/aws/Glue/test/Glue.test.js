@@ -148,18 +148,6 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Trigger", () =>
-    pipe([
-      () => ({
-        groupType: "Glue::Trigger",
-        livesNotFound: ({ config }) => [
-          {
-            Name: "a-12345",
-          },
-        ],
-      }),
-      awsResourceTest,
-    ])());
   it.skip("UserDefinedFunction", () =>
     pipe([
       () => ({

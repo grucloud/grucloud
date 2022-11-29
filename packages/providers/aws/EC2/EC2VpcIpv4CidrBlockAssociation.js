@@ -72,7 +72,7 @@ exports.EC2VpcIpv4CidrBlockAssociation = ({ compare }) => ({
       }),
     ]),
   findId,
-  ignoreErrorCodes: [""],
+  ignoreErrorCodes: ["InvalidVpcCidrBlockAssociationID.NotFound"],
   getById: {
     method: "describeVpcs",
     getField: "Vpcs",

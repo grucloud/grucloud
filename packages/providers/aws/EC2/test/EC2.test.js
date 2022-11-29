@@ -454,11 +454,15 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("VpcIpv4CidrBlockAssociation", () =>
+  it("VpcIpv4CidrBlockAssociation", () =>
     pipe([
       () => ({
         groupType: "EC2::VpcIpv4CidrBlockAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { AssociationId: "vpc-cidr-assoc-9f1fccf1" },
+        ],
+        skipGetByName: true,
+        skipGetById: true,
       }),
       awsResourceTest,
     ])());

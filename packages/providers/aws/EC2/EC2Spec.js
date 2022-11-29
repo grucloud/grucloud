@@ -532,7 +532,7 @@ module.exports = pipe([
             }),
             () =>
               `client-vpn-rule-assoc::${clientVpnEndpoint}::${TargetNetworkCidr}`,
-          ]),
+          ])(),
       propertiesDefault: {},
       compare: compareEC2({ filterAll: () => pick([]) }),
       filterLive: () =>

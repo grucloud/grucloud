@@ -14,11 +14,11 @@ describe("Shield", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ProtectionGroup", () =>
+  it("ProtectionGroup", () =>
     pipe([
       () => ({
         groupType: "Shield::ProtectionGroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ProtectionGroupId: "pg123" }],
       }),
       awsResourceTest,
     ])());
