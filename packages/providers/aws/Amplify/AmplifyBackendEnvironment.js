@@ -57,13 +57,11 @@ exports.AmplifyBackendEnvironment = () => ({
         tap((id) => {
           assert(id);
         }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "App",
-            group: "Amplify",
-            providerName: config.providerName,
-          }),
+        lives.getById({
+          type: "App",
+          group: "Amplify",
+          providerName: config.providerName,
+        }),
         get("name"),
         tap((name) => {
           assert(name);

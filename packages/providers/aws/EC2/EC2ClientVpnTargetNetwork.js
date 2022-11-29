@@ -75,26 +75,26 @@ exports.EC2ClientVpnTargetNetwork = ({ spec, config }) =>
               tap(() => {
                 assert(live.ClientVpnEndpointId);
               }),
-              () =>
-                lives.getById({
-                  id: live.ClientVpnEndpointId,
-                  type: "ClientVpnEndpoint",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => live,
+              get("ClientVpnEndpointId"),
+              lives.getById({
+                type: "ClientVpnEndpoint",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.ClientVpnEndpointId),
             ]),
             subnet: pipe([
               tap(() => {
                 assert(live.SubnetId);
               }),
-              () =>
-                lives.getById({
-                  id: live.SubnetId,
-                  type: "Subnet",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => live,
+              get("SubnetId"),
+              lives.getById({
+                type: "Subnet",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.SubnetId),
             ]),
           }),

@@ -101,13 +101,13 @@ const findDependencyFlowLog =
       tap(() => {
         assert(live.ResourceId);
       }),
-      () =>
-        lives.getById({
-          id: live.ResourceId,
-          type,
-          group,
-          providerName: config.providerName,
-        }),
+      () => live,
+      get("ResourceId"),
+      lives.getById({
+        type,
+        group,
+        providerName: config.providerName,
+      }),
       get("id"),
       unless(isEmpty, (id) => ({ type, group, ids: [id] })),
     ])();
@@ -119,13 +119,13 @@ const findNameInDependency =
       tap((name) => {
         assert(live.ResourceId);
       }),
-      () =>
-        lives.getById({
-          id: live.ResourceId,
-          type,
-          group,
-          providerName: config.providerName,
-        }),
+      () => live,
+      get("ResourceId"),
+      lives.getById({
+        type,
+        group,
+        providerName: config.providerName,
+      }),
       get("name"),
     ])();
 
@@ -185,13 +185,12 @@ exports.EC2FlowLogs = ({ spec, config }) =>
         group: "CloudWatchLogs",
         ids: [
           pipe([
-            () =>
-              lives.getByName({
-                name: live.LogGroupName,
-                type: "LogGroup",
-                group: "CloudWatchLogs",
-                providerName: config.providerName,
-              }),
+            () => live.LogGroupName,
+            lives.getByName({
+              type: "LogGroup",
+              group: "CloudWatchLogs",
+              providerName: config.providerName,
+            }),
             get("id"),
           ])(),
         ],

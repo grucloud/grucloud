@@ -35,12 +35,11 @@ exports.findDependenciesInEnvironment =
   ({ lives, config }) =>
   (live) =>
     pipe([
-      () =>
-        lives.getByType({
-          type,
-          group,
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type,
+        group,
+        providerName: config.providerName,
+      }),
       find(({ id }) =>
         pipe([
           () => live,

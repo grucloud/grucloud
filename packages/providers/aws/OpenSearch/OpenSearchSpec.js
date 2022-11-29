@@ -10,23 +10,17 @@ const GROUP = "OpenSearch";
 const compare = compareAws({});
 
 const { OpenSearchDomain } = require("./OpenSearchDomain");
-//const { OpenSearchDomainPolicy } = require("./OpenSearchDomainPolicy");
-//const { OpenSearchDomainSamlOption } = require("./OpenSearchDomainSamlOption");
 //const { OpenSearchInboundConnectionAccepter } = require("./OpenSearchInboundConnectionAccepter");
 //const { OpenSearchOutboundConnection } = require("./OpenSearchOutboundConnection");
+const { OpenSearchVpcEndpoint } = require("./OpenSearchVpcEndpoint");
 
 module.exports = pipe([
   () => [
-    OpenSearchDomain({}),
-    // OpenSearchDomainPolicy({})
-    // OpenSearchDomainSamlOption({})
+    OpenSearchDomain({ compare }),
     // OpenSearchInboundConnectionAccepter({})
     // OpenSearchOutboundConnection({})
+    OpenSearchVpcEndpoint({ compare }),
   ],
-  tap((params) => {
-    assert(true);
-  }),
-
   map(createAwsService),
   map(
     defaultsDeep({

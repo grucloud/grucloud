@@ -57,9 +57,7 @@ exports.createResources = () => [
     type: "Subscription",
     group: "SNS",
     properties: ({}) => ({
-      RawMessageDelivery: "false",
-      PendingConfirmation: "false",
-      ConfirmationWasAuthenticated: "true",
+      Attributes: {},
     }),
     dependencies: ({}) => ({
       snsTopic: "sam-app-MySnsTopic-1Q2VS8SMOPR20",

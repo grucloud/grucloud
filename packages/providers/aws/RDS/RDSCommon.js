@@ -58,11 +58,10 @@ exports.findDependenciesSecret =
   ({ lives, config }) =>
   (live) =>
     pipe([
-      () =>
-        lives.getByType({
-          type: "Secret",
-          group: "SecretsManager",
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type: "Secret",
+        group: "SecretsManager",
+        providerName: config.providerName,
+      }),
       find(eq(get(`live.SecretString.${secretField}`), live[rdsUsernameField])),
     ])();

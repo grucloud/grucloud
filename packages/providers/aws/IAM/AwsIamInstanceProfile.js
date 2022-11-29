@@ -60,12 +60,11 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           assert(lives);
           assert(live.InstanceProfileName);
         }),
-        () =>
-          lives.getByType({
-            type: "LaunchTemplate",
-            group: "EC2",
-            providerName: config.providerName,
-          }),
+        lives.getByType({
+          type: "LaunchTemplate",
+          group: "EC2",
+          providerName: config.providerName,
+        }),
         find(eq(get("live.LaunchTemplateName"), live.InstanceProfileName)),
         get("name"),
         unless(isEmpty, prepend("instance-profile-")),
@@ -221,13 +220,13 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           unless(
             isEmpty,
             pipe([
-              ({ RoleName }) =>
-                lives.getByName({
-                  name: RoleName,
-                  type: "Role",
-                  group: "IAM",
-                  providerName: config.providerName,
-                }),
+              get("RoleName"),
+              lives.getByName({
+                name: RoleName,
+                type: "Role",
+                group: "IAM",
+                providerName: config.providerName,
+              }),
               unless(isEmpty, findNamespaceInTags({ config })),
             ])
           ),

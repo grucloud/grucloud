@@ -111,12 +111,11 @@ exports.LightsailDiskAttachment = ({ compare }) => ({
             tap((params) => {
               assert(config);
             }),
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                type: "Disk",
-                group: "Lightsail",
-              }),
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Disk",
+              group: "Lightsail",
+            }),
             map(
               pipe([
                 get("live"),

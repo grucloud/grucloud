@@ -473,12 +473,11 @@ const findEksCluster =
       tap(() => {
         assert(lives, "lives");
       }),
-      () =>
-        lives.getByType({
-          type: "Cluster",
-          group: "EKS",
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type: "Cluster",
+        group: "EKS",
+        providerName: config.providerName,
+      }),
       find(eq(get("name"), findValueInTags({ key })(live))),
       tap((cluster) => {
         //logger.debug(`findEksCluster ${!!cluster}`);
@@ -978,13 +977,11 @@ exports.lambdaAddPermission = ({ lambda, lambdaFunction, SourceArn }) =>
 
 exports.destroyAutoScalingGroupById = ({ autoScalingGroup, lives, config }) =>
   pipe([
-    (id) =>
-      lives.getById({
-        id,
-        providerName: config.providerName,
-        type: "AutoScalingGroup",
-        group: "AutoScaling",
-      }),
+    lives.getById({
+      providerName: config.providerName,
+      type: "AutoScalingGroup",
+      group: "AutoScaling",
+    }),
     get("name"),
     unless(
       isEmpty,
@@ -1020,6 +1017,8 @@ const replaceArnWithAccountAndRegion =
                 !Id.endsWith("amazonaws.com") &&
                 Id != providerConfig.accountId() &&
                 !Id.startsWith("arn:aws:lambda") &&
+                !Id.startsWith("arn:aws:es") &&
+                !Id.startsWith("arn:aws:firehose") &&
                 !Id.startsWith("arn:aws:rds") &&
                 !Id.startsWith("arn:aws:sqs") &&
                 !Id.startsWith("arn:aws:code") &&

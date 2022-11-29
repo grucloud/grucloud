@@ -13,13 +13,13 @@ const findDependenciesSubscriptionFilter =
   ({ lives, config }) =>
   (live) =>
     pipe([
-      () =>
-        lives.getById({
-          id: live.destinationArn,
-          providerName: config.providerName,
-          type,
-          group,
-        }),
+      () => live,
+      get("destinationArn"),
+      lives.getById({
+        providerName: config.providerName,
+        type,
+        group,
+      }),
       get("id"),
     ])();
 

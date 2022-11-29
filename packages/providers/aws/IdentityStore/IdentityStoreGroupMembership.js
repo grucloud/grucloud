@@ -54,12 +54,10 @@ exports.IdentityStoreGroupMembership = ({ compare }) => ({
             tap((id) => {
               assert(id);
             }),
-            (id) =>
-              lives.getById({
-                id,
-                type: "Group",
-                group: "IdentityStore",
-              }),
+            lives.getById({
+              type: "Group",
+              group: "IdentityStore",
+            }),
             get("name"),
           ]),
           user: pipe([
@@ -69,13 +67,12 @@ exports.IdentityStoreGroupMembership = ({ compare }) => ({
             }),
             (id) =>
               pipe([
-                () =>
-                  lives.getById({
-                    id,
-                    type: "User",
-                    group: "IdentityStore",
-                    providerName: config.providerName,
-                  }),
+                () => id,
+                lives.getById({
+                  type: "User",
+                  group: "IdentityStore",
+                  providerName: config.providerName,
+                }),
                 get("name", id),
               ])(),
           ]),

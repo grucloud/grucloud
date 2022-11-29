@@ -100,13 +100,12 @@ exports.FirewallLoggingConfiguration = ({ compare }) => ({
       parent: true,
       dependencyId: ({ lives, config }) =>
         pipe([
-          (live) =>
-            lives.getByName({
-              name: live.FirewallName,
-              type: "Firewall",
-              group: "NetworkFirewall",
-              providerName: config.providerName,
-            }),
+          get("FirewallName"),
+          lives.getByName({
+            type: "Firewall",
+            group: "NetworkFirewall",
+            providerName: config.providerName,
+          }),
           get("id"),
         ]),
     },
@@ -119,17 +118,15 @@ exports.FirewallLoggingConfiguration = ({ compare }) => ({
           get("LoggingConfiguration.LogDestinationConfigs"),
           pluck("LogDestination"),
           pluck("logGroup"),
-          map((logGroup) =>
+          map(
             pipe([
-              () =>
-                lives.getByName({
-                  name: logGroup,
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "LogGroup",
+                group: "CloudWatchLogs",
+                providerName: config.providerName,
+              }),
               get("id"),
-            ])()
+            ])
           ),
         ]),
     },

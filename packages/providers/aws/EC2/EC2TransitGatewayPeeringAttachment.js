@@ -16,13 +16,11 @@ const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 const managedByOther = ({ lives, config }) =>
   pipe([
     get("AccepterTgwInfo.TransitGatewayId"),
-    (id) =>
-      lives.getById({
-        id,
-        type: "TransitGateway",
-        group: "EC2",
-        providerName: config.providerName,
-      }),
+    lives.getById({
+      type: "TransitGateway",
+      group: "EC2",
+      providerName: config.providerName,
+    }),
     eq(get("providerName"), config.providerName),
   ]);
 
@@ -82,13 +80,12 @@ const findNamePeeringAttachment =
           get("RequesterTgwInfo.TransitGatewayId"),
           (id) =>
             pipe([
-              () =>
-                lives.getById({
-                  id,
-                  type: "TransitGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => id,
+              lives.getById({
+                type: "TransitGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", id),
             ])(),
         ]),
@@ -96,13 +93,13 @@ const findNamePeeringAttachment =
           get("AccepterTgwInfo.TransitGatewayId"),
           (id) =>
             pipe([
-              () =>
-                lives.getById({
-                  id,
-                  type: "TransitGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => id,
+              lives.getById({
+                id,
+                type: "TransitGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", id),
             ])(),
         ]),

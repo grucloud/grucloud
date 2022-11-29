@@ -41,13 +41,11 @@ const findTargetDependency =
       tap((Arn) => {
         assert(Arn);
       }),
-      (Arn) =>
-        lives.getById({
-          id: Arn,
-          type,
-          group,
-          providerName: config.providerName,
-        }),
+      lives.getById({
+        type,
+        group,
+        providerName: config.providerName,
+      }),
     ]);
 
 const EventTargetDependencies = {

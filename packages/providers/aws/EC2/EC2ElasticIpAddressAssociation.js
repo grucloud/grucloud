@@ -41,23 +41,23 @@ exports.EC2ElasticIpAddressAssociation = ({ spec, config }) =>
         pipe([
           fork({
             instance: pipe([
-              () =>
-                lives.getById({
-                  id: live.InstanceId,
-                  type: "Instance",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => live,
+              get("InstanceId"),
+              lives.getById({
+                type: "Instance",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name"),
             ]),
             eip: pipe([
-              () =>
-                lives.getById({
-                  id: live.AllocationId,
-                  type: "ElasticIpAddress",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => live,
+              get("AllocationId"),
+              lives.getById({
+                type: "ElasticIpAddress",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name"),
             ]),
           }),
@@ -73,12 +73,11 @@ exports.EC2ElasticIpAddressAssociation = ({ spec, config }) =>
       ({ endpoint }) =>
       ({ lives }) =>
         pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type: "ElasticIpAddress",
-              group: "EC2",
-            }),
+          lives.getByType({
+            providerName: config.providerName,
+            type: "ElasticIpAddress",
+            group: "EC2",
+          }),
           pluck("live"),
           filter(get("InstanceId")),
           map(pick(["InstanceId", "AllocationId", "AssociationId"])),

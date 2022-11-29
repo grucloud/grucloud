@@ -53,13 +53,12 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
           switchCase([
             get("DefaultAssociationRouteTable"),
             pipe([
-              () =>
-                lives.getByType({
-                  id: live.TransitGatewayId,
-                  type: "TransitGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("TransitGatewayId"),
+              lives.getByType({
+                type: "TransitGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               find(eq(get("live.TransitGatewayId"), live.TransitGatewayId)),
               get("name", ""),
               tap((name) => {

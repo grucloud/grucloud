@@ -103,12 +103,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "Cluster",
-                    group: "EKS",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "Cluster",
+                  group: "EKS",
+                  providerName: config.providerName,
+                }),
                 find(
                   eq(get("live.identity.oidc.issuer"), `https://${live.Url}`)
                 ),

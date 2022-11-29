@@ -31,12 +31,11 @@ exports.GcpUrlMap = ({ spec, config }) => {
         get("defaultService"),
         (defaultService) => [
           pipe([
-            () =>
-              lives.getByType({
-                type: "BackendBucket",
-                group: "compute",
-                providerName,
-              }),
+            lives.getByType({
+              type: "BackendBucket",
+              group: "compute",
+              providerName,
+            }),
             find(eq(get("live.selfLink"), defaultService)),
             get("id"),
           ])(),

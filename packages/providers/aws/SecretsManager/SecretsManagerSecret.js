@@ -73,11 +73,13 @@ exports.SecretsManagerSecret = ({ compare }) => ({
   findName: findNameInTagsOrId({ findId: () => get("Name") }),
   findId: () => pipe([get("ARN")]),
   managedByOther,
+  cannotBeDeleted: managedByOther,
   ignoreErrorCodes: ["ResourceNotFoundException", "InvalidRequestException"],
   dependencies: {
     kmsKey: {
       type: "Key",
       group: "KMS",
+      excludeDefaultDependencies: true,
       dependencyId: ({ lives, config }) => get("KmsKeyId"),
     },
     kmsKeyReplicaRegions: {
@@ -102,15 +104,11 @@ exports.SecretsManagerSecret = ({ compare }) => ({
     "RotationLambdaARN",
     "RotationRules",
     "VersionIdsToStages",
+    "KmsKeyId",
+    "OwningService",
   ],
   compare: compare({
-    filterAll: () =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        omit(["SecretString", "SecretBinary"]),
-      ]),
+    filterAll: () => pipe([omit(["SecretString", "SecretBinary"])]),
   }),
   filterLive: ({ lives, providerConfig }) =>
     pipe([

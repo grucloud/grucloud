@@ -29,12 +29,11 @@ exports.Stage = ({ spec, config }) => {
           assert(live.ApiId);
           assert(live.StageName);
         }),
-        () =>
-          lives.getByType({
-            type: "Api",
-            group: "ApiGatewayV2",
-            providerName: config.providerName,
-          }),
+        lives.getByType({
+          type: "Api",
+          group: "ApiGatewayV2",
+          providerName: config.providerName,
+        }),
         find(eq(get("live.ApiId"), live.ApiId)),
         get("name"),
         tap((name) => {

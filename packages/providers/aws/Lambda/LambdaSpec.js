@@ -68,13 +68,11 @@ const dependencyIdEventSource =
   ({ lives, config }) =>
     pipe([
       get("EventSourceArn"),
-      (id) =>
-        lives.getById({
-          providerName: config.providerName,
-          id,
-          type,
-          group,
-        }),
+      lives.getById({
+        providerName: config.providerName,
+        type,
+        group,
+      }),
       get("id"),
     ]);
 
@@ -309,12 +307,11 @@ module.exports = pipe([
               pluck("Arn"),
               (layersArn) =>
                 pipe([
-                  () =>
-                    lives.getByType({
-                      providerName: config.providerName,
-                      type: "Layer",
-                      group: "Lambda",
-                    }),
+                  lives.getByType({
+                    providerName: config.providerName,
+                    type: "Layer",
+                    group: "Lambda",
+                  }),
                   filter(
                     pipe([
                       get("live.LayerVersionArn"),

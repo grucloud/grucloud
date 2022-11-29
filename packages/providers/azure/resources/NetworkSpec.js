@@ -1011,12 +1011,11 @@ exports.fnSpecs = ({ config }) => {
                   tap((params) => {
                     assert(properties.gatewayIpAddress);
                   }),
-                  () =>
-                    lives.getByType({
-                      providerType: "aws",
-                      type: "VpnConnection",
-                      group: "EC2",
-                    }),
+                  lives.getByType({
+                    providerType: "aws",
+                    type: "VpnConnection",
+                    group: "EC2",
+                  }),
                   find(
                     pipe([
                       get("live.Options.TunnelOptions"),
@@ -1039,12 +1038,11 @@ exports.fnSpecs = ({ config }) => {
                   tap((params) => {
                     assert(properties.gatewayIpAddress);
                   }),
-                  () =>
-                    lives.getByType({
-                      providerType: "google",
-                      type: "Address",
-                      group: "compute",
-                    }),
+                  lives.getByType({
+                    providerType: "google",
+                    type: "Address",
+                    group: "compute",
+                  }),
                   find(eq(get("live.address"), properties.gatewayIpAddress)),
                   get("id"),
                 ])(),
@@ -1190,12 +1188,11 @@ exports.fnSpecs = ({ config }) => {
                   tap((params) => {
                     assert(value);
                   }),
-                  () =>
-                    lives.getByType({
-                      providerType: "aws",
-                      type: "VpnConnection",
-                      group: "EC2",
-                    }),
+                  lives.getByType({
+                    providerType: "aws",
+                    type: "VpnConnection",
+                    group: "EC2",
+                  }),
                   find(
                     pipe([
                       get("live.Options.TunnelOptions"),

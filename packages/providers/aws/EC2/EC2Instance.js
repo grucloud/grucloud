@@ -501,13 +501,11 @@ exports.compareEC2Instance = pipe([
           pipe([
             () => live,
             getLaunchTemplateIdFromTags,
-            (id) =>
-              lives.getById({
-                id,
-                type: "LaunchTemplate",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
+            lives.getById({
+              type: "LaunchTemplate",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
             get("live.LaunchTemplateData"),
             pick(["InstanceType", "UserData", "KeyName", "ImageId"]),
             keys,

@@ -140,6 +140,12 @@ const decorate = ({ endpoint }) =>
       ]),
     }),
     ({ Config, ...other }) => ({ ...other, HostedZoneConfig: Config }),
+    // arn:aws:route53:::hostedzone/hosted-zone-id
+    assign({
+      Arn: pipe([
+        ({ HostedZoneId }) => `arn:aws:route53:::hostedzone/${HostedZoneId}`,
+      ]),
+    }),
   ]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53HostedZone = ({ spec, config }) => {
@@ -168,12 +174,11 @@ exports.Route53HostedZone = ({ spec, config }) => {
           when(
             any(get("HostedZoneConfig.PrivateZone")),
             pipe([
-              () =>
-                lives.getByType({
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              lives.getByType({
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               callProp("sort", (a, b) => a.name.localeCompare(b.name)),
               pluck("live"),
               flatMap(({ VpcId /*Region */ }) =>

@@ -78,13 +78,11 @@ exports.AmplifyWebhook = () => ({
         ({ branchName, appName }) =>
           pipe([
             () => `${appName}::${branchName}`,
-            (name) =>
-              lives.getByName({
-                name,
-                type: "Branch",
-                group: "Amplify",
-                providerName: config.providerName,
-              }),
+            lives.getByName({
+              type: "Branch",
+              group: "Amplify",
+              providerName: config.providerName,
+            }),
             get("id"),
             tap((id) => {
               assert(id);

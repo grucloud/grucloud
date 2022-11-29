@@ -115,12 +115,11 @@ const fnSpecs = (config) => {
           ],
           isDefault: ({ live, lives }) =>
             pipe([
-              () =>
-                lives.getById({
-                  type: "Network",
-                  providerName,
-                  id: live.network_id,
-                }),
+              () => live.network_id,
+              lives.getById({
+                type: "Network",
+                providerName,
+              }),
               get("isDefault"),
             ])(),
         }),
@@ -193,11 +192,10 @@ const fnSpecs = (config) => {
                 () => live,
                 get("addresses"),
                 keys,
-                map((network) =>
+                map(
                   lives.getByName({
                     providerName,
                     type: "Network",
-                    name: network,
                   })
                 ),
                 pluck("id"),

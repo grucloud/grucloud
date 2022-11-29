@@ -71,13 +71,11 @@ exports.AppConfigDeployment = ({ spec, config }) =>
           tap((id) => {
             assert(id);
           }),
-          (id) =>
-            lives.getById({
-              id,
-              type: "Environment",
-              group: "AppConfig",
-              providerName: config.providerName,
-            }),
+          lives.getById({
+            type: "Environment",
+            group: "AppConfig",
+            providerName: config.providerName,
+          }),
           get("name", live.EnvironmentId),
           tap((params) => {
             assert(true);

@@ -106,12 +106,11 @@ exports.AwsS3Object = ({ spec, config }) => {
         logger.info(`getList s3 #resources ${resources.length}`);
         assert(lives);
       }),
-      () =>
-        lives.getByType({
-          type: "Bucket",
-          group: "S3",
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type: "Bucket",
+        group: "S3",
+        providerName: config.providerName,
+      }),
       map.pool(mapPoolSize, (bucket) =>
         tryCatch(
           pipe([

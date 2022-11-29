@@ -1,53 +1,86 @@
-const assert = require("assert");
-const { get, pipe, tap, pick } = require("rubico");
+const { get, pipe, tap, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
+const assert = require("assert");
 
-const { getByIdCore, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { findNameInTagsOrId, findNamespaceInTags } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
-const { createEC2, tagResource, untagResource } = require("./EC2Common");
+const { findNameInTagsOrId, buildTags } = require("../AwsCommon");
 
-exports.EC2ElasticIpAddress = ({ spec, config }) => {
-  const ec2 = createEC2(config);
-  const client = AwsClient({ spec, config })(ec2);
+const { tagResource, untagResource } = require("./EC2Common");
 
-  const findId = () => get("AllocationId");
-  const pickId = pick(["AllocationId"]);
+const findId = () => get("AllocationId");
+const pickId = pick(["AllocationId"]);
 
-  const findName = findNameInTagsOrId({ findId });
+const decorate = ({ endpoint, lives, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+      assert(lives);
+      assert(config);
+    }),
+    assign({
+      Arn: pipe([
+        ({ AllocationId }) =>
+          `arn:aws:ec2:${
+            config.region
+          }:${config.accountId()}:eip-allocation/${AllocationId}`,
+      ]),
+    }),
+  ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
-  const getList = client.getList({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
+exports.EC2ElasticIpAddress = ({ compare }) => ({
+  type: "ElasticIpAddress",
+  package: "ec2",
+  client: "EC2",
+  propertiesDefault: {},
+  omitProperties: [
+    "Arn",
+    "InstanceId",
+    "PublicIp",
+    "AllocationId",
+    "AssociationId",
+    "NetworkInterfaceId",
+    "NetworkInterfaceOwnerId",
+    "PrivateIpAddress",
+    "PublicIpv4Pool",
+    "NetworkBorderGroup",
+  ],
+  filterLive: () => pick([]),
+  //compare: compare({ filterAll: () => pipe([pick([])]) }),
+  dependencies: {},
+  findName: findNameInTagsOrId({ findId }),
+  findId,
+  ignoreErrorCodes: ["InvalidAllocationID.NotFound"],
+  getById: {
+    method: "describeAddresses",
+    getField: "Addresses",
+    pickId: ({ AllocationId }) => ({
+      AllocationIds: [AllocationId],
+    }),
+    decorate,
+  },
+  getList: {
     method: "describeAddresses",
     getParam: "Addresses",
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-  const getById = () =>
-    pipe([
-      ({ AllocationId }) => ({ id: AllocationId }),
-      getByIdCore({ fieldIds: "AllocationIds", getList }),
-    ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#allocateAddress-property
-  const create = client.create({
+    decorate,
+  },
+  create: {
     method: "allocateAddress",
-    getById,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#releaseAddress-property
-  const destroy = client.destroy({
-    pickId,
+  },
+  destroy: {
     method: "releaseAddress",
-    getById,
-    ignoreErrorCodes: ["InvalidAllocationID.NotFound"],
-  });
-
-  const configDefault = ({
+    pickId,
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) => ({
+    tagResource,
+    untagResource,
+  }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
+    config,
   }) =>
     pipe([
       () => ({}),
@@ -64,20 +97,5 @@ exports.EC2ElasticIpAddress = ({ spec, config }) => {
       tap((params) => {
         assert(true);
       }),
-    ])();
-
-  return {
-    spec,
-    findId,
-    findNamespace: findNamespaceInTags,
-    getById,
-    getByName,
-    findName,
-    getList,
-    create,
-    destroy,
-    configDefault,
-    tagResource: tagResource({ endpoint: ec2 }),
-    untagResource: untagResource({ endpoint: ec2 }),
-  };
-};
+    ])(),
+});

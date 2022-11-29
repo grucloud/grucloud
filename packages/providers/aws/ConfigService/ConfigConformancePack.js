@@ -26,9 +26,7 @@ const decorate =
         // TemplateBody: pipe([
         //   ({ ConformancePackName, ConformancePackId }) =>
         //     `awsconfigconforms-${ConformancePackName}-${ConformancePackId}`,
-        //   (name) =>
         //     lives.getByName({
-        //       name,
         //       type: "Stack",
         //       group: "CloudFormation",
         //       providerName: config.providerName,

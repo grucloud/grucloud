@@ -59,12 +59,10 @@ exports.AmplifyBranch = () => ({
         tap((id) => {
           assert(id);
         }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "App",
-            group: "Amplify",
-          }),
+        lives.getById({
+          type: "App",
+          group: "Amplify",
+        }),
         get("name"),
         tap((name) => {
           assert(name);

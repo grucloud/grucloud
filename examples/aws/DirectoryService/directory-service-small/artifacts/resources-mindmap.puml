@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project directory-service-small
+skinparam monochrome true
++ Infra
+++ aws
++++ DirectoryService
+++++ Directory (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
++++ SNS
+++++ Topic (2)
+@endmindmap

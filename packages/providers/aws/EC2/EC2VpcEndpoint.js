@@ -61,13 +61,11 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
                   assert(live.VpcId);
                   assert(name);
                 }),
-                (id) =>
-                  lives.getById({
-                    id,
-                    type: "Vpc",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
+                lives.getById({
+                  type: "Vpc",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
                 get("name", live.VpcId),
                 tap((name) => {
                   assert(name, `no Vpc name for '${live.VpcId}'`);
@@ -81,13 +79,12 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
               pipe([
                 fork({
                   firewall: pipe([
-                    () =>
-                      lives.getById({
-                        id,
-                        type: "Firewall",
-                        group: "NetworkFirewall",
-                        providerName: config.providerName,
-                      }),
+                    () => id,
+                    lives.getById({
+                      type: "Firewall",
+                      group: "NetworkFirewall",
+                      providerName: config.providerName,
+                    }),
                     get("name", id),
                   ]),
                   subnet: pipe([
@@ -97,13 +94,11 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
                       assert.equal(size(SubnetIds), 1);
                     }),
                     first,
-                    (id) =>
-                      lives.getById({
-                        id,
-                        type: "Subnet",
-                        group: "EC2",
-                        providerName: config.providerName,
-                      }),
+                    lives.getById({
+                      type: "Subnet",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
                     get("name"),
                   ]),
                 }),

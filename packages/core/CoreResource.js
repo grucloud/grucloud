@@ -17,7 +17,6 @@ const {
   or,
   transform,
   fork,
-  set,
 } = require("rubico");
 
 const {
@@ -86,14 +85,13 @@ exports.ResourceMaker = ({
         assert(name);
         assert(path);
       }),
-      () =>
-        provider.lives.getByName({
-          name,
-          group,
-          type,
-          //TODO
-          //providerName: config.providerName,
-        }),
+      () => name,
+      provider.lives.getByName({
+        group,
+        type,
+        //TODO
+        //providerName: config.providerName,
+      }),
       tap((params) => {
         assert(true);
       }),
@@ -119,7 +117,6 @@ exports.ResourceMaker = ({
       tap((params) => {
         assert(true);
       }),
-      //
       switchCase([
         () => spec.inferName,
         pipe([
@@ -128,6 +125,16 @@ exports.ResourceMaker = ({
               spec.inferName,
               `resource ${spec.type} without name must implement 'inferName'`
             );
+            // assert(
+            //   isFunction(
+            //     spec.inferName({
+            //       resourceName: resourceNameToString(resourceName),
+            //       dependenciesSpec: dependencies({ config }),
+            //       dependencies: getDependencies(),
+            //     })
+            //   ),
+            //   `spec.inferName should return a function for  ${spec.groupType}`
+            // );
           }),
           () => resourceName,
           resourceNameToString,
@@ -139,6 +146,9 @@ exports.ResourceMaker = ({
                   getId,
                   generatePassword: generator.generate,
                 }),
+              tap((params) => {
+                assert(true);
+              }),
               spec.inferName({
                 resourceName: resourceNameString,
                 dependenciesSpec: dependencies({ config }),
@@ -250,13 +260,11 @@ exports.ResourceMaker = ({
       tap((params) => {
         assert(true);
       }),
-      (name) =>
-        provider.lives.getByName({
-          name,
-          providerName: provider.name,
-          type,
-          group,
-        }),
+      provider.lives.getByName({
+        providerName: provider.name,
+        type,
+        group,
+      }),
       tap((xxx) => {
         assert(true);
       }),
@@ -583,12 +591,11 @@ exports.ResourceMaker = ({
         switchCase([
           () => filterLives,
           pipe([
-            () =>
-              provider.lives.getByType({
-                type,
-                group,
-                providerName: provider.name,
-              }),
+            provider.lives.getByType({
+              type,
+              group,
+              providerName: provider.name,
+            }),
             tap((resources) => {
               logger.debug(
                 `resolveConfig ${type} #resources ${size(resources)}`

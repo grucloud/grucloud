@@ -167,13 +167,12 @@ exports.fnSpecs = ({ config }) =>
               set(
                 "properties.roleName",
                 pipe([
-                  () =>
-                    lives.getById({
-                      id: live.properties.roleDefinitionId,
-                      providerName: config.providerName,
-                      type: "RoleDefinition",
-                      group: "Authorization",
-                    }),
+                  get("properties.roleDefinitionId"),
+                  lives.getById({
+                    providerName: config.providerName,
+                    type: "RoleDefinition",
+                    group: "Authorization",
+                  }),
                   tap((params) => {
                     assert(true);
                   }),
@@ -249,12 +248,11 @@ exports.fnSpecs = ({ config }) =>
                 roleDefinitionId: when(
                   () => properties.properties.roleName,
                   pipe([
-                    () =>
-                      lives.getByType({
-                        providerName: config.providerName,
-                        type: "RoleDefinition",
-                        group: "Authorization",
-                      }),
+                    lives.getByType({
+                      providerName: config.providerName,
+                      type: "RoleDefinition",
+                      group: "Authorization",
+                    }),
                     find(
                       eq(
                         get("live.properties.roleName"),

@@ -182,12 +182,11 @@ module.exports = pipe([
                 () => undefined,
                 (Id) =>
                   pipe([
-                    () =>
-                      lives.getByType({
-                        type: "UserPool",
-                        group: "CognitoIdentityServiceProvider",
-                        providerName: config.providerName,
-                      }),
+                    lives.getByType({
+                      type: "UserPool",
+                      group: "CognitoIdentityServiceProvider",
+                      providerName: config.providerName,
+                    }),
                     find(eq(get("live.Id"), Id)),
                   ])(),
               ]),
@@ -225,12 +224,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    providerName: config.providerName,
-                    type: "Stage",
-                    group: "ApiGatewayV2",
-                  }),
+                lives.getByType({
+                  providerName: config.providerName,
+                  type: "Stage",
+                  group: "ApiGatewayV2",
+                }),
                 find(
                   and([
                     eq(get("live.StageName"), live.Stage),
@@ -293,12 +291,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "Listener",
-                    group: "ElasticLoadBalancingV2",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "Listener",
+                  group: "ElasticLoadBalancingV2",
+                  providerName: config.providerName,
+                }),
                 find(eq(get("id"), live.IntegrationUri)),
               ])(),
         }, //Integration name depends on listener name
@@ -309,12 +306,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "VpcLink",
-                    group: "ApiGatewayV2",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "VpcLink",
+                  group: "ApiGatewayV2",
+                  providerName: config.providerName,
+                }),
                 find(eq(get("id"), live.ConnectionId)),
               ])(),
         },
@@ -325,12 +321,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "Function",
-                    group: "Lambda",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "Function",
+                  group: "Lambda",
+                  providerName: config.providerName,
+                }),
                 find(
                   pipe([get("id"), (id) => includes(id)(live.IntegrationUri)])
                 ),
@@ -433,12 +428,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    providerName: config.providerName,
-                    type: "Stage",
-                    group: "ApiGatewayV2",
-                  }),
+                lives.getByType({
+                  providerName: config.providerName,
+                  type: "Stage",
+                  group: "ApiGatewayV2",
+                }),
                 find(eq(get("live.DeploymentId"), live.DeploymentId)),
                 get("id"),
               ])(),

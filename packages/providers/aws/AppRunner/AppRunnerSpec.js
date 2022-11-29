@@ -75,12 +75,11 @@ module.exports = pipe([
                   first,
                   (repositoryUri) =>
                     pipe([
-                      () =>
-                        lives.getByType({
-                          type: "Repository",
-                          group: "ECR",
-                          providerName: config.providerName,
-                        }),
+                      lives.getByType({
+                        type: "Repository",
+                        group: "ECR",
+                        providerName: config.providerName,
+                      }),
                       find(eq(get("live.repositoryUri"), repositoryUri)),
                     ])(),
                   get("id"),

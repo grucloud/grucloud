@@ -30,7 +30,6 @@ const {
   prepend,
   defaultsDeep,
   when,
-  isDeepEqual,
   callProp,
   identity,
   flatten,
@@ -39,7 +38,6 @@ const {
   omitIfEmpty,
   replaceWithName,
   differenceObject,
-  cidrToSubnetMaskLength,
 } = require("@grucloud/core/Common");
 const {
   compareAws,
@@ -128,6 +126,11 @@ const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { EC2NetworkInterface } = require("./EC2NetworkInterface");
 const { EC2NetworkAcl } = require("./EC2NetworkAcl");
+
+const {
+  EC2VpcIpv4CidrBlockAssociation,
+} = require("./EC2VpcIpv4CidrBlockAssociation");
+
 const { EC2VpcPeeringConnection } = require("./EC2VpcPeeringConnection");
 const { EC2PlacementGroup } = require("./EC2PlacementGroup");
 const {
@@ -259,13 +262,12 @@ const getIpPermissions =
               callProp("split", "::"),
               ([sg, vpcName]) =>
                 pipe([
-                  () =>
-                    lives.getByName({
-                      name: vpcName,
-                      type: "Vpc",
-                      group: "EC2",
-                      providerName: config.providerName,
-                    }),
+                  () => vpcName,
+                  lives.getByName({
+                    type: "Vpc",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])(),
               tap((vpcName) => {
@@ -461,12 +463,11 @@ module.exports = pipe([
                 tap((params) => {
                   assert(IpAddress);
                 }),
-                () =>
-                  lives.getByType({
-                    providerType: "azure",
-                    type: "PublicIPAddress",
-                    group: "Network",
-                  }),
+                lives.getByType({
+                  providerType: "azure",
+                  type: "PublicIPAddress",
+                  group: "Network",
+                }),
                 find(eq(get("live.properties.ipAddress"), IpAddress)),
                 get("id"),
               ])(),
@@ -482,12 +483,11 @@ module.exports = pipe([
                 tap((params) => {
                   assert(IpAddress);
                 }),
-                () =>
-                  lives.getByType({
-                    providerType: "google",
-                    type: "Address",
-                    group: "compute",
-                  }),
+                lives.getByType({
+                  providerType: "google",
+                  type: "Address",
+                  group: "compute",
+                }),
                 find(eq(get("live.address"), IpAddress)),
                 get("id"),
               ])(),
@@ -500,12 +500,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             ({ IpAddress }) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    providerType: "azure",
-                    type: "VirtualNetworkGateway",
-                    group: "Network",
-                  }),
+                lives.getByType({
+                  providerType: "azure",
+                  type: "VirtualNetworkGateway",
+                  group: "Network",
+                }),
                 find(
                   pipe([
                     get("live.properties.bgpSettings.bgpPeeringAddresses"),
@@ -533,7 +532,7 @@ module.exports = pipe([
             }),
             () =>
               `client-vpn-rule-assoc::${clientVpnEndpoint}::${TargetNetworkCidr}`,
-          ]),
+          ])(),
       propertiesDefault: {},
       compare: compareEC2({ filterAll: () => pick([]) }),
       filterLive: () =>
@@ -644,13 +643,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("ConnectionLogOptions.CloudwatchLogGroup"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  providerName: config.providerName,
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                }),
+              lives.getByName({
+                providerName: config.providerName,
+                type: "LogGroup",
+                group: "CloudWatchLogs",
+              }),
               get("id"),
             ]),
         },
@@ -662,7 +659,6 @@ module.exports = pipe([
         //       get("ConnectionLogOptions.CloudwatchLogStream"),
         //       (logStream) =>
         //         pipe([
-        //           () =>
         //             lives.getByType({
         //               providerName: config.providerName,
         //               type: "LogStream",
@@ -898,12 +894,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "Ipam",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "Ipam",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
                 find(eq(get("live.IpamArn"), live.IpamArn)),
                 get("id"),
               ])(),
@@ -947,12 +942,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "IpamScope",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "IpamScope",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
                 find(eq(get("live.IpamScopeArn"), live.IpamScopeArn)),
                 get("id"),
                 tap((id) => {
@@ -995,13 +989,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("Attachment.InstanceId"),
-              (id) =>
-                lives.getById({
-                  providerName: config.providerName,
-                  type: "Instance",
-                  group: "EC2",
-                  id,
-                }),
+              lives.getById({
+                providerName: config.providerName,
+                type: "Instance",
+                group: "EC2",
+              }),
               get("id"),
               tap((params) => {
                 assert(true);
@@ -1085,130 +1077,17 @@ module.exports = pipe([
       compare: compareAws({ getLiveTags: () => [], getTargetTags: () => [] })({
         filterAll: () => pipe([pick([])]),
       }),
-      inferName: ({ properties, dependenciesSpec: { volume, instance } }) =>
+      inferName: ({ dependenciesSpec: { volume, instance } }) =>
         pipe([
           tap(() => {
             assert(volume);
             assert(instance);
           }),
           () => `vol-attachment::${volume}::${instance}`,
-        ])(),
+        ]),
       filterLive: () => pipe([pick(["Device", "DeleteOnTermination"])]),
     },
-    {
-      type: "Vpc",
-      //TODO only for delete
-      //dependsOnDelete: ["IAM::User", "IAM::Group"],
-      Client: EC2Vpc,
-      omitProperties: [
-        "DhcpOptionsId",
-        "State",
-        "OwnerId",
-        "InstanceTenancy",
-        "Ipv6CidrBlockAssociationSet",
-        "CidrBlockAssociationSet",
-        "IsDefault",
-        "VpcId",
-        "VpcArn",
-        "Ipv4IpamPoolId",
-      ],
-      dependencies: {
-        ipamPoolIpv4: {
-          type: "IpamPool",
-          group: "EC2",
-          dependencyId:
-            ({ lives, config }) =>
-            (live) =>
-              pipe([
-                () =>
-                  lives.getByType({
-                    type: "IpamPool",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
-                find(
-                  and([
-                    eq(get("live.AddressFamily"), "ipv4"),
-                    pipe([
-                      get("live.Allocations"),
-                      find(eq(get("ResourceId"), live.VpcId)),
-                    ]),
-                  ])
-                ),
-                get("live.IpamPoolId"),
-              ])(),
-        },
-        // TODO ipamPoolIpv6
-        // ipamPoolIpv6: {
-        //   type: "IpamPool",
-        //   group: "EC2",
-        //   filterDependency:
-        //     ({ resource }) =>
-        //     (dependency) =>
-        //       pipe([
-        //         () => resource,
-        //         get("live.Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock"),
-        //       ])(),
-        //},
-      },
-      propertiesDefault: { DnsSupport: true, DnsHostnames: false },
-      compare: compareEC2({
-        filterAll: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["CidrBlock"]),
-          ]),
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit([
-              "AmazonProvidedIpv6CidrBlock",
-              "Ipv4NetmaskLength",
-              // TODO
-              "Ipv6NetmaskLength",
-            ]),
-          ]),
-      }),
-      filterLive: ({ resource }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          when(
-            pipe([
-              () => resource.dependencies,
-              find(eq(get("groupType"), "EC2::IpamPool")),
-              get("ids"),
-              not(isEmpty),
-            ]),
-            pipe([
-              when(
-                get("CidrBlock"),
-                assign({
-                  Ipv4NetmaskLength: pipe([
-                    get("CidrBlock"),
-                    cidrToSubnetMaskLength,
-                  ]),
-                })
-              ),
-              omit(["CidrBlock"]),
-            ])
-          ),
-          // TODO ipv6
-          when(
-            pipe([
-              get("Ipv6CidrBlockAssociationSet"),
-              first,
-              eq(get("Ipv6Pool"), "Amazon"),
-            ]),
-            assign({ AmazonProvidedIpv6CidrBlock: () => true })
-          ),
-        ]),
-    },
+    createAwsService(EC2Vpc({ compare: compareEC2 })),
     {
       type: "InternetGateway",
       Client: EC2InternetGateway,
@@ -1571,13 +1450,12 @@ module.exports = pipe([
           parentForName: true,
           dependencyId: ({ lives, config }) =>
             pipe([
-              (live) =>
-                lives.getById({
-                  id: live.GatewayId,
-                  type: "InternetGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("GatewayId"),
+              lives.getById({
+                type: "InternetGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -1621,13 +1499,12 @@ module.exports = pipe([
           parentForName: true,
           dependencyId: ({ lives, config }) =>
             pipe([
-              (live) =>
-                lives.getById({
-                  id: live.GatewayId,
-                  type: "VpcEndpoint",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("GatewayId"),
+              lives.getById({
+                type: "VpcEndpoint",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -1645,13 +1522,12 @@ module.exports = pipe([
           parentForName: true,
           dependencyId: ({ lives, config }) =>
             pipe([
-              (live) =>
-                lives.getById({
-                  id: live.GatewayId,
-                  type: "VpnGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("GatewayId"),
+              lives.getById({
+                type: "VpnGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -1805,30 +1681,7 @@ module.exports = pipe([
       dependencies: securityGroupRuleDependencies,
       inferName: inferNameSecurityGroupRule({ kind: "egress" }),
     },
-    {
-      type: "ElasticIpAddress",
-      // TODO
-      // dependencies: {
-      //   internetGateway: {
-      //     type: "InternetGateway",
-      //     group: "EC2",
-      //     dependencyId: ({ lives, config }) => get(""),
-      //   },
-      // },
-      Client: EC2ElasticIpAddress,
-      omitProperties: [
-        "InstanceId",
-        "PublicIp",
-        "AllocationId",
-        "AssociationId",
-        "NetworkInterfaceId",
-        "NetworkInterfaceOwnerId",
-        "PrivateIpAddress",
-        "PublicIpv4Pool",
-        "NetworkBorderGroup",
-      ],
-      filterLive: () => pick([]),
-    },
+    createAwsService(EC2ElasticIpAddress({ compare: compareEC2 })),
     {
       type: "ElasticIpAddressAssociation",
       Client: EC2ElasticIpAddressAssociation,
@@ -2047,13 +1900,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("KeyName"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  type: "KeyPair",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "KeyPair",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -2080,17 +1931,12 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("Placement.GroupName"),
-              (name) =>
-                pipe([
-                  () =>
-                    lives.getByName({
-                      name,
-                      type: "PlacementGroup",
-                      group: "EC2",
-                      providerName: config.providerName,
-                    }),
-                  get("id"),
-                ])(),
+              lives.getByName({
+                type: "PlacementGroup",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+              get("id"),
             ]),
         },
       },
@@ -2193,13 +2039,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("LaunchTemplateData.KeyName"),
-              (KeyName) =>
-                lives.getByName({
-                  name: KeyName,
-                  type: "KeyPair",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "KeyPair",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -2217,13 +2061,11 @@ module.exports = pipe([
                 pipe([
                   () => live,
                   get("LaunchTemplateData.IamInstanceProfile.Name"),
-                  (name) =>
-                    lives.getByName({
-                      name,
-                      type: "InstanceProfile",
-                      group: "IAM",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByName({
+                    type: "InstanceProfile",
+                    group: "IAM",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])(),
               ],
@@ -2254,17 +2096,12 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("LaunchTemplateData.Placement.GroupName"),
-              (name) =>
-                pipe([
-                  () =>
-                    lives.getByName({
-                      name,
-                      type: "PlacementGroup",
-                      group: "EC2",
-                      providerName: config.providerName,
-                    }),
-                  get("id"),
-                ])(),
+              lives.getByName({
+                type: "PlacementGroup",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+              get("id"),
             ]),
         },
       },
@@ -2489,6 +2326,7 @@ module.exports = pipe([
           unless(isEmpty, () => `\n`),
         ])(),
     },
+    createAwsService(EC2VpcIpv4CidrBlockAssociation({ compare: compareEC2 })),
     {
       type: "VpcPeeringConnection",
       Client: EC2VpcPeeringConnection,

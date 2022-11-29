@@ -61,13 +61,12 @@ module.exports = pipe([
               tap((live) => {
                 assert(live.ResourceSetName);
               }),
-              (live) =>
-                lives.getByName({
-                  name: live.ResourceSetName,
-                  type: "ResourceSet",
-                  group: "Route53RecoveryReadiness",
-                  config: config.providerName,
-                }),
+              get("ResourceSetName"),
+              lives.getByName({
+                type: "ResourceSet",
+                group: "Route53RecoveryReadiness",
+                config: config.providerName,
+              }),
               get("id"),
               tap((id) => {
                 assert(id);

@@ -414,43 +414,44 @@ exports.AzClient = ({
       (url) => [url],
     ]);
 
-  const getPathsListWithDeps = ({ lives, config, methods }) =>
-    pipe([
-      tap(({ type, group }) => {
-        assert(type);
-        assert(group);
-        assert(lives);
-        assert(methods);
-      }),
-      ({ type, group }) =>
+  const getPathsListWithDeps =
+    ({ lives, config, methods }) =>
+    ({ type, group }) =>
+      pipe([
+        tap(() => {
+          assert(type);
+          assert(group);
+          assert(lives);
+          assert(methods);
+        }),
         lives.getByType({
           providerName: config.providerName,
           type,
           group,
         }),
-      tap((params) => {
-        assert(true);
-      }),
-      map(({ id }) =>
-        pipe([
-          tap((params) => {
-            assert(id);
-          }),
-          () => methods,
-          get("getAll.path", methods.get.path),
-          tap((path) => {
-            assert(path, `no getAll or get`);
-          }),
-          callProp("split", "/"),
-          callProp("slice", size(id.split("/"))),
-          callProp("join", "/"),
-          prepend(`${id}/`),
-        ])()
-      ),
-      tap((params) => {
-        assert(true);
-      }),
-    ]);
+        tap((params) => {
+          assert(true);
+        }),
+        map(({ id }) =>
+          pipe([
+            tap((params) => {
+              assert(id);
+            }),
+            () => methods,
+            get("getAll.path", methods.get.path),
+            tap((path) => {
+              assert(path, `no getAll or get`);
+            }),
+            callProp("split", "/"),
+            callProp("slice", size(id.split("/"))),
+            callProp("join", "/"),
+            prepend(`${id}/`),
+          ])()
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+      ])();
 
   const numberOfDependenciesInPath = (path = "") =>
     pipe([

@@ -71,22 +71,18 @@ exports.EC2VpnConnectionRoute = ({ spec, config }) =>
       ({ lives, config }) =>
       (live) =>
         pipe([
-          fork({
-            vpnConnection: pipe([
-              () =>
-                lives.getById({
-                  id: live.VpnConnectionId,
-                  type: "VpnConnection",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
-              get("name", live.VpnConnectionId),
-            ]),
+          () => live,
+          get("VpnConnectionId"),
+          lives.getById({
+            type: "VpnConnection",
+            group: "EC2",
+            providerName: config.providerName,
           }),
-          tap(({ vpnConnection }) => {
+          get("name", live.VpnConnectionId),
+          tap((vpnConnection) => {
             assert(vpnConnection);
           }),
-          ({ vpnConnection }) =>
+          (vpnConnection) =>
             `vpn-conn-route::${vpnConnection}::${live.DestinationCidrBlock}`,
         ])(),
     findId,
@@ -95,12 +91,11 @@ exports.EC2VpnConnectionRoute = ({ spec, config }) =>
       ({ endpoint }) =>
       ({ lives, config }) =>
         pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type: "VpnConnection",
-              group: "EC2",
-            }),
+          lives.getByType({
+            providerName: config.providerName,
+            type: "VpnConnection",
+            group: "EC2",
+          }),
           flatMap(
             pipe([
               get("live"),

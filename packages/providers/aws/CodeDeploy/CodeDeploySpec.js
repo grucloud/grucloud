@@ -39,13 +39,12 @@ module.exports = pipe([
           parent: true,
           dependencyId: ({ lives, config }) =>
             pipe([
-              (live) =>
-                lives.getByName({
-                  name: live.applicationName,
-                  type: "Application",
-                  group: "CodeDeploy",
-                  providerName: config.providerName,
-                }),
+              get("applicationName"),
+              lives.getByName({
+                type: "Application",
+                group: "CodeDeploy",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -61,17 +60,15 @@ module.exports = pipe([
           dependencyIds: ({ lives, config }) =>
             pipe([
               get("autoScalingGroups", []),
-              map((autoScalingGroup) =>
+              map(
                 pipe([
-                  () =>
-                    lives.getByName({
-                      name: autoScalingGroup,
-                      type: "AutoScalingGroup",
-                      group: "AutoScaling",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByName({
+                    type: "AutoScalingGroup",
+                    group: "AutoScaling",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
-                ])()
+                ])
               ),
             ]),
         },
@@ -82,17 +79,16 @@ module.exports = pipe([
           dependencyIds: ({ lives, config }) =>
             pipe([
               get("ecsServices", []),
-              map(({ serviceName }) =>
+              map(
                 pipe([
-                  () =>
-                    lives.getByName({
-                      name: serviceName,
-                      type: "Service",
-                      group: "ECS",
-                      providerName: config.providerName,
-                    }),
+                  get("serviceName"),
+                  lives.getByName({
+                    type: "Service",
+                    group: "ECS",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
-                ])()
+                ])
               ),
             ]),
         },
@@ -103,17 +99,16 @@ module.exports = pipe([
           dependencyIds: ({ lives, config }) =>
             pipe([
               get("ecsServices", []),
-              map(({ clusterName }) =>
+              map(
                 pipe([
-                  () =>
-                    lives.getByName({
-                      name: clusterName,
-                      type: "Cluster",
-                      group: "ECS",
-                      providerName: config.providerName,
-                    }),
+                  get("clusterName"),
+                  lives.getByName({
+                    type: "Cluster",
+                    group: "ECS",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
-                ])()
+                ])
               ),
             ]),
         },
@@ -128,13 +123,12 @@ module.exports = pipe([
                   get("targetGroups"),
                   map(
                     pipe([
-                      ({ name }) =>
-                        lives.getByName({
-                          name,
-                          type: "TargetGroup",
-                          group: "ElasticLoadBalancingV2",
-                          providerName: config.providerName,
-                        }),
+                      get("name"),
+                      lives.getByName({
+                        type: "TargetGroup",
+                        group: "ElasticLoadBalancingV2",
+                        providerName: config.providerName,
+                      }),
                       get("id"),
                     ])
                   ),
@@ -155,13 +149,11 @@ module.exports = pipe([
                   get("prodTrafficRoute.listenerArns"),
                   map(
                     pipe([
-                      (id) =>
-                        lives.getById({
-                          id,
-                          type: "Listener",
-                          group: "ElasticLoadBalancingV2",
-                          providerName: config.providerName,
-                        }),
+                      lives.getById({
+                        type: "Listener",
+                        group: "ElasticLoadBalancingV2",
+                        providerName: config.providerName,
+                      }),
                       get("id"),
                     ])
                   ),

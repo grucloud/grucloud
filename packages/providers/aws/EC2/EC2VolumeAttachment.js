@@ -20,18 +20,18 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
     ({ lives, config }) =>
     (live) =>
       pipe([
+        () => live,
         fork({
           volume: pipe([
             tap(() => {
               assert(live.VolumeId);
             }),
-            () =>
-              lives.getById({
-                id: live.VolumeId,
-                providerName: config.providerName,
-                type: "Volume",
-                group: "EC2",
-              }),
+            get("VolumeId"),
+            lives.getById({
+              providerName: config.providerName,
+              type: "Volume",
+              group: "EC2",
+            }),
             get("name"),
             tap((volume) => {
               assert(volume);
@@ -41,13 +41,12 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
             tap(() => {
               assert(live.InstanceId);
             }),
-            () =>
-              lives.getById({
-                id: live.InstanceId,
-                providerName: config.providerName,
-                type: "Instance",
-                group: "EC2",
-              }),
+            get("InstanceId"),
+            lives.getById({
+              providerName: config.providerName,
+              type: "Instance",
+              group: "EC2",
+            }),
             get("name"),
             tap((instance) => {
               assert(instance);

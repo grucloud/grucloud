@@ -105,12 +105,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "Endpoint",
-                    group: "Route53Resolver",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "Endpoint",
+                  group: "Route53Resolver",
+                  providerName: config.providerName,
+                }),
                 find(eq(get("live.Id"), live.ResolverEndpointId)),
                 get("id"),
               ])(),
@@ -181,12 +180,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    type: "Rule",
-                    group: "Route53Resolver",
-                    providerName: config.providerName,
-                  }),
+                lives.getByType({
+                  type: "Rule",
+                  group: "Route53Resolver",
+                  providerName: config.providerName,
+                }),
                 find(eq(get("live.Id"), live.ResolverRuleId)),
                 get("id"),
               ])(),

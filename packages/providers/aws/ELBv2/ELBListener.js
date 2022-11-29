@@ -121,13 +121,13 @@ exports.ELBListener = ({ spec, config }) =>
           tap(() => {
             assert(lives);
           }),
-          () =>
-            lives.getById({
-              id: live.LoadBalancerArn,
-              type: "LoadBalancer",
-              group: "ElasticLoadBalancingV2",
-              providerName: config.providerName,
-            }),
+          () => live,
+          get("LoadBalancerArn"),
+          lives.getById({
+            type: "LoadBalancer",
+            group: "ElasticLoadBalancingV2",
+            providerName: config.providerName,
+          }),
           get("name"),
           tap((name) => {
             assert(name);
@@ -139,13 +139,13 @@ exports.ELBListener = ({ spec, config }) =>
       ({ lives, config }) =>
       (live) =>
         pipe([
-          () =>
-            lives.getById({
-              type: "LoadBalancer",
-              group: "ElasticLoadBalancingV2",
-              providerName: config.providerName,
-              id: live.LoadBalancerArn,
-            }),
+          () => live,
+          get("LoadBalancerArn"),
+          lives.getById({
+            type: "LoadBalancer",
+            group: "ElasticLoadBalancingV2",
+            providerName: config.providerName,
+          }),
           get("managedByOther"),
         ])(),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listControlPanels-property

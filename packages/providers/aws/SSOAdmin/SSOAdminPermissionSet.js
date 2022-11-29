@@ -1,14 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, assign, map, or, filter } = require("rubico");
-const {
-  defaultsDeep,
-  isEmpty,
-  unless,
-  keys,
-  isDeepEqual,
-} = require("rubico/x");
-const Diff = require("diff");
-
+const { defaultsDeep, isEmpty, unless } = require("rubico/x");
+const { updateResourceArray } = require("@grucloud/core/updateResourceArray");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
@@ -24,10 +17,6 @@ const buildArn = () =>
   ]);
 
 const pickId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-
   tap(({ InstanceArn, PermissionSetArn }) => {
     assert(InstanceArn);
     assert(PermissionSetArn);
@@ -137,12 +126,6 @@ const detachCustomerPolicy = ({ endpoint, live }) =>
     endpoint().detachCustomerManagedPolicyReferenceFromPermissionSet,
   ]);
 
-const diffArrayOptions = {
-  comparator: (left, right) => {
-    return isDeepEqual(left, right);
-  },
-};
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html
 exports.SSOAdminPermissionSet = ({}) => ({
   package: "sso-admin",
@@ -182,20 +165,15 @@ exports.SSOAdminPermissionSet = ({}) => ({
       list: true,
       dependencyIds: ({ lives, config }) =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           get("CustomerManagedPolicies"),
           map(
             pipe([
               get("Name"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  type: "Policy",
-                  group: "IAM",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "Policy",
+                group: "IAM",
+                providerName: config.providerName,
+              }),
               get("id"),
             ])
           ),
@@ -327,75 +305,23 @@ exports.SSOAdminPermissionSet = ({}) => ({
         tap((params) => {
           assert(true);
         }),
-        () => diff,
-        tap.if(
-          or([
-            get("liveDiff.updated.ManagedPolicies"),
-            get("targetDiff.added.ManagedPolicies"),
-            get("liveDiff.added.ManagedPolicies"),
-          ]),
-          pipe([
-            () =>
-              Diff.diffArrays(
-                live.ManagedPolicies || [],
-                payload.ManagedPolicies || [],
-                diffArrayOptions
-              ),
-            (arrayDiff) =>
-              pipe([
-                () => arrayDiff,
-                filter(get("removed")),
-                map(
-                  pipe([
-                    get("value"),
-                    map.series(detachManagedPolicy({ endpoint, live })),
-                  ])
-                ),
-                () => arrayDiff,
-                filter(get("added")),
-                map(
-                  pipe([
-                    get("value"),
-                    map.series(attachManagedPolicy({ endpoint, live })),
-                  ])
-                ),
-              ])(),
-          ])
-        ),
-        tap.if(
-          or([
-            get("liveDiff.updated.CustomerManagedPolicies"),
-            get("targetDiff.added.CustomerManagedPolicies"),
-            get("liveDiff.added.CustomerManagedPolicies"),
-          ]),
-          pipe([
-            () =>
-              Diff.diffArrays(
-                live.CustomerManagedPolicies || [],
-                payload.CustomerManagedPolicies || [],
-                diffArrayOptions
-              ),
-            (arrayDiff) =>
-              pipe([
-                () => arrayDiff,
-                filter(get("removed")),
-                map(
-                  pipe([
-                    get("value"),
-                    map.series(detachCustomerPolicy({ endpoint, live })),
-                  ])
-                ),
-                () => arrayDiff,
-                filter(get("added")),
-                map(
-                  pipe([
-                    get("value"),
-                    map.series(attachCustomerPolicy({ endpoint, live })),
-                  ])
-                ),
-              ])(),
-          ])
-        ),
+        // ManagedPolicies
+        () => ({ payload, live, diff }),
+        updateResourceArray({
+          endpoint,
+          arrayPath: "ManagedPolicies",
+          onAdd: attachManagedPolicy,
+          onRemove: detachManagedPolicy,
+        }),
+        // CustomerManagedPolicies
+        () => ({ payload, live, diff }),
+        updateResourceArray({
+          endpoint,
+          arrayPath: "CustomerManagedPolicies",
+          onAdd: attachCustomerPolicy,
+          onRemove: detachCustomerPolicy,
+        }),
+        // InlinePolicy
         tap.if(
           get("targetDiff.added.InlinePolicy"),
           pipe([

@@ -9,6 +9,17 @@ const compare = compareAws({});
 
 const pickId = pipe([({ Name }) => ({ SecretId: Name })]);
 
+const managedByOther = ({ lives, config }) =>
+  pipe([
+    get("ARN"),
+    lives.getById({
+      type: "Secret",
+      group: "SecretsManager",
+      providerName: config.providerName,
+    }),
+    get("managedByOther"),
+  ]);
+
 const stringifyResourcePolicy = assign({
   ResourcePolicy: pipe([get("ResourcePolicy"), JSON.stringify]),
 });
@@ -28,6 +39,8 @@ exports.SecretsManagerResourcePolicy = () => ({
   findName: () => pipe([get("Name")]),
   findId: () => pipe([get("ARN")]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   inferName: ({ dependenciesSpec: { secret } }) =>
     pipe([
       tap((params) => {

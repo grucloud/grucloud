@@ -140,13 +140,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("EventBusName"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  type: "EventBus",
-                  group: "CloudWatchEvents",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "EventBus",
+                group: "CloudWatchEvents",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -185,13 +183,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("Rule"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  type: "Rule",
-                  group: "CloudWatchEvents",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "Rule",
+                group: "CloudWatchEvents",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },

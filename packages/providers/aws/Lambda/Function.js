@@ -77,12 +77,11 @@ exports.Function = ({ spec, config }) => {
     ({ lives, config }) =>
     (live) =>
       pipe([
-        () =>
-          lives.getByType({
-            type: "Stack",
-            group: "CloudFormation",
-            providerName: config.providerName,
-          }),
+        lives.getByType({
+          type: "Stack",
+          group: "CloudFormation",
+          providerName: config.providerName,
+        }),
         any(
           pipe([
             get("name"),
@@ -134,12 +133,11 @@ exports.Function = ({ spec, config }) => {
             assert(value);
             assert(pathLive);
           }),
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type,
-              group,
-            }),
+          lives.getByType({
+            providerName: config.providerName,
+            type,
+            group,
+          }),
           find(eq(get(pathLive), value)),
           get("id"),
         ])()
@@ -231,12 +229,11 @@ exports.Function = ({ spec, config }) => {
         pluck("Arn"),
         (layersArn) =>
           pipe([
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                type: "Layer",
-                group: "Lambda",
-              }),
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Layer",
+              group: "Lambda",
+            }),
             filter(
               pipe([
                 get("live.LayerVersionArn"),

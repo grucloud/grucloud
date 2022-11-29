@@ -26,13 +26,11 @@ const findDependencyId =
           get("ResourceId"),
           callProp("split", "/"),
           last,
-          (name) =>
-            lives.getByName({
-              name,
-              type,
-              group,
-              providerName: config.providerName,
-            }),
+          lives.getByName({
+            type,
+            group,
+            providerName: config.providerName,
+          }),
           get("id"),
         ]),
         () => undefined,

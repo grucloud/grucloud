@@ -88,12 +88,11 @@ exports.SecretsManagerSecretRotation = ({ compare }) => ({
     ({ endpoint }) =>
     ({ lives, config }) =>
       pipe([
-        () =>
-          lives.getByType({
-            type: "Secret",
-            group: "SecretsManager",
-            providerName: config.providerName,
-          }),
+        lives.getByType({
+          type: "Secret",
+          group: "SecretsManager",
+          providerName: config.providerName,
+        }),
         filter(get("live.RotationEnabled")),
         pluck("live"),
         map(

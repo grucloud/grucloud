@@ -22,13 +22,13 @@ exports.findDependenciesTgwAttachment = ({ live, lives, config }) =>
     () => TgwAttachmentDependencies,
     map((type) =>
       pipe([
-        () =>
-          lives.getById({
-            id: live.TransitGatewayAttachmentId,
-            type,
-            group: "EC2",
-            providerName: config.providerName,
-          }),
+        () => live,
+        get("TransitGatewayAttachmentId"),
+        lives.getById({
+          type,
+          group: "EC2",
+          providerName: config.providerName,
+        }),
         get("id"),
         unless(isEmpty, (id) => ({ type, group: "EC2", ids: [id] })),
       ])()
@@ -47,45 +47,45 @@ exports.findNameRouteTableArm =
   ({ lives, config }) =>
   (live) =>
     pipe([
+      () => live,
+      tap((params) => {
+        assert(true);
+      }),
       fork({
         transitGatewayPeeringAttachment: pipe([
-          () =>
-            lives.getById({
-              id: live.TransitGatewayAttachmentId,
-              type: "TransitGatewayPeeringAttachment",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
+          get("TransitGatewayAttachmentId"),
+          lives.getById({
+            type: "TransitGatewayPeeringAttachment",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
           get("name"),
         ]),
         transitGatewayVpcAttachment: pipe([
-          () =>
-            lives.getById({
-              id: live.TransitGatewayAttachmentId,
-              type: "TransitGatewayVpcAttachment",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
+          get("TransitGatewayAttachmentId"),
+          lives.getById({
+            type: "TransitGatewayVpcAttachment",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
           get("name"),
         ]),
         transitGatewayAttachment: pipe([
-          () =>
-            lives.getById({
-              id: live.TransitGatewayAttachmentId,
-              type: "TransitGatewayAttachment",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
+          get("TransitGatewayAttachmentId"),
+          lives.getById({
+            type: "TransitGatewayAttachment",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
           get("name"),
         ]),
         transitGatewayRouteTable: pipe([
-          () =>
-            lives.getById({
-              id: live.TransitGatewayRouteTableId,
-              type: "TransitGatewayRouteTable",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
+          get("TransitGatewayRouteTableId"),
+          lives.getById({
+            type: "TransitGatewayRouteTable",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
           get("name"),
         ]),
       }),

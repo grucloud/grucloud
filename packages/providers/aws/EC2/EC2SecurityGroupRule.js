@@ -51,13 +51,12 @@ const protocolFromToPortToName = ({ IpProtocol, FromPort, ToPort }) =>
 
 const groupNameFromId = ({ GroupId, lives, config }) =>
   pipe([
-    () =>
-      lives.getById({
-        id: GroupId,
-        providerName: config.providerName,
-        type: "SecurityGroup",
-        group: "EC2",
-      }),
+    () => GroupId,
+    lives.getById({
+      providerName: config.providerName,
+      type: "SecurityGroup",
+      group: "EC2",
+    }),
     get("name"),
     tap((name) => {
       if (!name) {
@@ -68,7 +67,7 @@ const groupNameFromId = ({ GroupId, lives, config }) =>
               providerName: config.providerName,
               type: "SecurityGroup",
               group: "EC2",
-            })
+            })()
           )
         );
         assert(name, `cannot find ${GroupId}`);
@@ -157,64 +156,75 @@ const findName =
       }),
     ])();
 
-const SecurityGroupRuleBase = ({ config }) => {
-  const ec2 = createEC2(config);
-  const isDefault =
-    ({ IsEgress }) =>
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        tap(() => {
-          assert(live.GroupId);
-          assert(lives.getById);
-        }),
-        () => live,
-        or([
-          // Elastic Beanstalk
-          pipe([get("GroupName"), callProp("startsWith", "awseb-")]),
+const isDefault =
+  ({ IsEgress }) =>
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(live.GroupId);
+        assert(lives.getById);
+      }),
+      () => live,
+      or([
+        // Elastic Beanstalk
+        pipe([get("GroupName"), callProp("startsWith", "awseb-")]),
+        // Directory Service
+        pipe([
+          get("GroupName"),
           and([
-            pipe([
-              get("UserIdGroupPairs"),
-              and([
-                lte(size, 1),
-                pipe([first, or([isEmpty, eq(get("GroupId"), live.GroupId)])]),
-              ]),
-            ]),
-            or([
-              () => IsEgress,
-              and([
-                pipe([
-                  () =>
-                    lives.getById({
-                      type: "SecurityGroup",
-                      group: "EC2",
-                      providerName: config.providerName,
-                      id: live.GroupId,
-                    }),
-                  get("managedByOther"),
-                ]),
-              ]),
-            ]),
-            // Ingress
-            pipe([
-              pick(["IpProtocol", "FromPort", "ToPort"]),
-              (IpPermission) =>
-                isDeepEqual(IpPermission, {
-                  IpProtocol: "-1",
-                }),
+            callProp("startsWith", "d-"),
+            callProp("endsWith", "_controllers"),
+          ]),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        and([
+          pipe([
+            get("UserIdGroupPairs"),
+            and([
+              lte(size, 1),
+              pipe([first, or([isEmpty, eq(get("GroupId"), live.GroupId)])]),
             ]),
           ]),
+          or([
+            () => IsEgress,
+            and([
+              pipe([
+                get("GroupId"),
+                lives.getById({
+                  type: "SecurityGroup",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+                get("managedByOther"),
+              ]),
+            ]),
+          ]),
+          // Ingress
+          pipe([
+            pick(["IpProtocol", "FromPort", "ToPort"]),
+            (IpPermission) =>
+              isDeepEqual(IpPermission, {
+                IpProtocol: "-1",
+              }),
+          ]),
         ]),
-        tap((result) => {
-          // logger.debug(
-          //   `securityGroupRule IsEgress: ${IsEgress}, ${tos(
-          //     live
-          //   )} isDefault ${result}`
-          // );
-        }),
-      ])();
+      ]),
+      tap((result) => {
+        // logger.debug(
+        //   `securityGroupRule IsEgress: ${IsEgress}, ${tos(
+        //     live
+        //   )} isDefault ${result}`
+        // );
+      }),
+    ])();
 
-  const managedByOther = isDefault;
+const managedByOther = isDefault;
+
+const SecurityGroupRuleBase = ({ config }) => {
+  const ec2 = createEC2(config);
 
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([
@@ -273,13 +283,13 @@ const SecurityGroupRuleBase = ({ config }) => {
     ({ lives, config }) =>
     (live) =>
       pipe([
-        () =>
-          lives.getById({
-            id: live.GroupId,
-            type: "SecurityGroup",
-            group: "EC2",
-            providerName: config.providerName,
-          }),
+        () => live,
+        get("GroupId"),
+        lives.getById({
+          type: "SecurityGroup",
+          group: "EC2",
+          providerName: config.providerName,
+        }),
         get("namespace"),
       ])();
 
@@ -312,12 +322,11 @@ const SecurityGroupRuleBase = ({ config }) => {
     ({ IsEgress = false }) =>
     ({ resources = [], lives } = {}) =>
       pipe([
-        () =>
-          lives.getByType({
-            type: "SecurityGroup",
-            group: "EC2",
-            providerName: config.providerName,
-          }),
+        lives.getByType({
+          type: "SecurityGroup",
+          group: "EC2",
+          providerName: config.providerName,
+        }),
         pluck("live"),
         securityGroupToRules({ IsEgress }),
         tap((rules) => {

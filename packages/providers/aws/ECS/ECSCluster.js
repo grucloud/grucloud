@@ -55,13 +55,11 @@ exports.ECSCluster = ({ spec, config }) => {
         get("capacityProviders"),
         map(
           pipe([
-            (name) =>
-              lives.getByName({
-                name,
-                type: "CapacityProvider",
-                group: "ECS",
-                providerName: config.providerName,
-              }),
+            lives.getByName({
+              type: "CapacityProvider",
+              group: "ECS",
+              providerName: config.providerName,
+            }),
             get("id"),
           ])
         ),
@@ -159,18 +157,16 @@ exports.ECSCluster = ({ spec, config }) => {
         assert(lives);
       }),
       get("capacityProviders"),
-      map((name) =>
+      map(
         pipe([
-          () =>
-            lives.getByName({
-              name,
-              type: "CapacityProvider",
-              group: "ECS",
-              providerName: config.providerName,
-            }),
+          lives.getByName({
+            type: "CapacityProvider",
+            group: "ECS",
+            providerName: config.providerName,
+          }),
           get("autoScalingGroupProvider.autoScalingGroupArn"),
           destroyAutoScalingGroupById({ autoScalingGroup, lives, config }),
-        ])()
+        ])
       ),
     ]);
 

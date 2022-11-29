@@ -54,13 +54,13 @@ exports.EC2Route = ({ spec, config }) => {
         tap(() => {
           assert(live.RouteTableId);
         }),
-        () =>
-          lives.getById({
-            type: "RouteTable",
-            group: "EC2",
-            providerName: config.providerName,
-            id: live.RouteTableId,
-          }),
+        () => live,
+        get("RouteTableId"),
+        lives.getById({
+          type: "RouteTable",
+          group: "EC2",
+          providerName: config.providerName,
+        }),
         tap((routeTable) => {
           assert(routeTable, `no rtb ${live.RouteTableId}`);
         }),
@@ -96,13 +96,13 @@ exports.EC2Route = ({ spec, config }) => {
           ]),
           (rt) =>
             pipe([
-              () =>
-                lives.getById({
-                  type: "VpcEndpoint",
-                  group: "EC2",
-                  providerName: config.providerName,
-                  id: live.GatewayId,
-                }),
+              () => live,
+              get("GatewayId"),
+              lives.getById({
+                type: "VpcEndpoint",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.GatewayId),
               prepend(`${rt}::`),
             ])(),
@@ -110,13 +110,13 @@ exports.EC2Route = ({ spec, config }) => {
           () => live.InstanceId,
           (rt) =>
             pipe([
-              () =>
-                lives.getById({
-                  type: "Instance",
-                  group: "EC2",
-                  providerName: config.providerName,
-                  id: live.InstanceId,
-                }),
+              () => live,
+              get("InstanceId"),
+              lives.getById({
+                type: "Instance",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.InstanceId),
               prepend(`${rt}::`),
             ])(),
@@ -147,13 +147,13 @@ exports.EC2Route = ({ spec, config }) => {
           ]),
           (id) =>
             pipe([
-              () =>
-                lives.getById({
-                  id: live.DestinationPrefixListId,
-                  type: "ManagedPrefixList",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => live,
+              get("DestinationPrefixListId"),
+              lives.getById({
+                type: "ManagedPrefixList",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name"),
               tap((name) => {
                 assert(name);
@@ -249,12 +249,11 @@ exports.EC2Route = ({ spec, config }) => {
       tap(() => {
         //logger.debug(`getListFromLive`);
       }),
-      () =>
-        lives.getByType({
-          type: "RouteTable",
-          group: "EC2",
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type: "RouteTable",
+        group: "EC2",
+        providerName: config.providerName,
+      }),
       flatMap((resource) =>
         pipe([
           tap(() => {
@@ -392,13 +391,13 @@ exports.EC2Route = ({ spec, config }) => {
             callProp("startsWith", "vpce"),
           ]),
           pipe([
-            () =>
-              lives.getById({
-                id: live.GatewayId,
-                type: "VpcEndpoint",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
+            () => live,
+            get("GatewayId"),
+            lives.getById({
+              type: "VpcEndpoint",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
             eq(get("live.VpcEndpointType"), "Gateway"),
           ]),
         ]),

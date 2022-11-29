@@ -59,13 +59,13 @@ exports.GlobalAcceleratorEndpointGroup = ({ spec, config }) =>
       ({ lives, config }) =>
       (live) =>
         pipe([
-          () =>
-            lives.getById({
-              id: live.ListenerArn,
-              type: "Listener",
-              group: "GlobalAccelerator",
-              providerName: config.providerName,
-            }),
+          () => live,
+          get("ListenerArn"),
+          lives.getById({
+            type: "Listener",
+            group: "GlobalAccelerator",
+            providerName: config.providerName,
+          }),
           get("name"),
           tap((name) => {
             assert(name);

@@ -123,13 +123,11 @@ exports.LightsailInstance = ({ compare }) => ({
       dependencyId: ({ lives, config }) =>
         pipe([
           get("sshKeyName"),
-          (name) =>
-            lives.getByName({
-              name,
-              type: "KeyPair",
-              group: "Lightsail",
-              providerName: config.providerName,
-            }),
+          lives.getByName({
+            type: "KeyPair",
+            group: "Lightsail",
+            providerName: config.providerName,
+          }),
           get("id"),
         ]),
     },

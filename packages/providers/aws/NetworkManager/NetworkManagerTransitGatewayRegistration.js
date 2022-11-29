@@ -57,24 +57,23 @@ exports.NetworkManagerTransitGatewayRegistration = ({ spec, config }) =>
       ({ lives }) =>
       (live) =>
         pipe([
+          () => live,
           fork({
             globalNetworkName: pipe([
-              () =>
-                lives.getById({
-                  id: live.GlobalNetworkId,
-                  type: "GlobalNetwork",
-                  group: "NetworkManager",
-                  providerName: config.providerName,
-                }),
+              get("GlobalNetworkId"),
+              lives.getById({
+                type: "GlobalNetwork",
+                group: "NetworkManager",
+                providerName: config.providerName,
+              }),
               get("name", live.GlobalNetworkId),
             ]),
             transitGatewayName: pipe([
-              () =>
-                lives.getByType({
-                  type: "TransitGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              lives.getByType({
+                type: "TransitGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               find(eq(get("live.TransitGatewayArn"), live.TransitGatewayArn)),
               get("name", live.TransitGatewayArn),
             ]),

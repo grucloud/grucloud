@@ -49,13 +49,11 @@ exports.Route53TrafficPolicyInstance = () => ({
         }),
         () => live,
         get("HostedZoneId"),
-        (id) =>
-          lives.getById({
-            id,
-            type: "HostedZone",
-            group: "Route53",
-            providerName: config.providerName,
-          }),
+        lives.getById({
+          type: "HostedZone",
+          group: "Route53",
+          providerName: config.providerName,
+        }),
         get("name"),
         tap((name) => {
           assert(name);

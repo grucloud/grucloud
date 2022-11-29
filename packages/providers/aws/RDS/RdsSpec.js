@@ -162,13 +162,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("DBProxyName"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  type: "DBProxy",
-                  group: "RDS",
-                  providerName: config.providerName,
-                }),
+              lives.getByName({
+                type: "DBProxy",
+                group: "RDS",
+                providerName: config.providerName,
+              }),
               get("id"),
             ]),
         },
@@ -225,13 +223,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("DBSubnetGroup"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  providerName: config.providerName,
-                  type: "DBSubnetGroup",
-                  group: "RDS",
-                }),
+              lives.getByName({
+                providerName: config.providerName,
+                type: "DBSubnetGroup",
+                group: "RDS",
+              }),
               get("id"),
             ]),
         },
@@ -368,13 +364,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("DBSubnetGroup.DBSubnetGroupName"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  providerName: config.providerName,
-                  type: "DBSubnetGroup",
-                  group: "RDS",
-                }),
+              lives.getByName({
+                providerName: config.providerName,
+                type: "DBSubnetGroup",
+                group: "RDS",
+              }),
               get("id"),
             ]),
         },
@@ -405,13 +399,11 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) =>
             pipe([
               get("DBClusterIdentifier"),
-              (name) =>
-                lives.getByName({
-                  name,
-                  providerName: config.providerName,
-                  type: "DBCluster",
-                  group: "RDS",
-                }),
+              lives.getByName({
+                providerName: config.providerName,
+                type: "DBCluster",
+                group: "RDS",
+              }),
               get("id"),
             ]),
         },

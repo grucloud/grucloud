@@ -129,13 +129,11 @@ const getStorageAccountByName = ({ lives, config }) =>
     tap((name) => {
       assert(name);
     }),
-    (name) =>
-      lives.getByName({
-        name,
-        type: "StorageAccount",
-        group: "Storage",
-        providerName: config.providerName,
-      }),
+    lives.getByName({
+      type: "StorageAccount",
+      group: "Storage",
+      providerName: config.providerName,
+    }),
     tap((storageAccount) => {
       assert(storageAccount);
     }),
@@ -282,13 +280,12 @@ exports.upsert =
         assert(payload);
         assert(lives);
       }),
-      () =>
-        lives.getByName({
-          name,
-          type: "StorageAccount",
-          group: "Storage",
-          providerName: config.providerName,
-        }),
+      () => name,
+      lives.getByName({
+        type: "StorageAccount",
+        group: "Storage",
+        providerName: config.providerName,
+      }),
       tap((storageAccount) => {
         assert(storageAccount);
       }),

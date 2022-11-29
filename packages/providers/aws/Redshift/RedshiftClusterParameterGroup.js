@@ -5,8 +5,7 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./RedshiftCommon");
+const { Tagger } = require("./RedshiftCommon");
 
 const pickId = pipe([
   tap(({ ParameterGroupName }) => {
@@ -37,13 +36,27 @@ const decorate = ({ endpoint }) =>
     omitIfEmpty(["Parameters"]),
   ]);
 
-const model = ({ config }) => ({
+// arn:aws:redshift:region:account-id:parametergroup:parameter-group-name
+const buildArn = ({ accountId, region }) =>
+  pipe([
+    ({ ParameterGroupName }) =>
+      `arn:aws:redshift:${region}:${accountId()}:parametergroup:${ParameterGroupName}`,
+  ]);
+
+exports.RedshiftClusterParameterGroup = ({ compare }) => ({
+  type: "ClusterParameterGroup",
   package: "redshift",
   client: "Redshift",
   ignoreErrorCodes: [
     "ClusterParameterGroupNotFound",
     "ClusterParameterGroupNotFoundFault",
   ],
+  inferName: () => get("ParameterGroupName"),
+  findName: () => pipe([get("ParameterGroupName")]),
+  findId: () => pipe([get("ParameterGroupName")]),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
+  omitProperties: [],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#describeClusterParameterGroups-property
   getById: {
     method: "describeClusterParameterGroups",
@@ -73,52 +86,33 @@ const model = ({ config }) => ({
     method: "deleteClusterParameterGroup",
     pickId,
   },
-});
-
-// arn:aws:redshift:region:account-id:parametergroup:parameter-group-name
-const buildArn = ({ accountId, region }) =>
-  pipe([
-    ({ ParameterGroupName }) =>
-      `arn:aws:redshift:${region}:${accountId()}:parametergroup:${ParameterGroupName}`,
-  ]);
-
-exports.RedshiftClusterParameterGroup = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([
+      ({ name }) => ({
+        ParameterGroupName: name,
+      }),
+      getById({}),
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("ParameterGroupName")]),
-    findId: () => pipe([get("ParameterGroupName")]),
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    getByName: ({ getList, endpoint, getById }) =>
-      pipe([
-        ({ name }) => ({
-          ParameterGroupName: name,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          userTags: Tags,
         }),
-        getById({}),
-      ]),
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            userTags: Tags,
-          }),
-        }),
-      ])(),
-  });
+      }),
+    ])(),
+});

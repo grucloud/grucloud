@@ -51,13 +51,12 @@ exports.EC2Volume = ({ spec, config }) => {
         get("Attachments", []),
         any(({ Device, InstanceId }) =>
           pipe([
-            () =>
-              lives.getById({
-                providerName: config.providerName,
-                type: "Instance",
-                group: "EC2",
-                id: InstanceId,
-              }),
+            () => InstanceId,
+            lives.getById({
+              providerName: config.providerName,
+              type: "Instance",
+              group: "EC2",
+            }),
             tap((instance) => {
               //assert(instance, `cannot find ec2 instanceId: ${InstanceId}`);
             }),
@@ -94,13 +93,12 @@ exports.EC2Volume = ({ spec, config }) => {
       pipe([
         get("Attachments"),
         first,
-        ({ InstanceId }) =>
-          lives.getById({
-            providerName: config.providerName,
-            type: "Instance",
-            group: "EC2",
-            id: InstanceId,
-          }),
+        get("InstanceId"),
+        lives.getById({
+          providerName: config.providerName,
+          type: "Instance",
+          group: "EC2",
+        }),
         get("name"),
         prepend("vol-"),
       ]),
@@ -182,12 +180,11 @@ exports.EC2Volume = ({ spec, config }) => {
 
   const findNamespaceFromInstanceId = ({ live, lives }) =>
     pipe([
-      () =>
-        lives.getByType({
-          type: "Instance",
-          group: "EC2",
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type: "Instance",
+        group: "EC2",
+        providerName: config.providerName,
+      }),
       find(eq(get("live.InstanceId"), findInstanceId(live))),
       unless(
         isEmpty,

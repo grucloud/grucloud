@@ -124,13 +124,13 @@ exports.Stage = ({ spec, config }) =>
             assert(live.restApiId);
             assert(live.stageName);
           }),
-          () =>
-            lives.getById({
-              id: live.restApiId,
-              type: "RestApi",
-              group: "APIGateway",
-              providerName: config.providerName,
-            }),
+          () => live,
+          get("restApiId"),
+          lives.getById({
+            type: "RestApi",
+            group: "APIGateway",
+            providerName: config.providerName,
+          }),
           get("name"),
           tap((name) => {
             assert(name);

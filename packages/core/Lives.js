@@ -86,32 +86,36 @@ exports.createLives = () => {
       //     })}`
       //   );
       // }),
-    ])();
+    ]);
 
-  const getById = ({ providerName, type, group, id = "" }) =>
-    pipe([
-      tap(() => {
-        if (!isString(id)) {
-          assert(isString(id));
-        }
-      }),
-      () => ({ group, type }),
-      toGroupType,
-      getMapByIdByGroupType,
-      (mapById) => mapById.get(id.toLowerCase()),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+  const getById =
+    ({ providerName, type, group }) =>
+    (id = "") =>
+      pipe([
+        tap(() => {
+          if (!isString(id)) {
+            assert(isString(id));
+          }
+        }),
+        () => ({ group, type }),
+        toGroupType,
+        getMapByIdByGroupType,
+        (mapById) => mapById.get(id.toLowerCase()),
+        tap((params) => {
+          assert(true);
+        }),
+      ])();
 
-  const getByName = ({ providerName, type, group, name }) =>
-    pipe([
-      // tap(() => {
-      //   logger.debug(`getByName ${group}::${type}, name: ${name}`);
-      // }),
-      () => getByType({ providerName, type, group }),
-      find(eq(get("name"), name)),
-    ])();
+  const getByName =
+    ({ providerName, type, group }) =>
+    (name) =>
+      pipe([
+        // tap(() => {
+        //   logger.debug(`getByName ${group}::${type}, name: ${name}`);
+        // }),
+        getByType({ providerName, type, group }),
+        find(eq(get("name"), name)),
+      ])();
 
   return {
     get error() {

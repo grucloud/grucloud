@@ -68,12 +68,11 @@ exports.GcpIamBinding = ({ spec, config }) => {
             callProp("replace", "serviceAccount:", ""),
             (email) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    providerName: config.providerName,
-                    type: "ServiceAccount",
-                    group: "iam",
-                  }),
+                lives.getByType({
+                  providerName: config.providerName,
+                  type: "ServiceAccount",
+                  group: "iam",
+                }),
                 find(eq(get("live.email"), email)),
                 get("id"),
               ])(),

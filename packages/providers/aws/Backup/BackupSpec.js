@@ -50,13 +50,11 @@ module.exports = pipe([
               map(
                 pipe([
                   get("TargetBackupVaultName"),
-                  (name) =>
-                    lives.getByName({
-                      name,
-                      type: "BackupVault",
-                      group: GROUP,
-                      providerName: config.providerName,
-                    }),
+                  lives.getByName({
+                    type: "BackupVault",
+                    group: GROUP,
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])
               ),

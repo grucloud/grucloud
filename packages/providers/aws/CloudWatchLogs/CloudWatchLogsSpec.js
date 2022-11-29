@@ -67,12 +67,11 @@ module.exports = pipe([
             ({ lives, config }) =>
             (live) =>
               pipe([
-                () =>
-                  lives.getByType({
-                    providerName: config.providerName,
-                    type: "LogGroup",
-                    group: "CloudWatchLogs",
-                  }),
+                lives.getByType({
+                  providerName: config.providerName,
+                  type: "LogGroup",
+                  group: "CloudWatchLogs",
+                }),
                 find(pipe([({ id }) => live.arn.includes(id)])),
                 get("id"),
               ])(),
@@ -106,19 +105,16 @@ module.exports = pipe([
           type: "LogGroup",
           group: GROUP,
           parent: true,
-          dependencyId:
-            ({ lives, config }) =>
-            (live) =>
-              pipe([
-                () =>
-                  lives.getByName({
-                    name: live.logGroupName,
-                    providerName: config.providerName,
-                    type: "LogGroup",
-                    group: "CloudWatchLogs",
-                  }),
-                get("id"),
-              ])(),
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("logGroupName"),
+              lives.getByName({
+                providerName: config.providerName,
+                type: "LogGroup",
+                group: "CloudWatchLogs",
+              }),
+              get("id"),
+            ]),
         },
         role: {
           type: "Role",

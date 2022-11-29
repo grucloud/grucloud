@@ -106,11 +106,12 @@ const GROUPS = [
   ["WAFV2", "waf"],
 ];
 
-const mapRegionService = { "us-east-1": ["RedshiftServerless", "OpenSearch"] };
+const mapRegionService = {
+  "us-east-1": ["RedshiftServerless", "OpenSearch", "DirectoryService"],
+};
 
 const GROUPS_MISSING = [
   "CloudWatchLogs", // missing from the list provider by AWS
-  // "DirectoryService" Not available from SSM
 ];
 const GROUPS_GLOBAL = [
   "IAM",

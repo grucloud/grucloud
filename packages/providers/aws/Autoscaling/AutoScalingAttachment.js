@@ -25,13 +25,13 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
     ({ lives, config }) =>
     (live) =>
       pipe([
-        () =>
-          lives.getById({
-            id: live.TargetGroupARN,
-            providerName: config.providerName,
-            type: "TargetGroup",
-            group: "ElasticLoadBalancingV2",
-          }),
+        () => live,
+        get("TargetGroupARN"),
+        lives.getById({
+          providerName: config.providerName,
+          type: "TargetGroup",
+          group: "ElasticLoadBalancingV2",
+        }),
         get("name", live.TargetGroupARN),
         tap((targetGroupName) => {
           assert(targetGroupName);
@@ -48,13 +48,13 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
           assert(live);
           assert(live.TargetGroupARN);
         }),
-        () =>
-          lives.getById({
-            id: live.TargetGroupARN,
-            providerName: config.providerName,
-            type: "TargetGroup",
-            group: "ElasticLoadBalancingV2",
-          }),
+        () => live,
+        get("TargetGroupARN"),
+        lives.getById({
+          providerName: config.providerName,
+          type: "TargetGroup",
+          group: "ElasticLoadBalancingV2",
+        }),
         get("managedByOther"),
       ])();
 

@@ -11,6 +11,7 @@ exports.createAwsService = ({
   omitProperties,
   inferName,
   dependencies,
+  isDefault,
   cannotBeDeleted,
   managedByOther,
   filterLive,
@@ -27,6 +28,7 @@ exports.createAwsService = ({
   configDefault,
   compare,
   environmentVariables,
+  ignoreResource,
   tagger = () => ({}),
   ...other
 }) =>
@@ -43,6 +45,7 @@ exports.createAwsService = ({
       filterLive,
       compare,
       environmentVariables,
+      ignoreResource,
       Client: ({ spec, config }) =>
         createAwsResource({
           model: {
@@ -59,6 +62,7 @@ exports.createAwsService = ({
           getById,
           spec,
           config,
+          isDefault,
           cannotBeDeleted,
           managedByOther,
           findName,
@@ -69,11 +73,7 @@ exports.createAwsService = ({
           destroy,
           getByName,
           configDefault,
-
           ...tagger({ config }),
         }),
-    }),
-    tap((params) => {
-      assert(true);
     }),
   ])();

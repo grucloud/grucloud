@@ -86,13 +86,13 @@ exports.EC2ClientVpnAuthorizationRule = ({ spec, config }) =>
             assert(live.TargetNetworkCidr);
             assert(live.ClientVpnEndpointId);
           }),
-          () =>
-            lives.getById({
-              id: live.ClientVpnEndpointId,
-              type: "ClientVpnEndpoint",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
+          () => live,
+          get("ClientVpnEndpointId"),
+          lives.getById({
+            type: "ClientVpnEndpoint",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
           get("name", live.ClientVpnEndpointId),
           (clientVpnEndpoint) =>
             `client-vpn-rule-assoc::${clientVpnEndpoint}::${live.TargetNetworkCidr}`,

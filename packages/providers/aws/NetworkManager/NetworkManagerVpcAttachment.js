@@ -87,22 +87,20 @@ exports.NetworkManagerVpcAttachment = ({ spec, config }) =>
               tap(() => {
                 assert(live.CoreNetworkId);
               }),
-              () =>
-                lives.getById({
-                  id: live.CoreNetworkId,
-                  type: "CoreNetwork",
-                  group: "NetworkManager",
-                  providerName: config.providerName,
-                }),
+              get("CoreNetworkId"),
+              lives.getById({
+                type: "CoreNetwork",
+                group: "NetworkManager",
+                providerName: config.providerName,
+              }),
               get("name", live.CoreNetworkId),
             ]),
             vpcName: pipe([
-              () =>
-                lives.getByType({
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              lives.getByType({
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               find(pipe([eq(get("live.VpcArn"), live.ResourceArn)])),
               get("name", live.ResourceArn),
             ]),

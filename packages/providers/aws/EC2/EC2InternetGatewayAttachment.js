@@ -53,23 +53,23 @@ exports.EC2InternetGatewayAttachment = ({ spec, config }) =>
         pipe([
           fork({
             vpc: pipe([
-              () =>
-                lives.getById({
-                  id: live.VpcId,
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => live,
+              get("VpcId"),
+              lives.getById({
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name"),
             ]),
             internetGateway: pipe([
-              () =>
-                lives.getById({
-                  id: live.InternetGatewayId,
-                  type: "InternetGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              () => live,
+              get("InternetGatewayId"),
+              lives.getById({
+                type: "InternetGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name"),
             ]),
           }),
@@ -86,12 +86,11 @@ exports.EC2InternetGatewayAttachment = ({ spec, config }) =>
       ({ endpoint }) =>
       ({ lives }) =>
         pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type: "InternetGateway",
-              group: "EC2",
-            }),
+          lives.getByType({
+            providerName: config.providerName,
+            type: "InternetGateway",
+            group: "EC2",
+          }),
           filter(not(get("isDefault"))),
           flatMap(
             pipe([

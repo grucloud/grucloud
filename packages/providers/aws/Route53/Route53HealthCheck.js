@@ -95,18 +95,16 @@ exports.Route53HealthCheck = ({ spec, config }) =>
               prepend("heathcheck::CLOUDWATCH_METRIC::"),
             ]),
             eq(get("Type"), "RECOVERY_CONTROL"),
-            ({ RoutingControlArn }) =>
-              pipe([
-                () =>
-                  lives.getById({
-                    id: RoutingControlArn,
-                    type: "RoutingControl",
-                    group: "Route53RecoveryControlConfig",
-                    config: config.providerName,
-                  }),
-                get("name"),
-                prepend("heathcheck::RECOVERY_CONTROL::"),
-              ])(),
+            pipe([
+              get("RoutingControlArn"),
+              lives.getById({
+                type: "RoutingControl",
+                group: "Route53RecoveryControlConfig",
+                config: config.providerName,
+              }),
+              get("name"),
+              prepend("heathcheck::RECOVERY_CONTROL::"),
+            ]),
           ]),
           tap((params) => {
             assert(true);

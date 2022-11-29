@@ -84,12 +84,11 @@ const managedByOther =
           tap((params) => {
             assert(config);
           }),
-          () =>
-            lives.getByType({
-              type: "Stack",
-              group: "CloudFormation",
-              providerName: config.providerName,
-            }),
+          lives.getByType({
+            type: "Stack",
+            group: "CloudFormation",
+            providerName: config.providerName,
+          }),
           any(
             pipe([
               get("name"),
@@ -167,12 +166,11 @@ exports.AwsIamRole = ({ spec, config }) => {
         filter(not(isEmpty)),
         (oidps) =>
           pipe([
-            () =>
-              lives.getByType({
-                type: "OpenIDConnectProvider",
-                group: "IAM",
-                providerName,
-              }),
+            lives.getByType({
+              type: "OpenIDConnectProvider",
+              group: "IAM",
+              providerName,
+            }),
             filter((connectProvider) =>
               pipe([() => oidps, includes(connectProvider.id)])()
             ),

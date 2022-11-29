@@ -99,13 +99,12 @@ const findDependenciesResourceSet = ({ live, lives, config }) =>
             tap(() => {
               assert(ResourceArn);
             }),
-            () =>
-              lives.getById({
-                id: ResourceArn,
-                type,
-                group,
-                config: config.providerName,
-              }),
+            () => ResourceArn,
+            lives.getById({
+              id: type,
+              group,
+              config: config.providerName,
+            }),
             get("id"),
             tap((id) => {
               assert(id);
@@ -128,13 +127,12 @@ const findDependenciesReadinessScope = ({ live, lives, config }) =>
         () => ReadinessScopes,
         map(
           pipe([
-            (id) =>
-              lives.getById({
-                id,
-                type: "Cell",
-                group: "Route53RecoveryReadiness",
-                config: config.providerName,
-              }),
+            (id) => id,
+            lives.getById({
+              type: "Cell",
+              group: "Route53RecoveryReadiness",
+              config: config.providerName,
+            }),
             get("id"),
             tap((id) => {
               assert(id);

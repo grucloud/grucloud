@@ -65,13 +65,11 @@ exports.cloudWatchLogGroupsDeps = {
         map(
           pipe([
             get("DestinationDetails.CloudWatchLogsDetails.LogGroup"),
-            (name) =>
-              lives.getByName({
-                name,
-                providerName: config.providerName,
-                type: "LogGroup",
-                group: "CloudWatchLogs",
-              }),
+            lives.getByName({
+              providerName: config.providerName,
+              type: "LogGroup",
+              group: "CloudWatchLogs",
+            }),
             get("id"),
           ])
         ),
@@ -90,13 +88,11 @@ exports.firehoseDeliveryStreamsDeps = {
         map(
           pipe([
             get("DestinationDetails.KinesisFirehoseDetails.DeliveryStream"),
-            (name) =>
-              lives.getByName({
-                name,
-                type: "DeliveryStream",
-                group: "Firehose",
-                providerConfig: config.providerConfig,
-              }),
+            lives.getByName({
+              type: "DeliveryStream",
+              group: "Firehose",
+              providerConfig: config.providerConfig,
+            }),
             get("id"),
           ])
         ),

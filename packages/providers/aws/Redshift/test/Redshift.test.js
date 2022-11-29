@@ -28,6 +28,14 @@ describe("Redshift", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("EndpointAccess", () =>
+    pipe([
+      () => ({
+        groupType: "Redshift::EndpointAccess",
+        livesNotFound: ({ config }) => [{ ClusterSubnetGroupName: "1234" }],
+      }),
+      awsResourceTest,
+    ])());
   it.skip("EndpointAuthorization", () =>
     pipe([
       () => ({

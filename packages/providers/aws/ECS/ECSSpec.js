@@ -108,13 +108,11 @@ module.exports = pipe([
               get("capacityProviders"),
               map(
                 pipe([
-                  (name) =>
-                    lives.getByName({
-                      name,
-                      type: "CapacityProvider",
-                      group: "ECS",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByName({
+                    type: "CapacityProvider",
+                    group: "ECS",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])
               ),

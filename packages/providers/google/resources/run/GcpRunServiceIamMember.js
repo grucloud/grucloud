@@ -45,13 +45,12 @@ exports.GcpRunServiceIamMember = ({ spec, config }) => {
       group: "run",
       ids: [
         pipe([
-          () =>
-            lives.getByName({
-              providerName,
-              group: "run",
-              type: "Service",
-              name: live.service,
-            }),
+          () => live.service,
+          lives.getByName({
+            providerName,
+            group: "run",
+            type: "Service",
+          }),
           tap((service) => {
             assert(service);
           }),
@@ -97,12 +96,11 @@ exports.GcpRunServiceIamMember = ({ spec, config }) => {
 
   const getList = ({ lives }) =>
     pipe([
-      () =>
-        lives.getByType({
-          providerName,
-          type: "Service",
-          group: "run",
-        }),
+      lives.getByType({
+        providerName,
+        type: "Service",
+        group: "run",
+      }),
       map(
         pipe([
           get("live.metadata"),

@@ -110,12 +110,11 @@ exports.LightsailLoadBalancerAttachment = ({ compare }) => ({
         ({ client, endpoint, getById, config }) =>
         ({ lives }) =>
           pipe([
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                type: "LoadBalancer",
-                group: "Lightsail",
-              }),
+            lives.getByType({
+              providerName: config.providerName,
+              type: "LoadBalancer",
+              group: "Lightsail",
+            }),
             flatMap(({ live: { loadBalancerName, instanceHealthSummary } }) =>
               pipe([
                 () => instanceHealthSummary,

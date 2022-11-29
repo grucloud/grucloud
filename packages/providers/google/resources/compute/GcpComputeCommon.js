@@ -11,8 +11,7 @@ exports.findDependenciesNetwork = ({ live, lives, providerName }) => ({
     get("network"),
     (network) =>
       pipe([
-        () =>
-          lives.getByType({ type: "Network", group: "compute", providerName }),
+        lives.getByType({ type: "Network", group: "compute", providerName }),
         find(eq(get("live.selfLink"), network)),
         get("id"),
       ])(),

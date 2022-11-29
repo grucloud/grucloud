@@ -38,13 +38,13 @@ exports.EC2RouteTable = ({ spec, config }) => {
       fork({
         vpcName: (live) =>
           pipe([
-            () =>
-              lives.getById({
-                id: live.VpcId,
-                type: "Vpc",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
+            () => live,
+            get("VpcId"),
+            lives.getById({
+              type: "Vpc",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
             get("name"),
             tap((name) => {
               assert(

@@ -181,6 +181,7 @@ const AwsClient =
           "AccessDeniedException",
           "InvalidAccessException",
           "BadRequestException",
+          "ResourceNotFoundException",
         ],
         getById,
       }) =>
@@ -291,8 +292,7 @@ const AwsClient =
             assert(lives);
             assert(config);
           }),
-          () =>
-            lives.getByType({ providerName: config.providerName, type, group }),
+          lives.getByType({ providerName: config.providerName, type, group }),
           tap((parents) => {
             logger.info(`getListWithParent ${type} #parents: ${size(parents)}`);
           }),
@@ -433,7 +433,7 @@ const AwsClient =
                 tap((params) => {
                   assert(true);
                 }),
-                endpoint()[method],
+                endpoint()[isFunction(method) ? method()(payload) : method],
                 tap((params) => {
                   logger.debug(
                     `create ${groupType}, name: ${name}, response: ${JSON.stringify(
@@ -830,6 +830,7 @@ exports.createAwsResource = ({
   findId,
   managedByOther,
   tagResource,
+  isDefault,
   untagResource,
   cannotBeDeleted,
   findNamespace,
@@ -860,6 +861,7 @@ exports.createAwsResource = ({
               findName,
               findId,
               findDependencies,
+              isDefault,
               cannotBeDeleted,
               managedByOther,
               findNamespace,

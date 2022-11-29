@@ -76,25 +76,24 @@ exports.EC2VpnGatewayAttachment = ({ spec, config }) =>
       ({ lives }) =>
       (live) =>
         pipe([
+          () => live,
           fork({
             vpc: pipe([
-              () =>
-                lives.getById({
-                  id: live.VpcId,
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("VpcId"),
+              lives.getById({
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.VpcId),
             ]),
             vpnGateway: pipe([
-              () =>
-                lives.getById({
-                  id: live.VpnGatewayId,
-                  type: "VpnGateway",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("VpnGatewayId"),
+              lives.getById({
+                type: "VpnGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name"),
             ]),
           }),
@@ -110,12 +109,11 @@ exports.EC2VpnGatewayAttachment = ({ spec, config }) =>
       ({ endpoint }) =>
       ({ lives }) =>
         pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type: "VpnGateway",
-              group: "EC2",
-            }),
+          lives.getByType({
+            providerName: config.providerName,
+            type: "VpnGateway",
+            group: "EC2",
+          }),
           flatMap(
             pipe([
               get("live"),

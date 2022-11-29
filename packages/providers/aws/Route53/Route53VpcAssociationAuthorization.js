@@ -45,13 +45,12 @@ exports.Route53VpcAssociationAuthorization = ({ spec, config }) =>
               }),
               (id) =>
                 pipe([
-                  () =>
-                    lives.getById({
-                      id,
-                      type: "Vpc",
-                      group: "EC2",
-                      providerName: config.providerName,
-                    }),
+                  () => id,
+                  lives.getById({
+                    type: "Vpc",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
                   get("name", id),
                 ])(),
             ]),
@@ -60,13 +59,12 @@ exports.Route53VpcAssociationAuthorization = ({ spec, config }) =>
               tap((id) => {
                 assert(id);
               }),
-              (id) =>
-                lives.getById({
-                  id,
-                  type: "HostedZone",
-                  group: "Route53",
-                  providerName: config.providerName,
-                }),
+              (id) => id,
+              lives.getById({
+                type: "HostedZone",
+                group: "Route53",
+                providerName: config.providerName,
+              }),
               get("name"),
             ]),
           }),

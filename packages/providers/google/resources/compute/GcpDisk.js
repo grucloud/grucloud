@@ -40,12 +40,11 @@ exports.GcpDisk = ({ spec, config }) => {
           assert(lives);
           assert(live);
         }),
-        () =>
-          lives.getByType({
-            type: "Instance",
-            group: "compute",
-            providerName: config.providerName,
-          }),
+        lives.getByType({
+          type: "Instance",
+          group: "compute",
+          providerName: config.providerName,
+        }),
         any(
           pipe([
             get("live.disks"),

@@ -258,9 +258,6 @@ exports.createResources = () => [
       },
       Path: "/service-role/",
     }),
-    dependencies: ({}) => ({
-      logGroups: ["/aws/kinesisfirehose/delivery-stream-s3"],
-    }),
   },
   {
     type: "Bucket",

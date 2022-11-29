@@ -64,13 +64,11 @@ module.exports = pipe([
               flattenObject({ filterKey: (key) => key === "JobName" }),
               map(
                 pipe([
-                  (id) =>
-                    lives.getById({
-                      id,
-                      type: "Job",
-                      group: "Glue",
-                      providerName: config.providerName,
-                    }),
+                  lives.getById({
+                    type: "Job",
+                    group: "Glue",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])
               ),
@@ -89,12 +87,11 @@ module.exports = pipe([
               pluck("logGroupArn"),
               map((logGroupArn) =>
                 pipe([
-                  () =>
-                    lives.getByType({
-                      type: "LogGroup",
-                      group: "CloudWatchLogs",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByType({
+                    type: "LogGroup",
+                    group: "CloudWatchLogs",
+                    providerName: config.providerName,
+                  }),
                   find(({ id }) => logGroupArn.includes(id)),
                   get("id"),
                 ])()
@@ -111,13 +108,11 @@ module.exports = pipe([
               flattenObject({ filterKey: (key) => key === "FunctionName" }),
               map(
                 pipe([
-                  (id) =>
-                    lives.getById({
-                      id,
-                      type: "Function",
-                      group: "Lambda",
-                      providerName: config.providerName,
-                    }),
+                  lives.getById({
+                    type: "Function",
+                    group: "Lambda",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])
               ),
@@ -142,12 +137,11 @@ module.exports = pipe([
               flattenObject({ filterKey: (key) => key === "QueueUrl" }),
               map((QueueUrl) =>
                 pipe([
-                  () =>
-                    lives.getByType({
-                      type: "Queue",
-                      group: "SQS",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByType({
+                    type: "Queue",
+                    group: "SQS",
+                    providerName: config.providerName,
+                  }),
                   find(eq(get("live.QueueUrl"), QueueUrl)),
                   get("id"),
                 ])()

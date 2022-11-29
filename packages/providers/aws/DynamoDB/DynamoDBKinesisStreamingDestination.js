@@ -50,13 +50,13 @@ exports.DynamoDBKinesisStreamingDestination = ({ spec, config }) =>
           fork({
             table: () => live.TableName,
             stream: pipe([
-              () =>
-                lives.getById({
-                  id: live.StreamArn,
-                  type: "Stream",
-                  group: "Kinesis",
-                  providerName: config.providerName,
-                }),
+              () => live,
+              get("StreamArn"),
+              lives.getById({
+                type: "Stream",
+                group: "Kinesis",
+                providerName: config.providerName,
+              }),
               get("name", live.StreamArn),
             ]),
           }),
@@ -68,12 +68,11 @@ exports.DynamoDBKinesisStreamingDestination = ({ spec, config }) =>
       ({ endpoint }) =>
       ({ lives }) =>
         pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type: "Table",
-              group: "DynamoDB",
-            }),
+          lives.getByType({
+            providerName: config.providerName,
+            type: "Table",
+            group: "DynamoDB",
+          }),
           pluck("live"),
           flatMap(({ TableName }) =>
             pipe([

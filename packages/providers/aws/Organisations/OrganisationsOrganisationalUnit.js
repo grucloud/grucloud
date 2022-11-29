@@ -85,12 +85,11 @@ exports.OrganisationsOrganisationalUnit = ({}) => ({
     ({ endpoint }) =>
     ({ lives, config }) =>
       pipe([
-        () =>
-          lives.getByType({
-            providerName: config.providerName,
-            type: "Root",
-            group: "Organisations",
-          }),
+        lives.getByType({
+          providerName: config.providerName,
+          type: "Root",
+          group: "Organisations",
+        }),
         flatMap(
           pipe([
             get("live.Id"),

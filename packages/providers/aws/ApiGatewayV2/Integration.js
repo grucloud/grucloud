@@ -38,13 +38,11 @@ const listenerUriToName = ({ lives, config }) =>
       assert(true);
     }),
     get("IntegrationUri"),
-    (id) =>
-      lives.getById({
-        id,
-        type: "Listener",
-        group: "ElasticLoadBalancingV2",
-        providerName: config.providerName,
-      }),
+    lives.getById({
+      type: "Listener",
+      group: "ElasticLoadBalancingV2",
+      providerName: config.providerName,
+    }),
     get("name"),
     tap((name) => {
       assert(name);

@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project cost-explorer-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ CostExplorer
+++++ AnomalyMonitor (1)
+++++ AnomalySubscription (1)
+++++ CostCategory (1)
+@endmindmap

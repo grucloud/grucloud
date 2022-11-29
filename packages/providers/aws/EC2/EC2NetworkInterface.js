@@ -28,13 +28,11 @@ exports.EC2NetworkInterface = ({ spec, config }) => {
         }),
         () => live,
         get("Attachment.InstanceId"),
-        (id) =>
-          lives.getById({
-            providerName: config.providerName,
-            type: "Instance",
-            group: "EC2",
-            id,
-          }),
+        lives.getById({
+          providerName: config.providerName,
+          type: "Instance",
+          group: "EC2",
+        }),
         tap((params) => {
           assert(true);
         }),
@@ -50,13 +48,11 @@ exports.EC2NetworkInterface = ({ spec, config }) => {
         get("Groups"),
         first,
         get("GroupId"),
-        (GroupId) =>
-          lives.getById({
-            providerName: config.providerName,
-            type: "SecurityGroup",
-            group: "EC2",
-            id: GroupId,
-          }),
+        lives.getById({
+          providerName: config.providerName,
+          type: "SecurityGroup",
+          group: "EC2",
+        }),
         unless(
           isEmpty,
           pipe([

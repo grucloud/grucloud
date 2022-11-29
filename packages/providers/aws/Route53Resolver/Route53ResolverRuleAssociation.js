@@ -10,12 +10,11 @@ const cannotBeDeleted =
   ({ config, lives }) =>
   (live) =>
     pipe([
-      () =>
-        lives.getByType({
-          type: "Rule",
-          group: "Route53Resolver",
-          providerName: config.providerName,
-        }),
+      lives.getByType({
+        type: "Rule",
+        group: "Route53Resolver",
+        providerName: config.providerName,
+      }),
       find(eq(get("live.Id"), live.ResolverRuleId)),
       get("cannotBeDeleted"),
     ])();
@@ -76,22 +75,20 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
           () => live,
           fork({
             vpcName: pipe([
-              () =>
-                lives.getById({
-                  id: live.VPCId,
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
+              get("VPCId"),
+              lives.getById({
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
               get("name", live.VPCId),
             ]),
             ruleName: pipe([
-              () =>
-                lives.getByType({
-                  type: "Rule",
-                  group: "Route53Resolver",
-                  providerName: config.providerName,
-                }),
+              lives.getByType({
+                type: "Rule",
+                group: "Route53Resolver",
+                providerName: config.providerName,
+              }),
               find(eq(get("live.Id"), live.ResolverRuleId)),
               get("name", live.ResolverRuleId),
             ]),

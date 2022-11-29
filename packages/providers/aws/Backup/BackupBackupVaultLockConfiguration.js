@@ -51,22 +51,23 @@ exports.BackupBackupVaultLockConfiguration = ({ spec, config }) =>
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ BackupVaultName: name }), getById({})]),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#listBackupSelections-property
-    getList: ({ lives, client, endpoint, getById, config }) =>
-      pipe([
-        ({ lives }) =>
+    getList:
+      ({ lives, client, endpoint, getById, config }) =>
+      ({ lives }) =>
+        pipe([
           lives.getByType({
             type: "BackupVault",
             group: "Backup",
             providerName: config.providerName,
           }),
-        filter(get("live.Locked")),
-        map(
-          pipe([
-            get("live"),
-            pick(["BackupVaultName", "MinRetentionDays", "MaxRetentionDays"]),
-          ])
-        ),
-      ]),
+          filter(get("live.Locked")),
+          map(
+            pipe([
+              get("live"),
+              pick(["BackupVaultName", "MinRetentionDays", "MaxRetentionDays"]),
+            ])
+          ),
+        ])(),
     configDefault: ({
       name,
       namespace,

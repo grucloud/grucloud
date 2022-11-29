@@ -43,12 +43,10 @@ exports.SecurityHubOrganizationAdminAccount = () => ({
       tap((id) => {
         assert(id);
       }),
-      (id) =>
-        lives.getById({
-          id,
-          type: "Account",
-          group: "Organisations",
-        }),
+      lives.getById({
+        type: "Account",
+        group: "Organisations",
+      }),
       get("name"),
       tap((name) => {
         assert(name);

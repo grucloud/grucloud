@@ -103,11 +103,14 @@ const createResourceMakers = ({
       (acc, spec) =>
         set(
           `${groupName(spec.group)}${prefix}${spec.type}`,
-          spec[`${prefix}Resource`]({
-            provider,
-            spec,
-            programOptions,
-          })
+          pipe([
+            () =>
+              spec[`${prefix}Resource`]({
+                provider,
+                spec,
+                programOptions,
+              }),
+          ])
         )(acc),
       {}
     ),

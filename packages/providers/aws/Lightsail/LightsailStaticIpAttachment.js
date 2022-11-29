@@ -108,12 +108,11 @@ exports.LightsailStaticIpAttachment = ({ compare }) => ({
         ({ client, endpoint, getById, config }) =>
         ({ lives }) =>
           pipe([
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                type: "StaticIp",
-                group: "Lightsail",
-              }),
+            lives.getByType({
+              providerName: config.providerName,
+              type: "StaticIp",
+              group: "Lightsail",
+            }),
             map(
               pipe([
                 get("live"),

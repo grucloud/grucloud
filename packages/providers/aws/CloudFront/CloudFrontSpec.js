@@ -64,12 +64,11 @@ module.exports = () =>
               pluck("DomainName"),
               map((domainName) =>
                 pipe([
-                  () =>
-                    lives.getByType({
-                      type: "Bucket",
-                      group: "S3",
-                      providerName: config.providerName,
-                    }),
+                  lives.getByType({
+                    type: "Bucket",
+                    group: "S3",
+                    providerName: config.providerName,
+                  }),
                   find(({ id }) => pipe([() => domainName, includes(id)])()),
                   get("id"),
                 ])()
@@ -105,13 +104,11 @@ module.exports = () =>
                 pipe([
                   callProp("split", "/"),
                   last,
-                  (id) =>
-                    lives.getById({
-                      id,
-                      type: "OriginAccessIdentity",
-                      group: "CloudFront",
-                      providerName: config.providerName,
-                    }),
+                  lives.getById({
+                    type: "OriginAccessIdentity",
+                    group: "CloudFront",
+                    providerName: config.providerName,
+                  }),
                   get("id"),
                 ])
               ),

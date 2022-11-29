@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project appflow-redshift
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ SecurityGroup (1)
++++ Redshift
+++++ Cluster (1)
++++ S3
+++++ Bucket (1)
+@endmindmap
