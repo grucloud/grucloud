@@ -242,7 +242,7 @@ exports.createResources = () => [
       DBClusterIdentifier: "database-1",
       Engine: "aurora-postgresql",
       EngineVersion: "13.6",
-      MasterUsername: "MyUserNameDB",
+      MasterUsername: process.env.DATABASE_1_MASTER_USERNAME,
       PreferredBackupWindow: "09:29-09:59",
       PreferredMaintenanceWindow: "sun:07:52-sun:08:22",
       IAMDatabaseAuthenticationEnabled: false,
@@ -254,6 +254,7 @@ exports.createResources = () => [
         MinCapacity: 0.5,
         MaxCapacity: 1,
       },
+      MasterUserPassword: process.env.DATABASE_1_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
       dbSubnetGroup: "default-vpc-07c0392e5e3359f2e",

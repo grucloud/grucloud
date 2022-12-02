@@ -7,16 +7,23 @@ describe("DirectConnect", async function () {
   it.skip("BgpPeer", () =>
     pipe([
       () => ({
-        groupType: "DirectConnect::BgpPeer",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "DirectConnect::BGPPeer",
+        livesNotFound: ({ config }) => [
+          {
+            asn: 65432,
+            bgpPeerId: "b1234",
+            customerAddress: "10.0.0.1",
+            virtualInterfaceId: "v123",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Connection", () =>
+  it("Connection", () =>
     pipe([
       () => ({
         groupType: "DirectConnect::Connection",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ connectionId: "dxcon-ffabc123" }],
       }),
       awsResourceTest,
     ])());
@@ -24,7 +31,9 @@ describe("DirectConnect", async function () {
     pipe([
       () => ({
         groupType: "DirectConnect::ConnectionAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { connectionId: "dxcon-ffabc123", lagId: "dxlag-fg02ox79" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -36,11 +45,13 @@ describe("DirectConnect", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Gateway", () =>
+  it("Gateway", () =>
     pipe([
       () => ({
         groupType: "DirectConnect::Gateway",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { directConnectGatewayId: "f73c8c46-8288-4464-8c22-cda54e212db8" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -116,34 +127,18 @@ describe("DirectConnect", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Lag", () =>
+  it("Lag", () =>
     pipe([
       () => ({
         groupType: "DirectConnect::Lag",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ lagId: "dxlag-fg02ox79" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("PrivateVirtualInterface", () =>
+  it.skip("VirtualInterface", () =>
     pipe([
       () => ({
-        groupType: "DirectConnect::PrivateVirtualInterface",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("PublicVirtualInterface", () =>
-    pipe([
-      () => ({
-        groupType: "DirectConnect::PublicVirtualInterface",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("PublicTransitInterface", () =>
-    pipe([
-      () => ({
-        groupType: "DirectConnect::PublicTransitInterface",
+        groupType: "DirectConnect::VirtualInterface",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,

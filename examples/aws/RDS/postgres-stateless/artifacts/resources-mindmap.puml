@@ -19,6 +19,6 @@ skinparam monochrome true
 ++++ ElasticIpAddressAssociation (1)
 ++++ Instance (1)
 +++ RDS
-++++ DBSubnetGroup (1)
 ++++ DBCluster (1)
+++++ DBSubnetGroup (1)
 @endmindmap

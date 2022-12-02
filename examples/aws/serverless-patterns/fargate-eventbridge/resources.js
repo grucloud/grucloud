@@ -633,11 +633,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      logGroups: [
-        "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N",
-      ],
-    }),
   },
   {
     type: "Role",

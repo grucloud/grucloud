@@ -7,11 +7,13 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html
 
-//const { DirectConnectBgpPeer } = require("./DirectConnectBgpPeer");
-//const { DirectConnectConnection} = require("./DirectConnectConnection");
-//const { DirectConnectConnectionAssociation } = require("./DirectConnectConnectionAssociation");
+const { DirectConnectBGPPeer } = require("./DirectConnectBGPPeer");
+const { DirectConnectConnection } = require("./DirectConnectConnection");
+const {
+  DirectConnectConnectionAssociation,
+} = require("./DirectConnectConnectionAssociation");
 //const { DirectConnectConnectionConfirmation } = require("./DirectConnectConnectionConfirmation");
-//const { DirectConnectGateway} = require("./DirectConnectGateway");
+const { DirectConnectGateway } = require("./DirectConnectGateway");
 //const { DirectConnectGatewayAssociation } = require("./DirectConnectGatewayAssociation");
 //const { DirectConnectGatewayAssociationProposal } = require("./DirectConnectGatewayAssociationProposal");
 //const { DirectConnectHostedConnection } = require("./DirectConnectHostedConnection");
@@ -21,22 +23,22 @@ const { createAwsService } = require("../AwsService");
 //const { DirectConnectHostedPublicVirtualInterfaceAccepter } = require("./DirectConnectHostedPublicVirtualInterfaceAccepter");
 //const { DirectConnectHostedTransitVirtualInterface } = require("./DirectConnectHostedTransitVirtualInterface");
 //const { DirectConnectHostedTransitVirtualInterfaceAccepter } = require("./DirectConnectHostedTransitVirtualInterfaceAccepter");
-//const { DirectConnectLag } = require("./DirectConnectLag");
-//const { DirectConnectPrivateVirtualInterface } = require("./DirectConnectPrivateVirtualInterface");
-//const { DirectConnectPublicVirtualInterface } = require("./DirectConnectPublicVirtualInterface");
-//const { DirectConnectTransitVirtualInterface } = require("./DirectConnectTransitVirtualInterface");
+const { DirectConnectLag } = require("./DirectConnectLag");
+const {
+  DirectConnectVirtualInterface,
+} = require("./DirectConnectVirtualInterface");
 
 const GROUP = "DirectConnect";
-const tagsKey = "tag";
+const tagsKey = "tags";
 const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
-    // DirectConnectBgpPeer({})
-    // DirectConnectConnection({})
-    // DirectConnectConnectionAssociation({})
+    DirectConnectBGPPeer({ compare }),
+    DirectConnectConnection({ compare }),
+    DirectConnectConnectionAssociation({ compare }),
     // DirectConnectConnectionConfirmation({})
-    // DirectConnectGateway({})
+    DirectConnectGateway({ compare }),
     // DirectConnectGatewayAssociation({})
     // DirectConnectGatewayConfirmation({})
     // DirectConnectGatewayAssociationProposal({})
@@ -47,10 +49,8 @@ module.exports = pipe([
     // DirectConnectHostedPublicVirtualInterfaceAccepter({})
     // DirectConnectHostedTransitVirtualInterface({})
     // DirectConnectHostedTransitVirtualInterfaceAccepter({})
-    // DirectConnectLag({})
-    // DirectConnectPrivateVirtualInterface({})
-    // DirectConnectPublicVirtualInterface({})
-    // DirectConnectTransitVirtualInterface({})
+    DirectConnectLag({ compare }),
+    DirectConnectVirtualInterface({ compare }),
   ],
   map(createAwsService),
   map(

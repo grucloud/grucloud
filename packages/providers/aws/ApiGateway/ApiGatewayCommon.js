@@ -34,19 +34,17 @@ exports.diffToPatch = ({ diff }) =>
     fork({
       add: pipe([
         get("liveDiff.added", {}),
-        map.entries(([key, value]) => [
-          key,
-          { op: "replace", path: `/${key}`, value },
-        ]),
-        values,
+        Object.entries,
+        map(([key, value]) => ({ op: "replace", path: `/${key}`, value })),
       ]),
       replace: pipe([
         get("liveDiff.updated", {}),
-        map.entries(([key, value]) => [
-          key,
-          { op: "replace", path: `/${key}`, value: `${value?.toString()}` },
-        ]),
-        values,
+        Object.entries,
+        map(([key, value]) => ({
+          op: "replace",
+          path: `/${key}`,
+          value: `${value?.toString()}`,
+        })),
       ]),
     }),
     values,

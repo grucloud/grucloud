@@ -171,6 +171,7 @@ const ignoredTags = [
   "eksctl.cluster.k8s.io",
   "eks",
   "AmazonECSManaged",
+  "directconnect",
 ];
 
 const isNotOurTagKey = not(
@@ -231,8 +232,7 @@ const addEnvironmentVariables =
             () => acc,
             unless(
               pipe([get(path), isFunction]),
-              set(
-                path,
+              set(path, () =>
                 pipe([
                   () =>
                     `process.env.${envVarName({

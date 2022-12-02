@@ -24,7 +24,7 @@ const decorate = ({ endpoint }) =>
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html
 exports.SecurityHubOrganizationAdminAccount = () => ({
   type: "OrganizationAdminAccount",
-  package: "SecurityHub",
+  package: "securityhub",
   client: "SecurityHub",
   propertiesDefault: {},
   omitProperties: ["AdminAccountId", "Status"],

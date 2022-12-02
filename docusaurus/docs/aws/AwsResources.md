@@ -66,6 +66,8 @@ List of resources for provider aws:
 [ConfigRule](./resources/Config/ConfigRule.md), [ConfigurationRecorder](./resources/Config/ConfigurationRecorder.md), [ConfigurationRecorderStatus](./resources/Config/ConfigurationRecorderStatus.md), [ConformancePack](./resources/Config/ConformancePack.md), [DeliveryChannel](./resources/Config/DeliveryChannel.md)
 * ControlTower: 
 [Control](./resources/ControlTower/Control.md)
+* DirectConnect: 
+[BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
 * DynamoDB: 
 [Table](./resources/DynamoDB/Table.md), [KinesisStreamingDestination](./resources/DynamoDB/KinesisStreamingDestination.md)
 * EC2: 

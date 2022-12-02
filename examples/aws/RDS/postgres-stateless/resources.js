@@ -296,7 +296,7 @@ exports.createResources = () => [
       DBClusterIdentifier: "cluster-postgres-stateless",
       Engine: "aurora-postgresql",
       EngineVersion: "10.18",
-      MasterUsername: "userdb",
+      MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
       PreferredBackupWindow: "01:39-02:09",
       PreferredMaintenanceWindow: "sun:00:47-sun:01:17",
       IAMDatabaseAuthenticationEnabled: false,
@@ -317,6 +317,8 @@ exports.createResources = () => [
         TimeoutAction: "RollbackCapacityChange",
         SecondsBeforeTimeout: 300,
       },
+      MasterUserPassword:
+        process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
       dbSubnetGroup: "subnet-group-postgres-stateless",

@@ -108,6 +108,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet1",
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 8305,
+    }),
     dependencies: ({}) => ({
       subnet: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet1",
       eip: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet1",
@@ -117,6 +120,9 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet2",
+    properties: ({}) => ({
+      PrivateIpAddressIndex: 3461,
+    }),
     dependencies: ({}) => ({
       subnet: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet2",
       eip: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet2",
@@ -619,11 +625,6 @@ exports.createResources = () => [
           PolicyName:
             "MyFargateServiceTaskDefExecutionRoleDefaultPolicyEC22B20F",
         },
-      ],
-    }),
-    dependencies: ({}) => ({
-      logGroups: [
-        "CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-0cga6xIMrwPR",
       ],
     }),
   },
