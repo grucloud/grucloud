@@ -46,13 +46,6 @@ const buildArn = () =>
     }),
   ]);
 
-// const buildArn =
-// ({ config }) =>
-// ({ ConfigurationSetName }) =>
-//   `arn:aws:ses:${
-//     config.region
-//   }:${config.accountId()}:/configurationset/${ConfigurationSetName}`;
-
 //////////
 // pickId
 //////////
@@ -97,7 +90,7 @@ const pickId = pipe([
 //   IdentityPoolTags: Tags,
 // });
 
-const decorate = ({ endpoint }) =>
+const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);

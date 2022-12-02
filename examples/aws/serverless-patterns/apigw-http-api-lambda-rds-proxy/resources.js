@@ -289,8 +289,6 @@ exports.createResources = () => [
       PerformanceInsightsEnabled: true,
       PerformanceInsightsRetentionPeriod: 7,
       EnablePerformanceInsights: true,
-      MasterUsername: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USERNAME,
-      MasterUserPassword: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USER_PASSWORD,
     }),
     dependencies: ({ config }) => ({
       dbSubnetGroup: "sam-app-db-subnet-group",
