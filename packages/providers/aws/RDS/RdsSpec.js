@@ -274,7 +274,6 @@ module.exports = pipe([
       omitProperties: [
         "SubnetIds",
         "VpcSecurityGroupIds",
-        //"MasterUserPassword",
         "DBSubnetGroupName",
         "Capacity",
         "ScalingConfigurationInfo", //TODO
