@@ -197,7 +197,8 @@ exports.MyModuleMyResource = () => ({
   //         lives.getById({
   //           type: "Vpc",
   //           group: "EC2",
-  //           }),
+  //           providerName: config.providerName,
+  //         }),
   //         get("name"),
   //       ]),
   //       hostedZone: pipe([
@@ -327,6 +328,25 @@ exports.MyModuleMyResource = () => ({
     //decorate,
     //decorate: ({ getById }) => pipe([(name) => ({ name }), getById]),
   },
+
+  // getList:
+  //   ({ lives, client, endpoint, getById, config }) =>
+  //   ({ lives }) =>
+  //     pipe([
+  //       lives.getByType({
+  //         type: "BackupVault",
+  //         group: "Backup",
+  //         providerName: config.providerName,
+  //       }),
+  //       filter(get("live.Locked")),
+  //       map(
+  //         pipe([
+  //           get("live"),
+  //           pick(["BackupVaultName", "MinRetentionDays", "MaxRetentionDays"]),
+  //         ])
+  //       ),
+  //     ])(),
+
   //  getList for child resource
 
   // getList: ({ client, endpoint, getById, config }) =>

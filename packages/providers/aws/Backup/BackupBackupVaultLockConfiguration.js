@@ -52,7 +52,7 @@ exports.BackupBackupVaultLockConfiguration = ({ spec, config }) =>
       pipe([({ name }) => ({ BackupVaultName: name }), getById({})]),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#listBackupSelections-property
     getList:
-      ({ lives, client, endpoint, getById, config }) =>
+      ({ client, endpoint, getById, config }) =>
       ({ lives }) =>
         pipe([
           lives.getByType({
