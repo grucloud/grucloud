@@ -1785,6 +1785,7 @@ module.exports = pipe([
         "Hypervisor",
         "CpuOptions",
         "StateReason",
+        "Placement.GroupId",
       ],
       filterLive:
         ({ lives, providerConfig }) =>
