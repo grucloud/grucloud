@@ -4,11 +4,13 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("GuardDuty", async function () {
-  it.skip("Detector", () =>
+  it("Detector", () =>
     pipe([
       () => ({
         groupType: "GuardDuty::Detector",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { DetectorId: "6ec26c9c512c30d9260aeb71fdb9a9db" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -16,7 +18,12 @@ describe("GuardDuty", async function () {
     pipe([
       () => ({
         groupType: "GuardDuty::Filter",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            DetectorId: "6ec26c9c512c30d9260aeb71fdb9a9db",
+            FilterName: "f123",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -28,35 +35,45 @@ describe("GuardDuty", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("IpSet", () =>
+  it.only("IpSet", () =>
     pipe([
       () => ({
-        groupType: "GuardDuty::IpSet",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "GuardDuty::IPSet",
+        livesNotFound: ({ config }) => [
+          { DetectorId: "6ec26c9c512c30d9260aeb71fdb9a9db", IpSetId: "ip123" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Member", () =>
+  it("Member", () =>
     pipe([
       () => ({
         groupType: "GuardDuty::Member",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            DetectorId: "6ec26c9c512c30d9260aeb71fdb9a9db",
+            AccountId: "1234567890",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("OrganizationAdminAccount", () =>
+  it("OrganizationAdminAccount", () =>
     pipe([
       () => ({
         groupType: "GuardDuty::OrganizationAdminAccount",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ AdminAccountId: "1234567890" }],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
-  it.skip("OrganizationConfiguration", () =>
+  it("OrganizationConfiguration", () =>
     pipe([
       () => ({
         groupType: "GuardDuty::OrganizationConfiguration",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { DetectorId: "6ec26c9c512c30d9260aeb71fdb9a9db" },
+        ],
       }),
       awsResourceTest,
     ])());

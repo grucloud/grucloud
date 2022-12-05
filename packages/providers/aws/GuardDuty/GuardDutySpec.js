@@ -7,13 +7,17 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html
 
-//const { GuardDutyDetector } = require("./GuardDutyDetector");
-//const { GuardDutyFilter } = require("./GuardDutyFilter");
+const { GuardDutyDetector } = require("./GuardDutyDetector");
+const { GuardDutyFilter } = require("./GuardDutyFilter");
 //const { GuardDutyInviteAccepter } = require("./GuardDutyInviteAccepter");
-//const { GuardDutyIpSet } = require("./GuardDutyIpSet");
-//const { GuardDutyMember } = require("./GuardDutyMember");
-//const { GuardDutyOrganizationAdminAccount } = require("./GuardDutyOrganizationAdminAccount");
-//const { GuardDutyOrganizationConfiguration } = require("./GuardDutyOrganizationConfiguration");
+const { GuardDutyIPSet } = require("./GuardDutyIPSet");
+const { GuardDutyMember } = require("./GuardDutyMember");
+const {
+  GuardDutyOrganizationAdminAccount,
+} = require("./GuardDutyOrganizationAdminAccount");
+const {
+  GuardDutyOrganizationConfiguration,
+} = require("./GuardDutyOrganizationConfiguration");
 //const { GuardDutyPublishingDestination } = require("./GuardDutyPublishingDestination");
 //const { GuardDutyThreatIntelSet } = require("./GuardDutyThreatIntelSet");
 
@@ -23,21 +27,23 @@ const compare = compareAws({});
 
 module.exports = pipe([
   () => [
-    // GuardDutyDetector({})
-    // GuardDutyFilter({})
+    GuardDutyDetector({ compare }),
+    GuardDutyFilter({ compare }),
     // GuardDutyInviteAccepter({})
-    // GuardDutyIpSet({})
-    // GuardDutyMember({})
-    // GuardDutyOrganizationAdminAccount({})
-    // GuardDutyOrganizationConfiguration({})
+    GuardDutyIPSet({ compare }),
+    GuardDutyMember({ compare }),
+    GuardDutyOrganizationAdminAccount({ compare }),
+    GuardDutyOrganizationConfiguration({}),
     // GuardDutyPublishingDestination({})
     // GuardDutyThreatIntelSet({})
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

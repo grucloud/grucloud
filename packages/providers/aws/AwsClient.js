@@ -724,6 +724,9 @@ const AwsClient =
                   name: `destroying ${type}`,
                   fn: pipe([
                     () => params,
+                    tap((params) => {
+                      assert(true);
+                    }),
                     endpoint()[method],
                     () => live,
                     tap(postDestroy({ name, endpoint, lives, config })),
