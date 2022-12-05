@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project guardduty-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ GuardDuty
+++++ Detector (1)
+++++ OrganizationAdminAccount (1)
+++++ OrganizationConfiguration (1)
++++ Organisations
+++++ Account (1)
+@endmindmap

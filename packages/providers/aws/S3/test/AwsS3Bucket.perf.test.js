@@ -8,7 +8,7 @@ describe("AwsS3BucketPerf", async function () {
   const types = ["Bucket"];
   after(async () => {});
 
-  it("many buckets", async function () {
+  it.skip("many buckets", async function () {
     const provider = await AwsProvider({
       name: "aws",
       config: () => ({ projectName: "gru-test" }),
