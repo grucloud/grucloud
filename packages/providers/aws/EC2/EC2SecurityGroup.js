@@ -55,6 +55,7 @@ const managedByOther = ({ lives, config }) =>
       get("Description"),
       callProp("startsWith", "AWS created security group"),
     ]), // Directory Service
+    pipe([get("GroupName"), callProp("startsWith", "cloudhsm-cluster-")]), // CloudHSM
     hasKeyInTags({
       key: "aws:eks:cluster-name",
     }),

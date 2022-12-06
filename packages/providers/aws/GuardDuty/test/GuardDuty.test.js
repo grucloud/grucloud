@@ -35,7 +35,7 @@ describe("GuardDuty", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("IpSet", () =>
+  it("IpSet", () =>
     pipe([
       () => ({
         groupType: "GuardDuty::IPSet",
@@ -74,6 +74,7 @@ describe("GuardDuty", async function () {
         livesNotFound: ({ config }) => [
           { DetectorId: "6ec26c9c512c30d9260aeb71fdb9a9db" },
         ],
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());

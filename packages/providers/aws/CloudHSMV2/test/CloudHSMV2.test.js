@@ -4,11 +4,11 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("CloudHSMV2", async function () {
-  it.skip("Cluster", () =>
+  it("Cluster", () =>
     pipe([
       () => ({
         groupType: "CloudHSMV2::Cluster",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ClusterId: "cluster-igklspoyj5v" }],
       }),
       awsResourceTest,
     ])());
