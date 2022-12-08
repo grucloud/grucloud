@@ -1,0 +1,1 @@
+# Aws Postgres Secret Manager

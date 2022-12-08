@@ -12,43 +12,63 @@ describe("DMS", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Endpoint", () =>
+  it("Endpoint", () =>
     pipe([
       () => ({
         groupType: "DMS::Endpoint",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            EndpointArn: `arn:aws:dms:${
+              config.region
+            }:${config.accountId()}:endpoint:HDKU4NY5ETEZGOZZRMVURZALVJVWBSRJMUQHIIA`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("EventSubscription", () =>
+  it("EventSubscription", () =>
     pipe([
       () => ({
         groupType: "DMS::EventSubscription",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ SubscriptionName: "s123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("ReplicationInstance ", () =>
+  it("ReplicationInstance", () =>
     pipe([
       () => ({
         groupType: "DMS::ReplicationInstance",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            ReplicationInstanceArn: `arn:aws:dms:${
+              config.region
+            }:${config.accountId()}:rep:6UTDJGBOUS3VI3SUWA66XFJCJA`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("ReplicationSubnetGroup", () =>
+  it("ReplicationSubnetGroup", () =>
     pipe([
       () => ({
         groupType: "DMS::ReplicationSubnetGroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ReplicationSubnetGroupIdentifier: "s123" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("ReplicationTask", () =>
+  it("ReplicationTask", () =>
     pipe([
       () => ({
         groupType: "DMS::ReplicationTask",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            ReplicationTaskArn: `arn:aws:dms:${
+              config.region
+            }:${config.accountId()}:task:OEAMB3NXSTZ6LFYZFEPPBBXPYM`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

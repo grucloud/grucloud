@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project dms-replication-instance
+skinparam monochrome true
++ Infra
+++ aws
++++ DMS
+++++ Endpoint (2)
+++++ ReplicationInstance (1)
+++++ ReplicationSubnetGroup (1)
+++++ ReplicationTask (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+++++ SecurityGroup (1)
++++ IAM
+++++ Role (2)
+@endmindmap
