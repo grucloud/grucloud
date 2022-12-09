@@ -21,11 +21,11 @@ const compare = compareAws({});
 module.exports = pipe([
   () => [
     // TransferAccess({})
-    TransferServer({}),
+    TransferServer({ compare }),
     // TransferSshKey({})
     // TransferTag({})
-    TransferUser({}),
-    TransferWorkflow({}),
+    TransferUser({ compare }),
+    TransferWorkflow({ compare }),
   ],
   map(createAwsService),
   map(

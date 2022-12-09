@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, map } = require("rubico");
+const { pipe, tap, get, pick, eq, assign, map, fork } = require("rubico");
 const {
   defaultsDeep,
   pluck,
@@ -47,27 +47,30 @@ const decorate = ({ endpoint, config }) =>
 
 const onUpload = ({ providerConfig, lives }) =>
   pipe([
-    map(
-      assign({
-        ExecutionRole: pipe([
-          get("ExecutionRole"),
-          replaceWithName({
-            groupType: "IAM::Role",
-            path: "id",
-            providerConfig,
-            lives,
-          }),
-        ]),
-        WorkflowId: pipe([
-          get("WorkflowId"),
-          replaceWithName({
-            groupType: "Transfer::Workflow",
-            path: "id",
-            providerConfig,
-            lives,
-          }),
-        ]),
-      })
+    unless(
+      isEmpty,
+      map(
+        assign({
+          ExecutionRole: pipe([
+            get("ExecutionRole"),
+            replaceWithName({
+              groupType: "IAM::Role",
+              path: "id",
+              providerConfig,
+              lives,
+            }),
+          ]),
+          WorkflowId: pipe([
+            get("WorkflowId"),
+            replaceWithName({
+              groupType: "Transfer::Workflow",
+              path: "id",
+              providerConfig,
+              lives,
+            }),
+          ]),
+        })
+      )
     ),
   ]);
 
@@ -107,7 +110,7 @@ exports.TransferServer = () => ({
       pipe([() => `${Domain}::${EndpointType}`])(),
   findId: () =>
     pipe([
-      get("Arn"),
+      get("ServerId"),
       tap((id) => {
         assert(id);
       }),
@@ -143,13 +146,27 @@ exports.TransferServer = () => ({
       dependencyIds: ({ lives, config }) =>
         pipe([
           get("WorkflowDetails"),
-          unless(isEmpty, ({ OnPartialUpload, OnUpload }) =>
+          tap((params) => {
+            assert(true);
+          }),
+          unless(
+            isEmpty,
             pipe([
-              () => [
-                ...pluck("ExecutionRole")(OnPartialUpload),
-                ...pluck("ExecutionRole")(OnUpload),
+              fork({
+                partialUpload: pipe([
+                  get("OnPartialUpload", []),
+                  pluck("ExecutionRole"),
+                ]),
+                upload: pipe([
+                  get("OnPartialUpload", []),
+                  pluck("ExecutionRole"),
+                ]),
+              }),
+              ({ partialUpload = [], upload = [] }) => [
+                ...partialUpload,
+                ...upload,
               ],
-            ])()
+            ])
           ),
         ]),
     },
@@ -172,7 +189,6 @@ exports.TransferServer = () => ({
       list: true,
       dependencyIds: ({ lives, config }) => get("EndpointDetails.SubnetIds"),
     },
-
     vpc: {
       type: "Vpc",
       group: "EC2",
@@ -185,13 +201,21 @@ exports.TransferServer = () => ({
       dependencyIds: ({ lives, config }) =>
         pipe([
           get("WorkflowDetails"),
-          unless(isEmpty, ({ OnPartialUpload, OnUpload }) =>
+          unless(
+            isEmpty,
             pipe([
-              () => [
-                ...pluck("WorkflowId")(OnPartialUpload),
-                ...pluck("WorkflowId")(OnUpload),
+              fork({
+                partialUpload: pipe([
+                  get("OnPartialUpload", []),
+                  pluck("WorkflowId"),
+                ]),
+                upload: pipe([get("OnUpload", []), pluck("WorkflowId")]),
+              }),
+              ({ partialUpload = [], upload = [] }) => [
+                ...partialUpload,
+                ...upload,
               ],
-            ])()
+            ])
           ),
         ]),
     },
@@ -236,10 +260,24 @@ exports.TransferServer = () => ({
         assign({
           WorkflowDetails: pipe([
             get("WorkflowDetails"),
-            assign({
-              OnPartialUpload: onUpload({ providerConfig, lives }),
-              OnUpload: onUpload({ providerConfig, lives }),
-            }),
+            when(
+              get("OnPartialUpload"),
+              assign({
+                OnPartialUpload: pipe([
+                  get("OnPartialUpload"),
+                  onUpload({ providerConfig, lives }),
+                ]),
+              })
+            ),
+            when(
+              get("OnUpload"),
+              assign({
+                OnUpload: pipe([
+                  get("OnUpload"),
+                  onUpload({ providerConfig, lives }),
+                ]),
+              })
+            ),
           ]),
         })
       ),

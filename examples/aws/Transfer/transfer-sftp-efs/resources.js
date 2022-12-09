@@ -143,4 +143,23 @@ exports.createResources = () => [
       iamRoleLogging: "AWSTransferLoggingAccess",
     }),
   },
+  {
+    type: "User",
+    group: "Transfer",
+    properties: ({ getId }) => ({
+      HomeDirectory: `/${getId({
+        type: "FileSystem",
+        group: "EFS",
+        name: "myfs",
+        path: "live.FileSystemId",
+      })}/my-user`,
+      HomeDirectoryType: "PATH",
+      UserName: "my-user",
+    }),
+    dependencies: ({}) => ({
+      efsFileSystem: "myfs",
+      iamRole: "role-transfer",
+      server: "EFS::PUBLIC",
+    }),
+  },
 ];

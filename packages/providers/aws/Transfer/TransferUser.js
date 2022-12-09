@@ -1,29 +1,8 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  pick,
-  eq,
-  assign,
-  map,
-  and,
-  or,
-  not,
-  filter,
-  fork,
-} = require("rubico");
-const {
-  defaultsDeep,
-  first,
-  pluck,
-  callProp,
-  when,
-  isEmpty,
-  unless,
-  identity,
-} = require("rubico/x");
+const { pipe, tap, get, pick, assign } = require("rubico");
+const { defaultsDeep, when, identity, find, isIn } = require("rubico/x");
 
+const { replaceWithName } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
@@ -46,10 +25,11 @@ const pickId = pipe([
   pick(["UserName", "ServerId"]),
 ]);
 
-const decorate = ({ endpoint, config }) =>
+const decorate = ({ endpoint, config, live }) =>
   pipe([
-    tap((params) => {
-      assert(endpoint);
+    assign({
+      Tags: pipe([endpoint().listTagsForResource, get("Tags")]),
+      ServerId: () => live.ServerId,
     }),
   ]);
 
@@ -59,7 +39,7 @@ exports.TransferUser = () => ({
   package: "transfer",
   client: "Transfer",
   propertiesDefault: {},
-  omitProperties: ["Arn", "Role", "SshPublicKeyCount"],
+  omitProperties: ["Arn", "Role", "SshPublicKeyCount", "ServerId"],
   inferName: () =>
     pipe([
       get("UserName"),
@@ -82,6 +62,22 @@ exports.TransferUser = () => ({
       }),
     ]),
   dependencies: {
+    efsFileSystem: {
+      type: "FileSystem",
+      group: "EFS",
+      dependencyId:
+        ({ lives, config }) =>
+        ({ HomeDirectory }) =>
+          pipe([
+            lives.getByType({
+              providerName: config.providerName,
+              type: "FileSystem",
+              group: "EFS",
+            }),
+            find(pipe([get("live.FileSystemId"), isIn(HomeDirectory)])),
+            get("id"),
+          ])(),
+    },
     iamRole: {
       type: "Role",
       group: "IAM",
@@ -93,11 +89,43 @@ exports.TransferUser = () => ({
       parent: true,
       dependencyId: ({ lives, config }) => pipe([get("ServerId")]),
     },
+    s3Bucket: {
+      type: "Bucket",
+      group: "S3",
+      dependencyId:
+        ({ lives, config }) =>
+        ({ HomeDirectory }) =>
+          pipe([
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Bucket",
+              group: "S3",
+            }),
+            find(pipe([get("live.Name"), isIn(HomeDirectory)])),
+            get("id"),
+          ])(),
+    },
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html#getUser-property
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        HomeDirectory: pipe([
+          get("HomeDirectory"),
+          replaceWithName({
+            groupType: "EFS::FileSystem",
+            path: "live.FileSystemId",
+            pathLive: "live.FileSystemId",
+            providerConfig,
+            lives,
+            withSuffix: true,
+          }),
+        ]),
+      }),
+    ]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html#describeUser-property
   getById: {
-    method: "getUser",
+    method: "describeUser",
     getField: "User",
     pickId,
     decorate,
@@ -113,14 +141,14 @@ exports.TransferUser = () => ({
           getParam: "Users",
           config,
           decorate: ({ parent }) =>
-            pipe([defaultsDeep({ ServerId: parent.ServerId })]),
+            pipe([decorate({ endpoint, live: parent })]),
         }),
     ])(),
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html#createUser-property
   create: {
     method: "createUser",
-    pickCreated: ({ payload }) => pipe([get("User")]),
+    pickCreated: ({ payload }) => pipe([identity]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html#updateUser-property
   update: {

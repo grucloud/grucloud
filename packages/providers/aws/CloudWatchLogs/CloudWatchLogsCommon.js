@@ -32,6 +32,7 @@ exports.LogGroupNameManagedByOther = [
   "RDSOSMetrics",
   "/aws/apprunner",
   "/aws/cloudhsm/",
+  "/aws/transfer/",
 ];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#tagLogGroup-property
