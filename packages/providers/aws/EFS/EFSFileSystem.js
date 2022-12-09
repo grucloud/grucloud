@@ -1,7 +1,8 @@
 const assert = require("assert");
 const { pipe, tap, get, assign, pick, eq } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
@@ -40,11 +41,22 @@ exports.EFSFileSystem = ({ spec, config }) =>
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      dependencies: { kmsKey },
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
+        when(
+          () => kmsKey,
+          defaultsDeep({
+            kmsArn: getField(kmsKey, "Arn"),
+          })
+        ),
       ])(),
   });

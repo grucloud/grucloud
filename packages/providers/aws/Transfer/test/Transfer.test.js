@@ -12,11 +12,11 @@ describe("Transfer", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Server", () =>
+  it("Server", () =>
     pipe([
       () => ({
         groupType: "Transfer::Server",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ServerId: "s-dc21f45ec5764e801" }],
       }),
       awsResourceTest,
     ])());

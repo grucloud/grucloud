@@ -286,6 +286,11 @@ module.exports = pipe([
                 get("apiGatewayV2DomainName"),
                 prepend("ApiGatewayV2::DomainName::A::"),
               ]),
+              get("transferServer"),
+              pipe([
+                get("transferServer"),
+                prepend("Transfer::Server::CNAME::"),
+              ]),
               () => `${properties.Type}::${properties.Name}`,
             ]),
             prepend(`record::`),
@@ -352,6 +357,7 @@ module.exports = pipe([
             hasDependency({ type: "Certificate", group: "ACM" }),
             hasDependency({ type: "Distribution", group: "CloudFront" }),
             hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),
+            hasDependency({ type: "Server", group: "Transfer" }),
             hasDependency({
               type: "UserPoolDomain",
               group: "CognitoIdentityServiceProvider",

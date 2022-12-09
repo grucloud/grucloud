@@ -5,7 +5,7 @@ const { createTagger } = require("../AwsTagger");
 exports.Tagger = createTagger({
   methodTagResource: "tagResource",
   methodUnTagResource: "untagResource",
-  ResourceArn: "resourceArn",
-  TagsKey: "tags",
-  UnTagsKey: "tagKeys",
+  ResourceArn: "Arn",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
 });

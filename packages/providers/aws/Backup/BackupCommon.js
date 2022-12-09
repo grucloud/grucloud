@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, assign, get } = require("rubico");
+const { callProp } = require("rubico/x");
 
 const { createTagger } = require("../AwsTagger");
 
@@ -10,6 +11,11 @@ exports.Tagger = createTagger({
   TagsKey: "Tags",
   UnTagsKey: "TagKeyList",
 });
+
+exports.managedByEFS = pipe([
+  get("CreatorRequestId"),
+  callProp("startsWith", "aws/efs/automatic-backup"),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#tagResource-property
 exports.tagResource =

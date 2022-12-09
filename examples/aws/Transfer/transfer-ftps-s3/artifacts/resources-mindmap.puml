@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project transfer-ftps-s3
+skinparam monochrome true
++ Infra
+++ aws
++++ ACM
+++++ Certificate (1)
++++ DirectoryService
+++++ Directory (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
++++ IAM
+++++ Role (1)
++++ Transfer
+++++ Server (1)
+@endmindmap

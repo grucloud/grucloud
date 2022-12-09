@@ -40,10 +40,28 @@ module.exports = pipe([
         "OwnerId",
         "SizeInBytes",
         "Name",
+        "KmsKeyId",
       ],
       compare: compareEFS({
         filterAll: () => pipe([omit([])]),
       }),
+      dependencies: {
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          excludeDefaultDependencies: true,
+          dependencyId: ({ lives, config }) => get("KmsKeyId"),
+        },
+      },
+      filterLive: ({ providerConfig, lives }) =>
+        pipe([
+          assign({
+            AvailabilityZoneName: pipe([
+              get("AvailabilityZoneName"),
+              replaceAccountAndRegion({ providerConfig, lives }),
+            ]),
+          }),
+        ]),
     },
     {
       type: "AccessPoint",

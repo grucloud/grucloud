@@ -37,6 +37,7 @@ module.exports = pipe([
         "CreationDate",
         "VersionId",
         "Rules[].RuleId",
+        "CreatorRequestId",
       ],
       inferName: () => get("BackupPlanName"),
       dependencies: {
