@@ -23,7 +23,9 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const ignoreErrorMessages = [];
+const ignoreErrorMessages = [
+  "The request is rejected because the input detectorId is not owned by the current account",
+];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html
 exports.GuardDutyIPSet = () => ({
@@ -77,6 +79,7 @@ exports.GuardDutyIPSet = () => ({
     method: "getIPSet",
     pickId,
     decorate,
+    ignoreErrorMessages,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#listIPSets-property
   getList: {

@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project cloudhsmv2
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudHSMV2
+++++ Cluster (1)
+++++ Hsm (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+@endmindmap

@@ -176,10 +176,8 @@ const isDefault =
             callProp("startsWith", "d-"),
             callProp("endsWith", "_controllers"),
           ]),
-          tap((params) => {
-            assert(true);
-          }),
         ]),
+        pipe([get("GroupName"), callProp("startsWith", "cloudhsm-cluster-")]),
         and([
           pipe([
             get("UserIdGroupPairs"),

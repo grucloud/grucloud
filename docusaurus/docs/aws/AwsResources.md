@@ -42,6 +42,8 @@ List of resources for provider aws:
 [Stack](./resources/CloudFormation/Stack.md)
 * CloudFront: 
 [Distribution](./resources/CloudFront/Distribution.md), [CachePolicy](./resources/CloudFront/CachePolicy.md), [Function](./resources/CloudFront/Function.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md)
+* CloudHSMV2: 
+[Cluster](./resources/CloudHSMV2/Cluster.md), [Hsm](./resources/CloudHSMV2/Hsm.md)
 * CloudTrail: 
 [Trail](./resources/CloudTrail/Trail.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
 * CloudWatch: 
@@ -96,6 +98,8 @@ List of resources for provider aws:
 [Job](./resources/Glue/Job.md)
 * Grafana: 
 [Workspace](./resources/Grafana/Workspace.md)
+* GuardDuty: 
+[Detector](./resources/GuardDuty/Detector.md), [Filter](./resources/GuardDuty/Filter.md), [IPSet](./resources/GuardDuty/IPSet.md), [Member](./resources/GuardDuty/Member.md), [OrganizationAdminAccount](./resources/GuardDuty/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/GuardDuty/OrganizationConfiguration.md)
 * IAM: 
 [OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
 * IdentityStore: 
