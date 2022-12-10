@@ -36,6 +36,7 @@ exports.LakeFormationDataLakeSettings = () => ({
   },
   omitProperties: [],
   cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
   inferName: ({}) => pipe([() => "default"]),
   findName: ({ lives, config }) => pipe([() => "default"]),
   findId: () => pipe([() => "default"]),

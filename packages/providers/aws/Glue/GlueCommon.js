@@ -11,38 +11,11 @@ exports.Tagger = createTagger({
   UnTagsKey: "TagsToRemove",
 });
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#tagResource-property
-exports.tagResource =
-  ({ findId }) =>
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      tap((params) => {
-        assert(findId(live));
-      }),
-      (TagsToAdd) => ({ ResourceArn: findId(live), TagsToAdd }),
-      endpoint().tagResource,
-    ]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#untagResource-property
-exports.untagResource =
-  ({ findId }) =>
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      tap((params) => {
-        assert(findId(live));
-      }),
-      (TagsToRemove) => ({ ResourceArn: findId(live), TagsToRemove }),
-      endpoint().untagResource,
-    ]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#getTags-property
-exports.assignTags = ({ endpoint, findId }) =>
+exports.assignTags = ({ buildArn, endpoint }) =>
   pipe([
     assign({
       Tags: pipe([
-        findId,
+        buildArn,
         (ResourceArn) => ({ ResourceArn }),
         endpoint().getTags,
         get("Tags"),

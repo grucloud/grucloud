@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe.only("LakeFormation", async function () {
+describe("LakeFormation", async function () {
   it("DataLakeSettings", () =>
     pipe([
       () => ({
