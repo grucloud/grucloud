@@ -15,6 +15,7 @@ const {
   omit,
   and,
   flatMap,
+  any,
 } = require("rubico");
 const {
   find,
@@ -220,6 +221,33 @@ const Route53RecordDependencies = {
             pick(["id", "name"]),
           ])(),
       ]),
+  },
+  transferServer: {
+    type: "Server",
+    group: "Transfer",
+    parent: true,
+    parentForName: true,
+    dependencyId:
+      ({ lives, config }) =>
+      ({ ResourceRecords }) =>
+        pipe([
+          lives.getByType({
+            type: "Server",
+            group: "Transfer",
+            providerName: config.providerName,
+          }),
+          find(
+            pipe([
+              get("live"),
+              ({ ServerId }) =>
+                pipe([
+                  () => ResourceRecords,
+                  any(pipe([get("Value"), callProp("startsWith", ServerId)])),
+                ]),
+            ])
+          ),
+          pick(["id", "name"]),
+        ])(),
   },
   vpcEndpoint: {
     type: "VpcEndpoint",
@@ -602,6 +630,28 @@ exports.Route53Record = ({ spec, config }) => {
       })),
     ])();
 
+  const transferServerRecord = ({ transferServer, hostedZone, config }) =>
+    pipe([
+      () => transferServer,
+      unless(isEmpty, () => ({
+        Name: pipe([
+          () => transferServer,
+          get("live.Tags", []),
+          find(eq(get("Key"), "transfer:customHostname")),
+          get("Value"),
+          unless(isEmpty, append(".")),
+        ])(),
+        Type: "CNAME",
+        TTL: 300,
+        ResourceRecords: [
+          {
+            Value: `${getField(transferServer, "ServerId")}.server.transfer.${
+              config.region
+            }.amazonaws.com`,
+          },
+        ],
+      })),
+    ])();
   const userPoolDomainRecord = ({ userPoolDomain, hostedZone }) =>
     pipe([
       () => userPoolDomain,
@@ -633,14 +683,15 @@ exports.Route53Record = ({ spec, config }) => {
     name,
     properties = {},
     dependencies: {
-      certificate,
-      loadBalancer,
-      hostedZone,
       apiGatewayV2DomainName,
+      certificate,
       distribution,
+      healthCheck,
+      hostedZone,
+      loadBalancer,
+      transferServer,
       userPoolDomain,
       vpcEndpoint,
-      healthCheck,
     },
   }) =>
     pipe([
@@ -656,6 +707,9 @@ exports.Route53Record = ({ spec, config }) => {
       defaultsDeep(loadBalancerRecord({ loadBalancer, hostedZone })),
       defaultsDeep(apiGatewayV2Record({ apiGatewayV2DomainName, hostedZone })),
       defaultsDeep(distributionRecord({ distribution, hostedZone })),
+      defaultsDeep(
+        transferServerRecord({ transferServer, hostedZone, config })
+      ),
       defaultsDeep(userPoolDomainRecord({ userPoolDomain, hostedZone })),
       defaultsDeep(vpcEndpointRecord({ vpcEndpoint })),
       defaultsDeep({ Name: name }),

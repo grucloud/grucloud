@@ -119,6 +119,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
     or([
       cannotBeDeleted({ lives, config }),
       pipe([get("ServiceName"), callProp("startsWith", "com.amazonaws.vpce")]),
+      get("RequesterManaged"),
     ]);
 
   const decorate = () =>

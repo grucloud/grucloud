@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project dms-mysql-secret-manager
+skinparam monochrome true
++ Infra
+++ aws
++++ DMS
+++++ Endpoint (1)
++++ IAM
+++++ Role (1)
++++ SecretsManager
+++++ Secret (1)
+@endmindmap

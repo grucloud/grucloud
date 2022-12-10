@@ -196,6 +196,9 @@ exports.SecretsManagerSecret = ({ compare }) => ({
               ])()
             ),
             endpoint().putSecretValue,
+            //Tag
+            () => ({ SecretId: payload.Name, Tags: payload.Tags }),
+            endpoint().tagResource,
           ]),
           (error) => {
             throw error;

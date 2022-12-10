@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project dms-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ DMS
+++++ Endpoint (1)
+@endmindmap

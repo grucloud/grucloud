@@ -1,13 +1,18 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, map, pick } = require("rubico");
-const { defaultsDeep, when, identity } = require("rubico/x");
+const { pipe, tap, get, eq, map, pick, or } = require("rubico");
+const { defaultsDeep, when, identity, callProp } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 
-const { tagResource, untagResource, assignTags } = require("./BackupCommon");
+const {
+  tagResource,
+  untagResource,
+  assignTags,
+  managedByEFS,
+} = require("./BackupCommon");
 
 const buildArn = () => get("BackupVaultArn");
 
@@ -16,7 +21,11 @@ const decorate = ({ endpoint, live }) =>
 
 const pickId = pipe([pick(["BackupVaultName"])]);
 
-const managedByOther = () => eq(get("BackupVaultName"), "Default");
+const managedByOther = () =>
+  or([
+    eq(get("BackupVaultName"), "Default"), //
+    managedByEFS,
+  ]);
 
 const model = ({ config }) => ({
   package: "backup",

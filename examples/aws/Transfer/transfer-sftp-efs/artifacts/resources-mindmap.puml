@@ -1,0 +1,23 @@
+@startmindmap
+title Resources for project transfer-sftp-efs
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (1)
+++++ SecurityGroup (1)
++++ EFS
+++++ FileSystem (1)
+++++ MountTarget (1)
++++ IAM
+++++ Role (2)
++++ Route53
+++++ HostedZone (1)
+++++ Record (1)
++++ Route53Domains
+++++ Domain (1)
++++ Transfer
+++++ Server (1)
+++++ User (1)
+@endmindmap

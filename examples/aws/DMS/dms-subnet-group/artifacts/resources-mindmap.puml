@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project dms-subnet-group
+skinparam monochrome true
++ Infra
+++ aws
++++ DMS
+++++ ReplicationSubnetGroup (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
++++ IAM
+++++ Role (1)
+@endmindmap

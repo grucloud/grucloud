@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project dms-s3
+skinparam monochrome true
++ Infra
+++ aws
++++ DMS
+++++ Endpoint (1)
++++ IAM
+++++ Role (1)
+@endmindmap

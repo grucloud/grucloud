@@ -1,18 +1,26 @@
 const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { defaultsDeep, identity, callProp } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
 
-const { tagResource, untagResource, assignTags } = require("./BackupCommon");
+const {
+  tagResource,
+  untagResource,
+  assignTags,
+  managedByEFS,
+} = require("./BackupCommon");
 
 const buildArn = () => get("BackupPlanArn");
 
 //TODO
 const decorate = ({ endpoint, live }) =>
   pipe([defaultsDeep(live), assignTags({ endpoint, buildArn: buildArn() })]);
+
+// EFS FileSystem
+const managedByOther = () => pipe([managedByEFS]);
 
 const pickId = pipe([pick(["BackupPlanId"])]);
 
@@ -61,6 +69,8 @@ exports.BackupBackupPlan = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
+    managedByOther,
+    cannotBeDeleted: managedByOther,
     findName: () => pipe([get("BackupPlanName")]),
     findId: () => pipe([get("BackupPlanId")]),
     getByName: getByNameCore,
