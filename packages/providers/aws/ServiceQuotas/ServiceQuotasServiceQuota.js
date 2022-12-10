@@ -51,6 +51,7 @@ exports.ServiceQuotasServiceQuota = ({ compare }) => ({
   type: "ServiceQuota",
   package: "service-quotas",
   client: "ServiceQuotas",
+  region: "us-east-1",
   propertiesDefault: {},
   managedByOther: () => () => true,
   cannotBeDeleted: () => () => true,
