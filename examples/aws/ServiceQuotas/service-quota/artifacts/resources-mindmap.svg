@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="115px" preserveAspectRatio="none" style="width:520px;height:115px;background:#FFFFFF;" version="1.1" viewBox="0 0 520 115" width="520px" zoomAndPan="magnify"><defs/><g><rect height="26.4883" style="stroke:#00000000;stroke-width:1.0;fill:none;" width="269" x="99" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="259" x="104" y="33.5352">Resources for project service-quota</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="52" x="10" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="20" y="81.0234">Infra</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="112" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="122" y="81.0234">aws</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="117" x="208" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="97" x="218" y="81.0234">ServiceQuotas</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="133" x="375" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="113" x="385" y="81.0234">ServiceQuota (1)</text><path d="M325,75.7324 L335,75.7324 C350,75.7324 350,75.7324 365,75.7324 L375,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,75.7324 L168,75.7324 C183,75.7324 183,75.7324 198,75.7324 L208,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M62,75.7324 L72,75.7324 C87,75.7324 87,75.7324 102,75.7324 L112,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><!--MD5=[66e63eae158b7a3ab0794375e9f10fd5]
+@startmindmap
+title Resources for project service-quota
+skinparam monochrome true
++ Infra
+++ aws
++++ ServiceQuotas
+++++ ServiceQuota (1)
+@endmindmap
+
+PlantUML version 1.2022.6(Tue Jun 21 14:34:49 BRT 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

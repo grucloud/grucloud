@@ -7,21 +7,21 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceQuotas.html
 
-//const { ServiceQuotasServiceQuota } = require("./ServiceQuotasServiceQuota");
+const { ServiceQuotasServiceQuota } = require("./ServiceQuotasServiceQuota");
 
 const GROUP = "ServiceQuotas";
 
 const compare = compareAws({});
 
 module.exports = pipe([
-  () => [
-    // ServiceQuotasServiceQuota({})
-  ],
-  map(createAwsService),
+  () => [ServiceQuotasServiceQuota({ compare })],
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

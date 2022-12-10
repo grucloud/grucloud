@@ -546,7 +546,6 @@ const AwsClient =
             assert(method);
             assert(pickId);
             assert(compare);
-            assert(getById);
             logger.info(
               `update type: ${type}, method: ${method}, name: ${name}`
             );
