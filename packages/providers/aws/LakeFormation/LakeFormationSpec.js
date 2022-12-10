@@ -3,29 +3,33 @@ const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
+const { createAwsService } = require("../AwsService");
 
 const GROUP = "LakeFormation";
 
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
-//const { ReportDefinition } = require("./CURReportDefinition");
+const {
+  LakeFormationDataLakeSettings,
+} = require("./LakeFormationDataLakeSettings");
+const { LakeFormationLFTag } = require("./LakeFormationLFTag");
+const { LakeFormationResource } = require("./LakeFormationResource");
 
 module.exports = pipe([
   () => [
-    // {
-    //   type: "ReportDefinition",
-    //   Client: CURReportDefinition,
-    //   propertiesDefault: {},
-    //   omitProperties: [],
-    //   inferName: () => get("ReportName"),
-    // },
+    LakeFormationDataLakeSettings({}),
+    LakeFormationLFTag({}),
+    LakeFormationResource({}),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-      tagsKey,
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+        tagsKey,
+      }),
+    ])
   ),
 ]);

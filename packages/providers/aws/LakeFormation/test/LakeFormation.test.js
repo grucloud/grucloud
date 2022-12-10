@@ -3,20 +3,23 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("LakeFormation", async function () {
-  it.skip("DataLakeSettings", () =>
+describe.only("LakeFormation", async function () {
+  it("DataLakeSettings", () =>
     pipe([
       () => ({
         groupType: "LakeFormation::DataLakeSettings",
         livesNotFound: ({ config }) => [{}],
+        skipDelete: true,
+        skipGetByName: true,
+        skipGetById: true,
       }),
       awsResourceTest,
     ])());
-  it.skip("LfTags", () =>
+  it("LFTag", () =>
     pipe([
       () => ({
-        groupType: "LakeFormation::LfTags",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "LakeFormation::LFTag",
+        livesNotFound: ({ config }) => [{ TagKey: "toto" }],
       }),
       awsResourceTest,
     ])());
@@ -28,11 +31,14 @@ describe("LakeFormation", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Resource", () =>
+  it("Resource", () =>
     pipe([
       () => ({
         groupType: "LakeFormation::Resource",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ResourceArn: "arn:aws:s3:::gcpaperino" },
+        ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());

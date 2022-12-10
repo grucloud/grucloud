@@ -64,7 +64,11 @@ const untagResource = untagResourceIam({
 const cannotBeDeleted = () =>
   pipe([
     get("Path"),
-    or([includes("/aws-service-role"), includes("/aws-reserved/")]),
+    or([
+      //
+      includes("/aws-service-role"),
+      includes("/aws-reserved/"),
+    ]),
     tap((params) => {
       assert(true);
     }),
