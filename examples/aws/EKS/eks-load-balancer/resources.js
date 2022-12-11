@@ -402,7 +402,7 @@ exports.createResources = () => [
           },
         ],
         UserData:
-          'MIME-Version: 1.0\nContent-Type: multipart/mixed; boundary="//"\n\n--//\nContent-Type: text/x-shellscript; charset="us-ascii"\n#!/bin/bash\nset -ex\nB64_CLUSTER_CA=LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJeU1URXlNakF6TWpreE0xb1hEVE15TVRFeE9UQXpNamt4TTFvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTXpyClNFaDNyM2h4N0hiZEpRM3J0cUFGeU1PNmg1NXZrZlBzUEZrS1NldWtFb3FXNUxWcCtkZnhZYnc1NEZXL2trOTcKMDhTYkRta2h0ZGpoZ0dNaHltZklBQlBqU2dhMXNDYVJ1clZURHBqMXEyNEJFNDdWQVBYZVFZYTFnYXJYRVY2UwplaHA0S1U0WkM3TWZpU3hoNWpLQ2xMN01IeEVlUWJLYUtCZjhSUjIvR2gwOVNuSE5aSFZHUi9XWlFsU3E4Y2dYCjdCV05KU3dHNnBzcTlUc2t6c0NTZnVLRUs0a25xQlJtWFlTckx2NjRFbUNsWUZUSzlqUEI5NlBJakNpYXlEWnEKM1h5TEt0WTI5dGFROTF1M2dXSW92M3hRQXpCZ1JTazZib1pUOWpmcVo0RlBzUDdwNlhGOTgrSnJzek1MQzBSOQplMWtndHNuOXJBV21YSC90akU4Q0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZPeWtCNGtpSHhNdmJZa2g0QTZSZnVXOVpRMkZNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBTUZleEVZc3pRY2RINXJSdk5PcApNbjlxL1RkTFYvK3hkNUE4SU9QRHdSSG5IVmlSY0NXY2RERFJoUHlFenp4V1RFaGxlSkZDM0hqYmF5bzE0eDhHCkhOOTFOWm9udDJvM2VRUW44WXVtdzgvNjBJZmRySzJYVFBoRTNEa3ptUUozTnQrSnhwODJPU2FQbVFEdjRHUVIKaEpDMnBQa1lGRHV6cEkyakM2MkRCbTBBR1JYRjhyaXZTTGkxdnRZdEJuTnRBSWNmbUNWM1VFR29BUVVxL1NkbApKZXZsSjM4Z01kdUFJaVo4UXVocnV0clEwaVFGYkhuYXZCaC9vdVoyM2NRbFVnNWVmTkZ6dVlOVHN6bUFBZCtaCnozTHJNakpmT0hneStFb2VhYnBsU3E5RzRXOXZ6SVRNczJhZmowbDArOTBzR1drK2xyVXl1bEhLM3BMR0hkZEcKTGFNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==\nAPI_SERVER_URL=https://28FBD2655F87475EC2976707286B265A.gr7.us-east-1.eks.amazonaws.com\nK8S_CLUSTER_DNS_IP=10.100.0.10\n/etc/eks/bootstrap.sh my-cluster --kubelet-extra-args \'--node-labels=eks.amazonaws.com/sourceLaunchTemplateVersion=1,alpha.eksctl.io/cluster-name=my-cluster,alpha.eksctl.io/nodegroup-name=ng-1,eks.amazonaws.com/nodegroup-image=ami-0c9424a408e18bcc9,eks.amazonaws.com/capacityType=ON_DEMAND,eks.amazonaws.com/nodegroup=ng-1,eks.amazonaws.com/sourceLaunchTemplateId=lt-0d5a1cc06fb40b9dc --max-pods=17\' --b64-cluster-ca $B64_CLUSTER_CA --apiserver-endpoint $API_SERVER_URL --dns-cluster-ip $K8S_CLUSTER_DNS_IP --use-max-pods false\n\n--//--',
+          'MIME-Version: 1.0\nContent-Type: multipart/mixed; boundary="//"\n\n--//\nContent-Type: text/x-shellscript; charset="us-ascii"\n#!/bin/bash\nset -ex\nB64_CLUSTER_CA=LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJeU1USXhNVEUyTlRjMU9Gb1hEVE15TVRJd09ERTJOVGMxT0Zvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTkJECjlJQkJaMW9qNWVXc1gzOWNvKy9xaERzTTU1RDRWM1lQNXRoWkJ4WWduZERaUXJTMENkRUMzZnNlY0o5S1RHUFcKbzIvREJMcnVFVittWTNEWjlEWkZPSjI0NGljMVh6RnFMMVJQT1R1WWhTekdFa0tsT3JZTGx2QUVRbWMvSVcxSQp5MGhEemZoa1Q3NmJKNVBPdDhtMENBME90cDRsdEpON0FRa0hwdVRZc2lSM2VqbTdWRzJBM3pBaEV4bG9xL20zCk8weTREZGZOYlloeXJ2MDdXNDFaNE5pdnFWaWY1OENzQklvaWYyVlJwcVltTS94MmdzdE4ySjFlQ2NqdUN5eEgKNjZycEVUeEc2bDFHMjE1aDczcXFwZnhnWUNnOGd3Ty85VG9nRWtiMXArcWxxOTdXT0NXRmlMZWhDam1EZ3gwZApZck9VSmhTUWs0TFBKdGpObFVzQ0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZKZUM5dXdFTWlvK3VZM244ampzSEJnUld1R0lNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBQjhTOTZZMWdKNENrU2hRQkUvcwpOMUVGZ1lieVZUeno3UDV4UEFMMTlpR3laNDVmK0Z0RmJKRnRvMjA1amxacUVKZHlwR3MzQlBkTUxVTjVoVzNRCnlpbWpVU3RGcDYrNG9LcmMxZ0ZGWW5rdGZJaFVPaGc0bVhiaDU1Y0J0dERtaGpGdXdSbDRWQitVUEdmSEpRTVMKVGlBKzRVVlNjait3Q1piUEJBeUVEZGNZc3FjTzdQZit6bS84UDI0SHJJVnR4SlJZS3F6bEs1UG5ENnJOcmxacApwK3BrdE15NDNTU1BwMkF2NUYzVENMdGZXQy92QzFFMVAxaGx2S1lBSnlBd2R5dUhlYmdzK3BuM0x1dEtDRFVyClVtNE4ySXovUnhIUTBuMFo2VGIrNm1QYWFNNVdna2NaSk9BUmZGRjdpcE5oTVh3MGU0SjdYU3F6RUtyL3UwRjMKcGxjPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==\nAPI_SERVER_URL=https://04C4168D74D69EB6957E084B381C92F5.gr7.us-east-1.eks.amazonaws.com\nK8S_CLUSTER_DNS_IP=10.100.0.10\n/etc/eks/bootstrap.sh my-cluster --kubelet-extra-args \'--node-labels=eks.amazonaws.com/sourceLaunchTemplateVersion=1,alpha.eksctl.io/cluster-name=my-cluster,alpha.eksctl.io/nodegroup-name=ng-1,eks.amazonaws.com/nodegroup-image=ami-0c9424a408e18bcc9,eks.amazonaws.com/capacityType=ON_DEMAND,eks.amazonaws.com/nodegroup=ng-1,eks.amazonaws.com/sourceLaunchTemplateId=lt-0e3b06172ee7a8fc7 --max-pods=17\' --b64-cluster-ca $B64_CLUSTER_CA --apiserver-endpoint $API_SERVER_URL --dns-cluster-ip $K8S_CLUSTER_DNS_IP --use-max-pods false\n\n--//--',
         MetadataOptions: {
           HttpTokens: "optional",
           HttpPutResponseHopLimit: 2,
@@ -415,6 +415,17 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroups: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
+    }),
+  },
+  {
+    type: "Addon",
+    group: "EKS",
+    properties: ({}) => ({
+      addonName: "coredns",
+      addonVersion: "v1.8.7-eksbuild.2",
+    }),
+    dependencies: ({}) => ({
+      cluster: "my-cluster",
     }),
   },
   {

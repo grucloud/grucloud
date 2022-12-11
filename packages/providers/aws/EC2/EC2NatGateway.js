@@ -38,20 +38,22 @@ const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 
 const getBaseIpFromCidr = pipe([callProp("split", "/"), first]);
 
-const indexOfIpAddress = (cidrBlock) => (ipAddress) =>
-  pipe([
-    tap(() => {
-      assert(ipAddress);
-      assert(cidrBlock);
-    }),
-    () => cidrBlock,
-    getBaseIpFromCidr,
-    ipToInt32,
-    (cidrBlockNumber) => ipToInt32(ipAddress) - cidrBlockNumber,
-    tap((index) => {
-      assert(index > 0, `${ipAddress} below ${cidrBlock}`);
-    }),
-  ])();
+const indexOfIpAddress =
+  (cidrBlock = "") =>
+  (ipAddress) =>
+    pipe([
+      tap(() => {
+        assert(ipAddress);
+        //assert(cidrBlock);
+      }),
+      () => cidrBlock,
+      getBaseIpFromCidr,
+      ipToInt32,
+      (cidrBlockNumber) => ipToInt32(ipAddress) - cidrBlockNumber,
+      tap((index) => {
+        assert(index > 0, `${ipAddress} below ${cidrBlock}`);
+      }),
+    ])();
 
 const ipFromIndex = ({ cidrBlock, index }) =>
   pipe([
@@ -81,6 +83,9 @@ const decorate = ({ endpoint, lives, config }) =>
     assign({
       SubnetCidrBlock: pipe([
         get("SubnetId"),
+        tap((SubnetId) => {
+          assert(SubnetId);
+        }),
         lives.getById({
           providerName: config.providerName,
           type: "Subnet",
@@ -88,7 +93,7 @@ const decorate = ({ endpoint, lives, config }) =>
         }),
         get("live.CidrBlock"),
         tap((CidrBlock) => {
-          assert(CidrBlock);
+          //assert(CidrBlock);
         }),
       ]),
     }),

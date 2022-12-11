@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("EKS", async function () {
-  it.skip("Addon", () =>
+  it("Addon", () =>
     pipe([
       () => ({
         groupType: "EKS::Addon",
