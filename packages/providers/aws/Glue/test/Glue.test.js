@@ -53,7 +53,7 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Crawler", () =>
+  it("Crawler", () =>
     pipe([
       () => ({
         groupType: "Glue::Crawler",

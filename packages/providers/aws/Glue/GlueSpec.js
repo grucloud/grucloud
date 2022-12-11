@@ -6,6 +6,7 @@ const { createAwsService } = require("../AwsService");
 
 const { compareAws } = require("../AwsCommon");
 
+const { GlueCrawler } = require("./GlueCrawler");
 const { GlueDatabase } = require("./GlueDatabase");
 const { GlueJob } = require("./GlueJob");
 const { GlueTable } = require("./GlueTable");
@@ -18,7 +19,7 @@ const compare = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
-    //
+    GlueCrawler({ compare }),
     GlueDatabase({ compare }),
     GlueJob({ compare }),
     GlueTable({ compare }),

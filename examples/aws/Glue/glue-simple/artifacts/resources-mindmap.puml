@@ -4,5 +4,12 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ Glue
+++++ Crawler (1)
 ++++ Database (1)
+++++ Table (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ S3
+++++ Bucket (1)
 @endmindmap

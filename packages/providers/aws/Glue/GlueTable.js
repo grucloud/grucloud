@@ -79,7 +79,7 @@ exports.GlueTable = () => ({
     ]),
   findId: () =>
     pipe([
-      get("Name "),
+      get("Name"),
       tap((id) => {
         assert(id);
       }),
@@ -111,13 +111,14 @@ exports.GlueTable = () => ({
           get("StorageDescriptor.Location"),
           callProp("replace", "s3://", ""),
           lives.getById({
-            type: "Database",
-            group: "Glue",
+            type: "Bucket",
+            group: "S3",
             providerName: config.providerName,
           }),
           get("id"),
         ]),
     },
+    // TODO kinesis stream
   },
   ignoreErrorCodes: ["EntityNotFoundException"],
   filterLive: ({ lives, providerConfig }) =>
