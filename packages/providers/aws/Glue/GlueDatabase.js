@@ -3,6 +3,7 @@ const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep, unless } = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
+const { replaceAccountAndRegion } = require("../AwsCommon");
 const { Tagger, assignTags } = require("./GlueCommon");
 
 const buildArn = () =>
@@ -90,6 +91,15 @@ exports.GlueDatabase = () => ({
   //   filterTarget: () => pipe([omit(["compare"])]),
   // }),
   ignoreErrorCodes: ["EntityNotFoundException"],
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        CatalogId: pipe([
+          get("CatalogId"),
+          replaceAccountAndRegion({ lives, providerConfig }),
+        ]),
+      }),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#getDatabase-property
   getById: {
     method: "getDatabase",
@@ -133,7 +143,7 @@ exports.GlueDatabase = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { CatalogId, Tags, ...otherProps },
+    properties: { Tags, ...otherProps },
     dependencies: {},
     config,
   }) =>
@@ -143,9 +153,5 @@ exports.GlueDatabase = () => ({
         // error http 500 when Tags are set
         //Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
       }),
-      unless(
-        () => CatalogId,
-        assign({ CatalogId: pipe([() => config.accountId()]) })
-      ),
     ])(),
 });

@@ -97,7 +97,7 @@ List of resources for provider aws:
 * GlobalAccelerator: 
 [Accelerator](./resources/GlobalAccelerator/Accelerator.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
 * Glue: 
-[Job](./resources/Glue/Job.md)
+[Database](./resources/Glue/Database.md), [Job](./resources/Glue/Job.md), [Table](./resources/Glue/Table.md)
 * Grafana: 
 [Workspace](./resources/Grafana/Workspace.md)
 * GuardDuty: 
@@ -112,6 +112,8 @@ List of resources for provider aws:
 [Stream](./resources/Kinesis/Stream.md)
 * KMS: 
 [Key](./resources/KMS/Key.md)
+* LakeFormation: 
+[DataLakeSettings](./resources/LakeFormation/DataLakeSettings.md), [LFTag](./resources/LakeFormation/LFTag.md), [Resource](./resources/LakeFormation/Resource.md)
 * Lambda: 
 [Layer](./resources/Lambda/Layer.md), [Function](./resources/Lambda/Function.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md)
 * Lightsail: 

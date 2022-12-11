@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Glue", async function () {
-  it("CatalogDatabase", () =>
+  it("Database", () =>
     pipe([
       () => ({
         groupType: "Glue::Database",
@@ -16,19 +16,20 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("CatalogTable", () =>
+  it("Table", () =>
     pipe([
       () => ({
-        groupType: "Glue::CatalogTable",
+        groupType: "Glue::Table",
         livesNotFound: ({ config }) => [
           {
+            DatabaseName: "d-12345",
             Name: "a-12345",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Classifier", () =>
+  it.only("Classifier", () =>
     pipe([
       () => ({
         groupType: "Glue::Classifier",
@@ -52,7 +53,7 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Crawler", () =>
+  it("Crawler", () =>
     pipe([
       () => ({
         groupType: "Glue::Crawler",

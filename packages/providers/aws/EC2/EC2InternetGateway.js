@@ -9,6 +9,7 @@ const {
   any,
   pick,
   not,
+  or,
 } = require("rubico");
 const { find, defaultsDeep, first, isEmpty, when } = require("rubico/x");
 const assert = require("assert");
@@ -126,6 +127,7 @@ exports.EC2InternetGateway = ({ spec, config }) => {
               InternetGatewayId,
               VpcId,
             }),
+
           shouldRetryOnException: ({ error, name }) =>
             pipe([
               () => error,
@@ -133,50 +135,56 @@ exports.EC2InternetGateway = ({ spec, config }) => {
                 // "Network vpc-xxxxxxx has some mapped public address(es). Please unmap those public address(es) before detaching the gateway."
                 logger.error(`detachInternetGateway ${name}: ${tos(error)}`);
               }),
-              isAwsError("DependencyViolation"),
+              or([
+                isAwsError("DependencyViolation"),
+                isAwsError("Gateway.NotAttached"),
+              ]),
             ])(),
           config: { retryCount: 10, retryDelay: 5e3 },
         }),
     ])();
 
-  const detachInternetGateways = ({ endpoint }) =>
-    pipe([
-      tap(() => {
-        assert(true);
-      }),
-      getById({}),
-      tap((params) => {
-        assert(true);
-      }),
-
-      get("Attachments"),
-      map(
-        tryCatch(
-          pipe([
-            get("VpcId"),
-            tap((VpcId) => {
-              assert(VpcId);
-            }),
-            (VpcId) => detachInternetGateway({ InternetGatewayId, VpcId }),
-          ]),
-          (error, Attachment) =>
+  const detachInternetGateways =
+    ({ endpoint }) =>
+    ({ InternetGatewayId }) =>
+      pipe([
+        tap(() => {
+          assert(InternetGatewayId);
+        }),
+        () => InternetGatewayId,
+        getById({}),
+        tap((params) => {
+          assert(true);
+        }),
+        get("Attachments"),
+        map(
+          tryCatch(
             pipe([
-              tap(() => {
-                logger.error(
-                  `error associateRouteTable ${tos({
-                    Attachment,
-                    error,
-                  })}`
-                );
+              get("VpcId"),
+              tap((VpcId) => {
+                assert(VpcId);
               }),
-              () => ({ error, InternetGatewayId, Attachment }),
-            ])()
-        )
-      ),
-      tap.if(any(get("error")), (results) => {
-        throw results;
-      }),
-    ]);
+              (VpcId) => ({ InternetGatewayId, VpcId }),
+              detachInternetGateway,
+            ]),
+            (error, Attachment) =>
+              pipe([
+                tap(() => {
+                  logger.error(
+                    `error associateRouteTable ${tos({
+                      Attachment,
+                      error,
+                    })}`
+                  );
+                }),
+                () => ({ error, InternetGatewayId, Attachment }),
+              ])()
+          )
+        ),
+        tap.if(any(get("error")), (results) => {
+          throw results;
+        }),
+      ])();
 
   const destroy = client.destroy({
     preDestroy: detachInternetGateways,
