@@ -4,6 +4,16 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Classifier",
+    group: "Glue",
+    properties: ({}) => ({
+      JsonClassifier: {
+        JsonPath: "$.key",
+        Name: "my-classifier",
+      },
+    }),
+  },
+  {
     type: "Crawler",
     group: "Glue",
     properties: ({}) => ({

@@ -4,6 +4,7 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ Glue
+++++ Classifier (1)
 ++++ Crawler (1)
 ++++ Database (1)
 ++++ Table (1)

@@ -29,7 +29,7 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Classifier", () =>
+  it.only("Classifier", () =>
     pipe([
       () => ({
         groupType: "Glue::Classifier",
