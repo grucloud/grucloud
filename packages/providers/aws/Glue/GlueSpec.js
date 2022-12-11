@@ -8,6 +8,7 @@ const { compareAws } = require("../AwsCommon");
 
 const { GlueDatabase } = require("./GlueDatabase");
 const { GlueJob } = require("./GlueJob");
+const { GlueTable } = require("./GlueTable");
 
 const GROUP = "Glue";
 
@@ -20,6 +21,7 @@ module.exports = pipe([
     //
     GlueDatabase({ compare }),
     GlueJob({ compare }),
+    GlueTable({ compare }),
   ],
   map(
     pipe([

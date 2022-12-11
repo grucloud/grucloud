@@ -10,4 +10,37 @@ exports.createResources = () => [
       Name: "my-database",
     }),
   },
+  {
+    type: "Table",
+    group: "Glue",
+    properties: ({ config }) => ({
+      CatalogId: `${config.accountId()}`,
+      Name: "my-table",
+      Retention: 0,
+      StorageDescriptor: {
+        Columns: [],
+        Compressed: false,
+        InputFormat: "org.apache.hadoop.mapred.TextInputFormat",
+        Location: "s3://gc-glue-database",
+        NumberOfBuckets: 0,
+        OutputFormat:
+          "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+        SerdeInfo: {
+          SerializationLibrary: "org.openx.data.jsonserde.JsonSerDe",
+        },
+        SortColumns: [],
+        StoredAsSubDirectories: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      database: "my-database",
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "gc-glue-database",
+    }),
+  },
 ];
