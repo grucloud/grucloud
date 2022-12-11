@@ -1,6 +1,6 @@
 {
   "name": "prefix-list",
-  "version": "10.4.0",
+  "version": "10.5.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^10.4.0",
-    "@grucloud/provider-aws": "^10.4.0",
+    "@grucloud/provider-aws": "^10.5.0",
     "rubico": "1.8.10"
   },
   "devDependencies": {
