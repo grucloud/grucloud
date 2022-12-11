@@ -3,8 +3,12 @@ const assert = require("assert");
 const { pipe, map, pick, omit, tap, not, get, eq, assign } = require("rubico");
 const { defaultsDeep, when, pluck, find } = require("rubico/x");
 
+const { createAwsService } = require("../AwsService");
+
 const { compareAws } = require("../AwsCommon");
 const { isOurMinionObject } = require("../AwsCommon");
+
+const { EKSAddon } = require("./EKSAddon");
 const { EKSCluster } = require("./EKSCluster");
 const { EKSNodeGroup } = require("./EKSNodeGroup");
 
@@ -14,7 +18,7 @@ const isOurMinion = ({ live, config }) =>
 const GROUP = "EKS";
 const tagsKey = "tags";
 
-const compareEKS = compareAws({ tagsKey });
+const compare = compareAws({ tagsKey });
 
 const omitLaunchTemplateProps = pipe([
   when(get("launchTemplate"), omit(["instanceTypes", "amiType", "diskSize"])),
@@ -23,6 +27,7 @@ const omitLaunchTemplateProps = pipe([
 
 module.exports = pipe([
   () => [
+    createAwsService(EKSAddon({ compare })),
     {
       type: "Cluster",
       inferName: () =>
@@ -93,7 +98,7 @@ module.exports = pipe([
         "version",
         "platformVersion",
       ],
-      compare: compareEKS({}),
+      compare: compare({}),
       filterLive: ({ providerConfig, lives }) =>
         pipe([
           pick(["name", "version", "encryptionConfig"]),
@@ -137,7 +142,6 @@ module.exports = pipe([
             pipe([
               get("clusterName"),
               lives.getByName({
-                name: live.clusterName,
                 type: "Cluster",
                 group: "EKS",
                 providerName: config.providerName,
@@ -183,7 +187,7 @@ module.exports = pipe([
         },
       },
       Client: EKSNodeGroup,
-      compare: compareEKS({
+      compare: compare({
         filterTarget: () =>
           pipe([
             pick([
@@ -225,5 +229,7 @@ module.exports = pipe([
         ]),
     },
   ],
-  map(defaultsDeep({ group: GROUP, tagsKey, isOurMinion })),
+  map(
+    defaultsDeep({ group: GROUP, tagsKey, isOurMinion, compare: compare({}) })
+  ),
 ]);

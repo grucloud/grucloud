@@ -29,13 +29,13 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("Classifier", () =>
+  it("Classifier", () =>
     pipe([
       () => ({
         groupType: "Glue::Classifier",
         livesNotFound: ({ config }) => [
           {
-            Name: "a-12345",
+            JsonClassifier: { Name: "a-12345" },
           },
         ],
       }),

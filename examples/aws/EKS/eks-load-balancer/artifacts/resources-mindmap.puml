@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project EKS Load Balancer
+title Resources for project eks-load-balancer
 skinparam monochrome true
 + Infra
 ++ aws
@@ -20,8 +20,9 @@ skinparam monochrome true
 ++++ SecurityGroup (4)
 ++++ SecurityGroupRuleIngress (3)
 ++++ ElasticIpAddress (1)
-++++ LaunchTemplate (1)
+++++ LaunchTemplate (2)
 +++ EKS
+++++ Addon (1)
 ++++ Cluster (1)
 ++++ NodeGroup (1)
 +++ ElasticLoadBalancingV2
