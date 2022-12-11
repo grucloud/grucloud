@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project glue-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Glue
+++++ Database (1)
+@endmindmap

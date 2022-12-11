@@ -106,9 +106,6 @@ exports.WAFV2WebACLAssociation = ({ spec, config }) =>
       ({ lives, config }) =>
       (live) =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           () => live,
           fork({
             webACLName: pipe([
@@ -132,7 +129,7 @@ exports.WAFV2WebACLAssociation = ({ spec, config }) =>
                     providerName: config.providerName,
                   }),
                   get("name"),
-                ])
+                ])()
               ),
               filter(not(isEmpty)),
               first,

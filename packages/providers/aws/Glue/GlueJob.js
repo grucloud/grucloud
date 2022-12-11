@@ -1,25 +1,38 @@
 const assert = require("assert");
-const { pipe, tap, get, omit, pick, eq } = require("rubico");
+const { pipe, tap, get, omit, assign, pick, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource, assignTags } = require("./GlueCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
+
+const { Tagger, assignTags } = require("./GlueCommon");
+
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
 
 const findId = () =>
   pipe([
-    tap((params) => {
-      assert(params);
-    }),
     get("Name"),
+    tap((id) => {
+      assert(id);
+    }),
   ]);
 
-const buildArn =
-  ({ config }) =>
-  ({ Name }) =>
-    `arn:aws:glue:${config.region}:${config.accountId()}:job/${Name}`;
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        ({ Name }) =>
+          `arn:aws:glue:${config.region}:${config.accountId()}:job/${Name}`,
+      ]),
+    }),
+  ]);
 
 const pickId = pipe([
   tap((params) => {
@@ -28,25 +41,47 @@ const pickId = pipe([
   ({ Name }) => ({ JobName: Name }),
 ]);
 
-const model = ({ config }) => ({
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    assignArn({ config }),
+    assignTags({ endpoint, buildArn: buildArn() }),
+    tap((params) => {
+      assert(params);
+    }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html
+exports.GlueJob = () => ({
+  type: "Job",
   package: "glue",
   client: "Glue",
   ignoreErrorCodes: ["EntityNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#getJob-property
+  inferName: () => get("Name"),
+  findName: () => pipe([get("Name")]),
+  findId,
+  omitProperties: [
+    "CreatedOn",
+    "LastModifiedOn",
+    "AllocatedCapacity",
+    "MaxCapacity",
+    "Role",
+    "Arn",
+  ],
+  propertiesDefault: {},
+  dependencies: {
+    role: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: () => pipe([get("Role")]),
+    },
+  },
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([({ name }) => ({ Name: name }), getById({})]),
   getById: {
     method: "getJob",
     pickId,
     getField: "Job",
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(params);
-        }),
-        assignTags({ endpoint, findId: buildArn({ config }) }),
-        tap((params) => {
-          assert(params);
-        }),
-      ]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#listJobs-property
   getList: {
@@ -65,10 +100,6 @@ const model = ({ config }) => ({
   create: {
     method: "createJob",
     pickCreated: ({ payload }) => pipe([() => payload]),
-    postCreate:
-      ({ endpoint }) =>
-      (live) =>
-        pipe([() => live])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#updateJob-property
   update: {
@@ -81,39 +112,25 @@ const model = ({ config }) => ({
     method: "deleteJob",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html
-exports.GlueJob = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { role },
     config,
-    findName: () => pipe([get("Name")]),
-    findId,
-    getByName: ({ getList, endpoint, getById }) =>
-      pipe([({ name }) => ({ Name: name }), getById({})]),
-    //TODO
-    findDependencies: ({ live }) => [
-      {
-        type: "Role",
-        group: "IAM",
-        ids: [live.Role],
-      },
-    ],
-    tagResource: tagResource({ findId: buildArn({ config }) }),
-    untagResource: untagResource({ findId: buildArn({ config }) }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { role },
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-          Role: getField(role, "Arn"),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(role);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+        Role: getField(role, "Arn"),
+      }),
+    ])(),
+});

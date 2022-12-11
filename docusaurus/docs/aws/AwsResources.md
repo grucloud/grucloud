@@ -152,6 +152,8 @@ List of resources for provider aws:
 [Secret](./resources/SecretsManager/Secret.md), [SecretRotation](./resources/SecretsManager/SecretRotation.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SecurityHub: 
 [Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
+* ServiceQuotas: 
+[ServiceQuota](./resources/ServiceQuotas/ServiceQuota.md)
 * SESV2: 
 [ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md)
 * Shield: 

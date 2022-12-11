@@ -2,39 +2,33 @@ const assert = require("assert");
 const { map, pipe, get, tap } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { createAwsService } = require("../AwsService");
+
+const { compareAws } = require("../AwsCommon");
+
+const { GlueDatabase } = require("./GlueDatabase");
 const { GlueJob } = require("./GlueJob");
 
 const GROUP = "Glue";
 
 const tagsKey = "Tags";
 
-const compareJob = compareAws({ tagsKey });
+const compare = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
-    {
-      type: "Job",
-      Client: GlueJob,
-      inferName: () => get("Name"),
-      omitProperties: [
-        "CreatedOn",
-        "LastModifiedOn",
-        "AllocatedCapacity",
-        "MaxCapacity",
-        "Role",
-      ],
-      propertiesDefault: {},
-      dependencies: { role: { type: "Role", group: "IAM" } },
-      compare: compareJob({}),
-    },
+    //
+    GlueDatabase({ compare }),
+    GlueJob({ compare }),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      isOurMinion,
-      tagsKey,
-      compare: compareJob({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        tagsKey,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

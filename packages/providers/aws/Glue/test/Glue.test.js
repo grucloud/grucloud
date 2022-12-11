@@ -4,10 +4,10 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Glue", async function () {
-  it.skip("CatalogDatabase", () =>
+  it("CatalogDatabase", () =>
     pipe([
       () => ({
-        groupType: "Glue::CatalogDatabase",
+        groupType: "Glue::Database",
         livesNotFound: ({ config }) => [
           {
             Name: "a-12345",

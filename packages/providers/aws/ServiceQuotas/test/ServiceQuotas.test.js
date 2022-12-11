@@ -4,12 +4,12 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("ServiceQuotas", async function () {
-  it.skip("ServiceQuota", () =>
-    pipe([
-      () => ({
-        groupType: "ServiceQuotas::ServiceQuota",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
+  // it.skip("ServiceQuota", () =>
+  //   pipe([
+  //     () => ({
+  //       groupType: "ServiceQuotas::ServiceQuota",
+  //       livesNotFound: ({ config }) => [{}],
+  //     }),
+  //     awsResourceTest,
+  //   ])());
 });

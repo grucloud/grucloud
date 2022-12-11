@@ -76,6 +76,9 @@ exports.createResources = () => [
       FeatureSet: "ALL",
       MasterAccountEmail: "frederic.heem@gmail.com",
       serviceAccessPrincipals: [
+        "account.amazonaws.com",
+        "auditmanager.amazonaws.com",
+        "guardduty.amazonaws.com",
         "inspector2.amazonaws.com",
         "member.org.stacksets.cloudformation.amazonaws.com",
         "ram.amazonaws.com",

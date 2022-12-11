@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project lake-formation
+skinparam monochrome true
++ Infra
+++ aws
++++ LakeFormation
+++++ DataLakeSettings (1)
+++++ LFTag (1)
+++++ Resource (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

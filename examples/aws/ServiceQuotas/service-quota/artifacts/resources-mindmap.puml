@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project service-quota
+skinparam monochrome true
++ Infra
+++ aws
++++ ServiceQuotas
+++++ ServiceQuota (1)
+@endmindmap

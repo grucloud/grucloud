@@ -137,11 +137,10 @@ exports.RAMPrincipalAssociation = ({ spec, config }) =>
           tap(() => {
             assert(live.associatedEntity);
           }),
-          () =>
-            lives.getByType({
-              type: "Organisation",
-              group: "Organisations",
-            }),
+          lives.getByType({
+            type: "Organisation",
+            group: "Organisations",
+          }),
           find(eq(get("live.Arn"), live.associatedEntity)),
           get("name"),
           //TODO
