@@ -12,7 +12,6 @@
 - Amazon DynamoDB Streams
 - ECSTaskSet
 - AWS::XRay
-- aws_servicequotas_service_quota
 - Network Manager SiteToSiteVpnAttachment
   aws_networkmanager_attachment_accepter
 - EC2 instance, sort groups

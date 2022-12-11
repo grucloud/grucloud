@@ -29,6 +29,19 @@ describe("EKS", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("FargateProfile", () =>
+    pipe([
+      () => ({
+        groupType: "EKS::FargateProfile",
+        livesNotFound: ({ config }) => [
+          {
+            fargateProfileName: "12345",
+            clusterName: "c123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("NodeGroup", () =>
     pipe([
       () => ({
