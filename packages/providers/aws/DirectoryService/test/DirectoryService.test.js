@@ -20,14 +20,6 @@ describe("DirectoryService", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("LogSubscription", () =>
-    pipe([
-      () => ({
-        groupType: "DirectoryService::LogSubscription",
-        livesNotFound: ({ config }) => [{ DirectoryId: "d123" }],
-      }),
-      awsResourceTest,
-    ])());
   it.skip("Region", () =>
     pipe([
       () => ({

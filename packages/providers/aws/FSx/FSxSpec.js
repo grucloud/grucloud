@@ -9,12 +9,11 @@ const { createAwsService } = require("../AwsService");
 
 //const { FSxBackup } = require("./FSxBackup");
 //const { FSxDataRepositoryAssociation} = require("./FSxDataRepositoryAssociation");
-//const { FSxFileCache } = require("./FSxFileCache");
-//const { FSxLustreFileSystem } = require("./FSxLustreFileSystem");
-//const { FSxOpenzfsFileSystem } = require("./FSxOpenzfsFileSystem");
 //const { FSxOpenzfsSnapshot } = require("./FSxOpenzfsSnapshot");
-//const { FSxOpenzfsVolume } = require("./FSxOpenzfsVolume");
-//const { FSxWindowsFileSystem } = require("./FSxWindowsFileSystem");
+
+const { FSxFileSystem } = require("./FSxFileSystem");
+const { FSxStorageVirtualMachine } = require("./FSxStorageVirtualMachine");
+const { FSxVolume } = require("./FSxVolume");
 
 const GROUP = "FSx";
 const compare = compareAws({});
@@ -24,17 +23,18 @@ module.exports = pipe([
     // FSxBackup({})
     // FSxDataRepositoryAssociation({})
     // FSxFileCache({})
-    // FSxLustreFileSystem({})
-    // FSxOpenzfsFileSystem({})
     // FSxOpenzfsSnapshot({})
-    // FSxOpenzfsVolume({})
-    // FSxWindowsFileSystem({})
+    FSxFileSystem({}),
+    FSxStorageVirtualMachine({}),
+    FSxVolume({}),
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

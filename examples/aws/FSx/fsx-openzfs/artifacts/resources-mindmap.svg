@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="341px" preserveAspectRatio="none" style="width:537px;height:341px;background:#FFFFFF;" version="1.1" viewBox="0 0 537 341" width="537px" zoomAndPan="magnify"><defs/><g><rect height="26.4883" style="stroke:#00000000;stroke-width:1.0;fill:none;" width="257" x="113.5" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="247" x="118.5" y="33.5352">Resources for project fsx-openzfs</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="52" x="10" y="170.4648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="20" y="194">Infra</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="112" y="170.4648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="122" y="194">aws</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="47" x="208" y="142.2207"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="27" x="218" y="165.7559">EC2</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="68" x="305" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="48" x="315" y="81.0234">Vpc (1)</text><path d="M255,160.4648 L265,160.4648 C280,160.4648 280,75.7324 295,75.7324 L305,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="91" x="305" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="71" x="315" y="137.5117">Subnet (1)</text><path d="M255,160.4648 L265,160.4648 C280,160.4648 280,132.2207 295,132.2207 L305,132.2207 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="140" x="305" y="170.4648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="120" x="315" y="194">SecurityGroup (1)</text><path d="M255,160.4648 L265,160.4648 C280,160.4648 280,188.709 295,188.709 L305,188.709 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="220" x="305" y="226.9531"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="200" x="315" y="250.4883">SecurityGroupRuleIngress (1)</text><path d="M255,160.4648 L265,160.4648 C280,160.4648 280,245.1973 295,245.1973 L305,245.1973 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,188.709 L168,188.709 C183,188.709 183,160.4648 198,160.4648 L208,160.4648 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="45" x="208" y="283.4414"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="25" x="218" y="306.9766">FSx</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="115" x="303" y="283.4414"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="95" x="313" y="306.9766">FileSystem (1)</text><path d="M253,301.6855 L263,301.6855 C278,301.6855 278,301.6855 293,301.6855 L303,301.6855 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,188.709 L168,188.709 C183,188.709 183,301.6855 198,301.6855 L208,301.6855 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M62,188.709 L72,188.709 C87,188.709 87,188.709 102,188.709 L112,188.709 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><!--MD5=[31b36321b06abdf0c38d27f577ede0a8]
+@startmindmap
+title Resources for project fsx-openzfs
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
++++ FSx
+++++ FileSystem (1)
+@endmindmap
+
+PlantUML version 1.2022.6(Tue Jun 21 14:34:49 BRT 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

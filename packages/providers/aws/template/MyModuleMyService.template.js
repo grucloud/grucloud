@@ -261,6 +261,12 @@ exports.MyModuleMyResource = () => ({
   //     list: true,
   //     dependencyIds: ({ lives, config }) => get("VpcSubnetIds"),
   //   },
+  //   securityGroups: {
+  //     type: "SecurityGroup",
+  //     group: "EC2",
+  //     list: true,
+  //     dependencyIds: ({ lives, config }) => get("SecurityGroupIds"),
+  // },
   //   stage: {
   //     type: "Stage",
   //     group: "ApiGatewayV2",
