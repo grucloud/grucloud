@@ -4,6 +4,8 @@ const { defaultsDeep, pluck } = require("rubico/x");
 
 const { replaceWithName, omitIfEmpty } = require("@grucloud/core/Common");
 
+const { createAwsService } = require("../AwsService");
+
 const { compareAws } = require("../AwsCommon");
 
 const { AppConfigApplication } = require("./AppConfigApplication");
@@ -15,6 +17,11 @@ const {
   AppConfigConfigurationProfile,
 } = require("./AppConfigConfigurationProfile");
 const { AppConfigEnvironment } = require("./AppConfigEnvironment");
+const { AppConfigExtension } = require("./AppConfigExtension");
+const {
+  AppConfigExtensionAssociation,
+} = require("./AppConfigExtensionAssociation");
+
 const {
   AppConfigHostedConfigurationVersion,
 } = require("./AppConfigHostedConfigurationVersion");
@@ -30,8 +37,26 @@ module.exports = pipe([
     {
       type: "Application",
       Client: AppConfigApplication,
-      omitProperties: ["Id"],
+      omitProperties: ["Id", "Arn"],
       inferName: () => get("Name"),
+    },
+    {
+      type: "ConfigurationProfile",
+      Client: AppConfigConfigurationProfile,
+      omitProperties: ["Id", "ApplicationId", "Arn"],
+      inferName:
+        ({ dependenciesSpec }) =>
+        ({ Name }) =>
+          `${dependenciesSpec.application}::${Name}`,
+      dependencies: {
+        application: {
+          type: "Application",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("ApplicationId"),
+        },
+      },
+      filterLive: () => pipe([omitIfEmpty(["ValidatorTypes"])]),
     },
     {
       type: "Deployment",
@@ -96,28 +121,10 @@ module.exports = pipe([
       inferName: () => get("Name"),
     },
     {
-      type: "ConfigurationProfile",
-      Client: AppConfigConfigurationProfile,
-      omitProperties: ["Id", "ApplicationId"],
-      inferName:
-        ({ dependenciesSpec }) =>
-        ({ Name }) =>
-          `${dependenciesSpec.application}::${Name}`,
-      dependencies: {
-        application: {
-          type: "Application",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) => get("ApplicationId"),
-        },
-      },
-      filterLive: () => pipe([omitIfEmpty(["ValidatorTypes"])]),
-    },
-    {
       type: "Environment",
       Client: AppConfigEnvironment,
       propertiesDefault: { Monitors: [] },
-      omitProperties: ["Id", "ApplicationId", "State"],
+      omitProperties: ["Id", "ApplicationId", "State", "Arn"],
       inferName:
         ({ dependenciesSpec }) =>
         ({ Name }) =>
@@ -178,6 +185,9 @@ module.exports = pipe([
           }),
         ]),
     },
+    createAwsService(AppConfigExtension({})),
+    createAwsService(AppConfigExtensionAssociation({})),
+
     {
       type: "HostedConfigurationVersion",
       Client: AppConfigHostedConfigurationVersion,

@@ -61,7 +61,10 @@ exports.CloudHSMV2Hsm = () => ({
       dependencyId: ({ lives, config }) => get("ClusterId"),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: [
+    "CloudHsmResourceNotFoundException",
+    "ResourceNotFoundException",
+  ],
   filterLive: ({ lives, providerConfig }) =>
     pipe([
       assign({

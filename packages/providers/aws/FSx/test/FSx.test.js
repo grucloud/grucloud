@@ -28,22 +28,7 @@ describe("FSx", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("LustreFileSystem", () =>
-    pipe([
-      () => ({
-        groupType: "FSx::LustreFileSystem",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("OpenzfsFileSystem", () =>
-    pipe([
-      () => ({
-        groupType: "FSx::OpenzfsFileSystem",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
+
   it.skip("OpenzfsSnapshot", () =>
     pipe([
       () => ({
@@ -52,19 +37,21 @@ describe("FSx", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("OpenzfsVolume", () =>
+  it("Volume", () =>
     pipe([
       () => ({
-        groupType: "FSx::OpenzfsVolume",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "FSx::Volume",
+        livesNotFound: ({ config }) => [
+          { VolumeId: "fsvol-0337c80125f855f55" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("WindowsFileSystem", () =>
+  it("FileSystem", () =>
     pipe([
       () => ({
-        groupType: "FSx::WindowsFileSystem",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "FSx::FileSystem",
+        livesNotFound: ({ config }) => [{ FileSystemId: "fs-012345678901" }],
       }),
       awsResourceTest,
     ])());

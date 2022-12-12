@@ -12,6 +12,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "ConfigurationProfile",
+    group: "AppConfig",
+    properties: ({}) => ({
+      LocationUri: "hosted",
+      Name: "profile-freeform",
+      Type: "AWS.Freeform",
+    }),
+    dependencies: ({}) => ({
+      application: "my-appconfig",
+    }),
+  },
+  {
     type: "Deployment",
     group: "AppConfig",
     dependencies: ({}) => ({
@@ -35,18 +47,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ConfigurationProfile",
-    group: "AppConfig",
-    properties: ({}) => ({
-      LocationUri: "hosted",
-      Name: "profile-freeform",
-      Type: "AWS.Freeform",
-    }),
-    dependencies: ({}) => ({
-      application: "my-appconfig",
-    }),
-  },
-  {
     type: "Environment",
     group: "AppConfig",
     properties: ({}) => ({
@@ -58,6 +58,54 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Environment",
+    group: "AppConfig",
+    properties: ({}) => ({
+      Name: "uat",
+    }),
+    dependencies: ({}) => ({
+      application: "my-appconfig",
+    }),
+  },
+  {
+    type: "Extension",
+    group: "AppConfig",
+    properties: ({ getId }) => ({
+      Actions: {
+        ON_DEPLOYMENT_COMPLETE: [
+          {
+            Description: "",
+            Name: "dostuff",
+            RoleArn: `${getId({
+              type: "Role",
+              group: "IAM",
+              name: "role-appconfig",
+            })}`,
+            Uri: `${getId({
+              type: "Queue",
+              group: "SQS",
+              name: "appconfig-queue",
+            })}`,
+          },
+        ],
+      },
+      Name: "my-extension",
+      VersionNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      iamRoles: ["role-appconfig"],
+      sqsQueues: ["appconfig-queue"],
+    }),
+  },
+  {
+    type: "ExtensionAssociation",
+    group: "AppConfig",
+    dependencies: ({}) => ({
+      environment: "my-appconfig::uat",
+      extension: "my-extension",
+    }),
+  },
+  {
     type: "HostedConfigurationVersion",
     group: "AppConfig",
     properties: ({}) => ({
@@ -66,6 +114,38 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       configurationProfile: "my-appconfig::profile-freeform",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "role-appconfig",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "appconfig.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonSQSFullAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonSQSFullAccess",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Queue",
+    group: "SQS",
+    properties: ({}) => ({
+      QueueName: "appconfig-queue",
     }),
   },
 ];

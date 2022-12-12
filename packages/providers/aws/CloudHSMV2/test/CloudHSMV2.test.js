@@ -12,11 +12,14 @@ describe("CloudHSMV2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Hsm", () =>
+  it("Hsm", () =>
     pipe([
       () => ({
         groupType: "CloudHSMV2::Hsm",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ClusterId: "cluster-igklspoyj5a", HsmId: "hsm-jf7qzgpf5d2" },
+        ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());

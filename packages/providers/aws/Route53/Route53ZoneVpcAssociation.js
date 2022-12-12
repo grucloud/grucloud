@@ -10,6 +10,7 @@ const {
   map,
   and,
   or,
+  not,
 } = require("rubico");
 const { defaultsDeep, find, first, identity } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -44,6 +45,7 @@ const managedByOther =
       () => live,
       or([
         get("Owner.OwningService"),
+        not(eq(get("Owner.OwningAccount"), config.accountId())),
         pipe([
           get("HostedZoneId"),
           lives.getById({

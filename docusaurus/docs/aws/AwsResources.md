@@ -19,7 +19,7 @@ List of resources for provider aws:
 * ApiGatewayV2: 
 [DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
 * AppConfig: 
-[Application](./resources/AppConfig/Application.md), [Deployment](./resources/AppConfig/Deployment.md), [DeploymentStrategy](./resources/AppConfig/DeploymentStrategy.md), [ConfigurationProfile](./resources/AppConfig/ConfigurationProfile.md), [Environment](./resources/AppConfig/Environment.md), [HostedConfigurationVersion](./resources/AppConfig/HostedConfigurationVersion.md)
+[Application](./resources/AppConfig/Application.md), [ConfigurationProfile](./resources/AppConfig/ConfigurationProfile.md), [Deployment](./resources/AppConfig/Deployment.md), [DeploymentStrategy](./resources/AppConfig/DeploymentStrategy.md), [Environment](./resources/AppConfig/Environment.md), [Extension](./resources/AppConfig/Extension.md), [ExtensionAssociation](./resources/AppConfig/ExtensionAssociation.md), [HostedConfigurationVersion](./resources/AppConfig/HostedConfigurationVersion.md)
 * Appflow: 
 [Flow](./resources/Appflow/Flow.md), [ConnectorProfile](./resources/Appflow/ConnectorProfile.md)
 * ApplicationAutoScaling: 
@@ -83,7 +83,7 @@ List of resources for provider aws:
 * EFS: 
 [FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
-[Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
+[Addon](./resources/EKS/Addon.md), [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
 * ElastiCache: 
 [CacheCluster](./resources/ElastiCache/CacheCluster.md), [CacheParameterGroup](./resources/ElastiCache/CacheParameterGroup.md), [CacheSubnetGroup](./resources/ElastiCache/CacheSubnetGroup.md), [ReplicationGroup](./resources/ElastiCache/ReplicationGroup.md), [User](./resources/ElastiCache/User.md), [UserGroup](./resources/ElastiCache/UserGroup.md)
 * ElasticBeanstalk: 
@@ -94,10 +94,12 @@ List of resources for provider aws:
 [Application](./resources/EMRServerless/Application.md)
 * Firehose: 
 [DeliveryStream](./resources/Firehose/DeliveryStream.md)
+* FSx: 
+[FileSystem](./resources/FSx/FileSystem.md), [StorageVirtualMachine](./resources/FSx/StorageVirtualMachine.md), [Volume](./resources/FSx/Volume.md)
 * GlobalAccelerator: 
 [Accelerator](./resources/GlobalAccelerator/Accelerator.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
 * Glue: 
-[Database](./resources/Glue/Database.md), [Job](./resources/Glue/Job.md), [Table](./resources/Glue/Table.md)
+[Classifier](./resources/Glue/Classifier.md), [Crawler](./resources/Glue/Crawler.md), [Database](./resources/Glue/Database.md), [Job](./resources/Glue/Job.md), [Table](./resources/Glue/Table.md)
 * Grafana: 
 [Workspace](./resources/Grafana/Workspace.md)
 * GuardDuty: 

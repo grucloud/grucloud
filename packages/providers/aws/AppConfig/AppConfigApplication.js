@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get } = require("rubico");
+const { pipe, tap, get, assign } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -11,13 +11,31 @@ const { tagResource, untagResource, assignTags } = require("./AppConfigCommon");
 const pickId = pipe([({ Id }) => ({ ApplicationId: Id })]);
 
 // https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsappconfig.html
-const buildArn =
-  ({ region, accountId }) =>
-  ({ Id }) =>
-    `arn:aws:appconfig:${region}:${accountId()}:application/${Id}`;
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        ({ Id }) =>
+          `arn:aws:appconfig:${
+            config.region
+          }:${config.accountId()}:application/${Id}`,
+      ]),
+    }),
+  ]);
 
 const decorate = ({ endpoint, config }) =>
-  pipe([assignTags({ buildArn: buildArn(config), endpoint })]);
+  pipe([
+    assignArn({ config }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
+  ]);
 
 const model = ({ config }) => ({
   package: "appconfig",
