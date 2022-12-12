@@ -14,13 +14,40 @@ const pickId = pipe([
   ({ Id, ApplicationId }) => ({ EnvironmentId: Id, ApplicationId }),
 ]);
 
-const buildArn =
-  ({ region, accountId }) =>
-  ({ Id, ApplicationId }) =>
-    `arn:aws:appconfig:${region}:${accountId()}:application/${ApplicationId}/environment/${Id}`;
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        ({ Id, ApplicationId }) =>
+          `arn:aws:appconfig:${
+            config.region
+          }:${config.accountId()}:application/${ApplicationId}/environment/${Id}`,
+      ]),
+    }),
+  ]);
 
 const decorate = ({ endpoint, config }) =>
-  pipe([assignTags({ buildArn: buildArn(config), endpoint })]);
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    assignArn({ config }),
+    tap((params) => {
+      assert(true);
+    }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
 const model = ({ config }) => ({
   package: "appconfig",

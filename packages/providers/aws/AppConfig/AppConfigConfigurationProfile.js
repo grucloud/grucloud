@@ -14,13 +14,31 @@ const pickId = pipe([
   ({ Id, ApplicationId }) => ({ ConfigurationProfileId: Id, ApplicationId }),
 ]);
 
-const buildArn =
-  ({ region, accountId }) =>
-  ({ Id, ApplicationId }) =>
-    `arn:aws:appconfig:${region}:${accountId()}:application/${ApplicationId}/configurationprofile/${Id}`;
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        ({ Id, ApplicationId }) =>
+          `arn:aws:appconfig:${
+            config.region
+          }:${config.accountId()}:application/${ApplicationId}/configurationprofile/${Id}`,
+      ]),
+    }),
+  ]);
 
 const decorate = ({ endpoint, config }) =>
-  pipe([assignTags({ buildArn: buildArn(config), endpoint })]);
+  pipe([
+    assignArn({ config }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
+  ]);
 
 const model = ({ config }) => ({
   package: "appconfig",

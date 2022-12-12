@@ -46,6 +46,13 @@ const queueUrlToName = pipe([
   }),
 ]);
 
+const omitDefaultPolicy = assign({
+  Attributes: pipe([
+    get("Attributes"),
+    when(eq(get("Policy.Id"), "__default_policy_ID"), omit(["Policy"])),
+  ]),
+});
+
 const findName = () => pipe([queueUrlToName]);
 
 const ignoreErrorCodes = [
@@ -77,6 +84,7 @@ const decorate = ({ endpoint, live }) =>
         ),
       ]),
     }),
+    omitDefaultPolicy,
     assign({ QueueName: pipe([queueUrlToName]) }),
     assignTags({ endpoint }),
   ]);
@@ -137,7 +145,6 @@ exports.SQSQueue = () => ({
               ]),
             })
           ),
-          when(eq(get("Policy.Id"), "__default_policy_ID"), omit(["Policy"])),
         ]),
       }),
     ]),

@@ -61,19 +61,21 @@ describe("AppConfig", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Extension", () =>
+  it("Extension", () =>
     pipe([
       () => ({
         groupType: "AppConfig::Extension",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ExtensionIdentifier: "a11", VersionNumber: "1" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("ExtensionAssociation", () =>
+  it("ExtensionAssociation", () =>
     pipe([
       () => ({
         groupType: "AppConfig::ExtensionAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ExtensionAssociationId: "ex12345" }],
       }),
       awsResourceTest,
     ])());
