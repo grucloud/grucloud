@@ -19,7 +19,7 @@ List of resources for provider aws:
 * ApiGatewayV2: 
 [DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
 * AppConfig: 
-[Application](./resources/AppConfig/Application.md), [Deployment](./resources/AppConfig/Deployment.md), [DeploymentStrategy](./resources/AppConfig/DeploymentStrategy.md), [ConfigurationProfile](./resources/AppConfig/ConfigurationProfile.md), [Environment](./resources/AppConfig/Environment.md), [HostedConfigurationVersion](./resources/AppConfig/HostedConfigurationVersion.md)
+[Application](./resources/AppConfig/Application.md), [ConfigurationProfile](./resources/AppConfig/ConfigurationProfile.md), [Deployment](./resources/AppConfig/Deployment.md), [DeploymentStrategy](./resources/AppConfig/DeploymentStrategy.md), [Environment](./resources/AppConfig/Environment.md), [Extension](./resources/AppConfig/Extension.md), [ExtensionAssociation](./resources/AppConfig/ExtensionAssociation.md), [HostedConfigurationVersion](./resources/AppConfig/HostedConfigurationVersion.md)
 * Appflow: 
 [Flow](./resources/Appflow/Flow.md), [ConnectorProfile](./resources/Appflow/ConnectorProfile.md)
 * ApplicationAutoScaling: 

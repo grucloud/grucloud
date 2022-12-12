@@ -4110,6 +4110,7 @@
             "iam",
             "iot",
             "iot-data",
+            "iotdevicemanagement",
             "kinesis",
             "kms",
             "lambda",
