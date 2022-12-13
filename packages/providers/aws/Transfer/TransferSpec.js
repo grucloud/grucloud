@@ -9,8 +9,6 @@ const { createAwsService } = require("../AwsService");
 
 //const { TransferAccess } = require("./TransferAccess");
 const { TransferServer } = require("./TransferServer");
-//const { TransferSshKey } = require("./TransferSshKey");
-//const { TransferTag } = require("./TransferTag");
 const { TransferUser } = require("./TransferUser");
 const { TransferWorkflow } = require("./TransferWorkflow");
 
@@ -22,8 +20,6 @@ module.exports = pipe([
   () => [
     // TransferAccess({})
     TransferServer({ compare }),
-    // TransferSshKey({})
-    // TransferTag({})
     TransferUser({ compare }),
     TransferWorkflow({ compare }),
   ],

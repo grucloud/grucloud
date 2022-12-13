@@ -154,6 +154,17 @@ exports.createResources = () => [
         path: "live.FileSystemId",
       })}/my-user`,
       HomeDirectoryType: "PATH",
+      PosixProfile: {
+        Gid: 65534,
+        SecondaryGids: [],
+        Uid: 65534,
+      },
+      SshPublicKeys: [
+        {
+          SshPublicKeyBody:
+            "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDvgA5na1mOXg/sn/wG950KAP9X0u2mWLLGeJVB/IECb1rHZN/x6lLfomEc8uCpFPj7wT1tZYq9iYkJXF7sWqvyRfHdvnSXLlVf2q4scgixsvxZYRu0B+Iwr8w2jL2gR81T3m/cD5PflCUHpgI5QF0TAfGQYPvdoWAH46JfwLS5gpZ4sULyVt6JksiED1gHG/rKhKwUaVxJLA0QqxlKxqF1P2Vj7EWjZF2QPVJB7tJ5JZIAA9DYCvUeqEqUEajPYFpuVJLicBPSuo9AN7YDbsvzVsoteB5tVZcEjfS6WAxWQ6zrdNCKfLFu50rFWY7bWQfLxcldTWNvueBXchxR2PqF",
+        },
+      ],
       UserName: "my-user",
     }),
     dependencies: ({}) => ({
