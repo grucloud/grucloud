@@ -20,22 +20,6 @@ describe("Transfer", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("SshKey", () =>
-    pipe([
-      () => ({
-        groupType: "Transfer::SshKey",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("Tag", () =>
-    pipe([
-      () => ({
-        groupType: "Transfer::Tag",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
   it("User", () =>
     pipe([
       () => ({

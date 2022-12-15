@@ -251,6 +251,7 @@ exports.TransferServer = () => ({
   destroy: {
     method: "deleteServer",
     pickId,
+    shouldRetryOnExceptionMessages: ["Unable to delete VPC endpoint"],
   },
   getByName: getByNameCore,
   filterLive: ({ lives, providerConfig }) =>

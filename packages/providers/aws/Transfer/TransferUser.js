@@ -1,10 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
+const { pipe, tap, get, pick, assign, map } = require("rubico");
 const { defaultsDeep, when, identity, find, isIn } = require("rubico/x");
 
 const { replaceWithName } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { updateResourceArray } = require("@grucloud/core/updateResourceArray");
+
 const { buildTags } = require("../AwsCommon");
 
 const { Tagger } = require("./TransferCommon");
@@ -33,13 +35,40 @@ const decorate = ({ endpoint, config, live }) =>
     }),
   ]);
 
+const importSshPublicKey = ({ endpoint, live }) =>
+  pipe([
+    pick(["SshPublicKeyBody"]),
+    defaultsDeep({
+      UserName: live.UserName,
+      ServerId: live.ServerId,
+    }),
+    endpoint().importSshPublicKey,
+  ]);
+
+const deleteSshPublicKey = ({ endpoint, live }) =>
+  pipe([
+    pick(["SshPublicKeyId"]),
+    defaultsDeep({
+      UserName: live.UserName,
+      ServerId: live.ServerId,
+    }),
+    endpoint().deleteSshPublicKey,
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html
 exports.TransferUser = () => ({
   type: "User",
   package: "transfer",
   client: "Transfer",
   propertiesDefault: {},
-  omitProperties: ["Arn", "Role", "SshPublicKeyCount", "ServerId"],
+  omitProperties: [
+    "Arn",
+    "Role",
+    "SshPublicKeyCount",
+    "SshPublicKeys[].DateImported",
+    "SshPublicKeys[].SshPublicKeyId",
+    "ServerId",
+  ],
   inferName: () =>
     pipe([
       get("UserName"),
@@ -56,7 +85,7 @@ exports.TransferUser = () => ({
     ]),
   findId: () =>
     pipe([
-      get("Arn"),
+      get("UserName"),
       tap((id) => {
         assert(id);
       }),
@@ -141,21 +170,50 @@ exports.TransferUser = () => ({
           getParam: "Users",
           config,
           decorate: ({ parent }) =>
-            pipe([decorate({ endpoint, live: parent })]),
+            pipe([defaultsDeep({ ServerId: parent.ServerId }), getById({})]),
         }),
     ])(),
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html#createUser-property
   create: {
     method: "createUser",
     pickCreated: ({ payload }) => pipe([identity]),
+    postCreate:
+      ({ endpoint, payload, created }) =>
+      (live) =>
+        pipe([
+          () => payload,
+          get("SshPublicKeys"),
+          map(
+            pipe([
+              pick(["SshPublicKeyBody"]),
+              defaultsDeep({
+                UserName: payload.UserName,
+                ServerId: payload.ServerId,
+              }),
+              endpoint().importSshPublicKey,
+            ])
+          ),
+        ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html#updateUser-property
-  update: {
-    method: "updateUser",
-    filterParams: ({ pickId, payload, diff, live }) =>
-      pipe([() => payload, defaultsDeep(pickId(live))])(),
-  },
+  // update: {
+  //   method: "updateUser",
+  //   filterParams: ({ pickId, payload, diff, live }) =>
+  //     pipe([() => payload, defaultsDeep(pickId(live))])(),
+  // },
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        () => ({ payload, live, diff }),
+        updateResourceArray({
+          endpoint,
+          arrayPath: "SshPublicKeys",
+          onAdd: importSshPublicKey,
+          onRemove: deleteSshPublicKey,
+        }),
+        // TODO updateUser
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html#deleteUser-property
   destroy: {
     method: "deleteUser",
