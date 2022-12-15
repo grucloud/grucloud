@@ -25,15 +25,23 @@ const pickId = pipe([
   pick(["workspaceId"]),
 ]);
 
+const idToWorkspaceId = ({ id, ...other }) => ({
+  workspaceId: id,
+  ...other,
+});
+
 const assignArn = ({ config }) =>
   pipe([
     assign({
       arn: pipe([
-        ({ workspaceId }) =>
+        ({ workspaceName }) =>
           `arn:aws:grafana:${
             config.region
-          }:${config.accountId()}:workspace/${workspaceId}`,
+          }:${config.accountId()}:workspace/${workspaceName}`,
       ]),
+    }),
+    tap((params) => {
+      assert(true);
     }),
   ]);
 
@@ -44,7 +52,6 @@ const decorate = ({ endpoint, config }) =>
     }),
     ({
       name,
-      id,
       description,
       dataSources,
       authentication,
@@ -53,7 +60,6 @@ const decorate = ({ endpoint, config }) =>
       ...other
     }) => ({
       workspaceName: name,
-      workspaceId: id,
       workspaceDescription: description,
       authenticationProviders: authentication.providers,
       workspaceDataSources: dataSources,
@@ -61,6 +67,7 @@ const decorate = ({ endpoint, config }) =>
       workspaceOrganizationalUnits: organizationalUnits,
       ...other,
     }),
+    idToWorkspaceId,
     assignArn({ config }),
   ]);
 
@@ -84,10 +91,12 @@ exports.GrafanaWorkspace = () => ({
     "licenseType",
     "workspaceOrganizationalUnits",
     "authentication.samlConfigurationStatus",
+    "workspaceRoleArn",
+    "vpcConfiguration",
   ],
   inferName: () =>
     pipe([
-      get("name"),
+      get("workspaceName"),
       tap((Name) => {
         assert(Name);
       }),
@@ -107,7 +116,7 @@ exports.GrafanaWorkspace = () => ({
       }),
     ]),
   dependencies: {
-    role: {
+    workspaceRole: {
       type: "Role",
       group: "IAM",
       dependencyId: ({ lives, config }) => pipe([get("workspaceRoleArn")]),
@@ -119,12 +128,25 @@ exports.GrafanaWorkspace = () => ({
       dependencyIds: ({ lives, config }) =>
         pipe([get("workspaceOrganizationalUnits")]),
     },
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) => get("vpcConfiguration.subnetIds"),
+    },
+    securityGroups: {
+      type: "SecurityGroup",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        get("vpcConfiguration.securityGroupIds"),
+    },
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html#getWorkspace-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html#describeWorkspace-property
   getById: {
     method: "describeWorkspace",
-    getField: "Workspace",
+    getField: "workspace",
     pickId,
     decorate,
   },
@@ -132,12 +154,12 @@ exports.GrafanaWorkspace = () => ({
   getList: {
     method: "listWorkspaces",
     getParam: "workspaces",
-    decorate: ({ getById }) => pipe([getById]),
+    decorate: ({ getById }) => pipe([idToWorkspaceId, getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html#createWorkspace-property
   create: {
     method: "createWorkspace",
-    pickCreated: ({ payload }) => pipe([get("workspace")]),
+    pickCreated: ({ payload }) => pipe([get("workspace"), idToWorkspaceId]),
     isInstanceUp: pipe([eq(get("status"), "ACTIVE")]),
     isInstanceError: pipe([eq(get("Status"), "CREATION_FAILED")]),
   },
@@ -145,7 +167,16 @@ exports.GrafanaWorkspace = () => ({
   update: {
     method: "updateWorkspace",
     filterParams: ({ pickId, payload, diff, live }) =>
-      pipe([() => payload, defaultsDeep(pickId(live))])(),
+      pipe([
+        () => payload,
+        tap((params) => {
+          assert(live);
+        }),
+        defaultsDeep({ workspaceId: live.workspaceId }),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html#deleteWorkspace-property
   destroy: {
@@ -161,17 +192,22 @@ exports.GrafanaWorkspace = () => ({
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { workspaceRoleArn, organizationalUnits },
+    dependencies: {
+      subnets,
+      securityGroups,
+      workspaceRole,
+      organizationalUnits,
+    },
     config,
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
-        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
       }),
       when(
-        () => workspaceRoleArn,
-        assign({ workspaceRoleArn: getField(workspaceRoleArn, "Arn") })
+        () => workspaceRole,
+        assign({ workspaceRoleArn: () => getField(workspaceRole, "Arn") })
       ),
       when(
         () => organizationalUnits,
@@ -182,5 +218,30 @@ exports.GrafanaWorkspace = () => ({
           ])(),
         })
       ),
+      when(
+        () => subnets,
+        defaultsDeep({
+          vpcConfiguration: {
+            subnetIds: pipe([
+              () => subnets,
+              map((subnet) => getField(subnet, "SubnetId")),
+            ])(),
+          },
+        })
+      ),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          vpcConfiguration: {
+            securityGroupIds: pipe([
+              () => securityGroups,
+              map((securityGroup) => getField(securityGroup, "GroupId")),
+            ])(),
+          },
+        })
+      ),
+      tap((params) => {
+        assert(true);
+      }),
     ])(),
 });

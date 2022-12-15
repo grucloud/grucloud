@@ -611,7 +611,15 @@ exports.MyModuleMyResource = () => ({
       // ),
 
       // Optional dependency with array
-
+      // when(
+      //   () => subnets,
+      //   defaultsDeep({
+      //     SubnetIds: pipe([
+      //       () => subnets,
+      //       map((subnet) => getField(subnet, "SubnetId")),
+      //     ])(),
+      //   })
+      // ),
       // when(
       //   () => securityGroups,
       //   defaultsDeep({
