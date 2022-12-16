@@ -4,11 +4,16 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Transfer", async function () {
-  it.skip("Access", () =>
+  it("Access", () =>
     pipe([
       () => ({
         groupType: "Transfer::Access",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            ServerId: "s-dc21f45ec5764e801",
+            ExternalId: "S-1-1-12-1234567890-123456789-1234567890-1234",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

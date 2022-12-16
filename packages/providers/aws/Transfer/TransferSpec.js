@@ -7,7 +7,7 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html
 
-//const { TransferAccess } = require("./TransferAccess");
+const { TransferAccess } = require("./TransferAccess");
 const { TransferServer } = require("./TransferServer");
 const { TransferUser } = require("./TransferUser");
 const { TransferWorkflow } = require("./TransferWorkflow");
@@ -18,7 +18,7 @@ const compare = compareAws({});
 
 module.exports = pipe([
   () => [
-    // TransferAccess({})
+    TransferAccess({ compare }),
     TransferServer({ compare }),
     TransferUser({ compare }),
     TransferWorkflow({ compare }),

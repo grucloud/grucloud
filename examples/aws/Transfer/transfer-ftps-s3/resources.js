@@ -75,6 +75,54 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "role-transfer-s3",
+      Description: "Allow AWS Transfer to call AWS services on your behalf.",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "transfer.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonS3FullAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "gc-transfer-ftps-directory",
+    }),
+  },
+  {
+    type: "Access",
+    group: "Transfer",
+    properties: ({}) => ({
+      ExternalId: "S-1-1-12-1234567890-1234567890-1234567890-1234",
+      HomeDirectory: "/gc-transfer-ftps-directory/${transfer:Username}",
+      HomeDirectoryType: "PATH",
+    }),
+    dependencies: ({}) => ({
+      iamRole: "role-transfer-s3",
+      server: "S3::VPC",
+      s3Bucket: "gc-transfer-ftps-directory",
+    }),
+  },
+  {
     type: "Server",
     group: "Transfer",
     properties: ({}) => ({
