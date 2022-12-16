@@ -1,0 +1,1 @@
+# AWS SSM Service Settings

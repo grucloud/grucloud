@@ -44,11 +44,11 @@ describe("SSM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ServiceSetting", () =>
+  it("ServiceSetting", () =>
     pipe([
       () => ({
         groupType: "SSM::ServiceSetting",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ SettingId: "/s123" }],
       }),
       awsResourceTest,
     ])());
