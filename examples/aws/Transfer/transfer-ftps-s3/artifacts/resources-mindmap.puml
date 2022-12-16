@@ -11,7 +11,10 @@ skinparam monochrome true
 ++++ Vpc (1)
 ++++ Subnet (2)
 +++ IAM
-++++ Role (1)
+++++ Role (2)
++++ S3
+++++ Bucket (1)
 +++ Transfer
+++++ Access (1)
 ++++ Server (1)
 @endmindmap

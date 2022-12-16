@@ -240,6 +240,7 @@ exports.TransferServer = () => ({
     pickCreated: ({ payload }) => pipe([identity]),
     isInstanceUp: pipe([eq(get("State"), "ONLINE")]),
     isInstanceError: pipe([eq(get("State"), "START_FAILED")]),
+    shouldRetryOnExceptionMessages: ["Invalid Role ARN"],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html#updateServer-property
   update: {

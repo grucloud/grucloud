@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, pick, assign, map } = require("rubico");
 const { defaultsDeep, when, identity, find, isIn } = require("rubico/x");
 
-const { replaceWithName } = require("@grucloud/core/Common");
+const { replaceWithName, omitIfEmpty } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { updateResourceArray } = require("@grucloud/core/updateResourceArray");
@@ -33,6 +33,7 @@ const decorate = ({ endpoint, config, live }) =>
       Tags: pipe([endpoint().listTagsForResource, get("Tags")]),
       ServerId: () => live.ServerId,
     }),
+    omitIfEmpty(["SshPublicKeys"]),
   ]);
 
 const importSshPublicKey = ({ endpoint, live }) =>
