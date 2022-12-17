@@ -11,6 +11,19 @@ const pickId = pipe([pick(["Name"])]);
 
 const buildArn = () => get("Name");
 
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        tap(({ Name }) => {
+          assert(true);
+        }),
+        ({ Name }) =>
+          `arn:aws:ssm:${config.region}:${config.accountId()}:document/${Name}`,
+      ]),
+    }),
+  ]);
+
 const stringifyContent = assign({
   Content: pipe([get("Content"), JSON.stringify]),
 });
@@ -24,6 +37,7 @@ const decorate =
       endpoint().getDocument,
       defaultsDeep(live),
       assign({ Content: pipe([get("Content"), JSON.parse]) }),
+      assignArn({ config }),
       assignTags({ endpoint, ResourceType: "Document" }),
     ])();
 
@@ -44,9 +58,7 @@ exports.SSMDocument = () => ({
       tap((params) => {
         assert(config);
       }),
-      get("Name"),
-      (Name) =>
-        `arn:aws:ssm:${config.region}:${config.accountId()}:document/${Name}`,
+      get("Arn"),
     ]),
   omitProperties: [
     "Content.assumeRole",
@@ -130,19 +142,7 @@ exports.SSMDocument = () => ({
     isInstanceError: pipe([eq(get("Status"), "Failed")]),
     getErrorMessage: get("StatusInformation"),
   },
-  // update: {
-  //   method: "updateDocument",
-  //   filterParams: ({ payload, live }) =>
-  //     pipe([
-  //       () => payload,
-  //       stringifyContent,
-  //       defaultsDeep({
-  //         DocumentVersion: live.DefaultVersion,
-  //       }),
-  //     ])(),
-  // },
   destroy: { method: "deleteDocument", pickId },
-
   getByName: ({ getById }) =>
     pipe([({ name }) => ({ Name: name }), getById({})]),
   update:

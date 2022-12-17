@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project maintenance-task-run-command
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatch
+++++ MetricAlarm (1)
++++ IAM
+++++ Role (2)
+++++ Policy (2)
++++ S3
+++++ Bucket (1)
++++ SNS
+++++ Topic (2)
++++ SSM
+++++ MaintenanceWindow (1)
+++++ MaintenanceWindowTarget (1)
+++++ MaintenanceWindowTask (1)
+@endmindmap

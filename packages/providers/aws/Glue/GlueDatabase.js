@@ -122,7 +122,7 @@ exports.GlueDatabase = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#updateDatabase-property
   update: {
     method: "updateDatabase",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         () => payload,
         filterPayload,

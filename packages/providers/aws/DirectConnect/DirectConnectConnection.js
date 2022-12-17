@@ -108,7 +108,7 @@ exports.DirectConnectConnection = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html#updateConnection-property
   update: {
     method: "updateConnection",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html#deleteConnection-property

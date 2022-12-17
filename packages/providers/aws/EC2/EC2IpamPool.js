@@ -62,7 +62,7 @@ const createModel = ({ config }) => ({
   update: {
     method: "modifyIpamPool",
     pickId: pipe([pick(["IpamPoolId"])]),
-    filterParams: ({ pickId, payload, live }) =>
+    filterParams: ({ payload, live }) =>
       pipe([
         () => payload,
         omit(["TagSpecifications"]),

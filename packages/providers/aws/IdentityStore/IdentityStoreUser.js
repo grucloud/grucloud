@@ -70,7 +70,7 @@ exports.IdentityStoreUser = () => ({
   update: {
     pickId,
     method: "updateUser",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         tap((params) => {
           assert(live);

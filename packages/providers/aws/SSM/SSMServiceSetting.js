@@ -93,7 +93,7 @@ exports.SSMServiceSetting = () => ({
   update: {
     method: "updateServiceSetting",
     extraParam: { Overwrite: true },
-    filterParams: ({ pickId, payload, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, live }) => pipe([() => payload])(),
   },
   destroy: { method: "resetServiceSetting", pickId },
   getByName:

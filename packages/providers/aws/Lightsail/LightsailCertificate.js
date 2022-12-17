@@ -59,7 +59,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#updateCertificate-property
   update: {
     method: "updateCertificate",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#deleteCertificate-property
   destroy: {

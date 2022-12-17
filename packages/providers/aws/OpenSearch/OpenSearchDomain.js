@@ -231,7 +231,7 @@ exports.OpenSearchDomain = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#updateDomainConfig-property
   update: {
     method: "updateDomainConfig",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, accessPoliciesStringify])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#deleteDomain-property

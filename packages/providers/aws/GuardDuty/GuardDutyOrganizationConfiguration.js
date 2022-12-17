@@ -112,7 +112,7 @@ exports.GuardDutyOrganizationConfiguration = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#updateOrganizationConfiguration-property
   update: {
     method: "updateOrganizationConfiguration",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   getByName: getByNameCore,

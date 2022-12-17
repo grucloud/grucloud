@@ -28,11 +28,41 @@ describe("SSM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("MaintenanceWindowTask", () =>
+  it("MaintenanceWindow", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::MaintenanceWindow",
+        livesNotFound: ({ config }) => [
+          { WindowId: "mw-03eb0c6d842368e7b", Name: "12345" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("MaintenanceWindowTarget", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::MaintenanceWindowTarget",
+        livesNotFound: ({ config }) => [
+          {
+            WindowId: "mw-03eb0c6d842368e7b",
+            WindowTargetId: "37d52ba2-c758-4d0d-9ce8-57fb6258a312",
+          },
+        ],
+        skipGetByName: true,
+      }),
+      awsResourceTest,
+    ])());
+  it("MaintenanceWindowTask", () =>
     pipe([
       () => ({
         groupType: "SSM::MaintenanceWindowTask",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            WindowId: "mw-03eb0c6d842368e7b",
+            WindowTaskId: "37d52ba2-c758-4d0d-9ce8-57fb6258a312",
+          },
+        ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());

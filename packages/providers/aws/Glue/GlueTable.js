@@ -161,7 +161,7 @@ exports.GlueTable = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#updateTable-property
   update: {
     method: "updateTable",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         () => payload,
         filterPayload,

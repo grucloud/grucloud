@@ -453,9 +453,9 @@ exports.MyModuleMyResource = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#updateMyResource-property
   update: {
     method: "updateMyResource",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
-    // filterParams: ({ pickId, payload, diff, live }) =>
+    // filterParams: ({  payload, diff, live }) =>
     //   pipe([
     //     () => payload,
     //     // assign({

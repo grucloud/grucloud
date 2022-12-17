@@ -131,6 +131,7 @@ Apache Kafka
       }),
       () => properties,
       defaultsDeep({
+        // TODO  FunctionArn ?
         FunctionName: getField(lambdaFunction, "Configuration.FunctionName"),
       }),
       switchCase([

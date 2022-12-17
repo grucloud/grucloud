@@ -205,7 +205,7 @@ exports.GuardDutyDetector = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#updateDetector-property
   update: {
     method: "updateDetector",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#deleteDetector-property

@@ -89,7 +89,7 @@ exports.SecurityHubFindingAggregator = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#updateFindingAggregator-property
   update: {
     method: "updateFindingAggregator",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         //
         () => payload,

@@ -125,7 +125,7 @@ exports.DirectConnectBGPPeer = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html#updateBGPPeer-property
   update: {
     method: "updateBGPPeer",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html#deleteBGPPeer-property

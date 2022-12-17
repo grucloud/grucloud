@@ -128,7 +128,7 @@ exports.CostExplorerAnomalySubscription = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CostExplorer.html#updateAnomalySubscription-property
   update: {
     method: "updateAnomalySubscription",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CostExplorer.html#deleteAnomalySubscription-property

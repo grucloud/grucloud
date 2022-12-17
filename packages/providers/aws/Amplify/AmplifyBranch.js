@@ -119,7 +119,7 @@ exports.AmplifyBranch = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#updateBranch-property
   update: {
     method: "updateBranch",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#deleteBranch-property

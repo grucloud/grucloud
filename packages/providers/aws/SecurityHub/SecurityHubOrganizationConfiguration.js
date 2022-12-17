@@ -65,7 +65,7 @@ exports.SecurityHubOrganizationConfiguration = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#updateOrganizationConfiguration-property
   update: {
     method: "updateOrganizationConfiguration",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#updateOrganizationConfiguration-property
   destroy: {

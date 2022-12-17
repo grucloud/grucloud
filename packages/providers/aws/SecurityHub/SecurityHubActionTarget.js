@@ -83,7 +83,7 @@ exports.SecurityHubActionTarget = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#updateActionTarget-property
   update: {
     method: "updateActionTarget",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         //
         () => payload,

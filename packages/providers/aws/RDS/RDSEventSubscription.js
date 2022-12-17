@@ -56,7 +56,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyEventSubscription-property
   update: {
     method: "modifyEventSubscription",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteEventSubscription-property
   destroy: {

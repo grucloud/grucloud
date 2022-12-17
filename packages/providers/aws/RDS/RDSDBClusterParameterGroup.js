@@ -77,7 +77,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyDBClusterParameterGroup-property
   update: {
     method: "modifyDBClusterParameterGroup",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         tap((params) => {
           assert(true);

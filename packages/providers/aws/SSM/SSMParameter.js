@@ -81,7 +81,7 @@ exports.SSMParameter = () => ({
   update: {
     method: "putParameter",
     extraParam: { Overwrite: true },
-    filterParams: ({ pickId, payload, live }) =>
+    filterParams: ({ payload, live }) =>
       pipe([() => payload, omit(["Tags"])])(),
   },
   destroy: { method: "deleteParameter", pickId },
@@ -92,12 +92,7 @@ exports.SSMParameter = () => ({
   tagger: ({ config }) =>
     Tagger({
       buildArn: buildArn(config),
-      additionalParams: pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => ({ ResourceType: "Parameter" }),
-      ]),
+      additionalParams: pipe([() => ({ ResourceType: "Parameter" })]),
     }),
   configDefault: ({
     name,

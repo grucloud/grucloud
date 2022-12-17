@@ -127,7 +127,7 @@ exports.CostExplorerCostCategory = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CostExplorer.html#updateCostCategory-property
   update: {
     method: "updateCostCategory",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CostExplorer.html#deleteCostCategory-property

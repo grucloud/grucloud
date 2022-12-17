@@ -63,7 +63,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#updateWorkGroup-property
   update: {
     method: "updateWorkGroup",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         () => payload,
         ({ Configuration, ...other }) => ({

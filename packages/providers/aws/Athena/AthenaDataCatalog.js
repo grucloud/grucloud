@@ -66,7 +66,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#updateDataCatalog-property
   update: {
     method: "updateDataCatalog",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#deleteDataCatalog-property
   destroy: {
