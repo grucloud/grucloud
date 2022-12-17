@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project ssm-association
+skinparam monochrome true
++ Infra
+++ aws
++++ SSM
+++++ Association (1)
+@endmindmap

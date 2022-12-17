@@ -1,4 +1,3 @@
-const { getField } = require("@grucloud/core/ProviderCommon");
 const assert = require("assert");
 const {
   pipe,
@@ -26,6 +25,8 @@ const {
   callProp,
   last,
 } = require("rubico/x");
+
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { replaceWithName } = require("@grucloud/core/Common");
 

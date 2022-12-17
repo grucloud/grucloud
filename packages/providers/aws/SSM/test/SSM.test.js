@@ -4,11 +4,25 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("SSM", async function () {
-  it.skip("Activation", () =>
+  it("Activation", () =>
     pipe([
       () => ({
         groupType: "SSM::Activation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ActivationId: "e2b38703-da2d-4faa-b567-d62d04a19b5a" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("Association", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::Association",
+        livesNotFound: ({ config }) => [
+          {
+            AssociationId: "e2b38703-da2d-4faa-b567-d62d04a19b5a",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

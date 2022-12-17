@@ -5,6 +5,8 @@ const { isOurMinion, compareAws } = require("../AwsCommon");
 
 const { createAwsService } = require("../AwsService");
 
+const { SSMActivation } = require("./SSMActivation");
+const { SSMAssociation } = require("./SSMAssociation");
 const { SSMDocument } = require("./SSMDocument");
 const { SSMMaintenanceWindow } = require("./SSMMaintenanceWindow");
 const { SSMMaintenanceWindowTarget } = require("./SSMMaintenanceWindowTarget");
@@ -17,6 +19,8 @@ const compareSSM = compareAws({});
 
 module.exports = pipe([
   () => [
+    SSMActivation({}),
+    SSMAssociation({}),
     SSMDocument({}),
     SSMMaintenanceWindow({}),
     SSMMaintenanceWindowTarget({}),
