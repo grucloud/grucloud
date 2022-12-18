@@ -1,15 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, map } = require("rubico");
-const {
-  callProp,
-  isIn,
-  find,
-  identity,
-  append,
-  defaultsDeep,
-  when,
-  pluck,
-} = require("rubico/x");
+const { defaultsDeep, when, pluck } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");

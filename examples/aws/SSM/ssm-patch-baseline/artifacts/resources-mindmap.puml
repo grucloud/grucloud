@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project ssm-patch-baseline
+skinparam monochrome true
++ Infra
+++ aws
++++ SSM
+++++ PatchBaseline (1)
+@endmindmap

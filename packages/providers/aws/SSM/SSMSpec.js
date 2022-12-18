@@ -11,6 +11,7 @@ const { SSMDocument } = require("./SSMDocument");
 const { SSMMaintenanceWindow } = require("./SSMMaintenanceWindow");
 const { SSMMaintenanceWindowTarget } = require("./SSMMaintenanceWindowTarget");
 const { SSMMaintenanceWindowTask } = require("./SSMMaintenanceWindowTask");
+const { SSMPatchBaseline } = require("./SSMPatchBaseline");
 const { SSMParameter } = require("./SSMParameter");
 const { SSMServiceSetting } = require("./SSMServiceSetting");
 
@@ -26,6 +27,7 @@ module.exports = pipe([
     SSMMaintenanceWindowTarget({}),
     SSMMaintenanceWindowTask({}),
     SSMParameter({}),
+    SSMPatchBaseline({}),
     SSMServiceSetting({}),
   ],
   map(createAwsService),

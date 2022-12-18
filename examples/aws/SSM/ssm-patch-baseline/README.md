@@ -1,0 +1,1 @@
+# Aws SSM Patch Baseline

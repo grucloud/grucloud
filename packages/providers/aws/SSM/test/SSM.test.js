@@ -26,14 +26,6 @@ describe("SSM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("DefaultPatchBaseline", () =>
-    pipe([
-      () => ({
-        groupType: "SSM::DefaultPatchBaseline",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
   it("Document", () =>
     pipe([
       () => ({
@@ -85,6 +77,14 @@ describe("SSM", async function () {
       () => ({
         groupType: "SSM::Parameter",
         livesNotFound: ({ config }) => [{ Name: "12345" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("PatchBaseline", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::PatchBaseline",
+        livesNotFound: ({ config }) => [{ BaselineId: "pb-03ec98bc512aa3ac5" }],
       }),
       awsResourceTest,
     ])());
