@@ -130,7 +130,7 @@ exports.CognitoIdentityIdentityPool = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#updateIdentityPool-property
   update: {
     method: "updateIdentityPool",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, tagsToPayload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#deleteIdentityPool-property

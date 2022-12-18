@@ -79,7 +79,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#updateSchedule-property
   update: {
     method: "updateSchedule",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#deleteSchedule-property
   destroy: {

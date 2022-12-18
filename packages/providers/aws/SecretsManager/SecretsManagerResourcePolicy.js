@@ -80,7 +80,7 @@ exports.SecretsManagerResourcePolicy = () => ({
   },
   update: {
     method: "putResourcePolicy",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         () => payload,
         stringifyResourcePolicy,

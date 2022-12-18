@@ -113,7 +113,7 @@ exports.DMSReplicationSubnetGroup = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DMS.html#modifyReplicationSubnetGroup-property
   update: {
     method: "modifyReplicationSubnetGroup",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DMS.html#deleteReplicationSubnetGroup-property

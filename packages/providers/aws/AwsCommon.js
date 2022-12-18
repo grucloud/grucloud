@@ -1209,10 +1209,19 @@ const replaceStatement = ({ providerConfig, lives }) =>
               StringEquals: pipe([
                 get("StringEquals"),
                 map(
-                  replaceArnWithAccountAndRegion({
-                    providerConfig,
-                    lives,
-                  })
+                  switchCase([
+                    Array.isArray,
+                    map(
+                      replaceArnWithAccountAndRegion({
+                        providerConfig,
+                        lives,
+                      })
+                    ),
+                    replaceArnWithAccountAndRegion({
+                      providerConfig,
+                      lives,
+                    }),
+                  ])
                 ),
                 when(
                   get("elasticfilesystem:AccessPointArn"),

@@ -54,7 +54,7 @@ exports.SecurityHubAccount = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#updateAccount-property
   update: {
     method: "enableSecurityHub",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // Custom update
   // update:

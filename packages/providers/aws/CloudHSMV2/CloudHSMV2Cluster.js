@@ -103,7 +103,7 @@ exports.CloudHSMV2Cluster = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudHSMV2.html#updateCluster-property
   update: {
     method: "updateCluster",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudHSMV2.html#deleteCluster-property

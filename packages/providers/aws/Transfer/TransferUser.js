@@ -199,7 +199,7 @@ exports.TransferUser = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html#updateUser-property
   // update: {
   //   method: "updateUser",
-  //   filterParams: ({ pickId, payload, diff, live }) =>
+  //   filterParams: ({  payload, diff, live }) =>
   //     pipe([() => payload, defaultsDeep(pickId(live))])(),
   // },
   update:

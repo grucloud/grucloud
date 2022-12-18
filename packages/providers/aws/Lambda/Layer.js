@@ -109,7 +109,7 @@ exports.Layer = ({ spec, config }) => {
     method: "publishLayerVersion",
     getById,
     config,
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteLayerVersion-property

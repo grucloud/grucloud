@@ -136,7 +136,7 @@ exports.EKSAddon = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateAddon-property
   update: {
     method: "updateAddon",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteAddon-property

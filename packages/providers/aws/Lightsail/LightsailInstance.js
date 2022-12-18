@@ -74,7 +74,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#updateInstance-property
   // update: {
   //   method: "updateInstance",
-  //   filterParams: ({ pickId, payload, diff, live }) =>
+  //   filterParams: ({  payload, diff, live }) =>
   //     pipe([
   //       tap((params) => {
   //         assert(true);

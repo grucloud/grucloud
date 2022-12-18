@@ -113,7 +113,7 @@ exports.RedshiftServerlessSnapshot = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#updateSnapshot-property
   update: {
     method: "updateSnapshot",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#deleteSnapshot-property
   destroy: {

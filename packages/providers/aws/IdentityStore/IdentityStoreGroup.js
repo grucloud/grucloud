@@ -81,7 +81,7 @@ exports.IdentityStoreGroup = ({}) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#updateGroup-property
   update: {
     method: "updateGroup",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#deleteGroup-property
   destroy: {

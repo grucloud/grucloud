@@ -140,7 +140,7 @@ exports.RedshiftServerlessWorkgroup = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#updateWorkgroup-property
   update: {
     method: "updateWorkgroup",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#deleteWorkgroup-property
   destroy: {

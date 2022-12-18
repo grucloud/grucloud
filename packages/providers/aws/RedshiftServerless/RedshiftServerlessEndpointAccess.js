@@ -112,7 +112,7 @@ exports.RedshiftServerlessEndpointAccess = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#updateEndpointAccess-property
   update: {
     method: "updateEndpointAccess",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#deleteEndpointAccess-property
   destroy: {

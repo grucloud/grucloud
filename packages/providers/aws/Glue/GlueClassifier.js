@@ -94,7 +94,7 @@ exports.GlueClassifier = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#updateClassifier-property
   update: {
     method: "updateClassifier",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         () => payload,
         //filterPayload,

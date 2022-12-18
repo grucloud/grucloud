@@ -148,7 +148,7 @@ exports.DMSReplicationInstance = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DMS.html#modifyReplicationInstance-property
   update: {
     method: "modifyReplicationInstance",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DMS.html#deleteReplicationInstance-property

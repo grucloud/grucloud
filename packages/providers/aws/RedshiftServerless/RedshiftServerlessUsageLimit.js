@@ -109,7 +109,7 @@ exports.RedshiftServerlessUsageLimit = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#updateUsageLimit-property
   update: {
     method: "updateUsageLimit",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#deleteUsageLimit-property
   destroy: {

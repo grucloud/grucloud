@@ -169,7 +169,7 @@ exports.DMSReplicationTask = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DMS.html#modifyReplicationTask-property
   update: {
     method: "modifyReplicationTask",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         () => payload,
         ReplicationTaskSettingsStringify,

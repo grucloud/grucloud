@@ -78,7 +78,7 @@ exports.SecurityHubInsight = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#updateInsight-property
   update: {
     method: "updateInsight",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         //
         () => payload,

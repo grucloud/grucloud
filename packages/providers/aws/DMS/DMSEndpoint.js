@@ -222,7 +222,7 @@ exports.DMSEndpoint = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DMS.html#updateEndpoint-property
   update: {
     method: "updateEndpoint",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DMS.html#deleteEndpoint-property

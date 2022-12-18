@@ -174,7 +174,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     ),
     client.update({
       pickId,
-      filterParams: ({ pickId, payload, diff, live }) =>
+      filterParams: ({ payload, diff, live }) =>
         pipe([
           tap((params) => {
             assert(payload);

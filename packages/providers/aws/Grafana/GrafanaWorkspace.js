@@ -166,7 +166,7 @@ exports.GrafanaWorkspace = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html#updateWorkspace-property
   update: {
     method: "updateWorkspace",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         () => payload,
         tap((params) => {

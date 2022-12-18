@@ -292,7 +292,7 @@ exports.SSOAdminAccountAssignment = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#updateAccountAssignment-property
   update: {
     method: "updateAccountAssignment",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#deleteAccountAssignment-property
   destroy: {

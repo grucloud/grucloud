@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project maintenance-task-stepfunction
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (2)
+++++ Policy (2)
++++ SSM
+++++ MaintenanceWindow (1)
+++++ MaintenanceWindowTarget (1)
+++++ MaintenanceWindowTask (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

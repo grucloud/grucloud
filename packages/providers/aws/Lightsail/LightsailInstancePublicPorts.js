@@ -46,7 +46,7 @@ const model = ({ config }) => ({
   },
   update: {
     method: "putInstancePublicPorts",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#closeInstancePublicPorts-property
   destroy: {

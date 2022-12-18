@@ -96,7 +96,7 @@ exports.SecurityHubStandardsSubscription = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#updateStandardsSubscription-property
   update: {
     method: "batchEnableStandards",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         //
         () => payload,

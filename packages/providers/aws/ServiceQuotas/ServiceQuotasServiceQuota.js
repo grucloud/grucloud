@@ -125,7 +125,7 @@ exports.ServiceQuotasServiceQuota = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceQuotas.html#updateServiceQuota-property
   update: {
     method: "requestServiceQuotaIncrease",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, filterPayload])(),
     isInstanceUp: () => true,
   },

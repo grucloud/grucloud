@@ -4,19 +4,25 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("SSM", async function () {
-  it.skip("Activation", () =>
+  it("Activation", () =>
     pipe([
       () => ({
         groupType: "SSM::Activation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ActivationId: "e2b38703-da2d-4faa-b567-d62d04a19b5a" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("DefaultPatchBaseline", () =>
+  it("Association", () =>
     pipe([
       () => ({
-        groupType: "SSM::DefaultPatchBaseline",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "SSM::Association",
+        livesNotFound: ({ config }) => [
+          {
+            AssociationId: "e2b38703-da2d-4faa-b567-d62d04a19b5a",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -28,11 +34,41 @@ describe("SSM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("MaintenanceWindowTask", () =>
+  it("MaintenanceWindow", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::MaintenanceWindow",
+        livesNotFound: ({ config }) => [
+          { WindowId: "mw-03eb0c6d842368e7b", Name: "12345" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("MaintenanceWindowTarget", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::MaintenanceWindowTarget",
+        livesNotFound: ({ config }) => [
+          {
+            WindowId: "mw-03eb0c6d842368e7b",
+            WindowTargetId: "37d52ba2-c758-4d0d-9ce8-57fb6258a312",
+          },
+        ],
+        skipGetByName: true,
+      }),
+      awsResourceTest,
+    ])());
+  it("MaintenanceWindowTask", () =>
     pipe([
       () => ({
         groupType: "SSM::MaintenanceWindowTask",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            WindowId: "mw-03eb0c6d842368e7b",
+            WindowTaskId: "37d52ba2-c758-4d0d-9ce8-57fb6258a312",
+          },
+        ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
@@ -44,11 +80,19 @@ describe("SSM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ServiceSetting", () =>
+  it("PatchBaseline", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::PatchBaseline",
+        livesNotFound: ({ config }) => [{ BaselineId: "pb-03ec98bc512aa3ac5" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("ServiceSetting", () =>
     pipe([
       () => ({
         groupType: "SSM::ServiceSetting",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ SettingId: "/s123" }],
       }),
       awsResourceTest,
     ])());

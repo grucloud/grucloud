@@ -76,7 +76,7 @@ exports.LakeFormationDataLakeSettings = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/LakeFormation.html#putDataLakeSettings-property
   update: {
     method: "putDataLakeSettings",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([
         () => ({ DataLakeSettings: payload }),
         tap((params) => {

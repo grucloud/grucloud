@@ -78,7 +78,7 @@ exports.SESV2ConfigurationSet = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#updateConfigurationSet-property
   // update: {
   //   method: "updateConfigurationSet",
-  //   filterParams: ({ pickId, payload, diff, live }) =>
+  //   filterParams: ({  payload, diff, live }) =>
   //     pipe([
   //       () => payload,
   //       // assign({

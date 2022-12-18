@@ -114,7 +114,7 @@ exports.ACMPCACertificateAuthority = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACMPCA.html#updateCertificateAuthority-property
   update: {
     method: "updateCertificateAuthority",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACMPCA.html#deleteCertificateAuthority-property

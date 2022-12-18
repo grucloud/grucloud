@@ -152,7 +152,7 @@ exports.OpenSearchVpcEndpoint = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#updateVpcEndpoint-property
   update: {
     method: "updateVpcEndpoint",
-    filterParams: ({ pickId, payload, diff, live }) =>
+    filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#deleteVpcEndpoint-property
