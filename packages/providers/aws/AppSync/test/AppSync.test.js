@@ -17,6 +17,19 @@ describe("AppSync", async function () {
       }),
       awsResourceTest,
     ])());
+  it("Function", () =>
+    pipe([
+      () => ({
+        groupType: "AppSync::Function",
+        livesNotFound: ({ config }) => [
+          {
+            apiId: "12345",
+            functionId: "f123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("GraphqlApi", () =>
     pipe([
       () => ({

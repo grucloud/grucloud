@@ -4,6 +4,20 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "DataSource",
+    group: "AppSync",
+    properties: ({}) => ({
+      name: "lambdaDatasource",
+      type: "AWS_LAMBDA",
+    }),
+    dependencies: ({}) => ({
+      graphqlApi: "cdk-notes-appsync-api",
+      serviceRole:
+        "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
+      lambdaFunction: "lambda-fns",
+    }),
+  },
+  {
     type: "GraphqlApi",
     group: "AppSync",
     properties: ({}) => ({
@@ -22,82 +36,68 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "DataSource",
-    group: "AppSync",
-    properties: ({}) => ({
-      name: "lambdaDatasource",
-      type: "AWS_LAMBDA",
-    }),
-    dependencies: ({}) => ({
-      graphqlApi: "cdk-notes-appsync-api",
-      serviceRole:
-        "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
-      lambdaFunction: "lambda-fns",
-    }),
-  },
-  {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "createNote",
       kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
+      graphqlApi: "cdk-notes-appsync-api",
     }),
   },
   {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "deleteNote",
       kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
+      graphqlApi: "cdk-notes-appsync-api",
     }),
   },
   {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "updateNote",
       kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
+      graphqlApi: "cdk-notes-appsync-api",
     }),
   },
   {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "getNoteById",
       kind: "UNIT",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
+      graphqlApi: "cdk-notes-appsync-api",
     }),
   },
   {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "listNotes",
       kind: "UNIT",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
+      graphqlApi: "cdk-notes-appsync-api",
     }),
   },
   {

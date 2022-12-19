@@ -4,25 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "GraphqlApi",
-    group: "AppSync",
-    properties: ({}) => ({
-      name: "AppSyncEventBridgeAPI",
-      authenticationType: "API_KEY",
-      xrayEnabled: true,
-      logConfig: {
-        excludeVerboseContent: false,
-        fieldLogLevel: "ALL",
-      },
-      apiKeys: [{}],
-      schemaFile: "AppSyncEventBridgeAPI.graphql",
-    }),
-    dependencies: ({}) => ({
-      cloudWatchLogsRole:
-        "AppsyncEventbridgeStack-ApiApiLogsRole90293F72-7E0RPUK5AGTI",
-    }),
-  },
-  {
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
@@ -46,20 +27,70 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "GraphqlApi",
+    group: "AppSync",
+    properties: ({}) => ({
+      name: "AppSyncEventBridgeAPI",
+      authenticationType: "API_KEY",
+      xrayEnabled: true,
+      logConfig: {
+        excludeVerboseContent: false,
+        fieldLogLevel: "ALL",
+      },
+      apiKeys: [{}],
+      schemaFile: "AppSyncEventBridgeAPI.graphql",
+    }),
+    dependencies: ({}) => ({
+      cloudWatchLogsRole:
+        "AppsyncEventbridgeStack-ApiApiLogsRole90293F72-7E0RPUK5AGTI",
+    }),
+  },
+  {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "putEvent",
-      requestMappingTemplate:
-        '{\n  "version": "2018-05-29",\n  "method": "POST",\n  "resourcePath": "/",\n  "params": {\n    "headers": {\n      "content-type": "application/x-amz-json-1.1",\n      "x-amz-target":"AWSEvents.PutEvents"\n    },\n    "body": {\n      "Entries":[\n        {\n          "Source":"appsync",\n          "EventBusName": "AppSyncEventBus",\n          "Detail":"{ \\"event\\": \\"$ctx.arguments.event\\"}",\n          "DetailType":"Event Bridge via GraphQL"\n         }\n      ]\n    }\n  }\n}\n',
-      responseMappingTemplate:
-        "## Raise a GraphQL field error in case of a datasource invocation error\n#if($ctx.error)\n  $util.error($ctx.error.message, $ctx.error.type)\n#end\n## if the response status code is not 200, then return an error. Else return the body **\n#if($ctx.result.statusCode == 200)\n    ## If response is 200, return the body.\n\t$ctx.result.body\n#else\n    ## If response is not 200, append the response to error block.\n    $utils.appendError($ctx.result.body, $ctx.result.statusCode)\n#end\n",
       kind: "UNIT",
+      requestMappingTemplate: String.raw`{
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/",
+  "params": {
+    "headers": {
+      "content-type": "application/x-amz-json-1.1",
+      "x-amz-target":"AWSEvents.PutEvents"
+    },
+    "body": {
+      "Entries":[
+        {
+          "Source":"appsync",
+          "EventBusName": "AppSyncEventBus",
+          "Detail":"{ \"event\": \"$ctx.arguments.event\"}",
+          "DetailType":"Event Bridge via GraphQL"
+         }
+      ]
+    }
+  }
+}
+`,
+      responseMappingTemplate: String.raw`## Raise a GraphQL field error in case of a datasource invocation error
+#if($ctx.error)
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+## if the response status code is not 200, then return an error. Else return the body **
+#if($ctx.result.statusCode == 200)
+    ## If response is 200, return the body.
+	$ctx.result.body
+#else
+    ## If response is not 200, append the response to error block.
+    $utils.appendError($ctx.result.body, $ctx.result.statusCode)
+#end
+`,
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "AppSyncEventBridgeAPI",
       dataSource: "events",
+      graphqlApi: "AppSyncEventBridgeAPI",
     }),
   },
   {

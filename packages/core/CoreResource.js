@@ -48,6 +48,7 @@ const { retryCall } = require("./Retry");
 const { convertError } = require("./Common");
 const { decorateLive } = require("./Client");
 const { deepDefaults } = require("./deepDefault");
+const { multiline } = require("./multiline");
 
 exports.ResourceMaker = ({
   name: resourceName,
@@ -145,6 +146,7 @@ exports.ResourceMaker = ({
                   config,
                   getId,
                   generatePassword: generator.generate,
+                  multiline,
                 }),
               tap((params) => {
                 assert(true);
@@ -624,6 +626,7 @@ exports.ResourceMaker = ({
                 dependencies: resolvedDependencies,
                 getId,
                 generatePassword: generator.generate,
+                multiline,
               }),
             (properties = {}) =>
               getClient().configDefault({

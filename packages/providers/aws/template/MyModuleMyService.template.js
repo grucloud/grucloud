@@ -177,6 +177,24 @@ exports.MyModuleMyResource = () => ({
         assert(name);
       }),
     ]),
+
+  // findName:
+  // ({ lives, config }) =>
+  // ({ Name, WindowId }) =>
+  //   pipe([
+  //     () => WindowId,
+  //     lives.getById({
+  //       type: "MaintenanceWindow",
+  //       group: "SSM",
+  //       providerName: config.providerName,
+  //     }),
+  //     get("name"),
+  //     tap((name) => {
+  //       assert(name);
+  //     }),
+  //     append(`::${Name}`),
+  //   ])(),
+
   // Find name from dependencies
   // findName: ({  lives, config }) =>
   //   live => pipe([

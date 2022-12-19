@@ -159,7 +159,17 @@ exports.DBInstance = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBInstance",
-    extraParam: { ApplyImmediately: true },
+    filterParams: ({ payload, diff, live }) =>
+      pipe([
+        () => payload,
+        defaultsDeep({ ApplyImmediately: true }),
+        defaultsDeep(pickId(live)),
+        tap((params) => {
+          assert(true);
+        }),
+        // The specified DB instance is already in the target DB subnet group
+        omit(["DBSubnetGroupName"]),
+      ])(),
     getById,
     config: { ...config, retryDelay: 10e3, retryCount: 200 },
   });

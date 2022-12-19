@@ -16,6 +16,8 @@ const fs = require("fs").promises;
 const path = require("path");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
+
+const { createAwsService } = require("../AwsService");
 const {
   compareAws,
   isOurMinionObject,
@@ -24,6 +26,8 @@ const {
 
 const { findDependenciesGraphqlId } = require("./AppSyncCommon");
 
+const { AppSyncFunction } = require("./AppSyncFunction");
+
 const { AppSyncGraphqlApi } = require("./AppSyncGraphqlApi");
 const { AppSyncDataSource } = require("./AppSyncDataSource");
 const { AppSyncResolver } = require("./AppSyncResolver");
@@ -31,18 +35,13 @@ const { AppSyncResolver } = require("./AppSyncResolver");
 const GROUP = "AppSync";
 const tagsKey = "tags";
 
-const compareAppSync = compareAws({ tagsKey });
+const compare = compareAws({ tagsKey });
 
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
 
 const graphqlSchemaFilePath = ({ programOptions, commandOptions, resource }) =>
   path.resolve(programOptions.workingDirectory, `${resource.name}.graphql`);
-
-const omitMaxBatchSize = when(
-  eq(get("maxBatchSize"), 0),
-  omit(["maxBatchSize"])
-);
 
 const writeGraphqlSchema =
   ({ programOptions, commandOptions }) =>
@@ -79,52 +78,6 @@ const writeGraphqlSchema =
 module.exports = pipe([
   () => [
     {
-      type: "GraphqlApi",
-      Client: AppSyncGraphqlApi,
-      inferName: () => get("name"),
-      omitProperties: [
-        "apiId",
-        "arn",
-        "uris",
-        "wafWebAclArn",
-        "logConfig.cloudWatchLogsRoleArn",
-      ],
-      compare: compareAppSync({
-        filterTarget: () => pipe([omit(["schemaFile"])]),
-        filterLive: () =>
-          pipe([
-            assign({
-              apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
-            }),
-          ]),
-      }),
-      filterLive: (input) => (live) =>
-        pipe([
-          () => input,
-          tap(writeGraphqlSchema(input)),
-          () => live,
-          pick([
-            "name",
-            "authenticationType",
-            "xrayEnabled",
-            "logConfig",
-            "apiKeys",
-          ]),
-          assign({
-            schemaFile: () => `${live.name}.graphql`,
-            apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
-          }),
-        ])(),
-      dependencies: {
-        cloudWatchLogsRole: {
-          type: "Role",
-          group: "IAM",
-          dependencyId: ({ lives, config }) =>
-            get("logConfig.cloudWatchLogsRoleArn"),
-        },
-      },
-    },
-    {
       type: "DataSource",
       Client: AppSyncDataSource,
       inferName: () => get("name"),
@@ -136,7 +89,7 @@ module.exports = pipe([
         "relationalDatabaseConfig.rdsHttpEndpointConfig.awsSecretStoreArn",
         "relationalDatabaseConfig.rdsHttpEndpointConfig.awsRegion",
       ],
-      compare: compareAppSync({
+      compare: compare({
         filterAll: () => pipe([omitIfEmpty(["description"])]),
       }),
       filterLive: ({ providerConfig }) =>
@@ -244,73 +197,56 @@ module.exports = pipe([
         },
       },
     },
+    createAwsService(AppSyncFunction({})),
     {
-      type: "Resolver",
-      Client: AppSyncResolver,
-      inferName:
-        () =>
-        ({ typeName, fieldName }) =>
-          pipe([
-            tap((params) => {
-              assert(typeName);
-              assert(fieldName);
-            }),
-            () => `resolver::${typeName}::${fieldName}`,
-          ])(),
-      omitProperties: ["arn", "resolverArn"],
-      compare: compareAppSync({
+      type: "GraphqlApi",
+      Client: AppSyncGraphqlApi,
+      inferName: () => get("name"),
+      omitProperties: [
+        "apiId",
+        "arn",
+        "uris",
+        "wafWebAclArn",
+        "logConfig.cloudWatchLogsRoleArn",
+      ],
+      compare: compare({
+        filterTarget: () => pipe([omit(["schemaFile"])]),
         filterLive: () =>
           pipe([
-            // TODO replace region
-            omitIfEmpty([
-              "description",
-              "requestMappingTemplate",
-              "responseMappingTemplate",
-            ]),
-            omitMaxBatchSize,
+            assign({
+              apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
+            }),
           ]),
       }),
-      filterLive: () =>
+      filterLive: (input) => (live) =>
         pipe([
+          () => input,
+          tap(writeGraphqlSchema(input)),
+          () => live,
           pick([
-            "typeName",
-            "fieldName",
-            "requestMappingTemplate",
-            "responseMappingTemplate",
-            "kind",
-            "maxBatchSize",
+            "name",
+            "authenticationType",
+            "xrayEnabled",
+            "logConfig",
+            "apiKeys",
           ]),
-          omitMaxBatchSize,
-        ]),
+          assign({
+            schemaFile: () => `${live.name}.graphql`,
+            apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
+          }),
+        ])(),
       dependencies: {
-        graphqlApi: {
-          type: "GraphqlApi",
-          group: "AppSync",
-          parent: true,
-          dependencyId: findDependenciesGraphqlId,
-        },
-        //TODO
-        type: {
-          type: "Type",
-          group: "AppSync",
-          dependencyId: ({ lives, config }) => get("typeName"),
-        },
-        dataSource: {
-          type: "DataSource",
-          group: "AppSync",
+        cloudWatchLogsRole: {
+          type: "Role",
+          group: "IAM",
           dependencyId: ({ lives, config }) =>
-            pipe([
-              get("dataSourceName"),
-              lives.getByName({
-                type: "DataSource",
-                group: "AppSync",
-                providerName: config.providerName,
-              }),
-              get("id"),
-            ]),
+            get("logConfig.cloudWatchLogsRoleArn"),
         },
       },
     },
+    createAwsService(AppSyncResolver({ compare })),
   ],
-  map(defaultsDeep({ group: GROUP, tagsKey, isOurMinion })),
+  map(
+    defaultsDeep({ group: GROUP, tagsKey, isOurMinion, compare: compare({}) })
+  ),
 ]);

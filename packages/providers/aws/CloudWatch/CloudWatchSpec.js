@@ -67,6 +67,7 @@ module.exports = pipe([
         "StateReason",
         "StateReasonData",
         "StateUpdatedTimestamp",
+        "StateTransitionedTimestamp",
       ],
       dependencies: {
         snsTopic: {

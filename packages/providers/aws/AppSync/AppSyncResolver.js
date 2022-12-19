@@ -1,108 +1,214 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, pick, eq, omit, map } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
 
-const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { AwsClient } = require("../AwsClient");
-const {
-  createAppSync,
-  findDependenciesGraphqlApi,
-  ignoreErrorCodes,
-  tagResource,
-  untagResource,
-} = require("./AppSyncCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
+const { findDependenciesGraphqlId } = require("./AppSyncCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+
+const { Tagger, ignoreErrorCodes } = require("./AppSyncCommon");
+
+const buildArn = () =>
+  pipe([
+    get("resolverArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const pickId = pick(["apiId", "fieldName", "typeName"]);
+
+const decorate = ({ live }) => pipe([defaultsDeep({ apiId: live.apiId })]);
 
 const findId = () => get("resolverArn");
 
 const findName = () =>
-  pipe([({ typeName, fieldName }) => `resolver::${typeName}::${fieldName}`]);
+  pipe([
+    tap(({ typeName, fieldName }) => {
+      assert(typeName);
+      assert(fieldName);
+    }),
+    ({ typeName, fieldName }) => `resolver::${typeName}::${fieldName}`,
+  ]);
 
-const pickId = pick(["apiId", "fieldName", "typeName"]);
+const filterPayload = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+]);
+
+const omitMaxBatchSize = when(
+  eq(get("maxBatchSize"), 0),
+  omit(["maxBatchSize"])
+);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
-exports.AppSyncResolver = ({ spec, config }) => {
-  const appSync = createAppSync(config);
-
-  const client = AwsClient({ spec, config })(appSync);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listResolvers-property
-  const getList = client.getListWithParent({
-    parent: { type: "GraphqlApi", group: "AppSync" },
-    pickKey: pipe([pick(["apiId"]), defaultsDeep({ format: "SDL" })]),
-    method: "listTypes",
-    getParam: "types",
-    config,
-    decorate: ({ parent: { apiId, tags } }) =>
+exports.AppSyncResolver = ({ compare }) => ({
+  type: "Resolver",
+  package: "appsync",
+  client: "AppSync",
+  propertiesDefault: {},
+  omitProperties: [
+    "arn",
+    "resolverArn",
+    "apiId",
+    "dataSourceName",
+    "pipelineConfig",
+  ],
+  inferName:
+    () =>
+    ({ typeName, fieldName }) =>
       pipe([
-        ({ name }) =>
-          pipe([
-            () => ({ apiId, typeName: name }),
-            appSync().listResolvers,
-            get("resolvers"),
-            map(pipe([defaultsDeep({ apiId })])),
-          ])(),
+        tap((params) => {
+          assert(typeName);
+          assert(fieldName);
+        }),
+        () => `resolver::${typeName}::${fieldName}`,
+      ])(),
+  findName,
+  findId,
+  dependencies: {
+    dataSource: {
+      type: "DataSource",
+      group: "AppSync",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("dataSourceName"),
+          lives.getByName({
+            type: "DataSource",
+            group: "AppSync",
+            providerName: config.providerName,
+          }),
+          get("id"),
+        ]),
+    },
+    graphqlApi: {
+      type: "GraphqlApi",
+      group: "AppSync",
+      parent: true,
+      dependencyId: findDependenciesGraphqlId,
+    },
+    functions: {
+      type: "Function",
+      group: "AppSync",
+      list: true,
+      dependencyIds: ({ lives, config }) => get("pipelineConfig.functions"),
+    },
+    type: {
+      type: "Type",
+      group: "AppSync",
+      dependencyId: ({ lives, config }) => get("typeName"),
+    },
+  },
+  compare: compare({
+    filterLive: () =>
+      pipe([
+        // TODO replace region
+        omitIfEmpty([
+          "description",
+          "requestMappingTemplate",
+          "responseMappingTemplate",
+        ]),
+        omitMaxBatchSize,
       ]),
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#getResolver-property
-  const getById = client.getById({
+  }),
+  filterLive: () => pipe([omitMaxBatchSize]),
+  ignoreErrorCodes: ["NotFoundException"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#getFunction-property
+  getById: {
     pickId,
     method: "getResolver",
     getField: "resolver",
     ignoreErrorCodes,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createResolver-property
-  const create = client.create({
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listFunctions-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "GraphqlApi", group: "AppSync" },
+          pickKey: pipe([pick(["apiId"]), defaultsDeep({ format: "SDL" })]),
+          method: "listTypes",
+          getParam: "types",
+          config,
+          decorate: ({ parent: { apiId, tags } }) =>
+            pipe([
+              ({ name }) =>
+                pipe([
+                  () => ({ apiId, typeName: name }),
+                  endpoint().listResolvers,
+                  get("resolvers"),
+                  map(pipe([defaultsDeep({ apiId }), getById({})])),
+                ])(),
+            ]),
+        }),
+    ])(),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createFunction-property
+  create: {
     method: "createResolver",
+    filterPayload,
     pickCreated:
       ({ payload }) =>
       () =>
         payload,
-    getById,
     shouldRetryOnExceptionCodes: ["ConcurrentModificationException"],
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteResolver-property
-  const destroy = client.destroy({
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#updateResolver-property
+  update: {
+    method: "updateResolver",
+    filterParams: ({ payload, diff, live }) =>
+      pipe([
+        () => payload,
+        tap((params) => {
+          assert(true);
+        }),
+        defaultsDeep(pickId(live)),
+      ])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteFunction-property
+  destroy: {
     pickId,
     method: "deleteResolver",
-    getById,
     ignoreErrorCodes,
-  });
-
-  const configDefault = ({
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { ...otherProps },
-    dependencies: { graphqlApi, dataSource },
+    dependencies: { graphqlApi, dataSource, functions },
   }) =>
     pipe([
       tap(() => {
         assert(graphqlApi, "missing 'graphqlApi' dependency");
-        assert(dataSource, "missing 'dataSource' dependency");
+        //assert(dataSource, "missing 'dataSource' dependency");
       }),
       () => otherProps,
       defaultsDeep({
         apiId: getField(graphqlApi, "apiId"),
-        dataSourceName: getField(dataSource, "name"),
       }),
-    ])();
-
-  return {
-    spec,
-    findId,
-    getByName,
-    findName,
-    getById,
-    create,
-    destroy,
-    getList,
-    configDefault,
-    tagResource: tagResource({ appSync, property: "resolverArn" }),
-    untagResource: untagResource({ appSync, property: "resolverArn" }),
-  };
-};
+      when(
+        () => dataSource,
+        defaultsDeep({
+          dataSourceName: getField(dataSource, "name"),
+        })
+      ),
+      when(
+        () => functions,
+        defaultsDeep({
+          pipelineConfig: {
+            functions: pipe([
+              () => functions,
+              map((fun) => getField(fun, "functionId")),
+            ])(),
+          },
+        })
+      ),
+    ])(),
+});

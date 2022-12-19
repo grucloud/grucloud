@@ -4,17 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "GraphqlApi",
-    group: "AppSync",
-    properties: ({}) => ({
-      name: "ToSqSApi",
-      authenticationType: "API_KEY",
-      xrayEnabled: false,
-      apiKeys: [{}],
-      schemaFile: "ToSqSApi.graphql",
-    }),
-  },
-  {
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
@@ -37,20 +26,57 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "GraphqlApi",
+    group: "AppSync",
+    properties: ({}) => ({
+      name: "ToSqSApi",
+      authenticationType: "API_KEY",
+      xrayEnabled: false,
+      apiKeys: [{}],
+      schemaFile: "ToSqSApi.graphql",
+    }),
+  },
+  {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "sendMessage",
-      requestMappingTemplate:
-        '\n#set ($body = "Action=SendMessage&Version=2012-11-05")\n#set ($messageBody = $util.urlEncode($util.toJson($ctx.args)))\n#set ($queueUrl = $util.urlEncode("https://sqs.us-east-1.amazonaws.com/840541460064/CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6"))\n#set ($body = "$body&MessageBody=$messageBody&QueueUrl=$queueUrl")\n\n{\n  "version": "2018-05-29",\n  "method": "POST",\n  "resourcePath": "/840541460064/CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6",\n  "params": {\n    "body": "$body",\n    "headers": {\n      "content-type": "application/x-www-form-urlencoded"\n    }\n  }\n}\n',
-      responseMappingTemplate:
-        '\n#if($ctx.result.statusCode == 200)\n    ##if response is 200\n    ## Because the response is of type XML, we are going to convert\n    ## the result body as a map and only get the User object.\n    $utils.toJson($utils.xml.toMap($ctx.result.body).SendMessageResponse.SendMessageResult)\n#else\n    ##if response is not 200, append the response to error block.\n    $utils.appendError($ctx.result.body, "$ctx.result.statusCode")\n    null\n#end\n',
       kind: "UNIT",
+      requestMappingTemplate: String.raw`
+#set ($body = "Action=SendMessage&Version=2012-11-05")
+#set ($messageBody = $util.urlEncode($util.toJson($ctx.args)))
+#set ($queueUrl = $util.urlEncode("https://sqs.us-east-1.amazonaws.com/840541460064/CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6"))
+#set ($body = "$body&MessageBody=$messageBody&QueueUrl=$queueUrl")
+
+{
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/840541460064/CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6",
+  "params": {
+    "body": "$body",
+    "headers": {
+      "content-type": "application/x-www-form-urlencoded"
+    }
+  }
+}
+`,
+      responseMappingTemplate: String.raw`
+#if($ctx.result.statusCode == 200)
+    ##if response is 200
+    ## Because the response is of type XML, we are going to convert
+    ## the result body as a map and only get the User object.
+    $utils.toJson($utils.xml.toMap($ctx.result.body).SendMessageResponse.SendMessageResult)
+#else
+    ##if response is not 200, append the response to error block.
+    $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
+    null
+#end
+`,
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "ToSqSApi",
       dataSource: "sqs",
+      graphqlApi: "ToSqSApi",
     }),
   },
   {
