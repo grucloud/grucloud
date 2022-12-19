@@ -391,7 +391,10 @@ exports.ResourceMaker = ({
           );
         },
         pipe([
-          assign({ name: () => value }),
+          tap((params) => {
+            assert(true);
+          }),
+          assign({ name: () => value, providerName: () => spec.providerName }),
           provider.getResource,
           tap.if(isEmpty, () => {
             logger.info(`no resource`);

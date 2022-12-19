@@ -84,7 +84,12 @@ describe("SSM", async function () {
     pipe([
       () => ({
         groupType: "SSM::PatchBaseline",
-        livesNotFound: ({ config }) => [{ BaselineId: "pb-03ec98bc512aa3ac5" }],
+        livesNotFound: ({ config }) => [
+          {
+            BaselineId: "pb-03ec98bc512aa3ac5",
+            OperatingSystem: "AMAZON_LINUX_2",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

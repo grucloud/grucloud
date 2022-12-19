@@ -265,11 +265,12 @@ function CoreProvider({
     ])();
 
   const targetResourceAddToMap = (resource) => {
-    assert(resource.spec.providerName);
     const { type, group, name, spec } = resource;
     assert(name);
     assert(type);
     assert(spec.groupType);
+    assert(spec.providerName);
+
     const resourceKey = resource.toString();
     logger.debug(`targetResourceAddToMap ${resourceKey}`);
     if (mapNameToResource.has(resourceKey)) {
@@ -285,7 +286,10 @@ function CoreProvider({
     )(resourcesObj);
 
     mapNameToResource.set(resourceKey, resource);
-    mapGloblalNameToResource.set(`${group}::${type}::${name}`, resource);
+    mapGloblalNameToResource.set(
+      `${spec.providerName}::${group}::${type}::${name}`,
+      resource
+    );
 
     const resourcesByType = getResourcesByType(resource);
     assert(resourcesByType);

@@ -27,7 +27,7 @@ List of resources for provider aws:
 * AppRunner: 
 [Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
 * AppSync: 
-[GraphqlApi](./resources/AppSync/GraphqlApi.md), [DataSource](./resources/AppSync/DataSource.md), [Resolver](./resources/AppSync/Resolver.md)
+[DataSource](./resources/AppSync/DataSource.md), [Function](./resources/AppSync/Function.md), [GraphqlApi](./resources/AppSync/GraphqlApi.md), [Resolver](./resources/AppSync/Resolver.md)
 * Athena: 
 [DataCatalog](./resources/Athena/DataCatalog.md), [WorkGroup](./resources/Athena/WorkGroup.md)
 * AutoScaling: 
@@ -129,7 +129,9 @@ List of resources for provider aws:
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md)
 * NetworkManager: 
-[GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Site](./resources/NetworkManager/Site.md), [Device](./resources/NetworkManager/Device.md), [Link](./resources/NetworkManager/Link.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md), [VpcAttachment](./resources/NetworkManager/VpcAttachment.md)
+[CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Device](./resources/NetworkManager/Device.md), [GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [Link](./resources/NetworkManager/Link.md), [Site](./resources/NetworkManager/Site.md), [SiteToSiteVpnAttachment](./resources/NetworkManager/SiteToSiteVpnAttachment.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md), [VpcAttachment](./resources/NetworkManager/VpcAttachment.md)
+* OpenSearchServerless: 
+[AccessPolicy](./resources/OpenSearchServerless/AccessPolicy.md), [Collection](./resources/OpenSearchServerless/Collection.md), [SecurityConfig](./resources/OpenSearchServerless/SecurityConfig.md), [SecurityPolicy](./resources/OpenSearchServerless/SecurityPolicy.md), [VpcEndpoint](./resources/OpenSearchServerless/VpcEndpoint.md)
 * Organisations: 
 [Account](./resources/Organisations/Account.md), [Policy](./resources/Organisations/Policy.md), [PolicyAttachment](./resources/Organisations/PolicyAttachment.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md), [Root](./resources/Organisations/Root.md)
 * RAM: 

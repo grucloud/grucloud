@@ -596,12 +596,13 @@ exports.contextFromHookGlobalAction = ({ hookType, name }) => {
 // TODO add param to throw
 exports.createGetResource = ({ mapGloblalNameToResource }) =>
   pipe([
-    tap(({ type, group }) => {
+    tap(({ providerName, type, name }) => {
+      assert(providerName);
       assert(type);
-      //assert(group);
-      //assert(name);
+      assert(name);
     }),
-    ({ type, group, name }) => `${group}::${type}::${name}`,
+    ({ providerName, group, type, name }) =>
+      `${providerName}::${group}::${type}::${name}`,
     (uri) =>
       pipe([
         () => mapGloblalNameToResource.get(uri),

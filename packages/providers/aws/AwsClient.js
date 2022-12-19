@@ -392,7 +392,7 @@ const AwsClient =
       ({
         method,
         filterPayload = identity,
-        config,
+        //config,
         configIsUp,
         pickCreated = () => identity,
         pickId,
@@ -417,9 +417,9 @@ const AwsClient =
         pipe([
           tap(() => {
             logger.info(
-              `create ${groupType}, ${name}, configIsUp: ${JSON.stringify(
-                configIsUp
-              )}`
+              `create ${groupType}, ${name}, ${
+                config.region
+              }, configIsUp: ${JSON.stringify(configIsUp)}`
             );
             assert(method);
             assert(pickCreated);

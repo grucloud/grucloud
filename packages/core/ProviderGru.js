@@ -268,7 +268,7 @@ exports.ProviderGru = ({
         assert(resource.type);
         assert(resource.name);
         logger.debug(
-          `plannerExecutor: executor ${resource.type} ${resource.name}, action: ${action}`
+          `plannerExecutor: executor ${resource.uri}, action: ${action}`
         );
       }),
       () => ({}),

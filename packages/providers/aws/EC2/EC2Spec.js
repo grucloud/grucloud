@@ -2726,54 +2726,7 @@ module.exports = pipe([
         },
       },
     },
-    {
-      type: "VpnConnection",
-      Client: EC2VpnConnection,
-      // TODO managedByOther ?
-      ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
-      omitProperties: [
-        "CustomerGatewayId",
-        "VpnGatewayId",
-        "TransitGatewayId",
-        "CoreNetworkArn",
-        "State",
-        "VpnConnectionId",
-        "GatewayAssociationState",
-        "VgwTelemetry",
-        "Options.TunnelOptions",
-        "CustomerGatewayConfiguration",
-        "Routes",
-      ],
-      //filterLive Sort by PSK
-      propertiesDefault: {
-        Type: "ipsec.1",
-        Options: {
-          EnableAcceleration: false,
-          LocalIpv4NetworkCidr: "0.0.0.0/0",
-          OutsideIpAddressType: "PublicIpv4",
-          RemoteIpv4NetworkCidr: "0.0.0.0/0",
-          StaticRoutesOnly: false,
-          TunnelInsideIpVersion: "ipv4",
-        },
-      },
-      dependencies: {
-        customerGateway: {
-          type: "CustomerGateway",
-          group: "EC2",
-          dependencyId: ({ lives, config }) => get("CustomerGatewayId"),
-        },
-        vpnGateway: {
-          type: "VpnGateway",
-          group: "EC2",
-          dependencyId: ({ lives, config }) => get("VpnGatewayId"),
-        },
-        transitGateway: {
-          type: "TransitGateway",
-          group: "EC2",
-          dependencyId: ({ lives, config }) => get("TransitGatewayId"),
-        },
-      },
-    },
+    createAwsService(EC2VpnConnection({ compare: compareEC2 })),
     {
       type: "VpnConnectionRoute",
       Client: EC2VpnConnectionRoute,
