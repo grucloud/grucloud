@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
+const { pipe, tap, get, pick, eq, assign } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -84,11 +84,17 @@ const model = ({ config }) => ({
 exports.AthenaWorkGroup = ({ compare }) => ({
   type: "WorkGroup",
   propertiesDefault: {},
-  omitProperties: ["CreationTime"],
+  omitProperties: ["CreationTime", "ResultConfiguration.ExecutionRole"],
   inferName: () => get("WorkGroup"),
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
   dependencies: {
+    iamRoleExecution: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("ResultConfiguration.ExecutionRole")]),
+    },
     s3BucketOutput: {
       type: "Bucket",
       group: "S3",
@@ -101,6 +107,7 @@ exports.AthenaWorkGroup = ({ compare }) => ({
       dependencyId: ({ lives, config }) =>
         get("Configuration.ResultConfiguration.EncryptionConfiguration.KmsKey"),
     },
+    // TODO kmsKey customer
   },
   Client: ({ spec, config }) =>
     createAwsResource({
@@ -128,7 +135,7 @@ exports.AthenaWorkGroup = ({ compare }) => ({
         name,
         namespace,
         properties: { Tags, ...otherProps },
-        dependencies: { kmsKey },
+        dependencies: { kmsKey, iamRoleExecution },
       }) =>
         pipe([
           () => otherProps,
@@ -144,6 +151,14 @@ exports.AthenaWorkGroup = ({ compare }) => ({
                     KmsKey: getField(kmsKey, "Arn"),
                   },
                 },
+              },
+            })
+          ),
+          when(
+            () => iamRoleExecution,
+            assign({
+              ResultConfiguration: {
+                ExecutionRole: getField(iamRoleExecution, "Arn"),
               },
             })
           ),
