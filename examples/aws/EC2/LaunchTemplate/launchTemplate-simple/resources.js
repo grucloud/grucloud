@@ -120,8 +120,12 @@ exports.createResources = () => [
           },
         ],
         InstanceType: "t2.micro",
-        UserData:
-          "#!/bin/sh\nyum update -y\namazon-linux-extras install docker\nservice docker start\nusermod -a -G docker ec2-user\nchkconfig docker on",
+        UserData: `#!/bin/sh
+yum update -y
+amazon-linux-extras install docker
+service docker start
+usermod -a -G docker ec2-user
+chkconfig docker on`,
         Image: {
           Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
         },

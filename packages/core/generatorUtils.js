@@ -367,7 +367,15 @@ const printPropertiesDo = (value) =>
       isFunction,
       (fun) => pipe([() => fun()])(),
       isString,
-      pipe([(value) => JSON.stringify(value)]),
+      pipe([
+        switchCase([
+          and([includes("\n"), includes("${"), not(includes("/**"))]),
+          pipe([(value) => `multiline(()=>{/*\n${value}\n*/})`]),
+          includes("\n"),
+          pipe([callProp("replaceAll", "`", "\\`"), (value) => `\`${value}\``]),
+          (value) => JSON.stringify(value),
+        ]),
+      ]),
       isNumeric,
       pipe([identity]),
       Array.isArray,
@@ -419,7 +427,9 @@ const configBuildPropertiesDefault = ({
       and([not(isEmpty), () => !resource.isDefault, () => !hasNoProperty]),
       pipe([
         printProperties,
-        prepend("\nproperties: ({config, getId, generatePassword}) => ("),
+        prepend(
+          "\nproperties: ({config, getId, generatePassword, multiline}) => ("
+        ),
         append("),"),
       ]),
       pipe([() => ""]),

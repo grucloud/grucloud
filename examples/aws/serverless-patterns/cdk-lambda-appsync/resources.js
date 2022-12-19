@@ -4,17 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "GraphqlApi",
-    group: "AppSync",
-    properties: ({}) => ({
-      name: "TriggeredByLambda",
-      authenticationType: "AWS_IAM",
-      xrayEnabled: false,
-      apiKeys: [],
-      schemaFile: "TriggeredByLambda.graphql",
-    }),
-  },
-  {
     type: "DataSource",
     group: "AppSync",
     properties: ({}) => ({
@@ -26,19 +15,37 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "GraphqlApi",
+    group: "AppSync",
+    properties: ({}) => ({
+      name: "TriggeredByLambda",
+      authenticationType: "AWS_IAM",
+      xrayEnabled: false,
+      apiKeys: [],
+      schemaFile: "TriggeredByLambda.graphql",
+    }),
+  },
+  {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "createTodo",
-      requestMappingTemplate:
-        '\n$util.qr($ctx.args.put("id", $util.defaultIfNull($ctx.args.id, $util.autoId())))\n#set( $createdAt = $util.time.nowISO8601() )\n$util.qr($context.args.put("createdAt", $createdAt))\n$util.qr($context.args.put("updatedAt", $createdAt))\n{\n  "version": "2017-02-28",\n  "payload": $util.toJson($ctx.args)\n}',
-      responseMappingTemplate: "$util.toJson($context.result)",
       kind: "UNIT",
+      requestMappingTemplate: String.raw`
+$util.qr($ctx.args.put("id", $util.defaultIfNull($ctx.args.id, $util.autoId())))
+#set( $createdAt = $util.time.nowISO8601() )
+$util.qr($context.args.put("createdAt", $createdAt))
+$util.qr($context.args.put("updatedAt", $createdAt))
+{
+  "version": "2017-02-28",
+  "payload": $util.toJson($ctx.args)
+}`,
+      responseMappingTemplate: "$util.toJson($context.result)",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "TriggeredByLambda",
       dataSource: "NONE",
+      graphqlApi: "TriggeredByLambda",
     }),
   },
   {

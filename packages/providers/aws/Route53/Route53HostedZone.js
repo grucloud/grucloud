@@ -62,6 +62,9 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 // parseInt("052",8) => 42
 // String.fromCharCode(42) => *
 
+const managedByOther = () =>
+  pipe([get("Name"), callProp("endsWith", ".aoss.amazonaws.com.")]);
+
 const octalReplace = pipe([callProp("replaceAll", "\\052", "*")]);
 
 const findId = () =>
@@ -493,6 +496,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    managedByOther,
     findNamespace: findNamespaceInTags,
     tagResource: tagResource({ ResourceType })({ endpoint: route53 }),
     untagResource: untagResource({ ResourceType })({ endpoint: route53 }),

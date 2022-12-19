@@ -80,7 +80,7 @@ const GROUPS = [
   ["MSK", "kafka"],
   ["NetworkFirewall", "network-firewall"],
   ["NetworkManager", "networkmanager"],
-  //["OpenSearch", "opensearch"],
+  ["OpenSearchServerless", "opensearchserverless"],
   ["Organisations", "organizations"],
   ["RAM", "ram"],
   ["Redshift", "redshift"],

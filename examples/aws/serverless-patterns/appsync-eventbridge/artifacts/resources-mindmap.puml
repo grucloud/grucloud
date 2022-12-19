@@ -4,8 +4,8 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ AppSync
-++++ GraphqlApi (1)
 ++++ DataSource (1)
+++++ GraphqlApi (1)
 ++++ Resolver (1)
 +++ CloudWatchEvents
 ++++ EventBus (1)

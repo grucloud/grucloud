@@ -172,6 +172,10 @@ module.exports = pipe([
           PackageType: "Zip",
           TracingConfig: { Mode: "PassThrough" },
           EphemeralStorage: { Size: 512 },
+          SnapStart: {
+            ApplyOn: "None",
+            OptimizationStatus: "Off",
+          },
         },
       },
       filterLive:

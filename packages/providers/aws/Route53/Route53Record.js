@@ -43,6 +43,9 @@ const omitFieldRecord = omit(["HostedZoneId", "namespace"]);
 
 const liveToResourceSet = pipe([omitFieldRecord, filterEmptyResourceRecords]);
 
+const managedByOther = () =>
+  pipe([get("Name"), callProp("endsWith", ".aoss.amazonaws.com.")]);
+
 const findId = () => pipe([buildRecordName]);
 
 const getHostedZone = ({
@@ -758,6 +761,7 @@ exports.Route53Record = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    managedByOther,
     cannotBeDeleted,
     isOurMinion,
   };

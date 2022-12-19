@@ -4,17 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "GraphqlApi",
-    group: "AppSync",
-    properties: ({}) => ({
-      name: "My AppSync App",
-      authenticationType: "API_KEY",
-      xrayEnabled: false,
-      apiKeys: [{}],
-      schemaFile: "My AppSync App.graphql",
-    }),
-  },
-  {
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
@@ -35,83 +24,206 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "GraphqlApi",
+    group: "AppSync",
+    properties: ({}) => ({
+      name: "My AppSync App",
+      authenticationType: "API_KEY",
+      xrayEnabled: false,
+      apiKeys: [{}],
+      schemaFile: "My AppSync App.graphql",
+    }),
+  },
+  {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "createMyModelType",
-      requestMappingTemplate:
-        '{\n  "version": "2017-02-28",\n  "operation": "PutItem",\n  "key": {\n    "id": $util.dynamodb.toDynamoDBJson($util.autoId()),\n  },\n  "attributeValues": $util.dynamodb.toMapValuesJson($ctx.args.input),\n  "condition": {\n    "expression": "attribute_not_exists(#id)",\n    "expressionNames": {\n      "#id": "id",\n    },\n  },\n}',
-      responseMappingTemplate: "$util.toJson($context.result)",
       kind: "UNIT",
+      requestMappingTemplate: `{
+  "version": "2017-02-28",
+  "operation": "PutItem",
+  "key": {
+    "id": $util.dynamodb.toDynamoDBJson($util.autoId()),
+  },
+  "attributeValues": $util.dynamodb.toMapValuesJson($ctx.args.input),
+  "condition": {
+    "expression": "attribute_not_exists(#id)",
+    "expressionNames": {
+      "#id": "id",
+    },
+  },
+}`,
+      responseMappingTemplate: "$util.toJson($context.result)",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "My AppSync App",
       dataSource: "MyModelTypeTable",
+      graphqlApi: "My AppSync App",
     }),
   },
   {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "deleteMyModelType",
-      requestMappingTemplate:
-        '{\n  "version": "2017-02-28",\n  "operation": "DeleteItem",\n  "key": {\n    "id": $util.dynamodb.toDynamoDBJson($ctx.args.input.id),\n  },\n}',
-      responseMappingTemplate: "$util.toJson($context.result)",
       kind: "UNIT",
-    }),
-    dependencies: ({}) => ({
-      graphqlApi: "My AppSync App",
-      dataSource: "MyModelTypeTable",
-    }),
+      requestMappingTemplate: `{
+  "version": "2017-02-28",
+  "operation": "DeleteItem",
+  "key": {
+    "id": $util.dynamodb.toDynamoDBJson($ctx.args.input.id),
   },
-  {
-    type: "Resolver",
-    group: "AppSync",
-    properties: ({}) => ({
+}`,
+      responseMappingTemplate: "$util.toJson($context.result)",
       typeName: "Mutation",
+    }),
+    dependencies: ({}) => ({
+      dataSource: "MyModelTypeTable",
+      graphqlApi: "My AppSync App",
+    }),
+  },
+  {
+    type: "Resolver",
+    group: "AppSync",
+    properties: ({ multiline }) => ({
       fieldName: "updateMyModelType",
-      requestMappingTemplate:
-        '{\n  "version": "2017-02-28",\n  "operation": "UpdateItem",\n  "key": {\n    "id": $util.dynamodb.toDynamoDBJson($ctx.args.input.id),\n  },\n\n  ## Set up some space to keep track of things we\'re updating **\n  #set( $expNames  = {} )\n  #set( $expValues = {} )\n  #set( $expSet = {} )\n  #set( $expAdd = {} )\n  #set( $expRemove = [] )\n\n  ## Iterate through each argument, skipping keys **\n  #foreach( $entry in $util.map.copyAndRemoveAllKeys($ctx.args.input, ["id"]).entrySet() )\n    #if( $util.isNull($entry.value) )\n      ## If the argument is set to "null", then remove that attribute from the item in DynamoDB **\n\n      #set( $discard = ${expRemove.add("#${entry.key}")} )\n      $!{expNames.put("#${entry.key}", "${entry.key}")}\n    #else\n      ## Otherwise set (or update) the attribute on the item in DynamoDB **\n\n      $!{expSet.put("#${entry.key}", ":${entry.key}")}\n      $!{expNames.put("#${entry.key}", "${entry.key}")}\n      $!{expValues.put(":${entry.key}", $util.dynamodb.toDynamoDB($entry.value))}\n    #end\n  #end\n\n  ## Start building the update expression, starting with attributes we\'re going to SET **\n  #set( $expression = "" )\n  #if( !${expSet.isEmpty()} )\n    #set( $expression = "SET" )\n    #foreach( $entry in $expSet.entrySet() )\n      #set( $expression = "${expression} ${entry.key} = ${entry.value}" )\n      #if ( $foreach.hasNext )\n        #set( $expression = "${expression}," )\n      #end\n    #end\n  #end\n\n  ## Continue building the update expression, adding attributes we\'re going to ADD **\n  #if( !${expAdd.isEmpty()} )\n    #set( $expression = "${expression} ADD" )\n    #foreach( $entry in $expAdd.entrySet() )\n      #set( $expression = "${expression} ${entry.key} ${entry.value}" )\n      #if ( $foreach.hasNext )\n        #set( $expression = "${expression}," )\n      #end\n    #end\n  #end\n\n  ## Continue building the update expression, adding attributes we\'re going to REMOVE **\n  #if( !${expRemove.isEmpty()} )\n    #set( $expression = "${expression} REMOVE" )\n\n    #foreach( $entry in $expRemove )\n      #set( $expression = "${expression} ${entry}" )\n      #if ( $foreach.hasNext )\n        #set( $expression = "${expression}," )\n      #end\n    #end\n  #end\n\n  ## Finally, write the update expression into the document, along with any expressionNames and expressionValues **\n  "update": {\n    "expression": "${expression}",\n    #if( !${expNames.isEmpty()} )\n      "expressionNames": $utils.toJson($expNames),\n    #end\n    #if( !${expValues.isEmpty()} )\n      "expressionValues": $utils.toJson($expValues),\n    #end\n  },\n\n  "condition": {\n    "expression": "attribute_exists(#id)",\n    "expressionNames": {\n      "#id": "id",\n    },\n  }\n}',
-      responseMappingTemplate: "$util.toJson($context.result)",
       kind: "UNIT",
+      requestMappingTemplate: multiline(() => {
+        /*
+{
+  "version": "2017-02-28",
+  "operation": "UpdateItem",
+  "key": {
+    "id": $util.dynamodb.toDynamoDBJson($ctx.args.input.id),
+  },
+
+  ## Set up some space to keep track of things we're updating **
+  #set( $expNames  = {} )
+  #set( $expValues = {} )
+  #set( $expSet = {} )
+  #set( $expAdd = {} )
+  #set( $expRemove = [] )
+
+  ## Iterate through each argument, skipping keys **
+  #foreach( $entry in $util.map.copyAndRemoveAllKeys($ctx.args.input, ["id"]).entrySet() )
+    #if( $util.isNull($entry.value) )
+      ## If the argument is set to "null", then remove that attribute from the item in DynamoDB **
+
+      #set( $discard = ${expRemove.add("#${entry.key}")} )
+      $!{expNames.put("#${entry.key}", "${entry.key}")}
+    #else
+      ## Otherwise set (or update) the attribute on the item in DynamoDB **
+
+      $!{expSet.put("#${entry.key}", ":${entry.key}")}
+      $!{expNames.put("#${entry.key}", "${entry.key}")}
+      $!{expValues.put(":${entry.key}", $util.dynamodb.toDynamoDB($entry.value))}
+    #end
+  #end
+
+  ## Start building the update expression, starting with attributes we're going to SET **
+  #set( $expression = "" )
+  #if( !${expSet.isEmpty()} )
+    #set( $expression = "SET" )
+    #foreach( $entry in $expSet.entrySet() )
+      #set( $expression = "${expression} ${entry.key} = ${entry.value}" )
+      #if ( $foreach.hasNext )
+        #set( $expression = "${expression}," )
+      #end
+    #end
+  #end
+
+  ## Continue building the update expression, adding attributes we're going to ADD **
+  #if( !${expAdd.isEmpty()} )
+    #set( $expression = "${expression} ADD" )
+    #foreach( $entry in $expAdd.entrySet() )
+      #set( $expression = "${expression} ${entry.key} ${entry.value}" )
+      #if ( $foreach.hasNext )
+        #set( $expression = "${expression}," )
+      #end
+    #end
+  #end
+
+  ## Continue building the update expression, adding attributes we're going to REMOVE **
+  #if( !${expRemove.isEmpty()} )
+    #set( $expression = "${expression} REMOVE" )
+
+    #foreach( $entry in $expRemove )
+      #set( $expression = "${expression} ${entry}" )
+      #if ( $foreach.hasNext )
+        #set( $expression = "${expression}," )
+      #end
+    #end
+  #end
+
+  ## Finally, write the update expression into the document, along with any expressionNames and expressionValues **
+  "update": {
+    "expression": "${expression}",
+    #if( !${expNames.isEmpty()} )
+      "expressionNames": $utils.toJson($expNames),
+    #end
+    #if( !${expValues.isEmpty()} )
+      "expressionValues": $utils.toJson($expValues),
+    #end
+  },
+
+  "condition": {
+    "expression": "attribute_exists(#id)",
+    "expressionNames": {
+      "#id": "id",
+    },
+  }
+}
+*/
+      }),
+      responseMappingTemplate: "$util.toJson($context.result)",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "My AppSync App",
       dataSource: "MyModelTypeTable",
+      graphqlApi: "My AppSync App",
     }),
   },
   {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "getMyModelType",
-      requestMappingTemplate:
-        '{\n  "version": "2017-02-28",\n  "operation": "GetItem",\n  "key": {\n    "id": $util.dynamodb.toDynamoDBJson($ctx.args.id),\n  },\n}',
-      responseMappingTemplate: "$util.toJson($context.result)",
       kind: "UNIT",
+      requestMappingTemplate: `{
+  "version": "2017-02-28",
+  "operation": "GetItem",
+  "key": {
+    "id": $util.dynamodb.toDynamoDBJson($ctx.args.id),
+  },
+}`,
+      responseMappingTemplate: "$util.toJson($context.result)",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "My AppSync App",
       dataSource: "MyModelTypeTable",
+      graphqlApi: "My AppSync App",
     }),
   },
   {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "listMyModelTypes",
-      requestMappingTemplate:
-        '{\n  "version": "2017-02-28",\n  "operation": "Scan",\n  "filter": #if($context.args.filter) $util.transform.toDynamoDBFilterExpression($ctx.args.filter) #else null #end,\n  "limit": $util.defaultIfNull($ctx.args.limit, 20),\n  "nextToken": $util.toJson($util.defaultIfNullOrEmpty($ctx.args.nextToken, null)),\n}',
-      responseMappingTemplate: "$util.toJson($context.result)",
       kind: "UNIT",
+      requestMappingTemplate: `{
+  "version": "2017-02-28",
+  "operation": "Scan",
+  "filter": #if($context.args.filter) $util.transform.toDynamoDBFilterExpression($ctx.args.filter) #else null #end,
+  "limit": $util.defaultIfNull($ctx.args.limit, 20),
+  "nextToken": $util.toJson($util.defaultIfNullOrEmpty($ctx.args.nextToken, null)),
+}`,
+      responseMappingTemplate: "$util.toJson($context.result)",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
-      graphqlApi: "My AppSync App",
       dataSource: "MyModelTypeTable",
+      graphqlApi: "My AppSync App",
     }),
   },
   {
