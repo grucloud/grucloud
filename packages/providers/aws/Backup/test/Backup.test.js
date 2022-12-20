@@ -41,7 +41,7 @@ describe("Backup", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("BackupVaultLockConfiguration", () =>
+  it("BackupVaultLockConfiguration", () =>
     pipe([
       () => ({
         groupType: "Backup::BackupVaultLockConfiguration",
@@ -53,7 +53,7 @@ describe("Backup", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("BackupVaultNotification", () =>
+  it("BackupVaultNotification", () =>
     pipe([
       () => ({
         groupType: "Backup::BackupVaultNotification",
@@ -65,7 +65,7 @@ describe("Backup", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("BackupVaultPolicy", () =>
+  it("BackupVaultPolicy", () =>
     pipe([
       () => ({
         groupType: "Backup::BackupVaultPolicy",

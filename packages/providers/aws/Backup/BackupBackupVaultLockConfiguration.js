@@ -18,7 +18,7 @@ const decorate = () =>
 const model = ({ config }) => ({
   package: "backup",
   client: "Backup",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#describeBackupVault-property
   getById: {
     method: "describeBackupVault",
