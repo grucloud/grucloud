@@ -598,6 +598,7 @@ exports.createGetResource = ({ mapGloblalNameToResource }) =>
   pipe([
     tap(({ providerName, type, name }) => {
       assert(providerName);
+      assert(isString(providerName));
       assert(type);
       assert(name);
       assert(isString(name));

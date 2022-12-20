@@ -392,7 +392,7 @@ exports.ResourceMaker = ({
           tap((params) => {
             assert(true);
           }),
-          assign({ name: () => value, providerName: () => spec.providerName }),
+          assign({ name: () => value }),
           switchCase([
             () => providerName,
             assign({
@@ -434,12 +434,17 @@ exports.ResourceMaker = ({
                   isString,
                   (name) => dependencyNameToResource({ key, value: name }),
                   isObject,
-                  ({ name, provider }) =>
-                    dependencyNameToResource({
-                      key,
-                      value: name,
-                      providerName: provider,
+                  pipe([
+                    tap((params) => {
+                      assert(true);
                     }),
+                    ({ name, provider: providerName }) =>
+                      dependencyNameToResource({
+                        key,
+                        value: name,
+                        providerName,
+                      }),
+                  ]),
                   (elem) => {
                     assert(
                       false,
@@ -455,6 +460,7 @@ exports.ResourceMaker = ({
             tap(({ name, provider }) => {
               assert(name);
               assert(provider);
+              assert(isString(provider));
             }),
             ({ name, provider }) =>
               dependencyNameToResource({

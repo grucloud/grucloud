@@ -97,8 +97,18 @@ exports.createResources = () => [
                 responses: {
                   default: {
                     responseTemplates: {
-                      "application/json":
-                        '#set($inputRoot = $input.path(\'$\'))\n{\n\t"pets": [\n\t\t#foreach($field in $inputRoot.Items) {\n\t\t\t"id": "$field.id.S",\n\t\t\t"PetType": "$field.PetType.S",\n\t\t\t"PetName": "$field.PetName.S",\n\t\t\t"PetPrice": "$field.PetPrice.N"\n\t\t}#if($foreach.hasNext),#end\n\t\t#end\n\t]\n}',
+                      "application/json": `#set($inputRoot = $input.path('$'))
+{
+	"pets": [
+		#foreach($field in $inputRoot.Items) {
+			"id": "$field.id.S",
+			"PetType": "$field.PetType.S",
+			"PetName": "$field.PetName.S",
+			"PetPrice": "$field.PetPrice.N"
+		}#if($foreach.hasNext),#end
+		#end
+	]
+}`,
                     },
                     statusCode: "200",
                   },
