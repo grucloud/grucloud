@@ -59,7 +59,6 @@ exports.Route53VpcAssociationAuthorization = ({ spec, config }) =>
               tap((id) => {
                 assert(id);
               }),
-              (id) => id,
               lives.getById({
                 type: "HostedZone",
                 group: "Route53",

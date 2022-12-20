@@ -15,7 +15,7 @@ exports.createResources = () => [
     type: "ZoneVpcAssociation",
     group: "Route53",
     dependencies: ({}) => ({
-      hostedZone: "test.grucloud.org.",
+      hostedZone: { name: "test.grucloud.org.", provider: "aws-primary" },
       vpc: "vpc-dev",
     }),
   },

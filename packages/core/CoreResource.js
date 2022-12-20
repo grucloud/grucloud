@@ -24,13 +24,11 @@ const {
   append,
   isEmpty,
   isString,
+  isObject,
   isFunction,
   callProp,
   pluck,
   forEach,
-  find,
-
-  isDeepEqual,
   size,
   identity,
   unless,
@@ -362,7 +360,7 @@ exports.ResourceMaker = ({
       ),
     ])();
 
-  const dependencyNameToResource = ({ key: depKey, value }) =>
+  const dependencyNameToResource = ({ key: depKey, value, providerName }) =>
     pipe([
       tap(() => {
         assert(depKey);
@@ -395,6 +393,15 @@ exports.ResourceMaker = ({
             assert(true);
           }),
           assign({ name: () => value, providerName: () => spec.providerName }),
+          switchCase([
+            () => providerName,
+            assign({
+              providerName: () => providerName,
+            }),
+            assign({
+              providerName: () => spec.providerName,
+            }),
+          ]),
           provider.getResource,
           tap.if(isEmpty, () => {
             logger.info(`no resource`);
@@ -423,11 +430,41 @@ exports.ResourceMaker = ({
           pipe([
             map(
               pipe([
-                when(isString, (name) =>
-                  dependencyNameToResource({ key, value: name })
-                ),
+                switchCase([
+                  isString,
+                  (name) => dependencyNameToResource({ key, value: name }),
+                  isObject,
+                  ({ name, provider }) =>
+                    dependencyNameToResource({
+                      key,
+                      value: name,
+                      providerName: provider,
+                    }),
+                  (elem) => {
+                    assert(
+                      false,
+                      "dependency array item should be a string or an object"
+                    );
+                  },
+                ]),
               ])
             ),
+          ]),
+          isObject,
+          pipe([
+            tap(({ name, provider }) => {
+              assert(name);
+              assert(provider);
+            }),
+            ({ name, provider }) =>
+              dependencyNameToResource({
+                key,
+                value: name,
+                providerName: provider,
+              }),
+            tap((params) => {
+              assert(true);
+            }),
           ]),
           identity,
         ]),
@@ -448,6 +485,9 @@ exports.ResourceMaker = ({
         assert(isFunction(dependencies));
       }),
       dependencies,
+      tap((params) => {
+        assert(true);
+      }),
       //TODO
       filter(or([not(isEmpty) /*, not(isString)*/])),
       tap((params) => {

@@ -103,7 +103,7 @@ describe("NetworkManager", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("SiteToSiteVpnAttachment", () =>
+  it("SiteToSiteVpnAttachment", () =>
     pipe([
       () => ({
         config,

@@ -600,18 +600,20 @@ exports.createGetResource = ({ mapGloblalNameToResource }) =>
       assert(providerName);
       assert(type);
       assert(name);
+      assert(isString(name));
     }),
     ({ providerName, group, type, name }) =>
       `${providerName}::${group}::${type}::${name}`,
     (uri) =>
       pipe([
         () => mapGloblalNameToResource.get(uri),
-        // tap.if(isEmpty, () => {
-        //   logger.info(
-        //     `no resource for ${uri}, available resources:\n${[
-        //       ...mapGloblalNameToResource.keys(),
-        //     ].join("\n")} )}`
-        //   );
-        // }),
+        tap.if(isEmpty, () => {
+          assert(true);
+          //   logger.info(
+          //     `no resource for ${uri}, available resources:\n${[
+          //       ...mapGloblalNameToResource.keys(),
+          //     ].join("\n")} )}`
+          //   );
+        }),
       ])(),
   ]);

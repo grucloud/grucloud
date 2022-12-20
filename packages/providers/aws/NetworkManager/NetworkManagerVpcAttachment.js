@@ -1,12 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, fork } = require("rubico");
-const { find, defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, pick, eq, fork, map } = require("rubico");
+const { find, defaultsDeep, isObject, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
-
 const { createAwsResource } = require("../AwsClient");
+const { Tagger, assignArnAttachment } = require("./NetworkManagerCommon");
 
 const findId = () =>
   pipe([
@@ -16,6 +16,29 @@ const findId = () =>
     }),
   ]);
 
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const pickId = pipe([pick(["AttachmentId"])]);
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+    ({ Attachment, Options, SubnetArns }) => ({
+      ...Attachment,
+      SubnetArns,
+      Options,
+    }),
+    assignArnAttachment({ config }),
+  ]);
+
 const createModel = ({ config }) => ({
   package: "networkmanager",
   client: "NetworkManager",
@@ -23,13 +46,9 @@ const createModel = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getVpcAttachment-property
   getById: {
     method: "getVpcAttachment",
-    pickId: pipe([
-      tap(({ AttachmentId }) => {
-        //assert(AttachmentId);
-      }),
-      pick(["AttachmentId"]),
-    ]),
-    getField: "VpcAttachment.Attachment",
+    pickId,
+    getField: "VpcAttachment",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#listAttachments-property
   getList: {
@@ -43,31 +62,44 @@ const createModel = ({ config }) => ({
     method: "createVpcAttachment",
     pickCreated: ({ payload: { VpcArn, CoreNetworkId }, endpoint }) =>
       pipe([
+        tap((params) => {
+          assert(VpcArn);
+        }),
         () => ({
           CoreNetworkId,
           AttachmentType: "VPC",
         }),
-        endpoint.listAttachments,
+        endpoint().listAttachments,
         get("Attachments"),
         find(eq(get("ResourceArn"), VpcArn)),
       ]),
-    // isInstanceUp: pipe([
-    //   tap(({ State }) => {
-    //     logger.info(`createVpcAttachment State: ${State}`);
-    //   }),
-    //   eq(get("State"), "AVAILABLE"),
-    // ]),
-    // REJECTED
-    //isInstanceError: eq(get("State"), "FAILED"),
-    //getById: () => true,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#updateVpcAttachment-property
   // TODO updateVpcAttachment
-
+  /**
+   * var params = {
+  AttachmentId: 'STRING_VALUE', 
+  AddSubnetArns: [
+    'STRING_VALUE',
+  ],
+  Options: {
+    ApplianceModeSupport: true || false,
+    Ipv6Support: true || false
+  },
+  RemoveSubnetArns: [
+    'STRING_VALUE',
+  ]
+};
+   */
+  update: {
+    method: "updateVpcAttachment",
+    filterParams: ({ payload }) =>
+      pipe([() => payload, pick(["Options"]), defaultsDeep(pickId(live))]),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#deleteAttachment-property
   destroy: {
     method: "deleteAttachment",
-    pickId: pipe([pick(["AttachmentId"])]),
+    pickId,
   },
 });
 
@@ -78,7 +110,7 @@ exports.NetworkManagerVpcAttachment = ({ spec, config }) =>
     spec,
     config,
     findName:
-      ({ lives }) =>
+      ({ lives, config }) =>
       (live) =>
         pipe([
           () => live,
@@ -99,7 +131,6 @@ exports.NetworkManagerVpcAttachment = ({ spec, config }) =>
               lives.getByType({
                 type: "Vpc",
                 group: "EC2",
-                providerName: config.providerName,
               }),
               find(pipe([eq(get("live.VpcArn"), live.ResourceArn)])),
               get("name", live.ResourceArn),
@@ -110,8 +141,12 @@ exports.NetworkManagerVpcAttachment = ({ spec, config }) =>
         ])(),
     findId,
     getByName: getByNameCore,
+    ...Tagger({
+      buildArn: buildArn({ config }),
+    }),
     configDefault: ({
       name,
+      namespace,
       properties: { Tags, ...otherProps },
       dependencies: { coreNetwork, vpc, subnets },
     }) =>
@@ -126,7 +161,7 @@ exports.NetworkManagerVpcAttachment = ({ spec, config }) =>
           VpcArn: getField(vpc, "VpcArn"),
           SubnetArns: pipe([
             () => subnets,
-            map((subnet) => getField(subnet, "SubnetArn")),
+            map((subnet) => getField(subnet, "Arn")),
           ])(),
           Tags: buildTags({ config, namespace, name, UserTags: Tags }),
         }),

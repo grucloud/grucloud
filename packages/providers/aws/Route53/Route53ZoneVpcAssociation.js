@@ -45,7 +45,7 @@ const managedByOther =
       () => live,
       or([
         get("Owner.OwningService"),
-        not(eq(get("Owner.OwningAccount"), config.accountId())),
+        //not(eq(get("Owner.OwningAccount"), config.accountId())),
         pipe([
           get("HostedZoneId"),
           lives.getById({

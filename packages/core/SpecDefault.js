@@ -3,12 +3,12 @@ const { map, tap, pipe, assign, eq, get, filter, not, and } = require("rubico");
 const {
   defaultsDeep,
   find,
-  when,
   isEmpty,
   unless,
   prepend,
   identity,
   values,
+  isString,
 } = require("rubico/x");
 
 const logger = require("./logger")({
@@ -24,6 +24,7 @@ const resourceKeyDefault = pipe([
     assert(resource.providerName);
     assert(resource.type);
     assert(resource.name);
+    assert(isString(resource.name));
   }),
   ({
     providerName,

@@ -14,6 +14,7 @@ const {
   not,
 } = require("rubico");
 const {
+  isObject,
   append,
   prepend,
   isEmpty,
@@ -387,10 +388,15 @@ module.exports = pipe([
         },
       },
       omitProperties: ["HostedZoneId", "Name", "Owner", "VPC"],
-      inferName:
-        ({ dependenciesSpec: { hostedZone, vpc } }) =>
-        () =>
-          pipe([() => `zone-assoc::${hostedZone}::${vpc}`])(),
+      inferName: ({ dependenciesSpec: { hostedZone, vpc } }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => hostedZone,
+          when(isObject, get("name")),
+          (hostedZone) => `zone-assoc::${hostedZone}::${vpc}`,
+        ]),
       compare: compareRoute53({
         filterTarget: () => pipe([() => ({})]),
         filterLive: () => pipe([() => ({})]),
@@ -412,14 +418,28 @@ module.exports = pipe([
           type: "Vpc",
           group: "EC2",
           parent: true,
-          dependencyId: ({ lives, config }) => get("VPC.VPCId"),
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              get("VPC"),
+              ({ VPCRegion, VPCId }) =>
+                pipe([
+                  () => VPCId,
+                  lives.getById({ type: "Vpc", group: "EC2" }),
+                  pick(["id", "providerName"]),
+                ])(),
+            ]),
         },
       },
       omitProperties: ["HostedZoneId", "VPC"],
-      inferName:
-        ({ dependenciesSpec: { hostedZone, vpc } }) =>
-        () =>
-          pipe([() => `vpc-assoc-auth::${hostedZone}::${vpc}`])(),
+      inferName: ({ dependenciesSpec: { hostedZone, vpc } }) =>
+        pipe([
+          () => vpc,
+          when(isObject, get("name")),
+          (vpc) => `vpc-assoc-auth::${hostedZone}::${vpc}`,
+        ]),
       compare: compareRoute53({
         filterTarget: () => pipe([() => ({})]),
         filterLive: () => pipe([() => ({})]),

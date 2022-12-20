@@ -1182,6 +1182,7 @@ module.exports = pipe([
         //TODO
         "PrivateDnsNameOptionsOnLaunch",
         "CidrBlock",
+        "Arn",
       ],
       propertiesDefault: {
         MapPublicIpOnLaunch: false,

@@ -22,6 +22,7 @@ const {
 } = require("rubico");
 
 const {
+  isString,
   isEmpty,
   when,
   callProp,
@@ -267,6 +268,8 @@ function CoreProvider({
   const targetResourceAddToMap = (resource) => {
     const { type, group, name, spec } = resource;
     assert(name);
+    assert(isString(name));
+
     assert(type);
     assert(spec.groupType);
     assert(spec.providerName);
