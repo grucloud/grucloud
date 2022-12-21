@@ -392,7 +392,6 @@ const AwsClient =
       ({
         method,
         filterPayload = identity,
-        //config,
         configIsUp,
         pickCreated = () => identity,
         pickId,
@@ -687,7 +686,6 @@ const AwsClient =
             ])(),
         ]),
         isExpectedResult,
-        config,
       }) =>
       ({ name, live, lives }) =>
         pipe([

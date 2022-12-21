@@ -25,8 +25,18 @@ exports.createResources = () => [
     properties: ({}) => ({
       LaunchConfigurationName:
         "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-HWVeTO3QcmK1",
-      UserData:
-        'Content-Type: multipart/mixed; boundary="9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb"\nMIME-Version: 1.0\n\n--9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb\nContent-Type: text/text/x-shellscript; charset="utf-8"\nMime-Version: 1.0\n\n\n#!/bin/bash\necho ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config\necho \'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}\' >> /etc/ecs/ecs.config\n--9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb--',
+      UserData: `Content-Type: multipart/mixed; boundary="9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb"
+MIME-Version: 1.0
+
+--9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb
+Content-Type: text/text/x-shellscript; charset="utf-8"
+Mime-Version: 1.0
+
+
+#!/bin/bash
+echo ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config
+echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
+--9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb--`,
       InstanceType: "t2.small",
       BlockDeviceMappings: [],
       InstanceMonitoring: {

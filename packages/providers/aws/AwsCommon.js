@@ -373,6 +373,7 @@ const createEndpointProxy = (regionForce) => (client) => (config) =>
   pipe([
     tap((params) => {
       assert(client);
+      assert(config);
       assert(config.region);
       // logger.debug(
       //   `createEndpointProxy ${client.name}, region: ${config.region}`

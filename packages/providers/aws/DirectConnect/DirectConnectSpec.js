@@ -25,6 +25,10 @@ const { DirectConnectGateway } = require("./DirectConnectGateway");
 //const { DirectConnectHostedTransitVirtualInterfaceAccepter } = require("./DirectConnectHostedTransitVirtualInterfaceAccepter");
 const { DirectConnectLag } = require("./DirectConnectLag");
 const {
+  DirectConnectMacSecKeyAssociation,
+} = require("./DirectConnectMacSecKeyAssociation");
+
+const {
   DirectConnectVirtualInterface,
 } = require("./DirectConnectVirtualInterface");
 
@@ -50,14 +54,17 @@ module.exports = pipe([
     // DirectConnectHostedTransitVirtualInterface({})
     // DirectConnectHostedTransitVirtualInterfaceAccepter({})
     DirectConnectLag({ compare }),
+    DirectConnectMacSecKeyAssociation({ compare }),
     DirectConnectVirtualInterface({ compare }),
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      tagsKey,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        tagsKey,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

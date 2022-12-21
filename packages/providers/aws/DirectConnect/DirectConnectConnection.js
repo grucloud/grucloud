@@ -1,11 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, eq, not } = require("rubico");
-const { defaultsDeep, identity, isIn } = require("rubico/x");
+const { pipe, tap, get, pick, assign, eq, not, omit } = require("rubico");
+const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./DirectConnectCommon");
+const {
+  Tagger,
+  inferRequestMACSec,
+  deleteSecrets,
+} = require("./DirectConnectCommon");
 
 // TODO ownerAccount managedByOther
 
@@ -29,6 +33,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    inferRequestMACSec,
     assign({
       arn: pipe([
         ({ connectionId }) =>
@@ -84,6 +89,9 @@ exports.DirectConnectConnection = ({ compare }) => ({
       }),
     ]),
   dependencies: {},
+  compare: compare({
+    filterAll: () => pipe([omit(["requestMACSec"])]),
+  }),
   ignoreErrorCodes: ["DirectConnectClientException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html#describeConnections-property
   getById: {
@@ -113,6 +121,7 @@ exports.DirectConnectConnection = ({ compare }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html#deleteConnection-property
   destroy: {
+    preDestroy: deleteSecrets,
     method: "deleteConnection",
     pickId,
     isInstanceDown: pipe([eq(get("connectionState"), "deleted")]),

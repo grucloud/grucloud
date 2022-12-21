@@ -1,11 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick } = require("rubico");
+const { pipe, tap, get, eq, pick, omit } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger, assignTags } = require("./ElastiCacheCommon");
+const { Tagger, assignTags, compare } = require("./ElastiCacheCommon");
 
 const pickId = pipe([pick(["UserId"])]);
 const buildArn = () => pipe([get("ARN")]);
@@ -47,9 +47,9 @@ exports.ElastiCacheUser = () => ({
         pipe([eq(get("AuthenticationMode.Type"), "iam")]),
     },
   ],
-  // compare: compare({
-  //   filterAll: () => pipe([omit(["Authentication"])]),
-  // }),
+  compare: compare({
+    filterTarget: () => pipe([omit(["Passwords"])]),
+  }),
   filterLiveExtra: () =>
     pipe([
       when(

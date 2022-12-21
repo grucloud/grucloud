@@ -153,7 +153,7 @@ exports.DirectConnectBGPPeer = ({ compare }) => ({
         get("bgpPeers"),
         find(eq(get("asn"), name)),
         unless(isEmpty, decorate({ endpoint })),
-      ]),
+      ])(),
   configDefault: ({
     name,
     properties: { ...otherProps },

@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("DirectConnect", async function () {
-  it.skip("BgpPeer", () =>
+  it("BgpPeer", () =>
     pipe([
       () => ({
         groupType: "DirectConnect::BGPPeer",
@@ -13,9 +13,10 @@ describe("DirectConnect", async function () {
             asn: 65432,
             bgpPeerId: "b1234",
             customerAddress: "10.0.0.1",
-            virtualInterfaceId: "v123",
+            virtualInterfaceId: "dxvif-ffvpcwkq",
           },
         ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
@@ -27,13 +28,14 @@ describe("DirectConnect", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ConnectionAssociation", () =>
+  it("ConnectionAssociation", () =>
     pipe([
       () => ({
         groupType: "DirectConnect::ConnectionAssociation",
         livesNotFound: ({ config }) => [
           { connectionId: "dxcon-ffabc123", lagId: "dxlag-fg02ox79" },
         ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
@@ -135,11 +137,29 @@ describe("DirectConnect", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("VirtualInterface", () =>
+  it("MacSecKeyAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "DirectConnect::MacSecKeyAssociation",
+        livesNotFound: ({ config }) => [
+          {
+            connectionId: "dxcon-ffabc123",
+            secretARN: `arn:aws:secretsmanager:${
+              config.region
+            }:${config.accountId()}:secret:demordsservice-demostage-credentials-G7IcAQ`,
+          },
+        ],
+        skipGetByName: true,
+      }),
+      awsResourceTest,
+    ])());
+  it("VirtualInterface", () =>
     pipe([
       () => ({
         groupType: "DirectConnect::VirtualInterface",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { virtualInterfaceId: "dxvif-ffvpcwkq" },
+        ],
       }),
       awsResourceTest,
     ])());

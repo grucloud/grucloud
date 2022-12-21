@@ -11,6 +11,7 @@ exports.createResources = () => [
       connectionName: "165HS-Connection-1",
       location: "165HS",
       providerName: "Equinix, Inc.",
+      requestMACSec: true,
       tags: [
         {
           key: "mytag",
@@ -27,6 +28,7 @@ exports.createResources = () => [
       connectionName: "165HS-Connection-2",
       location: "165HS",
       providerName: "Equinix, Inc.",
+      requestMACSec: true,
       tags: [
         {
           key: "mytag",
@@ -59,9 +61,23 @@ exports.createResources = () => [
       lagName: "lag",
       location: "165HS",
       numberOfConnections: 1,
+      requestMACSec: true,
     }),
     dependencies: ({}) => ({
       connections: ["165HS-Connection-1"],
+    }),
+  },
+  {
+    type: "MacSecKeyAssociation",
+    group: "DirectConnect",
+    properties: ({}) => ({
+      ckn: process.env
+        .F1C3B2A4D6D9A7C5B4E1AB56DC21ED79AC97BE533671DCAB2678AC55CF71ACED_CKN,
+      cak: process.env
+        .F1C3B2A4D6D9A7C5B4E1AB56DC21ED79AC97BE533671DCAB2678AC55CF71ACED_CAK,
+    }),
+    dependencies: ({}) => ({
+      lag: "lag",
     }),
   },
   {

@@ -9,8 +9,9 @@ const {
   pick,
   map,
   omit,
+  or,
 } = require("rubico");
-const { defaultsDeep, when, size, pluck } = require("rubico/x");
+const { defaultsDeep, when, size, pluck, includes } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { replaceWithName } = require("@grucloud/core/Common");
 
@@ -25,7 +26,13 @@ const buildArn = () => get("ARN");
 
 const pickId = pipe([({ Name }) => ({ SecretId: Name })]);
 
-const managedByOther = () => pipe([get("OwningService")]);
+const managedByOther = () =>
+  pipe([
+    or([
+      // Direct Connect MacSecKey
+      get("OwningService"),
+    ]),
+  ]);
 
 const getSecretValue = ({ endpoint }) =>
   tryCatch(
@@ -73,7 +80,7 @@ exports.SecretsManagerSecret = ({ compare }) => ({
   findName: findNameInTagsOrId({ findId: () => get("Name") }),
   findId: () => pipe([get("ARN")]),
   managedByOther,
-  cannotBeDeleted: managedByOther,
+  //cannotBeDeleted: managedByOther,
   ignoreErrorCodes: ["ResourceNotFoundException", "InvalidRequestException"],
   dependencies: {
     kmsKey: {
