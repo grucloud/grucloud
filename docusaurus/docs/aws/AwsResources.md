@@ -30,6 +30,8 @@ List of resources for provider aws:
 [DataSource](./resources/AppSync/DataSource.md), [Function](./resources/AppSync/Function.md), [GraphqlApi](./resources/AppSync/GraphqlApi.md), [Resolver](./resources/AppSync/Resolver.md)
 * Athena: 
 [DataCatalog](./resources/Athena/DataCatalog.md), [WorkGroup](./resources/Athena/WorkGroup.md)
+* AuditManager: 
+[AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [Settings](./resources/AuditManager/Settings.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
 * Backup: 
@@ -69,7 +71,7 @@ List of resources for provider aws:
 * ControlTower: 
 [Control](./resources/ControlTower/Control.md)
 * DirectConnect: 
-[BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
+[BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [MacSecKeyAssociation](./resources/DirectConnect/MacSecKeyAssociation.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
 * DMS: 
 [Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
 * DynamoDB: 

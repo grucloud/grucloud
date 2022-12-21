@@ -109,6 +109,7 @@
     "@aws-sdk/client-apprunner": "3.231.0",
     "@aws-sdk/client-appsync": "3.231.0",
     "@aws-sdk/client-athena": "3.231.0",
+    "@aws-sdk/client-auditmanager": "3.231.0",
     "@aws-sdk/client-auto-scaling": "3.231.0",
     "@aws-sdk/client-backup": "3.231.0",
     "@aws-sdk/client-batch": "3.231.0",

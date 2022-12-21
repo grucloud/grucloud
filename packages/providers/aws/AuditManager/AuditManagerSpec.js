@@ -7,29 +7,43 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AuditManager.html
 
+const {
+  AuditManagerAccountRegistration,
+} = require("./AuditManagerAccountRegistration");
+
 //const { AuditManagerAssessment } = require("./AuditManagerAssessment");
 //const { AuditManagerAssessmentReport } = require("./AuditManagerAssessmentReport");
-//const { AuditManagerControl } = require("./AuditManagerControl");
-//const { AuditManagerFramework } = require("./AuditManagerFramework");
+const { AuditManagerControl } = require("./AuditManagerControl");
+const {
+  AuditManagerAssessmentFramework,
+} = require("./AuditManagerAssessmentFramework");
 //const { AuditManagerFrameworkShare } = require("./AuditManagerFrameworkShare");
 
-const GROUP = "AuditManager";
+const { AuditManagerSettings } = require("./AuditManagerSettings");
 
-const compare = compareAws({});
+const GROUP = "AuditManager";
+const tagsKey = "tags";
+
+const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
-    // AuditManagerAssessment({})
+    AuditManagerAccountRegistration({}),
     // AuditManagerAssessmentReport({})
-    // AuditManagerControl({})
+    AuditManagerControl({}),
+    AuditManagerAssessmentFramework({}),
     // AuditManagerFramework({})
     // AuditManagerFrameworkShare({})
+    AuditManagerSettings({}),
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+        tagsKey,
+      }),
+    ])
   ),
 ]);
