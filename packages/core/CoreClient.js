@@ -319,6 +319,8 @@ module.exports = CoreClient = ({
                                 name,
                                 id,
                                 dependencies: dependencies(),
+                                // TODO
+                                //config,
                               }),
                             ])(),
                         ])(),

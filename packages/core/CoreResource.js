@@ -834,6 +834,7 @@ exports.ResourceMaker = ({
                     diff,
                     live,
                     lives: provider.lives,
+                    config: provider.getConfig(),
                     //TODO do we need that id ?
                     id: client.findId({
                       lives: provider.lives,
@@ -843,6 +844,9 @@ exports.ResourceMaker = ({
                     compare: spec.compare,
                   }),
                   client.update,
+                  tap((params) => {
+                    assert(true);
+                  }),
                 ]),
                 (error) => {
                   logger.error(
@@ -853,6 +857,7 @@ exports.ResourceMaker = ({
                   throw error;
                 }
               ),
+              isExpectedResult: () => true,
               shouldRetryOnException: client.shouldRetryOnException,
               config: provider.config,
             }),

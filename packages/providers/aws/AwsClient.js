@@ -505,6 +505,7 @@ const AwsClient =
                 resolvedDependencies,
                 dependencies,
                 lives,
+                config,
                 endpoint,
               }),
               tap(() => {
