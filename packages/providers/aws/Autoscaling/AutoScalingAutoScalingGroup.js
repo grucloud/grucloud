@@ -8,12 +8,7 @@ const {
   prepend,
 } = require("rubico/x");
 
-const {
-  findNamespaceInTagsOrEksCluster,
-  hasKeyInTags,
-  buildTags,
-  findValueInTags,
-} = require("../AwsCommon");
+const { hasKeyInTags, buildTags, findValueInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
@@ -26,7 +21,13 @@ const {
 const ResourceType = "auto-scaling-group";
 
 const findId = () => get("AutoScalingGroupARN");
-const pickId = pipe([pick(["AutoScalingGroupName"])]);
+
+const pickId = pipe([
+  pick(["AutoScalingGroupName"]),
+  tap(({ AutoScalingGroupName }) => {
+    assert(AutoScalingGroupName);
+  }),
+]);
 
 const findNameEks = () =>
   pipe([

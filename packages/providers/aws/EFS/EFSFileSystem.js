@@ -46,6 +46,7 @@ exports.EFSFileSystem = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { kmsKey },
+      config,
     }) =>
       pipe([
         () => otherProps,

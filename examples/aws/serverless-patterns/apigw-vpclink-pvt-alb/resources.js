@@ -226,65 +226,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TaskDefinition",
-    group: "ECS",
-    properties: ({}) => ({
-      containerDefinitions: [
-        {
-          command: [],
-          cpu: 0,
-          dnsSearchDomains: [],
-          dnsServers: [],
-          dockerLabels: {},
-          dockerSecurityOptions: [],
-          entryPoint: [],
-          environment: [],
-          environmentFiles: [],
-          essential: true,
-          extraHosts: [],
-          image: "nginx",
-          links: [],
-          mountPoints: [],
-          name: "web",
-          portMappings: [
-            {
-              containerPort: 80,
-              hostPort: 80,
-              protocol: "tcp",
-            },
-          ],
-          secrets: [],
-          systemControls: [],
-          ulimits: [],
-          volumesFrom: [],
-        },
-      ],
-      cpu: "512",
-      family: "sam-app-ECSServiceTaskDefinition-7P836RFsrg3O",
-      memory: "1024",
-      networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.17",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.task-iam-role",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
-      requiresCompatibilities: ["FARGATE"],
-    }),
-    dependencies: ({}) => ({
-      taskRole: "sam-app-ECSTaskRole-1PCVBVKCZRWS2",
-      executionRole: "sam-app-ECSTaskExecutionRole-PMX4OZKH4A2P",
-    }),
-  },
-  {
     type: "Service",
     group: "ECS",
     properties: ({ getId }) => ({
@@ -317,8 +258,6 @@ exports.createResources = () => [
           assignPublicIp: "DISABLED",
         },
       },
-      placementConstraints: [],
-      placementStrategy: [],
       platformFamily: "Linux",
       platformVersion: "LATEST",
       schedulingStrategy: "REPLICA",
@@ -335,6 +274,50 @@ exports.createResources = () => [
         "sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
       ],
       targetGroups: ["sam-a-LoadB-29TIQLVPQQY9"],
+    }),
+  },
+  {
+    type: "TaskDefinition",
+    group: "ECS",
+    properties: ({}) => ({
+      containerDefinitions: [
+        {
+          cpu: 0,
+          essential: true,
+          image: "nginx",
+          name: "web",
+          portMappings: [
+            {
+              containerPort: 80,
+              hostPort: 80,
+              protocol: "tcp",
+            },
+          ],
+        },
+      ],
+      cpu: "512",
+      family: "sam-app-ECSServiceTaskDefinition-7P836RFsrg3O",
+      memory: "1024",
+      networkMode: "awsvpc",
+      requiresAttributes: [
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.17",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.task-iam-role",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
+        },
+        {
+          name: "ecs.capability.task-eni",
+        },
+      ],
+      requiresCompatibilities: ["FARGATE"],
+    }),
+    dependencies: ({}) => ({
+      taskRole: "sam-app-ECSTaskRole-1PCVBVKCZRWS2",
+      executionRole: "sam-app-ECSTaskExecutionRole-PMX4OZKH4A2P",
     }),
   },
   {

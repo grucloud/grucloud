@@ -104,10 +104,6 @@ exports.AppConfigDeployment = ({ spec, config }) =>
             config,
             transformListPost: () =>
               pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-
                 callProp(
                   "sort",
                   (a, b) => b.DeploymentNumber - a.DeploymentNumber

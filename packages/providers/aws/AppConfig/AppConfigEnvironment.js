@@ -36,17 +36,8 @@ const assignArn = ({ config }) =>
 
 const decorate = ({ endpoint, config }) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
     assignArn({ config }),
-    tap((params) => {
-      assert(true);
-    }),
     assignTags({ buildArn: buildArn(config), endpoint }),
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 
 const model = ({ config }) => ({

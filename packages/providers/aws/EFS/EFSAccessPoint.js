@@ -9,7 +9,7 @@ const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EFSCommon");
 
 const pickId = pipe([pick(["AccessPointId"])]);
-const findId = () => pipe([get("AccessPointArn")]);
+const findId = () => pipe([get("AccessPointId")]);
 
 const model = {
   package: "efs",
@@ -48,8 +48,12 @@ exports.EFSAccessPoint = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { fileSystem },
+      config,
     }) =>
       pipe([
+        tap((params) => {
+          assert(fileSystem);
+        }),
         () => otherProps,
         defaultsDeep({
           FileSystemId: getField(fileSystem, "FileSystemId"),

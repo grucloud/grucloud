@@ -979,23 +979,6 @@ exports.lambdaAddPermission = ({ lambda, lambdaFunction, SourceArn }) =>
     ),
   ]);
 
-exports.destroyAutoScalingGroupById = ({ autoScalingGroup, lives, config }) =>
-  pipe([
-    lives.getById({
-      providerName: config.providerName,
-      type: "AutoScalingGroup",
-      group: "AutoScaling",
-    }),
-    get("name"),
-    unless(
-      isEmpty,
-      pipe([
-        (AutoScalingGroupName) => ({ live: { AutoScalingGroupName } }),
-        autoScalingGroup.destroy,
-      ])
-    ),
-  ]);
-
 exports.ignoreResourceCdk = () =>
   pipe([get("name"), callProp("startsWith", "cdk-")]);
 

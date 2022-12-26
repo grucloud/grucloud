@@ -61,6 +61,28 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     }),
   },
   {
+    type: "MetricAlarm",
+    group: "CloudWatch",
+    properties: ({}) => ({
+      AlarmName: "alarm-ecs-cpu",
+      MetricName: "CPUReservation",
+      Namespace: "AWS/ECS",
+      Statistic: "Average",
+      Dimensions: [
+        {
+          Value: "my-cluster",
+          Name: "ClusterName",
+        },
+      ],
+      Period: 300,
+      EvaluationPeriods: 1,
+      DatapointsToAlarm: 1,
+      Threshold: 80,
+      ComparisonOperator: "GreaterThanThreshold",
+      TreatMissingData: "missing",
+    }),
+  },
+  {
     type: "Vpc",
     group: "EC2",
     name: "Vpc",
@@ -217,43 +239,15 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     }),
   },
   {
-    type: "TaskDefinition",
-    group: "ECS",
-    properties: ({}) => ({
-      containerDefinitions: [
-        {
-          cpu: 0,
-          environment: [],
-          essential: true,
-          image: "nginx",
-          memory: 512,
-          mountPoints: [],
-          name: "nginx",
-          portMappings: [
-            {
-              containerPort: 80,
-              hostPort: 80,
-              protocol: "tcp",
-            },
-          ],
-          volumesFrom: [],
-        },
-      ],
-      family: "nginx",
-      requiresCompatibilities: ["EC2"],
-      tags: [
-        {
-          key: "mykey",
-          value: "value",
-        },
-      ],
-    }),
-  },
-  {
     type: "Service",
     group: "ECS",
     properties: ({}) => ({
       deploymentConfiguration: {
+        alarms: {
+          alarmNames: ["alarm-ecs-cpu"],
+          enable: true,
+          rollback: false,
+        },
         deploymentCircuitBreaker: {
           enable: false,
           rollback: false,
@@ -286,8 +280,38 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
       ],
     }),
     dependencies: ({}) => ({
+      alarms: ["alarm-ecs-cpu"],
       cluster: "cluster",
       taskDefinition: "nginx",
+    }),
+  },
+  {
+    type: "TaskDefinition",
+    group: "ECS",
+    properties: ({}) => ({
+      containerDefinitions: [
+        {
+          cpu: 0,
+          essential: true,
+          image: "nginx",
+          memory: 512,
+          name: "nginx",
+          portMappings: [
+            {
+              containerPort: 80,
+              hostPort: 80,
+              protocol: "tcp",
+            },
+          ],
+        },
+      ],
+      family: "nginx",
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
   },
   {
