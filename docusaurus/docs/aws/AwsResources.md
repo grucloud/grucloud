@@ -81,7 +81,7 @@ List of resources for provider aws:
 * ECR: 
 [Repository](./resources/ECR/Repository.md), [Registry](./resources/ECR/Registry.md)
 * ECS: 
-[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [TaskDefinition](./resources/ECS/TaskDefinition.md), [Service](./resources/ECS/Service.md), [TaskSet](./resources/ECS/TaskSet.md), [Task](./resources/ECS/Task.md)
+[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [Service](./resources/ECS/Service.md), [TaskDefinition](./resources/ECS/TaskDefinition.md), [Task](./resources/ECS/Task.md), [TaskSet](./resources/ECS/TaskSet.md)
 * EFS: 
 [FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
@@ -169,7 +169,7 @@ List of resources for provider aws:
 * SNS: 
 [Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 
-[Queue](./resources/SQS/Queue.md)
+[Queue](./resources/SQS/Queue.md), [QueueRedriveAllowPolicy](./resources/SQS/QueueRedriveAllowPolicy.md), [QueueRedrivePolicy](./resources/SQS/QueueRedrivePolicy.md)
 * SSM: 
 [Activation](./resources/SSM/Activation.md), [Association](./resources/SSM/Association.md), [Document](./resources/SSM/Document.md), [MaintenanceWindow](./resources/SSM/MaintenanceWindow.md), [MaintenanceWindowTarget](./resources/SSM/MaintenanceWindowTarget.md), [MaintenanceWindowTask](./resources/SSM/MaintenanceWindowTask.md), [Parameter](./resources/SSM/Parameter.md), [PatchBaseline](./resources/SSM/PatchBaseline.md), [ServiceSetting](./resources/SSM/ServiceSetting.md)
 * SSOAdmin: 
