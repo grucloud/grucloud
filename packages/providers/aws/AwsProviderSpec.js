@@ -88,6 +88,7 @@ const GROUPS = [
   ["RDS", "rds"],
   ["Route53Resolver", "route53resolver"],
   ["Route53RecoveryControlConfig", "route53-recovery-control-config"],
+  ["RUM", "rum"],
   ["S3", "s3"],
   ["Scheduler", "scheduler"],
   ["Schemas", "schemas"],

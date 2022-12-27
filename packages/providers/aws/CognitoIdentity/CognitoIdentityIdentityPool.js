@@ -30,6 +30,7 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { replaceWithName } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./CognitoIdentityCommon");
+const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const buildArn = () =>
   pipe([
@@ -142,33 +143,42 @@ exports.CognitoIdentityIdentityPool = ({ compare }) => ({
   filterLive: ({ lives, providerConfig }) =>
     pipe([
       assign({
-        CognitoIdentityProviders: pipe([
-          get("CognitoIdentityProviders"),
-          map(
-            assign({
-              ClientId: pipe([
-                get("ClientId"),
-                replaceWithName({
-                  groupType: "CognitoIdentityServiceProvider::UserPoolClient",
-                  path: "id",
-                  providerConfig,
-                  lives,
-                }),
-              ]),
-              ProviderName: pipe([
-                get("ProviderName"),
-                replaceWithName({
-                  groupType: "CognitoIdentityServiceProvider::UserPool",
-                  path: "live.ProviderName",
-                  pathLive: "live.ProviderName",
-                  providerConfig,
-                  lives,
-                }),
-              ]),
-            })
-          ),
+        IdentityPoolName: pipe([
+          get("IdentityPoolName"),
+          replaceAccountAndRegion({ lives, providerConfig }),
         ]),
       }),
+      when(
+        get("CognitoIdentityProviders"),
+        assign({
+          CognitoIdentityProviders: pipe([
+            get("CognitoIdentityProviders"),
+            map(
+              assign({
+                ClientId: pipe([
+                  get("ClientId"),
+                  replaceWithName({
+                    groupType: "CognitoIdentityServiceProvider::UserPoolClient",
+                    path: "id",
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+                ProviderName: pipe([
+                  get("ProviderName"),
+                  replaceWithName({
+                    groupType: "CognitoIdentityServiceProvider::UserPool",
+                    path: "live.ProviderName",
+                    pathLive: "live.ProviderName",
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        })
+      ),
     ]),
   tagger: ({ config }) =>
     Tagger({

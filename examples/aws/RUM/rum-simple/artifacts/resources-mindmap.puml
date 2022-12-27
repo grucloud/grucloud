@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project rum-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Cognito
+++++ IdentityPool (1)
+++++ IdentityPoolRolesAttachments (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ RUM
+++++ AppMonitor (1)
+@endmindmap
