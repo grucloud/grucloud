@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project sqs-redrive-policy
+skinparam monochrome true
++ Infra
+++ aws
++++ SQS
+++++ Queue (2)
+++++ QueueRedriveAllowPolicy (1)
+++++ QueueRedrivePolicy (1)
+@endmindmap

@@ -8,6 +8,9 @@ const { createAwsService } = require("../AwsService");
 const { isOurMinionObject } = require("../AwsCommon");
 
 const { SQSQueue } = require("./SQSQueue");
+const { SQSQueueRedriveAllowPolicy } = require("./SQSQueueRedriveAllowPolicy");
+
+const { SQSQueueRedrivePolicy } = require("./SQSQueueRedrivePolicy");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html
 const GROUP = "SQS";
@@ -16,7 +19,12 @@ const tagsKey = "tags";
 const compareSQS = compareAws({ tagsKey });
 
 module.exports = pipe([
-  () => [SQSQueue()],
+  () => [
+    SQSQueue({}),
+    SQSQueueRedriveAllowPolicy({}),
+    SQSQueueRedrivePolicy({}),
+  ],
+
   map(createAwsService),
   map(
     defaultsDeep({
