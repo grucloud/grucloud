@@ -24,6 +24,7 @@ const decorate = ({ endpoint }) =>
 
 const ignoreErrorMessages = [
   "The request is rejected because the JSON could not be processed",
+  "The request is rejected because the input detectorId is not owned by the current account",
 ];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html
