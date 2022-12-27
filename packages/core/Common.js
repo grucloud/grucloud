@@ -42,6 +42,7 @@ const {
   isDeepEqual,
   includes,
   last,
+  filterOut,
 } = require("rubico/x");
 const util = require("util");
 const { detailedDiff } = require("deep-object-diff");
@@ -444,16 +445,12 @@ const removeOurTagObject = ({ tags = "tags" }) =>
         unless(
           or([isEmpty, Array.isArray]),
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            map.entries(([key, value]) => [
-              key,
-              key.startsWith("gc-") || key.startsWith("aws:") || key == "Name"
-                ? undefined
-                : value,
-            ]),
-            filter(not(isEmpty)),
+            Object.entries,
+            filterOut(
+              ([key, value]) =>
+                key.startsWith("gc-") || key.startsWith("aws:") || key == "Name"
+            ),
+            Object.fromEntries,
           ])
         ),
       ]),

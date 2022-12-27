@@ -41,4 +41,5 @@ exports.LogGroupNameManagedByOther = [
   "/aws/apprunner",
   "/aws/cloudhsm/",
   "/aws/transfer/",
+  "/aws/vendedlogs/RUMService",
 ];

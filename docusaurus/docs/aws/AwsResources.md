@@ -152,6 +152,8 @@ List of resources for provider aws:
 [Cell](./resources/Route53RecoveryReadiness/Cell.md), [ReadinessCheck](./resources/Route53RecoveryReadiness/ReadinessCheck.md), [RecoveryGroup](./resources/Route53RecoveryReadiness/RecoveryGroup.md), [ResourceSet](./resources/Route53RecoveryReadiness/ResourceSet.md)
 * Route53Resolver: 
 [Endpoint](./resources/Route53Resolver/Endpoint.md), [Rule](./resources/Route53Resolver/Rule.md), [RuleAssociation](./resources/Route53Resolver/RuleAssociation.md)
+* RUM: 
+[AppMonitor](./resources/RUM/AppMonitor.md), [MetricsDestination](./resources/RUM/MetricsDestination.md)
 * S3: 
 [Bucket](./resources/S3/Bucket.md), [Object](./resources/S3/Object.md)
 * Scheduler: 

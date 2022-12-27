@@ -181,6 +181,7 @@
     "@aws-sdk/client-route53-recovery-control-config": "3.236.0",
     "@aws-sdk/client-route53-recovery-readiness": "3.236.0",
     "@aws-sdk/client-route53resolver": "3.236.0",
+    "@aws-sdk/client-rum": "3.236.0",
     "@aws-sdk/client-s3": "3.236.0",
     "@aws-sdk/client-scheduler": "3.236.0",
     "@aws-sdk/client-schemas": "3.236.0",
