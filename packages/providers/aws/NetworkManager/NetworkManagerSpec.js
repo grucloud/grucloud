@@ -1,6 +1,7 @@
 const assert = require("assert");
-const { pipe, map, tap, get, eq } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
+const { pipe, map, tap, get, eq, filter } = require("rubico");
+const { defaultsDeep, find, when, isObject, isIn } = require("rubico/x");
+const { createAwsService } = require("../AwsService");
 
 const { compareAws } = require("../AwsCommon");
 
@@ -12,6 +13,10 @@ const {
   NetworkManagerTransitGatewayRegistration,
 } = require("./NetworkManagerTransitGatewayRegistration");
 const { NetworkManagerSite } = require("./NetworkManagerSite");
+const {
+  NetworkManagerSiteToSiteVpnAttachment,
+} = require("./NetworkManagerSiteToSiteVpnAttachment");
+
 const { NetworkManagerDevice } = require("./NetworkManagerDevice");
 const { NetworkManagerLink } = require("./NetworkManagerLink");
 const {
@@ -23,16 +28,6 @@ const compareNetworkManager = compareAws({});
 
 module.exports = pipe([
   () => [
-    {
-      type: "GlobalNetwork",
-      Client: NetworkManagerGlobalNetwork,
-      omitProperties: [
-        "GlobalNetworkId",
-        "GlobalNetworkArn",
-        "State",
-        "CreatedAt",
-      ],
-    },
     {
       type: "CoreNetwork",
       Client: NetworkManagerCoreNetwork,
@@ -50,25 +45,6 @@ module.exports = pipe([
         globalNetwork: {
           type: "GlobalNetwork",
           group: GROUP,
-          dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
-        },
-      },
-    },
-    {
-      type: "Site",
-      Client: NetworkManagerSite,
-      omitProperties: [
-        "GlobalNetworkId",
-        "SiteId",
-        "SiteArn",
-        "CreatedAt",
-        "State",
-      ],
-      dependencies: {
-        globalNetwork: {
-          type: "GlobalNetwork",
-          group: GROUP,
-          parent: true,
           dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
         },
       },
@@ -100,6 +76,16 @@ module.exports = pipe([
       },
     },
     {
+      type: "GlobalNetwork",
+      Client: NetworkManagerGlobalNetwork,
+      omitProperties: [
+        "GlobalNetworkId",
+        "GlobalNetworkArn",
+        "State",
+        "CreatedAt",
+      ],
+    },
+    {
       type: "Link",
       Client: NetworkManagerLink,
       omitProperties: [
@@ -126,10 +112,30 @@ module.exports = pipe([
       },
     },
     {
+      type: "Site",
+      Client: NetworkManagerSite,
+      omitProperties: [
+        "GlobalNetworkId",
+        "SiteId",
+        "SiteArn",
+        "CreatedAt",
+        "State",
+      ],
+      dependencies: {
+        globalNetwork: {
+          type: "GlobalNetwork",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
+        },
+      },
+    },
+    createAwsService(NetworkManagerSiteToSiteVpnAttachment({})),
+    {
       type: "TransitGatewayRegistration",
       Client: NetworkManagerTransitGatewayRegistration,
       omitProperties: ["GlobalNetworkId", "TransitGatewayArn", "State"],
-      inferName: ({ dependenciesSpec: { coreNetwork, vpc } }) =>
+      inferName: ({ dependenciesSpec: { globalNetwork, transitGateway } }) =>
         pipe([
           tap(() => {
             assert(globalNetwork);
@@ -137,7 +143,6 @@ module.exports = pipe([
           }),
           () => `tgw-assoc::${globalNetwork}::${transitGateway}`,
         ]),
-
       dependencies: {
         globalNetwork: {
           type: "GlobalNetwork",
@@ -173,6 +178,11 @@ module.exports = pipe([
         "State",
         "ResourceArn",
         "AttachmentPolicyRuleNumber",
+        "CreatedAt",
+        "UpdatedAt",
+        "Arn",
+        "SubnetArns",
+        "VpcArn",
       ],
       inferName: ({ dependenciesSpec: { coreNetwork, vpc } }) =>
         pipe([
@@ -180,7 +190,9 @@ module.exports = pipe([
             assert(coreNetwork);
             assert(vpc);
           }),
-          () => `vpc-attach::::${coreNetwork}::${vpc}`,
+          () => vpc,
+          when(isObject, get("name")),
+          (vpcName) => `vpc-attach::${coreNetwork}::${vpcName}`,
         ]),
       dependencies: {
         coreNetwork: {
@@ -198,35 +210,43 @@ module.exports = pipe([
         vpc: {
           type: "Vpc",
           group: "EC2",
-          //TODO
           parent: true,
           dependencyId:
             ({ lives, config }) =>
             (live) =>
               pipe([
+                tap((params) => {
+                  assert(live.ResourceArn);
+                }),
                 lives.getByType({
                   type: "Vpc",
                   group: "EC2",
-                  providerName: config.providerName,
+                }),
+                tap((params) => {
+                  assert(true);
                 }),
                 find(eq(get("live.VpcArn"), live.ResourceArn)),
                 get("id"),
-                tap((id) => {
-                  assert(id);
-                }),
               ])(),
         },
         subnets: {
-          type: "Vpc",
+          type: "Subnet",
           group: "EC2",
           list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("SubnetArns"),
-              tap((SubnetArns) => {
-                assert(SubnetArns);
-              }),
-            ]),
+          dependencyIds:
+            ({ lives, config }) =>
+            ({ SubnetArns }) =>
+              pipe([
+                lives.getByType({
+                  type: "Subnet",
+                  group: "EC2",
+                }),
+                tap((params) => {
+                  assert(SubnetArns);
+                }),
+                filter(pipe([get("live.Arn"), isIn(SubnetArns)])),
+                map(get("id")),
+              ])(),
         },
       },
     },

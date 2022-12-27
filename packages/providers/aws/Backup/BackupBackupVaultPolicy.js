@@ -6,35 +6,42 @@ const { createAwsResource } = require("../AwsClient");
 
 const pickId = pick(["BackupVaultName"]);
 
+const ignoreErrorMessages = ["Backup vault does not exist"];
+
 const decorate = () =>
   pipe([assign({ Policy: pipe([get("Policy"), JSON.parse]) })]);
+
+const filterPayload = pipe([
+  assign({ Policy: pipe([get("Policy"), JSON.stringify]) }),
+]);
 
 const model = ({ config }) => ({
   package: "backup",
   client: "Backup",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#getBackupVaultAccessPolicy-property
   getById: {
     method: "getBackupVaultAccessPolicy",
     pickId,
     decorate,
+    ignoreErrorMessages,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#putBackupVaultAccessPolicy-property
   create: {
     method: "putBackupVaultAccessPolicy",
     pickCreated: ({ payload }) => pipe([() => payload]),
-    filterPayload: pipe([
-      assign({ Policy: pipe([get("Policy"), JSON.stringify]) }),
-    ]),
+    filterPayload,
   },
   update: {
     method: "putBackupVaultAccessPolicy",
-    filterParams: ({ payload, live, diff }) => pipe([() => payload])(),
+    filterParams: ({ payload, live, diff }) =>
+      pipe([() => payload, filterPayload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#deleteBackupVaultAccessPolicy-property
   destroy: {
     method: "deleteBackupVaultAccessPolicy",
     pickId,
+    ignoreErrorMessages,
   },
 });
 

@@ -1,6 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, or, get, omit, filter, eq, assign } = require("rubico");
-const { defaultsDeep, pluck, callProp, find } = require("rubico/x");
+const {
+  defaultsDeep,
+  pluck,
+  callProp,
+  find,
+  unless,
+  isEmpty,
+} = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
@@ -15,7 +22,7 @@ const findDependencyDimension =
       get("Dimensions"),
       filter(eq(get("Name"), dimensionId)),
       pluck("Value"),
-      (id) =>
+      unless(isEmpty, (id) =>
         pipe([
           lives.getByType({
             type,
@@ -24,7 +31,8 @@ const findDependencyDimension =
           }),
           find(pipe([get("id"), callProp("endsWith", id)])),
           get("id"),
-        ])(),
+        ])()
+      ),
     ]);
 
 const AlarmDependenciesDimensions = {

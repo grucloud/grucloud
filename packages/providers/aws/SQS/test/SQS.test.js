@@ -18,19 +18,31 @@ describe("SQS", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("RedriveAllowPolicy", () =>
+  it("QueueRedriveAllowPolicy", () =>
     pipe([
       () => ({
-        groupType: "SQS::RedriveAllowPolicy",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "SQS::QueueRedriveAllowPolicy",
+        livesNotFound: ({ config }) => [
+          {
+            QueueUrl: `https://sqs.${
+              config.region
+            }.amazonaws.com/${config.accountId()}/MyNewerQueue`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("RedrivePolicy", () =>
+  it("QueueRedrivePolicy", () =>
     pipe([
       () => ({
-        groupType: "SQS::RedrivePolicy",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "SQS::QueueRedrivePolicy",
+        livesNotFound: ({ config }) => [
+          {
+            QueueUrl: `https://sqs.${
+              config.region
+            }.amazonaws.com/${config.accountId()}/MyNewerQueue`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

@@ -6,7 +6,11 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./DirectConnectCommon");
+const {
+  Tagger,
+  inferRequestMACSec,
+  deleteSecrets,
+} = require("./DirectConnectCommon");
 
 const buildArn = () =>
   pipe([
@@ -36,6 +40,7 @@ const decorate = ({ endpoint, config }) =>
           }:${config.accountId()}:dxlag/${lagId}`,
       ]),
     }),
+    inferRequestMACSec,
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html
@@ -60,6 +65,7 @@ exports.DirectConnectLag = ({ compare }) => ({
     "region",
     "minimumLinks",
     "connectionId",
+    "macSecKeys",
   ],
   inferName: () =>
     pipe([
@@ -90,7 +96,10 @@ exports.DirectConnectLag = ({ compare }) => ({
       dependencyIds: () => pipe([get("connections"), pluck("connectionId")]),
     },
   },
-  compare: compare({ filterAll: () => pipe([omit(["numberOfConnections"])]) }),
+  compare: compare({
+    filterAll: () =>
+      pipe([omit(["numberOfConnections"]), omit(["requestMACSec"])]),
+  }),
   ignoreErrorCodes: ["DirectConnectClientException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html#describeLags-property
   getById: {
@@ -119,6 +128,7 @@ exports.DirectConnectLag = ({ compare }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html#deleteLag-property
   destroy: {
+    postDestroy: deleteSecrets,
     method: "deleteLag",
     pickId,
     isInstanceDown: pipe([eq(get("lagState"), "deleted")]),

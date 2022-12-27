@@ -373,7 +373,11 @@ const createEndpointProxy = (regionForce) => (client) => (config) =>
   pipe([
     tap((params) => {
       assert(client);
+      assert(config);
       assert(config.region);
+      // logger.debug(
+      //   `createEndpointProxy ${client.name}, region: ${config.region}`
+      // );
     }),
     () => regionForce,
     createEndpointOption(config),
@@ -972,23 +976,6 @@ exports.lambdaAddPermission = ({ lambda, lambdaFunction, SourceArn }) =>
           }),
           lambda().addPermission,
         ])()
-    ),
-  ]);
-
-exports.destroyAutoScalingGroupById = ({ autoScalingGroup, lives, config }) =>
-  pipe([
-    lives.getById({
-      providerName: config.providerName,
-      type: "AutoScalingGroup",
-      group: "AutoScaling",
-    }),
-    get("name"),
-    unless(
-      isEmpty,
-      pipe([
-        (AutoScalingGroupName) => ({ live: { AutoScalingGroupName } }),
-        autoScalingGroup.destroy,
-      ])
     ),
   ]);
 

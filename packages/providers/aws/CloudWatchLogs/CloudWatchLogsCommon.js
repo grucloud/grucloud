@@ -1,21 +1,29 @@
 const assert = require("assert");
-const { pipe, tap } = require("rubico");
-const { createEndpoint } = require("../AwsCommon");
+const { pipe, tap, assign, get } = require("rubico");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { createTagger } = require("../AwsTagger");
 
 exports.Tagger = createTagger({
-  methodTagResource: "tagLogGroup",
-  methodUnTagResource: "untagLogGroup",
-  ResourceArn: "logGroupName",
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "resourceArn",
   TagsKey: "tags",
-  UnTagsKey: "tags",
+  UnTagsKey: "tagKeys",
 });
 
-exports.createCloudWatchLogs = createEndpoint(
-  "cloudwatch-logs",
-  "CloudWatchLogs"
-);
+exports.assignTags = ({ endpoint, buildArn }) =>
+  pipe([
+    assign({
+      tags: pipe([
+        buildArn,
+        (resourceArn) => ({ resourceArn }),
+        endpoint().listTagsForResource,
+        get("tags"),
+      ]),
+    }),
+    omitIfEmpty(["tags"]),
+  ]);
 
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 
@@ -34,21 +42,3 @@ exports.LogGroupNameManagedByOther = [
   "/aws/cloudhsm/",
   "/aws/transfer/",
 ];
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#tagLogGroup-property
-exports.tagResource =
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      (tags) => ({ logGroupName: live.logGroupName, tags }),
-      endpoint().tagLogGroup,
-    ]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#untagLogGroup-property
-exports.untagResource =
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      (tags) => ({ logGroupName: live.logGroupName, tags }),
-      endpoint().untagLogGroup,
-    ]);

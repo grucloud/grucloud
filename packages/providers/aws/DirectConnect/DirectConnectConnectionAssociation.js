@@ -9,6 +9,7 @@ const {
   flatMap,
   omit,
   map,
+  tryCatch,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -20,6 +21,7 @@ const {
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { throwIfNotAwsError } = require("../AwsCommon");
 
 const pickId = pipe([
   tap(({ connectionId, lagId }) => {
@@ -106,7 +108,7 @@ exports.DirectConnectConnectionAssociation = ({ compare }) => ({
       dependencyId: () => pipe([get("lagId")]),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["DirectConnectClientException"],
   compare: compare({ filterAll: () => pipe([pick([])]) }),
   filterLive: ({ lives, providerConfig }) => pipe([pick([])]),
   getById:
@@ -118,13 +120,18 @@ exports.DirectConnectConnectionAssociation = ({ compare }) => ({
           assert(live.connectionId);
         }),
         () => live,
-        pick(["lagId"]),
-        endpoint().describeLags,
-        get("lags"),
-        first,
-        get("connections"),
-        find(eq(get("connectionId"), live.connectionId)),
-        unless(isEmpty, decorate({ endpoint })),
+        tryCatch(
+          pipe([
+            pick(["lagId"]),
+            endpoint().describeLags,
+            get("lags"),
+            first,
+            get("connections"),
+            find(eq(get("connectionId"), live.connectionId)),
+            unless(isEmpty, decorate({ endpoint })),
+          ]),
+          throwIfNotAwsError("DirectConnectClientException")
+        ),
       ])(),
   getList:
     ({ client, endpoint, getById, config }) =>

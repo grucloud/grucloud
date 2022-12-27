@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe.only("OpenSearchServerless", async function () {
+describe("OpenSearchServerless", async function () {
   it("AccessPolicy", () =>
     pipe([
       () => ({
@@ -32,7 +32,7 @@ describe.only("OpenSearchServerless", async function () {
     pipe([
       () => ({
         groupType: "OpenSearchServerless::SecurityPolicy",
-        livesNotFound: ({ config }) => [{ id: "s123", type: "encryption" }],
+        livesNotFound: ({ config }) => [{ name: "s123", type: "encryption" }],
       }),
       awsResourceTest,
     ])());

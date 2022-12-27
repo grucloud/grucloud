@@ -21,7 +21,7 @@ const {
   assignPolicyAccountAndRegion,
 } = require("../AwsCommon");
 
-const { Tagger } = require("./SQSCommon");
+const { Tagger, ignoreErrorCodes } = require("./SQSCommon");
 
 const buildArn = () =>
   pipe([
@@ -54,11 +54,6 @@ const omitDefaultPolicy = assign({
 });
 
 const findName = () => pipe([queueUrlToName]);
-
-const ignoreErrorCodes = [
-  "AWS.SimpleQueueService.NonExistentQueue",
-  "QueueDoesNotExist",
-];
 
 const assignTags = ({ endpoint }) =>
   pipe([
@@ -129,6 +124,8 @@ exports.SQSQueue = () => ({
     "Attributes.CreatedTimestamp",
     "Attributes.LastModifiedTimestamp",
     "Attributes.SqsManagedSseEnabled",
+    "Attributes.RedrivePolicy",
+    "Attributes.RedriveAllowPolicy",
   ],
   filterLive: ({ providerConfig, lives }) =>
     pipe([
@@ -178,7 +175,7 @@ exports.SQSQueue = () => ({
         ]),
       }),
     ]),
-    config: { retryDelay: 65e3, retryCount: 2 },
+    //config: { retryDelay: 65e3, retryCount: 2 },
     configIsUp: { repeatCount: 1, repeatDelay: 60e3 },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#updateMyResource-property

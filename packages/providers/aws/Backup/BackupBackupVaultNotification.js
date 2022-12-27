@@ -10,7 +10,7 @@ const pickId = pick(["BackupVaultName"]);
 const model = ({ config }) => ({
   package: "backup",
   client: "Backup",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#getBackupVaultNotifications-property
   getById: {
     method: "getBackupVaultNotifications",
@@ -25,9 +25,9 @@ const model = ({ config }) => ({
     method: "putBackupVaultNotifications",
     filterParams: ({ payload, live, diff }) => pipe([() => payload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#deleteBackupVaultNotification-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#deleteBackupVaultNotifications-property
   destroy: {
-    method: "deleteBackupVaultNotification",
+    method: "deleteBackupVaultNotifications",
     pickId,
   },
 });

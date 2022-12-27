@@ -212,6 +212,7 @@ exports.createResources = () => [
             name: "sam-app-cluster-secret",
           })}`,
           IAMAuth: "REQUIRED",
+          ClientPasswordAuthType: "MYSQL_NATIVE_PASSWORD",
         },
       ],
       RequireTLS: true,

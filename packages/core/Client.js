@@ -195,6 +195,9 @@ const decorateLive =
                         ]),
                         () => {},
                       ]),
+                      tap((params) => {
+                        assert(true);
+                      }),
                       (ids) => ({ type, group, dependencyKey, ids }),
                     ])()
                 ),
@@ -214,7 +217,6 @@ const decorateLive =
                   }
                 }),
                 assign({
-                  //TODO ko
                   providerName: () => client.spec.providerName,
                   groupType: buildGroupType,
                   ids: pipe([get("ids", []), filter(not(isEmpty)), uniq]),

@@ -48,11 +48,9 @@ exports.createResources = () => [
       containerDefinitions: [
         {
           cpu: 0,
-          environment: [],
           essential: true,
           image: "nginx",
           memory: 1024,
-          mountPoints: [],
           name: "nginx",
           portMappings: [
             {
@@ -61,11 +59,9 @@ exports.createResources = () => [
               protocol: "tcp",
             },
           ],
-          volumesFrom: [],
         },
       ],
       family: "nginx",
-      requiresCompatibilities: ["EC2"],
       tags: [
         {
           key: "mykey",
@@ -79,6 +75,11 @@ exports.createResources = () => [
     group: "ECS",
     properties: ({}) => ({
       deploymentConfiguration: {
+        alarms: {
+          alarmNames: ["alarm-ecs-cpu"],
+          enable: true,
+          rollback: false,
+        },
         deploymentCircuitBreaker: {
           enable: false,
           rollback: false,
@@ -111,6 +112,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: () => ({
+      alarms: ["alarm-ecs-cpu"],
       cluster: "cluster",
       taskDefinition: "nginx",
     }),

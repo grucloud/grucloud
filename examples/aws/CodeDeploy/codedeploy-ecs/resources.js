@@ -135,7 +135,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECS cluster - VPC::ECS cluster - Public Subnet 1",
+    name: "ECS cluster - Public Subnet 1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Tags: [
@@ -154,7 +154,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECS cluster - VPC::ECS cluster - Public Subnet 2",
+    name: "ECS cluster - Public Subnet 2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       Tags: [
@@ -173,7 +173,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECS cluster - VPC::ECS cluster - RouteTable",
+    name: "ECS cluster - RouteTable",
     properties: ({}) => ({
       Tags: [
         {
@@ -341,72 +341,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TaskDefinition",
-    group: "ECS",
-    properties: ({ config }) => ({
-      containerDefinitions: [
-        {
-          command: [
-            "/bin/sh -c \"echo '<html> <head> <title>Amazon ECS Sample App</title> <style>body {margin-top: 40px; background-color: #333;} </style> </head><body> <div style=color:white;text-align:center> <h1>Amazon ECS Sample App</h1> <h2>Congratulations!</h2> <p>Your application is now running on a container in Amazon ECS.</p> </div></body></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\"",
-          ],
-          cpu: 256,
-          entryPoint: ["sh", "-c"],
-          environment: [],
-          essential: true,
-          image: "httpd:2.4",
-          links: [],
-          logConfiguration: {
-            logDriver: "awslogs",
-            options: {
-              "awslogs-group": "/ecs/first-run-task-definition",
-              "awslogs-region": `${config.region}`,
-              "awslogs-stream-prefix": "ecs",
-            },
-          },
-          memoryReservation: 512,
-          mountPoints: [],
-          name: "sample-app",
-          portMappings: [
-            {
-              containerPort: 80,
-              hostPort: 80,
-              protocol: "tcp",
-            },
-          ],
-          volumesFrom: [],
-        },
-      ],
-      cpu: "256",
-      family: "first-run-task-definition",
-      memory: "512",
-      networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
-        },
-        {
-          name: "ecs.capability.execution-role-awslogs",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.21",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
-      requiresCompatibilities: ["FARGATE"],
-    }),
-    dependencies: ({}) => ({
-      executionRole: "ecsTaskExecutionRole",
-    }),
-  },
-  {
     type: "Service",
     group: "ECS",
     properties: ({ getId }) => ({
@@ -438,8 +372,6 @@ exports.createResources = () => [
           assignPublicIp: "ENABLED",
         },
       },
-      placementConstraints: [],
-      placementStrategy: [],
       platformFamily: "Linux",
       platformVersion: "1.4.0",
       schedulingStrategy: "REPLICA",
@@ -454,6 +386,68 @@ exports.createResources = () => [
       ],
       securityGroups: ["sg::ECS cluster - VPC::api-1918"],
       targetGroups: ["EC2Co-Defau-MMUISWY3DEAQ"],
+    }),
+  },
+  {
+    type: "TaskDefinition",
+    group: "ECS",
+    properties: ({ config }) => ({
+      containerDefinitions: [
+        {
+          command: [
+            "/bin/sh -c \"echo '<html> <head> <title>Amazon ECS Sample App</title> <style>body {margin-top: 40px; background-color: #333;} </style> </head><body> <div style=color:white;text-align:center> <h1>Amazon ECS Sample App</h1> <h2>Congratulations!</h2> <p>Your application is now running on a container in Amazon ECS.</p> </div></body></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\"",
+          ],
+          cpu: 256,
+          entryPoint: ["sh", "-c"],
+          essential: true,
+          image: "httpd:2.4",
+          logConfiguration: {
+            logDriver: "awslogs",
+            options: {
+              "awslogs-group": "/ecs/first-run-task-definition",
+              "awslogs-region": `${config.region}`,
+              "awslogs-stream-prefix": "ecs",
+            },
+          },
+          memoryReservation: 512,
+          name: "sample-app",
+          portMappings: [
+            {
+              containerPort: 80,
+              hostPort: 80,
+              protocol: "tcp",
+            },
+          ],
+        },
+      ],
+      cpu: "256",
+      family: "first-run-task-definition",
+      memory: "512",
+      networkMode: "awsvpc",
+      requiresAttributes: [
+        {
+          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
+        },
+        {
+          name: "ecs.capability.execution-role-awslogs",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.21",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
+        },
+        {
+          name: "ecs.capability.task-eni",
+        },
+      ],
+      requiresCompatibilities: ["FARGATE"],
+    }),
+    dependencies: ({}) => ({
+      executionRole: "ecsTaskExecutionRole",
     }),
   },
   {

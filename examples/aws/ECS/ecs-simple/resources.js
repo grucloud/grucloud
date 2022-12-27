@@ -25,8 +25,18 @@ exports.createResources = () => [
     properties: ({}) => ({
       LaunchConfigurationName:
         "EC2ContainerService-cluster-EcsInstanceLc-COYK3CQZ0QRJ",
-      UserData:
-        'Content-Type: multipart/mixed; boundary="1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3"\nMIME-Version: 1.0\n\n--1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3\nContent-Type: text/text/x-shellscript; charset="utf-8"\nMime-Version: 1.0\n\n\n#!/bin/bash\necho ECS_CLUSTER=cluster >> /etc/ecs/ecs.config\necho \'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}\' >> /etc/ecs/ecs.config\n--1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3--',
+      UserData: `Content-Type: multipart/mixed; boundary="1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3"
+MIME-Version: 1.0
+
+--1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3
+Content-Type: text/text/x-shellscript; charset="utf-8"
+Mime-Version: 1.0
+
+
+#!/bin/bash
+echo ECS_CLUSTER=cluster >> /etc/ecs/ecs.config
+echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
+--1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3--`,
       InstanceType: "t2.micro",
       BlockDeviceMappings: [
         {
@@ -48,6 +58,28 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       instanceProfile: "ecsInstanceRole",
       securityGroups: ["sg::Vpc::EcsSecurityGroup"],
+    }),
+  },
+  {
+    type: "MetricAlarm",
+    group: "CloudWatch",
+    properties: ({}) => ({
+      AlarmName: "alarm-ecs-cpu",
+      MetricName: "CPUReservation",
+      Namespace: "AWS/ECS",
+      Statistic: "Average",
+      Dimensions: [
+        {
+          Value: "my-cluster",
+          Name: "ClusterName",
+        },
+      ],
+      Period: 300,
+      EvaluationPeriods: 1,
+      DatapointsToAlarm: 1,
+      Threshold: 80,
+      ComparisonOperator: "GreaterThanThreshold",
+      TreatMissingData: "missing",
     }),
   },
   {
@@ -207,43 +239,15 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TaskDefinition",
-    group: "ECS",
-    properties: ({}) => ({
-      containerDefinitions: [
-        {
-          cpu: 0,
-          environment: [],
-          essential: true,
-          image: "nginx",
-          memory: 512,
-          mountPoints: [],
-          name: "nginx",
-          portMappings: [
-            {
-              containerPort: 80,
-              hostPort: 80,
-              protocol: "tcp",
-            },
-          ],
-          volumesFrom: [],
-        },
-      ],
-      family: "nginx",
-      requiresCompatibilities: ["EC2"],
-      tags: [
-        {
-          key: "mykey",
-          value: "value",
-        },
-      ],
-    }),
-  },
-  {
     type: "Service",
     group: "ECS",
     properties: ({}) => ({
       deploymentConfiguration: {
+        alarms: {
+          alarmNames: ["alarm-ecs-cpu"],
+          enable: true,
+          rollback: false,
+        },
         deploymentCircuitBreaker: {
           enable: false,
           rollback: false,
@@ -276,8 +280,38 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
+      alarms: ["alarm-ecs-cpu"],
       cluster: "cluster",
       taskDefinition: "nginx",
+    }),
+  },
+  {
+    type: "TaskDefinition",
+    group: "ECS",
+    properties: ({}) => ({
+      containerDefinitions: [
+        {
+          cpu: 0,
+          essential: true,
+          image: "nginx",
+          memory: 512,
+          name: "nginx",
+          portMappings: [
+            {
+              containerPort: 80,
+              hostPort: 80,
+              protocol: "tcp",
+            },
+          ],
+        },
+      ],
+      family: "nginx",
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
   },
   {

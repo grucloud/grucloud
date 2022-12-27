@@ -24,13 +24,11 @@ const {
   append,
   isEmpty,
   isString,
+  isObject,
   isFunction,
   callProp,
   pluck,
   forEach,
-  find,
-
-  isDeepEqual,
   size,
   identity,
   unless,
@@ -362,7 +360,7 @@ exports.ResourceMaker = ({
       ),
     ])();
 
-  const dependencyNameToResource = ({ key: depKey, value }) =>
+  const dependencyNameToResource = ({ key: depKey, value, providerName }) =>
     pipe([
       tap(() => {
         assert(depKey);
@@ -391,7 +389,19 @@ exports.ResourceMaker = ({
           );
         },
         pipe([
+          tap((params) => {
+            assert(true);
+          }),
           assign({ name: () => value }),
+          switchCase([
+            () => providerName,
+            assign({
+              providerName: () => providerName,
+            }),
+            assign({
+              providerName: () => spec.providerName,
+            }),
+          ]),
           provider.getResource,
           tap.if(isEmpty, () => {
             logger.info(`no resource`);
@@ -420,11 +430,47 @@ exports.ResourceMaker = ({
           pipe([
             map(
               pipe([
-                when(isString, (name) =>
-                  dependencyNameToResource({ key, value: name })
-                ),
+                switchCase([
+                  isString,
+                  (name) => dependencyNameToResource({ key, value: name }),
+                  isObject,
+                  pipe([
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    ({ name, provider: providerName }) =>
+                      dependencyNameToResource({
+                        key,
+                        value: name,
+                        providerName,
+                      }),
+                  ]),
+                  (elem) => {
+                    assert(
+                      false,
+                      "dependency array item should be a string or an object"
+                    );
+                  },
+                ]),
               ])
             ),
+          ]),
+          isObject,
+          pipe([
+            tap(({ name, provider }) => {
+              assert(name);
+              assert(provider);
+              assert(isString(provider));
+            }),
+            ({ name, provider }) =>
+              dependencyNameToResource({
+                key,
+                value: name,
+                providerName: provider,
+              }),
+            tap((params) => {
+              assert(true);
+            }),
           ]),
           identity,
         ]),
@@ -445,6 +491,9 @@ exports.ResourceMaker = ({
         assert(isFunction(dependencies));
       }),
       dependencies,
+      tap((params) => {
+        assert(true);
+      }),
       //TODO
       filter(or([not(isEmpty) /*, not(isString)*/])),
       tap((params) => {
@@ -785,6 +834,7 @@ exports.ResourceMaker = ({
                     diff,
                     live,
                     lives: provider.lives,
+                    config: provider.getConfig(),
                     //TODO do we need that id ?
                     id: client.findId({
                       lives: provider.lives,
@@ -794,6 +844,9 @@ exports.ResourceMaker = ({
                     compare: spec.compare,
                   }),
                   client.update,
+                  tap((params) => {
+                    assert(true);
+                  }),
                 ]),
                 (error) => {
                   logger.error(
@@ -804,6 +857,7 @@ exports.ResourceMaker = ({
                   throw error;
                 }
               ),
+              isExpectedResult: () => true,
               shouldRetryOnException: client.shouldRetryOnException,
               config: provider.config,
             }),

@@ -43,6 +43,7 @@ const {
   findNamespaceInTags,
   buildTags,
   destroyNetworkInterfaces,
+  arnFromId,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { createEC2, tagResource, untagResource } = require("./EC2Common");
@@ -55,6 +56,20 @@ const SubnetAttributes = [
   "AssignIpv6AddressOnCreation",
   "EnableDns64",
 ];
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    assign({
+      Arn: pipe([
+        get("SubnetId"),
+        prepend("subnet/"),
+        arnFromId({ service: "ec2", config }),
+      ]),
+    }),
+  ]);
 
 const omitAssignIpv6AddressOnCreationIfIpv6Native = when(
   get("Ipv6Native"),
@@ -157,6 +172,7 @@ exports.EC2Subnet = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeSubnets",
     getParam: "Subnets",
+    decorate,
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -172,6 +188,7 @@ exports.EC2Subnet = ({ spec, config }) => {
     }),
     method: "describeSubnets",
     getField: "Subnets",
+    decorate,
   });
 
   const modifySubnetAttribute = ({ SubnetId }) =>

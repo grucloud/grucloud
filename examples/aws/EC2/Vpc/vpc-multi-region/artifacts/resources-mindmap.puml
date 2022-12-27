@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project vpc-multi-region
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ EC2
+++++ Vpc (1)
+-- aws-secondary
+--- EC2
+---- Vpc (1)
+@endmindmap

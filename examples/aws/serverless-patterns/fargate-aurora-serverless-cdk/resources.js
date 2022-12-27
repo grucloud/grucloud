@@ -325,18 +325,63 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Service",
+    group: "ECS",
+    properties: ({ getId }) => ({
+      deploymentConfiguration: {
+        deploymentCircuitBreaker: {
+          enable: false,
+          rollback: false,
+        },
+        maximumPercent: 200,
+        minimumHealthyPercent: 50,
+      },
+      desiredCount: 1,
+      enableECSManagedTags: false,
+      enableExecuteCommand: false,
+      healthCheckGracePeriodSeconds: 60,
+      launchType: "FARGATE",
+      loadBalancers: [
+        {
+          containerName: "web",
+          containerPort: 80,
+          targetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "CdkSt-Farga-1SEGM16UZSRPF",
+          })}`,
+        },
+      ],
+      networkConfiguration: {
+        awsvpcConfiguration: {
+          assignPublicIp: "DISABLED",
+        },
+      },
+      platformFamily: "Linux",
+      platformVersion: "LATEST",
+      schedulingStrategy: "REPLICA",
+      serviceName: "CdkStack-FargateServiceECC8084D-c9wCaLN6rjPU",
+    }),
+    dependencies: ({}) => ({
+      cluster: "CdkStack-ClusterEB0386A7-1MSjvijRu7By",
+      taskDefinition: "CdkStackFargateServiceTaskDef2C533A52",
+      subnets: [
+        "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
+        "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
+      ],
+      securityGroups: [
+        "sg::CdkStack/Vpc::CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
+      ],
+      targetGroups: ["CdkSt-Farga-1SEGM16UZSRPF"],
+    }),
+  },
+  {
     type: "TaskDefinition",
     group: "ECS",
     properties: ({ config, getId }) => ({
       containerDefinitions: [
         {
-          command: [],
           cpu: 0,
-          dnsSearchDomains: [],
-          dnsServers: [],
-          dockerLabels: {},
-          dockerSecurityOptions: [],
-          entryPoint: [],
           environment: [
             {
               name: "dbClusterArn",
@@ -359,11 +404,8 @@ exports.createResources = () => [
               value: "aurora_db",
             },
           ],
-          environmentFiles: [],
           essential: true,
-          extraHosts: [],
           image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:ad758bca7c4674905c156fb09c1cdc499a660e8bd2f563b4a0987f2385ecaf90`,
-          links: [],
           logConfiguration: {
             logDriver: "awslogs",
             options: {
@@ -374,7 +416,6 @@ exports.createResources = () => [
             },
             secretOptions: [],
           },
-          mountPoints: [],
           name: "web",
           portMappings: [
             {
@@ -383,10 +424,6 @@ exports.createResources = () => [
               protocol: "tcp",
             },
           ],
-          secrets: [],
-          systemControls: [],
-          ulimits: [],
-          volumesFrom: [],
         },
       ],
       cpu: "512",
@@ -430,59 +467,6 @@ exports.createResources = () => [
         "CdkStack-FargateServiceTaskDefExecutionRole9194820-18VY1XIQQ7L55",
       secret: "aurora-user-secret",
       rdsDbCluster: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
-    }),
-  },
-  {
-    type: "Service",
-    group: "ECS",
-    properties: ({ getId }) => ({
-      deploymentConfiguration: {
-        deploymentCircuitBreaker: {
-          enable: false,
-          rollback: false,
-        },
-        maximumPercent: 200,
-        minimumHealthyPercent: 50,
-      },
-      desiredCount: 1,
-      enableECSManagedTags: false,
-      enableExecuteCommand: false,
-      healthCheckGracePeriodSeconds: 60,
-      launchType: "FARGATE",
-      loadBalancers: [
-        {
-          containerName: "web",
-          containerPort: 80,
-          targetGroupArn: `${getId({
-            type: "TargetGroup",
-            group: "ElasticLoadBalancingV2",
-            name: "CdkSt-Farga-1SEGM16UZSRPF",
-          })}`,
-        },
-      ],
-      networkConfiguration: {
-        awsvpcConfiguration: {
-          assignPublicIp: "DISABLED",
-        },
-      },
-      placementConstraints: [],
-      placementStrategy: [],
-      platformFamily: "Linux",
-      platformVersion: "LATEST",
-      schedulingStrategy: "REPLICA",
-      serviceName: "CdkStack-FargateServiceECC8084D-c9wCaLN6rjPU",
-    }),
-    dependencies: ({}) => ({
-      cluster: "CdkStack-ClusterEB0386A7-1MSjvijRu7By",
-      taskDefinition: "CdkStackFargateServiceTaskDef2C533A52",
-      subnets: [
-        "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
-        "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
-      ],
-      securityGroups: [
-        "sg::CdkStack/Vpc::CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
-      ],
-      targetGroups: ["CdkSt-Farga-1SEGM16UZSRPF"],
     }),
   },
   {

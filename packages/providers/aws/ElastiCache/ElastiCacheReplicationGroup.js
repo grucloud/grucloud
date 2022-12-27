@@ -180,6 +180,7 @@ exports.ElastiCacheReplicationGroup = () => ({
         (ResourceName) => ({ ResourceName, Tags }),
         endpoint().addTagsToResource,
       ]),
+    configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#modifyReplicationGroup-property
   update: {

@@ -596,21 +596,25 @@ exports.contextFromHookGlobalAction = ({ hookType, name }) => {
 // TODO add param to throw
 exports.createGetResource = ({ mapGloblalNameToResource }) =>
   pipe([
-    tap(({ type, group }) => {
+    tap(({ providerName, type, name }) => {
+      assert(providerName);
+      assert(isString(providerName));
       assert(type);
-      //assert(group);
-      //assert(name);
+      assert(name);
+      assert(isString(name));
     }),
-    ({ type, group, name }) => `${group}::${type}::${name}`,
+    ({ providerName, group, type, name }) =>
+      `${providerName}::${group}::${type}::${name}`,
     (uri) =>
       pipe([
         () => mapGloblalNameToResource.get(uri),
-        // tap.if(isEmpty, () => {
-        //   logger.info(
-        //     `no resource for ${uri}, available resources:\n${[
-        //       ...mapGloblalNameToResource.keys(),
-        //     ].join("\n")} )}`
-        //   );
-        // }),
+        tap.if(isEmpty, () => {
+          assert(true);
+          //   logger.info(
+          //     `no resource for ${uri}, available resources:\n${[
+          //       ...mapGloblalNameToResource.keys(),
+          //     ].join("\n")} )}`
+          //   );
+        }),
       ])(),
   ]);

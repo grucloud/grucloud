@@ -27,9 +27,11 @@ List of resources for provider aws:
 * AppRunner: 
 [Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
 * AppSync: 
-[GraphqlApi](./resources/AppSync/GraphqlApi.md), [DataSource](./resources/AppSync/DataSource.md), [Resolver](./resources/AppSync/Resolver.md)
+[DataSource](./resources/AppSync/DataSource.md), [Function](./resources/AppSync/Function.md), [GraphqlApi](./resources/AppSync/GraphqlApi.md), [Resolver](./resources/AppSync/Resolver.md)
 * Athena: 
 [DataCatalog](./resources/Athena/DataCatalog.md), [WorkGroup](./resources/Athena/WorkGroup.md)
+* AuditManager: 
+[AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [Settings](./resources/AuditManager/Settings.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
 * Backup: 
@@ -69,7 +71,7 @@ List of resources for provider aws:
 * ControlTower: 
 [Control](./resources/ControlTower/Control.md)
 * DirectConnect: 
-[BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
+[BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [MacSecKeyAssociation](./resources/DirectConnect/MacSecKeyAssociation.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
 * DMS: 
 [Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
 * DynamoDB: 
@@ -79,7 +81,7 @@ List of resources for provider aws:
 * ECR: 
 [Repository](./resources/ECR/Repository.md), [Registry](./resources/ECR/Registry.md)
 * ECS: 
-[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [TaskDefinition](./resources/ECS/TaskDefinition.md), [Service](./resources/ECS/Service.md), [TaskSet](./resources/ECS/TaskSet.md), [Task](./resources/ECS/Task.md)
+[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [Service](./resources/ECS/Service.md), [TaskDefinition](./resources/ECS/TaskDefinition.md), [Task](./resources/ECS/Task.md), [TaskSet](./resources/ECS/TaskSet.md)
 * EFS: 
 [FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
@@ -129,7 +131,9 @@ List of resources for provider aws:
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md)
 * NetworkManager: 
-[GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Site](./resources/NetworkManager/Site.md), [Device](./resources/NetworkManager/Device.md), [Link](./resources/NetworkManager/Link.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md), [VpcAttachment](./resources/NetworkManager/VpcAttachment.md)
+[CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Device](./resources/NetworkManager/Device.md), [GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [Link](./resources/NetworkManager/Link.md), [Site](./resources/NetworkManager/Site.md), [SiteToSiteVpnAttachment](./resources/NetworkManager/SiteToSiteVpnAttachment.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md), [VpcAttachment](./resources/NetworkManager/VpcAttachment.md)
+* OpenSearchServerless: 
+[AccessPolicy](./resources/OpenSearchServerless/AccessPolicy.md), [Collection](./resources/OpenSearchServerless/Collection.md), [SecurityConfig](./resources/OpenSearchServerless/SecurityConfig.md), [SecurityPolicy](./resources/OpenSearchServerless/SecurityPolicy.md), [VpcEndpoint](./resources/OpenSearchServerless/VpcEndpoint.md)
 * Organisations: 
 [Account](./resources/Organisations/Account.md), [Policy](./resources/Organisations/Policy.md), [PolicyAttachment](./resources/Organisations/PolicyAttachment.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md), [Root](./resources/Organisations/Root.md)
 * RAM: 
@@ -165,7 +169,7 @@ List of resources for provider aws:
 * SNS: 
 [Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 
-[Queue](./resources/SQS/Queue.md)
+[Queue](./resources/SQS/Queue.md), [QueueRedriveAllowPolicy](./resources/SQS/QueueRedriveAllowPolicy.md), [QueueRedrivePolicy](./resources/SQS/QueueRedrivePolicy.md)
 * SSM: 
 [Activation](./resources/SSM/Activation.md), [Association](./resources/SSM/Association.md), [Document](./resources/SSM/Document.md), [MaintenanceWindow](./resources/SSM/MaintenanceWindow.md), [MaintenanceWindowTarget](./resources/SSM/MaintenanceWindowTarget.md), [MaintenanceWindowTask](./resources/SSM/MaintenanceWindowTask.md), [Parameter](./resources/SSM/Parameter.md), [PatchBaseline](./resources/SSM/PatchBaseline.md), [ServiceSetting](./resources/SSM/ServiceSetting.md)
 * SSOAdmin: 

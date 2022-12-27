@@ -80,6 +80,7 @@ exports.createResources = () => [
           Value: "inspection",
         },
       ],
+      PrivateIpAddressIndex: 17,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection-${config.region}::public-${config.region}a`,
@@ -97,6 +98,7 @@ exports.createResources = () => [
           Value: "inspection",
         },
       ],
+      PrivateIpAddressIndex: 165,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection-${config.region}::public-${config.region}b`,
@@ -106,8 +108,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::inspection-${config.region}a`,
+    name: ({ config }) => `inspection-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Tags: [
@@ -126,8 +127,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::inspection-${config.region}b`,
+    name: ({ config }) => `inspection-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       Tags: [
@@ -146,8 +146,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::public-${config.region}a`,
+    name: ({ config }) => `public-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Tags: [
@@ -166,8 +165,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::public-${config.region}b`,
+    name: ({ config }) => `public-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       Tags: [
@@ -186,7 +184,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `non-prod::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Tags: [
@@ -205,7 +203,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `non-prod::private-${config.region}b`,
+    name: ({ config }) => `private-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       Tags: [
@@ -224,7 +222,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `prod::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Tags: [
@@ -243,7 +241,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `prod::private-${config.region}b`,
+    name: ({ config }) => `private-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       Tags: [
@@ -262,8 +260,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::inspection-${config.region}a`,
+    name: ({ config }) => `inspection-${config.region}a`,
     properties: ({}) => ({
       Tags: [
         {
@@ -279,8 +276,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::inspection-${config.region}b`,
+    name: ({ config }) => `inspection-${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
@@ -296,8 +292,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::public-${config.region}a`,
+    name: ({ config }) => `public-${config.region}a`,
     properties: ({}) => ({
       Tags: [
         {
@@ -313,8 +308,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::public-${config.region}b`,
+    name: ({ config }) => `public-${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
@@ -330,7 +324,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `non-prod::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({}) => ({
       Tags: [
         {
@@ -346,7 +340,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `non-prod::private-${config.region}b`,
+    name: ({ config }) => `private-${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
@@ -362,7 +356,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `prod::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({}) => ({
       Tags: [
         {
@@ -378,7 +372,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `prod::private-${config.region}b`,
+    name: ({ config }) => `private-${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {

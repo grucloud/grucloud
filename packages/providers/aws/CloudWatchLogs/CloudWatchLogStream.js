@@ -10,10 +10,8 @@ const {
   map,
   or,
 } = require("rubico");
-const { defaultsDeep, callProp, prepend, append } = require("rubico/x");
+const { defaultsDeep, callProp, prepend, find } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
-
-const { createAwsResource } = require("../AwsClient");
 
 const { LogGroupNameManagedByOther } = require("./CloudWatchLogsCommon");
 
@@ -55,10 +53,57 @@ const managedByOther = () =>
     ]),
   ]);
 
-const createModel = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html
+exports.CloudWatchLogStream = ({ compare }) => ({
+  type: "LogStream",
   package: "cloudwatch-logs",
   client: "CloudWatchLogs",
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  omitProperties: [],
+  managedByOther,
+  inferName:
+    ({ dependenciesSpec: { cloudWatchLogGroup } }) =>
+    ({ logStreamName }) =>
+      pipe([
+        tap((params) => {
+          assert(cloudWatchLogGroup);
+          assert(logStreamName);
+        }),
+        () => `${cloudWatchLogGroup}::${logStreamName}`,
+      ])(),
+  findName:
+    ({ lives }) =>
+    (live) =>
+      pipe([
+        () => live,
+        logGroupNameFromArn,
+        (logGroupName) => `${logGroupName}::${live.logStreamName}`,
+      ])(),
+  findId,
+  ignoreResource: () => () => true,
+  compare: compare({
+    filterAll: () => pipe([pick([])]),
+  }),
+  filterLive: () => pipe([pick(["logStreamName"])]),
+  dependencies: {
+    cloudWatchLogGroup: {
+      type: "LogGroup",
+      group: "CloudWatchLogs",
+      parent: true,
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              providerName: config.providerName,
+              type: "LogGroup",
+              group: "CloudWatchLogs",
+            }),
+            find(pipe([({ id }) => live.arn.includes(id)])),
+            get("id"),
+          ])(),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#describeLogStreams-property
   getById: {
     method: "describeLogStreams",
@@ -77,6 +122,17 @@ const createModel = ({ config }) => ({
       ]),
     ]),
   },
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "LogGroup", group: "CloudWatchLogs" },
+          pickKey: pipe([pick(["logGroupName"])]),
+          method: "describeLogStreams",
+          getParam: "logStreams",
+          config,
+        }),
+    ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#createLogStream-property
   create: {
     method: "createLogStream",
@@ -95,47 +151,19 @@ const createModel = ({ config }) => ({
       }),
     ]),
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html
-exports.CloudWatchLogStream = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { cloudWatchLogGroup },
     config,
-    managedByOther,
-    findName:
-      ({ lives }) =>
-      (live) =>
-        pipe([
-          () => live,
-          logGroupNameFromArn,
-          (logGroupName) => `${logGroupName}::${live.logStreamName}`,
-        ])(),
-    findId,
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () =>
-          client.getListWithParent({
-            parent: { type: "LogGroup", group: "CloudWatchLogs" },
-            pickKey: pipe([pick(["logGroupName"])]),
-            method: "describeLogStreams",
-            getParam: "logStreams",
-            config,
-          }),
-      ])(),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { cloudWatchLogGroup },
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(cloudWatchLogGroup);
-        }),
-        () => otherProps,
-        defaultsDeep({ logGroupName: cloudWatchLogGroup.config.logGroupName }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(cloudWatchLogGroup);
+      }),
+      () => otherProps,
+      defaultsDeep({ logGroupName: cloudWatchLogGroup.config.logGroupName }),
+    ])(),
+});

@@ -6,6 +6,8 @@ skinparam monochrome true
 +++ AutoScaling
 ++++ AutoScalingGroup (1)
 ++++ LaunchConfiguration (1)
++++ CloudWatch
+++++ MetricAlarm (1)
 +++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)
@@ -19,8 +21,8 @@ skinparam monochrome true
 +++ ECS
 ++++ CapacityProvider (1)
 ++++ Cluster (1)
-++++ TaskDefinition (1)
 ++++ Service (1)
+++++ TaskDefinition (1)
 +++ IAM
 ++++ Role (1)
 ++++ InstanceProfile (1)

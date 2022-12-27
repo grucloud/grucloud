@@ -14,6 +14,7 @@ exports.Tagger = createTagger({
 
 const tagsKey = "Tags";
 exports.tagsKey = tagsKey;
+
 exports.compare = compareAws({ tagsKey, key: "Key" });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#addTagsToResource-property

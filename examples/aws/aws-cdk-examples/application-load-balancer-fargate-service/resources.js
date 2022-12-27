@@ -378,86 +378,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TaskDefinition",
-    group: "ECS",
-    properties: ({ config }) => ({
-      containerDefinitions: [
-        {
-          command: [],
-          cpu: 0,
-          dnsSearchDomains: [],
-          dnsServers: [],
-          dockerLabels: {},
-          dockerSecurityOptions: [],
-          entryPoint: [],
-          environment: [],
-          environmentFiles: [],
-          essential: true,
-          extraHosts: [],
-          image: "amazon/amazon-ecs-sample",
-          links: [],
-          logConfiguration: {
-            logDriver: "awslogs",
-            options: {
-              "awslogs-group":
-                "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
-              "awslogs-region": `${config.region}`,
-              "awslogs-stream-prefix": "ECSServiceStack",
-            },
-            secretOptions: [],
-          },
-          mountPoints: [],
-          name: "web",
-          portMappings: [
-            {
-              containerPort: 80,
-              hostPort: 80,
-              protocol: "tcp",
-            },
-          ],
-          secrets: [],
-          systemControls: [],
-          ulimits: [],
-          volumesFrom: [],
-        },
-      ],
-      cpu: "512",
-      family: "ECSServiceStackamazonecssampleTaskDef499685C5",
-      memory: "1024",
-      networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
-        },
-        {
-          name: "ecs.capability.execution-role-awslogs",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.17",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.task-iam-role",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
-      requiresCompatibilities: ["FARGATE"],
-    }),
-    dependencies: ({}) => ({
-      taskRole:
-        "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
-      executionRole:
-        "ECSServiceStack-amazonecssampleTaskDefExecutionRol-1391KZSJLULK2",
-    }),
-  },
-  {
     type: "Service",
     group: "ECS",
     properties: ({ getId }) => ({
@@ -490,8 +410,6 @@ exports.createResources = () => [
           assignPublicIp: "DISABLED",
         },
       },
-      placementConstraints: [],
-      placementStrategy: [],
       platformFamily: "Linux",
       platformVersion: "LATEST",
       schedulingStrategy: "REPLICA",
@@ -509,6 +427,68 @@ exports.createResources = () => [
         "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
       ],
       targetGroups: ["ECSSe-amazo-1HU1HZ8BFKNTJ"],
+    }),
+  },
+  {
+    type: "TaskDefinition",
+    group: "ECS",
+    properties: ({ config }) => ({
+      containerDefinitions: [
+        {
+          cpu: 0,
+          essential: true,
+          image: "amazon/amazon-ecs-sample",
+          logConfiguration: {
+            logDriver: "awslogs",
+            options: {
+              "awslogs-group":
+                "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
+              "awslogs-region": `${config.region}`,
+              "awslogs-stream-prefix": "ECSServiceStack",
+            },
+            secretOptions: [],
+          },
+          name: "web",
+          portMappings: [
+            {
+              containerPort: 80,
+              hostPort: 80,
+              protocol: "tcp",
+            },
+          ],
+        },
+      ],
+      cpu: "512",
+      family: "ECSServiceStackamazonecssampleTaskDef499685C5",
+      memory: "1024",
+      networkMode: "awsvpc",
+      requiresAttributes: [
+        {
+          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
+        },
+        {
+          name: "ecs.capability.execution-role-awslogs",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.task-iam-role",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
+        },
+        {
+          name: "ecs.capability.task-eni",
+        },
+      ],
+      requiresCompatibilities: ["FARGATE"],
+    }),
+    dependencies: ({}) => ({
+      taskRole:
+        "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
+      executionRole:
+        "ECSServiceStack-amazonecssampleTaskDefExecutionRol-1391KZSJLULK2",
     }),
   },
   {
@@ -591,11 +571,6 @@ exports.createResources = () => [
           PolicyName:
             "amazonecssampleTaskDefExecutionRoleDefaultPolicyAFBFE89A",
         },
-      ],
-    }),
-    dependencies: ({}) => ({
-      logGroups: [
-        "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
       ],
     }),
   },

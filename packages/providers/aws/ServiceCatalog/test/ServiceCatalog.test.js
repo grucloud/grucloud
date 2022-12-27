@@ -100,12 +100,4 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("TagOption", () =>
-    pipe([
-      () => ({
-        groupType: "ServiceCatalog::TagOptionResourceAssociation",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
 });

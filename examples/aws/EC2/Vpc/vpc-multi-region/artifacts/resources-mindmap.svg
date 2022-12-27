@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="115px" preserveAspectRatio="none" style="width:835px;height:115px;background:#FFFFFF;" version="1.1" viewBox="0 0 835 115" width="835px" zoomAndPan="magnify"><defs/><g><rect height="26.4883" style="stroke:#00000000;stroke-width:1.0;fill:none;" width="296" x="218" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="286" x="223" y="33.5352">Resources for project vpc-multi-region</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="52" x="399" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="409" y="81.0234">Infra</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="107" x="501" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="87" x="511" y="81.0234">aws-primary</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="47" x="658" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="27" x="668" y="81.0234">EC2</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="68" x="755" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="48" x="765" y="81.0234">Vpc (1)</text><path d="M705,75.7324 L715,75.7324 C730,75.7324 730,75.7324 745,75.7324 L755,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M608,75.7324 L618,75.7324 C633,75.7324 633,75.7324 648,75.7324 L658,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M451,75.7324 L461,75.7324 C476,75.7324 476,75.7324 491,75.7324 L501,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="124" x="225" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="104" x="235" y="81.0234">aws-secondary</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="47" x="128" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="27" x="138" y="81.0234">EC2</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="68" x="10" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="48" x="20" y="81.0234">Vpc (1)</text><path d="M128,75.7324 L118,75.7324 C103,75.7324 103,75.7324 88,75.7324 L78,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M225,75.7324 L215,75.7324 C200,75.7324 200,75.7324 185,75.7324 L175,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M399,75.7324 L389,75.7324 C374,75.7324 374,75.7324 359,75.7324 L349,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><!--MD5=[e51813b63f99231621efc407aad797d7]
+@startmindmap
+title Resources for project vpc-multi-region
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ EC2
+++++ Vpc (1)
+- - aws-secondary
+- - - EC2
+- - - - Vpc (1)
+@endmindmap
+
+PlantUML version 1.2022.6(Tue Jun 21 14:34:49 BRT 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project loggroup-data-protection-policy
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
+@endmindmap

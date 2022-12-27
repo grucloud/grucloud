@@ -10,20 +10,24 @@ describe("NetworkFirewall", async function () {
         groupType: "NetworkFirewall::Firewall",
         livesNotFound: ({ config }) => [
           {
-            FirewallArn: `arn:aws:network-firewall:us-east-1:${config.accountId()}:firewall/blabla`,
+            FirewallArn: `arn:aws:network-firewall:${
+              config.region
+            }:${config.accountId()}:firewall/blabla`,
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("LoggingConfiguration", () =>
+  it("LoggingConfiguration", () =>
     pipe([
       () => ({
         groupType: "NetworkFirewall::LoggingConfiguration",
         livesNotFound: ({ config }) => [
           {
-            FirewallPolicyArn: `arn:aws:network-firewall:us-east-1:${config.accountId()}:firewall-policy/blabla`,
-            LoggingConfiguration: { LogDestinationConfigs: "qq" },
+            FirewallArn: `arn:aws:network-firewall:${
+              config.region
+            }:${config.accountId()}:firewall/blabla`,
+            LoggingConfiguration: { LogDestinationConfigs: {} },
           },
         ],
       }),
@@ -35,7 +39,9 @@ describe("NetworkFirewall", async function () {
         groupType: "NetworkFirewall::Policy",
         livesNotFound: ({ config }) => [
           {
-            FirewallPolicyArn: `arn:aws:network-firewall:us-east-1:${config.accountId()}:firewall-policy/blabla`,
+            FirewallPolicyArn: `arn:aws:network-firewall:${
+              config.region
+            }:${config.accountId()}:firewall-policy/blabla`,
           },
         ],
       }),
@@ -47,7 +53,9 @@ describe("NetworkFirewall", async function () {
         groupType: "NetworkFirewall::RuleGroup",
         livesNotFound: ({ config }) => [
           {
-            RuleGroupArn: `arn:aws:network-firewall:us-east-1:${config.accountId()}:stateful-rulegroup/blabla`,
+            RuleGroupArn: `arn:aws:network-firewall:${
+              config.region
+            }:${config.accountId()}:stateful-rulegroup/blabla`,
           },
         ],
       }),

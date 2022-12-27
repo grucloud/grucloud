@@ -4,6 +4,15 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "CustomerGateway",
+    group: "EC2",
+    name: "cgw",
+    properties: ({}) => ({
+      BgpAsn: "65000",
+      IpAddress: "1.1.1.1",
+    }),
+  },
+  {
     type: "Vpc",
     group: "EC2",
     name: ({ config }) => `inspection-${config.region}`,
@@ -49,6 +58,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-vpn",
+    properties: ({}) => ({
+      CidrBlock: "172.16.0.0/16",
+    }),
+  },
+  {
     type: "InternetGateway",
     group: "EC2",
     name: ({ config }) => `inspection-${config.region}`,
@@ -61,12 +78,21 @@ exports.createResources = () => [
       ],
     }),
   },
+  { type: "InternetGateway", group: "EC2", name: "my-ig" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
     dependencies: ({ config }) => ({
       vpc: `inspection-${config.region}`,
       internetGateway: `inspection-${config.region}`,
+    }),
+  },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "vpc-vpn",
+      internetGateway: "my-ig",
     }),
   },
   {
@@ -80,6 +106,7 @@ exports.createResources = () => [
           Value: "inspection",
         },
       ],
+      PrivateIpAddressIndex: 26,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection-${config.region}::public-${config.region}a`,
@@ -97,6 +124,7 @@ exports.createResources = () => [
           Value: "inspection",
         },
       ],
+      PrivateIpAddressIndex: 91,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection-${config.region}::public-${config.region}b`,
@@ -106,8 +134,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::inspection-${config.region}a`,
+    name: ({ config }) => `inspection-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Tags: [
@@ -126,8 +153,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::inspection-${config.region}b`,
+    name: ({ config }) => `inspection-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       Tags: [
@@ -146,8 +172,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::public-${config.region}a`,
+    name: ({ config }) => `public-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Tags: [
@@ -166,8 +191,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::public-${config.region}b`,
+    name: ({ config }) => `public-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       Tags: [
@@ -186,7 +210,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `non-prod::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Tags: [
@@ -205,7 +229,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `non-prod::private-${config.region}b`,
+    name: ({ config }) => `private-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       Tags: [
@@ -224,7 +248,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `prod::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Tags: [
@@ -243,7 +267,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `prod::private-${config.region}b`,
+    name: ({ config }) => `private-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       Tags: [
@@ -260,10 +284,22 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-vpn",
+    }),
+  },
+  {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::inspection-${config.region}a`,
+    name: ({ config }) => `inspection-${config.region}a`,
     properties: ({}) => ({
       Tags: [
         {
@@ -279,8 +315,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::inspection-${config.region}b`,
+    name: ({ config }) => `inspection-${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
@@ -296,8 +331,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::public-${config.region}a`,
+    name: ({ config }) => `public-${config.region}a`,
     properties: ({}) => ({
       Tags: [
         {
@@ -313,8 +347,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-${config.region}::public-${config.region}b`,
+    name: ({ config }) => `public-${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
@@ -330,7 +363,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `non-prod::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({}) => ({
       Tags: [
         {
@@ -346,7 +379,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `non-prod::private-${config.region}b`,
+    name: ({ config }) => `private-${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
@@ -362,7 +395,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `prod::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({}) => ({
       Tags: [
         {
@@ -378,7 +411,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `prod::private-${config.region}b`,
+    name: ({ config }) => `private-${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
@@ -389,6 +422,14 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "prod",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "my-rt",
+    dependencies: ({}) => ({
+      vpc: "vpc-vpn",
     }),
   },
   {
@@ -456,6 +497,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "vpc-vpn::my-rt",
+      subnet: "vpc-vpn::subnet-1",
+    }),
+  },
+  {
     type: "Route",
     group: "EC2",
     properties: ({}) => ({
@@ -500,6 +549,17 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "192.168.0.0/16",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "vpc-vpn::my-rt",
+      vpnGateway: "vpw",
+    }),
+  },
+  {
     type: "ElasticIpAddress",
     group: "EC2",
     name: ({ config }) => `nat-public-${config.region}a`,
@@ -523,6 +583,42 @@ exports.createResources = () => [
           Value: "inspection",
         },
       ],
+    }),
+  },
+  {
+    type: "VpnGateway",
+    group: "EC2",
+    name: "vpw",
+    properties: ({}) => ({
+      AmazonSideAsn: 64512,
+    }),
+  },
+  {
+    type: "VpnGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "vpc-vpn",
+      vpnGateway: "vpw",
+    }),
+  },
+  {
+    type: "VpnGatewayRoutePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "vpc-vpn::my-rt",
+      vpnGateway: "vpw",
+    }),
+  },
+  {
+    type: "VpnConnection",
+    group: "EC2",
+    name: "vpn-connection",
+    properties: ({}) => ({
+      Category: "VPN",
+    }),
+    dependencies: ({}) => ({
+      customerGateway: "cgw",
+      vpnGateway: "vpw",
     }),
   },
 ];

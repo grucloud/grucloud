@@ -192,6 +192,7 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
       or([
         callProp("startsWith", "arn:aws:autoscaling"),
         callProp("startsWith", "arn:aws:inspector2"),
+        callProp("startsWith", "arn:aws:auditmanager"),
       ]),
     ]);
 

@@ -85,6 +85,7 @@ exports.EFSMountTarget = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { fileSystem, subnet, securityGroups },
+      config,
     }) =>
       pipe([
         () => otherProps,

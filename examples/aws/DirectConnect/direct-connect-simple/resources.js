@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Connection",
     group: "DirectConnect",
     properties: ({}) => ({
-      bandwidth: "1Gbps",
+      bandwidth: "10Gbps",
       connectionName: "165HS-Connection-1",
       location: "165HS",
       providerName: "Equinix, Inc.",
@@ -23,7 +23,7 @@ exports.createResources = () => [
     type: "Connection",
     group: "DirectConnect",
     properties: ({}) => ({
-      bandwidth: "1Gbps",
+      bandwidth: "10Gbps",
       connectionName: "165HS-Connection-2",
       location: "165HS",
       providerName: "Equinix, Inc.",
@@ -55,7 +55,7 @@ exports.createResources = () => [
     type: "Lag",
     group: "DirectConnect",
     properties: ({}) => ({
-      connectionsBandwidth: "1Gbps",
+      connectionsBandwidth: "10Gbps",
       lagName: "lag",
       location: "165HS",
       numberOfConnections: 1,

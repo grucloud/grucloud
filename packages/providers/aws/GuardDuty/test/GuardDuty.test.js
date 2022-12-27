@@ -14,7 +14,7 @@ describe("GuardDuty", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Filter", () =>
+  it("Filter", () =>
     pipe([
       () => ({
         groupType: "GuardDuty::Filter",

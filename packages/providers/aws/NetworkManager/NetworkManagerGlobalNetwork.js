@@ -29,9 +29,15 @@ const createModel = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#updateGlobalNetwork-property
   update: { method: "updateGlobalNetwork" },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#deleteGlobalNetwork-property
   destroy: {
     method: "deleteGlobalNetwork",
-    pickId: pipe([pick(["GlobalNetworkId"])]),
+    pickId: pipe([
+      pick(["GlobalNetworkId"]),
+      tap(({ GlobalNetworkId }) => {
+        assert(GlobalNetworkId);
+      }),
+    ]),
   },
 });
 const findId = () => pipe([get("GlobalNetworkId")]);

@@ -30,12 +30,27 @@ const createModel = ({ config }) => ({
         pipe([
           () => live,
           pick(["CoreNetworkId"]),
-          endpoint().getCoreNetworkPolicy,
-          get("CoreNetworkPolicy"),
-          assign({
-            PolicyDocument: pipe([get("PolicyDocument"), JSON.parse]),
-          }),
-          pick(["PolicyDocument", "PolicyVersionId"]),
+          tryCatch(
+            pipe([
+              endpoint().getCoreNetworkPolicy,
+              get("CoreNetworkPolicy"),
+              when(
+                get("PolicyDocument"),
+                assign({
+                  PolicyDocument: pipe([get("PolicyDocument"), JSON.parse]),
+                })
+              ),
+              pick(["PolicyDocument", "PolicyVersionId"]),
+            ]),
+            // "ResourceNotFoundException"
+            (error) =>
+              pipe([
+                tap((params) => {
+                  assert(error);
+                }),
+                () => ({}),
+              ])()
+          ),
           defaultsDeep(live),
         ])(),
   },
@@ -50,6 +65,7 @@ const createModel = ({ config }) => ({
     pickCreated: ({ payload }) => pipe([get("CoreNetwork")]),
     isInstanceUp: pipe([eq(get("State"), "AVAILABLE")]),
     filterPayload: pipe([assignPolicyDocument]),
+    configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#deleteCoreNetwork-property
   destroy: {

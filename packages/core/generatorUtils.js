@@ -135,22 +135,43 @@ const findDependencyNames = ({
         ]),
       ])
     ),
-    get("ids"),
-    tap((ids) => {
-      assert(true);
-      //console.log(resource.uri, "#ids ", size(ids));
-    }),
-    map(
-      findLiveById({ type, group, lives, providerName: resource.providerName })
+    unless(isEmpty, ({ ids, providerName }) =>
+      pipe([
+        () => ids,
+        tap((ids) => {
+          assert(true);
+        }),
+        map(
+          findLiveById({
+            type,
+            group,
+            lives,
+            providerName: resource.providerName,
+          })
+        ),
+        tap((deps) => {
+          assert(true);
+          //console.log(resource.uri, "#deps ", size(deps));
+        }),
+        filter(not(isEmpty)),
+        filter(filterDependency({ resource })),
+        map(
+          pipe([
+            tap(({ providerName }) => {
+              assert(providerName);
+            }),
+            switchCase([
+              eq(get("providerName"), providerName),
+              // Same region
+              ({ name }) => `${name}`,
+              // Cross region
+              ({ name, providerName }) => ({ name, provider: providerName }),
+            ]),
+          ])
+        ),
+        (dependencyVarNames) => ({ list, dependencyVarNames }),
+      ])()
     ),
-    tap((deps) => {
-      assert(true);
-      //console.log(resource.uri, "#deps ", size(deps));
-    }),
-    filter(not(isEmpty)),
-    filter(filterDependency({ resource })),
-    map(({ name }) => `${name}`),
-    (dependencyVarNames) => ({ list, dependencyVarNames }),
   ])();
 
 const envVarName = ({ name, suffix }) =>
@@ -521,10 +542,15 @@ const dependencyValue = ({ key, list, resource, providerConfig }) =>
         tap((params) => {
           assert(true);
         }),
-
-        replaceRegion({ providerConfig, asFunction: false }),
+        switchCase([
+          isString,
+          pipe([
+            replaceRegion({ providerConfig, asFunction: false }),
+            unless(includes("`"), pipe([prepend('"'), append('"')])),
+          ]),
+          pipe([JSON.stringify]),
+        ]),
         providerConfig.transformResourceName({ resource }),
-        unless(includes("`"), pipe([prepend('"'), append('"')])),
       ])
     ),
     when(() => list, pipe([(values) => `[${values}]`])),
@@ -579,7 +605,7 @@ const buildDependencies = ({
         assert(true);
       }),
       filter(not(isEmpty)),
-      map.entries(([key, { list, dependencyVarNames }]) => [
+      map.entries(([key, { list, dependencyVarNames, providerName }]) => [
         key,
         !isEmpty(dependencyVarNames) &&
           `${key}: ${dependencyValue({ key, list, resource, providerConfig })(
@@ -1384,6 +1410,7 @@ const isEqualById = ({ type, group, providerName, id }) =>
       assert(id);
     }),
     and([
+      // check id?.providerName
       or([matchId(id), matchId(id?.id)]),
       eq(get("type"), type),
       eq(get("group"), group),

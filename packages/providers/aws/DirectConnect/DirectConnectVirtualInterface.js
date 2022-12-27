@@ -8,6 +8,7 @@ const {
   eq,
   switchCase,
   omit,
+  not,
 } = require("rubico");
 const { defaultsDeep, identity, when } = require("rubico/x");
 
@@ -16,6 +17,8 @@ const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
 const { Tagger } = require("./DirectConnectCommon");
+
+const isInstanceDown = pipe([eq(get("virtualInterfaceState"), "deleted")]);
 
 const buildArn = () =>
   pipe([
@@ -129,6 +132,7 @@ exports.DirectConnectVirtualInterface = ({ compare }) => ({
     decorate,
   },
   getList: {
+    filterResource: not(isInstanceDown),
     method: "describeVirtualInterfaces",
     getParam: "virtualInterfaces",
     decorate,

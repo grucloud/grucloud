@@ -8,15 +8,10 @@ const {
   prepend,
 } = require("rubico/x");
 
-const {
-  findNamespaceInTagsOrEksCluster,
-  hasKeyInTags,
-  buildTags,
-  findValueInTags,
-} = require("../AwsCommon");
+const { hasKeyInTags, buildTags, findValueInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const {
   createAutoScaling,
   tagResource,
@@ -26,7 +21,13 @@ const {
 const ResourceType = "auto-scaling-group";
 
 const findId = () => get("AutoScalingGroupARN");
-const pickId = pipe([pick(["AutoScalingGroupName"])]);
+
+const pickId = pipe([
+  pick(["AutoScalingGroupName"]),
+  tap(({ AutoScalingGroupName }) => {
+    assert(AutoScalingGroupName);
+  }),
+]);
 
 const findNameEks = () =>
   pipe([
@@ -46,29 +47,25 @@ const findName = (params) => (live) => {
   }
 };
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
-exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
-  const autoScaling = createAutoScaling(config);
-  const client = AwsClient({ spec, config })(autoScaling);
-
-  const managedByOther = () =>
-    or([
-      hasKeyInTags({
-        key: "eks:cluster-name",
-      }),
-      hasKeyInTags({
-        key: "elasticbeanstalk:environment-id",
-      }),
-    ]);
-
-  const findNamespace = pipe([
-    findNamespaceInTagsOrEksCluster({
-      config,
+const managedByOther = () =>
+  or([
+    hasKeyInTags({
       key: "eks:cluster-name",
+    }),
+    hasKeyInTags({
+      key: "elasticbeanstalk:environment-id",
     }),
   ]);
 
-  const decorate = () =>
+// const findNamespace = pipe([
+//   findNamespaceInTagsOrEksCluster({
+//     config,
+//     key: "eks:cluster-name",
+//   }),
+// ]);
+
+const decorate = () =>
+  pipe([
     assign({
       VPCZoneIdentifier: pipe([
         get("VPCZoneIdentifier"),
@@ -76,7 +73,14 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
         callProp("sort"),
         callProp("join", ","),
       ]),
-    });
+    }),
+    omitIfEmpty(["TrafficSources"]),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
+exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
+  const autoScaling = createAutoScaling(config);
+  const client = AwsClient({ spec, config })(autoScaling);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
   const getList = client.getList({
@@ -177,7 +181,6 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
     findName,
     getByName,
     getById,

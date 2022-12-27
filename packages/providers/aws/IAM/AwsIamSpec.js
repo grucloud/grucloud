@@ -15,6 +15,7 @@ const {
   any,
 } = require("rubico");
 const {
+  forEach,
   pluck,
   when,
   isString,
@@ -222,7 +223,10 @@ module.exports = pipe([
           assign({
             policies: pipe([
               get("policies", []),
-              map(
+              tap((params) => {
+                assert(true);
+              }),
+              forEach(
                 when(isString, (name) =>
                   provider.IAM.usePolicy({
                     name: pipe([
@@ -326,7 +330,7 @@ module.exports = pipe([
                     lives,
                     providerName: resource.providerName,
                   }),
-                  switchCase([isEmpty, () => undefined, ({ name }) => name]),
+                  get("name"),
                 ])()
               ),
               filter(not(isEmpty)),
