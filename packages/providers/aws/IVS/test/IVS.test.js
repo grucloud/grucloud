@@ -4,11 +4,17 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("IVS", async function () {
-  it.skip("Channel", () =>
+  it("Channel", () =>
     pipe([
       () => ({
         groupType: "IVS::Channel",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            arn: `arn:aws:ivs:${
+              config.region
+            }:${config.accountId()}:channel/32no4tl70Fmr`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -16,24 +22,36 @@ describe("IVS", async function () {
     pipe([
       () => ({
         groupType: "IVS::PlaybackKeyPair",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            arn: `arn:aws:ivs:${
+              config.region
+            }:${config.accountId()}:playbackkeypair/z1UlkAz4Rlt3`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("RecordingConfiguration", () =>
+  it("RecordingConfiguration", () =>
     pipe([
       () => ({
         groupType: "IVS::RecordingConfiguration",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            arn: `arn:aws:ivs:${
+              config.region
+            }:${config.accountId()}:recording-configuration/z1UlkAz4Rlt3`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("StreamKey", () =>
-    pipe([
-      () => ({
-        groupType: "IVS::StreamKey",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
+  // it.skip("Room", () =>
+  //   pipe([
+  //     () => ({
+  //       groupType: "IVS::Room",
+  //       livesNotFound: ({ config }) => [{}],
+  //     }),
+  //     awsResourceTest,
+  //   ])());
 });

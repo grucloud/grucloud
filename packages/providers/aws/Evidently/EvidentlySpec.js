@@ -12,7 +12,7 @@ const { createAwsService } = require("../AwsService");
 //const { EvidentlySegment } = require("./EvidentlySegment");
 
 const GROUP = "Evidently";
-const tagsKey = "tag";
+const tagsKey = "tags";
 const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([

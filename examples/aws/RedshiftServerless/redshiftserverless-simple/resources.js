@@ -103,24 +103,21 @@ exports.createResources = () => [
     group: "RedshiftServerless",
     properties: ({ getId }) => ({
       policy: {
-        Statement: {
-          Effect: "Allow",
-          Action: "redshift-serverless:RestoreFromSnapshot",
-          Principal: {
-            AWS: [
-              `${getId({
-                type: "Account",
-                group: "Organisations",
-                name: "test account",
-              })}`,
-            ],
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: "redshift-serverless:RestoreFromSnapshot",
+            Principal: {
+              AWS: [
+                `${getId({
+                  type: "Account",
+                  group: "Organisations",
+                  name: "test account",
+                })}`,
+              ],
+            },
           },
-          Resource: `${getId({
-            type: "ResourcePolicy",
-            group: "RedshiftServerless",
-            name: "my-snapshot",
-          })}`,
-        },
+        ],
       },
     }),
     dependencies: ({}) => ({

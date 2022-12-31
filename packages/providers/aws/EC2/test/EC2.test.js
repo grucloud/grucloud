@@ -466,7 +466,21 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-
+  it.skip("VpcNetworkPerformanceMetricSubscription", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::VpcNetworkPerformanceMetricSubscription",
+        livesNotFound: ({ config }) => [
+          {
+            Destination: "us-east-1",
+            Metric: "aggregate-latency",
+            Source: "us-east-2",
+            Statistic: "p50",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("VpcPeeringConnection", () =>
     pipe([
       () => ({

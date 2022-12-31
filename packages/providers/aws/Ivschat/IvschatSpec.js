@@ -7,11 +7,12 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IVS.html
 
-const { IVSChannel } = require("./IVSChannel");
-const { IVSPlaybackKeyPair } = require("./IVSPlaybackKeyPair");
-const { IVSRecordingConfiguration } = require("./IVSRecordingConfiguration");
+const { IvschatRoom } = require("./IvschatRoom");
+const {
+  IvschatLoggingConfiguration,
+} = require("./IvschatLoggingConfiguration");
 
-const GROUP = "IVS";
+const GROUP = "Ivschat";
 const tagsKey = "tags";
 
 const compare = compareAws({ tagsKey, key: "key" });
@@ -19,9 +20,8 @@ const compare = compareAws({ tagsKey, key: "key" });
 module.exports = pipe([
   () => [
     //
-    IVSChannel({}),
-    IVSPlaybackKeyPair({}),
-    IVSRecordingConfiguration({}),
+    IvschatRoom({}),
+    IvschatLoggingConfiguration({}),
   ],
   map(
     pipe([

@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project ivschat-full
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ Ivschat
+++++ Room (1)
+++++ LoggingConfiguration (1)
+@endmindmap

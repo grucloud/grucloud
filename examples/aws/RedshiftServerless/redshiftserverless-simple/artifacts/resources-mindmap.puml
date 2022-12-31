@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project redshiftserverless-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (6)
+++++ SecurityGroup (1)
++++ Organisations
+++++ Account (1)
++++ RedshiftServerless
+++++ Namespace (1)
+++++ Snapshot (1)
+++++ ResourcePolicy (1)
+++++ Workgroup (1)
+@endmindmap
