@@ -69,6 +69,7 @@
     "test-organisations": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Organisation/**/iac.test.js' ",
     "test-ram": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/RAM/**/iac.test.js' ",
     "test-redshift": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Redshift/**/iac.test.js' ",
+    "test-redshift-serverless": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/RedshiftServerless/**/iac.test.js' ",
     "test-rds": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/RDS/**/iac.test.js' ",
     "test-route53": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Route53/**/iac.test.js' ",
     "test-route53recoverycontrolconfig": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Route53RecoveryControlConfig/**/iac.test.js' ",

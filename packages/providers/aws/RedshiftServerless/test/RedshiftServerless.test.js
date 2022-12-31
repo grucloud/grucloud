@@ -20,11 +20,17 @@ describe("RedshiftServerless", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ResourcePolicy", () =>
+  it("ResourcePolicy", () =>
     pipe([
       () => ({
         groupType: "RedshiftServerless::ResourcePolicy",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            resourceArn: `arn:aws:redshift-serverless:${
+              config.region
+            }:${config.accountId()}:snapshot/b6e29843-fee3-4b39-84cc-33e51a87dd60`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

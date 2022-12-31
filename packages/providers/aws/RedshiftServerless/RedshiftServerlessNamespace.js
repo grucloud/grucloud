@@ -124,6 +124,9 @@ exports.RedshiftServerlessNamespace = ({ compare }) => ({
   destroy: {
     method: "deleteNamespace",
     pickId,
+    shouldRetryOnExceptionMessages: [
+      "There is an operation running on the namespace. Try deleting the namespace again later",
+    ],
   },
   getByName: ({ getById }) =>
     pipe([({ name }) => ({ namespaceName: name }), getById({})]),

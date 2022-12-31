@@ -1,10 +1,9 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
+const { pipe, tap, get, pick, eq, assign } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
-const { assignTags } = require("./RedshiftServerlessCommon");
-
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { assignTags } = require("./RedshiftServerlessCommon");
 
 const pickId = pipe([
   tap(({ snapshotName }) => {
@@ -73,7 +72,7 @@ exports.RedshiftServerlessSnapshot = () => ({
     ]),
   findId: () =>
     pipe([
-      get("snapshotName"),
+      get("snapshotArn"),
       tap((id) => {
         assert(id);
       }),
@@ -91,6 +90,7 @@ exports.RedshiftServerlessSnapshot = () => ({
     },
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#getSnapshot-property
   getById: {
     method: "getSnapshot",
@@ -109,6 +109,9 @@ exports.RedshiftServerlessSnapshot = () => ({
     method: "createSnapshot",
     pickCreated: ({ payload }) => pipe([get("snapshot")]),
     isInstanceUp: pipe([eq(get("status"), "AVAILABLE")]),
+    shouldRetryOnExceptionMessages: [
+      "Cannot create a snapshot because database is not in available status, try again later",
+    ],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#updateSnapshot-property
   update: {
