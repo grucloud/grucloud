@@ -115,6 +115,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateAutoScalingGroup",
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
     getById,
   });
 

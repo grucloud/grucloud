@@ -80,7 +80,7 @@ exports.BackupBackupSelection = ({ spec, config }) =>
             decorate:
               ({ parent }) =>
               (live) =>
-                pipe([() => live, getById, defaultsDeep(live)])(),
+                pipe([() => live, getById({}), defaultsDeep(live)])(),
           }),
       ])(),
     update:

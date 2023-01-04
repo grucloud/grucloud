@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, eq } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
-const { buildTagsObject } = require("@grucloud/core/Common");
+const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
@@ -26,6 +26,11 @@ const decorate = ({ endpoint, live }) =>
         }),
       ]),
     }),
+    omitIfEmpty([
+      "ReportSetting.Accounts",
+      "ReportSetting.OrganizationUnits",
+      "ReportSetting.Regions",
+    ]),
   ]);
 
 const pickId = pipe([pick(["ReportPlanName"])]);

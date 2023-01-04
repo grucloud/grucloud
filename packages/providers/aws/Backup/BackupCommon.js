@@ -13,7 +13,7 @@ exports.Tagger = createTagger({
 });
 
 exports.managedByEFS = pipe([
-  get("CreatorRequestId"),
+  get("CreatorRequestId", "x"),
   callProp("startsWith", "aws/efs/automatic-backup"),
 ]);
 
