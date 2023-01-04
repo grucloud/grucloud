@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, assign, omit, map } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, callProp } = require("rubico/x");
 
 const { AwsClient } = require("../AwsClient");
 const { createCloudFormation } = require("./CloudFormationCommon");
@@ -11,8 +11,8 @@ const ignoreErrorMessages = ["does not exist"];
 const findName = () => pipe([get("StackName")]);
 const findId = () => get("StackId");
 
-//TODO managedByOther
-// Description DO NOT MODIFY THIS STACK!
+const managedByOther = () =>
+  pipe([get("StackName"), callProp("startsWith", "awsconfigconforms-pack")]);
 
 const pickId = pipe([
   pick(["StackName"]),
@@ -80,6 +80,8 @@ exports.CloudFormationStack = ({ spec, config }) => {
     spec,
     findId,
     getByName,
+    managedByOther,
+    cannotBeDeleted: managedByOther,
     getById,
     findName,
     create,

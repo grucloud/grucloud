@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, fork } = require("rubico");
-const { defaultsDeep, when, first, prepend } = require("rubico/x");
+const { pipe, tap, get, pick, fork, assign } = require("rubico");
+const { defaultsDeep, when, first } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -23,16 +23,16 @@ const decorate =
 
       () => live,
       fork({
-        // TemplateBody: pipe([
-        //   ({ ConformancePackName, ConformancePackId }) =>
-        //     `awsconfigconforms-${ConformancePackName}-${ConformancePackId}`,
-        //     lives.getByName({
-        //       type: "Stack",
-        //       group: "CloudFormation",
-        //       providerName: config.providerName,
-        //     }),
-        //   get("live.TemplateBody"),
-        // ]),
+        TemplateBody: pipe([
+          ({ ConformancePackName, ConformancePackId }) =>
+            `awsconfigconforms-${ConformancePackName}-${ConformancePackId}`,
+          lives.getByName({
+            type: "Stack",
+            group: "CloudFormation",
+            providerName: config.providerName,
+          }),
+          get("live.TemplateBody"),
+        ]),
         Details: pipe([
           ({ ConformancePackName }) => ({
             ConformancePackNames: [ConformancePackName],
@@ -108,11 +108,11 @@ exports.ConfigConformancePack = ({ spec, config }) =>
         () => otherProps,
         when(
           () => s3BucketDelivery,
-          defaultsDeep({ DeliveryS3Bucket: s3BucketDelivery.config.Name })
+          assign({ DeliveryS3Bucket: () => s3BucketDelivery.config.Name })
         ),
         when(
           () => s3BucketTemplate,
-          defaultsDeep({ TemplateS3Uri: s3BucketTemplate.config.Name })
+          assign({ TemplateS3Uri: () => s3BucketTemplate.config.Name })
         ),
       ])(),
   });

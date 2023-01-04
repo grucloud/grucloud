@@ -30,7 +30,7 @@
     "test-codedeploy": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CodeDeploy/**/iac.test.js' ",
     "test-codepipeline": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CodePipeline/**/iac.test.js' ",
     "test-codestarconnections": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CodeStarConnections/**/iac.test.js' ",
-    "test-configservice": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ConfigService/**/iac.test.js' ",
+    "test-configservice": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Config/**/iac.test.js' ",
     "test-costexplorer": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CostExplorer/**/iac.test.js' ",
     "test-cur": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CUR/**/iac.test.js' ",
     "test-cognitoidentityserviceprovider": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CognitoIdentityServiceProvider/**/iac.test.js' ",

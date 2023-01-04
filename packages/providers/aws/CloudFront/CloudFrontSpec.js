@@ -149,6 +149,7 @@ module.exports = () =>
         Restrictions: { GeoRestriction: { Quantity: 0, Items: [] } },
         HttpVersion: "http2",
         IsIPV6Enabled: true,
+        Staging: false,
       },
       compare: compareCloudFront({
         filterTarget: () =>

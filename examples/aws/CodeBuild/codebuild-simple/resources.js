@@ -29,8 +29,13 @@ exports.createResources = () => [
       },
       name: "my-project",
       source: {
-        buildspec:
-          "version: 0.2\n\nphases:\n  build:\n    commands:\n       - npm install\n",
+        buildspec: `version: 0.2
+
+phases:
+  build:
+    commands:
+       - npm install
+`,
         location: "https://github.com/grucloud/grucloud",
         reportBuildStatus: false,
         type: "GITHUB",

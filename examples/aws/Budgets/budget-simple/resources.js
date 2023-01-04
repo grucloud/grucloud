@@ -57,7 +57,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "topic-budget",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       Attributes: {
         Policy: {
           Version: "2008-10-17",
@@ -67,7 +67,7 @@ exports.createResources = () => [
               Sid: "AWSBudgets-notification-1",
               Effect: "Allow",
               Principal: {
-                Service: `budgets.amazonaws.com`,
+                Service: "budgets.amazonaws.com",
               },
               Action: "SNS:Publish",
               Resource: `arn:aws:sns:${
@@ -101,11 +101,6 @@ exports.createResources = () => [
             },
           ],
         },
-        LambdaSuccessFeedbackSampleRate: "0",
-        FirehoseSuccessFeedbackSampleRate: "0",
-        SQSSuccessFeedbackSampleRate: "0",
-        HTTPSuccessFeedbackSampleRate: "0",
-        ApplicationSuccessFeedbackSampleRate: "0",
       },
     }),
   },

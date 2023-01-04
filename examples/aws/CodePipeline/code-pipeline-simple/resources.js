@@ -411,9 +411,6 @@ exports.createResources = () => [
       Path: "/service-role/",
       Description: "Policy used in trust relationship with CodeBuild",
     }),
-    dependencies: ({}) => ({
-      logGroups: ["/aws/codebuild/starhackit"],
-    }),
   },
   {
     type: "Bucket",
