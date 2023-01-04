@@ -3,60 +3,80 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("AppMesh", async function () {
-  it.skip("GatewayRoute", () =>
+describe.only("AppMesh", async function () {
+  it("GatewayRoute", () =>
     pipe([
       () => ({
         groupType: "AppMesh::GatewayRoute",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            meshName: "m123",
+            virtualGatewayName: "vg123",
+            gatewayRouteName: "gr123",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Mesh", () =>
+  it("Mesh", () =>
     pipe([
       () => ({
         groupType: "AppMesh::Mesh",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ meshName: "m123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Route", () =>
+  it("Route", () =>
     pipe([
       () => ({
         groupType: "AppMesh::Route",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            meshName: "m123",
+            virtualRouterName: "vg123",
+            routeName: "gr123",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("VirtualGateway", () =>
+  it("VirtualGateway", () =>
     pipe([
       () => ({
         groupType: "AppMesh::VirtualGateway",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { meshName: "m123", virtualGatewayName: "vg123" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("VirtualNode", () =>
+  it("VirtualNode", () =>
     pipe([
       () => ({
         groupType: "AppMesh::VirtualNode",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { meshName: "m123", virtualNodeName: "vg123" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("VirtualRouter  ", () =>
+  it("VirtualRouter", () =>
     pipe([
       () => ({
         groupType: "AppMesh::VirtualRouter",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { meshName: "m123", virtualRouterName: "vg123" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("VirtualService", () =>
+  it("VirtualService", () =>
     pipe([
       () => ({
         groupType: "AppMesh::VirtualService",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { meshName: "m123", virtualServiceName: "vg123" },
+        ],
       }),
       awsResourceTest,
     ])());

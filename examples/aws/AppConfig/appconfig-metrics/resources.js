@@ -12,6 +12,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "ConfigurationProfile",
+    group: "AppConfig",
+    properties: ({}) => ({
+      LocationUri: "hosted",
+      Name: "profile-freeform",
+      Type: "AWS.Freeform",
+    }),
+    dependencies: ({}) => ({
+      application: "my-appconfig",
+    }),
+  },
+  {
     type: "Deployment",
     group: "AppConfig",
     dependencies: ({}) => ({
@@ -32,18 +44,6 @@ exports.createResources = () => [
       GrowthType: "LINEAR",
       Name: "my-stategy",
       ReplicateTo: "NONE",
-    }),
-  },
-  {
-    type: "ConfigurationProfile",
-    group: "AppConfig",
-    properties: ({}) => ({
-      LocationUri: "hosted",
-      Name: "profile-freeform",
-      Type: "AWS.Freeform",
-    }),
-    dependencies: ({}) => ({
-      application: "my-appconfig",
     }),
   },
   {
