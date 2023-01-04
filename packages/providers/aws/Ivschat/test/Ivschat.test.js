@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("IvschatRoom", async function () {
+describe.skip("IvschatRoom", async function () {
   it("LoggingConfiguration", () =>
     pipe([
       () => ({

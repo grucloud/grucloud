@@ -30,7 +30,13 @@ exports.createResources = () => [
         },
       ],
       SubscriptionName: "team",
-      Threshold: 60,
+      ThresholdExpression: {
+        Dimensions: {
+          Key: "ANOMALY_TOTAL_IMPACT_ABSOLUTE",
+          MatchOptions: ["GREATER_THAN_OR_EQUAL"],
+          Values: ["60.0"],
+        },
+      },
       Tags: [
         {
           Key: "mykey",

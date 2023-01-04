@@ -24,11 +24,7 @@ const pickId = pipe([
   pick(["SubscriptionArn"]),
 ]);
 
-const decorate = ({ endpoint }) =>
-  pipe([
-    //
-    assignTags({ buildArn, endpoint }),
-  ]);
+const decorate = ({ endpoint }) => pipe([assignTags({ buildArn, endpoint })]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CostExplorer.html
 exports.CostExplorerAnomalySubscription = () => ({
@@ -41,6 +37,7 @@ exports.CostExplorerAnomalySubscription = () => ({
     "MonitorArnList",
     "AccountId",
     "Subscribers[].Status",
+    "Threshold",
   ],
   inferName: () =>
     pipe([
@@ -117,6 +114,7 @@ exports.CostExplorerAnomalySubscription = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CostExplorer.html#createAnomalySubscription-property
   create: {
     filterPayload: pipe([
+      //thresholdExpressionStringify,
       ({ Tags, ...payload }) => ({
         AnomalySubscription: payload,
         ResourceTags: Tags,
