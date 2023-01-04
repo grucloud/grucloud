@@ -98,6 +98,7 @@ exports.CognitoIdentityServiceProviderUserPoolDomain = () => ({
       "Custom domain is not a valid subdomain: Was not able to resolve the root domain, please ensure an A record exists for the root domain",
       "One or more of the CNAMEs you provided are already associated with a different resource",
     ],
+    configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
     pickCreated:
       ({ payload }) =>
       () =>

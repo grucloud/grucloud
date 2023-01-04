@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe.only("AppMesh", async function () {
+describe("AppMesh", async function () {
   it("GatewayRoute", () =>
     pipe([
       () => ({

@@ -155,6 +155,7 @@ exports.DMSReplicationInstance = ({ compare }) => ({
   destroy: {
     method: "deleteReplicationInstance",
     pickId,
+    shouldRetryOnExceptionMessages: ["is already being deleted"],
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

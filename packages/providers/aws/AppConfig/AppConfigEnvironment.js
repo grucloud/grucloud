@@ -95,12 +95,7 @@ exports.AppConfigEnvironment = ({ spec, config }) =>
         () =>
           client.getListWithParent({
             parent: { type: "Application", group: "AppConfig" },
-            pickKey: pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              ({ Id }) => ({ ApplicationId: Id }),
-            ]),
+            pickKey: pipe([({ Id }) => ({ ApplicationId: Id })]),
             method: "listEnvironments",
             getParam: "Items",
             config,
