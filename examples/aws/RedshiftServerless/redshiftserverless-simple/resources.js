@@ -68,12 +68,21 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Account",
+    group: "Organisations",
+    name: "test account",
+    readOnly: true,
+    properties: ({}) => ({
+      Email: "test@grucloud.com",
+      Name: "test account",
+    }),
+  },
+  {
     type: "Namespace",
     group: "RedshiftServerless",
     properties: ({}) => ({
       adminUsername: process.env.DEFAULT_ADMIN_USERNAME,
       dbName: "dev",
-      logExports: [],
       namespaceName: "default",
       adminUserPassword: process.env.DEFAULT_ADMIN_USER_PASSWORD,
     }),
@@ -87,6 +96,33 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       namespace: "default",
+    }),
+  },
+  {
+    type: "ResourcePolicy",
+    group: "RedshiftServerless",
+    properties: ({ getId }) => ({
+      policy: {
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: "redshift-serverless:RestoreFromSnapshot",
+            Principal: {
+              AWS: [
+                `${getId({
+                  type: "Account",
+                  group: "Organisations",
+                  name: "test account",
+                })}`,
+              ],
+            },
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      accounts: ["test account"],
+      snapshot: "my-snapshot",
     }),
   },
   {

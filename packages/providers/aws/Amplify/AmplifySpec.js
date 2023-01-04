@@ -14,7 +14,7 @@ const { AmplifyDomainAssociation } = require("./AmplifyDomainAssociation");
 const { AmplifyWebhook } = require("./AmplifyWebhook");
 
 const GROUP = "Amplify";
-const tagsKey = "tag";
+const tagsKey = "tags";
 const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([

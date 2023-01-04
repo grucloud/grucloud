@@ -22,35 +22,28 @@
 <polygon fill="#eeeeee" stroke="#eeeeee" points="16,-54 16,-233 1046,-233 1046,-54 16,-54"/>
 <text text-anchor="start" x="530.86" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
-<!-- LogGroup::/aws/vendedlogs/RUMService_my&#45;monitorf1cb0059 -->
-<g id="node1" class="node">
-<title>LogGroup::/aws/vendedlogs/RUMService_my&#45;monitorf1cb0059</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="343.5,-225 31.5,-225 31.5,-167 343.5,-167 343.5,-225"/>
-<text text-anchor="start" x="43.5" y="-205.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
-<text text-anchor="start" x="43.5" y="-180.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">/aws/vendedlogs/RUMService_my&#45;mo...</text>
-</g>
 <!-- IdentityPool::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761 -->
-<g id="node2" class="node">
+<g id="node1" class="node">
 <title>IdentityPool::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1031.5,-149 730.5,-149 730.5,-91 1031.5,-91 1031.5,-149"/>
 <text text-anchor="start" x="743" y="-129.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Cognito::IdentityPool</text>
 <text text-anchor="start" x="743" y="-104.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;8405414600...</text>
 </g>
 <!-- IdentityPoolRolesAttachments::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761 -->
-<g id="node3" class="node">
+<g id="node2" class="node">
 <title>IdentityPoolRolesAttachments::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="351,-149 24,-149 24,-91 351,-91 351,-149"/>
-<text text-anchor="start" x="36.5" y="-129.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Cognito::IdentityPoolRolesAttachments</text>
-<text text-anchor="start" x="36.5" y="-104.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;8405414600...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="351,-201 24,-201 24,-143 351,-143 351,-201"/>
+<text text-anchor="start" x="36.5" y="-181.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Cognito::IdentityPoolRolesAttachments</text>
+<text text-anchor="start" x="36.5" y="-156.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;8405414600...</text>
 </g>
 <!-- IdentityPoolRolesAttachments::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761&#45;&gt;IdentityPool::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761 -->
 <g id="edge1" class="edge">
 <title>IdentityPoolRolesAttachments::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761&#45;&gt;IdentityPool::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761</title>
-<path fill="none" stroke="#707070" d="M351.18,-135.95C363.29,-136.77 375.33,-137.47 387,-138 520.64,-144.05 554.37,-144.25 688,-138 698.56,-137.51 709.44,-136.86 720.4,-136.11"/>
-<polygon fill="#707070" stroke="#707070" points="720.75,-139.59 730.47,-135.39 720.25,-132.61 720.75,-139.59"/>
+<path fill="none" stroke="#707070" d="M351.26,-160.47C363.35,-159.63 375.37,-158.8 387,-158 520.76,-148.84 554.36,-148.7 688,-138 698.54,-137.16 709.4,-136.25 720.34,-135.3"/>
+<polygon fill="#707070" stroke="#707070" points="720.75,-138.78 730.41,-134.42 720.14,-131.8 720.75,-138.78"/>
 </g>
 <!-- Role::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761&#45;Unauth -->
-<g id="node4" class="node">
+<g id="node3" class="node">
 <title>Role::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761&#45;Unauth</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="688,-225 387,-225 387,-167 688,-167 688,-225"/>
 <text text-anchor="start" x="399.5" y="-205.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
@@ -59,8 +52,8 @@
 <!-- IdentityPoolRolesAttachments::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761&#45;&gt;Role::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761&#45;Unauth -->
 <g id="edge2" class="edge">
 <title>IdentityPoolRolesAttachments::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761&#45;&gt;Role::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761&#45;Unauth</title>
-<path fill="none" stroke="#707070" d="M321.55,-149.06C345.16,-154.21 369.84,-159.6 393.71,-164.82"/>
-<polygon fill="#707070" stroke="#707070" points="393,-168.24 403.52,-166.96 394.5,-161.41 393,-168.24"/>
+<path fill="none" stroke="#707070" d="M351.04,-183.21C359.63,-183.8 368.25,-184.4 376.83,-184.99"/>
+<polygon fill="#707070" stroke="#707070" points="376.66,-188.48 386.88,-185.68 377.14,-181.5 376.66,-188.48"/>
 </g>
 <!-- Role::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761&#45;Unauth&#45;&gt;IdentityPool::RUM&#45;Monitor&#45;us&#45;east&#45;1&#45;840541460064&#45;8918708312761 -->
 <g id="edge4" class="edge">
@@ -69,7 +62,7 @@
 <polygon fill="#707070" stroke="#707070" points="740.5,-154.63 749.5,-149.04 738.98,-147.8 740.5,-154.63"/>
 </g>
 <!-- Policy::RUMPutBatchMetrics&#45;8918708312761 -->
-<g id="node5" class="node">
+<g id="node4" class="node">
 <title>Policy::RUMPutBatchMetrics&#45;8918708312761</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1038,-225 724,-225 724,-167 1038,-167 1038,-225"/>
 <text text-anchor="start" x="736" y="-205.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Policy</text>
@@ -82,7 +75,7 @@
 <polygon fill="#707070" stroke="#707070" points="713.95,-199.5 723.95,-196 713.95,-192.5 713.95,-199.5"/>
 </g>
 <!-- AppMonitor::my&#45;monitor -->
-<g id="node6" class="node">
+<g id="node5" class="node">
 <title>AppMonitor::my&#45;monitor</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="617.5,-129 457.5,-129 457.5,-71 617.5,-71 617.5,-129"/>
 <text text-anchor="start" x="469.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RUM::AppMonitor</text>

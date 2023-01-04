@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project ivs-full
+skinparam monochrome true
++ Infra
+++ aws
++++ IVS
+++++ Channel (1)
+++++ RecordingConfiguration (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

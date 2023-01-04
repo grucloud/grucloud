@@ -14,7 +14,9 @@ const {
   RedshiftServerlessNamespace,
 } = require("./RedshiftServerlessNamespace");
 const { RedshiftServerlessSnapshot } = require("./RedshiftServerlessSnapshot");
-//const { RedshiftServerlessResourcePolicy } = require("./RedshiftServerlessResourcePolicy");
+const {
+  RedshiftServerlessResourcePolicy,
+} = require("./RedshiftServerlessResourcePolicy");
 
 const {
   RedshiftServerlessUsageLimit,
@@ -33,7 +35,7 @@ module.exports = pipe([
     RedshiftServerlessEndpointAccess({}),
     RedshiftServerlessNamespace({ compare }),
     RedshiftServerlessSnapshot({}),
-    // RedshiftServerlessResourcePolicy({})
+    RedshiftServerlessResourcePolicy({}),
     RedshiftServerlessUsageLimit({}),
     RedshiftServerlessWorkgroup({}),
   ],

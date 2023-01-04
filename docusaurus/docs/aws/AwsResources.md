@@ -112,6 +112,8 @@ List of resources for provider aws:
 [GroupMembership](./resources/IdentityStore/GroupMembership.md), [User](./resources/IdentityStore/User.md), [Group](./resources/IdentityStore/Group.md)
 * Inspector2: 
 [DelegatedAdminAccount](./resources/Inspector2/DelegatedAdminAccount.md), [Enabler](./resources/Inspector2/Enabler.md), [OrganizationConfiguration](./resources/Inspector2/OrganizationConfiguration.md)
+* IVS: 
+[Channel](./resources/IVS/Channel.md), [PlaybackKeyPair](./resources/IVS/PlaybackKeyPair.md), [RecordingConfiguration](./resources/IVS/RecordingConfiguration.md)
 * Kinesis: 
 [Stream](./resources/Kinesis/Stream.md)
 * KMS: 
