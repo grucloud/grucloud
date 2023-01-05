@@ -4,33 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "DataLakeSettings",
-    group: "LakeFormation",
-    properties: ({ config }) => ({
-      CreateDatabaseDefaultPermissions: [
-        {
-          Permissions: ["ALL"],
-          Principal: {
-            DataLakePrincipalIdentifier: "IAM_ALLOWED_PRINCIPALS",
-          },
-        },
-      ],
-      CreateTableDefaultPermissions: [
-        {
-          Permissions: ["ALL"],
-          Principal: {
-            DataLakePrincipalIdentifier: "IAM_ALLOWED_PRINCIPALS",
-          },
-        },
-      ],
-      DataLakeAdmins: [
-        {
-          DataLakePrincipalIdentifier: `arn:aws:iam::${config.accountId()}:root`,
-        },
-      ],
-    }),
-  },
-  {
     type: "LFTag",
     group: "LakeFormation",
     properties: ({}) => ({

@@ -93,11 +93,13 @@ exports.createResources = () => [
     type: "Cluster",
     group: "MemoryDB",
     properties: ({}) => ({
+      NumShards: 1,
+      ACLName: "my-acl",
       EngineVersion: "6.2",
       MaintenanceWindow: "sun:07:00-sun:08:00",
       Name: "my-cluster",
       NodeType: "db.t4g.small",
-      NumberOfShards: 1,
+      ParameterGroupName: "param-group",
       SnapshotWindow: "09:00-10:00",
     }),
     dependencies: ({}) => ({

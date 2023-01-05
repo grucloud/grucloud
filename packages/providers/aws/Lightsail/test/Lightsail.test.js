@@ -4,6 +4,14 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Lightsail", async function () {
+  it.skip("Bucket", () =>
+    pipe([
+      () => ({
+        groupType: "Lightsail::Bucket",
+        livesNotFound: ({ config }) => [{ bucket: "a123" }],
+      }),
+      awsResourceTest,
+    ])());
   it("Certificate", () =>
     pipe([
       () => ({

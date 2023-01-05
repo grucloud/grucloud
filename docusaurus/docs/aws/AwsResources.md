@@ -33,7 +33,7 @@ List of resources for provider aws:
 * Athena: 
 [DataCatalog](./resources/Athena/DataCatalog.md), [WorkGroup](./resources/Athena/WorkGroup.md)
 * AuditManager: 
-[AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [Settings](./resources/AuditManager/Settings.md)
+[AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Assessment](./resources/AuditManager/Assessment.md), [AssessmentReport](./resources/AuditManager/AssessmentReport.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [Settings](./resources/AuditManager/Settings.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
 * Backup: 
@@ -97,7 +97,7 @@ List of resources for provider aws:
 * EMRServerless: 
 [Application](./resources/EMRServerless/Application.md)
 * Evidently: 
-[Project](./resources/Evidently/Project.md)
+[Feature](./resources/Evidently/Feature.md), [Project](./resources/Evidently/Project.md), [Segment](./resources/Evidently/Segment.md)
 * Firehose: 
 [DeliveryStream](./resources/Firehose/DeliveryStream.md)
 * FSx: 
@@ -157,7 +157,7 @@ List of resources for provider aws:
 * Route53RecoveryReadiness: 
 [Cell](./resources/Route53RecoveryReadiness/Cell.md), [ReadinessCheck](./resources/Route53RecoveryReadiness/ReadinessCheck.md), [RecoveryGroup](./resources/Route53RecoveryReadiness/RecoveryGroup.md), [ResourceSet](./resources/Route53RecoveryReadiness/ResourceSet.md)
 * Route53Resolver: 
-[Endpoint](./resources/Route53Resolver/Endpoint.md), [Rule](./resources/Route53Resolver/Rule.md), [RuleAssociation](./resources/Route53Resolver/RuleAssociation.md)
+[Config](./resources/Route53Resolver/Config.md), [DnssecConfig](./resources/Route53Resolver/DnssecConfig.md), [Endpoint](./resources/Route53Resolver/Endpoint.md), [FirewallConfig](./resources/Route53Resolver/FirewallConfig.md), [Rule](./resources/Route53Resolver/Rule.md), [RuleAssociation](./resources/Route53Resolver/RuleAssociation.md)
 * RUM: 
 [AppMonitor](./resources/RUM/AppMonitor.md), [MetricsDestination](./resources/RUM/MetricsDestination.md)
 * S3: 

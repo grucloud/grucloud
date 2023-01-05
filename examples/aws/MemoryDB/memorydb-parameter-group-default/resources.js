@@ -83,6 +83,7 @@ exports.createResources = () => [
     type: "Cluster",
     group: "MemoryDB",
     properties: ({}) => ({
+      NumShards: 1,
       ACLName: "open-access",
       EngineVersion: "6.2",
       MaintenanceWindow: "wed:06:30-wed:07:30",
