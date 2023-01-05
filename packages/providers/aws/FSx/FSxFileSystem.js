@@ -147,6 +147,9 @@ exports.FSxFileSystem = () => ({
   destroy: {
     method: "deleteFileSystem",
     pickId,
+    shouldRetryOnExceptionMessages: [
+      "Cannot delete file system while there is a user initiated backup in progress.",
+    ],
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

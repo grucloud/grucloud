@@ -33,15 +33,19 @@ describe("AuditManager", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("AssessmentReport", () =>
+  it("AssessmentReport", () =>
     pipe([
       () => ({
         groupType: "AuditManager::AssessmentReport",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            assessmentId: "5af4b834-7168-4ce3-8538-8fdb21300141",
+            assessmentReportId: "5af4b834-7168-4ce3-8538-8fdb21300141",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-
   it("Control", () =>
     pipe([
       () => ({
@@ -52,7 +56,6 @@ describe("AuditManager", async function () {
       }),
       awsResourceTest,
     ])());
-
   it.skip("FrameworkShare", () =>
     pipe([
       () => ({

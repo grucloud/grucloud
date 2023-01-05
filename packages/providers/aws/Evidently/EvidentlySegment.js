@@ -27,7 +27,6 @@ const {
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { replaceWithName } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./EvidentlyCommon");
 
@@ -40,10 +39,10 @@ const buildArn = () =>
   ]);
 
 const pickId = pipe([
-  tap(({ project }) => {
-    assert(project);
+  tap(({ segment }) => {
+    assert(segment);
   }),
-  pick(["project"]),
+  pick(["segment"]),
 ]);
 
 const decorate = ({ endpoint, config }) =>
@@ -54,19 +53,15 @@ const decorate = ({ endpoint, config }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html
-exports.EvidentlyProject = () => ({
-  type: "Project",
+exports.EvidentlySegment = () => ({
+  type: "Segment",
   package: "evidently",
   client: "Evidently",
   propertiesDefault: {},
   omitProperties: [
     "arn",
     "createdTime",
-    "appConfigResource",
-    "activeLaunchCount",
-    "activeExperimentCount",
     "experimentCount",
-    "featureCount",
     "lastUpdatedTime",
     "launchCount",
     "status",
@@ -93,52 +88,36 @@ exports.EvidentlyProject = () => ({
       }),
     ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  dependencies: {
-    appConfigApplication: {
-      type: "Application",
-      group: "AppConfig",
-      dependencyId: () => get("appConfigResource.applicationId"),
-    },
-    appConfigEnvironment: {
-      type: "Environment",
-      group: "AppConfig",
-      dependencyId: () => get("appConfigResource.environmentId"),
-    },
-    logGroup: {
-      type: "LogGroup",
-      group: "CloudWatchLog",
-      dependencyId: () => get("appConfigResource.environmentId"),
-    },
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#getProject-property
+  dependencies: {},
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#getSegment-property
   getById: {
-    method: "getProject",
-    getField: "project",
+    method: "getSegment",
+    getField: "segment",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#listProjects-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#listSegments-property
   getList: {
-    method: "listProjects",
-    getParam: "projects",
+    method: "listSegments",
+    getParam: "segments",
     decorate: ({ getById }) => pipe([getById]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#createProject-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#createSegment-property
   create: {
-    method: "createProject",
-    pickCreated: ({ payload }) => pipe([get("project")]),
+    method: "createSegment",
+    pickCreated: ({ payload }) => pipe([get("segment")]),
     // pickCreated: ({ payload }) => pipe([() => payload]),
     // pickCreated: ({ payload }) => pipe([identity]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#updateProject-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#updateSegment-property
   update: {
-    method: "updateProject",
+    method: "updateSegment",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#deleteProject-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#deleteSegment-property
   destroy: {
-    method: "deleteProject",
+    method: "deleteSegment",
     pickId,
   },
   getByName: getByNameCore,
@@ -150,20 +129,12 @@ exports.EvidentlyProject = () => ({
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { appConfigApplication, appConfigEnvironment },
+    dependencies: {},
     config,
   }) =>
     pipe([
-      tap((params) => {
-        assert(appConfigApplication);
-        assert(appConfigEnvironment);
-      }),
       () => otherProps,
       defaultsDeep({
-        appConfigResource: {
-          applicationId: getField(appConfigApplication, "Id"),
-          environmentId: getField(appConfigEnvironment, "Id"),
-        },
         tags: buildTagsObject({ name, config, namespace, userTags: tags }),
       }),
     ])(),

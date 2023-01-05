@@ -388,100 +388,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TaskDefinition",
-    group: "ECS",
-    properties: ({ config }) => ({
-      containerDefinitions: [
-        {
-          command: [],
-          cpu: 0,
-          dnsSearchDomains: [],
-          dnsServers: [],
-          dockerLabels: {},
-          dockerSecurityOptions: [],
-          entryPoint: [],
-          environment: [
-            {
-              name: "region",
-              value: `${config.region}`,
-            },
-            {
-              name: "eventBusName",
-              value: "DemoEventBus",
-            },
-          ],
-          environmentFiles: [],
-          essential: true,
-          extraHosts: [],
-          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:a2ee93c23f547d6744410d73d5a2b81dc046717e7569d4e3f278f4d31e2f15bc`,
-          links: [],
-          logConfiguration: {
-            logDriver: "awslogs",
-            options: {
-              "awslogs-group":
-                "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N",
-              "awslogs-region": `${config.region}`,
-              "awslogs-stream-prefix": "FargateService",
-            },
-            secretOptions: [],
-          },
-          mountPoints: [],
-          name: "web",
-          portMappings: [
-            {
-              containerPort: 80,
-              hostPort: 80,
-              protocol: "tcp",
-            },
-          ],
-          secrets: [],
-          systemControls: [],
-          ulimits: [],
-          volumesFrom: [],
-        },
-      ],
-      cpu: "512",
-      family: "CdkStackFargateServiceTaskDef2C533A52",
-      memory: "2048",
-      networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
-        },
-        {
-          name: "ecs.capability.execution-role-awslogs",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.ecr-auth",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.17",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.task-iam-role",
-        },
-        {
-          name: "ecs.capability.execution-role-ecr-pull",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
-      requiresCompatibilities: ["FARGATE"],
-    }),
-    dependencies: ({}) => ({
-      taskRole: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
-      executionRole:
-        "CdkStack-FargateServiceTaskDefExecutionRole9194820-138OPFQCAE04H",
-    }),
-  },
-  {
     type: "Service",
     group: "ECS",
     properties: ({ getId }) => ({
@@ -530,6 +436,82 @@ exports.createResources = () => [
         "sg::Vpc8378EB38::CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
       ],
       targetGroups: ["CdkSt-Farga-18J680K747YUS"],
+    }),
+  },
+  {
+    type: "TaskDefinition",
+    group: "ECS",
+    properties: ({ config }) => ({
+      containerDefinitions: [
+        {
+          cpu: 0,
+          environment: [
+            {
+              name: "region",
+              value: `${config.region}`,
+            },
+            {
+              name: "eventBusName",
+              value: "DemoEventBus",
+            },
+          ],
+          essential: true,
+          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:a2ee93c23f547d6744410d73d5a2b81dc046717e7569d4e3f278f4d31e2f15bc`,
+          logConfiguration: {
+            logDriver: "awslogs",
+            options: {
+              "awslogs-group":
+                "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N",
+              "awslogs-region": `${config.region}`,
+              "awslogs-stream-prefix": "FargateService",
+            },
+          },
+          name: "web",
+          portMappings: [
+            {
+              containerPort: 80,
+              hostPort: 80,
+              protocol: "tcp",
+            },
+          ],
+        },
+      ],
+      cpu: "512",
+      family: "CdkStackFargateServiceTaskDef2C533A52",
+      memory: "2048",
+      networkMode: "awsvpc",
+      requiresAttributes: [
+        {
+          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
+        },
+        {
+          name: "ecs.capability.execution-role-awslogs",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.ecr-auth",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.task-iam-role",
+        },
+        {
+          name: "ecs.capability.execution-role-ecr-pull",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
+        },
+        {
+          name: "ecs.capability.task-eni",
+        },
+      ],
+      requiresCompatibilities: ["FARGATE"],
+    }),
+    dependencies: ({}) => ({
+      taskRole: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
+      executionRole:
+        "CdkStack-FargateServiceTaskDefExecutionRole9194820-138OPFQCAE04H",
     }),
   },
   {

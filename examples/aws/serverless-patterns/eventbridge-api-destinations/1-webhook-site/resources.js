@@ -23,9 +23,7 @@ exports.createResources = () => [
       AuthParameters: {
         ApiKeyAuthParameters: {
           ApiKeyName: "MyWebhook",
-        },
-        BasicAuthParameters: {
-          Password: process.env.MY_CONNECTION_DV_MV_GG2ST_EXZ_PASSWORD,
+          ApiKeyValue: process.env.MY_CONNECTION_DV_MV_GG2ST_EXZ_API_KEY_VALUE,
         },
       },
       AuthorizationType: "API_KEY",

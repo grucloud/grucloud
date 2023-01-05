@@ -7,9 +7,9 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html
 
-//const { EvidentlyFeature } = require("./EvidentlyFeature");
+const { EvidentlyFeature } = require("./EvidentlyFeature");
 const { EvidentlyProject } = require("./EvidentlyProject");
-//const { EvidentlySegment } = require("./EvidentlySegment");
+const { EvidentlySegment } = require("./EvidentlySegment");
 
 const GROUP = "Evidently";
 const tagsKey = "tags";
@@ -17,9 +17,10 @@ const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
-    // EvidentlyFeature({})
+    //
+    EvidentlyFeature({}),
     EvidentlyProject({}),
-    // EvidentlySegment({})
+    EvidentlySegment({}),
   ],
   map(
     pipe([

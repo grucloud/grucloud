@@ -170,8 +170,15 @@ exports.createResources = () => [
           {
             inputs: {
               FunctionName: "sam-app-LambdaFunction-SzMn1A4Jbksd",
-              Payload:
-                '{\n "ssm_automation_parameters":\n   {\n     "table_name": "{{DocumentInputTableName}}",\n     "partition_key_input": "{{PartitonKeyInput}}",\n     "sort_key_input":"{{SortKeyInput}}"\n   }\n}\n',
+              Payload: `{
+ "ssm_automation_parameters":
+   {
+     "table_name": "{{DocumentInputTableName}}",
+     "partition_key_input": "{{PartitonKeyInput}}",
+     "sort_key_input":"{{SortKeyInput}}"
+   }
+}
+`,
             },
             name: "lambda_invoke",
             action: "aws:invokeLambdaFunction",

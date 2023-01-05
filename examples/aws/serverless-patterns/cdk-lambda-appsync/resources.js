@@ -31,7 +31,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       fieldName: "createTodo",
       kind: "UNIT",
-      requestMappingTemplate: String.raw`
+      requestMappingTemplate: `
 $util.qr($ctx.args.put("id", $util.defaultIfNull($ctx.args.id, $util.autoId())))
 #set( $createdAt = $util.time.nowISO8601() )
 $util.qr($context.args.put("createdAt", $createdAt))

@@ -29,7 +29,7 @@ const stringifyContent = assign({
 });
 
 const decorate =
-  ({ endpoint }) =>
+  ({ endpoint, config }) =>
   (live) =>
     pipe([
       () => live,
@@ -61,6 +61,7 @@ exports.SSMDocument = () => ({
       get("Arn"),
     ]),
   omitProperties: [
+    "Arn",
     "Content.assumeRole",
     "Owner",
     "DocumentVersion",

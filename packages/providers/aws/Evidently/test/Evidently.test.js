@@ -3,12 +3,12 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("Evidently", async function () {
-  it.skip("Feature", () =>
+describe.only("Evidently", async function () {
+  it("Feature", () =>
     pipe([
       () => ({
         groupType: "Evidently::Feature",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ project: "p123", feature: "f123" }],
       }),
       awsResourceTest,
     ])());
@@ -20,11 +20,11 @@ describe("Evidently", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Segment", () =>
+  it.only("Segment", () =>
     pipe([
       () => ({
         groupType: "Evidently::Segment",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ segment: "s123" }],
       }),
       awsResourceTest,
     ])());

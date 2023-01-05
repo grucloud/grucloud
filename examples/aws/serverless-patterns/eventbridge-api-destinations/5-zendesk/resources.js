@@ -10,10 +10,7 @@ exports.createResources = () => [
       AuthParameters: {
         BasicAuthParameters: {
           Username: "username",
-        },
-        ApiKeyAuthParameters: {
-          ApiKeyValue:
-            process.env.MY_ZENDESK_CONNECTION_72_YZ_HUVUNZ_II_API_KEY_VALUE,
+          Password: process.env.MY_ZENDESK_CONNECTION_72_YZ_HUVUNZ_II_PASSWORD,
         },
       },
       AuthorizationType: "BASIC",
