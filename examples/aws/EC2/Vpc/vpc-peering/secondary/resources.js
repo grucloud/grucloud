@@ -42,7 +42,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       routeTable: "vpc-secondary::rt-default",
-      vpcPeeringConnection: "vpc-peering::vpc-primary::vpc-secondary",
+      vpcPeeringConnection: {
+        name: "vpc-peering::vpc-primary::vpc-secondary",
+        provider: "aws-primary",
+      },
     }),
   },
   {
@@ -115,12 +118,12 @@ exports.createResources = () => [
             `${getId({
               type: "SecurityGroup",
               group: "EC2",
-              name: "sg::vpc-secondary::ssm",
+              name: "sg::vpc-secondary::icmp",
             })}`,
             `${getId({
               type: "SecurityGroup",
               group: "EC2",
-              name: "sg::vpc-secondary::icmp",
+              name: "sg::vpc-secondary::ssm",
             })}`,
           ],
           SubnetId: `${getId({
@@ -146,9 +149,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ec2-messages",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-secondary",
@@ -161,9 +164,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssm`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-secondary",
@@ -176,9 +179,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm-message",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-secondary",
@@ -190,7 +193,10 @@ exports.createResources = () => [
     type: "VpcPeeringConnectionAccepter",
     group: "EC2",
     dependencies: ({}) => ({
-      vpcPeeringConnection: "vpc-peering::vpc-primary::vpc-secondary",
+      vpcPeeringConnection: {
+        name: "vpc-peering::vpc-primary::vpc-secondary",
+        provider: "aws-primary",
+      },
     }),
   },
 ];

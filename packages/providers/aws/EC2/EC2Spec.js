@@ -19,6 +19,7 @@ const {
 } = require("rubico");
 const {
   pluck,
+  isObject,
   includes,
   first,
   size,
@@ -2347,7 +2348,9 @@ module.exports = pipe([
               assert(vpcPeer);
               assert(properties);
             }),
-            () => `vpc-peering::${vpc}::${vpcPeer}`,
+            () => vpcPeer,
+            when(isObject, get("name")),
+            (vpcPeerName) => `vpc-peering::${vpc}::${vpcPeerName}`,
           ])(),
       omitProperties: [
         "Status",
@@ -2401,7 +2404,10 @@ module.exports = pipe([
             tap((params) => {
               assert(vpcPeeringConnection);
             }),
-            () => `vpc-peering-accepter::${vpcPeeringConnection}`,
+            () => vpcPeeringConnection,
+            when(isObject, get("name")),
+            (vpcPeeringConnectionName) =>
+              `vpc-peering-accepter::${vpcPeeringConnectionName}`,
           ])(),
       omitProperties: [
         "Status",
@@ -2498,8 +2504,10 @@ module.exports = pipe([
               assert(transitGateway);
               assert(transitGatewayPeer);
             }),
-            () =>
-              `tgw-peering-attach::${transitGateway}::${transitGatewayPeer}`,
+            () => transitGatewayPeer,
+            when(isObject, get("name")),
+            (transitGatewayPeerName) =>
+              `tgw-peering-attach::${transitGateway}::${transitGatewayPeerName}`,
           ])(),
       // TODO remove this
       compare: compareEC2({
