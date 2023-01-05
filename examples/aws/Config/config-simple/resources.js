@@ -31,8 +31,107 @@ exports.createResources = () => [
     group: "Config",
     properties: ({}) => ({
       ConformancePackName: "pack-api-gateway",
-      TemplateBody:
-        '---\nDescription: "DO NOT MODIFY THIS STACK! This stack is managed by Config Conformance\\\n  \\ Packs."\nParameters:\n  ApiGwEndpointTypeCheckParamEndpointConfigurationTypes:\n    Type: "String"\n    Default: "REGIONAL, PRIVATE, EDGE"\nMappings: {}\nConditions:\n  apiGwEndpointTypeCheckParamEndpointConfigurationTypes:\n    Fn::Not:\n    - Fn::Equals:\n      - ""\n      - Ref: "ApiGwEndpointTypeCheckParamEndpointConfigurationTypes"\nRules: {}\nResources:\n  ApiGwAssociatedWithWaf:\n    Type: "AWS::Config::ConfigRule"\n    Properties:\n      ConfigRuleName: "api-gw-associated-with-waf-conformance-pack-xcb7t6kmi"\n      Scope:\n        ComplianceResourceTypes:\n        - "AWS::ApiGateway::Stage"\n      Source:\n        Owner: "AWS"\n        SourceIdentifier: "API_GW_ASSOCIATED_WITH_WAF"\n  ApiGwCacheEnabledAndEncrypted:\n    Type: "AWS::Config::ConfigRule"\n    Properties:\n      ConfigRuleName: "api-gw-cache-enabled-and-encrypted-conformance-pack-xcb7t6kmi"\n      Scope:\n        ComplianceResourceTypes:\n        - "AWS::ApiGateway::Stage"\n      Source:\n        Owner: "AWS"\n        SourceIdentifier: "API_GW_CACHE_ENABLED_AND_ENCRYPTED"\n  ApiGwEndpointTypeCheck:\n    Type: "AWS::Config::ConfigRule"\n    Properties:\n      ConfigRuleName: "api-gw-endpoint-type-check-conformance-pack-xcb7t6kmi"\n      InputParameters:\n        endpointConfigurationTypes:\n          Fn::If:\n          - "apiGwEndpointTypeCheckParamEndpointConfigurationTypes"\n          - Ref: "ApiGwEndpointTypeCheckParamEndpointConfigurationTypes"\n          - Ref: "AWS::NoValue"\n      Scope:\n        ComplianceResourceTypes:\n        - "AWS::ApiGateway::RestApi"\n      Source:\n        Owner: "AWS"\n        SourceIdentifier: "API_GW_ENDPOINT_TYPE_CHECK"\n  ApiGwExecutionLoggingEnabled:\n    Type: "AWS::Config::ConfigRule"\n    Properties:\n      ConfigRuleName: "api-gw-execution-logging-enabled-conformance-pack-xcb7t6kmi"\n      Scope:\n        ComplianceResourceTypes:\n        - "AWS::ApiGateway::Stage"\n        - "AWS::ApiGatewayV2::Stage"\n      Source:\n        Owner: "AWS"\n        SourceIdentifier: "API_GW_EXECUTION_LOGGING_ENABLED"\n  ApiGwSslEnabled:\n    Type: "AWS::Config::ConfigRule"\n    Properties:\n      ConfigRuleName: "api-gw-ssl-enabled-conformance-pack-xcb7t6kmi"\n      Scope:\n        ComplianceResourceTypes:\n        - "AWS::ApiGateway::Stage"\n      Source:\n        Owner: "AWS"\n        SourceIdentifier: "API_GW_SSL_ENABLED"\n  ApiGwXrayEnabled:\n    Type: "AWS::Config::ConfigRule"\n    Properties:\n      ConfigRuleName: "api-gw-xray-enabled-conformance-pack-xcb7t6kmi"\n      Scope:\n        ComplianceResourceTypes:\n        - "AWS::ApiGateway::Stage"\n      Source:\n        Owner: "AWS"\n        SourceIdentifier: "API_GW_XRAY_ENABLED"\n  CloudTrailCloudWatchLogsEnabled:\n    Type: "AWS::Config::ConfigRule"\n    Properties:\n      ConfigRuleName: "cloud-trail-cloud-watch-logs-enabled-conformance-pack-xcb7t6kmi"\n      Source:\n        Owner: "AWS"\n        SourceIdentifier: "CLOUD_TRAIL_CLOUD_WATCH_LOGS_ENABLED"\n  CloudTrailEnabled:\n    Type: "AWS::Config::ConfigRule"\n    Properties:\n      ConfigRuleName: "cloudtrail-enabled-conformance-pack-xcb7t6kmi"\n      Source:\n        Owner: "AWS"\n        SourceIdentifier: "CLOUD_TRAIL_ENABLED"\nOutputs: {}\nAWSTemplateFormatVersion: "2010-09-09"\nHooks: {}\n',
+      TemplateBody: `---
+Description: "DO NOT MODIFY THIS STACK! This stack is managed by Config Conformance\\
+  \ Packs."
+Parameters:
+  ApiGwEndpointTypeCheckParamEndpointConfigurationTypes:
+    Type: "String"
+    Default: "REGIONAL, PRIVATE, EDGE"
+Mappings: {}
+Conditions:
+  apiGwEndpointTypeCheckParamEndpointConfigurationTypes:
+    Fn::Not:
+    - Fn::Equals:
+      - ""
+      - Ref: "ApiGwEndpointTypeCheckParamEndpointConfigurationTypes"
+Rules: {}
+Resources:
+  ApiGwAssociatedWithWaf:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      ConfigRuleName: "api-gw-associated-with-waf-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf"
+      Scope:
+        ComplianceResourceTypes:
+        - "AWS::ApiGateway::Stage"
+      Source:
+        Owner: "AWS"
+        SourceIdentifier: "API_GW_ASSOCIATED_WITH_WAF"
+  ApiGwCacheEnabledAndEncrypted:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      ConfigRuleName: "api-gw-cache-enabled-and-encrypted-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf"
+      Scope:
+        ComplianceResourceTypes:
+        - "AWS::ApiGateway::Stage"
+      Source:
+        Owner: "AWS"
+        SourceIdentifier: "API_GW_CACHE_ENABLED_AND_ENCRYPTED"
+  ApiGwEndpointTypeCheck:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      ConfigRuleName: "api-gw-endpoint-type-check-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf"
+      InputParameters:
+        endpointConfigurationTypes:
+          Fn::If:
+          - "apiGwEndpointTypeCheckParamEndpointConfigurationTypes"
+          - Ref: "ApiGwEndpointTypeCheckParamEndpointConfigurationTypes"
+          - Ref: "AWS::NoValue"
+      Scope:
+        ComplianceResourceTypes:
+        - "AWS::ApiGateway::RestApi"
+      Source:
+        Owner: "AWS"
+        SourceIdentifier: "API_GW_ENDPOINT_TYPE_CHECK"
+  ApiGwExecutionLoggingEnabled:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      ConfigRuleName: "api-gw-execution-logging-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf"
+      Scope:
+        ComplianceResourceTypes:
+        - "AWS::ApiGateway::Stage"
+        - "AWS::ApiGatewayV2::Stage"
+      Source:
+        Owner: "AWS"
+        SourceIdentifier: "API_GW_EXECUTION_LOGGING_ENABLED"
+  ApiGwSslEnabled:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      ConfigRuleName: "api-gw-ssl-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf"
+      Scope:
+        ComplianceResourceTypes:
+        - "AWS::ApiGateway::Stage"
+      Source:
+        Owner: "AWS"
+        SourceIdentifier: "API_GW_SSL_ENABLED"
+  ApiGwXrayEnabled:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      ConfigRuleName: "api-gw-xray-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf"
+      Scope:
+        ComplianceResourceTypes:
+        - "AWS::ApiGateway::Stage"
+      Source:
+        Owner: "AWS"
+        SourceIdentifier: "API_GW_XRAY_ENABLED"
+  CloudTrailCloudWatchLogsEnabled:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      ConfigRuleName: "cloud-trail-cloud-watch-logs-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf"
+      Source:
+        Owner: "AWS"
+        SourceIdentifier: "CLOUD_TRAIL_CLOUD_WATCH_LOGS_ENABLED"
+  CloudTrailEnabled:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      ConfigRuleName: "cloudtrail-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf"
+      Source:
+        Owner: "AWS"
+        SourceIdentifier: "CLOUD_TRAIL_ENABLED"
+Outputs: {}
+AWSTemplateFormatVersion: "2010-09-09"
+Hooks: {}
+`,
       ConformancePackInputParameters: [],
     }),
   },

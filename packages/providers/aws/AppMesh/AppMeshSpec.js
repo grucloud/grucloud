@@ -7,33 +7,37 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html
 
-//const { AppMeshGatewayRoute } = require("./AppMeshGatewayRoute");
-//const { AppMeshMesh } = require("./AppMeshMesh");
-//const { AppMeshRoute } = require("./AppMeshRoute");
-//const { AppMeshVirtualGateway } = require("./AppMeshVirtualGateway");
-//const { AppMeshVirtualNode } = require("./AppMeshVirtualNode");
-//const { AppMeshVirtualRouter } = require("./AppMeshVirtualRouter");
-//const { AppMeshVirtualService } = require("./AppMeshVirtualService");
+const { AppMeshGatewayRoute } = require("./AppMeshGatewayRoute");
+const { AppMeshMesh } = require("./AppMeshMesh");
+const { AppMeshRoute } = require("./AppMeshRoute");
+const { AppMeshVirtualGateway } = require("./AppMeshVirtualGateway");
+const { AppMeshVirtualNode } = require("./AppMeshVirtualNode");
+const { AppMeshVirtualRouter } = require("./AppMeshVirtualRouter");
+const { AppMeshVirtualService } = require("./AppMeshVirtualService");
 
 const GROUP = "AppMesh";
+const tagsKey = "tags";
 
-const compare = compareAws({});
+const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
-    // AppMeshGatewayRoute({})
-    // AppMeshMesh({})
-    // AppMeshRoute({})
-    // AppMeshVirtualGateway({})
-    // AppMeshVirtualNode({})
-    // AppMeshVirtualRouter({})
-    // AppMeshVirtualService({})
+    AppMeshGatewayRoute({}),
+    AppMeshMesh({}),
+    AppMeshRoute({}),
+    AppMeshVirtualGateway({}),
+    AppMeshVirtualNode({}),
+    AppMeshVirtualRouter({}),
+    AppMeshVirtualService({}),
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+        tagsKey,
+      }),
+    ])
   ),
 ]);

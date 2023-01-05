@@ -24,6 +24,8 @@ List of resources for provider aws:
 [Flow](./resources/Appflow/Flow.md), [ConnectorProfile](./resources/Appflow/ConnectorProfile.md)
 * ApplicationAutoScaling: 
 [Policy](./resources/ApplicationAutoScaling/Policy.md), [Target](./resources/ApplicationAutoScaling/Target.md)
+* AppMesh: 
+[GatewayRoute](./resources/AppMesh/GatewayRoute.md), [Mesh](./resources/AppMesh/Mesh.md), [Route](./resources/AppMesh/Route.md), [VirtualGateway](./resources/AppMesh/VirtualGateway.md), [VirtualNode](./resources/AppMesh/VirtualNode.md), [VirtualRouter](./resources/AppMesh/VirtualRouter.md), [VirtualService](./resources/AppMesh/VirtualService.md)
 * AppRunner: 
 [Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
 * AppSync: 
@@ -94,6 +96,8 @@ List of resources for provider aws:
 [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md)
 * EMRServerless: 
 [Application](./resources/EMRServerless/Application.md)
+* Evidently: 
+[Project](./resources/Evidently/Project.md)
 * Firehose: 
 [DeliveryStream](./resources/Firehose/DeliveryStream.md)
 * FSx: 

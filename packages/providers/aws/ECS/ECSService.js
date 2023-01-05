@@ -78,26 +78,29 @@ exports.ECSService = ({ compare }) => ({
   }),
   filterLive: ({ lives, providerConfig }) =>
     pipe([
-      assign({
-        loadBalancers: pipe([
-          get("loadBalancers"),
-          map(
-            pipe([
-              assign({
-                targetGroupArn: pipe([
-                  get("targetGroupArn"),
-                  replaceWithName({
-                    groupType: "ElasticLoadBalancingV2::TargetGroup",
-                    path: "id",
-                    providerConfig,
-                    lives,
-                  }),
-                ]),
-              }),
-            ])
-          ),
-        ]),
-      }),
+      when(
+        get("loadBalancers"),
+        assign({
+          loadBalancers: pipe([
+            get("loadBalancers"),
+            map(
+              pipe([
+                assign({
+                  targetGroupArn: pipe([
+                    get("targetGroupArn"),
+                    replaceWithName({
+                      groupType: "ElasticLoadBalancingV2::TargetGroup",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                }),
+              ])
+            ),
+          ]),
+        })
+      ),
     ]),
   dependencies: {
     alarms: {

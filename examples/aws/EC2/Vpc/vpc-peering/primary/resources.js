@@ -146,9 +146,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ec2-messages",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-primary",
@@ -161,9 +161,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssm`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-primary",
@@ -176,9 +176,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm-message",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-primary",
@@ -212,7 +212,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "vpc-primary",
-      vpcPeer: "vpc-secondary",
+      vpcPeer: { name: "vpc-secondary", provider: "aws-secondary" },
     }),
   },
   {

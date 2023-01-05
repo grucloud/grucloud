@@ -33,7 +33,7 @@ const logger = require("@grucloud/core/logger")({
 });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const {
   buildTags,
   findNamespaceInTags,
@@ -92,6 +92,11 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
           ]),
         }),
         defaultsDeep(distribution),
+        tap((params) => {
+          assert(true);
+        }),
+
+        omitIfEmpty(["ContinuousDeploymentPolicyId"]),
       ])(),
   });
 

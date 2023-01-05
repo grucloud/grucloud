@@ -73,6 +73,7 @@ exports.DynamoDBTable = ({ spec, config }) => {
     method: "updateTable",
     getById,
     isInstanceUp: eq(get("TableStatus"), "ACTIVE"),
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#deleteTable-property

@@ -48,7 +48,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#describeJobDefinitions-property
   getById: {
     method: "describeJobDefinitions",
-    pickId,
+    pickId: pipe([pickId, defaultsDeep({ status: "ACTIVE" })]),
     getField: "jobDefinitions",
     decorate,
   },

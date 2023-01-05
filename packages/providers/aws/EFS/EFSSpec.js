@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, map, tap, omit, assign, get, eq } = require("rubico");
-const { defaultsDeep, prepend, last, find } = require("rubico/x");
+const { defaultsDeep, prepend, last, find, when } = require("rubico/x");
 
 const { compareAws, replaceAccountAndRegion } = require("../AwsCommon");
 const { EFSFileSystem } = require("./EFSFileSystem");
@@ -55,12 +55,15 @@ module.exports = pipe([
       },
       filterLive: ({ providerConfig, lives }) =>
         pipe([
-          assign({
-            AvailabilityZoneName: pipe([
-              get("AvailabilityZoneName"),
-              replaceAccountAndRegion({ providerConfig, lives }),
-            ]),
-          }),
+          when(
+            get("AvailabilityZoneName"),
+            assign({
+              AvailabilityZoneName: pipe([
+                get("AvailabilityZoneName"),
+                replaceAccountAndRegion({ providerConfig, lives }),
+              ]),
+            })
+          ),
         ]),
     },
     {

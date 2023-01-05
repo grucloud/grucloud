@@ -514,8 +514,6 @@ exports.createResources = () => [
           assignPublicIp: "DISABLED",
         },
       },
-      placementConstraints: [],
-      placementStrategy: [],
       platformFamily: "Linux",
       platformVersion: "LATEST",
       schedulingStrategy: "REPLICA",

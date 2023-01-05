@@ -9,7 +9,7 @@ const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EFSCommon");
 
 const pickId = pipe([pick(["AccessPointId"])]);
-const findId = () => pipe([get("AccessPointId")]);
+const findId = () => pipe([get("AccessPointArn")]);
 
 const model = {
   package: "efs",

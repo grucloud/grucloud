@@ -91,7 +91,6 @@ exports.createResources = () => [
       enableECSManagedTags: true,
       enableExecuteCommand: false,
       launchType: "EC2",
-      placementConstraints: [],
       placementStrategy: [
         {
           field: "attribute:ecs.availability-zone",

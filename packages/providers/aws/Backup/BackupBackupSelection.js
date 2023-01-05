@@ -7,6 +7,8 @@ const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
 
+const { managedByEFS } = require("./BackupCommon");
+
 const pickId = pick(["SelectionId", "BackupPlanId"]);
 
 const decorate = () =>
@@ -20,10 +22,16 @@ const decorate = () =>
     omitIfEmpty(["Conditions", "ListOfTags", "NotResources"]),
   ]);
 
+// EFS FileSystem
+const managedByOther = () => pipe([managedByEFS]);
+
 const model = ({ config }) => ({
   package: "backup",
   client: "Backup",
-  ignoreErrorCodes: ["InvalidParameterValueException"],
+  ignoreErrorCodes: [
+    "ResourceNotFoundException",
+    "InvalidParameterValueException",
+  ],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#getBackupSelection-property
   getById: {
     method: "getBackupSelection",
@@ -63,6 +71,8 @@ exports.BackupBackupSelection = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
+    managedByOther,
+    cannotBeDeleted: managedByOther,
     //TODO prefix with backup plan name
     findName: () => pipe([get("SelectionName")]),
     findId: () => pipe([get("SelectionId")]),
@@ -80,7 +90,7 @@ exports.BackupBackupSelection = ({ spec, config }) =>
             decorate:
               ({ parent }) =>
               (live) =>
-                pipe([() => live, getById, defaultsDeep(live)])(),
+                pipe([() => live, getById({}), defaultsDeep(live)])(),
           }),
       ])(),
     update:

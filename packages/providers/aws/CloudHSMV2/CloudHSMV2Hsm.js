@@ -93,9 +93,15 @@ exports.CloudHSMV2Hsm = () => ({
         }),
         endpoint().describeClusters,
         get("Clusters"),
+        tap((params) => {
+          assert(true);
+        }),
         first,
         get("Hsms"),
         find(eq(get("HsmId"), live.HsmId)),
+        tap((params) => {
+          assert(true);
+        }),
       ])(),
   getList:
     ({ client, endpoint, getById, config }) =>

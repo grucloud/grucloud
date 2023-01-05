@@ -259,7 +259,6 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
       enableECSManagedTags: true,
       enableExecuteCommand: false,
       launchType: "EC2",
-      placementConstraints: [],
       placementStrategy: [
         {
           field: "attribute:ecs.availability-zone",
@@ -278,6 +277,7 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
           value: "value",
         },
       ],
+      loadBalancers: undefined,
     }),
     dependencies: ({}) => ({
       alarms: ["alarm-ecs-cpu"],

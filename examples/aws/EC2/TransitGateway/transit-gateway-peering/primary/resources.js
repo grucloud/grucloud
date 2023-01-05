@@ -35,7 +35,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       transitGateway: "tgw-requester",
-      transitGatewayPeer: "tgw-acceptor",
+      transitGatewayPeer: { name: "tgw-acceptor", provider: "aws-secondary" },
     }),
   },
 ];

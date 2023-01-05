@@ -11,7 +11,7 @@ const {
   AuditManagerAccountRegistration,
 } = require("./AuditManagerAccountRegistration");
 
-//const { AuditManagerAssessment } = require("./AuditManagerAssessment");
+const { AuditManagerAssessment } = require("./AuditManagerAssessment");
 //const { AuditManagerAssessmentReport } = require("./AuditManagerAssessmentReport");
 const { AuditManagerControl } = require("./AuditManagerControl");
 const {
@@ -29,6 +29,7 @@ const compare = compareAws({ tagsKey, key: "key" });
 module.exports = pipe([
   () => [
     AuditManagerAccountRegistration({}),
+    AuditManagerAssessment({}),
     // AuditManagerAssessmentReport({})
     AuditManagerControl({}),
     AuditManagerAssessmentFramework({}),

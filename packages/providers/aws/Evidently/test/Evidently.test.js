@@ -12,11 +12,11 @@ describe("Evidently", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Project", () =>
+  it("Project", () =>
     pipe([
       () => ({
         groupType: "Evidently::Project",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ project: "p123" }],
       }),
       awsResourceTest,
     ])());
