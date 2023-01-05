@@ -129,6 +129,7 @@ exports.ElastiCacheCacheCluster = () => ({
   destroy: {
     method: "deleteCacheCluster",
     pickId,
+    shouldRetryOnExceptionCodes: ["InvalidCacheClusterStateFault"],
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

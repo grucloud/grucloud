@@ -204,6 +204,7 @@ exports.ElastiCacheReplicationGroup = () => ({
   destroy: {
     method: "deleteReplicationGroup",
     pickId,
+    shouldRetryOnExceptionCodes: ["InvalidReplicationGroupStateFault"],
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>
