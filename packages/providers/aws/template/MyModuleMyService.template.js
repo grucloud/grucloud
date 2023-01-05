@@ -432,6 +432,7 @@ exports.MyModuleMyResource = () => ({
     //   pipe([() => ({ ...other, BackupVaultTags: Tags })])(),
     // filterPayload: pipe([tagsToPayload]),
     //filterPayload: pipe([omit(SELECTORS)]),
+    // configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
 
     method: "createMyResource",
     pickCreated: ({ payload }) => pipe([get("MyResource")]),

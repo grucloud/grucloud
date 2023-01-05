@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project opensearch-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ OpenSearch
+++++ Domain (1)
+@endmindmap

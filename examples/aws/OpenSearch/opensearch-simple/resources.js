@@ -44,6 +44,10 @@ exports.createResources = () => [
         WarmEnabled: false,
         ZoneAwarenessEnabled: false,
       },
+      DomainEndpointOptions: {
+        CustomEndpointEnabled: false,
+        EnforceHTTPS: true,
+      },
       DomainName: "my-domain",
       EngineVersion: "OpenSearch_2.3",
     }),
