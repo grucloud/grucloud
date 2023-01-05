@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { defaultsDeep, when, isIn } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -130,7 +130,7 @@ exports.EKSAddon = () => ({
   create: {
     method: "createAddon",
     pickCreated: ({ payload }) => pipe([() => payload]),
-    isInstanceUp: pipe([eq(get("status"), "ACTIVE")]),
+    isInstanceUp: pipe([get("status"), isIn(["ACTIVE", "DEGRADED"])]),
     isInstanceError: pipe([eq(get("status"), "CREATE_FAILED")]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateAddon-property
