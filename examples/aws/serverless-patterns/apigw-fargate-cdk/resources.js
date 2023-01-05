@@ -421,7 +421,6 @@ exports.createResources = () => [
           assignPublicIp: "DISABLED",
         },
       },
-      placementStrategy: [],
       platformFamily: "Linux",
       platformVersion: "LATEST",
       schedulingStrategy: "REPLICA",
@@ -485,9 +484,6 @@ exports.createResources = () => [
         },
         {
           name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.17",
         },
         {
           name: "com.amazonaws.ecs.capability.task-iam-role",

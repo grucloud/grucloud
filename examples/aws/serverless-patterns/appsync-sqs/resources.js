@@ -42,7 +42,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       fieldName: "sendMessage",
       kind: "UNIT",
-      requestMappingTemplate: String.raw`
+      requestMappingTemplate: `
 #set ($body = "Action=SendMessage&Version=2012-11-05")
 #set ($messageBody = $util.urlEncode($util.toJson($ctx.args)))
 #set ($queueUrl = $util.urlEncode("https://sqs.us-east-1.amazonaws.com/840541460064/CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6"))
@@ -60,7 +60,7 @@ exports.createResources = () => [
   }
 }
 `,
-      responseMappingTemplate: String.raw`
+      responseMappingTemplate: `
 #if($ctx.result.statusCode == 200)
     ##if response is 200
     ## Because the response is of type XML, we are going to convert

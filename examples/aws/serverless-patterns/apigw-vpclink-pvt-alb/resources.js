@@ -301,9 +301,6 @@ exports.createResources = () => [
       networkMode: "awsvpc",
       requiresAttributes: [
         {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.17",
-        },
-        {
           name: "com.amazonaws.ecs.capability.task-iam-role",
         },
         {

@@ -59,11 +59,9 @@ exports.createResources = () => [
         DailyAutomaticBackupStartTime: "08:30",
         DataCompressionType: "NONE",
         DeploymentType: "PERSISTENT_2",
-        // LogConfiguration: {
-        //   Destination:
-        //     "arn:aws:logs:us-east-1:840541460064:log-group:/aws/fsx/lustre:log-stream:datarepo_fs-039215da41bfbceca",
-        //   Level: "WARN_ERROR",
-        // },
+        LogConfiguration: {
+          Level: "DISABLED",
+        },
         PerUnitStorageThroughput: 125,
         WeeklyMaintenanceStartTime: "4:06:00",
       },
@@ -71,7 +69,6 @@ exports.createResources = () => [
       StorageType: "SSD",
     }),
     dependencies: ({}) => ({
-      //logStream: "/aws/fsx/lustre::datarepo_fs-039215da41bfbceca",
       subnets: ["vpc-default::subnet-default-a"],
     }),
   },

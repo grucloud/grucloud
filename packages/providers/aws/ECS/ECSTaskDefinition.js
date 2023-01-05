@@ -80,6 +80,7 @@ const decorate = () =>
               "ulimits",
               "mountPoints",
               "volumesFrom",
+              "logConfiguration.secretOptions",
             ]),
           ])
         ),

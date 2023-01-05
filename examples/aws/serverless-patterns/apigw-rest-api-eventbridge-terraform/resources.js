@@ -58,16 +58,33 @@ exports.createResources = () => [
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_TEMPLATES",
                 requestTemplates: {
-                  "application/json":
-                    '#set($context.requestOverride.header.X-Amz-Target = "AWSEvents.PutEvents")\n#set($context.requestOverride.header.Content-Type = "application/x-amz-json-1.1")            \n#set($inputRoot = $input.path(\'$\')) \n{ \n  "Entries": [\n    #foreach($elem in $inputRoot.items)\n    {\n      "Detail": "$util.escapeJavaScript($elem.Detail).replaceAll("\\\\\'","\'")",\n      "DetailType": "$elem.DetailType",\n      "EventBusName": "MyIntegrationCustomBus",\n      "Source":"$elem.Source"\n    }#if($foreach.hasNext),#end\n    #end\n  ]\n            \n}\n',
+                  "application/json": `#set($context.requestOverride.header.X-Amz-Target = "AWSEvents.PutEvents")
+#set($context.requestOverride.header.Content-Type = "application/x-amz-json-1.1")            
+#set($inputRoot = $input.path('$')) 
+{ 
+  "Entries": [
+    #foreach($elem in $inputRoot.items)
+    {
+      "Detail": "$util.escapeJavaScript($elem.Detail).replaceAll("\\'","'")",
+      "DetailType": "$elem.DetailType",
+      "EventBusName": "MyIntegrationCustomBus",
+      "Source":"$elem.Source"
+    }#if($foreach.hasNext),#end
+    #end
+  ]
+            
+}
+`,
                 },
                 type: "AWS",
                 uri: `arn:aws:apigateway:${config.region}:events:action/PutEvents`,
                 responses: {
                   default: {
                     responseTemplates: {
-                      "application/json":
-                        "  #set($inputRoot = $input.path('$'))\n{\n}\n",
+                      "application/json": `  #set($inputRoot = $input.path('$'))
+{
+}
+`,
                     },
                     statusCode: "200",
                   },

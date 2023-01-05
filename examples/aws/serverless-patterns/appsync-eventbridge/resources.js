@@ -51,7 +51,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       fieldName: "putEvent",
       kind: "UNIT",
-      requestMappingTemplate: String.raw`{
+      requestMappingTemplate: `{
   "version": "2018-05-29",
   "method": "POST",
   "resourcePath": "/",
@@ -73,7 +73,7 @@ exports.createResources = () => [
   }
 }
 `,
-      responseMappingTemplate: String.raw`## Raise a GraphQL field error in case of a datasource invocation error
+      responseMappingTemplate: `## Raise a GraphQL field error in case of a datasource invocation error
 #if($ctx.error)
   $util.error($ctx.error.message, $ctx.error.type)
 #end

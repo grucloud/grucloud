@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { tap, pipe, map, omit, pick, get, assign } = require("rubico");
+const { tap, pipe, map, omit, pick, get, assign, not } = require("rubico");
 const { defaultsDeep, unless, callProp, when } = require("rubico/x");
 
 const {
@@ -7,7 +7,6 @@ const {
   isOurMinion,
   replaceAccountAndRegion,
 } = require("../AwsCommon");
-const { envVarName } = require("@grucloud/core/generatorUtils");
 
 const { CloudWatchEventConnection } = require("./CloudWatchEventConnection");
 const { CloudWatchEventBus } = require("./CloudWatchEventBus");
@@ -71,13 +70,13 @@ module.exports = pipe([
           path: "AuthParameters.ApiKeyAuthParameters.ApiKeyValue",
           suffix: "API_KEY_VALUE",
           rejectEnvironmentVariable: () =>
-            pipe([get("AuthParameters.ApiKeyAuthParameters")]),
+            pipe([not(get("AuthParameters.ApiKeyAuthParameters"))]),
         },
         {
           path: "AuthParameters.BasicAuthParameters.Password",
           suffix: "PASSWORD",
           rejectEnvironmentVariable: () =>
-            pipe([get("AuthParameters.BasicAuthParameters")]),
+            pipe([not(get("AuthParameters.BasicAuthParameters"))]),
         },
       ],
       compare: compareCloudWatchEvent({
