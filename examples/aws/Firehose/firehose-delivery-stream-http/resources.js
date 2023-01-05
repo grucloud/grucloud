@@ -257,9 +257,6 @@ exports.createResources = () => [
       },
       Path: "/service-role/",
     }),
-    dependencies: ({}) => ({
-      logGroups: ["/aws/kinesisfirehose/delivery-stream-http"],
-    }),
   },
   {
     type: "Policy",
@@ -382,9 +379,6 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
-    }),
-    dependencies: ({}) => ({
-      logGroups: ["/aws/kinesisfirehose/delivery-stream-s3"],
     }),
   },
   {

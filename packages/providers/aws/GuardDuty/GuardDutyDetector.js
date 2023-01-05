@@ -229,6 +229,7 @@ exports.GuardDutyDetector = () => ({
     method: "deleteDetector",
     pickId,
     ignoreErrorMessages,
+    // TODO Retry on "The request is rejected because the current account cannot delete detector while it has invited or associated members"
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>
