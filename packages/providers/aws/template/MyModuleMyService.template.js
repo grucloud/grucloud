@@ -327,6 +327,22 @@ exports.MyModuleMyResource = () => ({
     // }),
     decorate,
   },
+  // Custom getById
+  // getById:
+  //   ({ endpoint, config }) =>
+  //   ({ lives }) =>
+  //   (live) =>
+  //     pipe([
+  //       tap(() => {
+  //         assert(live.connectionId);
+  //         assert(live.secretARN);
+  //       }),
+  //       () => live,
+  //       fetchLagOrConnection({ endpoint }),
+  //       get("macSecKeys"),
+  //       find(eq(get("secretARN"), live.secretARN)),
+  //       unless(isEmpty, decorate({ endpoint })),
+  //     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#listMyResources-property
   getList: {
     //enhanceParams: () => () => ({ AlarmTypes: ["MetricAlarm"] }),

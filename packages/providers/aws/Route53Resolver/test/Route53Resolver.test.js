@@ -4,19 +4,19 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Route53Resolver", async function () {
-  it.skip("Config", () =>
+  it("Config", () =>
     pipe([
       () => ({
         groupType: "Route53Resolver::Config",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ResourceId: "vpc-123456" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("DnsConfig", () =>
+  it("DnssecConfig", () =>
     pipe([
       () => ({
-        groupType: "Route53Resolver::DnsConfig",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "Route53Resolver::DnssecConfig",
+        livesNotFound: ({ config }) => [{ ResourceId: "vpc-123456" }],
       }),
       awsResourceTest,
     ])());
@@ -28,43 +28,56 @@ describe("Route53Resolver", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("FirewallConfig", () =>
+  it("FirewallConfig", () =>
     pipe([
       () => ({
         groupType: "Route53Resolver::FirewallConfig",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ResourceId: "vpc-123456" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("FirewallDomainList", () =>
+  it("FirewallDomainList", () =>
     pipe([
       () => ({
         groupType: "Route53Resolver::FirewallDomainList",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ FirewallDomainListId: "f123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("FirewallRule", () =>
+  it("FirewallRule", () =>
     pipe([
       () => ({
         groupType: "Route53Resolver::FirewallRule",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            Name: "r1",
+            FirewallRuleGroupId: "f123",
+            FirewallDomainListId: "fd123",
+          },
+        ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
-  it.skip("FirewallRuleGroup", () =>
+  it("FirewallRuleGroup", () =>
     pipe([
       () => ({
         groupType: "Route53Resolver::FirewallRuleGroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ FirewallRuleGroupId: "f123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("FirewallRuleAssociation", () =>
+  it("FirewallRuleGroupAssociation", () =>
     pipe([
       () => ({
-        groupType: "Route53Resolver::FirewallRuleAssociation",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "Route53Resolver::FirewallRuleGroupAssociation",
+        livesNotFound: ({ config }) => [
+          {
+            FirewallRuleGroupAssociationId: "f123",
+            FirewallRuleGroupId: "rg123",
+            VpcId: "vpc-123456",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
