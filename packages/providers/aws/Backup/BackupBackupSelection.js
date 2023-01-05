@@ -28,7 +28,10 @@ const managedByOther = () => pipe([managedByEFS]);
 const model = ({ config }) => ({
   package: "backup",
   client: "Backup",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: [
+    "ResourceNotFoundException",
+    "InvalidParameterValueException",
+  ],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#getBackupSelection-property
   getById: {
     method: "getBackupSelection",
