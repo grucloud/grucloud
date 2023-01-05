@@ -10,9 +10,10 @@ const { createAwsService } = require("../AwsService");
 const {
   AuditManagerAccountRegistration,
 } = require("./AuditManagerAccountRegistration");
-
 const { AuditManagerAssessment } = require("./AuditManagerAssessment");
-//const { AuditManagerAssessmentReport } = require("./AuditManagerAssessmentReport");
+const {
+  AuditManagerAssessmentReport,
+} = require("./AuditManagerAssessmentReport");
 const { AuditManagerControl } = require("./AuditManagerControl");
 const {
   AuditManagerAssessmentFramework,
@@ -30,7 +31,7 @@ module.exports = pipe([
   () => [
     AuditManagerAccountRegistration({}),
     AuditManagerAssessment({}),
-    // AuditManagerAssessmentReport({})
+    AuditManagerAssessmentReport({}),
     AuditManagerControl({}),
     AuditManagerAssessmentFramework({}),
     // AuditManagerFramework({})
