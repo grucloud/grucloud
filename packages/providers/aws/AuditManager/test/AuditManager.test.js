@@ -13,11 +13,13 @@ describe("AuditManager", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Assessment", () =>
+  it("Assessment", () =>
     pipe([
       () => ({
         groupType: "AuditManager::Assessment",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { assessmentId: "5af4b834-7168-4ce3-8538-8fdb21300141" },
+        ],
       }),
       awsResourceTest,
     ])());
