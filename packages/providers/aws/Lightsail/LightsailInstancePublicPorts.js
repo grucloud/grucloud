@@ -112,6 +112,7 @@ exports.LightsailInstancePublicPorts = ({ compare }) => ({
       configDefault: ({
         properties: { ...otherProps },
         dependencies: { instance },
+        config,
       }) =>
         pipe([
           tap((params) => {

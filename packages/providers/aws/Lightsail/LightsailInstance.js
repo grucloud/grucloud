@@ -185,6 +185,7 @@ exports.LightsailInstance = ({ compare }) => ({
         namespace,
         properties: { tags, ...otherProps },
         dependencies: { keyPair },
+        config,
       }) =>
         pipe([
           () => otherProps,

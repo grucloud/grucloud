@@ -139,6 +139,7 @@ exports.LightsailDiskAttachment = ({ compare }) => ({
         namespace,
         properties: { ...otherProps },
         dependencies: { disk, instance },
+        config,
       }) =>
         pipe([
           tap((params) => {

@@ -56,11 +56,6 @@ const model = ({ config }) => ({
     // isInstanceError: pipe([eq(get("certificateDetail.status"), "FAILED")]),
     // getErrorMessage: get("requestFailureReason", "error"),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#updateCertificate-property
-  update: {
-    method: "updateCertificate",
-    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
-  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#deleteCertificate-property
   destroy: {
     method: "deleteCertificate",
@@ -120,6 +115,7 @@ exports.LightsailCertificate = () => ({
         namespace,
         properties: { tags, ...otherProps },
         dependencies: {},
+        config,
       }) =>
         pipe([
           () => otherProps,
