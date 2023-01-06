@@ -29,12 +29,13 @@ exports.SecurityHubStandardsSubscription = () => ({
   client: "SecurityHub",
   propertiesDefault: {},
   omitProperties: ["StandardsSubscriptionArn", "StandardsStatus"],
-  inferName: pipe([
-    get("properties.StandardsArn"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
+  inferName: () =>
+    pipe([
+      get("StandardsArn"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findName: () =>
     pipe([
       get("StandardsArn"),
