@@ -39,6 +39,7 @@
     "test-dms": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/DMS/**/iac.test.js' ",
     "test-dynamodb": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/DynamoDB/**/iac.test.js' ",
     "test-ec2": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/**/iac.test.js' ",
+    "test-ec2-flow-logs": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/flow-logs/**/iac.test.js' ",
     "test-ec2-instance": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/Instance/**/iac.test.js' ",
     "test-ec2-routetable": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/RouteTable/**/iac.test.js' ",
     "test-ec2-securitygroup": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/SecurityGroup/**/iac.test.js' ",
