@@ -91,6 +91,7 @@ const GROUPS = [
   ["Route53RecoveryControlConfig", "route53-recovery-control-config"],
   ["RUM", "rum"],
   ["S3", "s3"],
+  ["S3Control", "s3control"],
   ["Scheduler", "scheduler"],
   ["Schemas", "schemas"],
   ["SecretsManager", "secretsmanager"],
