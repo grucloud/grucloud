@@ -127,7 +127,7 @@ List of resources for provider aws:
 * Lambda: 
 [Layer](./resources/Lambda/Layer.md), [Function](./resources/Lambda/Function.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md)
 * Lightsail: 
-[Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
+[Bucket](./resources/Lightsail/Bucket.md), [Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
 * MemoryDB: 
 [ACL](./resources/MemoryDB/ACL.md), [Cluster](./resources/MemoryDB/Cluster.md), [ParameterGroup](./resources/MemoryDB/ParameterGroup.md), [SubnetGroup](./resources/MemoryDB/SubnetGroup.md), [User](./resources/MemoryDB/User.md)
 * MQ: 
@@ -157,11 +157,13 @@ List of resources for provider aws:
 * Route53RecoveryReadiness: 
 [Cell](./resources/Route53RecoveryReadiness/Cell.md), [ReadinessCheck](./resources/Route53RecoveryReadiness/ReadinessCheck.md), [RecoveryGroup](./resources/Route53RecoveryReadiness/RecoveryGroup.md), [ResourceSet](./resources/Route53RecoveryReadiness/ResourceSet.md)
 * Route53Resolver: 
-[Config](./resources/Route53Resolver/Config.md), [DnssecConfig](./resources/Route53Resolver/DnssecConfig.md), [Endpoint](./resources/Route53Resolver/Endpoint.md), [FirewallConfig](./resources/Route53Resolver/FirewallConfig.md), [Rule](./resources/Route53Resolver/Rule.md), [RuleAssociation](./resources/Route53Resolver/RuleAssociation.md)
+[Config](./resources/Route53Resolver/Config.md), [DnssecConfig](./resources/Route53Resolver/DnssecConfig.md), [Endpoint](./resources/Route53Resolver/Endpoint.md), [FirewallConfig](./resources/Route53Resolver/FirewallConfig.md), [FirewallDomainList](./resources/Route53Resolver/FirewallDomainList.md), [FirewallRule](./resources/Route53Resolver/FirewallRule.md), [FirewallRuleGroup](./resources/Route53Resolver/FirewallRuleGroup.md), [FirewallRuleGroupAssociation](./resources/Route53Resolver/FirewallRuleGroupAssociation.md), [Rule](./resources/Route53Resolver/Rule.md), [RuleAssociation](./resources/Route53Resolver/RuleAssociation.md)
 * RUM: 
 [AppMonitor](./resources/RUM/AppMonitor.md), [MetricsDestination](./resources/RUM/MetricsDestination.md)
 * S3: 
 [Bucket](./resources/S3/Bucket.md), [Object](./resources/S3/Object.md)
+* S3Control: 
+[AccessPoint](./resources/S3Control/AccessPoint.md)
 * Scheduler: 
 [Schedule](./resources/Scheduler/Schedule.md), [ScheduleGroup](./resources/Scheduler/ScheduleGroup.md)
 * SecretsManager: 
