@@ -216,6 +216,8 @@
     "@aws-sdk/client-sts": "3.236.0",
     "@aws-sdk/client-transfer": "3.236.0",
     "@aws-sdk/client-wafv2": "3.236.0",
+    "@aws-sdk/client-xray": "3.236.0",
+
     "@aws-sdk/credential-providers": "3.236.0",
     "@aws-sdk/node-config-provider": "3.226.0",
     "@aws-sdk/s3-request-presigner": "3.236.0",

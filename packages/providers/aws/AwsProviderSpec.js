@@ -107,6 +107,7 @@ const GROUPS = [
   ["SSM", "ssm"],
   ["Transfer", "transfer"],
   ["WAFV2", "waf"],
+  ["XRay", "xray"],
 ];
 
 const mapRegionService = {
