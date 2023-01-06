@@ -1702,6 +1702,38 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "LoggingConfiguration",
+    group: "NetworkFirewall",
+    properties: ({}) => ({
+      LoggingConfiguration: {
+        LogDestinationConfigs: [
+          {
+            LogDestination: {
+              logGroup: "/aws/network-firewall/flows",
+            },
+            LogDestinationType: "CloudWatchLogs",
+            LogType: "FLOW",
+          },
+          {
+            LogDestination: {
+              logGroup: "/aws/network-firewall/alerts",
+            },
+            LogDestinationType: "CloudWatchLogs",
+            LogType: "ALERT",
+          },
+        ],
+      },
+      FirewallName: "NetworkFirewall",
+    }),
+    dependencies: ({}) => ({
+      firewall: "NetworkFirewall",
+      logGroups: [
+        "/aws/network-firewall/alerts",
+        "/aws/network-firewall/flows",
+      ],
+    }),
+  },
+  {
     type: "Policy",
     group: "NetworkFirewall",
     properties: ({ getId }) => ({
@@ -1815,45 +1847,13 @@ exports.createResources = () => [
           },
         },
         RulesSource: {
-          RulesString:
-            '      drop tcp $SPOKE_VPCS any <> $SPOKE_VPCS 22 (msg:"Blocked SSH attempt"; sid:100; rev:1;)\n',
+          RulesString: `      drop tcp $SPOKE_VPCS any <> $SPOKE_VPCS 22 (msg:"Blocked SSH attempt"; sid:100; rev:1;)
+`,
         },
       },
       Capacity: 100,
       RuleGroupName: "drop-ssh-between-spokes",
       Type: "STATEFUL",
-    }),
-  },
-  {
-    type: "LoggingConfiguration",
-    group: "NetworkFirewall",
-    properties: ({}) => ({
-      LoggingConfiguration: {
-        LogDestinationConfigs: [
-          {
-            LogDestination: {
-              logGroup: "/aws/network-firewall/flows",
-            },
-            LogDestinationType: "CloudWatchLogs",
-            LogType: "FLOW",
-          },
-          {
-            LogDestination: {
-              logGroup: "/aws/network-firewall/alerts",
-            },
-            LogDestinationType: "CloudWatchLogs",
-            LogType: "ALERT",
-          },
-        ],
-      },
-      FirewallName: "NetworkFirewall",
-    }),
-    dependencies: ({}) => ({
-      firewall: "NetworkFirewall",
-      logGroups: [
-        "/aws/network-firewall/alerts",
-        "/aws/network-firewall/flows",
-      ],
     }),
   },
 ];
