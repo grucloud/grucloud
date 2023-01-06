@@ -446,7 +446,6 @@ exports.createResources = () => [
               "awslogs-region": `${config.region}`,
               "awslogs-stream-prefix": "ECSServiceStack",
             },
-            secretOptions: [],
           },
           name: "web",
           portMappings: [
