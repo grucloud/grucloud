@@ -9,7 +9,7 @@ describe("S3Control", async function () {
       () => ({
         groupType: "S3Control::AccessPoint",
         livesNotFound: ({ config }) => [
-          { AccountId: config.accountId(), Name: "n123" },
+          { AccountId: config.accountId(), Name: "gc-n123" },
         ],
       }),
       awsResourceTest,
@@ -18,7 +18,9 @@ describe("S3Control", async function () {
     pipe([
       () => ({
         groupType: "S3Control::MultiRegionAccessPoint",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { AccountId: config.accountId(), Name: "gc-n123" },
+        ],
       }),
       awsResourceTest,
     ])());

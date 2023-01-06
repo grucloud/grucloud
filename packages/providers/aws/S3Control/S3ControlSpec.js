@@ -13,9 +13,9 @@ const compare = compareAws({ tagsKey, key: "Key" });
 
 const { S3ControlAccessPoint } = require("./S3ControlAccessPoint");
 
-// const {
-//   S3ControlMultiRegionAccessPoint,
-// } = require("./S3ControlMultiRegionAccessPoint");
+const {
+  S3ControlMultiRegionAccessPoint,
+} = require("./S3ControlMultiRegionAccessPoint");
 // const { S3ControlObjectLambdaAccessPoint } = require("./S3ControlObjectLambdaAccessPoint");
 // const { S3ControlStorageLensConfiguration } = require("./S3ControlStorageLensConfiguration");
 

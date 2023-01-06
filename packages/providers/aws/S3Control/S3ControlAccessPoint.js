@@ -111,10 +111,12 @@ exports.S3ControlAccessPoint = () => ({
   }) =>
     pipe([
       () => otherProps,
+      defaultsDeep({
+        AccountId: config.accountId(),
+      }),
       when(
         () => vpc,
         defaultsDeep({
-          AccountId: config.accountId(),
           VpcConfiguration: { VpcId: getField(vpc, "VpcId") },
         })
       ),
