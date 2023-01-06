@@ -140,6 +140,7 @@ exports.LightsailContainerService = () => ({
         namespace,
         properties: { tags, ...otherProps },
         dependencies: {},
+        config,
       }) =>
         pipe([
           () => otherProps,

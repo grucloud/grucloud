@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, map } = require("rubico");
-const { defaultsDeep, when, pluck } = require("rubico/x");
+const { pipe, tap, get, pick, assign, map, or } = require("rubico");
+const { defaultsDeep, when, pluck, callProp } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
@@ -8,6 +8,12 @@ const { buildTags } = require("../AwsCommon");
 const { Tagger } = require("./SSMCommon");
 
 const buildArn = () => get("AssociationId");
+
+const cannotBeDeleted = () =>
+  pipe([
+    get("Name"),
+    or([callProp("startsWith", "Amazon"), callProp("startsWith", "AWS")]),
+  ]);
 
 const pickId = pipe([
   pick(["AssociationId"]),
@@ -35,6 +41,8 @@ exports.SSMAssociation = () => ({
   type: "Association",
   package: "ssm",
   client: "SSM",
+  cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
   findName: () => get("AssociationName"),
   findId: () =>
     pipe([

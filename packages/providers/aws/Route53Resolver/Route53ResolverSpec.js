@@ -12,7 +12,30 @@ const {
 const { replaceWithName } = require("@grucloud/core/Common");
 
 const { isOurMinion, compareAws } = require("../AwsCommon");
+const { createAwsService } = require("../AwsService");
+
+const { Route53ResolverConfig } = require("./Route53ResolverConfig");
+const {
+  Route53ResolverDnssecConfig,
+} = require("./Route53ResolverDnssecConfig");
+
 const { Route53ResolverEndpoint } = require("./Route53ResolverEndpoint");
+const {
+  Route53ResolverFirewallConfig,
+} = require("./Route53ResolverFirewallConfig");
+const {
+  Route53ResolverFirewallDomainList,
+} = require("./Route53ResolverFirewallDomainList");
+
+const {
+  Route53ResolverFirewallRule,
+} = require("./Route53ResolverFirewallRule");
+const {
+  Route53ResolverFirewallRuleGroup,
+} = require("./Route53ResolverFirewallRuleGroup");
+const {
+  Route53ResolverFirewallRuleGroupAssociation,
+} = require("./Route53ResolverFirewallRuleGroupAssociation");
 const { Route53ResolverRule } = require("./Route53ResolverRule");
 const {
   Route53ResolverRuleAssociation,
@@ -24,6 +47,8 @@ const compareRoute53Resolver = compareAws({});
 
 module.exports = pipe([
   () => [
+    createAwsService(Route53ResolverConfig({})),
+    createAwsService(Route53ResolverDnssecConfig({})),
     {
       type: "Endpoint",
       Client: Route53ResolverEndpoint,
@@ -94,6 +119,11 @@ module.exports = pipe([
           }),
         ]),
     },
+    createAwsService(Route53ResolverFirewallConfig({})),
+    createAwsService(Route53ResolverFirewallDomainList({})),
+    createAwsService(Route53ResolverFirewallRule({})),
+    createAwsService(Route53ResolverFirewallRuleGroup({})),
+    createAwsService(Route53ResolverFirewallRuleGroupAssociation({})),
     {
       type: "Rule",
       Client: Route53ResolverRule,

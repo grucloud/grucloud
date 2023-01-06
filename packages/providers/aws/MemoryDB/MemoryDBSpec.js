@@ -66,7 +66,13 @@ module.exports = pipe([
         "SecurityGroupIds",
         "NumberOfShards",
       ],
-      inferName: () => get("Name"),
+      inferName: () =>
+        pipe([
+          get("Name"),
+          tap((Name) => {
+            assert(Name);
+          }),
+        ]),
       dependencies: {
         acl: {
           type: "ACL",

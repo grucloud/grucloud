@@ -327,9 +327,28 @@ exports.MyModuleMyResource = () => ({
     // }),
     decorate,
   },
+  // Custom getById
+  // getById:
+  //   ({ endpoint, config }) =>
+  //   ({ lives }) =>
+  //   (live) =>
+  //     pipe([
+  //       tap(() => {
+  //         assert(live.connectionId);
+  //         assert(live.secretARN);
+  //       }),
+  //       () => live,
+  //       fetchLagOrConnection({ endpoint }),
+  //       get("macSecKeys"),
+  //       find(eq(get("secretARN"), live.secretARN)),
+  //       unless(isEmpty, decorate({ endpoint })),
+  //     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#listMyResources-property
   getList: {
     //enhanceParams: () => () => ({ AlarmTypes: ["MetricAlarm"] }),
+    // enhanceParams:
+    //   ({ config }) =>
+    //   () => ({ AccountId: config.accountId() }),
     //transformListPre: () => pipe([filter(not(isInstanceDown))]),
     // transformListPost: () =>
     //   pipe([
@@ -416,6 +435,7 @@ exports.MyModuleMyResource = () => ({
     //   pipe([() => ({ ...other, BackupVaultTags: Tags })])(),
     // filterPayload: pipe([tagsToPayload]),
     //filterPayload: pipe([omit(SELECTORS)]),
+    // configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
 
     method: "createMyResource",
     pickCreated: ({ payload }) => pipe([get("MyResource")]),

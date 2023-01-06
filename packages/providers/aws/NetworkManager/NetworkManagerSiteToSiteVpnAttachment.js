@@ -52,6 +52,7 @@ exports.NetworkManagerSiteToSiteVpnAttachment = () => ({
     "State",
     "ResourceArn",
     "AttachmentPolicyRuleNumber",
+    "OwnerAccountId",
   ],
   inferName: ({ dependenciesSpec: { coreNetwork, vpnConnection } }) =>
     pipe([
@@ -176,6 +177,8 @@ exports.NetworkManagerSiteToSiteVpnAttachment = () => ({
         get("Attachments"),
         find(eq(get("ResourceArn"), VpnConnectionArn)),
       ]),
+    isInstanceUp: pipe([eq(get("State"), "AVAILABLE")]),
+    isInstanceError: pipe([eq(get("State"), "FAILED")]),
   },
   // TODO up update function
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#deleteSiteToSiteAttachment-property

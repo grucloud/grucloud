@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe.only("Evidently", async function () {
+describe("Evidently", async function () {
   it("Feature", () =>
     pipe([
       () => ({
@@ -20,7 +20,7 @@ describe.only("Evidently", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("Segment", () =>
+  it("Segment", () =>
     pipe([
       () => ({
         groupType: "Evidently::Segment",

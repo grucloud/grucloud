@@ -179,6 +179,7 @@ exports.LightsailDomain = ({ compare }) => ({
         namespace,
         properties: { Tags, ...otherProps },
         dependencies: {},
+        config,
       }) =>
         pipe([
           () => otherProps,

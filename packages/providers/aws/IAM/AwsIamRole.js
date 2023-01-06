@@ -450,6 +450,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     properties: { Tags, ...otherProps },
     namespace,
     dependencies: { openIdConnectProvider },
+    config,
   }) =>
     pipe([
       tap(() => {

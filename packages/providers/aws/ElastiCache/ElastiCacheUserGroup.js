@@ -70,6 +70,7 @@ exports.ElastiCacheUserGroup = () => ({
   destroy: {
     method: "deleteUserGroup",
     pickId,
+    // TODO retry on InvalidUserGroupStateFault
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

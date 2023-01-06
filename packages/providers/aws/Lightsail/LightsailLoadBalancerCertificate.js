@@ -140,6 +140,7 @@ exports.LightsailLoadBalancerCertificate = ({ compare }) => ({
         namespace,
         properties: { tags, ...otherProps },
         dependencies: { loadBalancer },
+        config,
       }) =>
         pipe([
           tap((params) => {

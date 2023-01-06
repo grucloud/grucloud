@@ -103,6 +103,7 @@ exports.LightsailKeyPair = () => ({
         namespace,
         properties: { tags, ...otherProps },
         dependencies: {},
+        config,
       }) =>
         pipe([
           () => otherProps,

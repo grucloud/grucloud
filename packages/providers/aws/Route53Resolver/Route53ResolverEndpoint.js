@@ -115,7 +115,6 @@ exports.Route53ResolverEndpoint = ({ spec, config }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
-          Name: name,
           CreatorRequestId: getNewCallerReference(),
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),

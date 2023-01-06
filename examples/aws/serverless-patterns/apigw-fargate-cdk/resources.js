@@ -456,7 +456,6 @@ exports.createResources = () => [
               "awslogs-region": `${config.region}`,
               "awslogs-stream-prefix": "MyFargateService",
             },
-            secretOptions: [],
           },
           name: "web",
           portMappings: [

@@ -52,10 +52,6 @@ const decorate = ({ endpoint }) =>
     assignTags({ endpoint }),
     when(eq(get("CognitoOptions.Enabled"), false), omit(["CognitoOptions"])),
     when(
-      eq(get("DomainEndpointOptions.CustomEndpointEnabled"), false),
-      omit(["DomainEndpointOptions"])
-    ),
-    when(
       pipe([get("AutoTuneOptions.State"), callProp("startsWith", "ENABLE")]),
       defaultsDeep({ AutoTuneOptions: { DesiredState: "ENABLED" } })
     ),
@@ -79,6 +75,7 @@ exports.OpenSearchDomain = ({ compare }) => ({
     EncryptionAtRestOptions: {
       Enabled: true,
     },
+    DomainEndpointOptions: { TLSSecurityPolicy: "Policy-Min-TLS-1-0-2019-07" },
     EBSOptions: {
       EBSEnabled: true,
       Iops: 3000,
@@ -105,6 +102,7 @@ exports.OpenSearchDomain = ({ compare }) => ({
     "CognitoOptions.IdentityPoolId",
     "CognitoOptions.RoleArn",
     "ChangeProgressDetails",
+    "DomainEndpointOptions.CustomEndpointCertificateArn",
     "ServiceSoftwareOptions",
     "EncryptionAtRestOptions.KmsKeyId",
     "AutoTuneOptions.State",
@@ -227,6 +225,7 @@ exports.OpenSearchDomain = ({ compare }) => ({
     method: "createDomain",
     pickCreated: ({ payload }) => pipe([() => payload]),
     isInstanceUp: pipe([eq(get("Processing"), false)]),
+    configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html#updateDomainConfig-property
   update: {

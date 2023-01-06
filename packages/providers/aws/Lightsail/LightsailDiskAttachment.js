@@ -81,7 +81,13 @@ exports.LightsailDiskAttachment = ({ compare }) => ({
   type: "DiskAttachment",
   propertiesDefault: {},
   omitProperties: ["diskName", "instanceName"],
-  inferName: pipe([get("dependenciesSpec.disk")]),
+  inferName: ({ dependenciesSpec: { disk } }) =>
+    pipe([
+      tap((params) => {
+        assert(disk);
+      }),
+      () => disk,
+    ]),
   dependencies: {
     disk: {
       type: "Disk",
@@ -133,6 +139,7 @@ exports.LightsailDiskAttachment = ({ compare }) => ({
         namespace,
         properties: { ...otherProps },
         dependencies: { disk, instance },
+        config,
       }) =>
         pipe([
           tap((params) => {

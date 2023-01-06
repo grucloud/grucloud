@@ -3,11 +3,13 @@ const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
+const { createAwsService } = require("../AwsService");
 
 const GROUP = "Lightsail";
 
 const tagsKey = "tags";
 const compare = compareAws({ tagsKey, key: "key" });
+const { LightsailBucket } = require("./LightsailBucket");
 
 const { LightsailCertificate } = require("./LightsailCertificate");
 const { LightsailContainerService } = require("./LightsailContainerService");
@@ -40,6 +42,7 @@ const {
 
 module.exports = pipe([
   () => [
+    createAwsService(LightsailBucket({})),
     LightsailCertificate({ compare }),
     LightsailContainerService({ compare }),
     LightsailDatabase({ compare }),

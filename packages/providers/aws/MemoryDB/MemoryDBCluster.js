@@ -9,7 +9,24 @@ const { createAwsResource } = require("../AwsClient");
 
 const { tagResource, untagResource, assignTags } = require("./MemoryDBCommon");
 
-const pickId = pipe([({ Name }) => ({ ClusterName: Name })]);
+const pickId = pipe([
+  tap(({ Name }) => {
+    assert(Name);
+  }),
+  ({ Name }) => ({ ClusterName: Name }),
+]);
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    ({ NumberOfShards, ...other }) => ({ NumShards: NumberOfShards, ...other }),
+    tap((params) => {
+      assert(true);
+    }),
+    assignTags({ endpoint }),
+  ]);
 
 const model = ({ config }) => ({
   package: "memorydb",
@@ -20,12 +37,13 @@ const model = ({ config }) => ({
     method: "describeClusters",
     getField: "Clusters",
     pickId,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#describeClusters-property
   getList: {
     method: "describeClusters",
     getParam: "Clusters",
-    decorate: assignTags,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#createCluster-property
   create: {
@@ -44,6 +62,7 @@ const model = ({ config }) => ({
   destroy: {
     method: "deleteCluster",
     pickId,
+    shouldRetryOnExceptionCodes: ["InvalidClusterStateFault"],
   },
 });
 
@@ -54,7 +73,13 @@ exports.MemoryDBCluster = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: () => pipe([get("Name")]),
+    findName: () =>
+      pipe([
+        get("Name"),
+        tap((Name) => {
+          assert(Name);
+        }),
+      ]),
     findId: () => pipe([get("ARN")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([
