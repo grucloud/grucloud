@@ -11,7 +11,7 @@ const GROUP = "S3Control";
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
-// const { S3ControlAccessPoint } = require("./S3ControlAccessPoint");
+const { S3ControlAccessPoint } = require("./S3ControlAccessPoint");
 
 // const {
 //   S3ControlMultiRegionAccessPoint,
@@ -22,7 +22,7 @@ const compare = compareAws({ tagsKey, key: "Key" });
 module.exports = pipe([
   () => [
     //
-    //S3ControlAccessPoint({ compare }),
+    S3ControlAccessPoint({ compare }),
     //S3ControlMultiRegionAccessPoint({ compare }),
     //S3ControlObjectLambdaAccessPoint({ compare }),
     //S3ControlStorageLensConfiguration({ compare }),

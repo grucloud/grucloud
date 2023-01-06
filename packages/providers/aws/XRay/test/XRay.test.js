@@ -15,7 +15,7 @@ describe("XRay", async function () {
   it.skip("Group", () =>
     pipe([
       () => ({
-        groupType: "XRay::Group ",
+        groupType: "XRay::Group",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,

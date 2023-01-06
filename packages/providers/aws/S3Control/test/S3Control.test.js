@@ -4,11 +4,13 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("S3Control", async function () {
-  it.skip("AccessPoint", () =>
+  it("AccessPoint", () =>
     pipe([
       () => ({
         groupType: "S3Control::AccessPoint",
-        livesNotFound: ({ config }) => [{ Name: "d123" }],
+        livesNotFound: ({ config }) => [
+          { AccountId: config.accountId(), Name: "n123" },
+        ],
       }),
       awsResourceTest,
     ])());

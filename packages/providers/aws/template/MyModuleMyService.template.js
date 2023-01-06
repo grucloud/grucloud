@@ -346,6 +346,9 @@ exports.MyModuleMyResource = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#listMyResources-property
   getList: {
     //enhanceParams: () => () => ({ AlarmTypes: ["MetricAlarm"] }),
+    // enhanceParams:
+    //   ({ config }) =>
+    //   () => ({ AccountId: config.accountId() }),
     //transformListPre: () => pipe([filter(not(isInstanceDown))]),
     // transformListPost: () =>
     //   pipe([
