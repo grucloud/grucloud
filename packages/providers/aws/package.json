@@ -101,6 +101,7 @@
     "test-stepfunctions": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/StepFunctions/**/iac.test.js' ",
     "test-transfer": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Transfer/**/iac.test.js' ",
     "test-wafv2": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/WAFv2/**/iac.test.js' ",
+    "test-xray": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/XRay/**/iac.test.js' ",
     "test-modules": "dotenv -e ../../../secrets/default.env -- mocha  '../../modules/aws/**/iac.test.js' ",
     "test-samples": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/aws-samples/**/iac.test.js' ",
     "coverage": "nyc npm run test-all",

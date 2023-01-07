@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project xray-group
+skinparam monochrome true
++ Infra
+++ aws
++++ XRay
+++++ Group (1)
+@endmindmap

@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project xray-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ KMS
+++++ Key (1)
++++ XRay
+++++ EncryptionConfig (1)
+++++ SamplingRule (1)
+@endmindmap
