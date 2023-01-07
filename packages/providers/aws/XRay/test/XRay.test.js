@@ -4,28 +4,41 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("XRay", async function () {
-  it.skip("EncryptionConfig", () =>
+  it("EncryptionConfig", () =>
     pipe([
       () => ({
         groupType: "XRay::EncryptionConfig",
         livesNotFound: ({ config }) => [{}],
+        skipGetById: true,
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
-  it.skip("Group", () =>
+  it("Group", () =>
     pipe([
       () => ({
         groupType: "XRay::Group",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            GroupARN: `arn:aws:xray:${
+              config.region
+            }:${config.accountId()}:group/idonotexist`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("SamplingRule", () =>
+  it("SamplingRule", () =>
     pipe([
       () => ({
         groupType: "XRay::SamplingRule",
-        livesNotFound: ({ config }) => [{}],
-        skipGetById: true,
+        livesNotFound: ({ config }) => [
+          {
+            RuleARN: `arn:aws:xray:${
+              config.region
+            }:${config.accountId()}:sampling-rule/idonotexist`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
