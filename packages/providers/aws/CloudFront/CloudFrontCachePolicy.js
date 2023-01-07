@@ -1,90 +1,98 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, assign } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, eq } = require("rubico");
+const { defaultsDeep, identity } = require("rubico/x");
+const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
+const decorate = ({ endpoint, live }) =>
+  pipe([
+    tap((params) => {
+      assert(live);
+      assert(live.Id);
+    }),
+    defaultsDeep({ Id: live.Id, Type: get("Type", "custom")(live) }),
+  ]);
 
-const model = {
+const managedByOther = () => pipe([eq(get("Type"), "managed")]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
+exports.CloudFrontCachePolicy = ({ compare }) => ({
+  type: "CachePolicy",
   package: "cloudfront",
   client: "CloudFront",
-  ignoreErrorCodes: ["NoSuchCachePolicy"],
-  getById: {
-    method: "getCachePolicy",
-    getField: "CachePolicy",
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        assign({}),
-      ]),
-    pickId: pipe([
-      tap((params) => {
-        assert(true);
+  inferName: () =>
+    pipe([
+      get("CachePolicyConfig.Name"),
+      tap((name) => {
+        assert(name);
       }),
-      ({ CachePolicy: { Id } }) => ({ Id }),
+    ]),
+  findName: () =>
+    pipe([
+      get("CachePolicyConfig.Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("Id"),
+      tap((Id) => {
+        assert(Id);
+      }),
+    ]),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
+  ignoreErrorCodes: ["NoSuchCachePolicy"],
+  omitProperties: ["Id", "Type", "ETag"],
+  compare: compare({}),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#getCachePolicy-property
+  getById: {
+    method: "getCachePolicyConfig",
+    decorate,
+    pickId: pipe([
       tap(({ Id }) => {
         assert(Id);
       }),
     ]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listCachePolicies-property
   getList: {
     method: "listCachePolicies",
     getParam: "CachePolicyList.Items",
-    decorate:
-      ({ getById }) =>
-      (live) =>
-        pipe([
-          () => live,
-          // getById,
-          // defaultsDeep(live),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
+    filterResource: eq(get("Type"), "custom"),
+    decorate: ({ getById }) =>
+      pipe([({ CachePolicy: { Id }, Type }) => ({ Id, Type }), getById]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createCachePolicy-property
   create: {
     method: "createCachePolicy",
-    pickCreated:
-      ({ payload }) =>
-      () =>
-        payload,
+    pickCreated: ({ payload }) => pipe([get("CachePolicy")]),
   },
-  update: { method: "updateCachePolicy" },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#updateCachePolicy-property
+  update: {
+    method: "updateCachePolicy",
+    filterParams: ({ payload, live }) =>
+      pipe([
+        () => payload,
+        defaultsDeep({ Id: live.Id, IfMatch: live.ETag }),
+      ])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#deleteCachePolicy-property
   destroy: {
     method: "deleteCachePolicy",
     pickId: pipe([
-      tap((params) => {
-        assert(true);
+      tap(({ ETag }) => {
+        assert(ETag);
       }),
-      ({ CachePolicy: { Id }, ETag }) => ({ Id, IfMatch: ETag }),
-      tap(({ Id, IfMatch: ETag }) => {
+      ({ Id, ETag }) => ({ Id, IfMatch: ETag }),
+      tap(({ Id, IfMatch }) => {
         assert(Id);
-        //assert(ETag);
+        assert(IfMatch);
       }),
     ]),
+    ignoreErrorCodes: ["InvalidIfMatchVersion"],
   },
-};
-
-const managedByOther = () => pipe([eq(get("Type"), "managed")]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
-exports.CloudFrontCachePolicy = ({ spec, config }) =>
-  createAwsResource({
-    model,
-    spec,
-    config,
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    findName: () => pipe([get("CachePolicy.CachePolicyConfig.Name")]),
-    findId: () => get("CachePolicy.CachePolicyConfig.Name"),
-    getByName: ({ getById }) =>
-      pipe([({ name }) => ({ Name: name }), getById({})]),
-    configDefault: ({ name, namespace, properties }) =>
-      pipe([
-        () => properties,
-        defaultsDeep({
-          CachePolicyConfig: { Name: name },
-        }),
-      ])(),
-  });
+  getByName: getByNameCore,
+  configDefault: ({ name, namespace, properties }) =>
+    pipe([() => properties, defaultsDeep({})])(),
+});

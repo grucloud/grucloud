@@ -30,6 +30,7 @@ const {
 const logger = require("@grucloud/core/logger")({
   prefix: "CloudFrontDistribution",
 });
+const { createAwsService } = require("../AwsService");
 
 const { isOurMinion, compareAws, replaceRegion } = require("../AwsCommon");
 const { CloudFrontDistribution } = require("./CloudFrontDistribution");
@@ -40,7 +41,7 @@ const { CloudFrontCachePolicy } = require("./CloudFrontCachePolicy");
 const { CloudFrontFunction } = require("./CloudFrontFunction");
 
 const GROUP = "CloudFront";
-const compareCloudFront = compareAws({});
+const compare = compareAws({});
 
 const replaceWithBucketName = ({ providerConfig, lives }) =>
   replaceWithName({
@@ -51,6 +52,7 @@ const replaceWithBucketName = ({ providerConfig, lives }) =>
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
+    createAwsService(CloudFrontCachePolicy({ compare })),
     {
       type: "Distribution",
       dependencies: {
@@ -74,6 +76,12 @@ module.exports = () =>
                 ])()
               ),
             ]),
+        },
+        cachePolicy: {
+          type: "CachePolicy",
+          group: "CloudFront",
+          dependencyId: ({ lives, config }) =>
+            get("DefaultCacheBehavior.CachePolicyId"),
         },
         certificate: {
           type: "Certificate",
@@ -151,7 +159,7 @@ module.exports = () =>
         IsIPV6Enabled: true,
         Staging: false,
       },
-      compare: compareCloudFront({
+      compare: compare({
         filterTarget: () =>
           pipe([
             get("DistributionConfig"),
@@ -223,6 +231,20 @@ module.exports = () =>
             ]),
             DefaultCacheBehavior: pipe([
               get("DefaultCacheBehavior"),
+              when(
+                get("CachePolicyId"),
+                assign({
+                  CachePolicyId: pipe([
+                    get("CachePolicyId"),
+                    replaceWithName({
+                      groupType: "CloudFront::CachePolicy",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                })
+              ),
               when(
                 get("FunctionAssociations"),
                 assign({
@@ -306,20 +328,6 @@ module.exports = () =>
         ]),
     },
     {
-      type: "CachePolicy",
-      Client: CloudFrontCachePolicy,
-      omitProperties: ["CachePolicy.Id", "CachePolicy.LastModifiedTime"],
-      inferName: () => pipe([get("CachePolicy.CachePolicyConfig.Name")]),
-      filterLive: ({ lives }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          //pick([]),
-        ]),
-      compare: compareCloudFront,
-    },
-    {
       type: "Function",
       Client: CloudFrontFunction,
       omitProperties: [
@@ -345,12 +353,12 @@ module.exports = () =>
           }),
           //pick([]),
         ]),
-      compare: compareCloudFront,
+      compare: compare,
     },
     {
       type: "OriginAccessIdentity",
       Client: CloudFrontOriginAccessIdentity,
       filterLive: ({ lives }) => pipe([pick([])]),
-      compare: compareCloudFront,
+      compare: compare,
     },
   ]);

@@ -16,7 +16,7 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("CachePolicy", () =>
+  it("CachePolicy", () =>
     pipe([
       () => ({
         groupType: "CloudFront::CachePolicy",

@@ -211,7 +211,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
-  //TODO Tags
   const configDefault = ({
     name,
     properties: { Tags, ...otherProps },
@@ -222,9 +221,11 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep({
         CallerReference: getNewCallerReference(),
-
         Enabled: true,
-        ...(certificate && {
+      }),
+      when(
+        () => certificate,
+        defaultsDeep({
           ViewerCertificate: {
             ACMCertificateArn: getField(certificate, "CertificateArn"),
             SSLSupportMethod: "sni-only",
@@ -233,8 +234,8 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
             CertificateSource: "acm",
             CloudFrontDefaultCertificate: false,
           },
-        }),
-      }),
+        })
+      ),
       when(() => webAcl, defaultsDeep({ WebACLId: getField(webAcl, "ARN") })),
       (payload) => ({
         DistributionConfig: payload,
