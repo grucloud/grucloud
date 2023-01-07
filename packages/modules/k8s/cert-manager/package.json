@@ -5,7 +5,7 @@
   "main": "iac.js",
   "scripts": {
     "gen-code": "k8s-manifest2code --input cert-manager.yaml",
-    "download-manifest": "curl -L -o cert-manager.yaml https://github.com/jetstack/cert-manager/releases/download/v1.9.1/cert-manager.yaml"
+    "download-manifest": "curl -L -o cert-manager.yaml https://github.com/jetstack/cert-manager/releases/download/v1.10.1/cert-manager.yaml"
   },
   "author": "",
   "license": "ISC",

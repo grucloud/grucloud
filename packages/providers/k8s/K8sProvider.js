@@ -856,10 +856,7 @@ const fnSpecs = pipe([
         },
       },
       compare: compareK8s({
-        filterTarget: () =>
-          pipe([
-            unless(eq(get("spec.clusterIP"), "None"), omit(["spec.clusterIP"])),
-          ]),
+        filterAll: () => pipe([omit(["spec.clusterIP", "spec.type"])]),
       }),
       omitProperties: ["spec.clusterIPs", "spec.externalTrafficPolicy"],
       propertiesDefault: {
