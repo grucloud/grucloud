@@ -32,6 +32,16 @@ describe("S3Control", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("PublicAccessBlock", () =>
+    pipe([
+      () => ({
+        groupType: "S3Control::PublicAccessBlock",
+        livesNotFound: ({ config }) => [{}],
+        skipGetByName: true,
+        skipGetById: true,
+      }),
+      awsResourceTest,
+    ])());
   it.skip("StorageLensConfiguration", () =>
     pipe([
       () => ({

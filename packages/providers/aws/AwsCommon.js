@@ -1011,7 +1011,8 @@ const replaceArnWithAccountAndRegion =
                 !Id.startsWith("arn:aws:code") &&
                 !Id.startsWith("arn:aws:logs") &&
                 !Id.startsWith(`arn:aws:iam::${providerConfig.accountId()}`) &&
-                !Id.startsWith("arn:aws:sns"),
+                !Id.startsWith("arn:aws:sns") &&
+                !Id.startsWith("arn:aws:s3"),
             ])
           ),
         ]),
