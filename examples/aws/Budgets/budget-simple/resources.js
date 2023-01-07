@@ -27,6 +27,43 @@ exports.createResources = () => [
         UseBlended: false,
       },
       TimeUnit: "MONTHLY",
+      Actions: [
+        {
+          ActionThreshold: {
+            ActionThresholdType: "PERCENTAGE",
+            ActionThresholdValue: 70,
+          },
+          ActionType: "RUN_SSM_DOCUMENTS",
+          ApprovalModel: "AUTOMATIC",
+          Definition: {
+            SsmActionDefinition: {
+              ActionSubType: "STOP_EC2_INSTANCES",
+              InstanceIds: ["i-0751aea04276aadb8"],
+              Region: "us-east-1",
+            },
+          },
+          ExecutionRoleArn: `${getId({
+            type: "Role",
+            group: "IAM",
+            name: "role-budget-ec2",
+          })}`,
+          NotificationType: "ACTUAL",
+          Subscribers: [
+            {
+              Address: "fred@mail.com",
+              SubscriptionType: "EMAIL",
+            },
+            {
+              Address: `${getId({
+                type: "Topic",
+                group: "SNS",
+                name: "topic-budget",
+              })}`,
+              SubscriptionType: "SNS",
+            },
+          ],
+        },
+      ],
       Notifications: [
         {
           ComparisonOperator: "GREATER_THAN",
@@ -50,7 +87,42 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
+      iamRolesExecution: ["role-budget-ec2"],
       snsTopics: ["topic-budget"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "role-budget-ec2",
+      Description: "Allows EC2 instances to call AWS services on your behalf.",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "budgets.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEC2FullAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+        },
+      ],
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-budget-ec2",
+    dependencies: ({}) => ({
+      roles: ["role-budget-ec2"],
     }),
   },
   {

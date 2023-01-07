@@ -151,7 +151,7 @@ module.exports = pipe([
             ({ IPAddress }) =>
               pipe([
                 tap((params) => {
-                  assert(IPAddress);
+                  //assert(IPAddress);
                 }),
                 lives.getByType({
                   providerName: config.providerName,

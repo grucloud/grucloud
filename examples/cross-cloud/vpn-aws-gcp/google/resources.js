@@ -205,7 +205,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       targetVpnGateway: "vpn-1",
-      vpnConnectionAws: "vpn-gcp",
+      vpnConnectionAws: { name: "vpn-gcp", provider: "aws" },
     }),
   },
   {
@@ -232,7 +232,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       targetVpnGateway: "vpn-1",
-      vpnConnectionAws: "vpn-gcp",
+      vpnConnectionAws: { name: "vpn-gcp", provider: "aws" },
     }),
   },
 ];

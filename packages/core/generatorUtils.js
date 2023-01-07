@@ -218,12 +218,12 @@ const omitDependencyIds =
       (pathIds) => pipe([() => live, deepOmit(pathIds)])(),
     ])();
 
-const rejectEnvironmentVariable = ({ resource, props }) =>
+const rejectEnvironmentVariable = ({ resource, props, lives }) =>
   pipe([
     switchCase([
       callProp("hasOwnProperty", "rejectEnvironmentVariable"),
       ({ rejectEnvironmentVariable }) =>
-        rejectEnvironmentVariable({ resource })(props),
+        rejectEnvironmentVariable({ resource, lives })(props),
       () => false,
     ]),
   ]);
@@ -236,14 +236,14 @@ const omitEnvInFile = ({ resource, props }) =>
   ]);
 
 const addEnvironmentVariables =
-  ({ resource, environmentVariables }) =>
+  ({ resource, environmentVariables, lives }) =>
   (props) =>
     pipe([
       tap((params) => {
         assert(props);
       }),
       () => environmentVariables,
-      filter(not(rejectEnvironmentVariable({ resource, props }))),
+      filter(not(rejectEnvironmentVariable({ resource, props, lives }))),
       tap.if(not(isEmpty), (params) => {
         assert(true);
       }),
@@ -314,7 +314,7 @@ const buildProperties = ({
       pickPropertiesCreate,
     }),
     omitDependencyIds({ dependencies }),
-    addEnvironmentVariables({ resource, environmentVariables }),
+    addEnvironmentVariables({ resource, environmentVariables, lives }),
     filterLiveExtra({
       providerConfig,
       lives,
@@ -472,12 +472,14 @@ exports.hasDependency = ({ type, group }) =>
     not(isEmpty),
   ]);
 
-const envTpl = ({ resource, environmentVariables = [] }) =>
+const envTpl = ({ resource, environmentVariables = [], lives }) =>
   pipe([
     () => environmentVariables,
     filter(
       or([
-        not(rejectEnvironmentVariable({ resource, props: resource.live })),
+        not(
+          rejectEnvironmentVariable({ resource, props: resource.live, lives })
+        ),
         omitEnvInFile({ resource, props: resource.live }),
       ])
     ),
@@ -1562,6 +1564,7 @@ const writeResource =
               options,
               resource,
               environmentVariables,
+              lives,
             }),
             code: codeTpl({
               providerType,

@@ -3,7 +3,7 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const { GoogleProvider } = require("@grucloud/provider-google");
 const { AzureProvider } = require("@grucloud/provider-azure");
 
-const AwsStackEC2Vpc = require("../aws/EC2/ec2-vpc/resources");
+const AwsStackEC2Vpc = require("../aws/EC2/Instance/ec2-vpc/resources");
 const AzureStack = require("../azure/Compute/vm/resources");
 const GoogleStackVm = require("../google/vm/resources");
 

@@ -186,7 +186,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       targetVpnGateway: "vpn-1",
-      virtualNetworkGatewayAzure: "rg-hybrid::vng",
+      virtualNetworkGatewayAzure: { name: "rg-hybrid::vng", provider: "azure" },
     }),
   },
 ];
