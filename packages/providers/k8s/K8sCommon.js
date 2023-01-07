@@ -120,13 +120,13 @@ exports.compareK8s = ({ filterAll, filterTarget, filterLive } = {}) =>
     assign({
       targetDiff: pipe([
         get("targetDiff"),
+        omitIfEmpty(["updated.data", "updated"]),
         omit(["added", "deleted"]),
-        omitIfEmpty(["updated"]),
       ]),
       liveDiff: pipe([
         get("liveDiff"),
         omit(["deleted"]),
-        omitIfEmpty(["added", "updated", "updated.data"]),
+        omitIfEmpty(["added", "updated.data", "updated"]),
       ]),
     }),
     assignHasDiff,

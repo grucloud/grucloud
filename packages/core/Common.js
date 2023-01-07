@@ -84,7 +84,17 @@ exports.HookType = {
 };
 
 const omitPathIfEmpty = (path) => (obj) =>
-  pipe([() => obj, when(pipe([get(path), isEmpty]), omit([path]))])();
+  pipe([
+    () => obj,
+    when(
+      pipe([
+        get(path),
+        // TODO isEmpty sometimes fails with {}
+        or([isEmpty, pipe([keys, isEmpty])]),
+      ]),
+      omit([path])
+    ),
+  ])();
 
 const omitIfEmpty = (paths) => (obj) =>
   pipe([
