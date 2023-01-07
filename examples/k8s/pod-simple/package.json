@@ -1,6 +1,6 @@
 {
   "name": "pod-simple",
-  "version": "10.7.0",
+  "version": "10.7.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^10.7.0",
-    "@grucloud/provider-k8s": "^10.7.0",
+    "@grucloud/core": "^10.7.1",
+    "@grucloud/provider-k8s": "^10.7.1",
     "rubico": "^1.8.3"
   },
   "devDependencies": {

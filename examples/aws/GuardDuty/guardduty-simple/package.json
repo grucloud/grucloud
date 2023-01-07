@@ -1,6 +1,6 @@
 {
   "name": "guardduty-simple",
-  "version": "10.7.0",
+  "version": "10.7.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^10.7.0",
-    "@grucloud/provider-aws": "^10.7.0",
+    "@grucloud/core": "^10.7.1",
+    "@grucloud/provider-aws": "^10.7.1",
     "rubico": "1.8.10"
   },
   "devDependencies": {
