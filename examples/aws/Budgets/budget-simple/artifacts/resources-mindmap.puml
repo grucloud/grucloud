@@ -5,6 +5,9 @@ skinparam monochrome true
 ++ aws
 +++ Budgets
 ++++ Budget (1)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
 +++ SNS
 ++++ Topic (1)
 @endmindmap

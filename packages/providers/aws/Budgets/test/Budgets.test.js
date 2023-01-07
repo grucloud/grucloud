@@ -17,12 +17,4 @@ describe("Budgets", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("BudgetAction", () =>
-    pipe([
-      () => ({
-        groupType: "Budgets::BudgetAction",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
 });
