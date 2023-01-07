@@ -136,7 +136,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-hybrid",
-      gatewayIpAddressGoogle: "ip-vpn",
+      gatewayIpAddressGoogle: { name: "ip-vpn", provider: "google" },
     }),
   },
   {

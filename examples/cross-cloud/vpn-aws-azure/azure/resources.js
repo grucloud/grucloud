@@ -178,7 +178,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "hybridrg",
-      gatewayIpAddressAws: "vpn-connection",
+      gatewayIpAddressAws: { name: "vpn-connection", provider: "aws" },
     }),
   },
   {
@@ -201,7 +201,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "hybridrg",
-      gatewayIpAddressAws: "vpn-connection",
+      gatewayIpAddressAws: { name: "vpn-connection", provider: "aws" },
     }),
   },
   {
@@ -499,7 +499,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "hybridrg",
       virtualNetworkGatewayConnection: "hybridrg::vngc1",
-      vpnConnectionAws: "vpn-connection",
+      vpnConnectionAws: { name: "vpn-connection", provider: "aws" },
     }),
   },
   {
@@ -516,7 +516,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "hybridrg",
       virtualNetworkGatewayConnection: "hybridrg::vngc2",
-      vpnConnectionAws: "vpn-connection",
+      vpnConnectionAws: { name: "vpn-connection", provider: "aws" },
     }),
   },
   {

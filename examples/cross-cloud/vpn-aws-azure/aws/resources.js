@@ -17,8 +17,11 @@ exports.createResources = () => [
       })}`,
     }),
     dependencies: ({}) => ({
-      ipAddressAzure: "hybridrg::vnetvgwpip1",
-      virtualNetworkGatewayAzure: "hybridrg::myvng1",
+      ipAddressAzure: { name: "hybridrg::vnetvgwpip1", provider: "azure" },
+      virtualNetworkGatewayAzure: {
+        name: "hybridrg::myvng1",
+        provider: "azure",
+      },
     }),
   },
   {
@@ -165,9 +168,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ec2-message",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({}) => ({
       vpc: "Default VPC",
@@ -180,9 +183,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssm`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({}) => ({
       vpc: "Default VPC",
@@ -195,9 +198,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm-message",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({}) => ({
       vpc: "Default VPC",

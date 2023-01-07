@@ -23,6 +23,7 @@ exports.createResources = () => [
             maxUnhealthyInstancePercent: 20,
             maxUnhealthyUpgradedInstancePercent: 20,
             pauseTimeBetweenBatches: "PT0S",
+            maxSurge: false,
           },
         },
         virtualMachineProfile: {

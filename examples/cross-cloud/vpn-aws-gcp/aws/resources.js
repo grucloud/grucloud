@@ -17,7 +17,7 @@ exports.createResources = () => [
       })}`,
     }),
     dependencies: ({}) => ({
-      ipAddressGoogle: "ip-vpn",
+      ipAddressGoogle: { name: "ip-vpn", provider: "google" },
     }),
   },
   {
@@ -171,9 +171,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ec2-messages",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "vpc",
@@ -186,9 +186,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssm`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "vpc",
@@ -201,9 +201,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm-messages",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "vpc",

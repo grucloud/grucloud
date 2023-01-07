@@ -22,6 +22,7 @@ const {
   findIndex,
   find,
   first,
+  isString,
 } = require("rubico/x");
 
 const {
@@ -101,6 +102,25 @@ const findGcpVpnTunnelByIp = ({ gatewayIpAddress }) =>
         eq(get("live.address"), gatewayIpAddress),
       ])
     ),
+  ]);
+
+const findEC2VpcConnection = ({ value }) =>
+  pipe([
+    tap((params) => {
+      //assert(value);
+    }),
+    find(
+      and([
+        eq(get("groupType"), "EC2::VpnConnection"),
+        pipe([
+          get("live.Options.TunnelOptions"),
+          any(eq(get("PreSharedKey"), value)),
+        ]),
+      ])
+    ),
+    tap((params) => {
+      assert(true);
+    }),
   ]);
 
 exports.fnSpecs = ({ config }) => {
@@ -1118,25 +1138,32 @@ exports.fnSpecs = ({ config }) => {
               },
             ],
           ]),
-        environmentVariables: [{ path: "value", suffix: "SHAREDSECRET" }],
+        environmentVariables: [
+          {
+            path: "value",
+            suffix: "SHAREDSECRET",
+            rejectEnvironmentVariable:
+              ({ lives }) =>
+              ({ value }) =>
+                pipe([
+                  tap((params) => {
+                    assert(lives);
+                  }),
+                  () => lives,
+                  findEC2VpcConnection({ value }),
+                ])(),
+          },
+        ],
         filterLiveExtra: ({ lives, providerConfig }) =>
           pipe([
             assign({
               value: ({ value }) =>
                 pipe([
                   tap((params) => {
-                    assert(value);
+                    // assert(isString(value));
                   }),
                   () => lives,
-                  find(
-                    and([
-                      eq(get("groupType"), "EC2::VpnConnection"),
-                      pipe([
-                        get("live.Options.TunnelOptions"),
-                        any(eq(get("PreSharedKey"), value)),
-                      ]),
-                    ])
-                  ),
+                  findEC2VpcConnection({ value }),
                   switchCase([
                     isEmpty,
                     () => value,
@@ -1160,6 +1187,9 @@ exports.fnSpecs = ({ config }) => {
                           ])(),
                       ])(),
                   ]),
+                  tap((params) => {
+                    assert(true);
+                  }),
                 ])(),
             }),
           ]),
@@ -1186,7 +1216,7 @@ exports.fnSpecs = ({ config }) => {
               ({ value }) =>
                 pipe([
                   tap((params) => {
-                    assert(value);
+                    //assert(value);
                   }),
                   lives.getByType({
                     providerType: "aws",

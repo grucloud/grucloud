@@ -46,6 +46,7 @@
     "test-ec2-transitgateway": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/TransitGateway/**/iac.test.js' ",
     "test-ec2-vpc": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/Vpc/**/iac.test.js' ",
     "test-ecs": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ECS/**/iac.test.js' ",
+    "test-ecr": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ECR/**/iac.test.js' ",
     "test-efs": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EFS/**/iac.test.js' ",
     "test-eks": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EKS/**/iac.test.js' ",
     "test-elasticache": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ElastiCache/**/iac.test.js' ",
