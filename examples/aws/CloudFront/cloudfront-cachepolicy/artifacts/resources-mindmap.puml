@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project cloudfront-cachepolicy
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudFront
+++++ CachePolicy (1)
+@endmindmap
