@@ -1,9 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, pick, assign, tryCatch, or } = require("rubico");
+const { defaultsDeep, when, unless, isEmpty } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { assignPolicyAccountAndRegion } = require("../AwsCommon");
+
+const toAccountId = ({ BucketAccountId, ...other }) => ({
+  AccountId: BucketAccountId,
+  ...other,
+});
 
 const pickId = pipe([
   tap(({ Name, AccountId }) => {
@@ -18,7 +24,29 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    toAccountId,
+    (live) =>
+      tryCatch(
+        pipe([
+          () => live,
+          endpoint().getAccessPointPolicy,
+          get("Policy"),
+          JSON.parse,
+          (Policy) => ({ ...live, Policy }),
+        ]),
+        () => live
+      )(),
   ]);
+
+const putAccessPointPolicy = ({ endpoint }) =>
+  pipe([
+    pick(["Name", "AccountId", "Policy"]),
+    assign({ Policy: pipe([get("Policy"), JSON.stringify]) }),
+    endpoint().putAccessPointPolicy,
+  ]);
+
+const deleteAccessPointPolicy = ({ endpoint }) =>
+  pipe([pickId, endpoint().deleteAccessPointPolicy]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3Control.html
 exports.S3ControlAccessPoint = () => ({
@@ -27,6 +55,7 @@ exports.S3ControlAccessPoint = () => ({
   client: "S3Control",
   propertiesDefault: {},
   omitProperties: [
+    "Alias",
     "AccountId",
     "CreationDate",
     "AccessPointArn",
@@ -62,7 +91,7 @@ exports.S3ControlAccessPoint = () => ({
       dependencyId: ({ lives, config }) =>
         pipe([
           get("Bucket"),
-          tap((Bucketparams) => {
+          tap((Bucket) => {
             assert(Bucket);
           }),
         ]),
@@ -74,6 +103,18 @@ exports.S3ControlAccessPoint = () => ({
         pipe([get("VpcConfiguration.VpcId")]),
     },
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      when(
+        get("Policy"),
+        assign({
+          Policy: pipe([
+            get("Policy"),
+            assignPolicyAccountAndRegion({ lives, providerConfig }),
+          ]),
+        })
+      ),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3Control.html#getAccessPoint-property
   getById: {
     method: "getAccessPoint",
@@ -87,15 +128,37 @@ exports.S3ControlAccessPoint = () => ({
       () => ({ AccountId: config.accountId() }),
     method: "listAccessPoints",
     getParam: "AccessPointList",
-    decorate: ({ getById }) => pipe([getById]),
+    decorate: ({ getById }) => pipe([toAccountId, getById]),
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3Control.html#createAccessPoint-property
   create: {
     method: "createAccessPoint",
     pickCreated: ({ payload }) => pipe([() => payload]),
+    postCreate: ({ endpoint, payload, config }) =>
+      pipe([
+        () => payload,
+        tap.if(
+          get("Policy"),
+          pipe([putAccessPointPolicy({ endpoint, config })])
+        ),
+      ]),
   },
-  // TODO update ?
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        () => diff,
+        // Policy Added/Updated
+        tap.if(
+          or([get("liveDiff.added.Policy"), get("liveDiff.updated.Policy")]),
+          pipe([() => payload, putAccessPointPolicy({ endpoint })])
+        ),
+        // Policy Deleted
+        tap.if(
+          or([get("targetDiff.added.Policy")]),
+          pipe([() => payload, deleteAccessPointPolicy({ endpoint })])
+        ),
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3Control.html#deleteAccessPoint-property
   destroy: {
     method: "deleteAccessPoint",

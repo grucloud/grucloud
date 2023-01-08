@@ -4,9 +4,7 @@ const { defaultsDeep, callProp, identity } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource, assignTags } = require("./AppConfigCommon");
+const { Tagger, assignTags } = require("./AppConfigCommon");
 
 const pickId = pipe([({ Id }) => ({ DeploymentStrategyId: Id })]);
 
@@ -26,10 +24,15 @@ const decorate = ({ endpoint, config }) =>
 const managedByOther = () =>
   pipe([get("Name"), callProp("startsWith", "AppConfig.")]);
 
-const model = ({ config }) => ({
+exports.AppConfigDeploymentStrategy = () => ({
+  type: "DeploymentStrategy",
   package: "appconfig",
   client: "AppConfig",
+  omitProperties: ["Id"],
+  inferName: () => get("Name"),
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  findName: () => pipe([get("Name")]),
+  findId: () => pipe([get("Id")]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#getDeploymentStrategy-property
   getById: {
     method: "getDeploymentStrategy",
@@ -57,34 +60,24 @@ const model = ({ config }) => ({
     method: "deleteDeploymentStrategy",
     pickId,
   },
-});
-
-exports.AppConfigDeploymentStrategy = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  managedByOther,
+  cannotBeDeleted: managedByOther,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("Name")]),
-    findId: () => pipe([get("Id")]),
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      }),
+    ])(),
+});

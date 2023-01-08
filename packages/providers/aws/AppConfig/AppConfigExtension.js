@@ -181,29 +181,32 @@ exports.AppConfigExtension = () => ({
                       }),
                     ]),
                   }),
-                  switchCase([
-                    isOfArn("arn:aws:sqs"),
-                    assignUri({
-                      groupType: "SQS::Queue",
-                      providerConfig,
-                      lives,
-                    }),
-                    isOfArn("arn:aws:sns"),
-                    assignUri({
-                      groupType: "SNS::Topic",
-                      providerConfig,
-                      lives,
-                    }),
-                    isOfArn("arn:aws:lambda"),
-                    assignUri({
-                      groupType: "Lambda::Function",
-                      providerConfig,
-                      lives,
-                    }),
-                    () => {
-                      assert(false, "should be sqs, sns or lambda");
-                    },
-                  ]),
+                  when(
+                    get("Uri"),
+                    switchCase([
+                      isOfArn("arn:aws:sqs"),
+                      assignUri({
+                        groupType: "SQS::Queue",
+                        providerConfig,
+                        lives,
+                      }),
+                      isOfArn("arn:aws:sns"),
+                      assignUri({
+                        groupType: "SNS::Topic",
+                        providerConfig,
+                        lives,
+                      }),
+                      isOfArn("arn:aws:lambda"),
+                      assignUri({
+                        groupType: "Lambda::Function",
+                        providerConfig,
+                        lives,
+                      }),
+                      (arn) => {
+                        assert(false, `should be sqs, sns or lambda: "${arn}"`);
+                      },
+                    ])
+                  ),
                 ])
               ),
             ])

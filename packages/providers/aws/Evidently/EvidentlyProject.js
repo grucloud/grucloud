@@ -1,33 +1,10 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  pick,
-  eq,
-  assign,
-  map,
-  and,
-  or,
-  not,
-  filter,
-  fork,
-} = require("rubico");
-const {
-  defaultsDeep,
-  first,
-  pluck,
-  callProp,
-  when,
-  isEmpty,
-  unless,
-  identity,
-} = require("rubico/x");
+const { pipe, tap, get, eq } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { replaceWithName } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./EvidentlyCommon");
 
@@ -40,10 +17,10 @@ const buildArn = () =>
   ]);
 
 const pickId = pipe([
-  tap(({ project }) => {
-    assert(project);
+  tap(({ name }) => {
+    assert(name);
   }),
-  pick(["project"]),
+  ({ name }) => ({ project: name }),
 ]);
 
 const decorate = ({ endpoint, config }) =>
@@ -51,6 +28,12 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    omitIfEmpty([
+      "dataDelivery.s3Destination.bucket",
+      "dataDelivery.s3Destination.prefix",
+      "dataDelivery.s3Destination",
+      "description",
+    ]),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html
@@ -127,8 +110,7 @@ exports.EvidentlyProject = () => ({
   create: {
     method: "createProject",
     pickCreated: ({ payload }) => pipe([get("project")]),
-    // pickCreated: ({ payload }) => pipe([() => payload]),
-    // pickCreated: ({ payload }) => pipe([identity]),
+    isInstanceIp: pipe([eq(get("status"), "AVAILABLE")]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#updateProject-property
   update: {
