@@ -4,11 +4,27 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Evidently", async function () {
+  it("Experiment", () =>
+    pipe([
+      () => ({
+        groupType: "Evidently::Experiment",
+        livesNotFound: ({ config }) => [{ project: "p123", name: "f123" }],
+      }),
+      awsResourceTest,
+    ])());
   it("Feature", () =>
     pipe([
       () => ({
         groupType: "Evidently::Feature",
-        livesNotFound: ({ config }) => [{ project: "p123", feature: "f123" }],
+        livesNotFound: ({ config }) => [{ project: "p123", name: "f123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("Launch", () =>
+    pipe([
+      () => ({
+        groupType: "Evidently::Launch",
+        livesNotFound: ({ config }) => [{ project: "p123", name: "l123" }],
       }),
       awsResourceTest,
     ])());
@@ -16,7 +32,7 @@ describe("Evidently", async function () {
     pipe([
       () => ({
         groupType: "Evidently::Project",
-        livesNotFound: ({ config }) => [{ project: "p123" }],
+        livesNotFound: ({ config }) => [{ name: "p123" }],
       }),
       awsResourceTest,
     ])());

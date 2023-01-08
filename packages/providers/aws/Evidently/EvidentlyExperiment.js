@@ -1,28 +1,6 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  pick,
-  eq,
-  assign,
-  map,
-  and,
-  or,
-  not,
-  filter,
-  fork,
-} = require("rubico");
-const {
-  defaultsDeep,
-  first,
-  pluck,
-  callProp,
-  when,
-  isEmpty,
-  unless,
-  identity,
-} = require("rubico/x");
+const { pipe, tap, get, assign, map } = require("rubico");
+const { defaultsDeep, keys, values, first } = require("rubico/x");
 
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -43,29 +21,48 @@ const pickId = pipe([
     assert(name);
     assert(project);
   }),
-  ({ name, project }) => ({ feature: name, project }),
+  ({ name, project }) => ({ experiment: name, project }),
 ]);
 
 const decorate = ({ endpoint, config }) =>
   pipe([
-    //
-    omitIfEmpty(["evaluationRules", "entityOverrides"]),
+    tap((params) => {
+      assert(endpoint);
+    }),
+    omitIfEmpty(["description"]),
+    ({ onlineAbDefinition, ...other }) => ({
+      ...other,
+      onlineAbConfig: onlineAbDefinition,
+    }),
+    assign({
+      treatments: pipe([
+        get("treatments"),
+        map(
+          pipe([
+            ({ featureVariations, ...other }) => ({
+              feature: pipe([keys, first])(featureVariations),
+              variation: pipe([values, first])(featureVariations),
+              ...other,
+            }),
+          ])
+        ),
+      ]),
+    }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html
-exports.EvidentlyFeature = () => ({
-  type: "Feature",
+exports.EvidentlyExperiment = () => ({
+  type: "Experiment",
   package: "evidently",
   client: "Evidently",
-  propertiesDefault: {},
+  propertiesDefault: { samplingRate: 100000 },
   omitProperties: [
     "arn",
     "createdTime",
     "lastUpdatedTime",
     "project",
     "status",
-    "valueType",
-    "evaluationRules",
+    "type",
   ],
   inferName: () =>
     pipe([
@@ -97,44 +94,43 @@ exports.EvidentlyFeature = () => ({
       dependencyId: () => get("project"),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#getFeature-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#getExperiment-property
   getById: {
-    method: "getFeature",
-    getField: "feature",
+    method: "getExperiment",
+    getField: "experiment",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#listFeatures-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#listExperiments-property
   getList: ({ client, endpoint, getById, config }) =>
     pipe([
       () =>
         client.getListWithParent({
           parent: { type: "Project", group: "Evidently" },
           pickKey: pipe([({ name }) => ({ project: name })]),
-          method: "listFeatures",
-          getParam: "features",
+          method: "listExperiments",
+          getParam: "experiments",
           config,
           decorate: ({ endpoint }) => pipe([getById({})]),
         }),
     ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#createFeature-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#createExperiment-property
   create: {
-    method: "createFeature",
-    pickCreated: ({ payload }) => pipe([get("feature")]),
-    isInstanceIp: pipe([eq(get("status"), "AVAILABLE")]),
+    method: "createExperiment",
+    pickCreated: ({ payload }) => pipe([get("experiment")]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#updateFeature-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#updateExperiment-property
   update: {
-    method: "updateFeature",
+    method: "updateExperiment",
     filterParams: ({ payload: { name, ...other }, diff, live }) =>
       pipe([
-        () => ({ feature: name, ...other }), //
+        () => ({ experiment: name, ...other }), //
         // TODO addOrUpdateVariations removeVariations
       ])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#deleteFeature-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#deleteExperiment-property
   destroy: {
-    method: "deleteFeature",
+    method: "deleteExperiment",
     pickId,
   },
   getByName: getByNameCore,
