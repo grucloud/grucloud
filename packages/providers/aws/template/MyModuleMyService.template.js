@@ -112,7 +112,7 @@ const decorate = ({ endpoint, config }) =>
 //   callProp("startsWith", "default."),
 // ]);
 
-// const managedByOther = ({  lives }) =>
+// const managedByOther = ({  lives, config }) =>
 //   live => pipe([
 //     () => live,
 //     get("LoadBalancerArn"),

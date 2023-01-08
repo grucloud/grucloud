@@ -17,6 +17,17 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { Tagger, assignTags } = require("./AppConfigCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
+const managedByOther = ({ lives, config }) =>
+  pipe([
+    get("ExtensionArn"),
+    lives.getById({
+      type: "Extension",
+      group: "AppConfig",
+      providerName: config.providerName,
+    }),
+    get("managedByOther"),
+  ]);
+
 const buildArn = () =>
   pipe([
     get("Arn"),
@@ -53,10 +64,6 @@ const decorate = ({ endpoint, config }) =>
   pipe([
     idToExtensionAssociationId,
     assignArn({ config }),
-    tap((params) => {
-      assert(true);
-    }),
-
     assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
@@ -93,6 +100,8 @@ exports.AppConfigExtensionAssociation = () => ({
   package: "appconfig",
   client: "AppConfig",
   propertiesDefault: {},
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   omitProperties: [
     "ExtensionAssociationId",
     "Arn",

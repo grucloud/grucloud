@@ -1,14 +1,13 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, assign } = require("rubico");
-const { defaultsDeep, when, append, identity } = require("rubico/x");
+const { pipe, tap, get, eq, assign, map } = require("rubico");
+const { defaultsDeep, when, append, identity, pluck } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource, assignTags } = require("./AppConfigCommon");
+const { Tagger, assignTags } = require("./AppConfigCommon");
 
 const pickId = pipe([
   ({ Id, ApplicationId }) => ({ EnvironmentId: Id, ApplicationId }),
@@ -40,10 +39,99 @@ const decorate = ({ endpoint, config }) =>
     assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
-const model = ({ config }) => ({
+exports.AppConfigEnvironment = () => ({
+  type: "Environment",
   package: "appconfig",
   client: "AppConfig",
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  inferName:
+    ({ dependenciesSpec }) =>
+    ({ Name }) =>
+      `${dependenciesSpec.application}::${Name}`,
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        get("ApplicationId"),
+        lives.getById({
+          type: "Application",
+          group: "AppConfig",
+          providerName: config.providerName,
+        }),
+        get("name", live.ApplicationId),
+        append(`::${live.Name}`),
+      ])(),
+  findId: () => pipe([get("Id")]),
+  propertiesDefault: { Monitors: [] },
+  omitProperties: ["Id", "ApplicationId", "State", "Arn"],
+
+  dependencies: {
+    application: {
+      type: "Application",
+      group: "AppConfig",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("ApplicationId"),
+    },
+    alarmRoles: {
+      type: "Role",
+      group: "IAM",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("Monitors"), pluck("AlarmRoleArn")]),
+    },
+    alarms: {
+      type: "MetricAlarm",
+      group: "CloudWatch",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("Monitors"), pluck("AlarmArn")]),
+    },
+  },
+  filterLive: ({ providerConfig, lives }) =>
+    pipe([
+      assign({
+        Monitors: pipe([
+          get("Monitors"),
+          map(
+            assign({
+              AlarmArn: pipe([
+                get("AlarmArn"),
+                replaceWithName({
+                  groupType: "CloudWatch::MetricAlarm",
+                  path: "id",
+                  providerConfig,
+                  lives,
+                }),
+              ]),
+              AlarmRoleArn: pipe([
+                get("AlarmRoleArn"),
+                replaceWithName({
+                  groupType: "IAM::Role",
+                  path: "id",
+                  providerConfig,
+                  lives,
+                }),
+              ]),
+            })
+          ),
+        ]),
+      }),
+    ]),
+  getByName: getByNameCore,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#listEnvironments-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Application", group: "AppConfig" },
+          pickKey: pipe([({ Id }) => ({ ApplicationId: Id })]),
+          method: "listEnvironments",
+          getParam: "Items",
+          config,
+          decorate,
+        }),
+    ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#getEnvironment-property
   getById: {
     method: "getEnvironment",
@@ -66,63 +154,26 @@ const model = ({ config }) => ({
     method: "deleteEnvironment",
     pickId,
   },
-});
-
-exports.AppConfigEnvironment = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { application, iamRole },
     config,
-    findName:
-      ({ lives, config }) =>
-      (live) =>
-        pipe([
-          () => live,
-          get("ApplicationId"),
-          lives.getById({
-            type: "Application",
-            group: "AppConfig",
-            providerName: config.providerName,
-          }),
-          get("name", live.ApplicationId),
-          append(`::${live.Name}`),
-        ])(),
-    findId: () => pipe([get("Id")]),
-    getByName: getByNameCore,
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#listEnvironments-property
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () =>
-          client.getListWithParent({
-            parent: { type: "Application", group: "AppConfig" },
-            pickKey: pipe([({ Id }) => ({ ApplicationId: Id })]),
-            method: "listEnvironments",
-            getParam: "Items",
-            config,
-            decorate,
-          }),
-      ])(),
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { application, iamRole },
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          ApplicationId: getField(application, "Id"),
-          Tags: buildTagsObject({ name, config, namespace, UserTags: Tags }),
-        }),
-        when(
-          () => iamRole,
-          assign({ RetrievalRoleArn: getField(iamRole, "Arn") })
-        ),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        ApplicationId: getField(application, "Id"),
+        Tags: buildTagsObject({ name, config, namespace, UserTags: Tags }),
+      }),
+      when(
+        () => iamRole,
+        assign({ RetrievalRoleArn: getField(iamRole, "Arn") })
+      ),
+    ])(),
+});

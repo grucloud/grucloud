@@ -1,14 +1,23 @@
 const assert = require("assert");
 const { pipe, tap, get, assign, map, pick } = require("rubico");
-const { defaultsDeep, when, append, identity } = require("rubico/x");
+const {
+  defaultsDeep,
+  when,
+  append,
+  identity,
+  keys,
+  includes,
+} = require("rubico/x");
+
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
+const { Tagger, assignTags } = require("./AppConfigCommon");
 
-const { tagResource, untagResource, assignTags } = require("./AppConfigCommon");
+const managedByOther = () => pipe([get("Tags"), keys, includes("Owner")]);
 
 const pickId = pipe([
   ({ Id, ApplicationId }) => ({ ConfigurationProfileId: Id, ApplicationId }),
@@ -40,15 +49,61 @@ const decorate = ({ endpoint, config }) =>
     assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
-const model = ({ config }) => ({
+exports.AppConfigConfigurationProfile = () => ({
+  type: "ConfigurationProfile",
   package: "appconfig",
   client: "AppConfig",
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  omitProperties: ["Id", "ApplicationId", "Arn"],
+  inferName:
+    ({ dependenciesSpec }) =>
+    ({ Name }) =>
+      `${dependenciesSpec.application}::${Name}`,
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        get("ApplicationId"),
+        lives.getById({
+          type: "Application",
+          group: "AppConfig",
+          providerName: config.providerName,
+        }),
+        get("name", live.ApplicationId),
+        append(`::${live.Name}`),
+      ])(),
+  findId: () => pipe([get("Id")]),
+  dependencies: {
+    application: {
+      type: "Application",
+      group: "AppConfig",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("ApplicationId"),
+    },
+  },
+  filterLive: () => pipe([omitIfEmpty(["ValidatorTypes"])]),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
+  getByName: getByNameCore,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#getConfigurationProfile-property
   getById: {
     method: "getConfigurationProfile",
     pickId,
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#listConfigurationProfiles-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Application", group: "AppConfig" },
+          pickKey: pipe([({ Id }) => ({ ApplicationId: Id })]),
+          method: "listConfigurationProfiles",
+          getParam: "Items",
+          config,
+          decorate,
+        }),
+    ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#createConfigurationProfile-property
   create: {
     method: "createConfigurationProfile",
@@ -83,63 +138,26 @@ const model = ({ config }) => ({
     method: "deleteConfigurationProfile",
     pickId,
   },
-});
-
-exports.AppConfigConfigurationProfile = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { application, iamRole },
     config,
-    findName:
-      ({ lives, config }) =>
-      (live) =>
-        pipe([
-          () => live,
-          get("ApplicationId"),
-          lives.getById({
-            type: "Application",
-            group: "AppConfig",
-            providerName: config.providerName,
-          }),
-          get("name", live.ApplicationId),
-          append(`::${live.Name}`),
-        ])(),
-    findId: () => pipe([get("Id")]),
-    getByName: getByNameCore,
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#listConfigurationProfiles-property
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () =>
-          client.getListWithParent({
-            parent: { type: "Application", group: "AppConfig" },
-            pickKey: pipe([({ Id }) => ({ ApplicationId: Id })]),
-            method: "listConfigurationProfiles",
-            getParam: "Items",
-            config,
-            decorate,
-          }),
-      ])(),
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { application, iamRole },
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          ApplicationId: getField(application, "Id"),
-          Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-        }),
-        when(
-          () => iamRole,
-          assign({ RetrievalRoleArn: getField(iamRole, "Arn") })
-        ),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        ApplicationId: getField(application, "Id"),
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      }),
+      when(
+        () => iamRole,
+        assign({ RetrievalRoleArn: getField(iamRole, "Arn") })
+      ),
+    ])(),
+});

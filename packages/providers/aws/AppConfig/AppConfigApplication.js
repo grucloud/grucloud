@@ -4,9 +4,7 @@ const { defaultsDeep, identity } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource, assignTags } = require("./AppConfigCommon");
+const { Tagger, assignTags } = require("./AppConfigCommon");
 
 const pickId = pipe([({ Id }) => ({ ApplicationId: Id })]);
 
@@ -37,11 +35,15 @@ const decorate = ({ endpoint, config }) =>
     assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
-const model = ({ config }) => ({
+exports.AppConfigApplication = () => ({
+  type: "Application",
   package: "appconfig",
   client: "AppConfig",
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#getApplication-property
+  omitProperties: ["Id", "Arn"],
+  inferName: () => get("Name"),
+  findName: () => pipe([get("Name")]),
+  findId: () => pipe([get("Id")]),
   getById: {
     method: "getApplication",
     pickId,
@@ -68,32 +70,22 @@ const model = ({ config }) => ({
     method: "deleteApplication",
     pickId,
   },
-});
-
-exports.AppConfigApplication = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("Name")]),
-    findId: () => pipe([get("Id")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      }),
+    ])(),
+});
