@@ -41,6 +41,10 @@ const { CloudFrontCachePolicy } = require("./CloudFrontCachePolicy");
 const { CloudFrontFunction } = require("./CloudFrontFunction");
 
 const {
+  CloudFrontOriginRequestPolicy,
+} = require("./CloudFrontOriginRequestPolicy");
+
+const {
   CloudFrontResponseHeadersPolicy,
 } = require("./CloudFrontResponseHeadersPolicy");
 
@@ -125,6 +129,18 @@ module.exports = () =>
                 ])
               ),
             ]),
+        },
+        originRequestPolicy: {
+          type: "OriginRequestPolicy",
+          group: "CloudFront",
+          dependencyId: ({ lives, config }) =>
+            get("DefaultCacheBehavior.OriginRequestPolicyId"),
+        },
+        responseHeadersPolicy: {
+          type: "ResponseHeadersPolicy",
+          group: "CloudFront",
+          dependencyId: ({ lives, config }) =>
+            get("DefaultCacheBehavior.ResponseHeadersPolicyId"),
         },
         webAcl: {
           type: "WebACLCloudFront",
@@ -250,6 +266,34 @@ module.exports = () =>
                 })
               ),
               when(
+                get("OriginRequestPolicyId"),
+                assign({
+                  OriginRequestPolicyId: pipe([
+                    get("OriginRequestPolicyId"),
+                    replaceWithName({
+                      groupType: "CloudFront::OriginRequestPolicy",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                })
+              ),
+              when(
+                get("ResponseHeadersPolicyId"),
+                assign({
+                  ResponseHeadersPolicyId: pipe([
+                    get("ResponseHeadersPolicyId"),
+                    replaceWithName({
+                      groupType: "CloudFront::ResponseHeadersPolicy",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                })
+              ),
+              when(
                 get("FunctionAssociations"),
                 assign({
                   FunctionAssociations: pipe([
@@ -365,5 +409,7 @@ module.exports = () =>
       filterLive: ({ lives }) => pipe([pick([])]),
       compare: compare,
     },
+
+    createAwsService(CloudFrontOriginRequestPolicy({ compare })),
     createAwsService(CloudFrontResponseHeadersPolicy({ compare })),
   ]);

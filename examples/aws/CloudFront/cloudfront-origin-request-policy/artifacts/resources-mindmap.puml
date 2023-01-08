@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project cloudfront-origin-request-policy
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudFront
+++++ OriginRequestPolicy (1)
+@endmindmap
