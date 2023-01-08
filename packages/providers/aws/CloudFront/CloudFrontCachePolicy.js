@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, eq } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const decorate = ({ endpoint, live }) =>
@@ -81,14 +81,11 @@ exports.CloudFrontCachePolicy = ({ compare }) => ({
   destroy: {
     method: "deleteCachePolicy",
     pickId: pipe([
-      tap(({ ETag }) => {
+      tap(({ Id, ETag }) => {
         assert(ETag);
+        assert(Id);
       }),
       ({ Id, ETag }) => ({ Id, IfMatch: ETag }),
-      tap(({ Id, IfMatch }) => {
-        assert(Id);
-        assert(IfMatch);
-      }),
     ]),
     ignoreErrorCodes: ["InvalidIfMatchVersion"],
   },

@@ -58,12 +58,16 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ResponseHeadersPolicy", () =>
+  it("ResponseHeadersPolicy", () =>
     pipe([
       () => ({
         groupType: "CloudFront::ResponseHeadersPolicy",
-        livesNotFound: ({ config }) => [{}],
-        skipGetById: true,
+        livesNotFound: ({ config }) => [
+          {
+            Id: "123",
+            ETag: "E123456",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

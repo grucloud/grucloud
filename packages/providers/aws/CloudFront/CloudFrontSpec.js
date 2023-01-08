@@ -40,6 +40,10 @@ const {
 const { CloudFrontCachePolicy } = require("./CloudFrontCachePolicy");
 const { CloudFrontFunction } = require("./CloudFrontFunction");
 
+const {
+  CloudFrontResponseHeadersPolicy,
+} = require("./CloudFrontResponseHeadersPolicy");
+
 const GROUP = "CloudFront";
 const compare = compareAws({});
 
@@ -361,4 +365,5 @@ module.exports = () =>
       filterLive: ({ lives }) => pipe([pick([])]),
       compare: compare,
     },
+    createAwsService(CloudFrontResponseHeadersPolicy({ compare })),
   ]);

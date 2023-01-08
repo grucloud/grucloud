@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project cloudfront-response-header-policy
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudFront
+++++ ResponseHeadersPolicy (1)
+@endmindmap
