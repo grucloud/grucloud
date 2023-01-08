@@ -22,7 +22,7 @@ describe("CloudFront", async function () {
         groupType: "CloudFront::CachePolicy",
         livesNotFound: ({ config }) => [
           {
-            CachePolicy: { Id: "123" },
+            Id: "123",
             ETag: "E123456",
           },
         ],
@@ -55,6 +55,15 @@ describe("CloudFront", async function () {
             CloudFrontOriginAccessIdentity: { Id: "a123s" },
           },
         ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("ResponseHeadersPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "CloudFront::ResponseHeadersPolicy",
+        livesNotFound: ({ config }) => [{}],
+        skipGetById: true,
       }),
       awsResourceTest,
     ])());

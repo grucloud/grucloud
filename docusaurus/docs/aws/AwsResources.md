@@ -97,7 +97,7 @@ List of resources for provider aws:
 * EMRServerless: 
 [Application](./resources/EMRServerless/Application.md)
 * Evidently: 
-[Feature](./resources/Evidently/Feature.md), [Project](./resources/Evidently/Project.md), [Segment](./resources/Evidently/Segment.md)
+[Experiment](./resources/Evidently/Experiment.md), [Feature](./resources/Evidently/Feature.md), [Launch](./resources/Evidently/Launch.md), [Project](./resources/Evidently/Project.md), [Segment](./resources/Evidently/Segment.md)
 * Firehose: 
 [DeliveryStream](./resources/Firehose/DeliveryStream.md)
 * FSx: 
