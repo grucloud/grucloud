@@ -19,14 +19,14 @@ const findDependencyFromEntity =
     ])();
 
 const RamResourceDependencies = {
-  subnet: {
-    type: "Subnet",
-    group: "EC2",
-    arnKey: "SubnetArn",
+  appMesh: {
+    type: "Mesh",
+    group: "AppMesh",
+    arnKey: "metadata.arn",
     dependencyId: findDependencyFromEntity({
-      type: "Subnet",
-      group: "EC2",
-      arnKey: "SubnetArn",
+      type: "Mesh",
+      group: "AppMesh",
+      arnKey: "metadata.arn",
     }),
   },
   ipamPool: {
@@ -47,6 +47,16 @@ const RamResourceDependencies = {
       type: "Rule",
       group: "Route53Resolver",
       arnKey: "Arn",
+    }),
+  },
+  subnet: {
+    type: "Subnet",
+    group: "EC2",
+    arnKey: "SubnetArn",
+    dependencyId: findDependencyFromEntity({
+      type: "Subnet",
+      group: "EC2",
+      arnKey: "SubnetArn",
     }),
   },
   transitGateway: {

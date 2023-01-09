@@ -105,9 +105,10 @@ module.exports = pipe([
         ({
           dependenciesSpec: {
             resourceShare,
-            subnet,
+            appMesh,
             ipamPool,
             resolverRule,
+            subnet,
             transitGateway,
           },
         }) =>
@@ -118,12 +119,14 @@ module.exports = pipe([
             }),
             () => `ram-resource-assoc::${resourceShare}::`,
             switchCase([
-              () => subnet,
-              append(subnet),
+              () => appMesh,
+              append(appMesh),
               () => ipamPool,
               append(ipamPool),
               () => resolverRule,
               append(resolverRule),
+              () => subnet,
+              append(subnet),
               () => transitGateway,
               append(transitGateway),
               () => {

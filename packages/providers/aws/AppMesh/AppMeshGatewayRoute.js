@@ -5,7 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./AppMeshCommon");
+const { Tagger, omitPropertiesMesh, assignTags } = require("./AppMeshCommon");
 
 const buildArn = () =>
   pipe([
@@ -29,6 +29,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html
@@ -37,7 +38,7 @@ exports.AppMeshGatewayRoute = () => ({
   package: "app-mesh",
   client: "AppMesh",
   propertiesDefault: {},
-  omitProperties: ["metadata", "status"],
+  omitProperties: [...omitPropertiesMesh],
   inferName:
     ({ dependenciesSpec: { mesh, virtualGateway } }) =>
     ({ gatewayRouteName }) =>
@@ -79,6 +80,7 @@ exports.AppMeshGatewayRoute = () => ({
       type: "VirtualGateway",
       group: "AppMesh",
       parent: true,
+      // TODO also use meshName
       dependencyId: ({ lives, config }) => get("VirtualGatewayName"),
     },
   },
@@ -125,7 +127,7 @@ exports.AppMeshGatewayRoute = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: {},
     config,
   }) =>
@@ -136,8 +138,8 @@ exports.AppMeshGatewayRoute = () => ({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          value: "tag",
+          UserTags: tags,
+          value: "value",
           key: "key",
         }),
       }),

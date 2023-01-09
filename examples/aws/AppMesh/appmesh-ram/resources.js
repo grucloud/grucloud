@@ -111,4 +111,24 @@ exports.createResources = () => [
       virtualRouter: "my-mesh::my-router",
     }),
   },
+  {
+    type: "ResourceShare",
+    group: "RAM",
+    properties: ({}) => ({
+      allowExternalPrincipals: true,
+      featureSet: "STANDARD",
+      name: "share-mesh",
+    }),
+  },
+  {
+    type: "ResourceAssociation",
+    group: "RAM",
+    properties: ({}) => ({
+      external: false,
+    }),
+    dependencies: ({}) => ({
+      resourceShare: "share-mesh",
+      appMesh: "my-mesh",
+    }),
+  },
 ];

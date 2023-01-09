@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project appmesh-ram
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ AppMesh
+++++ Mesh (1)
+++++ Route (1)
+++++ VirtualNode (1)
+++++ VirtualRouter (1)
+++++ VirtualService (1)
++++ RAM
+++++ ResourceShare (1)
+++++ PrincipalAssociation (1)
+++++ ResourceAssociation (1)
+-- aws-secondary
+
+@endmindmap

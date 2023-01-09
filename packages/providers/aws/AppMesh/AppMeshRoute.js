@@ -1,11 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, pick, and, eq } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./AppMeshCommon");
+const { Tagger, omitPropertiesMesh, assignTags } = require("./AppMeshCommon");
 
 const buildArn = () =>
   pipe([
@@ -29,6 +29,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html
@@ -37,28 +38,28 @@ exports.AppMeshRoute = () => ({
   package: "app-mesh",
   client: "AppMesh",
   propertiesDefault: {},
-  omitProperties: ["metadata", "status"],
+  omitProperties: [...omitPropertiesMesh],
   inferName:
-    ({ dependenciesSpec: { mesh, virtualRouter } }) =>
+    ({ dependenciesSpec: { virtualRouter } }) =>
     ({ routeName }) =>
       pipe([
         tap((params) => {
-          assert(mesh);
           assert(virtualRouter);
           assert(routeName);
         }),
-        () => `${mesh}::${virtualRouter}::${routeName}`,
+        () => `${virtualRouter}::${routeName}`,
       ])(),
   findName:
     ({ lives, config }) =>
-    ({ meshName, virtualRouter, routeName }) =>
+    ({ meshName, virtualRouterName, routeName, ...other }) =>
       pipe([
         tap((params) => {
+          assert(other);
           assert(meshName);
-          assert(virtualRouter);
+          assert(virtualRouterName);
           assert(routeName);
         }),
-        () => `${meshName}::${virtualRouter}::${routeName}`,
+        () => `${meshName}::${virtualRouterName}::${routeName}`,
       ])(),
   findId: () =>
     pipe([
@@ -79,7 +80,27 @@ exports.AppMeshRoute = () => ({
       type: "VirtualRouter",
       group: "AppMesh",
       parent: true,
-      dependencyId: ({ lives, config }) => get("VirtualRouterName"),
+      dependencyId:
+        ({ lives, config }) =>
+        ({ meshName, virtualRouterName }) =>
+          pipe([
+            tap((params) => {
+              assert(meshName);
+              assert(virtualRouterName);
+            }),
+            lives.getByType({
+              providerName: config.providerName,
+              type: "VirtualRouter",
+              group: "AppMesh",
+            }),
+            find(
+              and([
+                eq(get("live.meshName"), meshName),
+                eq(get("live.virtualRouterName"), virtualRouterName),
+              ])
+            ),
+            get("id"),
+          ])(),
     },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html#describeRoute-property
@@ -99,7 +120,7 @@ exports.AppMeshRoute = () => ({
           method: "listRoutes",
           getParam: "routes",
           config,
-          decorate,
+          decorate: () => pipe([getById({})]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html#createRoute-property
@@ -125,19 +146,24 @@ exports.AppMeshRoute = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
+    properties: { tags, ...otherProps },
+    dependencies: { mesh },
     config,
   }) =>
     pipe([
+      tap((params) => {
+        assert(mesh);
+        assert(mesh.config.meshName);
+      }),
       () => otherProps,
       defaultsDeep({
+        meshName: mesh.config.meshName,
         tags: buildTags({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          value: "tag",
+          UserTags: tags,
+          value: "value",
           key: "key",
         }),
       }),

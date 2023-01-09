@@ -5,7 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./AppMeshCommon");
+const { Tagger, omitPropertiesMesh, assignTags } = require("./AppMeshCommon");
 
 const buildArn = () =>
   pipe([
@@ -28,6 +28,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html
@@ -36,7 +37,7 @@ exports.AppMeshVirtualNode = () => ({
   package: "app-mesh",
   client: "AppMesh",
   propertiesDefault: {},
-  omitProperties: ["metadata", "status"],
+  omitProperties: [...omitPropertiesMesh],
   inferName:
     ({ dependenciesSpec: { mesh } }) =>
     ({ virtualNodeName }) =>
@@ -76,7 +77,7 @@ exports.AppMeshVirtualNode = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html#describeVirtualNode-property
   getById: {
     method: "describeVirtualNode",
-    getField: "virtualGateway",
+    getField: "virtualNode",
     pickId,
     decorate,
   },
@@ -88,15 +89,15 @@ exports.AppMeshVirtualNode = () => ({
           parent: { type: "Mesh", group: "AppMesh" },
           pickKey: pipe([pick(["meshName"])]),
           method: "listVirtualNodes",
-          getParam: "virtualGateways",
+          getParam: "virtualNodes",
           config,
-          decorate,
+          decorate: () => pipe([getById({})]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html#createVirtualNode-property
   create: {
     method: "createVirtualNode",
-    pickCreated: ({ payload }) => pipe([get("virtualGateway")]),
+    pickCreated: ({ payload }) => pipe([get("virtualNode")]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html#updateVirtualNode-property
   update: {
@@ -116,19 +117,24 @@ exports.AppMeshVirtualNode = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
+    properties: { tags, ...otherProps },
+    dependencies: { mesh },
     config,
   }) =>
     pipe([
       () => otherProps,
+      tap((params) => {
+        assert(mesh);
+        assert(mesh.config.meshName);
+      }),
       defaultsDeep({
+        meshName: mesh.config.meshName,
         tags: buildTags({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          value: "tag",
+          UserTags: tags,
+          value: "value",
           key: "key",
         }),
       }),

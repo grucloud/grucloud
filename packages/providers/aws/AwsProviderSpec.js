@@ -6,6 +6,7 @@ const {
   callProp,
   unless,
   isEmpty,
+  isIn,
 } = require("rubico/x");
 
 const assert = require("assert");
@@ -149,6 +150,17 @@ const findServicesPerRegion = ({ region = "us-east-1" }) =>
     }),
   ])();
 
+const excludeGroups = ({ config: { includeGroups = [] } }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    unless(
+      () => isEmpty(includeGroups),
+      filter(isIn(["IAM", "CloudWatchLogs", ...includeGroups]))
+    ),
+  ]);
+
 exports.fnSpecs = (config) =>
   pipe([
     tap(() => {
@@ -170,6 +182,10 @@ exports.fnSpecs = (config) =>
         append(GROUPS_MISSING),
         unless(() => config.noGlobalEndpoint, append(GROUPS_GLOBAL)),
         appendMissingServices(config),
+        tap((params) => {
+          assert(true);
+        }),
+        excludeGroups({ config }),
         callProp("sort", (a, b) => a.localeCompare(b)),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
       ])(),

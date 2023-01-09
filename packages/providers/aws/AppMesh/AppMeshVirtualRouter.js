@@ -5,7 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./AppMeshCommon");
+const { Tagger, omitPropertiesMesh, assignTags } = require("./AppMeshCommon");
 
 const buildArn = () =>
   pipe([
@@ -28,6 +28,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html
@@ -36,7 +37,7 @@ exports.AppMeshVirtualRouter = () => ({
   package: "app-mesh",
   client: "AppMesh",
   propertiesDefault: {},
-  omitProperties: ["metadata", "status"],
+  omitProperties: [...omitPropertiesMesh],
   inferName:
     ({ dependenciesSpec: { mesh } }) =>
     ({ virtualRouterName }) =>
@@ -57,6 +58,7 @@ exports.AppMeshVirtualRouter = () => ({
         }),
         () => `${meshName}::${virtualRouterName}`,
       ])(),
+
   findId: () =>
     pipe([
       get("metadata.arn"),
@@ -90,7 +92,7 @@ exports.AppMeshVirtualRouter = () => ({
           method: "listVirtualRouters",
           getParam: "virtualRouters",
           config,
-          decorate,
+          decorate: () => pipe([getById({})]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html#createVirtualRouter-property
@@ -116,19 +118,24 @@ exports.AppMeshVirtualRouter = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
+    properties: { tags, ...otherProps },
+    dependencies: { mesh },
     config,
   }) =>
     pipe([
+      tap((params) => {
+        assert(mesh);
+        assert(mesh.config.meshName);
+      }),
       () => otherProps,
       defaultsDeep({
+        meshName: mesh.config.meshName,
         tags: buildTags({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          value: "tag",
+          UserTags: tags,
+          value: "value",
           key: "key",
         }),
       }),
