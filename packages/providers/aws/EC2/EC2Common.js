@@ -34,25 +34,28 @@ exports.findDependenciesSubnet = ({ live }) => ({
 });
 
 exports.imageDescriptionFromId =
-  ({ ec2 }) =>
+  ({ endpoint }) =>
   ({ ImageId }) =>
     pipe([
       tap(() => {
-        assert(ec2);
+        assert(endpoint);
         assert(ImageId);
       }),
       () => ({ ImageIds: [ImageId] }),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeImages-property
-      ec2().describeImages,
+      endpoint().describeImages,
       get("Images"),
       first,
       pick(["Description"]),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
-exports.fetchImageIdFromDescription = ({ ec2 }) =>
+exports.fetchImageIdFromDescription = ({ endpoint }) =>
   pipe([
     tap((params) => {
-      assert(ec2);
+      assert(endpoint);
     }),
     unless(isEmpty, ({ Description }) =>
       pipe([
@@ -68,7 +71,7 @@ exports.fetchImageIdFromDescription = ({ ec2 }) =>
             },
           ],
         }),
-        ec2().describeImages,
+        endpoint().describeImages,
         get("Images"),
         first,
         get("ImageId"),

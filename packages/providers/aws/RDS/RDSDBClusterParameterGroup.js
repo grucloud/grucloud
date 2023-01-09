@@ -51,10 +51,23 @@ const isDefaultParameterGroup = pipe([
 
 const managedByOther = () => pipe([isDefaultParameterGroup]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
+exports.RDSDBClusterParameterGroup = ({ compare }) => ({
+  type: "DBClusterParameterGroup",
   package: "rds",
   client: "RDS",
   ignoreErrorCodes: ["DBParameterGroupNotFoundFault"],
+  propertiesDefault: {},
+  omitProperties: [
+    "SubnetGroupStatus",
+    "VpcId",
+    "DBClusterParameterGroupArn",
+    "SubnetIds",
+  ],
+  inferName: () => get("DBClusterParameterGroupName"),
+  // compare: compare({
+  //   filterTarget: () => pipe([omit(["compare"])]),
+  // }),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBClusterParameterGroups-property
   getById: {
     method: "describeDBClusterParameterGroups",
@@ -90,60 +103,39 @@ const model = ({ config }) => ({
     method: "deleteDBClusterParameterGroup",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
-exports.RDSDBClusterParameterGroup = ({ compare }) => ({
-  type: "DBClusterParameterGroup",
-  propertiesDefault: {},
-  omitProperties: [
-    "SubnetGroupStatus",
-    "VpcId",
-    "DBClusterParameterGroupArn",
-    "SubnetIds",
-  ],
-  inferName: () => get("DBClusterParameterGroupName"),
-  // compare: compare({
-  //   filterTarget: () => pipe([omit(["compare"])]),
-  // }),
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      managedByOther,
-      cannotBeDeleted: managedByOther,
-      findName: () =>
-        pipe([
-          get("DBClusterParameterGroupName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("DBClusterParameterGroupName"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([
-          ({ name }) => ({ DBClusterParameterGroupName: name }),
-          getById({}),
-        ]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { Tags, ...otherProps },
-        dependencies: {},
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-          }),
-        ])(),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
+  findName: () =>
+    pipe([
+      get("DBClusterParameterGroupName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("DBClusterParameterGroupName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ DBClusterParameterGroupName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
     }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])(),
 });

@@ -13,6 +13,11 @@ exports.isAuroraEngine = isAuroraEngine;
 const isNeptune = pipe([get("Engine"), callProp("startsWith", "neptune")]);
 exports.isNeptune = isNeptune;
 
+exports.environmentVariables = [
+  { path: "MasterUsername", suffix: "MASTER_USERNAME" },
+  { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
+];
+
 exports.omitAllocatedStorage = pipe([
   when(or([isAuroraEngine, isNeptune]), omit(["AllocatedStorage"])),
 ]);
@@ -22,6 +27,14 @@ exports.omitUsernamePassword = when(
   omit(["MasterUsername", "MasterUserPassword"])
 );
 
+// TODO
+// When MultiAZ = true, here is the error:
+// AutoMinorVersionUpgrade can only be specified for a Multi-AZ DB cluster. You can use CreateDBInstance to set AutoMinorVersionUpgrade for a DB instance in a different type of DB cluster.
+// For now, omit omitAutoMinorVersionUpgrade
+exports.omitAutoMinorVersionUpgrade = pipe([
+  when(() => true /*not(get("MultiAZ"))*/, omit(["AutoMinorVersionUpgrade"])),
+]);
+
 exports.Tagger = createTagger({
   methodTagResource: "addTagsToResource",
   methodUnTagResource: "removeTagsFromResource",
@@ -29,24 +42,6 @@ exports.Tagger = createTagger({
   TagsKey: "Tags",
   UnTagsKey: "TagKeys",
 });
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#addTagsToResource-property
-exports.tagResource =
-  ({ endpoint }) =>
-  ({ id }) =>
-    pipe([
-      (Tags) => ({ ResourceName: id, Tags }),
-      endpoint().addTagsToResource,
-    ]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#removeTagsFromResource-property
-exports.untagResource =
-  ({ endpoint }) =>
-  ({ id }) =>
-    pipe([
-      (TagKeys) => ({ ResourceName: id, TagKeys }),
-      endpoint().removeTagsFromResource,
-    ]);
 
 exports.renameTagList = pipe([
   assign({ Tags: get("TagList") }),

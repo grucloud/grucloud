@@ -49,6 +49,14 @@ describe("RDS", async function () {
       }),
       awsResourceTest,
     ])());
+  it("DBEngineVersion", () =>
+    pipe([
+      () => ({
+        groupType: "RDS::DBEngineVersion",
+        livesNotFound: ({ config }) => [{ Engine: "1", EngineVersion: "1" }],
+      }),
+      awsResourceTest,
+    ])());
   it("DBProxy", () =>
     pipe([
       () => ({

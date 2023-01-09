@@ -93,7 +93,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
             get("LaunchTemplateData"),
             when(
               get("ImageId"),
-              assign({ Image: imageDescriptionFromId({ ec2 }) })
+              assign({ Image: imageDescriptionFromId({ endpoint }) })
             ),
             omit(["TagSpecifications"]),
             DecodeUserData,
@@ -179,7 +179,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
           assert(ec2);
         }),
         () => Image,
-        fetchImageIdFromDescription({ ec2 }),
+        fetchImageIdFromDescription({ endpoint: ec2 }),
         (ImageId) =>
           pipe([
             () => otherProperties,
