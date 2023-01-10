@@ -63,6 +63,7 @@ const GROUPS = [
   ["Evidently", "evidently"],
   ["Firehose", "firehose"],
   ["FSx", "fsx"],
+  ["Imagebuilder", "imagebuilder"],
   ["IVS", "ivs"],
   //["Ivschat", "ivschat"],
   ["GuardDuty", "guardduty"],
