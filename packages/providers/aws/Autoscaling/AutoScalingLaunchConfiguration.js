@@ -31,10 +31,10 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
 
   const client = AwsClient({ spec, config })(autoScaling);
 
-  const decorate = ({}) =>
+  const decorate = ({ endpoint }) =>
     pipe([
       assign({
-        Image: imageDescriptionFromId({ ec2 }),
+        Image: imageDescriptionFromId({ endpoint }),
       }),
     ]);
 
@@ -87,7 +87,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   }) =>
     pipe([
       () => Image,
-      fetchImageIdFromDescription({ ec2 }),
+      fetchImageIdFromDescription({ endpoint: ec2 }),
       (ImageId) =>
         pipe([
           () => otherProps,
