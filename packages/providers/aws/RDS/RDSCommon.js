@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, assign, omit, get, eq, or } = require("rubico");
-const { find, when, callProp } = require("rubico/x");
+const { find, when, callProp, defaultsDeep } = require("rubico/x");
 const { createTagger } = require("../AwsTagger");
 
 const { createEndpoint } = require("../AwsCommon");
@@ -13,6 +13,18 @@ exports.isAuroraEngine = isAuroraEngine;
 const isNeptune = pipe([get("Engine"), callProp("startsWith", "neptune")]);
 exports.isNeptune = isNeptune;
 
+exports.assignManageMasterUserPassword = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  when(
+    get("MasterUserSecret"),
+    pipe([
+      defaultsDeep({ ManageMasterUserPassword: true }),
+      omit(["MasterUserSecret", "MasterUserPassword"]),
+    ])
+  ),
+]);
 exports.environmentVariables = [
   { path: "MasterUsername", suffix: "MASTER_USERNAME" },
   { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },

@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick, switchCase, omit } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  get,
+  eq,
+  pick,
+  switchCase,
+  omit,
+  or,
+} = require("rubico");
 const { defaultsDeep, when, pluck } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -9,7 +19,7 @@ const {
   Tagger,
   renameTagList,
   omitAllocatedStorage,
-  environmentVariables,
+  assignManageMasterUserPassword,
   findDependenciesSecret,
   isAuroraEngine,
   omitUsernamePassword,
@@ -61,7 +71,13 @@ const omitStorageThroughput = when(
 );
 
 const decorate = ({ endpoint }) =>
-  pipe([renameTagList, omitStorageThroughput, omitAllocatedStorage]);
+  pipe([
+    //
+    renameTagList,
+    omitStorageThroughput,
+    omitAllocatedStorage,
+    assignManageMasterUserPassword,
+  ]);
 
 exports.DBInstance = ({ compare }) => ({
   type: "DBInstance",
@@ -95,6 +111,7 @@ exports.DBInstance = ({ compare }) => ({
     secret: {
       type: "Secret",
       group: "SecretsManager",
+      excludeDefaultDependencies: true,
       dependencyId: findDependenciesSecret({
         secretField: "username",
         rdsUsernameField: "MasterUsername",
@@ -172,6 +189,7 @@ exports.DBInstance = ({ compare }) => ({
     "MonitoringRoleArn",
     "PerformanceInsightsKMSKeyId",
     "NetworkType", //TODO
+    "CertificateDetails",
   ],
   compare: compare({
     filterAll: () =>
@@ -203,14 +221,21 @@ exports.DBInstance = ({ compare }) => ({
       filterLiveDbInstance,
     ]),
   filterLiveExtra: () => pipe([omitUsernamePassword]),
-  environmentVariables: pipe([
-    () => environmentVariables,
-    map(
-      defaultsDeep({
-        rejectEnvironmentVariable: () => pipe([get("DBClusterIdentifier")]),
-      })
-    ),
-  ])(),
+  environmentVariables: [
+    {
+      path: "MasterUsername",
+      suffix: "MASTER_USERNAME",
+      rejectEnvironmentVariable: () => pipe([or([get("DBClusterIdentifier")])]),
+    },
+    {
+      path: "MasterUserPassword",
+      suffix: "MASTER_USER_PASSWORD",
+      rejectEnvironmentVariable: () =>
+        pipe([
+          or([get("ManageMasterUserPassword"), get("DBClusterIdentifier")]),
+        ]),
+    },
+  ],
   getById: {
     pickId,
     method: "describeDBInstances",
@@ -299,9 +324,14 @@ exports.DBInstance = ({ compare }) => ({
       () => otherProps,
       defaultsDeep({
         DBInstanceIdentifier: name,
-        DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(
+        () => dbSubnetGroup,
+        defaultsDeep({
+          DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
+        })
+      ),
       when(() => kmsKey, defaultsDeep({ KmsKeyId: getField(kmsKey, "Arn") })),
       switchCase([
         () => dbCluster,
@@ -313,25 +343,13 @@ exports.DBInstance = ({ compare }) => ({
               securityGroups
             ),
           }),
-          switchCase([
+          when(
             () => secret,
             defaultsDeep({
               MasterUsername: getField(secret, "SecretString.username"),
               MasterUserPassword: getField(secret, "SecretString.password"),
-            }),
-            defaultsDeep({
-              MasterUsername: () =>
-                `process.env.${envVarName({
-                  name,
-                  suffix: "MasterUsername",
-                })}`,
-              MasterUserPassword: () =>
-                `process.env.${envVarName({
-                  name,
-                  suffix: "MasterUserPassword",
-                })}`,
-            }),
-          ]),
+            })
+          ),
         ]),
       ]),
       when(
