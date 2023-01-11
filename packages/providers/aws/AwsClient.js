@@ -507,6 +507,7 @@ const AwsClient =
                 lives,
                 config,
                 endpoint,
+                getById: getById && getById({ lives, config }),
               }),
               tap(() => {
                 logger.info(`created ${groupType}, ${name}`);

@@ -1875,6 +1875,7 @@
             "ssm",
             "ssm-contacts",
             "ssm-incidents",
+            "ssm-sap",
             "sso",
             "sso-oidc",
             "stepfunctions",

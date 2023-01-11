@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe.only("Imagebuilder", async function () {
+describe("Imagebuilder", async function () {
   it.skip("Component", () =>
     pipe([
       () => ({
@@ -12,11 +12,17 @@ describe.only("Imagebuilder", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ContainerRecipe", () =>
+  it("ContainerRecipe", () =>
     pipe([
       () => ({
         groupType: "Imagebuilder::ContainerRecipe",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            arn: `arn:aws:imagebuilder:${
+              config.region
+            }:${config.accountId()}:container-recipe/my-repo/1.0.0`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -50,7 +56,7 @@ describe.only("Imagebuilder", async function () {
           {
             arn: `arn:aws:imagebuilder:${
               config.region
-            }:${config.accountId()}:distribution-configuration/image-pipeline/my-pipeline-ko`,
+            }:${config.accountId()}:image-pipeline/my-pipeline-ko`,
           },
         ],
       }),

@@ -28,6 +28,8 @@ List of resources for provider aws:
 [GatewayRoute](./resources/AppMesh/GatewayRoute.md), [Mesh](./resources/AppMesh/Mesh.md), [Route](./resources/AppMesh/Route.md), [VirtualGateway](./resources/AppMesh/VirtualGateway.md), [VirtualNode](./resources/AppMesh/VirtualNode.md), [VirtualRouter](./resources/AppMesh/VirtualRouter.md), [VirtualService](./resources/AppMesh/VirtualService.md)
 * AppRunner: 
 [Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
+* AppStream: 
+[AppBlock](./resources/AppStream/AppBlock.md), [Application](./resources/AppStream/Application.md), [DirectoryConfig](./resources/AppStream/DirectoryConfig.md), [Fleet](./resources/AppStream/Fleet.md), [ImageBuilder](./resources/AppStream/ImageBuilder.md), [Stack](./resources/AppStream/Stack.md), [User](./resources/AppStream/User.md), [UsageReportSubscription](./resources/AppStream/UsageReportSubscription.md)
 * AppSync: 
 [DataSource](./resources/AppSync/DataSource.md), [Function](./resources/AppSync/Function.md), [GraphqlApi](./resources/AppSync/GraphqlApi.md), [Resolver](./resources/AppSync/Resolver.md)
 * Athena: 
@@ -45,7 +47,7 @@ List of resources for provider aws:
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
 * CloudFront: 
-[CachePolicy](./resources/CloudFront/CachePolicy.md), [Distribution](./resources/CloudFront/Distribution.md), [Function](./resources/CloudFront/Function.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md)
+[CachePolicy](./resources/CloudFront/CachePolicy.md), [Distribution](./resources/CloudFront/Distribution.md), [Function](./resources/CloudFront/Function.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md), [OriginRequestPolicy](./resources/CloudFront/OriginRequestPolicy.md), [ResponseHeadersPolicy](./resources/CloudFront/ResponseHeadersPolicy.md)
 * CloudHSMV2: 
 [Cluster](./resources/CloudHSMV2/Cluster.md), [Hsm](./resources/CloudHSMV2/Hsm.md)
 * CloudTrail: 
@@ -114,6 +116,8 @@ List of resources for provider aws:
 [OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
 * IdentityStore: 
 [GroupMembership](./resources/IdentityStore/GroupMembership.md), [User](./resources/IdentityStore/User.md), [Group](./resources/IdentityStore/Group.md)
+* Imagebuilder: 
+[Component](./resources/Imagebuilder/Component.md), [ContainerRecipe](./resources/Imagebuilder/ContainerRecipe.md), [DistributionConfiguration](./resources/Imagebuilder/DistributionConfiguration.md), [Image](./resources/Imagebuilder/Image.md), [ImagePipeline](./resources/Imagebuilder/ImagePipeline.md), [ImageRecipe](./resources/Imagebuilder/ImageRecipe.md), [InfrastructureConfiguration](./resources/Imagebuilder/InfrastructureConfiguration.md)
 * Inspector2: 
 [DelegatedAdminAccount](./resources/Inspector2/DelegatedAdminAccount.md), [Enabler](./resources/Inspector2/Enabler.md), [OrganizationConfiguration](./resources/Inspector2/OrganizationConfiguration.md)
 * IVS: 
@@ -145,7 +149,7 @@ List of resources for provider aws:
 * RAM: 
 [ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * RDS: 
-[DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBClusterEndpoint](./resources/RDS/DBClusterEndpoint.md), [DBClusterParameterGroup](./resources/RDS/DBClusterParameterGroup.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBInstance](./resources/RDS/DBInstance.md), [EventSubscription](./resources/RDS/EventSubscription.md)
+[DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBClusterEndpoint](./resources/RDS/DBClusterEndpoint.md), [DBEngineVersion](./resources/RDS/DBEngineVersion.md), [DBClusterParameterGroup](./resources/RDS/DBClusterParameterGroup.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBInstance](./resources/RDS/DBInstance.md), [EventSubscription](./resources/RDS/EventSubscription.md)
 * Redshift: 
 [Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md)
 * Route53: 

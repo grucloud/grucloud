@@ -25,6 +25,7 @@ const GROUPS = [
   ["AppRunner", "apprunner"],
   ["ApplicationAutoScaling", "application-autoscaling"],
   ["Appflow", "appflow"],
+  ["AppStream", "appstream"],
   ["AppSync", "appsync"],
   ["Athena", "athena"],
   ["AuditManager", "auditmanager"],

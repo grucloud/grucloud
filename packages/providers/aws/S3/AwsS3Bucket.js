@@ -41,6 +41,19 @@ const {
 
 const { createS3 } = require("./AwsS3Common");
 
+const rejectPrefixes = ["appstream", "cf-template"];
+
+const managedByOther =
+  () =>
+  ({ Name }) =>
+    pipe([
+      tap((params) => {
+        assert(Name);
+      }),
+      () => rejectPrefixes,
+      any((prefix) => Name.startsWith(prefix)),
+    ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
   const s3 = createS3(config);
@@ -775,6 +788,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   return {
     spec,
     config: clientConfig,
+    managedByOther,
     findNamespace,
     findId,
     getByName,
