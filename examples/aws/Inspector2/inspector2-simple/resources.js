@@ -14,7 +14,7 @@ exports.createResources = () => [
     type: "Enabler",
     group: "Inspector2",
     properties: ({}) => ({
-      resourceTypes: ["EC2", "ECR"],
+      resourceTypes: ["EC2", "ECR", "LAMBDA"],
     }),
   },
   {

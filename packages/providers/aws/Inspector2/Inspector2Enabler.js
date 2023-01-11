@@ -1,11 +1,9 @@
 const assert = require("assert");
-const { pipe, tap, get, or, eq } = require("rubico");
+const { pipe, tap, get, or, eq, reduce, switchCase } = require("rubico");
 const {
   defaultsDeep,
   first,
-  unless,
-  when,
-  append,
+  isEmpty,
   callProp,
   differenceWith,
   isDeepEqual,
@@ -13,7 +11,7 @@ const {
 
 const { createAwsResource } = require("../AwsClient");
 
-const resourceTypesAll = ["ECR", "EC2"];
+const resourceTypesAll = ["EC2", "ECR", "LAMBDA"];
 
 const cannotBeDeleted = () => pipe([eq(get("state.status"), "DISABLED")]);
 
@@ -28,16 +26,19 @@ const model = ({ config }) => ({
       pipe([
         get("accounts"),
         first,
-        ({ resourceState: { ec2, ecr }, state }) =>
+        ({ resourceState, state }) =>
           pipe([
-            () => [],
-            when(
-              pipe([() => ec2.status, callProp("startsWith", "ENA")]),
-              append("EC2")
-            ),
-            when(
-              pipe([() => ecr.status, callProp("startsWith", "ENA")]),
-              append("ECR")
+            () => resourceTypesAll,
+            reduce(
+              (acc, type) =>
+                pipe([
+                  () => resourceState,
+                  get(type.toLowerCase()),
+                  get("status"),
+                  callProp("startsWith", "ENA"),
+                  switchCase([isEmpty, () => acc, [...acc, type]]),
+                ])(),
+              []
             ),
             (resourceTypes) => ({
               resourceTypes,
