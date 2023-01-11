@@ -1,24 +1,33 @@
 const assert = require("assert");
-const { pipe, tap, pick } = require("rubico");
+const { pipe, tap, pick, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
 const pickId = pipe([pick(["delegatedAdminAccountId"])]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Inspector2.html
+exports.Inspector2DelegatedAdminAccount = () => ({
+  type: "DelegatedAdminAccount",
   package: "inspector2",
   client: "Inspector2",
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  findName: () => pipe([() => "default"]),
+  findId: () => pipe([() => "default"]),
+  inferName: () => () => "default",
+  omitProperties: ["status", "delegatedAdminAccountId"],
+  dependencies: {
+    account: {
+      type: "Account",
+      group: "Organisations",
+      dependencyId: () => pipe([get("delegatedAdminAccountId")]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Inspector2.html#listDelegatedAdminAccounts-property
   getList: {
     method: "listDelegatedAdminAccounts",
     getParam: "delegatedAdminAccounts",
     decorate: ({ getById }) =>
       pipe([
-        tap((params) => {
-          assert(params);
-        }),
         ({ accountId, ...other }) => ({
           delegatedAdminAccountId: accountId,
           ...other,
@@ -29,51 +38,36 @@ const model = ({ config }) => ({
   create: {
     method: "enableDelegatedAdminAccount",
     pickCreated: ({ payload }) => pipe([() => payload]),
-    filterParams: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Inspector2.html#disableDelegatedAdminAccount-property
   destroy: {
     method: "disableDelegatedAdminAccount",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Inspector2.html
-exports.Inspector2DelegatedAdminAccount = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () => pipe([() => "default"]),
-    findId: () => pipe([() => "default"]),
-    //TODO
-    update:
-      ({ endpoint }) =>
-      ({ payload, live }) =>
-        pipe([
-          () => live,
-          endpoint().disableDelegatedAdminAccount,
-          () => payload,
-          endpoint().enableDelegatedAdminAccount,
-        ])(),
-    getByName: ({ getList, endpoint, getById }) => pipe([getList]),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: { account },
-    }) =>
+  //TODO
+  update:
+    ({ endpoint }) =>
+    ({ payload, live }) =>
       pipe([
-        tap((params) => {
-          assert(account);
-        }),
-        () => otherProps,
-        defaultsDeep({
-          delegatedAdminAccountId: getField(account, "Id"),
-        }),
+        () => live,
+        endpoint().disableDelegatedAdminAccount,
+        () => payload,
+        endpoint().enableDelegatedAdminAccount,
       ])(),
-  });
+  getByName: ({ getList, endpoint, getById }) => pipe([getList]),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: { account },
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(account);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        delegatedAdminAccountId: getField(account, "Id"),
+      }),
+    ])(),
+});
