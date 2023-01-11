@@ -29,6 +29,8 @@ const {
   append,
   values,
   first,
+  pluck,
+  isIn,
 } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 
@@ -81,6 +83,95 @@ const removeLastCharacter = callProp("slice", 0, -1);
 exports.removeLastCharacter = removeLastCharacter;
 
 const Route53RecordDependencies = {
+  appRunnerCustomDomain: {
+    type: "CustomDomain",
+    group: "AppRunner",
+    parent: true,
+    parentForName: true,
+    dependencyId:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          tap((params) => {
+            assert(live.Name);
+          }),
+          lives.getByType({
+            type: "CustomDomain",
+            group: "AppRunner",
+            providerName: config.providerName,
+          }),
+          find(
+            and([
+              eq(get("live.CertificateValidationRecords[0].Name"), live.Name),
+              () => eq(get("Type"), "CNAME")(live),
+            ])
+          ),
+          pick(["id", "name"]),
+        ])(),
+  },
+  appRunnerCustomDomain2: {
+    type: "CustomDomain",
+    typeDisplay: "2",
+    group: "AppRunner",
+    parent: true,
+    parentForName: true,
+    dependencyId:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          lives.getByType({
+            type: "CustomDomain",
+            group: "AppRunner",
+            providerName: config.providerName,
+          }),
+          find(
+            and([
+              eq(get("live.CertificateValidationRecords[1].Name"), live.Name),
+              () => eq(get("Type"), "CNAME")(live),
+            ])
+          ),
+          pick(["id", "name"]),
+        ])(),
+  },
+  appRunnerService: {
+    type: "Service",
+    group: "AppRunner",
+    parent: true,
+    parentForName: true,
+    dependencyId: ({ lives, config }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        switchCase([
+          eq(get("Type"), "CNAME"),
+          pipe([
+            get("ResourceRecords", []),
+            pluck("Value"),
+            tap((params) => {
+              assert(true);
+            }),
+            (Values) =>
+              pipe([
+                lives.getByType({
+                  type: "Service",
+                  group: "AppRunner",
+                  providerName: config.providerName,
+                }),
+                tap((params) => {
+                  assert(true);
+                }),
+                find(pipe([get("live.ServiceUrl"), isIn(Values)])),
+                pick(["id", "name"]),
+                tap((params) => {
+                  assert(true);
+                }),
+              ])(),
+          ]),
+          () => undefined,
+        ]),
+      ]),
+  },
   elasticIpAddress: {
     type: "ElasticIpAddress",
     group: "EC2",
@@ -305,11 +396,11 @@ exports.Route53Record = ({ spec, config }) => {
           assert(true);
         }),
         //TODO
-        map(({ type, group, dependencyId }) =>
+        map(({ type, typeDisplay, group, dependencyId }) =>
           pipe([
             () => live,
             dependencyId({ lives, config }),
-            (id) => ({ type, group, id }),
+            (id) => ({ type, group, id, typeDisplay }),
           ])()
         ),
         tap((params) => {
@@ -327,8 +418,8 @@ exports.Route53Record = ({ spec, config }) => {
               ({ group, type }) =>
                 `record::${group}::${type}::${live.Type}::${live.Name}`,
               pipe([
-                ({ group, type, id }) =>
-                  `record::${group}::${type}::${live.Type}::${id.name}`,
+                ({ group, type, typeDisplay = "", id }) =>
+                  `record::${group}::${type}${typeDisplay}::${live.Type}::${id.name}`,
                 when(
                   () => live.SetIdentifier,
                   append(`::${live.SetIdentifier}`)
@@ -559,6 +650,58 @@ exports.Route53Record = ({ spec, config }) => {
       ]),
     ])();
 
+  const appRunnerCustomDomainRecord = ({ appRunnerCustomDomain }) =>
+    pipe([
+      () => appRunnerCustomDomain,
+      unless(
+        isEmpty,
+        pipe([
+          () => ({
+            Name: getField(
+              appRunnerCustomDomain,
+              "CertificateValidationRecords[0].Name"
+            ),
+            ResourceRecords: [
+              {
+                Value: getField(
+                  appRunnerCustomDomain,
+                  "CertificateValidationRecords[0].Value"
+                ),
+              },
+            ],
+            TTL: 300,
+            Type: "CNAME",
+          }),
+        ])
+      ),
+    ])();
+
+  const appRunnerCustomDomain2Record = ({ appRunnerCustomDomain2 }) =>
+    pipe([
+      () => appRunnerCustomDomain2,
+      unless(
+        isEmpty,
+        pipe([
+          () => ({
+            Name: getField(
+              appRunnerCustomDomain2,
+              "CertificateValidationRecords[1].Name"
+            ),
+            ResourceRecords: [
+              {
+                Value: getField(
+                  appRunnerCustomDomain2,
+                  "CertificateValidationRecords[1].Value"
+                ),
+              },
+            ],
+            TTL: 300,
+            Type: "CNAME",
+          }),
+        ])
+      ),
+    ])();
+
   const certificateRecord = ({ certificate }) =>
     pipe([
       () => certificate,
@@ -686,6 +829,8 @@ exports.Route53Record = ({ spec, config }) => {
     name,
     properties = {},
     dependencies: {
+      appRunnerCustomDomain,
+      appRunnerCustomDomain2,
       apiGatewayV2DomainName,
       certificate,
       distribution,
@@ -706,6 +851,8 @@ exports.Route53Record = ({ spec, config }) => {
         () => healthCheck,
         defaultsDeep({ HealthCheckId: getField(healthCheck, "Id") })
       ),
+      defaultsDeep(appRunnerCustomDomainRecord({ appRunnerCustomDomain })),
+      defaultsDeep(appRunnerCustomDomain2Record({ appRunnerCustomDomain2 })),
       defaultsDeep(certificateRecord({ certificate })),
       defaultsDeep(loadBalancerRecord({ loadBalancer, hostedZone })),
       defaultsDeep(apiGatewayV2Record({ apiGatewayV2DomainName, hostedZone })),

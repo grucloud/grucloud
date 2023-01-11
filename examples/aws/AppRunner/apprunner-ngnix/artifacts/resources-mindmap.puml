@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project apprunner-ngnix
+skinparam monochrome true
++ Infra
+++ aws
++++ AppRunner
+++++ CustomDomain (1)
+++++ Service (1)
++++ Route53
+++++ HostedZone (1)
+++++ Record (3)
++++ Route53Domains
+++++ Domain (1)
+@endmindmap

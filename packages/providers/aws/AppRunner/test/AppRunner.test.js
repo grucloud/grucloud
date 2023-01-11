@@ -4,23 +4,61 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("AppRunner", async function () {
+  it("AutoScalingConfiguration", () =>
+    pipe([
+      () => ({
+        groupType: "AppRunner::AutoScalingConfiguration",
+        livesNotFound: ({ config }) => [
+          {
+            AutoScalingConfigurationArn: `arn:aws:apprunner:${
+              config.region
+            }:${config.accountId()}:autoscalingconfiguration/DefaultConfigurationko/1/00000000000000000000000000000001`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Connection", () =>
     pipe([
       () => ({
         groupType: "AppRunner::Connection",
         livesNotFound: ({ config }) => [
           {
-            ConnectionArn: `arn:aws:apprunner:us-east-1:${config.accountId()}:connection/mock-server/4d97761b3685416bb95d7debd86ca5a8`,
+            ConnectionName: "conn1",
+            ConnectionArn: `arn:aws:apprunner:${
+              config.region
+            }:${config.accountId()}:connection/mock-server/4d97761b3685416bb95d7debd86ca5a8`,
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("ObservabilityConfiguration", () =>
+  it("CustomDomain", () =>
     pipe([
       () => ({
-        groupType: "AppRunner::observabilityConfiguration",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "AppRunner::CustomDomain",
+        livesNotFound: ({ config }) => [
+          {
+            DomainName: "runner.grucloud.org",
+            ServiceArn: `arn:aws:apprunner:${
+              config.region
+            }:${config.accountId()}:service/mock-server/4d97761b3685416bb95d7debd86ca5a8`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("ObservabilityConfiguration", () =>
+    pipe([
+      () => ({
+        groupType: "AppRunner::ObservabilityConfiguration",
+        livesNotFound: ({ config }) => [
+          {
+            ObservabilityConfigurationArn: `arn:aws:apprunner:${
+              config.region
+            }:${config.accountId()}:observabilityconfiguration/DefaultConfigurationKO/1/00000000000000000000000000000001`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -30,7 +68,9 @@ describe("AppRunner", async function () {
         groupType: "AppRunner::Service",
         livesNotFound: ({ config }) => [
           {
-            ServiceArn: `arn:aws:apprunner:us-east-1:${config.accountId()}:service/mock-server/4d97761b3685416bb95d7debd86ca5a8`,
+            ServiceArn: `arn:aws:apprunner:${
+              config.region
+            }:${config.accountId()}:service/mock-server/4d97761b3685416bb95d7debd86ca5a8`,
           },
         ],
       }),
@@ -42,7 +82,9 @@ describe("AppRunner", async function () {
         groupType: "AppRunner::VpcConnector",
         livesNotFound: ({ config }) => [
           {
-            VpcConnectorArn: `arn:aws:apprunner:us-east-1:${config.accountId()}:vpcconnector/connector/1/89fea545a5da460c843c8329e21f7daf`,
+            VpcConnectorArn: `arn:aws:apprunner:${
+              config.region
+            }:${config.accountId()}:vpcconnector/connector/1/89fea545a5da460c843c8329e21f7daf`,
           },
         ],
       }),
@@ -54,7 +96,9 @@ describe("AppRunner", async function () {
         groupType: "AppRunner::VpcIngressConnection",
         livesNotFound: ({ config }) => [
           {
-            VpcIngressConnectionArn: `arn:aws:apprunner:us-east-1:${config.accountId()}:vpcingressconnection/connector/1/89fea545a5da460c843c8329e21f7daf`,
+            VpcIngressConnectionArn: `arn:aws:apprunner:${
+              config.region
+            }:${config.accountId()}:vpcingressconnection/connector/1/89fea545a5da460c843c8329e21f7daf`,
           },
         ],
       }),

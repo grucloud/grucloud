@@ -28,7 +28,7 @@ const {
   pluck,
 } = require("rubico/x");
 
-const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 const { createAwsService } = require("../AwsService");
 
@@ -66,6 +66,73 @@ const omitHostedZoneConfigComment = pipe([
   omitIfEmpty(["HostedZoneConfig.Comment"]),
   omitIfEmpty(["HostedZoneConfig"]),
 ]);
+
+const dependenciesRecord = [
+  { groupType: "EC2::ElasticIpAddress", path: "PublicIp" },
+  { groupType: "AppRunner::Service", path: "ServiceUrl" },
+];
+
+const findRecordByValue =
+  ({ resourceRecord, lives }) =>
+  ({ groupType, path }) =>
+    pipe([
+      tap((params) => {
+        assert(resourceRecord);
+        assert(groupType);
+        assert(path);
+      }),
+      () => lives,
+      filter(eq(get("groupType"), groupType)),
+      tap((params) => {
+        assert(true);
+      }),
+      find(eq(get(`live.${path}`), resourceRecord.Value)),
+    ])();
+
+const getPathlive = (resource) =>
+  `live.${pipe([
+    () => dependenciesRecord,
+    find(eq(get("groupType"), resource.groupType)),
+    get("path"),
+    tap((path) => {
+      assert(path);
+    }),
+  ])()}`;
+
+const assignResourceRecords = ({ lives, providerConfig }) =>
+  pipe([
+    get("ResourceRecords"),
+    map((resourceRecord) =>
+      pipe([
+        () => dependenciesRecord,
+        map(findRecordByValue({ resourceRecord, lives })),
+        find(not(isEmpty)),
+        switchCase([
+          isEmpty,
+          () => resourceRecord,
+          (resource) =>
+            pipe([
+              () => resourceRecord,
+              tap((params) => {
+                assert(resource.groupType);
+              }),
+              assign({
+                Value: pipe([
+                  get("Value"),
+                  replaceWithName({
+                    groupType: resource.groupType,
+                    path: getPathlive(resource),
+                    pathLive: getPathlive(resource),
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+              }),
+            ])(),
+        ]),
+      ])()
+    ),
+  ]);
 
 module.exports = pipe([
   () => [
@@ -255,6 +322,21 @@ module.exports = pipe([
               assert(dependenciesSpec);
             }),
             switchCase([
+              get("appRunnerCustomDomain"),
+              pipe([
+                get("appRunnerCustomDomain", "noName"),
+                prepend("AppRunner::CustomDomain::CNAME::"),
+              ]),
+              get("appRunnerCustomDomain2"),
+              pipe([
+                get("appRunnerCustomDomain2", "noName"),
+                prepend("AppRunner::CustomDomain2::CNAME::"),
+              ]),
+              get("appRunnerService"),
+              pipe([
+                get("appRunnerService", "noName"),
+                prepend("AppRunner::Service::CNAME::"),
+              ]),
               get("vpcEndpoint"),
               pipe([
                 () =>
@@ -317,35 +399,7 @@ module.exports = pipe([
               get("Name"),
               replaceAccountAndRegion({ lives, providerConfig }),
             ]),
-            ResourceRecords: pipe([
-              get("ResourceRecords"),
-              map((resourceRecord) =>
-                pipe([
-                  () => lives,
-                  filter(eq(get("groupType"), "EC2::ElasticIpAddress")),
-                  find(eq(get("live.PublicIp"), resourceRecord.Value)),
-                  switchCase([
-                    isEmpty,
-                    () => resourceRecord,
-                    (IPAddress) =>
-                      pipe([
-                        () => resourceRecord,
-                        assign({
-                          Value: pipe([
-                            () => IPAddress,
-                            buildGetId({
-                              id: IPAddress.id,
-                              path: "live.PublicIp",
-                              providerConfig,
-                            }),
-                            (result) => () => result,
-                          ]),
-                        }),
-                      ])(),
-                  ]),
-                ])()
-              ),
-            ]),
+            ResourceRecords: assignResourceRecords({ lives, providerConfig }),
           }),
           omitIfEmpty(["ResourceRecords"]),
           omit(["HostedZoneId"]),
@@ -355,6 +409,7 @@ module.exports = pipe([
           () => resource,
           or([
             //hasDependency({ type: "LoadBalancer", group: "ElasticLoadBalancingV2" }),
+            hasDependency({ type: "CustomDomain", group: "AppRunner" }),
             hasDependency({ type: "Certificate", group: "ACM" }),
             hasDependency({ type: "Distribution", group: "CloudFront" }),
             hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),
