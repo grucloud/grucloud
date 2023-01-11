@@ -3,9 +3,7 @@ const { pipe, tap, get, eq, assign, pick, map } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource, assignTags } = require("./AppRunnerCommon");
+const { Tagger, assignTags } = require("./AppRunnerCommon");
 const { buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -16,10 +14,36 @@ const pickId = pipe([pick(["VpcConnectorArn"])]);
 const decorate = ({ endpoint }) =>
   pipe([assignTags({ endpoint, buildArn: buildArn() })]);
 
-const model = ({ config }) => ({
+exports.AppRunnerVpcConnector = () => ({
+  type: "VpcConnector",
   package: "apprunner",
   client: "AppRunner",
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  findName: () => pipe([get("VpcConnectorName")]),
+  findId: () => pipe([get("VpcConnectorArn")]),
+  inferName: () => get("VpcConnectorName"),
+  omitProperties: [
+    "VpcConnectorArn",
+    "Status",
+    "CreatedAt",
+    "DeletedAt",
+    "Subnets",
+    "SecurityGroups",
+  ],
+  dependencies: {
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) => get("Subnets"),
+    },
+    securityGroups: {
+      type: "SecurityGroup",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) => get("SecurityGroups"),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#describeVpcConnector-property
   getById: {
     method: "describeVpcConnector",
@@ -54,51 +78,41 @@ const model = ({ config }) => ({
     pickId,
     isInstanceDown: pipe([eq(get("Status"), "INACTIVE")]),
   },
-});
-
-exports.AppRunnerVpcConnector = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { subnets, securityGroups },
     config,
-    findName: () => pipe([get("VpcConnectorName")]),
-    findId: () => pipe([get("VpcConnectorArn")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { subnets, securityGroups },
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(subnets);
-          assert(securityGroups);
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(subnets);
+        assert(securityGroups);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
-        }),
-        assign({
-          Subnets: pipe([
-            () => subnets,
-            map((subnet) => getField(subnet, "SubnetId")),
-          ]),
-          SecurityGroups: pipe([
-            () => securityGroups,
-            map((sg) => getField(sg, "GroupId")),
-          ]),
-        }),
-      ])(),
-  });
+      }),
+      assign({
+        Subnets: pipe([
+          () => subnets,
+          map((subnet) => getField(subnet, "SubnetId")),
+        ]),
+        SecurityGroups: pipe([
+          () => securityGroups,
+          map((sg) => getField(sg, "GroupId")),
+        ]),
+      }),
+    ])(),
+});

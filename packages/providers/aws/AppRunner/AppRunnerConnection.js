@@ -3,9 +3,7 @@ const { pipe, tap, get, pick, eq, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { tagResource, untagResource, assignTags } = require("./AppRunnerCommon");
-
-const { createAwsResource } = require("../AwsClient");
+const { Tagger, assignTags } = require("./AppRunnerCommon");
 
 const buildArn = () => get("ConnectionArn");
 const pickId = pipe([pick(["ConnectionArn"])]);
@@ -13,13 +11,24 @@ const pickId = pipe([pick(["ConnectionArn"])]);
 const decorate = ({ endpoint }) =>
   pipe([assignTags({ endpoint, buildArn: buildArn() })]);
 
-const model = ({ config }) => ({
+exports.AppRunnerConnection = ({ compare }) => ({
+  type: "Connection",
   package: "apprunner",
   client: "AppRunner",
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  inferName: () => get("ConnectionName"),
+  findName: () => pipe([get("ConnectionName")]),
+  findId: () => pipe([get("ConnectionArn")]),
+  omitProperties: ["ConnectionArn", "Status", "CreatedAt"],
+  filterLive: () => pipe([pick(["ConnectionName", "ProviderType"])]),
   getById: {
     method: "listConnections",
-    pickId: pick(["ConnectionName"]),
+    pickId: pipe([
+      pick(["ConnectionName"]),
+      tap(({ ConnectionName }) => {
+        assert(ConnectionName);
+      }),
+    ]),
     getField: "ConnectionSummaryList",
     decorate,
   },
@@ -38,33 +47,23 @@ const model = ({ config }) => ({
     method: "deleteConnection",
     pickId,
   },
-});
-
-exports.AppRunnerConnection = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ ConnectionName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies,
     config,
-    findName: () => pipe([get("ConnectionName")]),
-    findId: () => pipe([get("ConnectionArn")]),
-    getByName: ({ getById }) =>
-      pipe([({ name }) => ({ ConnectionName: name }), getById({})]),
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({ name, namespace, config, UserTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ name, namespace, config, UserTags: Tags }),
+      }),
+    ])(),
+});

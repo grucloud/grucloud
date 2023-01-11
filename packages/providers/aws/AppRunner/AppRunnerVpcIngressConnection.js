@@ -3,9 +3,7 @@ const { pipe, tap, get, eq, assign, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource, assignTags } = require("./AppRunnerCommon");
+const { Tagger, assignTags } = require("./AppRunnerCommon");
 const { buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -16,10 +14,37 @@ const pickId = pipe([pick(["VpcIngressConnectionArn"])]);
 const decorate = ({ endpoint }) =>
   pipe([assignTags({ endpoint, buildArn: buildArn() })]);
 
-const model = ({ config }) => ({
+exports.AppRunnerVpcIngressConnection = () => ({
+  type: "VpcIngressConnection",
   package: "apprunner",
   client: "AppRunner",
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  findName: () => pipe([get("VpcIngressConnectionName")]),
+  findId: () => pipe([get("VpcIngressConnectionArn")]),
+  inferName: () => get("VpcIngressConnectionName"),
+  omitProperties: [
+    "VpcIngressConnectionArn",
+    "Status",
+    "CreatedAt",
+    "AccountId",
+    "DomainName",
+    "IngressVpcConfiguration",
+    "ServiceArn",
+  ],
+  dependencies: {
+    service: {
+      type: "Service",
+      group: "AppRunner",
+      dependencyId: ({ lives, config }) => get("ServiceArn"),
+    },
+    vpcEndpoint: {
+      type: "VpcEndpoint",
+      group: "EC2",
+      dependencyId: ({ lives, config }) =>
+        get("IngressVpcConfiguration.VpcEndpointId"),
+    },
+  },
+  getByName: getByNameCore,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#describeVpcIngressConnection-property
   getById: {
     method: "describeVpcIngressConnection",
@@ -56,46 +81,35 @@ const model = ({ config }) => ({
     isInstanceDown: pipe([eq(get("Status"), "DELETED")]),
     isInstanceError: pipe([eq(get("Status"), "FAILED_DELETION")]),
   },
-});
-
-exports.AppRunnerVpcIngressConnection = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { service, vpcEndpoint },
     config,
-    findName: () => pipe([get("VpcIngressConnectionName")]),
-    findId: () => pipe([get("VpcIngressConnectionArn")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { service, vpcEndpoint },
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(service);
-          assert(vpcEndpoint);
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(service);
+        assert(vpcEndpoint);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        IngressVpcConfiguration: {
+          VpcEndpointId: getField(vpcEndpoint, "VpcEndpointId"),
+          VpcId: getField(vpcEndpoint, "VpcId"),
+        },
+        ServiceArn: getField(service, "ServiceArn"),
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-        () => otherProps,
-        defaultsDeep({
-          IngressVpcConfiguration: {
-            VpcEndpointId: getField(vpcEndpoint, "VpcEndpointId"),
-            VpcId: getField(vpcEndpoint, "VpcId"),
-          },
-          ServiceArn: getField(service, "ServiceArn"),
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
-        }),
-      ])(),
-  });
+      }),
+    ])(),
+});

@@ -467,8 +467,9 @@ exports.hasDependency = ({ type, group }) =>
       assert(group);
     }),
     get("dependencies"),
-    find(and([eq(get("type"), type), eq(get("group"), group)])),
-    get("ids"),
+    filter(and([eq(get("type"), type), eq(get("group"), group)])),
+    pluck("ids"),
+    flatten,
     not(isEmpty),
   ]);
 
