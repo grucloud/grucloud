@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project appstream-stack
+skinparam monochrome true
++ Infra
+++ aws
++++ AppStream
+++++ Fleet (1)
+++++ Stack (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ SecurityGroup (1)
++++ IAM
+++++ Role (3)
+@endmindmap

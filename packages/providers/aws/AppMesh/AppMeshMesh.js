@@ -4,7 +4,7 @@ const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./AppMeshCommon");
+const { Tagger, assignTags } = require("./AppMeshCommon");
 
 const buildArn = () =>
   pipe([
@@ -26,6 +26,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppMesh.html
@@ -34,7 +35,16 @@ exports.AppMeshMesh = () => ({
   package: "app-mesh",
   client: "AppMesh",
   propertiesDefault: {},
-  omitProperties: ["metadata", "status"],
+  omitProperties: [
+    "arn",
+    "createdAt",
+    "lastUpdatedAt",
+    "metadata",
+    "resourceOwner",
+    "status",
+    "version",
+    "meshOwner",
+  ],
   inferName: () =>
     pipe([
       get("meshName"),
@@ -94,7 +104,7 @@ exports.AppMeshMesh = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: {},
     config,
   }) =>
@@ -105,8 +115,8 @@ exports.AppMeshMesh = () => ({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          value: "tag",
+          UserTags: tags,
+          value: "value",
           key: "key",
         }),
       }),

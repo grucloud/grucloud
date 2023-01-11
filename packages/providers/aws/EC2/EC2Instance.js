@@ -86,7 +86,7 @@ const configDefault =
         assert(ec2);
       }),
       () => Image,
-      fetchImageIdFromDescription({ ec2 }),
+      fetchImageIdFromDescription({ endpoint: ec2 }),
       (ImageId) =>
         pipe([
           () => otherProperties,
@@ -213,7 +213,7 @@ exports.EC2Instance = ({ spec, config }) => {
         assert(endpoint);
       }),
       assign({
-        Image: imageDescriptionFromId({ ec2 }),
+        Image: imageDescriptionFromId({ endpoint }),
       }),
       assign({
         UserData: pipe([

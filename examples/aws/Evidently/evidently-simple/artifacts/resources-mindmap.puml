@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project evidently-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ AppConfig
+++++ Application (1)
+++++ Environment (1)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ Evidently
+++++ Experiment (1)
+++++ Feature (1)
+++++ Launch (1)
+++++ Project (1)
+@endmindmap

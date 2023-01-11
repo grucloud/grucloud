@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project appstream-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ AppStream
+++++ DirectoryConfig (1)
++++ IAM
+++++ Role (3)
+@endmindmap

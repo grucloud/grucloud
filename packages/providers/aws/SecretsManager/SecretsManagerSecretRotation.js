@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, filter, pick, map, omit } = require("rubico");
-const { defaultsDeep, pluck, when } = require("rubico/x");
+const { defaultsDeep, pluck, when, callProp } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -23,11 +23,16 @@ const decorate = ({ endpoint }) =>
     ),
   ]);
 
+const managedByOther = () =>
+  pipe([get("SecretId"), callProp("startsWith", "rds!")]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecretsManager.html
 exports.SecretsManagerSecretRotation = ({ compare }) => ({
   type: "SecretRotation",
   package: "secrets-manager",
   client: "SecretsManager",
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   inferName: () =>
     pipe([
       get("SecretId"),
@@ -73,7 +78,7 @@ exports.SecretsManagerSecretRotation = ({ compare }) => ({
         pipe([
           get("RotationLambdaARN"),
           tap((RotationLambdaARN) => {
-            assert(RotationLambdaARN);
+            //assert(RotationLambdaARN);
           }),
         ]),
     },
@@ -126,15 +131,15 @@ exports.SecretsManagerSecretRotation = ({ compare }) => ({
     config,
   }) =>
     pipe([
-      tap((params) => {
-        assert(lambdaFunction);
-      }),
       () => otherProps,
-      defaultsDeep({
-        RotationLambdaARN: getField(
-          lambdaFunction,
-          "Configuration.FunctionArn"
-        ),
-      }),
+      when(
+        () => lambdaFunction,
+        defaultsDeep({
+          RotationLambdaARN: getField(
+            lambdaFunction,
+            "Configuration.FunctionArn"
+          ),
+        })
+      ),
     ])(),
 });

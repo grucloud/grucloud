@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project appmesh-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ AppMesh
+++++ Mesh (1)
+++++ Route (1)
+++++ VirtualNode (1)
+++++ VirtualRouter (1)
+++++ VirtualService (1)
+@endmindmap

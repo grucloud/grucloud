@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="172px" preserveAspectRatio="none" style="width:517px;height:172px;background:#FFFFFF;" version="1.1" viewBox="0 0 517 172" width="517px" zoomAndPan="magnify"><defs/><g><rect height="26.4883" style="stroke:#00000000;stroke-width:1.0;fill:none;" width="303" x="80.5" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="293" x="85.5" y="33.5352">Resources for project appstream-simple</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="52" x="10" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="20" y="109.2676">Infra</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="112" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="122" y="109.2676">aws</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="96" x="208" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="76" x="218" y="81.0234">AppStream</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="151" x="354" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="131" x="364" y="81.0234">DirectoryConfig (1)</text><path d="M304,75.7324 L314,75.7324 C329,75.7324 329,75.7324 344,75.7324 L354,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,103.9766 L168,103.9766 C183,103.9766 183,75.7324 198,75.7324 L208,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="208" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="218" y="137.5117">IAM</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="73" x="304" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="53" x="314" y="137.5117">Role (3)</text><path d="M254,132.2207 L264,132.2207 C279,132.2207 279,132.2207 294,132.2207 L304,132.2207 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,103.9766 L168,103.9766 C183,103.9766 183,132.2207 198,132.2207 L208,132.2207 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M62,103.9766 L72,103.9766 C87,103.9766 87,103.9766 102,103.9766 L112,103.9766 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><!--MD5=[a154d7f138878b4d1df0c22326a81208]
+@startmindmap
+title Resources for project appstream-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ AppStream
+++++ DirectoryConfig (1)
++++ IAM
+++++ Role (3)
+@endmindmap
+
+PlantUML version 1.2022.6(Tue Jun 21 12:34:49 COT 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

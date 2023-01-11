@@ -30,41 +30,6 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
-  package: "rds",
-  client: "RDS",
-  ignoreErrorCodes: ["SubscriptionNotFoundFault"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#getEventSubscription-property
-  getById: {
-    method: "describeEventSubscriptions",
-    getField: "EventSubscriptionsList",
-    pickId,
-    decorate,
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeEventSubscriptions-property
-  getList: {
-    method: "describeEventSubscriptions",
-    getParam: "EventSubscriptionsList",
-    decorate,
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createEventSubscription-property
-  create: {
-    method: "createEventSubscription",
-    pickCreated: ({ payload }) => pipe([() => payload]),
-    isInstanceUp: pipe([eq(get("Status"), "active")]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyEventSubscription-property
-  update: {
-    method: "modifyEventSubscription",
-    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteEventSubscription-property
-  destroy: {
-    method: "deleteEventSubscription",
-    pickId,
-  },
-});
-
 const buildSourceDependenciesId =
   ({ SourceType }) =>
   ({ lives, config }) =>
@@ -79,6 +44,9 @@ const buildSourceDependenciesId =
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
 exports.RDSEventSubscription = ({ compare }) => ({
   type: "EventSubscription",
+  package: "rds",
+  client: "RDS",
+  ignoreErrorCodes: ["SubscriptionNotFoundFault"],
   propertiesDefault: { Enabled: true },
   omitProperties: [
     "CustomerAwsId",
@@ -121,43 +89,70 @@ exports.RDSEventSubscription = ({ compare }) => ({
     },
     // TODO db-security-group | db-snapshot | db-cluster-snapshot
   },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("SubscriptionName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("SubscriptionName"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ SubscriptionName: name }), getById({})]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { Tags, ...otherProps },
-        dependencies: { snsTopic },
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(snsTopic);
-          }),
-          () => otherProps,
-          defaultsDeep({
-            SnsTopicArn: getField(snsTopic, "Attributes.TopicArn"),
-            Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-          }),
-        ])(),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#getEventSubscription-property
+  getById: {
+    method: "describeEventSubscriptions",
+    getField: "EventSubscriptionsList",
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeEventSubscriptions-property
+  getList: {
+    method: "describeEventSubscriptions",
+    getParam: "EventSubscriptionsList",
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createEventSubscription-property
+  create: {
+    method: "createEventSubscription",
+    pickCreated: ({ payload }) => pipe([() => payload]),
+    isInstanceUp: pipe([eq(get("Status"), "active")]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyEventSubscription-property
+  update: {
+    method: "modifyEventSubscription",
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteEventSubscription-property
+  destroy: {
+    method: "deleteEventSubscription",
+    pickId,
+  },
+  findName: () =>
+    pipe([
+      get("SubscriptionName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("SubscriptionName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ SubscriptionName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
     }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { snsTopic },
+    config,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(snsTopic);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        SnsTopicArn: getField(snsTopic, "Attributes.TopicArn"),
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])(),
 });

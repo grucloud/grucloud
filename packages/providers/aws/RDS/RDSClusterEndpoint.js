@@ -1,10 +1,9 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, switchCase, not } = require("rubico");
-const { defaultsDeep, when, isEmpty, append } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger } = require("./RDSCommon");
 
@@ -32,10 +31,46 @@ const decorate = ({ endpoint }) =>
 
 const managedByOther = () => pipe([not(get("DBClusterEndpointIdentifier"))]);
 
-const model = ({ config }) => ({
+const findNameClusterEndpoint = pipe([
+  switchCase([
+    get("DBClusterEndpointIdentifier"),
+    get("DBClusterEndpointIdentifier"),
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      ({ DBClusterIdentifier, EndpointType }) =>
+        `${DBClusterIdentifier}::${EndpointType}`,
+    ]),
+  ]),
+]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Neptune.html
+exports.RDSClusterEndpoint = ({ compare }) => ({
+  type: "DBClusterEndpoint",
   package: "rds",
   client: "RDS",
   ignoreErrorCodes: ["DBClusterEndpointNotFoundFault"],
+  propertiesDefault: {},
+  omitProperties: [
+    "DBClusterIdentifier",
+    "DBClusterEndpointResourceIdentifier",
+    "Endpoint",
+    "Status",
+    "DBClusterEndpointArn",
+    "CustomEndpointType",
+  ],
+  inferName: () => get("DBClusterEndpointIdentifier"),
+  // compare: compare({
+  //   filterTarget: () => pipe([omit(["compare"])]),
+  // }),
+  dependencies: {
+    cluster: {
+      type: "DBCluster",
+      group: "Neptune",
+      dependencyId: ({ lives, config }) => pipe([get("DBClusterIdentifier")]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Neptune.html#getDBClusterEndpoint-property
   getById: {
     method: "describeDBClusterEndpoints",
@@ -65,81 +100,37 @@ const model = ({ config }) => ({
     method: "deleteDBClusterEndpoint",
     pickId,
   },
-});
-
-const findNameClusterEndpoint = pipe([
-  switchCase([
-    get("DBClusterEndpointIdentifier"),
-    get("DBClusterEndpointIdentifier"),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
+  findName: () => pipe([findNameClusterEndpoint]),
+  findId: () =>
+    pipe([
+      findNameClusterEndpoint,
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ DBClusterEndpointIdentifier: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { cluster },
+    config,
+  }) =>
     pipe([
       tap((params) => {
-        assert(true);
+        assert(cluster);
       }),
-      ({ DBClusterIdentifier, EndpointType }) =>
-        `${DBClusterIdentifier}::${EndpointType}`,
-    ]),
-  ]),
-]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Neptune.html
-exports.RDSClusterEndpoint = ({ compare }) => ({
-  type: "DBClusterEndpoint",
-  propertiesDefault: {},
-  omitProperties: [
-    "DBClusterIdentifier",
-    "DBClusterEndpointResourceIdentifier",
-    "Endpoint",
-    "Status",
-    "DBClusterEndpointArn",
-    "CustomEndpointType",
-  ],
-  inferName: () => get("DBClusterEndpointIdentifier"),
-  // compare: compare({
-  //   filterTarget: () => pipe([omit(["compare"])]),
-  // }),
-  dependencies: {
-    cluster: {
-      type: "DBCluster",
-      group: "Neptune",
-      dependencyId: ({ lives, config }) => pipe([get("DBClusterIdentifier")]),
-    },
-  },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      managedByOther,
-      cannotBeDeleted: managedByOther,
-      findName: () => pipe([findNameClusterEndpoint]),
-      findId: () =>
-        pipe([
-          findNameClusterEndpoint,
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([
-          ({ name }) => ({ DBClusterEndpointIdentifier: name }),
-          getById({}),
-        ]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { Tags, ...otherProps },
-        dependencies: { cluster },
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(cluster);
-          }),
-          () => otherProps,
-          defaultsDeep({
-            DBClusterIdentifier: getField(cluster, "DBClusterIdentifier"),
-            Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-          }),
-        ])(),
-    }),
+      () => otherProps,
+      defaultsDeep({
+        DBClusterIdentifier: getField(cluster, "DBClusterIdentifier"),
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])(),
 });

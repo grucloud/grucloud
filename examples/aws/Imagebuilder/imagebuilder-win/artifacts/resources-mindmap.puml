@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project imagebuilder-win
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
++++ Imagebuilder
+++++ DistributionConfiguration (1)
+++++ ImagePipeline (1)
+++++ ImageRecipe (1)
+++++ InfrastructureConfiguration (1)
+@endmindmap

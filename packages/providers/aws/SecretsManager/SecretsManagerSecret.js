@@ -103,6 +103,7 @@ exports.SecretsManagerSecret = ({ compare }) => ({
     "LastAccessedDate",
     "LastChangedDate",
     "LastRotatedDate",
+    "NextRotationDate",
     "DeletedDate",
     "SecretVersionsToStages",
     "SecretString.DBClusterIdentifier",
@@ -113,6 +114,7 @@ exports.SecretsManagerSecret = ({ compare }) => ({
     "VersionIdsToStages",
     "KmsKeyId",
     "OwningService",
+    "CertificateDetails",
   ],
   compare: compare({
     filterAll: () => pipe([omit(["SecretString", "SecretBinary"])]),

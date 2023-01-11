@@ -4,7 +4,6 @@ const { defaultsDeep, pluck } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger } = require("./RDSCommon");
 
@@ -43,10 +42,37 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
+exports.RDSDBSubnetGroup = ({ compare }) => ({
+  type: "DBSubnetGroup",
   package: "rds",
   client: "RDS",
   ignoreErrorCodes: ["DBSubnetGroupNotFoundFault"],
+  propertiesDefault: { SupportedNetworkTypes: ["IPV4"] },
+  omitProperties: [
+    "SubnetGroupStatus",
+    "VpcId",
+    "DBSubnetGroupArn",
+    "SubnetIds",
+  ],
+  inferName: () =>
+    pipe([
+      get("DBSubnetGroupName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  // compare: compare({
+  //   filterTarget: () => pipe([omit(["compare"])]),
+  // }),
+  dependencies: {
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) => pipe([get("SubnetIds")]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#getDBSubnetGroup-property
   getById: {
     method: "describeDBSubnetGroups",
@@ -76,77 +102,45 @@ const model = ({ config }) => ({
     method: "deleteDBSubnetGroup",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
-exports.RDSDBSubnetGroup = ({ compare }) => ({
-  type: "DBSubnetGroup",
-  propertiesDefault: { SupportedNetworkTypes: ["IPV4"] },
-  omitProperties: [
-    "SubnetGroupStatus",
-    "VpcId",
-    "DBSubnetGroupArn",
-    "SubnetIds",
-  ],
-  inferName: () =>
+  managedByOther,
+  findName: () =>
     pipe([
       get("DBSubnetGroupName"),
       tap((name) => {
         assert(name);
       }),
     ]),
-  // compare: compare({
-  //   filterTarget: () => pipe([omit(["compare"])]),
-  // }),
-  dependencies: {
-    subnets: {
-      type: "Subnet",
-      group: "EC2",
-      list: true,
-      dependencyIds: ({ lives, config }) => pipe([get("SubnetIds")]),
-    },
-  },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      managedByOther,
-      findName: () =>
-        pipe([
-          get("DBSubnetGroupName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("DBSubnetGroupName"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ DBSubnetGroupName: name }), getById({})]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { Tags, ...otherProps },
-        dependencies: { subnets },
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(subnets);
-          }),
-          () => otherProps,
-          defaultsDeep({
-            Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-            SubnetIds: pipe([
-              () => subnets,
-              map((subnet) => getField(subnet, "SubnetId")),
-            ])(),
-          }),
-        ])(),
+  findId: () =>
+    pipe([
+      get("DBSubnetGroupName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ DBSubnetGroupName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
     }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { subnets },
+    config,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(subnets);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+        SubnetIds: pipe([
+          () => subnets,
+          map((subnet) => getField(subnet, "SubnetId")),
+        ])(),
+      }),
+    ])(),
 });

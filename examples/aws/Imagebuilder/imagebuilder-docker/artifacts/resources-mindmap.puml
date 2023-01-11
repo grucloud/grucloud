@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project imagebuilder-docker
+skinparam monochrome true
++ Infra
+++ aws
++++ ECR
+++++ Repository (1)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
++++ Imagebuilder
+++++ ContainerRecipe (1)
+@endmindmap

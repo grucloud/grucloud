@@ -16,6 +16,14 @@ describe("AppRunner", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("ObservabilityConfiguration", () =>
+    pipe([
+      () => ({
+        groupType: "AppRunner::observabilityConfiguration",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("Service", () =>
     pipe([
       () => ({
