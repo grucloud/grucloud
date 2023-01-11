@@ -1,25 +1,32 @@
 const assert = require("assert");
-const { pipe, tap, get, or, eq } = require("rubico");
+const { pipe, tap, get, or, eq, reduce, switchCase, omit } = require("rubico");
 const {
   defaultsDeep,
   first,
-  unless,
-  when,
-  append,
+  isEmpty,
   callProp,
   differenceWith,
   isDeepEqual,
 } = require("rubico/x");
 
-const { createAwsResource } = require("../AwsClient");
-
-const resourceTypesAll = ["ECR", "EC2"];
+const resourceTypesAll = ["EC2", "ECR", "LAMBDA"];
 
 const cannotBeDeleted = () => pipe([eq(get("state.status"), "DISABLED")]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Inspector2.html
+exports.Inspector2Enabler = ({ compare }) => ({
+  type: "Enabler",
   package: "inspector2",
   client: "Inspector2",
+  inferName: () => () => "default",
+  findName: () => pipe([() => "default"]),
+  findId: () => pipe([() => "default"]),
+  ignoreResource: () => pipe([get("live.resourceTypes"), isEmpty]),
+  compare: compare({
+    filterAll: () => pipe([omit(["accountIds"])]),
+  }),
+  omitProperties: ["state"],
+  cannotBeDeleted,
   ignoreErrorCodes: ["ResourceNotFoundException"],
   getById: {
     method: "batchGetAccountStatus",
@@ -28,16 +35,19 @@ const model = ({ config }) => ({
       pipe([
         get("accounts"),
         first,
-        ({ resourceState: { ec2, ecr }, state }) =>
+        ({ resourceState, state }) =>
           pipe([
-            () => [],
-            when(
-              pipe([() => ec2.status, callProp("startsWith", "ENA")]),
-              append("EC2")
-            ),
-            when(
-              pipe([() => ecr.status, callProp("startsWith", "ENA")]),
-              append("ECR")
+            () => resourceTypesAll,
+            reduce(
+              (acc, type) =>
+                pipe([
+                  () => resourceState,
+                  get(type.toLowerCase()),
+                  get("status"),
+                  callProp("startsWith", "ENA"),
+                  switchCase([isEmpty, () => acc, [...acc, type]]),
+                ])(),
+              []
             ),
             (resourceTypes) => ({
               resourceTypes,
@@ -60,45 +70,33 @@ const model = ({ config }) => ({
     }),
     isInstanceDown: pipe([eq(get("state.status"), "DISABLED")]),
   },
+  getList: ({ endpoint, getById }) => pipe([getById({}), (result) => [result]]),
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        () => diff,
+        tap.if(
+          or([get("liveDiff.deleted.resourceTypes")]),
+          pipe([
+            () => payload.resourceTypes,
+            differenceWith(isDeepEqual, resourceTypesAll),
+            (resourceTypes) => ({
+              accountIds: payload.accountIds,
+              resourceTypes,
+            }),
+            endpoint().disable,
+          ])
+        ),
+        tap.if(
+          or([get("liveDiff.added.resourceTypes")]),
+          pipe([() => payload, endpoint().enable])
+        ),
+      ])(),
+  getByName: ({ getList, endpoint, getById }) => pipe([getById({})]),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { accountIds = [], ...otherProps },
+  }) => pipe([() => otherProps, defaultsDeep({ accountIds })])(),
 });
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Inspector2.html
-exports.Inspector2Enabler = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () => pipe([() => "default"]),
-    findId: () => pipe([() => "default"]),
-    cannotBeDeleted,
-    getList: ({ endpoint, getById }) =>
-      pipe([getById({}), (result) => [result]]),
-    update:
-      ({ endpoint, getById }) =>
-      async ({ payload, live, diff }) =>
-        pipe([
-          () => diff,
-          tap.if(
-            or([get("liveDiff.deleted.resourceTypes")]),
-            pipe([
-              () => payload.resourceTypes,
-              differenceWith(isDeepEqual, resourceTypesAll),
-              (resourceTypes) => ({
-                accountIds: payload.accountIds,
-                resourceTypes,
-              }),
-              endpoint().disable,
-            ])
-          ),
-          tap.if(
-            or([get("liveDiff.added.resourceTypes")]),
-            pipe([() => payload, endpoint().enable])
-          ),
-        ])(),
-    getByName: ({ getList, endpoint, getById }) => pipe([getById({})]),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { accountIds = [], ...otherProps },
-    }) => pipe([() => otherProps, defaultsDeep({ accountIds })])(),
-  });

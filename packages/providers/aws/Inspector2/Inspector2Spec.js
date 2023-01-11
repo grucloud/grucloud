@@ -1,8 +1,9 @@
 const assert = require("assert");
 const { map, pipe, tap, get, omit } = require("rubico");
-const { defaultsDeep, isEmpty, isDeepEqual } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
+const { createAwsService } = require("../AwsService");
 
 const {
   Inspector2DelegatedAdminAccount,
@@ -16,55 +17,22 @@ const GROUP = "Inspector2";
 
 const tagsKey = "Tags";
 
-const compareInspector2 = compareAws({ tagsKey });
+const compare = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
-    {
-      type: "DelegatedAdminAccount",
-      Client: Inspector2DelegatedAdminAccount,
-      inferName: () => () => "default",
-      omitProperties: ["status", "delegatedAdminAccountId"],
-      dependencies: {
-        account: {
-          type: "Account",
-          group: "Organisations",
-          dependencyId: () => pipe([get("delegatedAdminAccountId")]),
-        },
-      },
-    },
-    {
-      type: "Enabler",
-      Client: Inspector2Enabler,
-      ignoreResource: () => pipe([get("live.resourceTypes"), isEmpty]),
-      inferName: () => () => "default",
-      compare: compareInspector2({
-        filterAll: () => pipe([omit(["accountIds"])]),
-      }),
-      omitProperties: ["state"],
-    },
-    {
-      type: "OrganizationConfiguration",
-      Client: Inspector2OrganizationConfiguration,
-      inferName: () => () => "default",
-      omitProperties: ["maxAccountLimitReached"],
-      ignoreResource: () =>
-        pipe([
-          get("live"),
-          get("autoEnable"),
-          (autoEnable) =>
-            isDeepEqual(autoEnable, {
-              ec2: false,
-              ecr: false,
-            }),
-        ]),
-    },
+    Inspector2DelegatedAdminAccount({ compare }),
+    Inspector2Enabler({ compare }),
+    Inspector2OrganizationConfiguration({ compare }),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      tagsKey,
-      compare: compareInspector2({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        tagsKey,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

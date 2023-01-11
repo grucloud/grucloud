@@ -100,22 +100,22 @@
 <path fill="none" stroke="#707070" d="M293.11,-222.94C320.82,-216.04 350.21,-208.72 377.32,-201.96"/>
 <polygon fill="#707070" stroke="#707070" points="378.34,-205.31 387.2,-199.5 376.65,-198.52 378.34,-205.31"/>
 </g>
-<!-- Record::record::AppRunner::Service::A::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS -->
+<!-- Record::record::AppRunner::Service::CNAME::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS -->
 <g id="node6" class="node">
-<title>Record::record::AppRunner::Service::A::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="312.5,-129 38.5,-129 38.5,-71 312.5,-71 312.5,-129"/>
-<text text-anchor="start" x="50.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
-<text text-anchor="start" x="50.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::AppRunner::Service::A::n...</text>
+<title>Record::record::AppRunner::Service::CNAME::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="321.5,-129 29.5,-129 29.5,-71 321.5,-71 321.5,-129"/>
+<text text-anchor="start" x="41.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
+<text text-anchor="start" x="41.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::AppRunner::Service::CNAM...</text>
 </g>
-<!-- Record::record::AppRunner::Service::A::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS&#45;&gt;Service::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS -->
+<!-- Record::record::AppRunner::Service::CNAME::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS&#45;&gt;Service::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS -->
 <g id="edge8" class="edge">
-<title>Record::record::AppRunner::Service::A::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS&#45;&gt;Service::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS</title>
-<path fill="none" stroke="#707070" d="M312.8,-100C404.58,-100 526.84,-100 627.8,-100"/>
-<polygon fill="#707070" stroke="#707070" points="627.81,-103.5 637.81,-100 627.81,-96.5 627.81,-103.5"/>
+<title>Record::record::AppRunner::Service::CNAME::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS&#45;&gt;Service::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS</title>
+<path fill="none" stroke="#707070" d="M321.9,-100C412.51,-100 530.03,-100 627.66,-100"/>
+<polygon fill="#707070" stroke="#707070" points="627.95,-103.5 637.95,-100 627.95,-96.5 627.95,-103.5"/>
 </g>
-<!-- Record::record::AppRunner::Service::A::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS&#45;&gt;HostedZone::grucloud.org. -->
+<!-- Record::record::AppRunner::Service::CNAME::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS&#45;&gt;HostedZone::grucloud.org. -->
 <g id="edge7" class="edge">
-<title>Record::record::AppRunner::Service::A::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS&#45;&gt;HostedZone::grucloud.org.</title>
+<title>Record::record::AppRunner::Service::CNAME::nginx&#45;01GPFJZH2B9WNG546PXJWBYGDS&#45;&gt;HostedZone::grucloud.org.</title>
 <path fill="none" stroke="#707070" d="M293.11,-129.06C320.82,-135.96 350.21,-143.28 377.32,-150.04"/>
 <polygon fill="#707070" stroke="#707070" points="376.65,-153.48 387.2,-152.5 378.34,-146.69 376.65,-153.48"/>
 </g>
