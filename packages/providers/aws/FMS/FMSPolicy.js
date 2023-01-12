@@ -1,6 +1,7 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, map, pick, assign } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -52,6 +53,37 @@ const decorate = ({ endpoint, config }) =>
     }),
   ]);
 
+const replaceMap = ({ providerConfig, lives }) =>
+  pipe([
+    when(
+      get("ACCOUNT"),
+      pipe([
+        map(
+          replaceWithName({
+            groupType: "Organisations::Account",
+            path: "id",
+            providerConfig,
+            lives,
+          })
+        ),
+      ])
+    ),
+    when(
+      get("ORG_UNIT"),
+      pipe([
+        pipe([
+          map(
+            replaceWithName({
+              groupType: "Organisations::OrganisationalUnit",
+              path: "id",
+              providerConfig,
+              lives,
+            })
+          ),
+        ]),
+      ])
+    ),
+  ]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/FMS.html
 exports.FMSPolicy = () => ({
   type: "Policy",
@@ -105,13 +137,34 @@ exports.FMSPolicy = () => ({
       list: true,
       dependencyIds: ({ lives, config }) => pipe([get("ExcludeMap.ACCOUNT")]),
     },
-    organisationalExclude: {
+    organisationalUnitsExclude: {
       type: "OrganisationalUnit",
       group: "Organisations",
       list: true,
       dependencyIds: ({ lives, config }) => pipe([get("ExcludeMap.ORG_UNIT")]),
     },
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      when(
+        get("IncludeMap"),
+        assign({
+          IncludeMap: pipe([
+            get("IncludeMap"),
+            replaceMap({ providerConfig, lives }),
+          ]),
+        })
+      ),
+      when(
+        get("ExcludeMap"),
+        assign({
+          ExcludeMap: pipe([
+            get("ExcludeMap"),
+            replaceMap({ providerConfig, lives }),
+          ]),
+        })
+      ),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/FMS.html#getPolicy-property
   getById: {
     method: "getPolicy",
@@ -126,7 +179,7 @@ exports.FMSPolicy = () => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/FMS.html#putPolicy-property
   create: {
-    filterPayload: filterPayload,
+    filterPayload,
     method: "putPolicy",
     pickCreated: ({ payload }) => pipe([get("Policy")]),
   },
