@@ -39,7 +39,7 @@ module.exports = pipe([
             "AttributeDefinitions",
             "KeySchema",
             "ProvisionedThroughput",
-            "BillingModeSummary",
+            "BillingMode",
             "GlobalSecondaryIndexes",
             "LocalSecondaryIndexes",
           ]),

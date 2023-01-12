@@ -4,4 +4,5 @@ const pkg = require("../package.json");
 module.exports = () => ({
   projectName: pkg.name,
   credentials: { profile: "account_secondary" },
+  includeGroups: ["EC2", "Route53", "Route53Domains"],
 });

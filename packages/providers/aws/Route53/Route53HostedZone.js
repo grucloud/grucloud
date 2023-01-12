@@ -54,7 +54,7 @@ const {
 } = require("./Route53Common");
 const {
   createRoute53Domains,
-} = require("../Route53Domain/Route53DomainCommon");
+} = require("../Route53Domains/Route53DomainCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 // https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/DomainNameFormat.html

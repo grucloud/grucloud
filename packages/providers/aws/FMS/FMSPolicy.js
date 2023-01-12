@@ -87,6 +87,30 @@ exports.FMSPolicy = () => ({
       group: "FMS",
       dependsOnTypeOnly: true,
     },
+    accountsInclude: {
+      type: "Account",
+      group: "Organisations",
+      list: true,
+      dependencyIds: ({ lives, config }) => pipe([get("IncludeMap.ACCOUNT")]),
+    },
+    organisationalUnitsInclude: {
+      type: "OrganisationalUnit",
+      group: "Organisations",
+      list: true,
+      dependencyIds: ({ lives, config }) => pipe([get("IncludeMap.ORG_UNIT")]),
+    },
+    accountsExclude: {
+      type: "Account",
+      group: "Organisations",
+      list: true,
+      dependencyIds: ({ lives, config }) => pipe([get("ExcludeMap.ACCOUNT")]),
+    },
+    organisationalExclude: {
+      type: "OrganisationalUnit",
+      group: "Organisations",
+      list: true,
+      dependencyIds: ({ lives, config }) => pipe([get("ExcludeMap.ORG_UNIT")]),
+    },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/FMS.html#getPolicy-property
   getById: {

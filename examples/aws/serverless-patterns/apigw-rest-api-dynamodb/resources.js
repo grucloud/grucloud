@@ -157,6 +157,7 @@ exports.createResources = () => [
           KeyType: "HASH",
         },
       ],
+      BillingMode: "PAY_PER_REQUEST",
     }),
   },
   {

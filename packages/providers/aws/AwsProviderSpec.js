@@ -124,7 +124,7 @@ const GROUPS_MISSING = [
 const GROUPS_GLOBAL = [
   "IAM",
   "Route53",
-  "Route53Domain", // always on us-east-1
+  "Route53Domains", // always on us-east-1
   "Route53RecoveryReadiness",
   "GlobalAccelerator",
 ];

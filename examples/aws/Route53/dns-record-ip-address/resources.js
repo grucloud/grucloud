@@ -41,12 +41,12 @@ exports.createResources = () => [
       TTL: 300,
       ResourceRecords: [
         {
-          Value: getId({
+          Value: `${getId({
             type: "ElasticIpAddress",
             group: "EC2",
             name: "myip",
             path: "live.PublicIp",
-          }),
+          })}`,
         },
       ],
     }),
