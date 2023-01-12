@@ -11,8 +11,6 @@
   Lambda EventSourceMapping:
 - Amazon DynamoDB Streams
 - ECSTaskSet
-- AWS::XRay
-- Network Manager SiteToSiteVpnAttachment
   aws_networkmanager_attachment_accepter
 - EC2 instance, sort groups
 - API Gateway v1 Authorizer

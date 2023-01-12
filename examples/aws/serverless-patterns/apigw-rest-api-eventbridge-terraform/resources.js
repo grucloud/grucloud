@@ -65,7 +65,7 @@ exports.createResources = () => [
   "Entries": [
     #foreach($elem in $inputRoot.items)
     {
-      "Detail": "$util.escapeJavaScript($elem.Detail).replaceAll("\\'","'")",
+      "Detail": "$util.escapeJavaScript($elem.Detail).replaceAll("\'","'")",
       "DetailType": "$elem.DetailType",
       "EventBusName": "MyIntegrationCustomBus",
       "Source":"$elem.Source"

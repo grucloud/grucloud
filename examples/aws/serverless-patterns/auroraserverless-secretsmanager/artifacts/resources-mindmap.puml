@@ -9,8 +9,8 @@ skinparam monochrome true
 ++++ RouteTable (2)
 ++++ RouteTableAssociation (2)
 +++ RDS
-++++ DBSubnetGroup (1)
 ++++ DBCluster (1)
+++++ DBSubnetGroup (1)
 +++ SecretsManager
 ++++ Secret (1)
 @endmindmap

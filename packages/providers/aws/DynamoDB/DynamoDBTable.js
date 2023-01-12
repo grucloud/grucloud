@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick, assign } = require("rubico");
+const { map, pipe, tap, get, eq, pick, assign, omit } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
@@ -36,6 +36,13 @@ exports.DynamoDBTable = ({ spec, config }) => {
           get("Tags"),
         ]),
       }),
+      when(
+        eq(get("BillingModeSummary.BillingMode"), "PAY_PER_REQUEST"),
+        pipe([
+          assign({ BillingMode: () => "PAY_PER_REQUEST" }),
+          omit(["ProvisionedThroughput", "BillingModeSummary"]),
+        ])
+      ),
     ]);
 
   const getById = client.getById({
