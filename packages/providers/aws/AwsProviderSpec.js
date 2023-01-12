@@ -110,7 +110,7 @@ const GROUPS = [
   ["SQS", "sqs"],
   ["SSM", "ssm"],
   ["Transfer", "transfer"],
-  ["WAFV2", "waf"],
+  ["WAFv2", "waf"],
   ["XRay", "xray"],
 ];
 
