@@ -63,6 +63,7 @@ const GROUPS = [
   ["ElasticLoadBalancingV2", "elb"],
   ["Evidently", "evidently"],
   ["Firehose", "firehose"],
+  ["FMS", "fms"],
   ["FSx", "fsx"],
   ["Imagebuilder", "imagebuilder"],
   ["IVS", "ivs"],
