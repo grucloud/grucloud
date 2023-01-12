@@ -76,8 +76,20 @@ exports.SecretsManagerSecret = ({ compare }) => ({
   type: "Secret",
   package: "secrets-manager",
   client: "SecretsManager",
-  inferName: () => get("Name"),
-  findName: findNameInTagsOrId({ findId: () => get("Name") }),
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
   findId: () => pipe([get("ARN")]),
   managedByOther,
   //cannotBeDeleted: managedByOther,

@@ -168,8 +168,21 @@ const { EC2VpnConnectionRoute } = require("./EC2VpnConnectionRoute");
 
 const GROUP = "EC2";
 
-const getResourceNameFromTag = () =>
-  pipe([get("Tags"), find(eq(get("Key"), "Name")), get("Value")]);
+const getResourceNameFromTag =
+  () =>
+  ({ Tags }) =>
+    pipe([
+      () => Tags,
+      find(eq(get("Key"), "Name")),
+      when(
+        isEmpty,
+        pipe([
+          () => Tags,
+          find(eq(get("Key"), "aws:cloudformation:logical-id")),
+        ])
+      ),
+      get("Value"),
+    ])();
 
 const findDefaultWithVpcDependency = ({ resources, dependencies }) =>
   pipe([
@@ -1256,6 +1269,10 @@ module.exports = pipe([
       Client: EC2RouteTable,
       getResourceName: () =>
         pipe([
+          tap((params) => {
+            assert(true);
+          }),
+
           switchCase([
             pipe([get("Associations"), any(get("Main"))]),
             pipe([() => "rt-default"]),

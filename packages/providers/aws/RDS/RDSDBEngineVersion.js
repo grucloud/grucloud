@@ -10,17 +10,7 @@ const {
   fetchImageIdFromDescription,
 } = require("../EC2/EC2Common");
 
-const { Tagger } = require("./RDSCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-
-// TODO
-// const buildArn = () =>
-//   pipe([
-//     get("DBClusterIdentifier"),
-//     tap((arn) => {
-//       assert(arn);
-//     }),
-//   ]);
 
 const pickId = pipe([
   tap(({ Engine, EngineVersion }) => {

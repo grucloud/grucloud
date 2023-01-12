@@ -22,7 +22,7 @@ const ignoreErrorCodes = ["DBClusterNotFoundFault", ""];
 
 const buildArn = () =>
   pipe([
-    get("DBClusterIdentifier"),
+    get("DBClusterArn"),
     tap((arn) => {
       assert(arn);
     }),
