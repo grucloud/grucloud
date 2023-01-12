@@ -23,7 +23,7 @@ module.exports = pipe([
   () => [
     //
     S3ControlAccessPoint({ compare }),
-    //S3ControlMultiRegionAccessPoint({ compare }),
+    S3ControlMultiRegionAccessPoint({ compare }),
     //S3ControlObjectLambdaAccessPoint({ compare }),
     //S3ControlStorageLensConfiguration({ compare }),
   ],
