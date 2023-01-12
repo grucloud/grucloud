@@ -28,31 +28,9 @@ module.exports = pipe([
         "CreationDateTime",
         "TableStatus",
         "SSEDescription",
-        "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
       ],
-      compare: compareDynamoDB({
-        filterAll: () =>
-          pipe([
-            defaultsDeep({
-              BillingMode: "PAY_PER_REQUEST",
-              ProvisionedThroughput: {
-                ReadCapacityUnits: 0,
-                WriteCapacityUnits: 0,
-              },
-            }),
-            ({ BillingMode, ...other }) => ({
-              ...other,
-              BillingModeSummary: { BillingMode },
-            }),
-          ]),
-        filterLive: () =>
-          pipe([
-            omitIfEmpty([
-              "ProvisionedThroughput.ReadCapacityUnits",
-              "ProvisionedThroughput.WriteCapacityUnits",
-            ]),
-          ]),
-      }),
+      propertiesDefault: {},
+      compare: compareDynamoDB({}),
       filterLive: () =>
         pipe([
           //TODO remove pick
@@ -61,17 +39,10 @@ module.exports = pipe([
             "AttributeDefinitions",
             "KeySchema",
             "ProvisionedThroughput",
-            "BillingModeSummary",
+            "BillingMode",
             "GlobalSecondaryIndexes",
             "LocalSecondaryIndexes",
           ]),
-          when(
-            eq(get("BillingModeSummary.BillingMode"), "PAY_PER_REQUEST"),
-            pipe([
-              assign({ BillingMode: () => "PAY_PER_REQUEST" }),
-              omit(["ProvisionedThroughput", "BillingModeSummary"]),
-            ])
-          ),
         ]),
       dependencies: {
         kmsKey: {

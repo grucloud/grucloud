@@ -93,6 +93,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceAccessControlAttribute",
+    group: "SSOAdmin",
+    properties: ({}) => ({
+      InstanceAccessControlAttributeConfiguration: {
+        AccessControlAttributes: [],
+      },
+    }),
+    dependencies: ({}) => ({
+      identityStore: "default",
+    }),
+  },
+  {
     type: "PermissionSet",
     group: "SSOAdmin",
     properties: ({}) => ({

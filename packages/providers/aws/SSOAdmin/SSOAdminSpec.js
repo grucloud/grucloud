@@ -11,14 +11,17 @@ const compare = compareAws({ tagsKey, key: "Key" });
 
 const { SSOAdminAccountAssignment } = require("./SSOAdminAccountAssignment");
 const { SSOAdminInstance } = require("./SSOAdminInstance");
+const {
+  SSOAdminInstanceAccessControlAttribute,
+} = require("./SSOAdminInstanceAccessControlAttribute");
 const { SSOAdminPermissionSet } = require("./SSOAdminPermissionSet");
-
 const { createAwsService } = require("../AwsService");
 
 module.exports = pipe([
   () => [
     SSOAdminAccountAssignment({}),
     SSOAdminInstance({}),
+    SSOAdminInstanceAccessControlAttribute({}),
     SSOAdminPermissionSet({}),
   ],
   map(createAwsService),

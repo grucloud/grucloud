@@ -12,5 +12,6 @@ skinparam monochrome true
 +++ SSOAdmin
 ++++ AccountAssignment (1)
 ++++ Instance (1)
+++++ InstanceAccessControlAttribute (1)
 ++++ PermissionSet (1)
 @endmindmap

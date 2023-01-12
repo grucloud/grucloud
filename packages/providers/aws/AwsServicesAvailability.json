@@ -95,6 +95,7 @@
             "license-manager-user-subscriptions",
             "logs",
             "macie",
+            "managedservices",
             "marketplace",
             "mediaconvert",
             "meteringmarketplace",
@@ -4237,8 +4238,11 @@
             "support",
             "swf",
             "synthetics",
+            "transitgateway",
             "vpc",
             "vpn",
+            "waf",
+            "waf-regional",
             "xray"
         ]
     },

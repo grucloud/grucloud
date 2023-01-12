@@ -21,6 +21,9 @@ exports.SSOAdminInstance = ({ compare }) => ({
   package: "sso-admin",
   client: "SSOAdmin",
   ignoreErrorCodes: [],
+  inferName: () => pipe([() => defaultName]),
+  findName: () => pipe([() => defaultName]),
+  findId: () => pipe([get("InstanceArn")]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#listInstances-property
   getList: {
     method: "listInstances",
@@ -29,9 +32,7 @@ exports.SSOAdminInstance = ({ compare }) => ({
   },
   propertiesDefault: {},
   omitProperties: ["IdentityStoreId", "InstanceArn", "Index", "IsDefault"],
-  inferName: () => pipe([() => defaultName]),
+
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
-  findName: () => pipe([() => defaultName]),
-  findId: () => pipe([get("InstanceArn")]),
 });

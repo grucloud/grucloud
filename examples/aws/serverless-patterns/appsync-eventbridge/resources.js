@@ -65,7 +65,7 @@ exports.createResources = () => [
         {
           "Source":"appsync",
           "EventBusName": "AppSyncEventBus",
-          "Detail":"{ \"event\": \"$ctx.arguments.event\"}",
+          "Detail":"{ "event": "$ctx.arguments.event"}",
           "DetailType":"Event Bridge via GraphQL"
          }
       ]

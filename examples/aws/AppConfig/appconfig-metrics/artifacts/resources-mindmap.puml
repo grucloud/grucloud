@@ -5,9 +5,9 @@ skinparam monochrome true
 ++ aws
 +++ AppConfig
 ++++ Application (1)
+++++ ConfigurationProfile (1)
 ++++ Deployment (1)
 ++++ DeploymentStrategy (1)
-++++ ConfigurationProfile (1)
 ++++ Environment (1)
 ++++ HostedConfigurationVersion (1)
 +++ CloudWatch

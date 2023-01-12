@@ -18,7 +18,7 @@ const GROUPS = [
   ["ACM", "acm"],
   ["ACMPCA", "acm-pca"],
   ["Amplify", "amplify"],
-  ["ApiGateway", "apigateway"],
+  ["APIGateway", "apigateway"],
   ["ApiGatewayV2", "apigatewayv2"],
   ["AppConfig", "appconfig"],
   ["AppMesh", "appmesh"],
@@ -43,7 +43,7 @@ const GROUPS = [
   ["CloudHSMV2", "cloudhsmv2"],
   ["CloudTrail", "cloudtrail"],
   ["CloudWatch", "cloudwatch"],
-  ["CloudWatchEvent", "cloudwatch"],
+  ["CloudWatchEvents", "cloudwatch"],
   ["CognitoIdentity", "cognito-identity"],
   ["CognitoIdentityServiceProvider", "cognito-idp"],
   ["ControlTower", "controltower"],
@@ -60,9 +60,10 @@ const GROUPS = [
   ["ElasticBeanstalk", "elasticbeanstalk"],
   ["ElastiCache", "elasticache"],
   ["EMRServerless", "emr-serverless"],
-  ["ELBv2", "elb"],
+  ["ElasticLoadBalancingV2", "elb"],
   ["Evidently", "evidently"],
   ["Firehose", "firehose"],
+  ["FMS", "fms"],
   ["FSx", "fsx"],
   ["Imagebuilder", "imagebuilder"],
   ["IVS", "ivs"],
@@ -109,7 +110,7 @@ const GROUPS = [
   ["SQS", "sqs"],
   ["SSM", "ssm"],
   ["Transfer", "transfer"],
-  ["WAFV2", "waf"],
+  ["WAFv2", "waf"],
   ["XRay", "xray"],
 ];
 
@@ -123,7 +124,7 @@ const GROUPS_MISSING = [
 const GROUPS_GLOBAL = [
   "IAM",
   "Route53",
-  "Route53Domain", // always on us-east-1
+  "Route53Domains", // always on us-east-1
   "Route53RecoveryReadiness",
   "GlobalAccelerator",
 ];
