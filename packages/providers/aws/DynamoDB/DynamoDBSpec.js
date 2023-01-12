@@ -29,7 +29,7 @@ module.exports = pipe([
         "TableStatus",
         "SSEDescription",
       ],
-      propertiesDefault: { BillingMode: "PAY_PER_REQUEST" },
+      propertiesDefault: {},
       compare: compareDynamoDB({}),
       filterLive: () =>
         pipe([
