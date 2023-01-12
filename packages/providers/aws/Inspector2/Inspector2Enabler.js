@@ -44,8 +44,11 @@ exports.Inspector2Enabler = ({ compare }) => ({
                   () => resourceState,
                   get(type.toLowerCase()),
                   get("status"),
-                  callProp("startsWith", "ENA"),
-                  switchCase([isEmpty, () => acc, [...acc, type]]),
+                  switchCase([
+                    callProp("startsWith", "ENA"),
+                    () => [...acc, type],
+                    () => acc,
+                  ]),
                 ])(),
               []
             ),
