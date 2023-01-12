@@ -27,7 +27,7 @@ List of resources for provider aws:
 * AppMesh: 
 [GatewayRoute](./resources/AppMesh/GatewayRoute.md), [Mesh](./resources/AppMesh/Mesh.md), [Route](./resources/AppMesh/Route.md), [VirtualGateway](./resources/AppMesh/VirtualGateway.md), [VirtualNode](./resources/AppMesh/VirtualNode.md), [VirtualRouter](./resources/AppMesh/VirtualRouter.md), [VirtualService](./resources/AppMesh/VirtualService.md)
 * AppRunner: 
-[Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
+[AutoScalingConfiguration](./resources/AppRunner/AutoScalingConfiguration.md), [CustomDomain](./resources/AppRunner/CustomDomain.md), [Connection](./resources/AppRunner/Connection.md), [ObservabilityConfiguration](./resources/AppRunner/ObservabilityConfiguration.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
 * AppStream: 
 [AppBlock](./resources/AppStream/AppBlock.md), [Application](./resources/AppStream/Application.md), [DirectoryConfig](./resources/AppStream/DirectoryConfig.md), [Fleet](./resources/AppStream/Fleet.md), [ImageBuilder](./resources/AppStream/ImageBuilder.md), [Stack](./resources/AppStream/Stack.md), [User](./resources/AppStream/User.md), [UsageReportSubscription](./resources/AppStream/UsageReportSubscription.md)
 * AppSync: 
@@ -102,6 +102,8 @@ List of resources for provider aws:
 [Experiment](./resources/Evidently/Experiment.md), [Feature](./resources/Evidently/Feature.md), [Launch](./resources/Evidently/Launch.md), [Project](./resources/Evidently/Project.md), [Segment](./resources/Evidently/Segment.md)
 * Firehose: 
 [DeliveryStream](./resources/Firehose/DeliveryStream.md)
+* FMS: 
+[AdminAccount](./resources/FMS/AdminAccount.md), [Policy](./resources/FMS/Policy.md)
 * FSx: 
 [FileSystem](./resources/FSx/FileSystem.md), [StorageVirtualMachine](./resources/FSx/StorageVirtualMachine.md), [Volume](./resources/FSx/Volume.md)
 * GlobalAccelerator: 
@@ -187,7 +189,7 @@ List of resources for provider aws:
 * SSM: 
 [Activation](./resources/SSM/Activation.md), [Association](./resources/SSM/Association.md), [Document](./resources/SSM/Document.md), [MaintenanceWindow](./resources/SSM/MaintenanceWindow.md), [MaintenanceWindowTarget](./resources/SSM/MaintenanceWindowTarget.md), [MaintenanceWindowTask](./resources/SSM/MaintenanceWindowTask.md), [Parameter](./resources/SSM/Parameter.md), [PatchBaseline](./resources/SSM/PatchBaseline.md), [ServiceSetting](./resources/SSM/ServiceSetting.md)
 * SSOAdmin: 
-[AccountAssignment](./resources/SSOAdmin/AccountAssignment.md), [Instance](./resources/SSOAdmin/Instance.md), [PermissionSet](./resources/SSOAdmin/PermissionSet.md)
+[AccountAssignment](./resources/SSOAdmin/AccountAssignment.md), [Instance](./resources/SSOAdmin/Instance.md), [InstanceAccessControlAttribute](./resources/SSOAdmin/InstanceAccessControlAttribute.md), [PermissionSet](./resources/SSOAdmin/PermissionSet.md)
 * StepFunctions: 
 [StateMachine](./resources/StepFunctions/StateMachine.md)
 * Transfer: 
