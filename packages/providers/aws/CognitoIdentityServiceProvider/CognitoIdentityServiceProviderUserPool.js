@@ -45,6 +45,8 @@ const decorate = ({ endpoint, config }) =>
       ...other,
     }),
     liveToTags,
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeRiskConfiguration-property
+    // describeRiskConfiguration in {UserPoolId} returns RiskConfiguration
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
@@ -149,6 +151,8 @@ exports.CognitoIdentityServiceProviderUserPool = () => ({
     filterPayload: pipe([tagsToPayload]),
     method: "createUserPool",
     pickCreated: ({ payload }) => pipe([get("UserPool")]),
+    // TODO postCreate
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#setRiskConfiguration-property
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#updateUserPool-property
   update: {
