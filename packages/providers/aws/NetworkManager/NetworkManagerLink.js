@@ -6,13 +6,50 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./NetworkManagerCommon");
+const { Tagger } = require("./NetworkManagerCommon");
 
-const createModel = ({ config }) => ({
+const buildArn = () =>
+  pipe([
+    get("LinkArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const findId = () => pipe([get("LinkId")]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html
+exports.NetworkManagerLink = () => ({
+  type: "Link",
   package: "networkmanager",
   client: "NetworkManager",
   ignoreErrorCodes: ["ResourceNotFoundException", "ValidationException"],
+  findName: findNameInTagsOrId({ findId }),
+  findId,
+  pickId: pipe([pick(["LinkArn"])]),
+  omitProperties: [
+    "GlobalNetworkId",
+    "SiteId",
+    "CreatedAt",
+    "State",
+    "LinkArn",
+    "LinkId",
+  ],
+  dependencies: {
+    globalNetwork: {
+      type: "GlobalNetwork",
+      group: "NetworkManager",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
+    },
+    site: {
+      type: "Site",
+      group: "NetworkManager",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("SiteId"),
+    },
+  },
+  getByName: getByNameCore,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getLinks-property
   getById: {
     method: "getLinks",
@@ -48,54 +85,43 @@ const createModel = ({ config }) => ({
     method: "deleteLink",
     pickId: pipe([pick(["GlobalNetworkId", "SiteId", "LinkId"])]),
   },
-});
-
-const findId = () => pipe([get("LinkId")]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html
-exports.NetworkManagerLink = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getLinks-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "GlobalNetwork", group: "NetworkManager" },
+          pickKey: pipe([pick(["GlobalNetworkId"])]),
+          method: "getLinks",
+          getParam: "Links",
+          config,
+        }),
+    ])(),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { globalNetwork, site },
     config,
-    findName: findNameInTagsOrId({ findId }),
-    findId,
-    pickId: pipe([pick(["LinkArn"])]),
-    getByName: getByNameCore,
-    tagResource: tagResource({ property: "LinkArn" }),
-    untagResource: untagResource({ property: "LinkArn" }),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getLinks-property
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () =>
-          client.getListWithParent({
-            parent: { type: "GlobalNetwork", group: "NetworkManager" },
-            pickKey: pipe([pick(["GlobalNetworkId"])]),
-            method: "getLinks",
-            getParam: "Links",
-            config,
-          }),
-      ])(),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { globalNetwork, site },
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(globalNetwork);
-        }),
-        () => otherProps,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(globalNetwork);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        GlobalNetworkId: getField(globalNetwork, "GlobalNetworkId"),
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+      }),
+      when(
+        () => site,
         defaultsDeep({
-          GlobalNetworkId: getField(globalNetwork, "GlobalNetworkId"),
-          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-        }),
-        when(
-          () => site,
-          defaultsDeep({
-            SiteId: getField(site, "SiteId"),
-          })
-        ),
-      ])(),
-  });
+          SiteId: getField(site, "SiteId"),
+        })
+      ),
+    ])(),
+});

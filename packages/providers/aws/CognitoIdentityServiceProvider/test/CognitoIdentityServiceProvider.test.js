@@ -14,11 +14,11 @@ describe("CognitoIdentityServiceProvider", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("RiskConfiguration", () =>
+  it("RiskConfiguration", () =>
     pipe([
       () => ({
         groupType: "CognitoIdentityServiceProvider::RiskConfiguration",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ UserPoolId: "up_12345" }],
       }),
       awsResourceTest,
     ])());

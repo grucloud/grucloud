@@ -80,11 +80,21 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Account",
+    group: "Organisations",
+    name: "test account",
+    readOnly: true,
+    properties: ({}) => ({
+      Email: "test@grucloud.com",
+      Name: "test account",
+    }),
+  },
+  {
     type: "Cluster",
     group: "Redshift",
     properties: ({}) => ({
       ClusterIdentifier: "redshift-cluster-1",
-      NodeType: "dc2.large",
+      NodeType: "ra3.xlplus",
       MasterUsername: "awsuser",
       DBName: "dev",
       ClusterParameterGroups: [
@@ -95,6 +105,7 @@ exports.createResources = () => [
       ClusterSubnetGroupName: "cluster-subnet-group-1",
       NumberOfNodes: 2,
       EnhancedVpcRouting: true,
+      AvailabilityZoneRelocationStatus: "enabled",
       MasterUserPassword: process.env.REDSHIFT_CLUSTER_1_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
@@ -124,6 +135,14 @@ exports.createResources = () => [
         `vpc::subnet-private1-${config.region}a`,
         `vpc::subnet-private2-${config.region}b`,
       ],
+    }),
+  },
+  {
+    type: "EndpointAuthorization",
+    group: "Redshift",
+    dependencies: ({}) => ({
+      account: "test account",
+      cluster: "redshift-cluster-1",
     }),
   },
 ];

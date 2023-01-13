@@ -21,14 +21,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "GlobalNetwork",
-    group: "NetworkManager",
-    name: "cloudwan-module-without",
-    properties: ({}) => ({
-      Description: "Global Network - AWS CloudWAN Module",
-    }),
-  },
-  {
     type: "CoreNetwork",
     group: "NetworkManager",
     name: "cloudwan-module-without",
@@ -36,7 +28,7 @@ exports.createResources = () => [
       PolicyDocument: {
         "core-network-configuration": {
           "vpn-ecmp-support": false,
-          "asn-ranges": ["60517-64557"],
+          "asn-ranges": ["64512-64555"],
           "edge-locations": [
             {
               location: "us-east-1",
@@ -90,21 +82,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Site",
-    group: "NetworkManager",
-    name: "office",
-    properties: ({}) => ({
-      Location: {
-        Address: "rue de la paix",
-        Latitude: "0",
-        Longitude: "0",
-      },
-    }),
-    dependencies: ({}) => ({
-      globalNetwork: "cloudwan-module-without",
-    }),
-  },
-  {
     type: "Device",
     group: "NetworkManager",
     name: "my-device",
@@ -125,6 +102,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "GlobalNetwork",
+    group: "NetworkManager",
+    name: "cloudwan-module-without",
+    properties: ({}) => ({
+      Description: "Global Network - AWS CloudWAN Module",
+    }),
+  },
+  {
     type: "Link",
     group: "NetworkManager",
     name: "my-link",
@@ -137,6 +122,21 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       globalNetwork: "cloudwan-module-without",
       site: "office",
+    }),
+  },
+  {
+    type: "Site",
+    group: "NetworkManager",
+    name: "office",
+    properties: ({}) => ({
+      Location: {
+        Address: "rue de la paix",
+        Latitude: "0",
+        Longitude: "0",
+      },
+    }),
+    dependencies: ({}) => ({
+      globalNetwork: "cloudwan-module-without",
     }),
   },
   {

@@ -10,17 +10,28 @@ const GROUP = "Redshift";
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 const { RedshiftCluster } = require("./RedshiftCluster");
+
 const {
   RedshiftClusterParameterGroup,
 } = require("./RedshiftClusterParameterGroup");
 
 const { RedshiftClusterSubnetGroup } = require("./RedshiftClusterSubnetGroup");
 
+const { RedshiftEndpointAccess } = require("./RedshiftEndpointAccess");
+const {
+  RedshiftEndpointAuthorization,
+} = require("./RedshiftEndpointAuthorization");
+const { RedshiftUsageLimit } = require("./RedshiftUsageLimit");
+
+//
 module.exports = pipe([
   () => [
     RedshiftCluster({ compare }),
     RedshiftClusterParameterGroup({ compare }),
     RedshiftClusterSubnetGroup({ compare }),
+    RedshiftEndpointAccess({}),
+    RedshiftEndpointAuthorization({}),
+    RedshiftUsageLimit({}),
   ],
   map(
     pipe([

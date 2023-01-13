@@ -28,19 +28,21 @@ describe("Redshift", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("EndpointAccess", () =>
+  it("EndpointAccess", () =>
     pipe([
       () => ({
         groupType: "Redshift::EndpointAccess",
-        livesNotFound: ({ config }) => [{ ClusterSubnetGroupName: "1234" }],
+        livesNotFound: ({ config }) => [{ EndpointName: "e1234" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("EndpointAuthorization", () =>
+  it("EndpointAuthorization", () =>
     pipe([
       () => ({
         groupType: "Redshift::EndpointAuthorization",
-        livesNotFound: ({ config }) => [{ ClusterSubnetGroupName: "1234" }],
+        livesNotFound: ({ config }) => [
+          { ClusterIdentifier: "1234", Account: "000542909724" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -49,6 +51,14 @@ describe("Redshift", async function () {
       () => ({
         groupType: "Redshift::Partner",
         livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it("UsageLimit", () =>
+    pipe([
+      () => ({
+        groupType: "Redshift::UsageLimit",
+        livesNotFound: ({ config }) => [{ UsageLimitId: "u123" }],
       }),
       awsResourceTest,
     ])());

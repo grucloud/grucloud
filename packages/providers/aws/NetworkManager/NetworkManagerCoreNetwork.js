@@ -9,87 +9,22 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./NetworkManagerCommon");
+const { Tagger } = require("./NetworkManagerCommon");
 
-const assignPolicyDocument = assign({
-  PolicyDocument: pipe([get("PolicyDocument"), JSON.stringify]),
-});
+const buildArn = () =>
+  pipe([
+    get("CoreNetworkArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
 
-const createModel = ({ config }) => ({
-  package: "networkmanager",
-  client: "NetworkManager",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
-  getById: {
-    method: "getCoreNetwork",
-    pickId: pipe([pick(["CoreNetworkId"])]),
-    getField: "CoreNetwork",
-    decorate:
-      ({ endpoint }) =>
-      (live) =>
-        pipe([
-          () => live,
-          pick(["CoreNetworkId"]),
-          tryCatch(
-            pipe([
-              endpoint().getCoreNetworkPolicy,
-              get("CoreNetworkPolicy"),
-              when(
-                get("PolicyDocument"),
-                assign({
-                  PolicyDocument: pipe([get("PolicyDocument"), JSON.parse]),
-                })
-              ),
-              pick(["PolicyDocument", "PolicyVersionId"]),
-            ]),
-            // "ResourceNotFoundException"
-            (error) =>
-              pipe([
-                tap((params) => {
-                  assert(error);
-                }),
-                () => ({}),
-              ])()
-          ),
-          defaultsDeep(live),
-        ])(),
-  },
-  getList: {
-    method: "listCoreNetworks",
-    getParam: "CoreNetworks",
-    decorate: ({ endpoint, getById }) => pipe([getById]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#createCoreNetwork-property
-  create: {
-    method: "createCoreNetwork",
-    pickCreated: ({ payload }) => pipe([get("CoreNetwork")]),
-    isInstanceUp: pipe([eq(get("State"), "AVAILABLE")]),
-    filterPayload: pipe([assignPolicyDocument]),
-    configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#deleteCoreNetwork-property
-  destroy: {
-    // TODO
-    // preDestroy: ({ endpoint,  }) =>
-    //   live => pipe([
-    //     tap((params) => {
-    //       assert(true);
-    //     }),
-    //     () => live,
-    //     pick(["CoreNetworkId"]),
-    //     defaultsDeep({ Alias: "LATEST" }),
-    //     endpoint().getCoreNetworkPolicy,
-    //     tap((params) => {
-    //       assert(true);
-    //     }),
-    //     get("CoreNetworkPolicy"),
-    //     pick(["CoreNetworkId", "PolicyVersionId"]),
-    //     endpoint().deleteCoreNetworkPolicyVersion,
-    //   ])(),
-    method: "deleteCoreNetwork",
-    pickId: pipe([pick(["CoreNetworkId"])]),
-  },
-});
+const assignPolicyDocument = when(
+  get("PolicyDocument"),
+  assign({
+    PolicyDocument: pipe([get("PolicyDocument"), JSON.stringify]),
+  })
+);
 
 const findId = () => pipe([get("CoreNetworkId")]);
 
@@ -174,45 +109,134 @@ const updateCoreNetworkPolicy =
     ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html
-exports.NetworkManagerCoreNetwork = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
-    config,
-    findName: findNameInTagsOrId({ findId }),
-    findId,
-    pickId: pipe([pick(["CoreNetworkArn"])]),
-    update:
+exports.NetworkManagerCoreNetwork = () => ({
+  type: "CoreNetwork",
+  package: "networkmanager",
+  client: "NetworkManager",
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  findName: findNameInTagsOrId({ findId }),
+  findId,
+  pickId: pipe([pick(["CoreNetworkArn"])]),
+  omitProperties: [
+    "GlobalNetworkId",
+    "CoreNetworkId",
+    "CoreNetworkArn",
+    "CreatedAt",
+    "State",
+    "Segments",
+    "Edges",
+    "PolicyVersionId",
+  ],
+  dependencies: {
+    globalNetwork: {
+      type: "GlobalNetwork",
+      group: "NetworkManager",
+      dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
+    },
+  },
+  getById: {
+    method: "getCoreNetwork",
+    pickId: pipe([pick(["CoreNetworkId"])]),
+    getField: "CoreNetwork",
+    decorate:
       ({ endpoint }) =>
-      ({ payload, name, namespace, diff, live, lives }) =>
+      (live) =>
         pipe([
-          () => ({ payload, diff, live }),
-          tap.if(
-            get("diff.liveDiff.updated.Description"),
-            updateCoreNetwork({ endpoint })
+          () => live,
+          pick(["CoreNetworkId"]),
+          tryCatch(
+            pipe([
+              endpoint().getCoreNetworkPolicy,
+              get("CoreNetworkPolicy"),
+              when(
+                get("PolicyDocument"),
+                assign({
+                  PolicyDocument: pipe([get("PolicyDocument"), JSON.parse]),
+                })
+              ),
+              pick(["PolicyDocument", "PolicyVersionId"]),
+            ]),
+            // "ResourceNotFoundException"
+            (error) =>
+              pipe([
+                tap((params) => {
+                  assert(error);
+                }),
+                () => ({}),
+              ])()
           ),
-          tap.if(
-            get("diff.liveDiff.updated.PolicyDocument"),
-            updateCoreNetworkPolicy({ endpoint })
-          ),
+          defaultsDeep(live),
         ])(),
-    getByName: getByNameCore,
-    tagResource: tagResource({ property: "CoreNetworkArn" }),
-    untagResource: untagResource({ property: "CoreNetworkArn" }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { globalNetwork },
-    }) =>
+  },
+  getList: {
+    method: "listCoreNetworks",
+    getParam: "CoreNetworks",
+    decorate: ({ endpoint, getById }) => pipe([getById]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#createCoreNetwork-property
+  create: {
+    method: "createCoreNetwork",
+    pickCreated: ({ payload }) => pipe([get("CoreNetwork")]),
+    isInstanceUp: pipe([eq(get("State"), "AVAILABLE")]),
+    filterPayload: pipe([assignPolicyDocument]),
+    configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#deleteCoreNetwork-property
+  destroy: {
+    // TODO
+    // preDestroy: ({ endpoint,  }) =>
+    //   live => pipe([
+    //     tap((params) => {
+    //       assert(true);
+    //     }),
+    //     () => live,
+    //     pick(["CoreNetworkId"]),
+    //     defaultsDeep({ Alias: "LATEST" }),
+    //     endpoint().getCoreNetworkPolicy,
+    //     tap((params) => {
+    //       assert(true);
+    //     }),
+    //     get("CoreNetworkPolicy"),
+    //     pick(["CoreNetworkId", "PolicyVersionId"]),
+    //     endpoint().deleteCoreNetworkPolicyVersion,
+    //   ])(),
+    method: "deleteCoreNetwork",
+    pickId: pipe([pick(["CoreNetworkId"])]),
+  },
+  update:
+    ({ endpoint }) =>
+    ({ payload, name, namespace, diff, live, lives }) =>
       pipe([
-        tap((params) => {
-          assert(globalNetwork);
-        }),
-        () => otherProps,
-        defaultsDeep({
-          GlobalNetworkId: getField(globalNetwork, "GlobalNetworkId"),
-          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-        }),
+        () => ({ payload, diff, live }),
+        tap.if(
+          get("diff.liveDiff.updated.Description"),
+          updateCoreNetwork({ endpoint })
+        ),
+        tap.if(
+          get("diff.liveDiff.updated.PolicyDocument"),
+          updateCoreNetworkPolicy({ endpoint })
+        ),
       ])(),
-  });
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { globalNetwork },
+    config,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(globalNetwork);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        GlobalNetworkId: getField(globalNetwork, "GlobalNetworkId"),
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+      }),
+    ])(),
+});
