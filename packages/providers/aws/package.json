@@ -45,7 +45,6 @@
     "test-ec2-flow-logs": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/flow-logs/**/iac.test.js' ",
     "test-ec2-instance": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/Instance/**/iac.test.js' ",
     "test-ec2-lt": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/LaunchTemplate/**/iac.test.js' ",
-
     "test-ec2-routetable": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/RouteTable/**/iac.test.js' ",
     "test-ec2-securitygroup": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/SecurityGroup/**/iac.test.js' ",
     "test-ec2-transitgateway": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EC2/TransitGateway/**/iac.test.js' ",
@@ -106,6 +105,7 @@
     "test-sqs": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/SQS/**/iac.test.js' ",
     "test-ssm": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/SSM/**/iac.test.js' ",
     "test-stepfunctions": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/StepFunctions/**/iac.test.js' ",
+    "test-timestreamwrite": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Timestreamwrite/**/iac.test.js' ",
     "test-transfer": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Transfer/**/iac.test.js' ",
     "test-wafv2": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/WAFv2/**/iac.test.js' ",
     "test-xray": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/XRay/**/iac.test.js' ",
@@ -227,6 +227,7 @@
     "@aws-sdk/client-ssm": "3.245.0",
     "@aws-sdk/client-sso-admin": "3.245.0",
     "@aws-sdk/client-sts": "3.245.0",
+    "@aws-sdk/client-timestream-write": "3.245.0",
     "@aws-sdk/client-transfer": "3.245.0",
     "@aws-sdk/client-wafv2": "3.245.0",
     "@aws-sdk/client-xray": "3.245.0",

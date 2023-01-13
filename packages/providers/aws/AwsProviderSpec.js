@@ -109,6 +109,7 @@ const GROUPS = [
   ["SSOAdmin", "sso"],
   ["SQS", "sqs"],
   ["SSM", "ssm"],
+  ["TimestreamWrite", "timestream-write"],
   ["Transfer", "transfer"],
   ["WAFv2", "waf"],
   ["XRay", "xray"],

@@ -15,10 +15,6 @@ exports.createResources = () => [
     type: "Service",
     group: "AppRunner",
     properties: ({ getId }) => ({
-      AutoScalingConfigurationSummary: {
-        AutoScalingConfigurationName: "DefaultConfiguration",
-        AutoScalingConfigurationRevision: 1,
-      },
       ServiceName: "apprunner",
       NetworkConfiguration: {
         IngressConfiguration: {

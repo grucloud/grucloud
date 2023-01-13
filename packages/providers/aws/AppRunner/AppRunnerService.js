@@ -154,7 +154,7 @@ exports.AppRunnerService = ({ compare }) => ({
       dependencyIds: () =>
         pipe([
           get(
-            "SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentResourcesType"
+            "SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentSecrets"
           ),
           values,
           filter(callProp("startsWith", "arn:aws:secretsmanager")),
@@ -167,7 +167,7 @@ exports.AppRunnerService = ({ compare }) => ({
       dependencyIds: () =>
         pipe([
           get(
-            "SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentResourcesType"
+            "SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentSecrets"
           ),
           values,
           filter(callProp("startsWith", "arn:aws:ssm")),
@@ -239,10 +239,10 @@ exports.AppRunnerService = ({ compare }) => ({
                       CodeConfigurationValues: pipe([
                         get("CodeConfigurationValues"),
                         when(
-                          get("RuntimeEnvironmentResourcesType"),
+                          get("RuntimeEnvironmentSecrets"),
                           assign({
-                            RuntimeEnvironmentResourcesType: pipe([
-                              get("RuntimeEnvironmentResourcesType"),
+                            RuntimeEnvironmentSecrets: pipe([
+                              get("RuntimeEnvironmentSecrets"),
                               map(
                                 replaceRuntimeEnvironment({
                                   lives,
