@@ -22,4 +22,12 @@ describe("FMS", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("Protocol", () =>
+    pipe([
+      () => ({
+        groupType: "FMS::Protocol",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
 });

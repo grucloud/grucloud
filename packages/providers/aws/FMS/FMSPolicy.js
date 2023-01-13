@@ -143,6 +143,49 @@ exports.FMSPolicy = () => ({
       list: true,
       dependencyIds: ({ lives, config }) => pipe([get("ExcludeMap.ORG_UNIT")]),
     },
+    // TODO
+    // networkFirewallRuleGroups: {
+    //   type: "RuleGroup",
+    //   group: "NetworkFirewall",
+    //   list: true,
+    //   dependencyIds: ({ lives, config }) =>
+    //     pipe([get("SecurityServicePolicyData.ManagedServiceData.TODO")]),
+    // },
+    // inspectionVpcs: {
+    //   type: "Vpc",
+    //   group: "EC2",
+    //   list: true,
+    //   dependencyIds: ({ lives, config }) =>
+    //     pipe([get("SecurityServicePolicyData.ManagedServiceData.TODO")]),
+    // },
+    // securityGroups: {
+    //   type: "SecurityGroup",
+    //   group: "EC2",
+    //   list: true,
+    //   dependencyIds: ({ lives, config }) =>
+    //     pipe([get("SecurityServicePolicyData.ManagedServiceData.TODO")]),
+    // },
+    // firehoseDeliveryStream: {
+    //   type: "DeliveryStream",
+    //   group: "Firehose",
+    //   list: true,
+    //   dependencyIds: ({ lives, config }) =>
+    //     pipe([get("SecurityServicePolicyData.ManagedServiceData.TODO")]),
+    // },
+    // wafv2RuleGroup: {
+    //   type: "RuleGroup",
+    //   group: "WAFv2",
+    //   list: true,
+    //   dependencyIds: ({ lives, config }) =>
+    //     pipe([get("SecurityServicePolicyData.ManagedServiceData.TODO")]),
+    // },
+    // route53FirewallRuleGroup: {
+    //   type: "FirewallRuleGroup",
+    //   group: "Route53Resolver",
+    //   list: true,
+    //   dependencyIds: ({ lives, config }) =>
+    //     pipe([get("SecurityServicePolicyData.ManagedServiceData.TODO")]),
+    // },
   },
   filterLive: ({ lives, providerConfig }) =>
     pipe([

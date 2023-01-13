@@ -182,6 +182,7 @@ const AwsClient =
           "InvalidAccessException",
           "BadRequestException",
           "ResourceNotFoundException",
+          "PermanentRedirect",
         ],
         getById,
       }) =>

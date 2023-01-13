@@ -1,5 +1,16 @@
 const assert = require("assert");
-const { eq, pipe, tap, get, pick, omit, assign } = require("rubico");
+const {
+  eq,
+  pipe,
+  tap,
+  get,
+  pick,
+  omit,
+  assign,
+  filter,
+  switchCase,
+  map,
+} = require("rubico");
 const {
   defaultsDeep,
   when,
@@ -8,6 +19,7 @@ const {
   callProp,
   first,
   find,
+  values,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -15,11 +27,54 @@ const { buildTags, replaceAccountAndRegion } = require("../AwsCommon");
 const { Tagger, assignTags } = require("./AppRunnerCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
 
+const EnvironmentResourcesType = [
+  {
+    arnPrefix: "arn:aws:secretsmanager",
+    groupType: "SecretsManager::Secret",
+  },
+  {
+    arnPrefix: "arn:aws:ssm",
+    groupType: "SSM::Parameter",
+  },
+];
+
 const buildArn = () => get("ServiceArn");
 const pickId = pipe([pick(["ServiceArn"])]);
 
 const decorate = ({ endpoint }) =>
-  pipe([assignTags({ endpoint, buildArn: buildArn() })]);
+  pipe([
+    ({ AutoScalingConfigurationSummary, ...other }) => ({
+      ...other,
+      AutoScalingConfigurationArn:
+        AutoScalingConfigurationSummary.AutoScalingConfigurationArn,
+    }),
+    assignTags({ endpoint, buildArn: buildArn() }),
+  ]);
+
+const replaceRuntimeEnvironment =
+  ({ lives, providerConfig }) =>
+  (arn) =>
+    pipe([
+      tap((params) => {
+        assert(arn);
+      }),
+      () => EnvironmentResourcesType,
+      find(pipe([({ arnPrefix }) => arn.startsWith(arnPrefix)])),
+      switchCase([
+        isEmpty,
+        () => arn,
+        ({ groupType }) =>
+          pipe([
+            () => arn,
+            replaceWithName({
+              groupType,
+              path: "id",
+              providerConfig,
+              lives,
+            }),
+          ])(),
+      ]),
+    ])();
 
 exports.AppRunnerService = ({ compare }) => ({
   type: "Service",
@@ -35,6 +90,18 @@ exports.AppRunnerService = ({ compare }) => ({
       group: "IAM",
       dependencyId: ({ lives, config }) =>
         get("SourceConfiguration.AuthenticationConfiguration.AccessRoleArn"),
+    },
+    instanceRole: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) =>
+        get("InstanceConfiguration.InstanceRoleArn"),
+    },
+    autoScalingConfiguration: {
+      type: "AutoScalingConfiguration",
+      group: "AppRunner",
+      excludeDefaultDependencies: true,
+      dependencyId: ({ lives, config }) => get("AutoScalingConfigurationArn"),
     },
     connection: {
       type: "Connection",
@@ -80,6 +147,32 @@ exports.AppRunnerService = ({ compare }) => ({
           ),
         ]),
     },
+    secrets: {
+      type: "Secret",
+      group: "SecretsManager",
+      list: true,
+      dependencyIds: () =>
+        pipe([
+          get(
+            "SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentResourcesType"
+          ),
+          values,
+          filter(callProp("startsWith", "arn:aws:secretsmanager")),
+        ]),
+    },
+    ssmParameters: {
+      type: "Parameter",
+      group: "SSM",
+      list: true,
+      dependencyIds: () =>
+        pipe([
+          get(
+            "SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentResourcesType"
+          ),
+          values,
+          filter(callProp("startsWith", "arn:aws:ssm")),
+        ]),
+    },
     vpcConnector: {
       type: "VpcConnector",
       group: "AppRunner",
@@ -101,11 +194,14 @@ exports.AppRunnerService = ({ compare }) => ({
     "Status",
     "NetworkConfiguration.EgressConfiguration.VpcConnectorArn",
     "EncryptionConfiguration.KmsKey",
-    "AutoScalingConfigurationSummary",
+    "AutoScalingConfigurationSummary.AutoScalingConfigurationArn",
+    "InstanceConfiguration.InstanceRoleArn",
+    "AutoScalingConfigurationArn",
   ],
   filterLive: ({ lives, providerConfig }) =>
     pipe([
       pick([
+        "AutoScalingConfigurationSummary",
         "ServiceName",
         "NetworkConfiguration",
         "SourceConfiguration",
@@ -131,6 +227,38 @@ exports.AppRunnerService = ({ compare }) => ({
       assign({
         SourceConfiguration: pipe([
           get("SourceConfiguration"),
+          when(
+            get("CodeRepository"),
+            assign({
+              CodeRepository: pipe([
+                get("CodeRepository"),
+                assign({
+                  CodeConfiguration: pipe([
+                    get("CodeConfiguration"),
+                    assign({
+                      CodeConfigurationValues: pipe([
+                        get("CodeConfigurationValues"),
+                        when(
+                          get("RuntimeEnvironmentResourcesType"),
+                          assign({
+                            RuntimeEnvironmentResourcesType: pipe([
+                              get("RuntimeEnvironmentResourcesType"),
+                              map(
+                                replaceRuntimeEnvironment({
+                                  lives,
+                                  providerConfig,
+                                })
+                              ),
+                            ]),
+                          })
+                        ),
+                      ]),
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          ),
           when(
             get("ImageRepository"),
             assign({
@@ -218,6 +346,15 @@ exports.AppRunnerService = ({ compare }) => ({
         })
       ),
       when(
+        () => dependencies.autoScalingConfiguration,
+        defaultsDeep({
+          AutoScalingConfigurationArn: getField(
+            dependencies.autoScalingConfiguration,
+            "AutoScalingConfigurationArn"
+          ),
+        })
+      ),
+      when(
         () => dependencies.kmsKey,
         defaultsDeep({
           EncryptionConfiguration: {
@@ -232,6 +369,14 @@ exports.AppRunnerService = ({ compare }) => ({
             AuthenticationConfiguration: {
               AccessRoleArn: getField(dependencies.accessRole, "Arn"),
             },
+          },
+        })
+      ),
+      when(
+        () => dependencies.instanceRole,
+        defaultsDeep({
+          InstanceConfiguration: {
+            InstanceRoleArn: getField(dependencies.instanceRole, "Arn"),
           },
         })
       ),

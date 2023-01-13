@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
+const { pipe, tap, get, pick, assign, eq } = require("rubico");
 const { defaultsDeep, prepend, pluck } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -22,8 +22,13 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    defaultsDeep({ AccountId: config.accountId() }),
     assignArn({ config }),
   ]);
+
+const filterPayload = pipe([
+  ({ AccountId, ...Details }) => ({ AccountId, Details }),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3Control.html
 exports.S3ControlMultiRegionAccessPoint = () => ({
@@ -33,10 +38,12 @@ exports.S3ControlMultiRegionAccessPoint = () => ({
   //region: "us-west-1",
   propertiesDefault: {},
   omitProperties: [
+    "Arn",
     "AccountId",
     "CreatedAt",
     "MultiRegionAccessPointArn",
     "Status",
+    "Alias",
   ],
   inferName: () =>
     pipe([
@@ -79,11 +86,10 @@ exports.S3ControlMultiRegionAccessPoint = () => ({
   getById: {
     method: "getMultiRegionAccessPoint",
     pickId: pipe([
-      tap(({ Details }) => {
-        assert(Details);
-        assert(Details.Name);
+      tap(({ Name }) => {
+        assert(Name);
       }),
-      ({ AccountId, Details }) => ({ AccountId, Name: Details.Name }),
+      pick(["AccountId", "Name"]),
     ]),
     getField: "AccessPoint",
     decorate,
@@ -95,11 +101,12 @@ exports.S3ControlMultiRegionAccessPoint = () => ({
       () => ({ AccountId: config.accountId() }),
     method: "listMultiRegionAccessPoints",
     getParam: "AccessPoints",
-    //decorate: ({ getById }) => pipe([getById]),
+    decorate: ({ getById, config }) =>
+      pipe([({ Name }) => ({ AccountId: config.accountId(), Name }), getById]),
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3Control.html#createMultiRegionAccessPoint-property
   create: {
+    filterPayload,
     method: "createMultiRegionAccessPoint",
     pickCreated: ({ payload }) => pipe([() => payload]),
     isInstanceUp: pipe([eq(get("Status"), "READY")]),
@@ -109,10 +116,11 @@ exports.S3ControlMultiRegionAccessPoint = () => ({
   destroy: {
     method: "deleteMultiRegionAccessPoint",
     pickId: pipe([
-      tap(({ Details }) => {
-        assert(Details);
+      tap(({ Name, AccountId }) => {
+        assert(AccountId);
+        assert(Name);
       }),
-      pick(["AccountId", "Details"]),
+      ({ AccountId, Name }) => ({ AccountId, Details: { Name } }),
     ]),
   },
   getByName: getByNameCore,

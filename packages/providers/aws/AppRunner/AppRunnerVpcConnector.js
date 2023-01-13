@@ -23,6 +23,7 @@ exports.AppRunnerVpcConnector = () => ({
   findId: () => pipe([get("VpcConnectorArn")]),
   inferName: () => get("VpcConnectorName"),
   omitProperties: [
+    "VpcConnectorRevision",
     "VpcConnectorArn",
     "Status",
     "CreatedAt",
