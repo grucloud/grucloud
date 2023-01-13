@@ -86,6 +86,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       BatchSize: 10,
       MaximumBatchingWindowInSeconds: 0,
+      ScalingConfig: {
+        MaximumConcurrency: 3,
+      },
     }),
     dependencies: ({}) => ({
       lambdaFunction: "sqs-lambda-demo",

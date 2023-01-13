@@ -467,6 +467,15 @@ module.exports = pipe([
             ]),
             prepend(`mapping::${lambdaFunction}::`),
           ])(),
+      omitProperties: [
+        "EventSourceArn",
+        "UUID",
+        "FunctionArn",
+        "LastModified",
+        "LastProcessingResult",
+        "StateTransitionReason",
+        "State",
+      ],
       compare: compareLambda({
         filterTarget: () =>
           pipe([
@@ -480,14 +489,6 @@ module.exports = pipe([
           ]),
         filterLive: () =>
           pipe([
-            omit([
-              "UUID",
-              "FunctionArn",
-              "LastModified",
-              "LastProcessingResult",
-              "StateTransitionReason",
-              "State",
-            ]),
             omitIfEmpty([
               "StartingPosition",
               "StartingPositionTimestamp",
@@ -506,21 +507,6 @@ module.exports = pipe([
           pipe([
             tap(() => {}),
             () => live,
-            pick([
-              "StartingPosition",
-              "StartingPositionTimestamp",
-              "BatchSize",
-              "MaximumBatchingWindowInSeconds",
-              "ParallelizationFactor",
-              "DestinationConfig",
-              "Topics",
-              "Queues",
-              "MaximumRecordAgeInSeconds",
-              "BisectBatchOnFunctionError",
-              "MaximumRetryAttempts",
-              "TumblingWindowInSeconds",
-              "FunctionResponseTypes",
-            ]),
             omitIfEmpty(["FunctionResponseTypes"]),
             omitDestinationConfig,
           ])(),
