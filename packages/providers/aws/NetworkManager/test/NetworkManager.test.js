@@ -5,7 +5,7 @@ const { awsResourceTest } = require("../../AwsResourceTester");
 
 let config = () => ({ region: "us-west-2" });
 
-describe("NetworkManager", async function () {
+describe.only("NetworkManager", async function () {
   it("CoreNetwork", () =>
     pipe([
       () => ({

@@ -1,18 +1,54 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, tryCatch } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { pipe, tap, get, pick, eq } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./NetworkManagerCommon");
+const { Tagger } = require("./NetworkManagerCommon");
 
-const createModel = ({ config }) => ({
+const buildArn = () =>
+  pipe([
+    get("SiteArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const findId = () =>
+  pipe([
+    get("SiteId"),
+    tap((SiteId) => {
+      assert(SiteId);
+    }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html
+exports.NetworkManagerSite = () => ({
+  type: "Site",
   package: "networkmanager",
   client: "NetworkManager",
   ignoreErrorCodes: ["ResourceNotFoundException", "ValidationException"],
+  findName: findNameInTagsOrId({ findId }),
+  findId,
+  pickId: pipe([pick(["SiteArn"])]),
+  omitProperties: [
+    "GlobalNetworkId",
+    "SiteId",
+    "SiteArn",
+    "CreatedAt",
+    "State",
+  ],
+  dependencies: {
+    globalNetwork: {
+      type: "GlobalNetwork",
+      group: "NetworkManager",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
+    },
+  },
+  getByName: getByNameCore,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getSites-property
   getById: {
     method: "getSites",
@@ -21,7 +57,6 @@ const createModel = ({ config }) => ({
     ]),
     getField: "Sites",
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#createSite-property
   create: {
     method: "createSite",
@@ -42,48 +77,37 @@ const createModel = ({ config }) => ({
     method: "deleteSite",
     pickId: pipe([pick(["GlobalNetworkId", "SiteId"])]),
   },
-});
-
-const findId = () => pipe([get("SiteId")]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html
-exports.NetworkManagerSite = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getSites-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "GlobalNetwork", group: "NetworkManager" },
+          pickKey: pipe([pick(["GlobalNetworkId"])]),
+          method: "getSites",
+          getParam: "Sites",
+          config,
+        }),
+    ])(),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { globalNetwork },
     config,
-    findName: findNameInTagsOrId({ findId }),
-    findId,
-    pickId: pipe([pick(["SiteArn"])]),
-    getByName: getByNameCore,
-    tagResource: tagResource({ property: "SiteArn" }),
-    untagResource: untagResource({ property: "SiteArn" }),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getSites-property
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () =>
-          client.getListWithParent({
-            parent: { type: "GlobalNetwork", group: "NetworkManager" },
-            pickKey: pipe([pick(["GlobalNetworkId"])]),
-            method: "getSites",
-            getParam: "Sites",
-            config,
-          }),
-      ])(),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { globalNetwork },
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(globalNetwork);
-        }),
-        () => otherProps,
-        defaultsDeep({
-          GlobalNetworkId: getField(globalNetwork, "GlobalNetworkId"),
-          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(globalNetwork);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        GlobalNetworkId: getField(globalNetwork, "GlobalNetworkId"),
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+      }),
+    ])(),
+});

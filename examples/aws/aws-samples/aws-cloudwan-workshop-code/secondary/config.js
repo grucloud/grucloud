@@ -6,6 +6,7 @@ const pkg = require("../package.json");
 module.exports = () => ({
   projectName: pkg.name,
   credentials: { profile: "ireland" },
+  includeGroups: ["EC2"],
   filterTags: pipe([
     tap((params) => {
       //assert(true);
