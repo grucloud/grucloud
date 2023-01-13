@@ -79,7 +79,7 @@ const decorate = ({ endpoint }) =>
     assignManageMasterUserPassword,
   ]);
 
-exports.DBInstance = ({ compare }) => ({
+exports.RDSDBInstance = ({ compare }) => ({
   type: "DBInstance",
   package: "rds",
   client: "RDS",

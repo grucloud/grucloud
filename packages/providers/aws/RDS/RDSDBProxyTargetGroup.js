@@ -38,7 +38,7 @@ const decorate = ({ endpoint }) =>
 const managedByOther = () => pipe([get("IsDefault")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
-exports.DBProxyTargetGroup = () => ({
+exports.RDSDBProxyTargetGroup = () => ({
   type: "DBProxyTargetGroup",
   package: "rds",
   client: "RDS",

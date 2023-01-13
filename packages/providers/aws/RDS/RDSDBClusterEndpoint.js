@@ -45,8 +45,8 @@ const findNameClusterEndpoint = pipe([
   ]),
 ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Neptune.html
-exports.RDSClusterEndpoint = ({ compare }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
+exports.RDSDBClusterEndpoint = ({ compare }) => ({
   type: "DBClusterEndpoint",
   package: "rds",
   client: "RDS",
@@ -67,35 +67,35 @@ exports.RDSClusterEndpoint = ({ compare }) => ({
   dependencies: {
     cluster: {
       type: "DBCluster",
-      group: "Neptune",
+      group: "RDS",
       dependencyId: ({ lives, config }) => pipe([get("DBClusterIdentifier")]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Neptune.html#getDBClusterEndpoint-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#getDBClusterEndpoint-property
   getById: {
     method: "describeDBClusterEndpoints",
     getField: "DBClusterEndpoints",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Neptune.html#describeDBClusterEndpoints-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBClusterEndpoints-property
   getList: {
     method: "describeDBClusterEndpoints",
     getParam: "DBClusterEndpoints",
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Neptune.html#createDBClusterEndpoint-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBClusterEndpoint-property
   create: {
     method: "createDBClusterEndpoint",
     pickCreated: ({ payload }) => pipe([() => payload]),
     isInstanceUp: pipe([eq(get("Status"), "available")]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Neptune.html#modifyDBClusterEndpoint-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyDBClusterEndpoint-property
   update: {
     method: "modifyDBClusterEndpoint",
     filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Neptune.html#deleteDBClusterEndpoint-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteDBClusterEndpoint-property
   destroy: {
     method: "deleteDBClusterEndpoint",
     pickId,

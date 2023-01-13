@@ -18,7 +18,7 @@ const {
 
 const { replaceWithName } = require("@grucloud/core/Common");
 
-const ignoreErrorCodes = ["DBClusterNotFoundFault", ""];
+const ignoreErrorCodes = ["DBClusterNotFoundFault"];
 
 const buildArn = () =>
   pipe([
@@ -47,7 +47,7 @@ const pickId = pipe([
   }),
 ]);
 
-exports.DBCluster = ({ compare }) => ({
+exports.RDSDBCluster = ({ compare }) => ({
   type: "DBCluster",
   package: "rds",
   client: "RDS",
