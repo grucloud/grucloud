@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project timestream-write-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ TimestreamWrite
+++++ Database (1)
+++++ Table (1)
+@endmindmap
