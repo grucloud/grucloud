@@ -7,6 +7,6 @@ module.exports = () => ({
     "EC2",
     "ECR",
     "Route53",
-    "Route53Domain",
+    "Route53Domains",
   ],
 });

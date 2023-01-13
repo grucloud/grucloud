@@ -42,7 +42,14 @@ const buildArn = () => get("ServiceArn");
 const pickId = pipe([pick(["ServiceArn"])]);
 
 const decorate = ({ endpoint }) =>
-  pipe([assignTags({ endpoint, buildArn: buildArn() })]);
+  pipe([
+    ({ AutoScalingConfigurationSummary, ...other }) => ({
+      ...other,
+      AutoScalingConfigurationArn:
+        AutoScalingConfigurationSummary.AutoScalingConfigurationArn,
+    }),
+    assignTags({ endpoint, buildArn: buildArn() }),
+  ]);
 
 const replaceRuntimeEnvironment =
   ({ lives, providerConfig }) =>
@@ -94,8 +101,7 @@ exports.AppRunnerService = ({ compare }) => ({
       type: "AutoScalingConfiguration",
       group: "AppRunner",
       excludeDefaultDependencies: true,
-      dependencyId: ({ lives, config }) =>
-        get("AutoScalingConfigurationSummary.AutoScalingConfigurationArn"),
+      dependencyId: ({ lives, config }) => get("AutoScalingConfigurationArn"),
     },
     connection: {
       type: "Connection",
@@ -148,7 +154,7 @@ exports.AppRunnerService = ({ compare }) => ({
       dependencyIds: () =>
         pipe([
           get(
-            "SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentResourcesType"
+            "SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentSecrets"
           ),
           values,
           filter(callProp("startsWith", "arn:aws:secretsmanager")),
@@ -161,7 +167,7 @@ exports.AppRunnerService = ({ compare }) => ({
       dependencyIds: () =>
         pipe([
           get(
-            "SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentResourcesType"
+            "SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentSecrets"
           ),
           values,
           filter(callProp("startsWith", "arn:aws:ssm")),
@@ -190,6 +196,7 @@ exports.AppRunnerService = ({ compare }) => ({
     "EncryptionConfiguration.KmsKey",
     "AutoScalingConfigurationSummary.AutoScalingConfigurationArn",
     "InstanceConfiguration.InstanceRoleArn",
+    "AutoScalingConfigurationArn",
   ],
   filterLive: ({ lives, providerConfig }) =>
     pipe([
@@ -232,10 +239,10 @@ exports.AppRunnerService = ({ compare }) => ({
                       CodeConfigurationValues: pipe([
                         get("CodeConfigurationValues"),
                         when(
-                          get("RuntimeEnvironmentResourcesType"),
+                          get("RuntimeEnvironmentSecrets"),
                           assign({
-                            RuntimeEnvironmentResourcesType: pipe([
-                              get("RuntimeEnvironmentResourcesType"),
+                            RuntimeEnvironmentSecrets: pipe([
+                              get("RuntimeEnvironmentSecrets"),
                               map(
                                 replaceRuntimeEnvironment({
                                   lives,
@@ -341,12 +348,10 @@ exports.AppRunnerService = ({ compare }) => ({
       when(
         () => dependencies.autoScalingConfiguration,
         defaultsDeep({
-          AutoScalingConfigurationSummary: {
-            AutoScalingConfigurationName: getField(
-              dependencies.autoScalingConfiguration,
-              "AutoScalingConfigurationArn"
-            ),
-          },
+          AutoScalingConfigurationArn: getField(
+            dependencies.autoScalingConfiguration,
+            "AutoScalingConfigurationArn"
+          ),
         })
       ),
       when(
