@@ -42,7 +42,14 @@ const buildArn = () => get("ServiceArn");
 const pickId = pipe([pick(["ServiceArn"])]);
 
 const decorate = ({ endpoint }) =>
-  pipe([assignTags({ endpoint, buildArn: buildArn() })]);
+  pipe([
+    ({ AutoScalingConfigurationSummary, ...other }) => ({
+      ...other,
+      AutoScalingConfigurationArn:
+        AutoScalingConfigurationSummary.AutoScalingConfigurationArn,
+    }),
+    assignTags({ endpoint, buildArn: buildArn() }),
+  ]);
 
 const replaceRuntimeEnvironment =
   ({ lives, providerConfig }) =>
@@ -94,8 +101,7 @@ exports.AppRunnerService = ({ compare }) => ({
       type: "AutoScalingConfiguration",
       group: "AppRunner",
       excludeDefaultDependencies: true,
-      dependencyId: ({ lives, config }) =>
-        get("AutoScalingConfigurationSummary.AutoScalingConfigurationArn"),
+      dependencyId: ({ lives, config }) => get("AutoScalingConfigurationArn"),
     },
     connection: {
       type: "Connection",
@@ -190,6 +196,7 @@ exports.AppRunnerService = ({ compare }) => ({
     "EncryptionConfiguration.KmsKey",
     "AutoScalingConfigurationSummary.AutoScalingConfigurationArn",
     "InstanceConfiguration.InstanceRoleArn",
+    "AutoScalingConfigurationArn",
   ],
   filterLive: ({ lives, providerConfig }) =>
     pipe([
@@ -341,12 +348,10 @@ exports.AppRunnerService = ({ compare }) => ({
       when(
         () => dependencies.autoScalingConfiguration,
         defaultsDeep({
-          AutoScalingConfigurationSummary: {
-            AutoScalingConfigurationName: getField(
-              dependencies.autoScalingConfiguration,
-              "AutoScalingConfigurationArn"
-            ),
-          },
+          AutoScalingConfigurationArn: getField(
+            dependencies.autoScalingConfiguration,
+            "AutoScalingConfigurationArn"
+          ),
         })
       ),
       when(
