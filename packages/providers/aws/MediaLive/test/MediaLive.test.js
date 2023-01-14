@@ -4,35 +4,35 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("MediaLive", async function () {
-  it.skip("Channel", () =>
+  it("Channel", () =>
     pipe([
       () => ({
         groupType: "MediaLive::Channel",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ChannelId: "123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Input", () =>
+  it("Input", () =>
     pipe([
       () => ({
         groupType: "MediaLive::Input",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ InputId: "123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("InputSecurityGroup", () =>
+  it("InputSecurityGroup", () =>
     pipe([
       () => ({
         groupType: "MediaLive::InputSecurityGroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ InputSecurityGroupId: "123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Multiplex", () =>
+  it("Multiplex", () =>
     pipe([
       () => ({
         groupType: "MediaLive::Multiplex",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ MultiplexId: "123" }],
       }),
       awsResourceTest,
     ])());
