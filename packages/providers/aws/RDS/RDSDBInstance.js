@@ -25,6 +25,17 @@ const {
   omitUsernamePassword,
 } = require("./RDSCommon");
 
+const managedByOther = ({ lives, config }) =>
+  pipe([
+    get("DBClusterIdentifier"),
+    lives.getById({
+      type: "DBCluster",
+      group: "RDS",
+      providerName: config.providerName,
+    }),
+    get("live.MultiAZ"),
+  ]);
+
 const filterLiveDbInstance = pipe([
   when(
     get("DBClusterIdentifier"),
@@ -86,6 +97,8 @@ exports.RDSDBInstance = ({ compare }) => ({
   inferName: () => get("DBInstanceIdentifier"),
   findName: () => get("DBInstanceIdentifier"),
   findId: () => get("DBInstanceArn"),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   dependencies: {
     dbSubnetGroup: {
       type: "DBSubnetGroup",
