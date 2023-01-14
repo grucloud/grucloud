@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project medialive-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ MediaLive
+++++ Channel (1)
+++++ Input (1)
+++++ InputSecurityGroup (1)
+++++ Multiplex (1)
+++++ MultiplexProgram (1)
+@endmindmap
