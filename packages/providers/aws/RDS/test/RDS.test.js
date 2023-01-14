@@ -39,6 +39,18 @@ describe("RDS", async function () {
       }),
       awsResourceTest,
     ])());
+  it("DBClusterSnapshot", () =>
+    pipe([
+      () => ({
+        groupType: "RDS::DBClusterSnapshot",
+        livesNotFound: ({ config }) => [
+          {
+            DBClusterSnapshotIdentifier: "p123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("DBInstance", () =>
     pipe([
       () => ({
@@ -76,6 +88,16 @@ describe("RDS", async function () {
       }),
       awsResourceTest,
     ])());
+  it("DBSnapshot", () =>
+    pipe([
+      () => ({
+        groupType: "RDS::DBSnapshot",
+        livesNotFound: ({ config }) => [
+          { DBSnapshotIdentifier: "instance-12345" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("DBSubnetGroup", () =>
     pipe([
       () => ({
@@ -89,6 +111,24 @@ describe("RDS", async function () {
       () => ({
         groupType: "RDS::EventSubscription",
         livesNotFound: ({ config }) => [{ SubscriptionName: "s123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("GlobalCluster", () =>
+    pipe([
+      () => ({
+        groupType: "RDS::GlobalCluster",
+        livesNotFound: ({ config }) => [
+          { GlobalClusterIdentifier: "dbProxy-12345" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("OptionGroup", () =>
+    pipe([
+      () => ({
+        groupType: "RDS::OptionGroup",
+        livesNotFound: ({ config }) => [{ OptionGroupName: "o-12345" }],
       }),
       awsResourceTest,
     ])());

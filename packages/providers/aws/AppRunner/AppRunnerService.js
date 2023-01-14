@@ -264,6 +264,25 @@ exports.AppRunnerService = ({ compare }) => ({
             assign({
               ImageRepository: pipe([
                 get("ImageRepository"),
+                assign({
+                  ImageConfiguration: pipe([
+                    get("ImageConfiguration"),
+                    when(
+                      get("RuntimeEnvironmentSecrets"),
+                      assign({
+                        RuntimeEnvironmentSecrets: pipe([
+                          get("RuntimeEnvironmentSecrets"),
+                          map(
+                            replaceRuntimeEnvironment({
+                              lives,
+                              providerConfig,
+                            })
+                          ),
+                        ]),
+                      })
+                    ),
+                  ]),
+                }),
                 when(
                   get("ImageIdentifier"),
                   assign({

@@ -4,32 +4,36 @@ const { defaultsDeep } = require("rubico/x");
 const { isOurMinionFactory, compareAws } = require("../AwsCommon");
 const { createAwsService } = require("../AwsService");
 
-const { DBCluster } = require("./DBCluster");
-const { RDSClusterEndpoint } = require("./RDSClusterEndpoint");
-const { RDSEventSubscription } = require("./RDSEventSubscription");
-
-const { RDSDBEngineVersion } = require("./RDSDBEngineVersion");
-
-const { DBInstance } = require("./DBInstance");
-const { RDSDBSubnetGroup } = require("./RDSDBSubnetGroup");
-const { DBProxy } = require("./DBProxy");
-const { DBProxyTargetGroup } = require("./DBProxyTargetGroup");
+const { RDSDBCluster } = require("./RDSDBCluster");
+const { RDSDBClusterEndpoint } = require("./RDSDBClusterEndpoint");
 const { RDSDBClusterParameterGroup } = require("./RDSDBClusterParameterGroup");
+const { RDSDBClusterSnapshot } = require("./RDSDBClusterSnapshot");
+const { RDSDBEngineVersion } = require("./RDSDBEngineVersion");
+const { RDSDBInstance } = require("./RDSDBInstance");
+const { RDSDBSubnetGroup } = require("./RDSDBSubnetGroup");
+const { RDSDBProxy } = require("./RDSDBProxy");
+const { RDSDBProxyTargetGroup } = require("./RDSDBProxyTargetGroup");
+const { RDSDBSnapshot } = require("./RDSDBSnapshot");
+const { RDSEventSubscription } = require("./RDSEventSubscription");
+const { RDSGlobalCluster } = require("./RDSGlobalCluster");
 
 const GROUP = "RDS";
 const compareRDS = compareAws({});
 
 module.exports = pipe([
   () => [
-    DBProxy({}),
-    DBProxyTargetGroup({}),
-    DBCluster({ compare: compareRDS }),
-    RDSClusterEndpoint({ compare: compareRDS }),
-    RDSDBEngineVersion({ compare: compareRDS }),
+    RDSDBCluster({ compare: compareRDS }),
+    RDSDBClusterEndpoint({ compare: compareRDS }),
     RDSDBClusterParameterGroup({ compare: compareRDS }),
+    RDSDBClusterSnapshot({}),
+    RDSDBEngineVersion({ compare: compareRDS }),
+    RDSDBInstance({ compare: compareRDS }),
+    RDSDBProxy({}),
+    RDSDBProxyTargetGroup({}),
+    RDSDBSnapshot({}),
     RDSDBSubnetGroup({ compare: compareRDS }),
-    DBInstance({ compare: compareRDS }),
     RDSEventSubscription({ compare: compareRDS }),
+    RDSGlobalCluster({}),
   ],
   map(
     pipe([

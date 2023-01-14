@@ -36,7 +36,7 @@ const decorate = ({ endpoint }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
-exports.DBProxy = () => ({
+exports.RDSDBProxy = () => ({
   type: "DBProxy",
   package: "rds",
   client: "RDS",
