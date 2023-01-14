@@ -45,6 +45,15 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("KeyGroup", () =>
+    pipe([
+      () => ({
+        groupType: "CloudFront::KeyGroup",
+        livesNotFound: ({ config }) => [{}],
+        skipGetById: true,
+      }),
+      awsResourceTest,
+    ])());
   it("OriginAccessIdentity", () =>
     pipe([
       () => ({

@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("SSOAdmin", async function () {
-  it.skip("AccountAssignment", () =>
+  it("AccountAssignment", () =>
     pipe([
       () => ({
         groupType: "SSOAdmin::AccountAssignment",
@@ -26,16 +26,17 @@ describe("SSOAdmin", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("InstanceAccessControlAttributes", () =>
+  it("InstanceAccessControlAttribute", () =>
     pipe([
       () => ({
-        groupType: "SSOAdmin::InstanceAccessControlAttributes",
+        groupType: "SSOAdmin::InstanceAccessControlAttribute",
         livesNotFound: ({ config }) => [{}],
+        skipDelete: true,
+        skipGetById: true,
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
-  //
-
   it("PermissionSet", () =>
     pipe([
       () => ({

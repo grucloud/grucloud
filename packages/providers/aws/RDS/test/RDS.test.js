@@ -114,7 +114,7 @@ describe("RDS", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("GlobalCluster", () =>
+  it("GlobalCluster", () =>
     pipe([
       () => ({
         groupType: "RDS::GlobalCluster",
