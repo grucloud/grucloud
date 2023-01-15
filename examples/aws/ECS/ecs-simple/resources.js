@@ -277,7 +277,6 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
           value: "value",
         },
       ],
-      loadBalancers: undefined,
     }),
     dependencies: ({}) => ({
       alarms: ["alarm-ecs-cpu"],
