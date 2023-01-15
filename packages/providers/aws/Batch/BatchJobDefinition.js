@@ -117,6 +117,7 @@ exports.BatchJobDefinition = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: { roleExecution },
+      config,
     }) =>
       pipe([
         () => otherProps,

@@ -215,6 +215,7 @@ exports.SchedulerSchedule = ({ compare }) => ({
         namespace,
         properties: { Tags, ...otherProps },
         dependencies: { iamRole, kmsKey, sqsQueue, sqsQueueDeadLetter },
+        config,
       }) =>
         pipe([
           () => otherProps,

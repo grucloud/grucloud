@@ -177,6 +177,7 @@ exports.RAMPrincipalAssociation = ({ spec, config }) =>
       namespace,
       properties: { ...otheProps },
       dependencies: { resourceShare, ...principalDependencies },
+      config,
     }) =>
       pipe([
         tap((params) => {

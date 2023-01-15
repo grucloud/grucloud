@@ -191,6 +191,7 @@ exports.WAFV2WebACLAssociation = ({ spec, config }) =>
       namespace,
       properties,
       dependencies: { webAcl, ...wafDependencies },
+      config,
     }) =>
       pipe([
         tap(() => {

@@ -102,6 +102,7 @@ exports.ElasticBeanstalkApplication = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { serviceRole },
+      config,
     }) =>
       pipe([
         () => otherProps,

@@ -110,6 +110,7 @@ exports.AthenaDataCatalog = ({ compare }) => ({
         namespace,
         properties: { Tags, ...otherProps },
         dependencies: {},
+        config,
       }) =>
         pipe([
           () => otherProps,

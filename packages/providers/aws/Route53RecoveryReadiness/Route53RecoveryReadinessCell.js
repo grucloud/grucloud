@@ -63,6 +63,7 @@ exports.Route53RecoveryReadinessCell = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { cells },
+      config,
     }) =>
       pipe([
         () => otherProps,

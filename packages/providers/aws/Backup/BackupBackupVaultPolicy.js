@@ -71,6 +71,7 @@ exports.BackupBackupVaultPolicy = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: { backupVault },
+      config,
     }) =>
       pipe([
         tap((params) => {

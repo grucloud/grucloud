@@ -107,6 +107,7 @@ exports.ElasticBeanstalkEnvironment = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { application },
+      config,
     }) =>
       pipe([
         tap((params) => {

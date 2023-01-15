@@ -130,6 +130,7 @@ exports.EC2TransitGatewayPeeringAttachment = ({ spec, config }) =>
       namespace,
       properties: { Tags, AccepterTgwInfo, ...otherProps },
       dependencies: { transitGateway, transitGatewayPeer },
+      config,
     }) =>
       pipe([
         tap((params) => {

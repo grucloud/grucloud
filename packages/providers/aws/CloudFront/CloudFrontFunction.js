@@ -109,6 +109,7 @@ exports.CloudFrontFunction = ({ spec, config }) =>
         FunctionCode,
         FunctionConfig: { Runtime, Comment },
       },
+      config,
     }) =>
       pipe([
         tap((params) => {

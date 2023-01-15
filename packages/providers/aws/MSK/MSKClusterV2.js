@@ -75,6 +75,7 @@ exports.MSKClusterV2 = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: {},
+      config,
     }) =>
       pipe([
         () => otherProps,

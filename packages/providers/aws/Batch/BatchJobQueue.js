@@ -89,6 +89,7 @@ exports.BatchJobQueue = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: { schedulingPolicy },
+      config,
     }) =>
       pipe([
         () => otherProps,

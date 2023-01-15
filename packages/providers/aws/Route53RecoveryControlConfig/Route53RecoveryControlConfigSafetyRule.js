@@ -130,6 +130,7 @@ exports.Route53RecoveryControlConfigSafetyRule = ({ spec, config }) =>
       namespace,
       properties: { Name, Tags, ...otherProps },
       dependencies: { controlPanel },
+      config,
     }) =>
       pipe([
         tap((params) => {

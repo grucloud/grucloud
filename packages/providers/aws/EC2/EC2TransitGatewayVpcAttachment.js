@@ -128,6 +128,7 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { transitGateway, vpc, subnets },
+      config,
     }) =>
       pipe([
         tap((params) => {

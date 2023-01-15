@@ -161,6 +161,7 @@ exports.Stage = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: { restApi },
+      config,
     }) =>
       pipe([
         tap(() => {

@@ -241,6 +241,7 @@ exports.EC2FlowLogs = ({ spec, config }) =>
         cloudWatchLogGroup,
         ...deps
       },
+      config,
     }) =>
       pipe([
         tap((params) => {

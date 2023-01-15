@@ -63,6 +63,10 @@ exports.CloudWatchDashboard = ({ spec, config }) =>
     findId: () => pipe([get("DashboardArn")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ DashboardName: name }), getById({})]),
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
-      pipe([() => otherProps, defaultsDeep({})])(),
+    configDefault: ({
+      name,
+      namespace,
+      properties: { ...otherProps },
+      config,
+    }) => pipe([() => otherProps, defaultsDeep({})])(),
   });

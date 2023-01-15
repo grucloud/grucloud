@@ -188,7 +188,11 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
             },
           }),
         ])(),
-    configDefault: ({ properties, dependencies: { vpc, hostedZone } }) =>
+    configDefault: ({
+      properties,
+      dependencies: { vpc, hostedZone },
+      config,
+    }) =>
       pipe([
         tap(() => {
           assert(vpc);

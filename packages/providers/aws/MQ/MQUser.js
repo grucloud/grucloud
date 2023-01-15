@@ -68,7 +68,7 @@ exports.MQUser = ({ spec, config }) =>
     configDefault: ({
       name,
       namespace,
-      properties: { Tags, ...otherProps },
+      properties: { ...otherProps },
       dependencies: {},
     }) => pipe([() => otherProps, defaultsDeep({})])(),
   });

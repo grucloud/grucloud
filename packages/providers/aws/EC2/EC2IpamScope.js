@@ -95,6 +95,7 @@ exports.EC2IpamScope = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { ipam },
+      config,
     }) =>
       pipe([
         () => otherProps,

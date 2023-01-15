@@ -88,6 +88,7 @@ exports.EC2IpamPoolCidr = ({ spec, config }) =>
     configDefault: ({
       properties: { Tags, ...otherProps },
       dependencies: { ipamPool },
+      config,
     }) =>
       pipe([
         () => otherProps,

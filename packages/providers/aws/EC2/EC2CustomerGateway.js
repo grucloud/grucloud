@@ -57,6 +57,7 @@ exports.EC2CustomerGateway = ({ spec, config }) =>
       namespace,
       properties: { Tags, IpAddress, ...otherProps },
       dependencies: { certificate },
+      config,
     }) =>
       pipe([
         () => otherProps,

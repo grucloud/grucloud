@@ -85,7 +85,11 @@ exports.DynamoDBKinesisStreamingDestination = ({ spec, config }) =>
         ])(),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property
     getByName: getByNameCore,
-    configDefault: ({ properties, dependencies: { table, kinesisStream } }) =>
+    configDefault: ({
+      properties,
+      dependencies: { table, kinesisStream },
+      config,
+    }) =>
       pipe([
         tap(() => {
           assert(table);

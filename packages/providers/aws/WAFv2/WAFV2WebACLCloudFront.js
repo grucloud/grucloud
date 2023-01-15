@@ -28,7 +28,12 @@ exports.WAFV2WebACLCloudFront = ({ spec, config }) =>
     getByName: getByNameCore,
     tagResource: tagResource({ findId: findId() }),
     untagResource: untagResource({ findId: findId() }),
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      config,
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({

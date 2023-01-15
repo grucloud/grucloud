@@ -81,6 +81,7 @@ exports.Route53RecoveryControlConfigRoutingControl = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { controlPanel },
+      config,
     }) =>
       pipe([
         tap((params) => {

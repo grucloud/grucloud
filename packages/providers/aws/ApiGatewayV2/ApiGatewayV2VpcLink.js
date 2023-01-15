@@ -48,6 +48,7 @@ exports.ApiGatewayV2VpcLink = ({ spec, config }) => {
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { subnets, securityGroups },
+      config,
     }) =>
       pipe([
         () => otherProps,

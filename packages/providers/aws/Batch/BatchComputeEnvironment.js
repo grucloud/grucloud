@@ -124,6 +124,7 @@ exports.BatchComputeEnvironment = ({ spec, config }) =>
         subnets,
         securityGroups,
       },
+      config,
     }) =>
       pipe([
         () => otherProps,

@@ -83,6 +83,7 @@ exports.ConfigConfigurationRecorderStatus = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: { deliveryChannel },
+      config,
     }) =>
       pipe([
         () => ({

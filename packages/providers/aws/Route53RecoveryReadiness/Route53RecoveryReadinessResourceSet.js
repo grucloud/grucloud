@@ -174,6 +174,7 @@ exports.Route53RecoveryReadinessResourceSet = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: {},
+      config,
     }) =>
       pipe([
         () => otherProps,

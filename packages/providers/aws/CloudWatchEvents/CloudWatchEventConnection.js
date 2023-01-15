@@ -49,7 +49,12 @@ exports.CloudWatchEventConnection = ({ spec, config }) =>
     findName: () => pipe([get("Name")]),
     findId: () => get("ConnectionArn"),
     getByName: getByNameCore,
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { ...otherProps },
+      config,
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({

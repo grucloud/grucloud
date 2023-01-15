@@ -139,6 +139,7 @@ exports.EC2InternetGatewayAttachment = ({ spec, config }) =>
       namespace,
       properties,
       dependencies: { vpc, internetGateway },
+      config,
     }) =>
       pipe([
         tap(() => {

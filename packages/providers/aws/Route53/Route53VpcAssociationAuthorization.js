@@ -137,6 +137,7 @@ exports.Route53VpcAssociationAuthorization = ({ spec, config }) =>
       namespace,
       properties: { ...otheProps },
       dependencies: { hostedZone, vpc },
+      config,
     }) =>
       pipe([
         tap((params) => {

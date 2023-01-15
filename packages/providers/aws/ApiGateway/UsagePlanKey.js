@@ -86,13 +86,11 @@ exports.UsagePlanKey = ({ spec, config }) =>
               ])(),
         }),
       ]),
-    // tagResource: tagResource({
-    //   buildResourceArn: buildResourceArn({ config }),
-    // }),
-    // untagResource: untagResource({
-    //   buildResourceArn: buildResourceArn({ config }),
-    // }),
-    configDefault: ({ properties, dependencies: { usagePlan, apiKey } }) =>
+    configDefault: ({
+      properties,
+      dependencies: { usagePlan, apiKey },
+      config,
+    }) =>
       pipe([
         tap((params) => {
           assert(usagePlan);

@@ -103,6 +103,7 @@ exports.ConfigConformancePack = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: { s3BucketDelivery, s3BucketTemplate },
+      config,
     }) =>
       pipe([
         () => otherProps,

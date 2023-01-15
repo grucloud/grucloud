@@ -59,5 +59,6 @@ exports.BackupRegionSettings = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: {},
+      config,
     }) => pipe([() => otherProps, defaultsDeep({})])(),
   });

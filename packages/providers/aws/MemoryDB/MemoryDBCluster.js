@@ -109,6 +109,7 @@ exports.MemoryDBCluster = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { kmsKey, subnetGroup, securityGroups },
+      config,
     }) =>
       pipe([
         () => otherProps,

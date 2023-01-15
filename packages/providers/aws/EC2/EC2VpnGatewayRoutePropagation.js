@@ -144,7 +144,11 @@ exports.EC2VpnGatewayRoutePropagation = ({ spec, config }) =>
             pipe([defaultsDeep({ GatewayId: vpnGateway.live.VpnGatewayId })])
           ),
         ])(),
-    configDefault: ({ properties, dependencies: { routeTable, vpnGateway } }) =>
+    configDefault: ({
+      properties,
+      dependencies: { routeTable, vpnGateway },
+      config,
+    }) =>
       pipe([
         tap(() => {
           assert(routeTable);

@@ -106,6 +106,7 @@ exports.BackupBackupSelection = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: { backupPlan, iamRole },
+      config,
     }) =>
       pipe([
         tap((params) => {

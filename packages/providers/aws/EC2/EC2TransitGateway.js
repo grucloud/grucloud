@@ -115,6 +115,7 @@ exports.EC2TransitGateway = ({ spec, config }) =>
       namespace,
       properties: { Tags, IpAddress, ...otherProps },
       dependencies: {},
+      config,
     }) =>
       pipe([
         () => otherProps,

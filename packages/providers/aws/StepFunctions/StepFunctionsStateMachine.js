@@ -67,6 +67,7 @@ exports.StepFunctionsStateMachine = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: { role },
+      config,
     }) =>
       pipe([
         tap((params) => {

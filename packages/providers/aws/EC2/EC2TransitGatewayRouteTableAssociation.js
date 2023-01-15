@@ -93,6 +93,7 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ spec, config }) =>
         transitGatewayVpcAttachment,
         transitGatewayAttachment,
       },
+      config,
     }) =>
       pipe([
         tap((params) => {

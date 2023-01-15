@@ -109,6 +109,7 @@ exports.SchedulerScheduleGroup = ({ compare }) => ({
         namespace,
         properties: { Tags, ...otherProps },
         dependencies: {},
+        config,
       }) =>
         pipe([
           () => otherProps,

@@ -152,7 +152,12 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) =>
     untagResource: untagResource({
       buildArn: buildArn(config),
     }),
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      name,
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({

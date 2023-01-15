@@ -118,6 +118,7 @@ exports.EC2ClientVpnAuthorizationRule = ({ spec, config }) =>
       properties,
       // TODO AD
       dependencies: { clientVpnEndpoint, activeDirectoryGroup },
+      config,
     }) =>
       pipe([
         tap((params) => {

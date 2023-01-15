@@ -126,6 +126,7 @@ exports.AwsCertificate = ({ spec, config }) =>
         Tags,
         ...otherProps
       },
+      config,
     }) =>
       pipe([
         () => otherProps,

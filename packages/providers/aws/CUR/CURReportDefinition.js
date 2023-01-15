@@ -77,6 +77,7 @@ exports.CURReportDefinition = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: { s3Bucket },
+      config,
     }) =>
       pipe([
         () => otherProps,

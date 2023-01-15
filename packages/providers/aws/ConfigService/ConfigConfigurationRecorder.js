@@ -74,6 +74,7 @@ exports.ConfigConfigurationRecorder = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: { iamRole },
+      config,
     }) =>
       pipe([
         () => otherProps,

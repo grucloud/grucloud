@@ -136,6 +136,7 @@ exports.AthenaWorkGroup = ({ compare }) => ({
         namespace,
         properties: { Tags, ...otherProps },
         dependencies: { kmsKey, iamRoleExecution },
+        config,
       }) =>
         pipe([
           () => otherProps,
