@@ -79,6 +79,7 @@ const GROUPS = [
   ["Lambda", "lambda"],
   ["Lightsail", "lightsail"],
   ["Macie2", "macie"],
+  //["MediaConvert", "mediaconvert"],
   ["MediaLive", "medialive"],
   ["MemoryDB", "memorydb"],
   ["MQ", "mq"],

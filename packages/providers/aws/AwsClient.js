@@ -80,7 +80,7 @@ const shouldRetryOnExceptionDefault = ({
   ]);
 
 const AwsClient =
-  ({ spec, config }) =>
+  ({ spec, config, getContext = () => ({}) }) =>
   (endpoint) => {
     const { type, groupType } = spec;
     assert(config);
@@ -112,7 +112,7 @@ const AwsClient =
               tap((params) => {
                 logger.info(`getById ${type}`);
               }),
-              (params) => endpoint()[method](params),
+              (params) => endpoint(getContext())[method](params),
               tap((params) => {
                 assert(true);
               }),
@@ -193,7 +193,7 @@ const AwsClient =
               tap(() => {
                 assert(method, `no method for ${spec.groupType}`);
                 //assert(getParam);
-                //assert(isFunction(endpoint()[method]));
+                //assert(isFunction(endpoint(getContext())[method]));
               }),
               () => params,
               defaultsDeep(extraParam),
@@ -209,7 +209,7 @@ const AwsClient =
                 let NextToken;
                 let data = [];
                 do {
-                  const results = await endpoint()[method]({
+                  const results = await endpoint(getContext())[method]({
                     ...params,
                     NextToken,
                   });
@@ -310,7 +310,7 @@ const AwsClient =
                   }),
                   tryCatch(
                     pipe([
-                      (param) => endpoint()[method](param),
+                      (param) => endpoint(getContext())[method](param),
                       tap((params) => {
                         assert(true);
                       }),
@@ -433,7 +433,9 @@ const AwsClient =
                 tap((params) => {
                   assert(true);
                 }),
-                endpoint()[isFunction(method) ? method()(payload) : method],
+                endpoint(getContext())[
+                  isFunction(method) ? method()(payload) : method
+                ],
                 tap((params) => {
                   logger.debug(
                     `create ${groupType}, name: ${name}, response: ${JSON.stringify(
@@ -582,7 +584,7 @@ const AwsClient =
                   name: `update ${type} ${name}`,
                   fn: pipe([
                     () => input,
-                    endpoint()[method],
+                    endpoint(getContext())[method],
                     tap((results) => {
                       // logger.debug(
                       //   `updated ${type} ${name}, response: ${JSON.stringify(
@@ -727,7 +729,7 @@ const AwsClient =
                     tap((params) => {
                       assert(true);
                     }),
-                    endpoint()[method],
+                    endpoint(getContext())[method],
                     () => live,
                     tap(postDestroy({ name, endpoint, lives, config })),
                     when(
@@ -846,16 +848,18 @@ exports.createAwsResource = ({
   create,
   update,
   destroy,
+  getContext,
 }) =>
   pipe([
     tap((params) => {
       assert(config);
+      //assert(getContext);
     }),
     () => createEndpoint(model.package, model.client, model.region)(config),
     (endpoint) =>
       pipe([
         () => endpoint,
-        AwsClient({ spec, config }),
+        AwsClient({ spec, config, getContext }),
         (client) =>
           pipe([
             () => ({

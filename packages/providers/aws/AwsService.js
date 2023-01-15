@@ -46,8 +46,9 @@ exports.createAwsService = ({
       compare,
       environmentVariables,
       ignoreResource,
-      Client: ({ spec, config }) =>
+      Client: ({ spec, config, getContext }) =>
         createAwsResource({
+          getContext,
           model: {
             package,
             client,
@@ -75,5 +76,6 @@ exports.createAwsService = ({
           configDefault,
           ...tagger({ config }),
         }),
+      ...other,
     }),
   ])();

@@ -8,7 +8,7 @@ describe("MediaConvert", async function () {
     pipe([
       () => ({
         groupType: "MediaConvert::Queue",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Name: "n123" }],
       }),
       awsResourceTest,
     ])());
