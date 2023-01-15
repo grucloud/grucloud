@@ -10,25 +10,3 @@ exports.Tagger = createTagger({
   TagsKey: "Tags",
   UnTagsKey: "TagKeys",
 });
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#tagResource-property
-exports.tagResource =
-  ({ buildArn }) =>
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      tap((params) => {
-        assert(live);
-      }),
-      (Tags) => ({ ResourceArn: buildArn(live), Tags }),
-      endpoint().tagResource,
-    ]);
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#untagResource-property
-exports.untagResource =
-  ({ buildArn }) =>
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      (TagKeys) => ({ ResourceArn: buildArn(live), TagKeys }),
-      endpoint().untagResource,
-    ]);

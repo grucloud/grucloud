@@ -409,7 +409,7 @@ exports.EC2Vpc = ({ compare }) => ({
         () => diff,
         tap.if(
           pipe([
-            get("liveDiff.updated"),
+            get("liveDiff.updated", ""),
             callProp("hasOwnProperty", "DnsSupport"),
           ]),
           pipe([
@@ -424,7 +424,7 @@ exports.EC2Vpc = ({ compare }) => ({
         ),
         tap.if(
           pipe([
-            get("liveDiff.updated"),
+            get("liveDiff.updated", ""),
             callProp("hasOwnProperty", "DnsHostnames"),
           ]),
           pipe([
