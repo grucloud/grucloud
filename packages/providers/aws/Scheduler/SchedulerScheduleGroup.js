@@ -4,8 +4,6 @@ const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-
 const { Tagger, assignClientToken } = require("./SchedulerCommon");
 
 const buildArn = () =>
@@ -42,10 +40,36 @@ const decorate = ({ endpoint }) =>
 
 const cannotBeDeleted = () => pipe([eq(get("Name"), "default")]);
 
-const model = ({ config }) => ({
+const model = ({ config }) => ({});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ScheduleGroupr.html
+exports.SchedulerScheduleGroup = ({ compare }) => ({
+  type: "ScheduleGroup",
   package: "scheduler",
   client: "Scheduler",
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  propertiesDefault: {},
+  omitProperties: ["Arn", "CreationDate", "LastModificationDate", "State"],
+  inferName: () => get("Name"),
+  // compare: compare({
+  //   filterAll: () => pipe([() => ({})]),
+  // }),
+  managedByOther: cannotBeDeleted,
+  cannotBeDeleted,
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("Name"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ScheduleGroupr.html#getScheduleGroup-property
   getById: {
     method: "getScheduleGroup",
@@ -69,53 +93,23 @@ const model = ({ config }) => ({
     method: "deleteScheduleGroup",
     pickId: pipe([pickId, assignClientToken]),
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ScheduleGroupr.html
-exports.SchedulerScheduleGroup = ({ compare }) => ({
-  type: "ScheduleGroup",
-  propertiesDefault: {},
-  omitProperties: ["Arn", "CreationDate", "LastModificationDate", "State"],
-  inferName: () => get("Name"),
-  // compare: compare({
-  //   filterAll: () => pipe([() => ({})]),
-  // }),
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      managedByOther: cannotBeDeleted,
-      cannotBeDeleted,
-      findName: () =>
-        pipe([
-          get("Name"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("Name"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ Name: name }), getById({})]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { Tags, ...otherProps },
-        dependencies: {},
-        config,
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-          }),
-        ])(),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ Name: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
     }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])(),
 });

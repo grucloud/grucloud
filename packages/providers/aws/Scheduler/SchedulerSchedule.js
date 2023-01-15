@@ -7,8 +7,6 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, replaceAccountAndRegion } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-
 const { Tagger, assignClientToken } = require("./SchedulerCommon");
 
 const buildArn = () =>
@@ -51,46 +49,12 @@ const decorate = ({ endpoint }) =>
     // }),
   ]);
 
-const model = ({ config }) => ({
-  package: "scheduler",
-  client: "Scheduler",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#getSchedule-property
-  getById: {
-    method: "getSchedule",
-    pickId,
-    decorate,
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#listSchedules-property
-  getList: {
-    method: "listSchedules",
-    getParam: "Schedules",
-    decorate: ({ getById }) => pipe([getById]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#createSchedule-property
-  create: {
-    method: "createSchedule",
-    pickCreated: ({ payload }) => pipe([() => payload]),
-    shouldRetryOnExceptionMessages: [
-      "The execution role you provide must allow AWS EventBridge Scheduler to assume the role.",
-    ],
-    //
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#updateSchedule-property
-  update: {
-    method: "updateSchedule",
-    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#deleteSchedule-property
-  destroy: {
-    method: "deleteSchedule",
-    pickId: pipe([pickId, assignClientToken]),
-  },
-});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html
 exports.SchedulerSchedule = ({ compare }) => ({
   type: "Schedule",
+  package: "scheduler",
+  client: "Scheduler",
+  ignoreErrorCodes: ["ResourceNotFoundException"],
   propertiesDefault: { State: "ENABLED" },
   omitProperties: [
     "Arn",
@@ -189,72 +153,100 @@ exports.SchedulerSchedule = ({ compare }) => ({
       dependencyId: ({ lives, config }) => get("Target.Arn"),
     },
   },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("Name"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("Name"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: getByNameCore,
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { Tags, ...otherProps },
-        dependencies: { iamRole, kmsKey, sqsQueue, sqsQueueDeadLetter },
-        config,
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            // TODO tagging is not working
-            //Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-          }),
-          when(
-            () => iamRole,
-            defaultsDeep({
-              Target: {
-                RoleArn: getField(iamRole, "Arn"),
-              },
-            })
-          ),
-          when(
-            () => kmsKey,
-            defaultsDeep({
-              KmsKeyArn: getField(kmsKey, "Arn"),
-            })
-          ),
-          when(
-            () => sqsQueue,
-            defaultsDeep({
-              Target: {
-                Arn: getField(sqsQueue, "Attributes.QueueArn"),
-              },
-            })
-          ),
-          when(
-            () => sqsQueueDeadLetter,
-            defaultsDeep({
-              Target: {
-                DeadLetterConfig: {
-                  Arn: getField(sqsQueueDeadLetter, "Attributes.QueueArn"),
-                },
-              },
-            })
-          ),
-        ])(),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("Name"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#getSchedule-property
+  getById: {
+    method: "getSchedule",
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#listSchedules-property
+  getList: {
+    method: "listSchedules",
+    getParam: "Schedules",
+    decorate: ({ getById }) => pipe([getById]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#createSchedule-property
+  create: {
+    method: "createSchedule",
+    pickCreated: ({ payload }) => pipe([() => payload]),
+    shouldRetryOnExceptionMessages: [
+      "The execution role you provide must allow AWS EventBridge Scheduler to assume the role.",
+    ],
+    //
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#updateSchedule-property
+  update: {
+    method: "updateSchedule",
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#deleteSchedule-property
+  destroy: {
+    method: "deleteSchedule",
+    pickId: pipe([pickId, assignClientToken]),
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
     }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { iamRole, kmsKey, sqsQueue, sqsQueueDeadLetter },
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        // TODO tagging is not working
+        //Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+      when(
+        () => iamRole,
+        defaultsDeep({
+          Target: {
+            RoleArn: getField(iamRole, "Arn"),
+          },
+        })
+      ),
+      when(
+        () => kmsKey,
+        defaultsDeep({
+          KmsKeyArn: getField(kmsKey, "Arn"),
+        })
+      ),
+      when(
+        () => sqsQueue,
+        defaultsDeep({
+          Target: {
+            Arn: getField(sqsQueue, "Attributes.QueueArn"),
+          },
+        })
+      ),
+      when(
+        () => sqsQueueDeadLetter,
+        defaultsDeep({
+          Target: {
+            DeadLetterConfig: {
+              Arn: getField(sqsQueueDeadLetter, "Attributes.QueueArn"),
+            },
+          },
+        })
+      ),
+    ])(),
 });
