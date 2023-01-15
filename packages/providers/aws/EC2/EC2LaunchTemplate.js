@@ -77,7 +77,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
   });
 
   const decorate =
-    ({ endpoint }) =>
+    ({ endpoint, config }) =>
     (launchTemplate) =>
       pipe([
         () => launchTemplate,
@@ -93,7 +93,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
             get("LaunchTemplateData"),
             when(
               get("ImageId"),
-              assign({ Image: imageDescriptionFromId({ endpoint }) })
+              assign({ Image: imageDescriptionFromId({ config }) })
             ),
             omit(["TagSpecifications"]),
             DecodeUserData,
@@ -179,7 +179,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
           assert(ec2);
         }),
         () => Image,
-        fetchImageIdFromDescription({ endpoint: ec2 }),
+        fetchImageIdFromDescription({ config }),
         (ImageId) =>
           pipe([
             () => otherProperties,

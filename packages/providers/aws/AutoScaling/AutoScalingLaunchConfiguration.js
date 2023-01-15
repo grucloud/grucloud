@@ -24,19 +24,22 @@ const findId = () => get("LaunchConfigurationARN");
 
 const pickId = pipe([pick(["LaunchConfigurationName"])]);
 
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    assign({
+      Image: imageDescriptionFromId({ config }),
+    }),
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   const autoScaling = createAutoScaling(config);
   const ec2 = createEC2(config);
 
   const client = AwsClient({ spec, config })(autoScaling);
-
-  const decorate = ({ endpoint }) =>
-    pipe([
-      assign({
-        Image: imageDescriptionFromId({ endpoint }),
-      }),
-    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeLaunchConfigurations-property
   const getById = client.getById({
@@ -84,10 +87,11 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     namespace,
     properties: { Tags, Image, ...otherProps },
     dependencies: { instanceProfile, securityGroups = [], keyPair },
+    config,
   }) =>
     pipe([
       () => Image,
-      fetchImageIdFromDescription({ endpoint: ec2 }),
+      fetchImageIdFromDescription({ config }),
       (ImageId) =>
         pipe([
           () => otherProps,

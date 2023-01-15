@@ -12,7 +12,8 @@ const {
 } = require("rubico/x");
 const { createEndpoint, compareAws } = require("../AwsCommon");
 
-exports.createEC2 = createEndpoint("ec2", "EC2");
+const createEC2 = createEndpoint("ec2", "EC2");
+exports.createEC2 = createEC2;
 
 const getTargetTags = pipe([get("TagSpecifications"), first, get("Tags")]);
 
@@ -34,16 +35,16 @@ exports.findDependenciesSubnet = ({ live }) => ({
 });
 
 exports.imageDescriptionFromId =
-  ({ endpoint }) =>
+  ({ config }) =>
   ({ ImageId }) =>
     pipe([
       tap(() => {
-        assert(endpoint);
+        assert(config);
         assert(ImageId);
       }),
       () => ({ ImageIds: [ImageId] }),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeImages-property
-      endpoint().describeImages,
+      createEC2(config)().describeImages,
       get("Images"),
       first,
       pick(["Description"]),
@@ -52,10 +53,10 @@ exports.imageDescriptionFromId =
       }),
     ])();
 
-exports.fetchImageIdFromDescription = ({ endpoint }) =>
+exports.fetchImageIdFromDescription = ({ config }) =>
   pipe([
     tap((params) => {
-      assert(endpoint);
+      assert(config);
     }),
     unless(isEmpty, ({ Description }) =>
       pipe([
@@ -71,7 +72,7 @@ exports.fetchImageIdFromDescription = ({ endpoint }) =>
             },
           ],
         }),
-        endpoint().describeImages,
+        createEC2(config)().describeImages,
         get("Images"),
         first,
         get("ImageId"),

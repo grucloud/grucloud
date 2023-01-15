@@ -80,13 +80,14 @@ const configDefault =
       launchTemplate,
       placementGroup,
     },
+    config,
   }) =>
     pipe([
       tap((params) => {
         assert(ec2);
       }),
       () => Image,
-      fetchImageIdFromDescription({ endpoint: ec2 }),
+      fetchImageIdFromDescription({ config }),
       (ImageId) =>
         pipe([
           () => otherProperties,
@@ -207,13 +208,13 @@ exports.EC2Instance = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
-  const decorate = ({ endpoint }) =>
+  const decorate = ({ endpoint, config }) =>
     pipe([
       tap((params) => {
         assert(endpoint);
       }),
       assign({
-        Image: imageDescriptionFromId({ endpoint }),
+        Image: imageDescriptionFromId({ config }),
       }),
       assign({
         UserData: pipe([
@@ -221,7 +222,7 @@ exports.EC2Instance = ({ spec, config }) => {
             Attribute: "userData",
             InstanceId,
           }),
-          ec2().describeInstanceAttribute,
+          endpoint().describeInstanceAttribute,
           get("UserData.Value"),
           unless(isEmpty, (UserData) =>
             Buffer.from(UserData, "base64").toString()
@@ -232,7 +233,7 @@ exports.EC2Instance = ({ spec, config }) => {
             Attribute: "disableApiStop",
             InstanceId,
           }),
-          ec2().describeInstanceAttribute,
+          endpoint().describeInstanceAttribute,
           get("DisableApiStop.Value"),
         ]),
         DisableApiTermination: pipe([
@@ -240,7 +241,7 @@ exports.EC2Instance = ({ spec, config }) => {
             Attribute: "disableApiTermination",
             InstanceId,
           }),
-          ec2().describeInstanceAttribute,
+          endpoint().describeInstanceAttribute,
           get("DisableApiTermination.Value"),
         ]),
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstanceCreditSpecifications-property
@@ -256,7 +257,7 @@ exports.EC2Instance = ({ spec, config }) => {
             ({ InstanceId }) => ({
               InstanceIds: [InstanceId],
             }),
-            ec2().describeInstanceCreditSpecifications,
+            endpoint().describeInstanceCreditSpecifications,
             get("InstanceCreditSpecifications"),
             first,
             pick(["CpuCredits"]),
@@ -293,7 +294,6 @@ exports.EC2Instance = ({ spec, config }) => {
   const updateAttributes = ({ InstanceId, updated, added }) =>
     pipe([
       () => ({ ...updated, ...added }),
-
       Object.entries,
       filter(([key]) =>
         pipe([
