@@ -7,6 +7,7 @@ exports.createAwsService = ({
   package,
   client,
   type,
+  region,
   propertiesDefault,
   omitProperties,
   inferName,
@@ -52,6 +53,7 @@ exports.createAwsService = ({
           model: {
             package,
             client,
+            region,
             getById,
             getList,
             create,
