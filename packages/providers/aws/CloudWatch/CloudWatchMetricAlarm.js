@@ -156,7 +156,7 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      name,
+      config,
     }) =>
       pipe([
         () => otherProps,
