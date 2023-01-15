@@ -1,3 +1,5 @@
+const pkg = require("./package.json");
 module.exports = () => ({
-  projectName: "internet-gateway",
+  projectName: pkg.name,
+  includeGroups: ["EC2"],
 });

@@ -6,4 +6,5 @@ module.exports = () => ({
   credentials: { profile: "regionB" },
   regionPrimary: "us-east-1",
   noGlobalEndpoint: true, // No IAM
+  includeGroups: ["EC2"],
 });
