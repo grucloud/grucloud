@@ -61,7 +61,7 @@ describe("CloudFront", async function () {
         livesNotFound: ({ config }) => [
           {
             ETag: "ETVPDKIKX0DER",
-            CloudFrontOriginAccessIdentity: { Id: "a123s" },
+            Id: "a123s",
           },
         ],
       }),

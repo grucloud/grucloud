@@ -111,6 +111,13 @@ module.exports = () =>
               pluck("FunctionARN"),
             ]),
         },
+        keyGroups: {
+          type: "KeyGroup",
+          group: "CloudFront",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            get("DefaultCacheBehavior.TrustedKeyGroups.Items"),
+        },
         originAccessIdentities: {
           type: "OriginAccessIdentity",
           group: "CloudFront",
@@ -209,6 +216,8 @@ module.exports = () =>
       omitProperties: [
         "ViewerCertificate.ACMCertificateArn",
         "ViewerCertificate.Certificate",
+        "DefaultCacheBehavior.TrustedKeyGroups.Quantity",
+        "DefaultCacheBehavior.TrustedSigners.Quantity",
       ],
       filterLive: ({ lives, providerConfig }) =>
         pipe([
@@ -255,6 +264,31 @@ module.exports = () =>
             ]),
             DefaultCacheBehavior: pipe([
               get("DefaultCacheBehavior"),
+              when(
+                get("TrustedKeyGroups"),
+                assign({
+                  TrustedKeyGroups: pipe([
+                    get("TrustedKeyGroups"),
+                    omit(["Quantity"]),
+                    when(
+                      get("Items"),
+                      assign({
+                        Items: pipe([
+                          get("Items"),
+                          map(
+                            replaceWithName({
+                              groupType: "CloudFront::KeyGroup",
+                              path: "id",
+                              providerConfig,
+                              lives,
+                            })
+                          ),
+                        ]),
+                      })
+                    ),
+                  ]),
+                })
+              ),
               when(
                 get("CachePolicyId"),
                 assign({
@@ -409,12 +443,7 @@ module.exports = () =>
     },
     createAwsService(CloudFrontKeyGroup({ compare })),
     createAwsService(CloudFrontOriginRequestPolicy({ compare })),
-    {
-      type: "OriginAccessIdentity",
-      Client: CloudFrontOriginAccessIdentity,
-      filterLive: ({ lives }) => pipe([pick([])]),
-      compare: compare,
-    },
+    createAwsService(CloudFrontOriginAccessIdentity({ compare })),
     createAwsService(CloudFrontPublicKey({ compare })),
     createAwsService(CloudFrontResponseHeadersPolicy({ compare })),
   ]);

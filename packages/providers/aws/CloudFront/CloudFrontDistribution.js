@@ -13,6 +13,7 @@ const {
   filter,
   omit,
   and,
+  set,
 } = require("rubico");
 const {
   find,
@@ -22,6 +23,7 @@ const {
   callProp,
   last,
   includes,
+  size,
   first,
   when,
 } = require("rubico/x");
@@ -136,7 +138,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
         logger.debug(tos({ payload }));
         assert(id, "id");
       }),
-
       () => ({ Id: id }),
       cloudFront().getDistributionConfig,
       (config) =>
@@ -235,6 +236,18 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
             CloudFrontDefaultCertificate: false,
           },
         })
+      ),
+      set(
+        "DefaultCacheBehavior.TrustedKeyGroups.Quantity",
+        pipe([get("DefaultCacheBehavior.TrustedKeyGroups.Items"), size])
+      ),
+      set(
+        "DefaultCacheBehavior.TrustedSigners.Quantity",
+        pipe([get("DefaultCacheBehavior.TrustedSigners.Items"), size])
+      ),
+      set(
+        "Restrictions.GeoRestriction.Quantity",
+        pipe([get("Restrictions.GeoRestriction.Items"), size])
       ),
       when(() => webAcl, defaultsDeep({ WebACLId: getField(webAcl, "ARN") })),
       (payload) => ({
