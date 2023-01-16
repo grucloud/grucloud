@@ -40,9 +40,13 @@ const {
 const { CloudFrontCachePolicy } = require("./CloudFrontCachePolicy");
 const { CloudFrontFunction } = require("./CloudFrontFunction");
 
+const { CloudFrontKeyGroup } = require("./CloudFrontKeyGroup");
+
 const {
   CloudFrontOriginRequestPolicy,
 } = require("./CloudFrontOriginRequestPolicy");
+
+const { CloudFrontPublicKey } = require("./CloudFrontPublicKey");
 
 const {
   CloudFrontResponseHeadersPolicy,
@@ -403,13 +407,14 @@ module.exports = () =>
         ]),
       compare: compare,
     },
+    createAwsService(CloudFrontKeyGroup({ compare })),
+    createAwsService(CloudFrontOriginRequestPolicy({ compare })),
     {
       type: "OriginAccessIdentity",
       Client: CloudFrontOriginAccessIdentity,
       filterLive: ({ lives }) => pipe([pick([])]),
       compare: compare,
     },
-
-    createAwsService(CloudFrontOriginRequestPolicy({ compare })),
+    createAwsService(CloudFrontPublicKey({ compare })),
     createAwsService(CloudFrontResponseHeadersPolicy({ compare })),
   ]);

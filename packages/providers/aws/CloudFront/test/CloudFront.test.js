@@ -45,11 +45,11 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("KeyGroup", () =>
+  it("KeyGroup", () =>
     pipe([
       () => ({
         groupType: "CloudFront::KeyGroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "123", ETag: "E123456" }],
         skipGetById: true,
       }),
       awsResourceTest,
@@ -80,7 +80,14 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
-  //
+  it("PublicKey", () =>
+    pipe([
+      () => ({
+        groupType: "CloudFront::PublicKey",
+        livesNotFound: ({ config }) => [{ Id: "123", ETag: "E123456" }],
+      }),
+      awsResourceTest,
+    ])());
   it("ResponseHeadersPolicy", () =>
     pipe([
       () => ({
