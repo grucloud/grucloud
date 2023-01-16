@@ -80,7 +80,7 @@ const shouldRetryOnExceptionDefault = ({
   ]);
 
 const AwsClient =
-  ({ spec, config, getContext = () => ({}) }) =>
+  ({ spec, config, getContext = () => ({}), getEndpointConfig = () => ({}) }) =>
   (endpoint) => {
     const { type, groupType } = spec;
     assert(config);
@@ -112,7 +112,8 @@ const AwsClient =
               tap((params) => {
                 logger.info(`getById ${type}`);
               }),
-              (params) => endpoint(getContext())[method](params),
+              (params) =>
+                endpoint(getEndpointConfig(getContext()))[method](params),
               tap((params) => {
                 assert(true);
               }),
@@ -124,7 +125,13 @@ const AwsClient =
               unless(
                 isEmpty,
                 pipe([
-                  decorate({ live, endpoint, lives, config }),
+                  decorate({
+                    live,
+                    endpoint,
+                    lives,
+                    config,
+                    endpointConfig: getEndpointConfig(getContext()),
+                  }),
                   assignTagsSort,
                 ])
               ),
@@ -193,7 +200,7 @@ const AwsClient =
               tap(() => {
                 assert(method, `no method for ${spec.groupType}`);
                 //assert(getParam);
-                //assert(isFunction(endpoint(getContext())[method]));
+                //assert(isFunction(endpoint(getEndpointConfig(getContext()))[method]));
               }),
               () => params,
               defaultsDeep(extraParam),
@@ -209,7 +216,9 @@ const AwsClient =
                 let NextToken;
                 let data = [];
                 do {
-                  const results = await endpoint(getContext())[method]({
+                  const results = await endpoint(
+                    getEndpointConfig(getEndpointConfig(getContext()))
+                  )[method]({
                     ...params,
                     NextToken,
                   });
@@ -310,7 +319,10 @@ const AwsClient =
                   }),
                   tryCatch(
                     pipe([
-                      (param) => endpoint(getContext())[method](param),
+                      (param) =>
+                        endpoint(getEndpointConfig(getContext()))[method](
+                          param
+                        ),
                       tap((params) => {
                         assert(true);
                       }),
@@ -433,7 +445,7 @@ const AwsClient =
                 tap((params) => {
                   assert(true);
                 }),
-                endpoint(getContext())[
+                endpoint(getEndpointConfig(getContext()))[
                   isFunction(method) ? method()(payload) : method
                 ],
                 tap((params) => {
@@ -584,7 +596,7 @@ const AwsClient =
                   name: `update ${type} ${name}`,
                   fn: pipe([
                     () => input,
-                    endpoint(getContext())[method],
+                    endpoint(getEndpointConfig(getContext()))[method],
                     tap((results) => {
                       // logger.debug(
                       //   `updated ${type} ${name}, response: ${JSON.stringify(
@@ -729,7 +741,7 @@ const AwsClient =
                     tap((params) => {
                       assert(true);
                     }),
-                    endpoint(getContext())[method],
+                    endpoint(getEndpointConfig(getContext()))[method],
                     () => live,
                     tap(postDestroy({ name, endpoint, lives, config })),
                     when(
@@ -848,7 +860,8 @@ exports.createAwsResource = ({
   create,
   update,
   destroy,
-  getContext,
+  getContext = () => ({}),
+  getEndpointConfig = () => ({}),
 }) =>
   pipe([
     tap((params) => {
@@ -859,7 +872,7 @@ exports.createAwsResource = ({
     (endpoint) =>
       pipe([
         () => endpoint,
-        AwsClient({ spec, config, getContext }),
+        AwsClient({ spec, config, getContext, getEndpointConfig }),
         (client) =>
           pipe([
             () => ({
@@ -878,8 +891,16 @@ exports.createAwsResource = ({
             when(
               () => tagResource,
               assign({
-                tagResource: () => tagResource({ endpoint }),
-                untagResource: () => untagResource({ endpoint }),
+                tagResource: () =>
+                  tagResource({
+                    endpoint,
+                    endpointConfig: getEndpointConfig(getContext()),
+                  }),
+                untagResource: () =>
+                  untagResource({
+                    endpoint,
+                    endpointConfig: getEndpointConfig(getContext()),
+                  }),
               })
             ),
             switchCase([

@@ -1,5 +1,16 @@
 const assert = require("assert");
-const { map, pipe, tap, get, pick, assign, eq } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  get,
+  pick,
+  assign,
+  eq,
+  switchCase,
+  and,
+  or,
+} = require("rubico");
 const {
   defaultsDeep,
   when,

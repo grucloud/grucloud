@@ -1130,27 +1130,21 @@ function CoreProvider({
         tap((params) => {
           logger.debug(`start done ${providerName}`);
         }),
-        // TODO
-        // getSpecs,
-        // map(
-        //   when(
-        //     get("setup"),
-        //     pipe([
-        //       callProp("setup", { config: getProviderConfig() }),
-        //       (result = {}) => {
-        //         context = {
-        //           ...context,
-        //           ...result,
-        //         };
-        //       },
-        //     ])
-        //   )
-        // ),
-        tap((clients) => {
-          logger.info(
-            `listLives #clients: ${size(clients)}, ${JSON.stringify({})}`
-          );
-        }),
+        getSpecs,
+        forEach(
+          when(
+            get("setup"),
+            pipe([
+              callProp("setup", { config: getProviderConfig() }),
+              (result = {}) => {
+                context = {
+                  ...context,
+                  ...result,
+                };
+              },
+            ])
+          )
+        ),
       ]),
       (error) => {
         logger.error(`start error ${tos(convertError({ error }))}`);

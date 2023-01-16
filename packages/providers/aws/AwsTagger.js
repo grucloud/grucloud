@@ -12,7 +12,7 @@ exports.createTagger =
   }) =>
   ({ buildArn, additionalParams }) => ({
     tagResource:
-      ({ endpoint }) =>
+      ({ endpoint, endpointConfig }) =>
       ({ live }) =>
         pipe([
           tap((Tags) => {
@@ -29,10 +29,10 @@ exports.createTagger =
           tap((params) => {
             assert(true);
           }),
-          endpoint()[methodTagResource],
+          endpoint(endpointConfig)[methodTagResource],
         ]),
     untagResource:
-      ({ endpoint }) =>
+      ({ endpoint, endpointConfig }) =>
       ({ live }) =>
         pipe([
           tap((TagKeys) => {
@@ -48,6 +48,6 @@ exports.createTagger =
             () => additionalParams,
             (input) => ({ ...input, ...additionalParams(live) })
           ),
-          endpoint()[methodUnTagResource],
+          endpoint(endpointConfig)[methodUnTagResource],
         ]),
   });
