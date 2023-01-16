@@ -62,8 +62,8 @@ const replaceWithBucketName = ({ providerConfig, lives }) =>
     lives,
   });
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     createAwsService(CloudFrontCachePolicy({ compare })),
     {
       type: "Distribution",
@@ -413,37 +413,12 @@ module.exports = () =>
           }),
         ]),
     },
-    {
-      type: "Function",
-      Client: CloudFrontFunction,
-      omitProperties: [
-        "ETag",
-        "FunctionMetadata.FunctionARN",
-        "FunctionMetadata.CreatedTime",
-        "FunctionMetadata.LastModifiedTime",
-      ],
-      inferName:
-        () =>
-        ({ Name, FunctionMetadata: { Stage } }) =>
-          pipe([
-            tap((params) => {
-              assert(Name);
-              assert(Stage);
-            }),
-            () => `${Name}::${Stage}`,
-          ])(),
-      filterLive: ({ lives }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          //pick([]),
-        ]),
-      compare: compare,
-    },
+    createAwsService(CloudFrontFunction({ compare })),
     createAwsService(CloudFrontKeyGroup({ compare })),
     createAwsService(CloudFrontOriginRequestPolicy({ compare })),
     createAwsService(CloudFrontOriginAccessIdentity({ compare })),
     createAwsService(CloudFrontPublicKey({ compare })),
     createAwsService(CloudFrontResponseHeadersPolicy({ compare })),
-  ]);
+  ],
+  map(assign({ group: () => GROUP, compare })),
+]);

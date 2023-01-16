@@ -30,7 +30,7 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Function", () =>
+  it("Function", () =>
     pipe([
       () => ({
         groupType: "CloudFront::Function",
@@ -42,6 +42,7 @@ describe("CloudFront", async function () {
           },
         ],
         skipGetById: true,
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
