@@ -63,18 +63,20 @@ const model = ({ config }) => ({
     method: "deleteBackupVault",
     pickId,
     preDestroy: ({ endpoint, getById }) =>
-      pipe([
-        pick(["BackupVaultName"]),
-        endpoint().listRecoveryPointsByBackupVault,
-        get("RecoveryPoints"),
-        map.pool(
-          20,
-          pipe([
-            pick(["BackupVaultName", "RecoveryPointArn"]),
-            endpoint().deleteRecoveryPoint,
-          ])
-        ),
-      ]),
+      tap(
+        pipe([
+          pick(["BackupVaultName"]),
+          endpoint().listRecoveryPointsByBackupVault,
+          get("RecoveryPoints"),
+          map.pool(
+            20,
+            pipe([
+              pick(["BackupVaultName", "RecoveryPointArn"]),
+              endpoint().deleteRecoveryPoint,
+            ])
+          ),
+        ])
+      ),
   },
 });
 

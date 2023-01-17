@@ -289,14 +289,16 @@ exports.EC2SecurityGroup = ({ spec, config }) => {
 
   const destroy = client.destroy({
     preDestroy: ({ endpoint }) =>
-      pipe([
-        tap(revokeIngressRules({ endpoint })),
-        ({ GroupId }) => ({
-          Name: "group-id",
-          Values: [GroupId],
-        }),
-        destroyNetworkInterfaces({ endpoint }),
-      ]),
+      tap(
+        pipe([
+          tap(revokeIngressRules({ endpoint })),
+          ({ GroupId }) => ({
+            Name: "group-id",
+            Values: [GroupId],
+          }),
+          destroyNetworkInterfaces({ endpoint }),
+        ])
+      ),
     pickId,
     method: "deleteSecurityGroup",
     getById,

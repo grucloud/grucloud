@@ -359,9 +359,8 @@ exports.AwsIamRole = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteRole-property
   const destroy = client.destroy({
     pickId,
-    preDestroy:
-      ({ endpoint }) =>
-      (live) =>
+    preDestroy: ({ endpoint }) =>
+      tap((live) =>
         pipe([
           () => live,
           ({ RoleName }) =>
@@ -406,7 +405,8 @@ exports.AwsIamRole = ({ spec, config }) => {
                 });
               }),
             ])(),
-        ])(),
+        ])()
+      ),
     method: "deleteRole",
     ignoreErrorCodes,
     shouldRetryOnExceptionCodes: ["DeleteConflictException"],

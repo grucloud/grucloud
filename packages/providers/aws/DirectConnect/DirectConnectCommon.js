@@ -54,10 +54,12 @@ const deleteSecret =
 exports.deleteSecret = deleteSecret;
 
 exports.deleteSecrets = ({ config }) =>
-  pipe([
-    tap((params) => {
-      assert(config);
-    }),
-    get("macSecKeys"),
-    map(deleteSecret({ config })),
-  ]);
+  tap(
+    pipe([
+      tap((params) => {
+        assert(config);
+      }),
+      get("macSecKeys"),
+      map(deleteSecret({ config })),
+    ])
+  );

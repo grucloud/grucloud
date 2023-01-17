@@ -284,18 +284,20 @@ exports.AwsIamUser = ({ spec, config }) => {
   const destroy = client.destroy({
     pickId,
     preDestroy: ({ endpoint }) =>
-      pipe([
-        pick(["UserName"]),
-        fork({
-          userFromGroup: removeUserFromGroup({ endpoint }),
-          deletePolicy: pipe([
-            tap(detachUserPolicy({ endpoint })),
-            deleteUserPolicy({ endpoint }),
-          ]),
-          loginProfile: deleteLoginProfile({ endpoint }),
-          accessKey: destroyAccessKey({ endpoint }),
-        }),
-      ]),
+      tap(
+        pipe([
+          pick(["UserName"]),
+          fork({
+            userFromGroup: removeUserFromGroup({ endpoint }),
+            deletePolicy: pipe([
+              tap(detachUserPolicy({ endpoint })),
+              deleteUserPolicy({ endpoint }),
+            ]),
+            loginProfile: deleteLoginProfile({ endpoint }),
+            accessKey: destroyAccessKey({ endpoint }),
+          }),
+        ])
+      ),
     method: "deleteUser",
     ignoreErrorCodes,
     getById,

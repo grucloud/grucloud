@@ -137,6 +137,7 @@ exports.replaceRegionAll =
 exports.replaceRegion = ({ providerConfig }) =>
   pipe([
     tap((params) => {
+      assert(providerConfig);
       assert(providerConfig.region);
     }),
     when(

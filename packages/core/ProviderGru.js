@@ -39,7 +39,7 @@ const { displayLive } = require("./cli/displayUtils");
 const { buildGraphLive } = require("./GraphLive");
 const { buildGraphTarget } = require("./GraphTarget");
 const { buildGraphTree } = require("./GraphTree");
-const { createClient, decorateLive } = require("./Client");
+const { decorateLive } = require("./Client");
 const {
   nextStateOnError,
   contextFromProvider,
@@ -127,70 +127,6 @@ exports.ProviderGru = ({
       assert(config);
     }),
   ]);
-
-  const getClient = ({ providerName, groupType }) =>
-    pipe([
-      tap(() => {
-        assert(groupType);
-        assert(providerName);
-      }),
-      getSpecs,
-      find(eq(get("groupType"), groupType)),
-      tap((spec) => {
-        assert(spec, `no ${groupType}`);
-      }),
-      (spec) =>
-        pipe([
-          () => ({ providerName }),
-          getProvider,
-          (provider) =>
-            createClient({
-              provider,
-              getTargetResources: () => mapGloblalNameToResource,
-              getResourcesByType: provider.getResourcesByType,
-              getResource,
-              spec,
-              config: provider.config,
-              providerName,
-              getListHof: provider.getListHof,
-              lives,
-            }),
-        ])(),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-
-  const destroyById = ({ resource, live }) =>
-    pipe([
-      tap(() => {
-        assert(live);
-        assert(resource);
-        logger.debug(`destroyById: ${tos(resource.toString())}`);
-      }),
-      () => resource,
-      getClient,
-      tap((client) => {
-        assert(client, `Cannot find endpoint ${resource.toString()}}`);
-        assert(client.spec);
-      }),
-      tap((client) =>
-        retryCall({
-          name: `destroy ${client.spec.groupType}/${resource.name}`,
-          fn: () =>
-            client.destroy({
-              live,
-              id: client.findId({ lives, config: getProviderConfig() })(live), // TODO remove id, only use live
-              name: resource.name,
-              resource,
-              lives,
-            }),
-          isExpectedResult: () => true,
-          shouldRetryOnException: client.shouldRetryOnExceptionDelete,
-          config: getProviderConfig(),
-        })
-      ),
-    ])();
 
   const onStateChangeResource =
     ({ operation, onStateChange }) =>
@@ -622,6 +558,40 @@ exports.ProviderGru = ({
           addErrorToResults,
         ]),
       }),
+      assign({
+        resultOnDeploy: ({ resultCreate }) =>
+          pipe([
+            tap((params) => {
+              assert(resultCreate);
+            }),
+            getSpecs,
+            filter(get("onDeployed")),
+            map(
+              tryCatch(
+                ({ providerName, onDeployed }) =>
+                  pipe([
+                    () => ({ providerName }),
+                    getProvider,
+                    (provider) =>
+                      onDeployed({
+                        resultCreate,
+                        lives: provider.lives,
+                        config: provider.getConfig(),
+                      }),
+                  ])(),
+                (error) => {
+                  logger.error(
+                    `planApply onDeployed error ${tos(convertError({ error }))}`
+                  );
+                  return {
+                    error: convertError({ error, name: "Apply" }),
+                  };
+                }
+              )
+            ),
+            addErrorToResults,
+          ])(),
+      }),
       tap((params) => {
         assert(true);
       }),
@@ -852,7 +822,7 @@ exports.ProviderGru = ({
         name: functionName,
       }),
       tap((result) => {
-        logger.info(`runCommand result: ${tos(result)}`);
+        logger.info(`runCommand result: ${JSON.stringify(result)}`);
       }),
     ])();
 

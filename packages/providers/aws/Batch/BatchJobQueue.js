@@ -47,9 +47,8 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#deleteJobQueue-property
   destroy: {
-    preDestroy:
-      ({ endpoint, getById }) =>
-      (live) =>
+    preDestroy: ({ endpoint, getById }) =>
+      tap((live) =>
         pipe([
           () => ({
             jobQueue: live.jobQueueName,
@@ -62,7 +61,8 @@ const model = ({ config }) => ({
               fn: pipe([() => live, getById]),
               isExpectedResult: eq(get("status"), "VALID"),
             }),
-        ])(),
+        ])()
+      ),
     method: "deleteJobQueue",
     pickId: ({ jobQueueName }) => ({
       jobQueue: jobQueueName,

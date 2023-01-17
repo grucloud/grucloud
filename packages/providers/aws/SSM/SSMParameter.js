@@ -108,4 +108,12 @@ exports.SSMParameter = () => ({
       }),
       when(() => kmsKey, defaultsDeep({ KeyId: getField(kmsKey, "Arn") })),
     ])(),
+  onDeployed: ({ resultCreate, lives, config }) =>
+    pipe([
+      tap(() => {
+        assert(resultCreate);
+        assert(lives);
+        assert(config);
+      }),
+    ])(),
 });

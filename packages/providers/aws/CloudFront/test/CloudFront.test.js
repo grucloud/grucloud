@@ -11,8 +11,10 @@ describe("CloudFront", async function () {
         livesNotFound: ({ config }) => [
           {
             Id: "A123456789",
+            ETag: "E123456",
           },
         ],
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());

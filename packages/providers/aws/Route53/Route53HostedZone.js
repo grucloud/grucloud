@@ -348,9 +348,8 @@ exports.Route53HostedZone = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
   const destroy = client.destroy({
     pickId,
-    preDestroy:
-      ({ endpoint }) =>
-      (live) =>
+    preDestroy: ({ endpoint }) =>
+      tap((live) =>
         pipe([
           () => live,
           ({ Id: HostedZoneId }) =>
@@ -381,7 +380,8 @@ exports.Route53HostedZone = ({ spec, config }) => {
                 })
               ),
             ])(),
-        ])(),
+        ])()
+      ),
     method: "deleteHostedZone",
     getById,
     ignoreErrorCodes: ["NoSuchHostedZone"],

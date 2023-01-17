@@ -211,21 +211,26 @@ exports.GuardDutyDetector = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#deleteDetector-property
   destroy: {
     preDestroy: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(endpoint);
-        }),
-        endpoint().listInvitations,
-        get("Invitations"),
-        pluck("AccountId"),
-        tap((params) => {
-          assert(true);
-        }),
-        unless(
-          isEmpty,
-          pipe([(AccountIds) => ({ AccountIds }), endpoint().deleteInvitations])
-        ),
-      ]),
+      tap(
+        pipe([
+          tap((params) => {
+            assert(endpoint);
+          }),
+          endpoint().listInvitations,
+          get("Invitations"),
+          pluck("AccountId"),
+          tap((params) => {
+            assert(true);
+          }),
+          unless(
+            isEmpty,
+            pipe([
+              (AccountIds) => ({ AccountIds }),
+              endpoint().deleteInvitations,
+            ])
+          ),
+        ])
+      ),
     method: "deleteDetector",
     pickId,
     ignoreErrorMessages,

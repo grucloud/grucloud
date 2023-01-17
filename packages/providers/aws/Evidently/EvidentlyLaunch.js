@@ -148,17 +148,19 @@ exports.EvidentlyLaunch = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Evidently.html#deleteLaunch-property
   destroy: {
     preDestroy: ({ endpoint }) =>
-      tryCatch(
-        pipe([
-          pickId,
-          defaultsDeep({
-            desiredState: "CANCELLED",
-            reason: "Stopped by GruCloud",
-          }),
-          endpoint().stopLaunch,
-        ]),
-        // Launch cannot be cancelled from current status
-        (error) => undefined
+      tap(
+        tryCatch(
+          pipe([
+            pickId,
+            defaultsDeep({
+              desiredState: "CANCELLED",
+              reason: "Stopped by GruCloud",
+            }),
+            endpoint().stopLaunch,
+          ]),
+          // Launch cannot be cancelled from current status
+          (error) => undefined
+        )
       ),
     method: "deleteLaunch",
     pickId,

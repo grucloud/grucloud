@@ -1572,82 +1572,6 @@ function CoreProvider({
       }),
     ])({});
 
-  const planApply = ({ plan, planAll, onStateChange = identity }) =>
-    pipe([
-      tap(() => {
-        assert(plan);
-        logger.info(`Apply Plan ${providerName}`);
-      }),
-      providerRunning({ onStateChange, providerName }),
-      assign({
-        resultDestroy: switchCase([
-          () => isValidPlan(plan.resultDestroy),
-          pipe([
-            () => planAll,
-            get("results"),
-            pluck("resultDestroy"),
-            flatten,
-            (planDestroyAll) =>
-              planDestroy({
-                plans: plan.resultDestroy,
-                planDestroyAll,
-                onStateChange,
-                direction: PlanDirection.UP,
-                title: TitleDestroying,
-              }),
-          ]),
-          () => ({ error: false, results: [], plans: [] }),
-        ]),
-      }),
-      // assign({
-      //   resultCreate: switchCase([
-      //     () => isValidPlan(plan.resultCreate),
-      //     pipe([
-      //       () => planAll,
-      //       get("results"),
-      //       pluck("resultCreate"),
-      //       flatten,
-      //       (planCreateAll) =>
-      //         upsertResources({
-      //           plans: plan.resultCreate,
-      //           planCreateAll,
-      //           onStateChange,
-      //           title: TitleDeploying,
-      //         }),
-      //     ]),
-      //     () => ({ error: false, plans: [] }),
-      //   ]),
-      // }),
-      tap((result) => {
-        assert(result);
-      }),
-      (result) => ({
-        providerName,
-        lives: getLives(),
-        error: result.resultCreate.error || result.resultDestroy.error,
-        resultCreate: result.resultCreate,
-        resultDestroy: result.resultDestroy,
-      }),
-      tap((result) =>
-        pipe([
-          getClients,
-          forEach(
-            tryCatch(
-              tap.if(get("onDeployed"), callProp("onDeployed", result)),
-              (error) => {
-                logger.error(`error running client.onDeployed `);
-                logger.error(error.stack);
-                throw error;
-              }
-            )
-          ),
-        ])()
-      ),
-      tap((result) => {
-        logger.info(`Apply done`);
-      }),
-    ])();
-
   const onStateChangeResource = ({ operation, onStateChange }) => {
     return ({ resource, error, ...other }) => {
       // logger.debug(
@@ -1823,7 +1747,6 @@ List of resources for provider ${providerName}:\n
     planFindDestroy,
     listLives,
     planQuery,
-    planApply,
     listTargets,
     listConfig,
     targetResourcesAdd,

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, map, or } = require("rubico");
+const { pipe, tap, get, pick, assign, map, or, tryCatch } = require("rubico");
 const { defaultsDeep, when, pluck, callProp } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -24,15 +24,27 @@ const pickId = pipe([
 
 const decorate = ({ endpoint }) =>
   pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
     assign({
-      Tags: pipe([
-        ({ AssociationId }) => ({
-          ResourceId: AssociationId,
-          ResourceType: "Association",
-        }),
-        endpoint().listTagsForResource,
-        get("TagList"),
-      ]),
+      Tags: tryCatch(
+        pipe([
+          ({ AssociationId }) => ({
+            ResourceId: AssociationId,
+            ResourceType: "Association",
+          }),
+          endpoint().listTagsForResource,
+          get("TagList"),
+        ]),
+        (error) =>
+          pipe([
+            tap((params) => {
+              assert(error);
+            }),
+            () => [],
+          ])()
+      ),
     }),
   ]);
 

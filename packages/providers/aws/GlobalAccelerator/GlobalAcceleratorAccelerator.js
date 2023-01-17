@@ -102,9 +102,8 @@ exports.GlobalAcceleratorAccelerator = () => ({
   destroy: {
     method: "deleteAccelerator",
     pickId,
-    preDestroy:
-      ({ endpoint, getById }) =>
-      (live) =>
+    preDestroy: ({ endpoint, getById }) =>
+      tap((live) =>
         pipe([
           () => ({
             AcceleratorArn: live.AcceleratorArn,
@@ -117,7 +116,8 @@ exports.GlobalAcceleratorAccelerator = () => ({
               fn: pipe([() => live, getById]),
               isExpectedResult: eq(get("Status"), "DEPLOYED"),
             }),
-        ])(),
+        ])()
+      ),
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

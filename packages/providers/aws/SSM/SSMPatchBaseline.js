@@ -79,9 +79,8 @@ const registerDefaultPatchBaseline = ({ endpoint }) =>
     endpoint().registerDefaultPatchBaseline,
   ]);
 
-const registerDefaultPatchBaselineDefault =
-  ({ endpoint }) =>
-  (live) =>
+const registerDefaultPatchBaselineDefault = ({ endpoint }) =>
+  tap((live) =>
     pipe([
       tap(() => {
         assert(live.OperatingSystem);
@@ -105,7 +104,8 @@ const registerDefaultPatchBaselineDefault =
         isEmpty,
         pipe([pick(["BaselineId"]), endpoint().registerDefaultPatchBaseline])
       ),
-    ])();
+    ])()
+  );
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
 exports.SSMPatchBaseline = () => ({

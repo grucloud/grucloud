@@ -108,44 +108,46 @@ const decorate = ({ endpoint, lives, config }) =>
   ]);
 
 const disassociateAddress = ({ endpoint }) =>
-  pipe([
-    tap((live) => {
-      assert(live);
-      assert(endpoint);
-    }),
-    get("NatGatewayAddresses"),
-    tap((NatGatewayAddresses) => {
-      logger.info(
-        `destroy nat #NatGatewayAddresses ${size(NatGatewayAddresses)}`
-      );
-    }),
-    map(
-      pipe([
-        ({ AllocationId }) => ({
-          Filters: [
-            {
-              Name: "allocation-id",
-              Values: [AllocationId],
-            },
-          ],
-        }),
-        endpoint().describeAddresses,
-        get("Addresses"),
-        map(
-          tryCatch(
-            pipe([pick(["AssociationId"]), endpoint().disassociateAddress]),
-            (error, address) =>
-              pipe([
-                tap(() => {
-                  logger.error(`error disassociateAddress  ${tos(error)}`);
-                }),
-                () => ({ error, address }),
-              ])()
-          )
-        ),
-      ])
-    ),
-  ]);
+  tap(
+    pipe([
+      tap((live) => {
+        assert(live);
+        assert(endpoint);
+      }),
+      get("NatGatewayAddresses"),
+      tap((NatGatewayAddresses) => {
+        logger.info(
+          `destroy nat #NatGatewayAddresses ${size(NatGatewayAddresses)}`
+        );
+      }),
+      map(
+        pipe([
+          ({ AllocationId }) => ({
+            Filters: [
+              {
+                Name: "allocation-id",
+                Values: [AllocationId],
+              },
+            ],
+          }),
+          endpoint().describeAddresses,
+          get("Addresses"),
+          map(
+            tryCatch(
+              pipe([pick(["AssociationId"]), endpoint().disassociateAddress]),
+              (error, address) =>
+                pipe([
+                  tap(() => {
+                    logger.error(`error disassociateAddress  ${tos(error)}`);
+                  }),
+                  () => ({ error, address }),
+                ])()
+            )
+          ),
+        ])
+      ),
+    ])
+  );
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
 exports.EC2NatGateway = () => ({

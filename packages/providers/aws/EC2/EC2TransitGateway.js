@@ -11,42 +11,44 @@ const { tagResource, untagResource } = require("./EC2Common");
 const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 
 const deleteTransitGatewayPeeringAttachment = ({ endpoint }) =>
-  pipe([
-    tap(({ TransitGatewayId }) => {
-      assert(TransitGatewayId);
-    }),
-    ({ TransitGatewayId }) => ({
-      Filters: [
-        {
-          Name: "transit-gateway-id",
-          Values: [TransitGatewayId],
-        },
-      ],
-    }),
-    endpoint().describeTransitGatewayPeeringAttachments,
-    get("TransitGatewayPeeringAttachments"),
-    map((livePeeringAttachment) =>
-      pipe([
-        () => livePeeringAttachment,
-        pick(["TransitGatewayAttachmentId"]),
-        endpoint().deleteTransitGatewayPeeringAttachment,
-        () =>
-          retryCall({
-            name: `destroy EC2TransitGatewayPeeringAttachment`,
-            fn: pipe([
-              () => livePeeringAttachment,
-              ({ TransitGatewayAttachmentId }) => ({
-                TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
-              }),
-              endpoint().describeTransitGatewayPeeringAttachments,
-              get("TransitGatewayPeeringAttachments"),
-              first,
-              or([isEmpty, eq(get("State"), "deleted")]),
-            ]),
-          }),
-      ])()
-    ),
-  ]);
+  tap(
+    pipe([
+      tap(({ TransitGatewayId }) => {
+        assert(TransitGatewayId);
+      }),
+      ({ TransitGatewayId }) => ({
+        Filters: [
+          {
+            Name: "transit-gateway-id",
+            Values: [TransitGatewayId],
+          },
+        ],
+      }),
+      endpoint().describeTransitGatewayPeeringAttachments,
+      get("TransitGatewayPeeringAttachments"),
+      map((livePeeringAttachment) =>
+        pipe([
+          () => livePeeringAttachment,
+          pick(["TransitGatewayAttachmentId"]),
+          endpoint().deleteTransitGatewayPeeringAttachment,
+          () =>
+            retryCall({
+              name: `destroy EC2TransitGatewayPeeringAttachment`,
+              fn: pipe([
+                () => livePeeringAttachment,
+                ({ TransitGatewayAttachmentId }) => ({
+                  TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
+                }),
+                endpoint().describeTransitGatewayPeeringAttachments,
+                get("TransitGatewayPeeringAttachments"),
+                first,
+                or([isEmpty, eq(get("State"), "deleted")]),
+              ]),
+            }),
+        ])()
+      ),
+    ])
+  );
 
 const createModel = ({ config }) => ({
   package: "ec2",

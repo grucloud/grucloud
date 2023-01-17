@@ -32,6 +32,7 @@ exports.createAwsService = ({
   ignoreResource,
   tagger = () => ({}),
   getEndpointConfig,
+  onDeployed,
   ...other
 }) =>
   pipe([
@@ -48,6 +49,7 @@ exports.createAwsService = ({
       compare,
       environmentVariables,
       ignoreResource,
+      onDeployed,
       Client: ({ spec, config, getContext }) =>
         createAwsResource({
           getContext,

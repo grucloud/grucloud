@@ -721,7 +721,6 @@ const AwsClient =
                 endpoint,
                 getById: getById ? getById({ lives, config }) : undefined,
               }),
-              () => live,
               tap((params) => {
                 assert(true);
               }),

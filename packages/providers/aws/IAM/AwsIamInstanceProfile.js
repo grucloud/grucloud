@@ -186,18 +186,20 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const destroy = client.destroy({
     pickId,
     preDestroy: ({ endpoint }) =>
-      pipe([
-        ({ Roles, InstanceProfileName }) =>
-          pipe([
-            () => Roles,
-            forEach(({ RoleName }) =>
-              removeRoleFromInstanceProfile({ endpoint })({
-                RoleName,
-                InstanceProfileName,
-              })
-            ),
-          ])(),
-      ]),
+      tap(
+        pipe([
+          ({ Roles, InstanceProfileName }) =>
+            pipe([
+              () => Roles,
+              forEach(({ RoleName }) =>
+                removeRoleFromInstanceProfile({ endpoint })({
+                  RoleName,
+                  InstanceProfileName,
+                })
+              ),
+            ])(),
+        ])
+      ),
     method: "deleteInstanceProfile",
     ignoreErrorCodes,
     getById,

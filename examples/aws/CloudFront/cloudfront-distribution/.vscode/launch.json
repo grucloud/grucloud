@@ -10,7 +10,8 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "name": "Graph",
@@ -21,7 +22,8 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "name": "List",
@@ -32,7 +34,8 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "name": "Plan",
@@ -43,7 +46,8 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "name": "Apply",
@@ -54,7 +58,8 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "name": "Destroy",
@@ -65,7 +70,8 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "name": "onDeployed",
@@ -76,7 +82,8 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "name": "onDestroyed",
@@ -87,7 +94,8 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "name": "E2E test",
@@ -98,7 +106,8 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     }
   ]
 }

@@ -222,10 +222,12 @@ exports.AppStreamFleet = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppStream.html#deleteFleet-property
   destroy: {
     preDestroy: ({ endpoint }) =>
-      fork({
-        disassociate: disassociateApplicationFleet({ endpoint }),
-        stopFleet: pipe([pickId, endpoint().stopFleet]),
-      }),
+      tap(
+        fork({
+          disassociate: disassociateApplicationFleet({ endpoint }),
+          stopFleet: pipe([pickId, endpoint().stopFleet]),
+        })
+      ),
     method: "deleteFleet",
     pickId,
   },

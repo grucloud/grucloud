@@ -62,37 +62,39 @@ exports.EC2RouteTable = ({ spec, config }) => {
       ({ vpcName, rtbName }) => `${vpcName}::${rtbName}`,
     ]);
 
-  const routesDelete = () => (live) =>
-    pipe([
-      () => live,
-      get("Routes"),
-      filter(eq(get("State"), "blackhole")),
-      map(
-        tryCatch(
-          pipe([
-            tap((Route) => {
-              assert(Route);
-            }),
-            pick(["DestinationCidrBlock", "DestinationIpv6CidrBlock"]),
-            defaultsDeep({ RouteTableId: live.RouteTableId }),
-            tryCatch(
-              endpoint().deleteRoute,
-              throwIfNotAwsError("InvalidRoute.NotFound")
-            ),
-          ]),
-          (error, Route) =>
+  const routesDelete = () =>
+    tap((live) =>
+      pipe([
+        () => live,
+        get("Routes"),
+        filter(eq(get("State"), "blackhole")),
+        map(
+          tryCatch(
             pipe([
-              tap(() => {
-                logger.error(`error deleteRoute ${tos({ Route, error })}`);
+              tap((Route) => {
+                assert(Route);
               }),
-              () => ({ error, Route }),
-            ])()
-        )
-      ),
-      tap.if(any(get("error")), (result) => {
-        throw result;
-      }),
-    ])();
+              pick(["DestinationCidrBlock", "DestinationIpv6CidrBlock"]),
+              defaultsDeep({ RouteTableId: live.RouteTableId }),
+              tryCatch(
+                endpoint().deleteRoute,
+                throwIfNotAwsError("InvalidRoute.NotFound")
+              ),
+            ]),
+            (error, Route) =>
+              pipe([
+                tap(() => {
+                  logger.error(`error deleteRoute ${tos({ Route, error })}`);
+                }),
+                () => ({ error, Route }),
+              ])()
+          )
+        ),
+        tap.if(any(get("error")), (result) => {
+          throw result;
+        }),
+      ])()
+    );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
   const getList = client.getList({

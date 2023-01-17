@@ -54,7 +54,7 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": ["${workspaceFolder}/**/*.js", "!**/node_modules/**"]
     },
     {
       "name": "Destroy",

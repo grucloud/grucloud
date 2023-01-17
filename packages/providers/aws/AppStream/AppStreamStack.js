@@ -47,18 +47,20 @@ const decorate =
     ])();
 
 const disassociateFleet = ({ endpoint }) =>
-  pipe([
-    when(
-      get("FleetName"),
-      pipe([
-        ({ FleetName, Name }) => ({
-          FleetName: FleetName,
-          StackName: Name,
-        }),
-        endpoint().disassociateFleet,
-      ])
-    ),
-  ]);
+  tap(
+    pipe([
+      when(
+        get("FleetName"),
+        pipe([
+          ({ FleetName, Name }) => ({
+            FleetName: FleetName,
+            StackName: Name,
+          }),
+          endpoint().disassociateFleet,
+        ])
+      ),
+    ])
+  );
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppStream.html
 exports.AppStreamStack = () => ({
