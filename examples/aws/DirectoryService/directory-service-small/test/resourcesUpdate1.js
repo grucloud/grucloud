@@ -10,6 +10,7 @@ exports.createResources = () => [
       Name: "grucloud.org",
       ShortName: "grucloud",
       Size: "Small",
+      Type: "SimpleAD",
       EventTopics: [
         {
           TopicName: "DirectoryMonitoring_grucloud",

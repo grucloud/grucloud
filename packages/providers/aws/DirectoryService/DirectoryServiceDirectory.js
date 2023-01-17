@@ -11,6 +11,7 @@ const {
   tryCatch,
   switchCase,
   or,
+  not,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -28,6 +29,15 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags, replaceAccountAndRegion } = require("../AwsCommon");
 
 const { Tagger } = require("./DirectoryServiceCommon");
+
+// const managedByOther = ({ config }) =>
+//   pipe([
+//     tap((params) => {
+//       assert(config);
+//       assert(config.accountId());
+//     }),
+//     not(eq(get("SourceAccount"), config.accountId())),
+//   ]);
 
 const buildArn = () =>
   pipe([
@@ -211,7 +221,7 @@ exports.DirectoryServiceDirectory = ({ compare }) => ({
     },
   },
   ignoreErrorCodes: ["EntityDoesNotExistException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectoryService.html#getDirectory-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectoryService.html#describeDirectories-property
   getById: {
     method: "describeDirectories",
     getField: "DirectoryDescriptions",
@@ -220,7 +230,7 @@ exports.DirectoryServiceDirectory = ({ compare }) => ({
     }),
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectoryService.html#listDirectorys-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectoryService.html#describeDirectories-property
   getList: {
     method: "describeDirectories",
     getParam: "DirectoryDescriptions",
@@ -231,13 +241,16 @@ exports.DirectoryServiceDirectory = ({ compare }) => ({
   create: {
     method: () =>
       pipe([
+        tap(({ Type }) => {
+          assert(Type);
+        }),
         switchCase([
           eq(get("Type"), "SimpleAD"),
           () => "createDirectory",
           eq(get("Type"), "MicrosoftAD"),
           () => "createMicrosoftAD",
           ({ Type }) => {
-            assert(false, `type ${Type} should be SimpleAD or MicrosoftAD`);
+            assert(false, `type '${Type}' should be SimpleAD or MicrosoftAD`);
           },
         ]),
       ]),
