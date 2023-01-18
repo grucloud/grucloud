@@ -4,27 +4,27 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("DAX", async function () {
-  it.skip("Cluster", () =>
+  it("Cluster", () =>
     pipe([
       () => ({
         groupType: "DAX::Cluster",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ClusterName: "c123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("ParameterGroup", () =>
+  it("ParameterGroup", () =>
     pipe([
       () => ({
         groupType: "DAX::ParameterGroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ParameterGroupName: "p123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("SubnetGroup", () =>
+  it("SubnetGroup", () =>
     pipe([
       () => ({
         groupType: "DAX::SubnetGroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ SubnetGroupName: "s123" }],
       }),
       awsResourceTest,
     ])());

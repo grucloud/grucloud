@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("MediaConvert", async function () {
-  it.skip("Queue", () =>
+  it("Queue", () =>
     pipe([
       () => ({
         groupType: "MediaConvert::Queue",

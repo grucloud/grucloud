@@ -50,6 +50,7 @@ const GROUPS = [
   ["CostExplorer", "costexplorer"],
   ["CUR", "cur"],
   ["DataSync", "datasync"],
+  ["DAX", "dax"],
   ["DirectConnect", "directconnect"],
   ["DMS", "dms"],
   ["DynamoDB", "dynamodb"],

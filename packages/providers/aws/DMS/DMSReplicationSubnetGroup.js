@@ -134,6 +134,9 @@ exports.DMSReplicationSubnetGroup = ({ compare }) => ({
     config,
   }) =>
     pipe([
+      tap((params) => {
+        assert(subnets);
+      }),
       () => otherProps,
       defaultsDeep({
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
