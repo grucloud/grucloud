@@ -210,6 +210,22 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("NetworkInsightsAnalysis", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::NetworkInsightsAnalysis",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("NetworkInsightsPath", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::NetworkInsightsPath",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("NetworkInterface", () =>
     pipe([
       () => ({

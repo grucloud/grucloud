@@ -20,7 +20,7 @@ const pickId = pipe([
   pick(["Engine", "EngineVersion"]),
 ]);
 
-const decorate = ({ endpoint }) =>
+const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(true);
@@ -35,7 +35,7 @@ const decorate = ({ endpoint }) =>
         Image: pipe([
           get("Image"),
           assign({
-            Description: pipe([imageDescriptionFromId({ endpoint })]),
+            Description: pipe([imageDescriptionFromId({ config })]),
           }),
         ]),
       })
@@ -116,7 +116,7 @@ exports.RDSDBEngineVersion = () => ({
   }) =>
     pipe([
       () => Image,
-      fetchImageIdFromDescription({ endpoint }),
+      fetchImageIdFromDescription({ config }),
       (ImageId) =>
         pipe([
           () => otherProps,

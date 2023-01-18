@@ -62,6 +62,7 @@ exports.CloudWatchEventApiDestination = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { connection },
+      config,
     }) =>
       pipe([
         tap((params) => {

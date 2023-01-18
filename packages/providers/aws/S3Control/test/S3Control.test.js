@@ -14,7 +14,7 @@ describe("S3Control", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("MultiRegionAccessPoint", () =>
+  it("MultiRegionAccessPoint", () =>
     pipe([
       () => ({
         groupType: "S3Control::MultiRegionAccessPoint",

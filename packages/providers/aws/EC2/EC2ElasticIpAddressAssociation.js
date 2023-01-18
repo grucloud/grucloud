@@ -110,6 +110,7 @@ exports.EC2ElasticIpAddressAssociation = ({ spec, config }) =>
       namespace,
       properties,
       dependencies: { instance, eip },
+      config,
     }) =>
       pipe([
         tap(() => {

@@ -82,6 +82,7 @@ exports.MemoryDBACL = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { users },
+      config,
     }) =>
       pipe([
         () => otherProps,

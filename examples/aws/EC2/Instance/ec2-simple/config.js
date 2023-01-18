@@ -1,3 +1,5 @@
-module.exports = ({ stage }) => ({
-  projectName: "ec2-simple",
+const pkg = require("./package.json");
+module.exports = () => ({
+  projectName: pkg.name,
+  includeGroups: ["EC2"],
 });

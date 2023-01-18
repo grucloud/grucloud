@@ -99,6 +99,7 @@ exports.MQBroker = ({ spec, config }) =>
         subnets,
         securityGroups,
       },
+      config,
     }) =>
       pipe([
         () => otherProps,

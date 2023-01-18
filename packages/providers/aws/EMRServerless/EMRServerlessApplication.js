@@ -78,6 +78,7 @@ exports.EMRServerlessApplication = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: { subnets, securityGroups },
+      config,
     }) =>
       pipe([
         () => otherProps,

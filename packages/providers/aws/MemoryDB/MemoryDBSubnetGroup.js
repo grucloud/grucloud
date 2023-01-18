@@ -77,6 +77,7 @@ exports.MemoryDBSubnetGroup = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { subnets },
+      config,
     }) =>
       pipe([
         () => otherProps,

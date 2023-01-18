@@ -65,6 +65,7 @@ exports.EC2EgressOnlyInternetGateway = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { vpc },
+      config,
     }) =>
       pipe([
         tap((params) => {

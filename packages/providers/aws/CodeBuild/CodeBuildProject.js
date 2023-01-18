@@ -54,6 +54,7 @@ exports.CodeBuildProject = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: { serviceRole, vpc, subnets, securityGroups },
+      config,
     }) =>
       pipe([
         () => otherProps,

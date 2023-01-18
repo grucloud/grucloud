@@ -123,6 +123,7 @@ exports.EC2VpcPeeringConnectionAccepter = ({ spec, config }) =>
       namespace,
       properties: {},
       dependencies: { vpcPeeringConnection },
+      config,
     }) =>
       pipe([
         tap(() => {

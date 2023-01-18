@@ -119,6 +119,7 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
       namespace,
       properties,
       dependencies: { vpc, dhcpOptions },
+      config,
     }) =>
       pipe([
         tap(() => {

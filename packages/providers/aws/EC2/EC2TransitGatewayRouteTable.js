@@ -87,6 +87,7 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { transitGateway },
+      config,
     }) =>
       pipe([
         tap((params) => {

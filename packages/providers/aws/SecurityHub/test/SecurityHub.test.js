@@ -62,26 +62,26 @@ describe("SecurityHub", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Member", () =>
+  it("Member", () =>
     pipe([
       () => ({
         groupType: "SecurityHub::Member",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ AccountId: config.accountId() }],
       }),
       awsResourceTest,
     ])());
-  it.skip("OrganisationAdminAccount", () =>
+  it("OrganizationAdminAccount", () =>
     pipe([
       () => ({
-        groupType: "SecurityHub::OrganisationAdminAccount",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "SecurityHub::OrganizationAdminAccount",
+        livesNotFound: ({ config }) => [{ AdminAccountId: config.accountId() }],
       }),
       awsResourceTest,
     ])());
-  it.skip("OrganisationConfiguration", () =>
+  it("OrganizationConfiguration", () =>
     pipe([
       () => ({
-        groupType: "SecurityHub::OrganisationConfiguration",
+        groupType: "SecurityHub::OrganizationConfiguration",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
@@ -102,11 +102,17 @@ describe("SecurityHub", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("StandardsSubscription", () =>
+  it("StandardsSubscription", () =>
     pipe([
       () => ({
         groupType: "SecurityHub::StandardsSubscription",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            StandardsSubscriptionArn: `arn:aws:securityhub:${
+              config.region
+            }:${config.accountId()}:subscription/cis-aws-foundations-benchmark-ko/v/1.2.0`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

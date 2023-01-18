@@ -1,19 +1,75 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map, assign, or } = require("rubico");
-const { defaultsDeep, when, first } = require("rubico/x");
+const { pipe, tap, get, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pick(["ListenerArn"]);
 
-const model = ({ config }) => ({
+exports.GlobalAcceleratorListener = () => ({
+  type: "Listener",
   package: "global-accelerator",
   client: "GlobalAccelerator",
   region: "us-west-2",
   ignoreErrorCodes: ["ListenerNotFoundException"],
+  inferName:
+    ({ dependenciesSpec: { accelerator } }) =>
+    ({ Protocol, PortRanges }) =>
+      pipe([
+        () =>
+          `${accelerator}::${Protocol}::${PortRanges[0].FromPort}::${PortRanges[0].ToPort}`,
+      ])(),
+  findName: () =>
+    pipe([
+      ({ AcceleratorName, Protocol, PortRanges }) =>
+        `${AcceleratorName}::${Protocol}::${PortRanges[0].FromPort}::${PortRanges[0].ToPort}`,
+    ]),
+  findId: () => pipe([get("ListenerArn")]),
+  propertiesDefault: { ClientAffinity: "NONE" },
+  omitProperties: ["AcceleratorArn", "ListenerArn"],
+  dependencies: {
+    accelerator: {
+      type: "Accelerator",
+      group: "GlobalAccelerator",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("AcceleratorArn"),
+    },
+  },
+  getByName: getByNameCore,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#listListeners-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Accelerator", group: "GlobalAccelerator" },
+          pickKey: pipe([pick(["AcceleratorArn"])]),
+          method: "listListeners",
+          getParam: "Listeners",
+          config,
+          decorate: ({ parent }) =>
+            pipe([
+              tap((params) => {
+                assert(parent.Name);
+              }),
+              defaultsDeep({
+                AcceleratorArn: parent.AcceleratorArn,
+                AcceleratorName: parent.Name,
+              }),
+            ]),
+        }),
+    ])(),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateAccelerator-property
+  //TODO
+  update:
+    ({ endpoint }) =>
+    async ({ pickId, payload, diff, live }) =>
+      pipe([
+        tap((params) => {
+          assert(endpoint);
+        }),
+        () => diff,
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#describeListener-property
   getById: {
     method: "describeListener",
@@ -30,66 +86,19 @@ const model = ({ config }) => ({
     method: "deleteListener",
     pickId,
   },
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { accelerator },
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(accelerator);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        AcceleratorArn: getField(accelerator, "AcceleratorArn"),
+      }),
+    ])(),
 });
-
-exports.GlobalAcceleratorListener = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () =>
-      pipe([
-        ({ AcceleratorName, Protocol, PortRanges }) =>
-          `${AcceleratorName}::${Protocol}::${PortRanges[0].FromPort}::${PortRanges[0].ToPort}`,
-      ]),
-    findId: () => pipe([get("ListenerArn")]),
-    getByName: getByNameCore,
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#listListeners-property
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () =>
-          client.getListWithParent({
-            parent: { type: "Accelerator", group: "GlobalAccelerator" },
-            pickKey: pipe([pick(["AcceleratorArn"])]),
-            method: "listListeners",
-            getParam: "Listeners",
-            config,
-            decorate: ({ parent }) =>
-              pipe([
-                tap((params) => {
-                  assert(parent.Name);
-                }),
-                defaultsDeep({
-                  AcceleratorArn: parent.AcceleratorArn,
-                  AcceleratorName: parent.Name,
-                }),
-              ]),
-          }),
-      ])(),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateAccelerator-property
-    //TODO
-    update:
-      ({ endpoint }) =>
-      async ({ pickId, payload, diff, live }) =>
-        pipe([
-          tap((params) => {
-            assert(endpoint);
-          }),
-          () => diff,
-        ])(),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { accelerator },
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          AcceleratorArn: getField(accelerator, "AcceleratorArn"),
-        }),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-  });

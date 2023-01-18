@@ -78,6 +78,7 @@ exports.CodePipelinePipeline = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: { role },
+      config,
     }) =>
       pipe([
         () => otherProps,

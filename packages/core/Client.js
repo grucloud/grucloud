@@ -362,25 +362,25 @@ const decorateLives = ({ client, config, options, readOnly, lives }) =>
   ]);
 
 const createClient = ({
-  //provider,
   spec,
   providerName,
   config,
   getResource,
   //Remove getResourcesByType and getListHof
   getResourcesByType,
-  getResourceFromLive,
   getListHof,
   lives,
+  getContext,
 }) =>
   pipe([
     tap((params) => {
       assert(spec.Client, `missing Client for ${spec.groupType}`);
       assert(lives);
+      assert(getContext);
       //TODO
       // assert(provider)
     }),
-    () => spec.Client({ providerName, spec, config, lives }),
+    () => spec.Client({ providerName, spec, config, lives, getContext }),
     tap((client) => {
       //assert(getResourcesByType);
       assert(providerName);

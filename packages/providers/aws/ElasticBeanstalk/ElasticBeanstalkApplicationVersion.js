@@ -101,6 +101,7 @@ exports.ElasticBeanstalkApplicationVersion = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { application },
+      config,
     }) =>
       pipe([
         tap((params) => {

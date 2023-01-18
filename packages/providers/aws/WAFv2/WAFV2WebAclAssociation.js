@@ -18,12 +18,11 @@ const {
   isEmpty,
   keys,
   unless,
+  prepend,
 } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-
-const { createAwsResource } = require("../AwsClient");
 
 //TODO dependencyId use lives.getById
 
@@ -67,10 +66,86 @@ const WebAclDependencies = {
 
 exports.WebAclDependencies = WebAclDependencies;
 
-const createModel = ({ config }) => ({
+const findId = () =>
+  pipe([
+    ({ WebACLArn, ResourceArn }) =>
+      `webacl-assoc::${WebACLArn}::${ResourceArn}`,
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html
+exports.WAFV2WebACLAssociation = () => ({
+  type: "WebACLAssociation",
   package: "wafv2",
   client: "WAFV2",
   ignoreErrorCodes,
+  omitProperties: ["ResourceArn", "WebACLArn"],
+  inferName:
+    ({ dependenciesSpec: { webAcl, ...otherDeps } }) =>
+    () =>
+      pipe([
+        tap((params) => {
+          assert(webAcl);
+        }),
+        () => otherDeps,
+        values,
+        first,
+        tap((dep) => {
+          assert(dep);
+        }),
+        prepend(`webacl-assoc::${webAcl}::`),
+      ])(),
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        fork({
+          webACLName: pipe([
+            get("WebACLArn"),
+            lives.getById({
+              type: "WebACL",
+              group: "WAFv2",
+              providerName: config.providerName,
+            }),
+            get("name", live.WebACLArn),
+          ]),
+          resourceName: pipe([
+            () => WebAclDependencies,
+            values,
+            map(({ type, group }) =>
+              pipe([
+                () => live.ResourceArn,
+                lives.getById({
+                  type,
+                  group,
+                  providerName: config.providerName,
+                }),
+                get("name"),
+              ])()
+            ),
+            filter(not(isEmpty)),
+            first,
+            tap((name) => {
+              assert(name);
+            }),
+          ]),
+        }),
+        tap(({ webACLName, resourceName }) => {
+          assert(webACLName);
+          assert(resourceName);
+        }),
+        ({ webACLName, resourceName }) =>
+          `webacl-assoc::${webACLName}::${resourceName}`,
+      ])(),
+  findId,
+  dependencies: {
+    webAcl: {
+      type: "WebACL",
+      group: "WAFv2",
+      dependencyId: ({ lives, config }) => get("WebACLArn"),
+    },
+    ...WebAclDependencies,
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#associateWebACL-property
   create: {
     method: "associateWebACL",
@@ -88,137 +163,80 @@ const createModel = ({ config }) => ({
       pick(["ResourceArn"]),
     ]),
   },
-});
-
-const findId = () =>
-  pipe([
-    ({ WebACLArn, ResourceArn }) =>
-      `webacl-assoc::${WebACLArn}::${ResourceArn}`,
-  ]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html
-exports.WAFV2WebACLAssociation = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
-    config,
-    findName:
-      ({ lives, config }) =>
-      (live) =>
-        pipe([
-          () => live,
-          fork({
-            webACLName: pipe([
-              get("WebACLArn"),
-              lives.getById({
-                type: "WebACL",
-                group: "WAFv2",
-                providerName: config.providerName,
-              }),
-              get("name", live.WebACLArn),
-            ]),
-            resourceName: pipe([
-              () => WebAclDependencies,
-              values,
-              map(({ type, group }) =>
-                pipe([
-                  () => live.ResourceArn,
-                  lives.getById({
-                    type,
-                    group,
-                    providerName: config.providerName,
-                  }),
-                  get("name"),
-                ])()
-              ),
-              filter(not(isEmpty)),
-              first,
-              tap((name) => {
-                assert(name);
-              }),
-            ]),
-          }),
-          tap(({ webACLName, resourceName }) => {
-            assert(webACLName);
-            assert(resourceName);
-          }),
-          ({ webACLName, resourceName }) =>
-            `webacl-assoc::${webACLName}::${resourceName}`,
-        ])(),
-    findId,
-    getList:
-      ({ endpoint }) =>
-      ({ lives }) =>
-        pipe([
-          () => WebAclDependencies,
-          values,
-          flatMap(({ type, group, buildArn }) =>
-            pipe([
-              lives.getByType({
-                providerName: config.providerName,
-                type,
-                group,
-              }),
-              map(
-                pipe([
-                  get("live"),
-                  buildArn({ config }),
-                  tap((ResourceArn) => {
-                    assert(ResourceArn);
-                  }),
-                  (ResourceArn) =>
-                    pipe([
-                      () => ({ ResourceArn }),
-                      endpoint().getWebACLForResource,
-                      get("WebACL.ARN"),
-                      tap((ARN) => {
-                        assert(true);
-                      }),
-                      unless(isEmpty, (WebACLArn) => ({
-                        WebACLArn,
-                        ResourceArn,
-                      })),
-                    ])(),
-                ])
-              ),
-              filter(not(isEmpty)),
-            ])()
-          ),
-        ])(),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties,
-      dependencies: { webAcl, ...wafDependencies },
-    }) =>
+  getList:
+    ({ endpoint }) =>
+    ({ lives, config }) =>
       pipe([
-        tap(() => {
-          assert(webAcl);
-        }),
-        () => properties,
-        defaultsDeep({
-          WebACLArn: getField(webAcl, "ARN"),
-          ResourceArn: pipe([
-            () => wafDependencies,
-            keys,
-            first,
-            tap((key) => {
-              assert(key, "missing waf dependency");
+        () => WebAclDependencies,
+        values,
+        flatMap(({ type, group, buildArn }) =>
+          pipe([
+            lives.getByType({
+              providerName: config.providerName,
+              type,
+              group,
             }),
-            (key) =>
+            map(
               pipe([
-                () => wafDependencies,
-                get(key),
                 get("live"),
-                switchCase([
-                  isEmpty,
-                  () => `<< Arn of ${key} not available yet >>`,
-                  WebAclDependencies[key].buildArn({ config }),
-                ]),
-                ,
-              ])(),
-          ])(),
-        }),
+                buildArn({ config }),
+                tap((ResourceArn) => {
+                  assert(ResourceArn);
+                }),
+                (ResourceArn) =>
+                  pipe([
+                    () => ({ ResourceArn }),
+                    endpoint().getWebACLForResource,
+                    get("WebACL.ARN"),
+                    tap((ARN) => {
+                      assert(true);
+                    }),
+                    unless(isEmpty, (WebACLArn) => ({
+                      WebACLArn,
+                      ResourceArn,
+                    })),
+                  ])(),
+              ])
+            ),
+            filter(not(isEmpty)),
+          ])()
+        ),
       ])(),
-  });
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties,
+    dependencies: { webAcl, ...wafDependencies },
+    config,
+  }) =>
+    pipe([
+      tap(() => {
+        assert(webAcl);
+      }),
+      () => properties,
+      defaultsDeep({
+        WebACLArn: getField(webAcl, "ARN"),
+        ResourceArn: pipe([
+          () => wafDependencies,
+          keys,
+          first,
+          tap((key) => {
+            assert(key, "missing waf dependency");
+          }),
+          (key) =>
+            pipe([
+              () => wafDependencies,
+              get(key),
+              get("live"),
+              switchCase([
+                isEmpty,
+                () => `<< Arn of ${key} not available yet >>`,
+                WebAclDependencies[key].buildArn({ config }),
+              ]),
+              ,
+            ])(),
+        ])(),
+      }),
+    ])(),
+});

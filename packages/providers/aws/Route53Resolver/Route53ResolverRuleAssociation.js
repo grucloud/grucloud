@@ -106,6 +106,7 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
       namespace,
       properties,
       dependencies: { resolverRule, vpc },
+      config,
     }) =>
       pipe([
         tap((params) => {

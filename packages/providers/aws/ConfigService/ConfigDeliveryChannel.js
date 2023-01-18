@@ -68,6 +68,7 @@ exports.ConfigDeliveryChannel = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: { snsTopic, s3Bucket },
+      config,
     }) =>
       pipe([
         tap((params) => {

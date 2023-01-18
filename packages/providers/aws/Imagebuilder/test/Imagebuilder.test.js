@@ -4,11 +4,17 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Imagebuilder", async function () {
-  it.skip("Component", () =>
+  it("Component", () =>
     pipe([
       () => ({
         groupType: "Imagebuilder::Component",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            arn: `arn:aws:imagebuilder:${
+              config.region
+            }:${config.accountId()}:component/myimportedcomponent/1.0.0/1`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

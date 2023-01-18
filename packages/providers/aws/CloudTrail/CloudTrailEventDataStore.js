@@ -44,7 +44,12 @@ exports.CloudTrailEventDataStore = ({ spec, config }) =>
       pipe([({ name }) => ({ EventDataStoreArn: name }), getById({})]),
     tagResource: tagResource,
     untagResource: untagResource,
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      config,
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({

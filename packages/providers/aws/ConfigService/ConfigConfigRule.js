@@ -77,6 +77,7 @@ exports.ConfigConfigRule = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: {},
+      config,
     }) =>
       pipe([
         // TODO Tags

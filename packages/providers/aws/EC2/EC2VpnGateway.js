@@ -47,7 +47,12 @@ exports.EC2VpnGateway = ({ spec, config }) =>
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      config,
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({

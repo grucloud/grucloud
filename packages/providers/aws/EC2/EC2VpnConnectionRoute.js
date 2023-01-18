@@ -128,6 +128,7 @@ exports.EC2VpnConnectionRoute = ({ spec, config }) =>
     configDefault: ({
       properties: { DestinationCidrBlock },
       dependencies: { vpnConnection },
+      config,
     }) =>
       pipe([
         tap(() => {

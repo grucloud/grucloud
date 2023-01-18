@@ -66,7 +66,7 @@ exports.S3ControlMultiRegionAccessPoint = () => ({
         assert(id);
       }),
     ]),
-  ignoreErrorCodes: ["NoSuchMultiRegionAccessPoint"],
+  ignoreErrorCodes: ["PermanentRedirect", "NoSuchMultiRegionAccessPoint"],
   dependencies: {
     s3Bucket: {
       type: "Bucket",

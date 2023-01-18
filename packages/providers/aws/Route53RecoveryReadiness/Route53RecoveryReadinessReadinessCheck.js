@@ -89,6 +89,7 @@ exports.Route53RecoveryReadinessReadinessCheck = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { resourceSet },
+      config,
     }) =>
       pipe([
         tap((params) => {

@@ -147,6 +147,7 @@ exports.CodeDeployDeploymentGroup = ({ spec, config }) =>
       properties: { tags, ...otherProps },
       //TODO add other dependencies
       dependencies: { serviceRole, autoScalingGroups },
+      config,
     }) =>
       pipe([
         () => otherProps,

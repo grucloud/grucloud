@@ -106,6 +106,7 @@ exports.Route53RecoveryControlConfigControlPanel = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { cluster },
+      config,
     }) =>
       pipe([
         tap((params) => {

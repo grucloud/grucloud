@@ -147,6 +147,7 @@ exports.CloudTrail = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { bucket, kmsKey, snsTopic, logGroup, logGroupRole },
+      config,
     }) =>
       pipe([
         tap(() => {

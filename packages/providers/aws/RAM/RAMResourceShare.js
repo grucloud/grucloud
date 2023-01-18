@@ -96,6 +96,7 @@ exports.RAMResourceShare = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: {},
+      config,
     }) =>
       pipe([
         () => otherProps,

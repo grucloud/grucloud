@@ -180,6 +180,7 @@ exports.ELBListener = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { loadBalancer, certificate, targetGroup },
+      config,
     }) =>
       pipe([
         tap(() => {

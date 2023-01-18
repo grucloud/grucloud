@@ -183,6 +183,10 @@ function CoreProvider({
   mapGloblalNameToResource = new Map(),
 }) {
   assert(makeConfig);
+
+  let context = {};
+  const getContext = () => context;
+
   let _lives;
   const setLives = (livesToSet) => {
     _lives = livesToSet;
@@ -412,6 +416,7 @@ function CoreProvider({
       providerName,
       getListHof,
       lives: getLives(),
+      getContext,
     });
 
   const getClients = pipe([
@@ -1122,9 +1127,24 @@ function CoreProvider({
             targetResourcesBuildMap,
           ])
         ),
-        tap(() => {
+        tap((params) => {
           logger.debug(`start done ${providerName}`);
         }),
+        getSpecs,
+        forEach(
+          when(
+            get("setup"),
+            pipe([
+              callProp("setup", { config: getProviderConfig() }),
+              (result = {}) => {
+                context = {
+                  ...context,
+                  ...result,
+                };
+              },
+            ])
+          )
+        ),
       ]),
       (error) => {
         logger.error(`start error ${tos(convertError({ error }))}`);
@@ -1778,6 +1798,7 @@ List of resources for provider ${providerName}:\n
       return getProviderConfig();
     },
     getConfig: getProviderConfig,
+    getContext,
     setLives,
     get lives() {
       return getLives();

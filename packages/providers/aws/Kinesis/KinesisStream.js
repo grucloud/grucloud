@@ -62,7 +62,12 @@ exports.KinesisStream = ({ spec, config }) =>
       pipe([({ name }) => ({ StreamName: name }), getById({})]),
     tagResource: tagResource,
     untagResource: untagResource,
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      config,
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({

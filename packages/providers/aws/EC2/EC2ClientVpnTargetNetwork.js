@@ -130,6 +130,7 @@ exports.EC2ClientVpnTargetNetwork = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { clientVpnEndpoint, subnet },
+      config,
     }) =>
       pipe([
         tap((params) => {

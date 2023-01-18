@@ -79,6 +79,7 @@ exports.MemoryDBParameterGroup = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: {},
+      config,
     }) =>
       pipe([
         () => otherProps,

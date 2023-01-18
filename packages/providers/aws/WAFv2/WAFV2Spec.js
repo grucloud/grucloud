@@ -1,82 +1,36 @@
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const assert = require("assert");
 const { map, pipe, tap, get } = require("rubico");
-const { defaultsDeep, first, prepend, values } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const { isOurMinion, compareAws } = require("../AwsCommon");
 const { WAFV2WebACL } = require("./WAFV2WebAcl");
 const { WAFV2WebACLCloudFront } = require("./WAFV2WebACLCloudFront");
 
-const {
-  WAFV2WebACLAssociation,
-  WebAclDependencies,
-} = require("./WAFV2WebAclAssociation");
+const { WAFV2WebACLAssociation } = require("./WAFV2WebAclAssociation");
 
 const GROUP = "WAFv2";
 
 const tagsKey = "Tags";
-const compareWAFV2 = compareAws({ tagsKey });
+const compare = compareAws({ tagsKey });
 
-const filterDescription = omitIfEmpty(["Description"]);
-const omitPropertiesWebACL = ["ARN", "Id", "LockToken", "LabelNamespace"];
+const { createAwsService } = require("../AwsService");
 
 module.exports = pipe([
   () => [
-    {
-      type: "WebACL",
-      Client: WAFV2WebACL,
-      inferName: () => get("Name"),
-      omitProperties: omitPropertiesWebACL,
-      compare: compareWAFV2({
-        filterLive: () => pipe([filterDescription]),
-      }),
-      filterLive: () => pipe([filterDescription]),
-    },
-    {
-      type: "WebACLCloudFront",
-      Client: WAFV2WebACLCloudFront,
-      inferName: () => get("Name"),
-      omitProperties: omitPropertiesWebACL,
-      compare: compareWAFV2({
-        filterLive: () => pipe([filterDescription]),
-      }),
-      filterLive: () => pipe([filterDescription]),
-    },
-    {
-      type: "WebACLAssociation",
-      Client: WAFV2WebACLAssociation,
-      omitProperties: ["ResourceArn", "WebACLArn"],
-      inferName:
-        ({ dependenciesSpec: { webAcl, ...otherDeps } }) =>
-        () =>
-          pipe([
-            tap((params) => {
-              assert(webAcl);
-            }),
-            () => otherDeps,
-            values,
-            first,
-            tap((dep) => {
-              assert(dep);
-            }),
-            prepend(`webacl-assoc::${webAcl}::`),
-          ])(),
-      dependencies: {
-        webAcl: {
-          type: "WebACL",
-          group: GROUP,
-          dependencyId: ({ lives, config }) => get("WebACLArn"),
-        },
-        ...WebAclDependencies,
-      },
-    },
+    WAFV2WebACL({ compare }),
+    WAFV2WebACLCloudFront({ compare }),
+    WAFV2WebACLAssociation({ compare }),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      isOurMinion,
-      tagsKey,
-      compare: compareWAFV2({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        isOurMinion,
+        tagsKey,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

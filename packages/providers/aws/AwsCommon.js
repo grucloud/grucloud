@@ -369,25 +369,30 @@ const createEndpointOption = (config) =>
 
 exports.createEndpointOption = createEndpointOption;
 
-const createEndpointProxy = (regionForce) => (client) => (config) =>
-  pipe([
-    tap((params) => {
-      assert(client);
-      assert(config);
-      assert(config.region);
-      // logger.debug(
-      //   `createEndpointProxy ${client.name}, region: ${config.region}`
-      // );
-    }),
-    () => regionForce,
-    createEndpointOption(config),
-    tap(({ region }) => {
-      assert(region);
-    }),
-    (options) => new client(options),
-    (endpoint) =>
-      new Proxy({}, proxyHandler({ endpointName: client.name, endpoint })),
-  ]);
+const createEndpointProxy =
+  (regionForce) =>
+  (client) =>
+  (config) =>
+  (configOverride = {}) =>
+    pipe([
+      tap((params) => {
+        assert(client);
+        assert(config);
+        assert(config.region);
+        assert(configOverride);
+        // logger.debug(
+        //   `createEndpointProxy ${client.name}, region: ${config.region}`
+        // );
+      }),
+      () => regionForce,
+      createEndpointOption(config),
+      tap(({ region }) => {
+        assert(region);
+      }),
+      (options) => new client({ ...options, ...configOverride }),
+      (endpoint) =>
+        new Proxy({}, proxyHandler({ endpointName: client.name, endpoint })),
+    ])();
 
 const createEndpoint = (packageName, entryPoint, regionForce) =>
   pipe([

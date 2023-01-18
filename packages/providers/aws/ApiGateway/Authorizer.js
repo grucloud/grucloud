@@ -73,6 +73,7 @@ exports.Authorizer = ({ spec, config }) =>
       namespace,
       properties,
       dependencies: { restApi, userPools },
+      config,
     }) =>
       pipe([
         tap(() => {

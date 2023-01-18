@@ -36,11 +36,13 @@ describe("MediaLive", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("MultiplexProgram", () =>
+  it("MultiplexProgram", () =>
     pipe([
       () => ({
         groupType: "MediaLive::MultiplexProgram",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { MultiplexId: "123", ProgramName: "p123" },
+        ],
       }),
       awsResourceTest,
     ])());

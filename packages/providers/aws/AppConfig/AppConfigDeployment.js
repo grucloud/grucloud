@@ -13,8 +13,6 @@ const {
 const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
-
 const { Tagger, assignTags } = require("./AppConfigCommon");
 
 const managedByOther = () => pipe([get("Tags"), keys, includes("DeployedBy")]);

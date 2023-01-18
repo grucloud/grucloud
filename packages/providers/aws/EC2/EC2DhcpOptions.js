@@ -146,6 +146,7 @@ exports.EC2DhcpOptions = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: {},
+      config,
     }) =>
       pipe([
         tap((params) => {

@@ -111,6 +111,7 @@ exports.Route53ResolverEndpoint = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { securityGroups },
+      config,
     }) =>
       pipe([
         () => otherProps,

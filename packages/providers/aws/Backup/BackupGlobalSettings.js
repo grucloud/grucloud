@@ -65,5 +65,6 @@ exports.BackupGlobalSettings = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: {},
+      config,
     }) => pipe([() => otherProps, defaultsDeep({})])(),
   });

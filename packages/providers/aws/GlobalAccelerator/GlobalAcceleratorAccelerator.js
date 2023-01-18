@@ -6,9 +6,8 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { retryCall } = require("@grucloud/core/Retry");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
-const { tagResource, untagResource } = require("./GlobalAcceleratorCommon");
+const { Tagger } = require("./GlobalAcceleratorCommon");
 
 const pickId = pick(["AcceleratorArn"]);
 
@@ -40,11 +39,36 @@ const updateAcceleratorAttributes = ({ endpoint, live }) =>
     endpoint().updateAcceleratorAttributes,
   ]);
 
-const model = ({ config }) => ({
+const buildArn = () => pipe([get("AcceleratorArn")]);
+
+exports.GlobalAcceleratorAccelerator = () => ({
+  type: "Accelerator",
   package: "global-accelerator",
   client: "GlobalAccelerator",
   region: "us-west-2",
   ignoreErrorCodes: ["AcceleratorNotFoundException"],
+  inferName: () => get("Name"),
+  findName: () => pipe([get("Name")]),
+  findId: () => pipe([get("AcceleratorArn")]),
+  propertiesDefault: { Enabled: true, IpAddressType: "IPV4" },
+  omitProperties: [
+    "AcceleratorArn",
+    "DnsName",
+    "Status",
+    "CreatedTime",
+    "LastModifiedTime",
+    "DualStackDnsName",
+    "Events",
+    "IpSets",
+  ],
+  dependencies: {
+    s3Bucket: {
+      type: "Bucket",
+      group: "S3",
+      dependencyId: ({ lives, config }) =>
+        get("AcceleratorAttributes.FlowLogsS3Bucket"),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#describeAccelerator-property
   getById: {
     method: "describeAccelerator",
@@ -95,65 +119,50 @@ const model = ({ config }) => ({
             }),
         ])(),
   },
-});
-
-const buildArn = () => pipe([get("AcceleratorArn")]);
-
-exports.GlobalAcceleratorAccelerator = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () => pipe([get("Name")]),
-    findId: () => pipe([get("AcceleratorArn")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
     }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateAccelerator-property
-    // TODO
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateAcceleratorAttributes-property
-    update:
-      ({ endpoint }) =>
-      async ({ pickId, payload, diff, live }) =>
-        pipe([
-          () => diff,
-          get("liveDiff.updated"),
-          tap.if(
-            or([callProp("hasOwnProperty", "Enabled"), get("IpAddressType")]),
-            pipe([
-              () => payload,
-              pick(["Enabled", "IpAddressType"]),
-              defaultsDeep({ AcceleratorArn: live.AcceleratorArn }),
-              endpoint().updateAccelerator,
-            ])
-          ),
-          tap.if(
-            get("AcceleratorAttributes"),
-            pipe([
-              () => payload,
-              updateAcceleratorAttributes({ endpoint, live }),
-            ])
-          ),
-        ])(),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) =>
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateAccelerator-property
+  // TODO
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateAcceleratorAttributes-property
+  update:
+    ({ endpoint }) =>
+    async ({ pickId, payload, diff, live }) =>
       pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            userTags: Tags,
-          }),
-        }),
+        () => diff,
+        get("liveDiff.updated"),
+        tap.if(
+          or([callProp("hasOwnProperty", "Enabled"), get("IpAddressType")]),
+          pipe([
+            () => payload,
+            pick(["Enabled", "IpAddressType"]),
+            defaultsDeep({ AcceleratorArn: live.AcceleratorArn }),
+            endpoint().updateAccelerator,
+          ])
+        ),
+        tap.if(
+          get("AcceleratorAttributes"),
+          pipe([() => payload, updateAcceleratorAttributes({ endpoint, live })])
+        ),
       ])(),
-  });
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          userTags: Tags,
+        }),
+      }),
+    ])(),
+});

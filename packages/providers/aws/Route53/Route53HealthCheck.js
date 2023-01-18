@@ -119,6 +119,7 @@ exports.Route53HealthCheck = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { routingControl },
+      config,
     }) =>
       pipe([
         () => otherProps,

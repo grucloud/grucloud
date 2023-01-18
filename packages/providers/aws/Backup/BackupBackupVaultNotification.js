@@ -57,6 +57,7 @@ exports.BackupBackupVaultNotification = ({ spec, config }) =>
       namespace,
       properties: { ...otherProps },
       dependencies: { backupVault, snsTopic },
+      config,
     }) =>
       pipe([
         tap((params) => {

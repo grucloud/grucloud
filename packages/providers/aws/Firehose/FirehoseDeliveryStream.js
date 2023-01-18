@@ -97,6 +97,7 @@ exports.FirehoseDeliveryStream = ({ spec, config }) =>
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: { kinesisStream, s3BucketDestination, kmsKey },
+      config,
     }) =>
       pipe([
         () => otherProps,

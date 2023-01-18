@@ -114,7 +114,15 @@ describe("RDS", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("GlobalCluster", () =>
+  it.skip("ExportTask", () =>
+    pipe([
+      () => ({
+        groupType: "RDS::ExportTask",
+        livesNotFound: ({ config }) => [{ SubscriptionName: "s123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("GlobalCluster", () =>
     pipe([
       () => ({
         groupType: "RDS::GlobalCluster",

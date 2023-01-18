@@ -159,6 +159,7 @@ exports.EC2VpcPeeringConnection = ({ spec, config }) =>
       namespace,
       properties: { Tags, AccepterVpcInfo },
       dependencies: { vpc, vpcPeer },
+      config,
     }) =>
       pipe([
         tap(() => {

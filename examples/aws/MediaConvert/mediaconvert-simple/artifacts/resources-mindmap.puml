@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project mediaconvert-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ MediaConvert
+++++ Queue (1)
+@endmindmap

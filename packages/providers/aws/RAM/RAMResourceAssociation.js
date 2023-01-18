@@ -196,6 +196,7 @@ exports.RAMResourceAssociation = ({ spec, config }) =>
       namespace,
       properties: { ...otheProps },
       dependencies: { resourceShare, ...resourceDependencies },
+      config,
     }) =>
       pipe([
         tap((params) => {

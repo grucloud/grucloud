@@ -144,7 +144,11 @@ exports.EC2VpnGatewayAttachment = ({ spec, config }) =>
           get("VpcAttachments"),
           find(eq(get("VpcId"), vpc.live.VpcId)),
         ])(),
-    configDefault: ({ properties, dependencies: { vpc, vpnGateway } }) =>
+    configDefault: ({
+      properties,
+      dependencies: { vpc, vpnGateway },
+      config,
+    }) =>
       pipe([
         tap(() => {
           assert(vpc);

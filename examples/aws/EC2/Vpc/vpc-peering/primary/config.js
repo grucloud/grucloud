@@ -5,4 +5,5 @@ module.exports = () => ({
   projectName: pkg.name,
   credentials: { profile: "regionA" },
   regionSecondary: "us-west-2",
+  includeGroups: ["EC2"],
 });

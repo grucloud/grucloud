@@ -63,6 +63,7 @@ exports.EC2ClientVpnEndpoint = ({ spec, config }) =>
         cloudWatchLogStream,
         serverCertificate,
       },
+      config,
     }) =>
       pipe([
         tap((params) => {

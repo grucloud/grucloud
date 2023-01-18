@@ -74,6 +74,7 @@ exports.CodeStarConnectionsConnection = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: { host },
+      config,
     }) =>
       pipe([
         () => otherProps,
