@@ -41,7 +41,13 @@ module.exports = pipe([
         "SizeInBytes",
         "Name",
         "KmsKeyId",
+        "AvailabilityZoneId",
       ],
+      propertiesDefault: {
+        Encrypted: true,
+        PerformanceMode: "generalPurpose",
+        ThroughputMode: "bursting",
+      },
       compare: compareEFS({
         filterAll: () => pipe([omit([])]),
       }),

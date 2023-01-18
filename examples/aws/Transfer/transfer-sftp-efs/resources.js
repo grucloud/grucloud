@@ -27,7 +27,6 @@ exports.createResources = () => [
     group: "EFS",
     name: "myfs",
     properties: ({ config }) => ({
-      AvailabilityZoneId: "use1-az4",
       AvailabilityZoneName: `${config.region}a`,
       Encrypted: true,
       PerformanceMode: "generalPurpose",

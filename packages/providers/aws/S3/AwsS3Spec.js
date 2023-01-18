@@ -123,6 +123,7 @@ module.exports = pipe([
         filterLive: () =>
           pipe([
             omit([
+              "Arn",
               "CreationDate",
               "LocationConstraint",
               "ACL", //TODO

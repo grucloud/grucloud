@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project fsx-ontap
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (1)
++++ FSx
+++++ FileSystem (1)
+++++ StorageVirtualMachine (1)
+++++ Volume (1)
+@endmindmap

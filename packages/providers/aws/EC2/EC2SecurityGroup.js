@@ -31,6 +31,7 @@ const {
   findNamespaceInTagsOrEksCluster,
   revokeSecurityGroupIngress,
   destroyNetworkInterfaces,
+  arnFromId,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags } = require("../AwsCommon");
@@ -71,6 +72,34 @@ const managedByOther = ({ lives, config }) =>
     isDefault({ lives, config }),
   ]);
 
+const assignTags = ({ config }) =>
+  assign({
+    Arn: pipe([
+      get("GroupId"),
+      prepend("security-group/"),
+      arnFromId({ service: "ec2", config }),
+    ]),
+  });
+
+const decorate = ({ config }) =>
+  pipe([
+    assign({
+      IpPermissions: pipe([
+        get("IpPermissions"),
+        callProp(
+          "sort",
+          (
+            { FromPort: FromPortA = "-1", IpProtocol: IpProtocolA },
+            { FromPort: FromPortB = "-1", IpProtocol: IpProtocolB }
+          ) =>
+            `${FromPortA}${IpProtocolA}`.localeCompare(
+              `${FromPortB}${IpProtocolB}`
+            )
+        ),
+      ]),
+    }),
+    assignTags({ config }),
+  ]);
 exports.EC2SecurityGroup = ({ spec, config }) => {
   const { managedByDescription, providerName } = config;
   assert(managedByDescription);
@@ -132,24 +161,7 @@ exports.EC2SecurityGroup = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeSecurityGroups",
     getParam: "SecurityGroups",
-    decorate: () =>
-      pipe([
-        assign({
-          IpPermissions: pipe([
-            get("IpPermissions"),
-            callProp(
-              "sort",
-              (
-                { FromPort: FromPortA = "-1", IpProtocol: IpProtocolA },
-                { FromPort: FromPortB = "-1", IpProtocol: IpProtocolB }
-              ) =>
-                `${FromPortA}${IpProtocolA}`.localeCompare(
-                  `${FromPortB}${IpProtocolB}`
-                )
-            ),
-          ]),
-        }),
-      ]),
+    decorate,
   });
 
   const extractGroupName = pipe([callProp("split", "::"), last]);

@@ -72,10 +72,20 @@ exports.FSxFileSystem = () => ({
     "OntapConfiguration.RouteTableIds",
     "OpenZFSConfiguration.RootVolumeId",
     "LustreConfiguration.MountName",
+    "WindowsConfiguration.ActiveDirectoryId",
+    "WindowsConfiguration.PreferredFileServerIp",
+    "WindowsConfiguration.PreferredSubnetId",
+    "WindowsConfiguration.RemoteAdministrationEndpoint",
   ],
   findName: findNameInTagsOrId({ findId }),
   findId,
   dependencies: {
+    directory: {
+      type: "Directory",
+      group: "DirectoryService",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("WindowsConfiguration.ActiveDirectoryId")]),
+    },
     kmsKey: {
       type: "Key",
       group: "KMS",
@@ -149,6 +159,7 @@ exports.FSxFileSystem = () => ({
     pickId,
     shouldRetryOnExceptionMessages: [
       "Cannot delete file system while there is a user initiated backup in progress.",
+      "Cannot take backup while",
     ],
   },
   getByName: getByNameCore,
@@ -160,7 +171,7 @@ exports.FSxFileSystem = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { kmsKey, subnets, securityGroups },
+    dependencies: { directory, kmsKey, subnets, securityGroups },
     config,
   }) =>
     pipe([
@@ -168,6 +179,14 @@ exports.FSxFileSystem = () => ({
       defaultsDeep({
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
+      when(
+        () => directory,
+        defaultsDeep({
+          WindowsConfiguration: {
+            ActiveDirectoryId: getField(directory, "DirectoryId"),
+          },
+        })
+      ),
       when(
         () => kmsKey,
         defaultsDeep({

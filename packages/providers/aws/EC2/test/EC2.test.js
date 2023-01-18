@@ -182,6 +182,14 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("Fleet", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::Fleet",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("Instance", () =>
     pipe([
       () => ({
@@ -210,6 +218,14 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("NetworkInsightsAccessScope", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::NetworkInsightsAccessScope",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it.skip("NetworkInsightsAnalysis", () =>
     pipe([
       () => ({
@@ -226,6 +242,7 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+
   it("NetworkInterface", () =>
     pipe([
       () => ({

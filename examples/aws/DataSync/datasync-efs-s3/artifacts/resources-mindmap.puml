@@ -1,0 +1,24 @@
+@startmindmap
+title Resources for project datasync-efs-s3
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ DataSync
+++++ LocationEfs (1)
+++++ LocationS3 (1)
+++++ Task (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (1)
+++++ SecurityGroup (1)
++++ EFS
+++++ FileSystem (1)
+++++ MountTarget (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

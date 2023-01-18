@@ -1,0 +1,24 @@
+@startmindmap
+title Resources for project datasync-fsxopenzfs
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ DataSync
+++++ LocationFsxOpenZfs (1)
+++++ LocationS3 (1)
+++++ Task (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
++++ FSx
+++++ FileSystem (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

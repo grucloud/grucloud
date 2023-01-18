@@ -47,7 +47,7 @@ List of resources for provider aws:
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
 * CloudFront: 
-[CachePolicy](./resources/CloudFront/CachePolicy.md), [Distribution](./resources/CloudFront/Distribution.md), [Function](./resources/CloudFront/Function.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md), [OriginRequestPolicy](./resources/CloudFront/OriginRequestPolicy.md), [ResponseHeadersPolicy](./resources/CloudFront/ResponseHeadersPolicy.md)
+[CachePolicy](./resources/CloudFront/CachePolicy.md), [Distribution](./resources/CloudFront/Distribution.md), [Function](./resources/CloudFront/Function.md), [KeyGroup](./resources/CloudFront/KeyGroup.md), [OriginRequestPolicy](./resources/CloudFront/OriginRequestPolicy.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md), [PublicKey](./resources/CloudFront/PublicKey.md), [ResponseHeadersPolicy](./resources/CloudFront/ResponseHeadersPolicy.md)
 * CloudHSMV2: 
 [Cluster](./resources/CloudHSMV2/Cluster.md), [Hsm](./resources/CloudHSMV2/Hsm.md)
 * CloudTrail: 
@@ -74,6 +74,8 @@ List of resources for provider aws:
 [ConfigRule](./resources/Config/ConfigRule.md), [ConfigurationRecorder](./resources/Config/ConfigurationRecorder.md), [ConfigurationRecorderStatus](./resources/Config/ConfigurationRecorderStatus.md), [ConformancePack](./resources/Config/ConformancePack.md), [DeliveryChannel](./resources/Config/DeliveryChannel.md)
 * ControlTower: 
 [Control](./resources/ControlTower/Control.md)
+* DataSync: 
+[LocationEfs](./resources/DataSync/LocationEfs.md), [LocationFsxLustre](./resources/DataSync/LocationFsxLustre.md), [LocationFsxOpenZfs](./resources/DataSync/LocationFsxOpenZfs.md), [LocationFsxWindows](./resources/DataSync/LocationFsxWindows.md), [LocationS3](./resources/DataSync/LocationS3.md), [Task](./resources/DataSync/Task.md)
 * DirectConnect: 
 [BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [MacSecKeyAssociation](./resources/DirectConnect/MacSecKeyAssociation.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
 * DMS: 
@@ -134,6 +136,8 @@ List of resources for provider aws:
 [Layer](./resources/Lambda/Layer.md), [Function](./resources/Lambda/Function.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md)
 * Lightsail: 
 [Bucket](./resources/Lightsail/Bucket.md), [Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
+* MediaConvert: 
+[Queue](./resources/MediaConvert/Queue.md)
 * MediaLive: 
 [Channel](./resources/MediaLive/Channel.md), [Input](./resources/MediaLive/Input.md), [InputSecurityGroup](./resources/MediaLive/InputSecurityGroup.md), [Multiplex](./resources/MediaLive/Multiplex.md), [MultiplexProgram](./resources/MediaLive/MultiplexProgram.md)
 * MemoryDB: 
