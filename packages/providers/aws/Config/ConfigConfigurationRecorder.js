@@ -27,7 +27,14 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#describeConfigurationRecorders-property
   getById: {
     method: "describeConfigurationRecorders",
-    pickId,
+    pickId: pipe([
+      tap(({ name }) => {
+        assert(name);
+      }),
+      ({ name }) => ({
+        ConfigurationRecorderNames: [name],
+      }),
+    ]),
     getField: "ConfigurationRecorders",
     decorate,
   },

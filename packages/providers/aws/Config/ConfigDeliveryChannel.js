@@ -27,7 +27,14 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#describeDeliveryChannels-property
   getById: {
     method: "describeDeliveryChannels",
-    pickId,
+    pickId: pipe([
+      tap(({ name }) => {
+        assert(name);
+      }),
+      ({ name }) => ({
+        DeliveryChannelNames: [name],
+      }),
+    ]),
     getField: "DeliveryChannels",
     decorate,
   },
