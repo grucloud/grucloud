@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Route53", async function () {
-  it.skip("DelegationSet", () =>
+  it("DelegationSet", () =>
     pipe([
       () => ({
         groupType: "Route53::DelegationSet",

@@ -43,20 +43,23 @@ const {
   findDnsServers,
   findNsRecordByName,
 } = require("./Route53HostedZone");
-const { Route53ZoneVpcAssociation } = require("./Route53ZoneVpcAssociation");
+
+const { Route53DelegationSet } = require("./Route53DelegationSet");
+const { Route53HealthCheck } = require("./Route53HealthCheck");
+
 const {
   Route53Record,
   compareRoute53Record,
   Route53RecordDependencies,
 } = require("./Route53Record");
-const {
-  Route53VpcAssociationAuthorization,
-} = require("./Route53VpcAssociationAuthorization");
-const { Route53HealthCheck } = require("./Route53HealthCheck");
 const { Route53TrafficPolicy } = require("./Route53TrafficPolicy");
 const {
   Route53TrafficPolicyInstance,
 } = require("./Route53TrafficPolicyInstance");
+const {
+  Route53VpcAssociationAuthorization,
+} = require("./Route53VpcAssociationAuthorization");
+const { Route53ZoneVpcAssociation } = require("./Route53ZoneVpcAssociation");
 
 const GROUP = "Route53";
 
@@ -136,6 +139,7 @@ const assignResourceRecords = ({ lives, providerConfig }) =>
 
 module.exports = pipe([
   () => [
+    createAwsService(Route53DelegationSet({})),
     {
       type: "HealthCheck",
       dependencies: {
@@ -214,6 +218,11 @@ module.exports = pipe([
     {
       type: "HostedZone",
       dependencies: {
+        delegationSet: {
+          type: "DelegationSet",
+          group: "Route53",
+          dependencyId: ({ lives, config }) => pipe([get("DelegationSet.Id")]),
+        },
         domain: {
           type: "Domain",
           group: "Route53Domains",
@@ -274,7 +283,7 @@ module.exports = pipe([
             pipe([get("VpcAssociations"), first, get("VPCId")]),
         },
       },
-      omitProperties: ["Arn"],
+      omitProperties: ["Arn", "DelegationSetId"],
       Client: Route53HostedZone,
       compare: compareRoute53({
         filterAll: () =>
