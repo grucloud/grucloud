@@ -105,7 +105,7 @@ exports.createResources = () => [
       ClusterSubnetGroupName: "cluster-subnet-group-1",
       NumberOfNodes: 2,
       EnhancedVpcRouting: true,
-      AvailabilityZoneRelocationStatus: "enabled",
+      AvailabilityZoneRelocation: true,
       MasterUserPassword: process.env.REDSHIFT_CLUSTER_1_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
