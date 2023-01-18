@@ -94,6 +94,7 @@
     "test-route53recoverycontrolconfig": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Route53RecoveryControlConfig/**/iac.test.js' ",
     "test-route53readiness": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Route53RecoveryReadiness/**/iac.test.js' ",
     "test-route53resolver": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Route53Resolver/**/iac.test.js' ",
+    "test-rum": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/RUM/**/iac.test.js' ",
     "test-s3": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/S3/**/iac.test.js' ",
     "test-s3control": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/S3Control/**/iac.test.js' ",
     "test-ssoadmin": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/SSOAdmin/**/iac.test.js' ",

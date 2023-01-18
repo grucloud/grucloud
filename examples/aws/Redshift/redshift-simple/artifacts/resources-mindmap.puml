@@ -9,8 +9,11 @@ skinparam monochrome true
 ++++ RouteTable (2)
 ++++ RouteTableAssociation (2)
 ++++ SecurityGroup (1)
++++ Organisations
+++++ Account (1)
 +++ Redshift
 ++++ Cluster (1)
 ++++ ClusterParameterGroup (1)
 ++++ ClusterSubnetGroup (1)
+++++ EndpointAuthorization (1)
 @endmindmap
