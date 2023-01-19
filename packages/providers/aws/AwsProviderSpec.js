@@ -1,4 +1,13 @@
-const { pipe, tap, flatMap, filter, eq, get, map } = require("rubico");
+const {
+  pipe,
+  tap,
+  flatMap,
+  filter,
+  eq,
+  get,
+  map,
+  switchCase,
+} = require("rubico");
 const {
   find,
   includes,
@@ -7,10 +16,22 @@ const {
   unless,
   isEmpty,
   isIn,
+  filterOut,
 } = require("rubico/x");
 
 const assert = require("assert");
 const AwsServicesAvailability = require("./AwsServicesAvailability.json");
+
+const defaultExcludes = [
+  //"ACMPCA",
+  //"Appflow",
+  //"AppMesh",
+  //"CloudHSMV2",
+  "IVS",
+  "Isvchat",
+];
+
+const defaultIncludes = ["IAM", "CloudWatchLogs"];
 
 const GROUPS = [
   ["Account", "account"],
@@ -69,7 +90,7 @@ const GROUPS = [
   ["FSx", "fsx"],
   ["Imagebuilder", "imagebuilder"],
   ["IVS", "ivs"],
-  //["Ivschat", "ivschat"],
+  ["Ivschat", "ivschat"],
   ["GuardDuty", "guardduty"],
   ["Glue", "glue"],
   ["Grafana", "grafana"],
@@ -162,10 +183,11 @@ const excludeGroups = ({ config: { includeGroups = [] } }) =>
     tap((params) => {
       assert(true);
     }),
-    unless(
+    switchCase([
       () => isEmpty(includeGroups),
-      filter(isIn(["IAM", "CloudWatchLogs", ...includeGroups]))
-    ),
+      filterOut(isIn(defaultExcludes)),
+      filter(isIn([...defaultIncludes, ...includeGroups])),
+    ]),
   ]);
 
 exports.fnSpecs = (config) =>
