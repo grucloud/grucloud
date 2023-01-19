@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project cloudfront-publickey
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudFront
+++++ KeyGroup (1)
+++++ PublicKey (1)
+@endmindmap

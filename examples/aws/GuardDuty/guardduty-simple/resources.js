@@ -73,6 +73,104 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "PublishingDestination",
+    group: "GuardDuty",
+    properties: ({}) => ({
+      DestinationProperties: {
+        DestinationArn: "arn:aws:s3:::gc-guardduty-test",
+      },
+    }),
+    dependencies: ({}) => ({
+      detector: "detector",
+      kmsKey: "alias/guardduty",
+      s3Bucket: "gc-guardduty-test",
+    }),
+  },
+  {
+    type: "Key",
+    group: "KMS",
+    name: "alias/guardduty",
+    properties: ({ config }) => ({
+      Policy: {
+        Version: "2012-10-17",
+        Id: "key-consolepolicy-3",
+        Statement: [
+          {
+            Sid: "Allow GuardDuty to encrypt findings",
+            Effect: "Allow",
+            Principal: {
+              Service: "guardduty.amazonaws.com",
+            },
+            Action: "kms:GenerateDataKey",
+            Resource: "*",
+          },
+          {
+            Sid: "Enable IAM User Permissions",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:root`,
+            },
+            Action: "kms:*",
+            Resource: "*",
+          },
+          {
+            Sid: "Allow access for Key Administrators",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:role/aws-service-role/guardduty.amazonaws.com/AWSServiceRoleForAmazonGuardDuty`,
+            },
+            Action: [
+              "kms:Create*",
+              "kms:Describe*",
+              "kms:Enable*",
+              "kms:List*",
+              "kms:Put*",
+              "kms:Update*",
+              "kms:Revoke*",
+              "kms:Disable*",
+              "kms:Get*",
+              "kms:Delete*",
+              "kms:TagResource",
+              "kms:UntagResource",
+              "kms:ScheduleKeyDeletion",
+              "kms:CancelKeyDeletion",
+            ],
+            Resource: "*",
+          },
+          {
+            Sid: "Allow use of the key",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:role/aws-service-role/guardduty.amazonaws.com/AWSServiceRoleForAmazonGuardDuty`,
+            },
+            Action: [
+              "kms:Encrypt",
+              "kms:Decrypt",
+              "kms:ReEncrypt*",
+              "kms:GenerateDataKey*",
+              "kms:DescribeKey",
+            ],
+            Resource: "*",
+          },
+          {
+            Sid: "Allow attachment of persistent resources",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:role/aws-service-role/guardduty.amazonaws.com/AWSServiceRoleForAmazonGuardDuty`,
+            },
+            Action: ["kms:CreateGrant", "kms:ListGrants", "kms:RevokeGrant"],
+            Resource: "*",
+            Condition: {
+              Bool: {
+                "kms:GrantIsForAWSResource": "true",
+              },
+            },
+          },
+        ],
+      },
+    }),
+  },
+  {
     type: "Account",
     group: "Organisations",
     name: "frederic heem",
@@ -80,6 +178,64 @@ exports.createResources = () => [
     properties: ({}) => ({
       Email: "frederic.heem@gmail.com",
       Name: "frederic heem",
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "gc-guardduty-test",
+      Policy: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "Deny non-HTTPS access",
+            Effect: "Deny",
+            Principal: {
+              Service: "guardduty.amazonaws.com",
+            },
+            Action: "s3:*",
+            Resource: "arn:aws:s3:::gc-guardduty-test/*",
+            Condition: {
+              Bool: {
+                "aws:SecureTransport": "false",
+              },
+            },
+          },
+          {
+            Sid: "Deny unencrypted object uploads",
+            Effect: "Deny",
+            Principal: {
+              Service: "guardduty.amazonaws.com",
+            },
+            Action: "s3:PutObject",
+            Resource: "arn:aws:s3:::gc-guardduty-test/*",
+            Condition: {
+              StringNotEquals: {
+                "s3:x-amz-server-side-encryption": "aws:kms",
+              },
+            },
+          },
+          {
+            Sid: "Allow PutObject",
+            Effect: "Allow",
+            Principal: {
+              Service: "guardduty.amazonaws.com",
+            },
+            Action: "s3:PutObject",
+            Resource: "arn:aws:s3:::gc-guardduty-test/*",
+          },
+          {
+            Sid: "Allow GetBucketLocation",
+            Effect: "Allow",
+            Principal: {
+              Service: "guardduty.amazonaws.com",
+            },
+            Action: "s3:GetBucketLocation",
+            Resource: "arn:aws:s3:::gc-guardduty-test",
+          },
+        ],
+      },
     }),
   },
 ];

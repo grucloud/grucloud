@@ -1,4 +1,13 @@
-const { pipe, tap, flatMap, filter, eq, get, map } = require("rubico");
+const {
+  pipe,
+  tap,
+  flatMap,
+  filter,
+  eq,
+  get,
+  map,
+  switchCase,
+} = require("rubico");
 const {
   find,
   includes,
@@ -7,10 +16,23 @@ const {
   unless,
   isEmpty,
   isIn,
+  filterOut,
 } = require("rubico/x");
 
 const assert = require("assert");
 const AwsServicesAvailability = require("./AwsServicesAvailability.json");
+
+const defaultExcludes = [
+  //"ACMPCA",
+  //"Appflow",
+  //"AppMesh",
+  //"CloudHSMV2",
+  "IVS",
+  "Isvchat",
+  "MediaConvert",
+];
+
+const defaultIncludes = ["IAM", "CloudWatchLogs"];
 
 const GROUPS = [
   ["Account", "account"],
@@ -24,6 +46,7 @@ const GROUPS = [
   ["AppMesh", "appmesh"],
   ["AppRunner", "apprunner"],
   ["ApplicationAutoScaling", "application-autoscaling"],
+  ["ApplicationInsights", "application-insights"],
   ["Appflow", "appflow"],
   ["AppStream", "appstream"],
   ["AppSync", "appsync"],
@@ -37,18 +60,20 @@ const GROUPS = [
   ["CodeDeploy", "codedeploy"],
   ["CodePipeline", "codepipeline"],
   ["CodeStarConnections", "codestar-connections"],
-  ["ConfigService", "config"],
+  ["Config", "config"],
   ["CloudFront", "cloudfront"],
   ["CloudFormation", "cloudformation"],
   ["CloudHSMV2", "cloudhsmv2"],
   ["CloudTrail", "cloudtrail"],
   ["CloudWatch", "cloudwatch"],
   ["CloudWatchEvents", "cloudwatch"],
-  ["CognitoIdentity", "cognito-identity"],
+  ["Cognito", "cognito-identity"],
   ["CognitoIdentityServiceProvider", "cognito-idp"],
   ["ControlTower", "controltower"],
   ["CostExplorer", "costexplorer"],
   ["CUR", "cur"],
+  ["DataSync", "datasync"],
+  ["DAX", "dax"],
   ["DirectConnect", "directconnect"],
   ["DMS", "dms"],
   ["DynamoDB", "dynamodb"],
@@ -67,7 +92,7 @@ const GROUPS = [
   ["FSx", "fsx"],
   ["Imagebuilder", "imagebuilder"],
   ["IVS", "ivs"],
-  //["Ivschat", "ivschat"],
+  ["Ivschat", "ivschat"],
   ["GuardDuty", "guardduty"],
   ["Glue", "glue"],
   ["Grafana", "grafana"],
@@ -160,10 +185,11 @@ const excludeGroups = ({ config: { includeGroups = [] } }) =>
     tap((params) => {
       assert(true);
     }),
-    unless(
+    switchCase([
       () => isEmpty(includeGroups),
-      filter(isIn(["IAM", "CloudWatchLogs", ...includeGroups]))
-    ),
+      filterOut(isIn(defaultExcludes)),
+      filter(isIn([...defaultIncludes, ...includeGroups])),
+    ]),
   ]);
 
 exports.fnSpecs = (config) =>

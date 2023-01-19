@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project dax-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ DAX
+++++ ParameterGroup (1)
+++++ SubnetGroup (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+@endmindmap

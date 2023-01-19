@@ -18,8 +18,10 @@ const {
 const {
   GuardDutyOrganizationConfiguration,
 } = require("./GuardDutyOrganizationConfiguration");
-//const { GuardDutyPublishingDestination } = require("./GuardDutyPublishingDestination");
-//const { GuardDutyThreatIntelSet } = require("./GuardDutyThreatIntelSet");
+const {
+  GuardDutyPublishingDestination,
+} = require("./GuardDutyPublishingDestination");
+const { GuardDutyThreatIntelSet } = require("./GuardDutyThreatIntelSet");
 
 const GROUP = "GuardDuty";
 
@@ -34,8 +36,8 @@ module.exports = pipe([
     GuardDutyMember({ compare }),
     GuardDutyOrganizationAdminAccount({ compare }),
     GuardDutyOrganizationConfiguration({}),
-    // GuardDutyPublishingDestination({})
-    // GuardDutyThreatIntelSet({})
+    GuardDutyPublishingDestination({}),
+    GuardDutyThreatIntelSet({}),
   ],
   map(
     pipe([

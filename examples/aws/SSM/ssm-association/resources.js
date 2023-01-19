@@ -15,7 +15,7 @@ exports.createResources = () => [
         action: ["configure"],
         mode: ["ec2"],
         optionalConfigurationSource: ["ssm"],
-        optionalOpenTelemetryCollectorConfigurationSource: ["ssm"],
+        //optionalOpenTelemetryCollectorConfigurationSource: ["ssm"],
         optionalRestart: ["yes"],
       },
       ScheduleExpression: "cron(0 */30 * * * ? *)",

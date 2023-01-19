@@ -263,9 +263,8 @@ exports.EC2Subnet = ({ spec, config }) => {
 
   const destroy = client.destroy({
     pickId,
-    preDestroy:
-      ({ endpoint }) =>
-      ({ SubnetId }) =>
+    preDestroy: ({ endpoint }) =>
+      tap(({ SubnetId }) =>
         pipe([
           tap((params) => {
             assert(SubnetId);
@@ -275,7 +274,8 @@ exports.EC2Subnet = ({ spec, config }) => {
             Values: [SubnetId],
           }),
           destroyNetworkInterfaces({ endpoint }),
-        ])(),
+        ])()
+      ),
     method: "deleteSubnet",
     getById,
     ignoreErrorCodes: ["InvalidSubnetID.NotFound"],

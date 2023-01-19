@@ -1,12 +1,17 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick } = require("rubico");
-const { defaultsDeep, append } = require("rubico/x");
+const { pipe, tap, get, assign, pick } = require("rubico");
+const { defaultsDeep, append, identity } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { ignoreErrorCodes } = require("./GuardDutyCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
+
+const {
+  //ignoreErrorCodes,
+  ignoreErrorMessages,
+  Tagger,
+} = require("./GuardDutyCommon");
 
 const pickId = pipe([
   tap(({ DetectorId, IpSetId }) => {
@@ -16,16 +21,37 @@ const pickId = pipe([
   pick(["DetectorId", "IpSetId"]),
 ]);
 
-const decorate = ({ endpoint }) =>
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        tap(({ DetectorId, IpSetId }) => {
+          assert(DetectorId);
+          assert(IpSetId);
+        }),
+        ({ DetectorId, IpSetId }) =>
+          `arn:aws:guardduty:${
+            config.region
+          }:${config.accountId()}:detector/${DetectorId}/ipset/${IpSetId}`,
+      ]),
+    }),
+  ]);
+
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
+    assignArn({ config }),
   ]);
-
-const ignoreErrorMessages = [
-  "The request is rejected because the input detectorId is not owned by the current account",
-];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html
 exports.GuardDutyIPSet = () => ({
@@ -33,34 +59,41 @@ exports.GuardDutyIPSet = () => ({
   package: "guardduty",
   client: "GuardDuty",
   propertiesDefault: {},
-  omitProperties: ["DetectorId", "IpSetId"],
+  omitProperties: ["Arn", "DetectorId", "IpSetId"],
   inferName:
     ({ dependenciesSpec: { detector } }) =>
     ({ Name }) =>
       pipe([
         tap((params) => {
           assert(detector);
+          assert(Name);
         }),
         () => `${detector}::${Name}`,
       ])(),
-  findName: () => (live) =>
-    pipe([
-      () => live,
-      get("DetectorId"),
-      tap((id) => {
-        assert(id);
-      }),
-      lives.getById({
-        type: "Detector",
-        group: "GuardDuty",
-      }),
-      get("name"),
-      tap((name) => {
-        assert(name);
-      }),
-      append("::"),
-      append(live.Name),
-    ])(),
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        tap((params) => {
+          assert(live.Name);
+        }),
+        () => live,
+        get("DetectorId"),
+        tap((id) => {
+          assert(id);
+        }),
+        lives.getById({
+          type: "Detector",
+          group: "GuardDuty",
+          providerName: config.providerName,
+        }),
+        get("name"),
+        tap((name) => {
+          assert(name);
+        }),
+        append("::"),
+        append(live.Name),
+      ])(),
   findId:
     () =>
     ({ DetectorId, Name }) =>
@@ -73,7 +106,7 @@ exports.GuardDutyIPSet = () => ({
       dependencyId: ({ lives, config }) => pipe([get("DetectorId")]),
     },
   },
-  ignoreErrorCodes,
+  //ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#getIPSet-property
   getById: {
     method: "getIPSet",
@@ -96,13 +129,17 @@ exports.GuardDutyIPSet = () => ({
           method: "listIPSets",
           getParam: "IpSetIds",
           config,
-          decorate: () => pipe([(IpSetId) => ({ IpSetId }), getById]),
+          decorate: ({ parent }) =>
+            pipe([
+              (IpSetId) => ({ IpSetId, DetectorId: parent.DetectorId }),
+              getById({}),
+            ]),
         }),
     ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#createIPSets-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#createIPSet-property
   create: {
     method: "createIPSet",
-    pickCreated: ({ payload }) => pipe([() => payload]),
+    pickCreated: ({ payload }) => pipe([identity, defaultsDeep(payload)]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#deleteIPSet-property
   destroy: {
@@ -110,6 +147,10 @@ exports.GuardDutyIPSet = () => ({
     pickId,
     ignoreErrorMessages,
   },
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
   getByName: getByNameCore,
   configDefault: ({
     name,

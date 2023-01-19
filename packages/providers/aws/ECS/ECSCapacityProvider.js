@@ -37,14 +37,16 @@ const cannotBeDeleted = () =>
   pipe([get("name"), isIn(["FARGATE", "FARGATE_SPOT"])]);
 
 const deleteAutoScalingGroup = ({ lives, config }) =>
-  pipe([
-    tap((params) => {
-      assert(lives);
-      assert(config);
-    }),
-    get("autoScalingGroupProvider.autoScalingGroupArn"),
-    destroyAutoScalingGroupById({ lives, config }),
-  ]);
+  tap(
+    pipe([
+      tap((params) => {
+        assert(lives);
+        assert(config);
+      }),
+      get("autoScalingGroupProvider.autoScalingGroupArn"),
+      destroyAutoScalingGroupById({ lives, config }),
+    ])
+  );
 
 exports.ECSCapacityProvider = ({ compare }) => ({
   type: "CapacityProvider",

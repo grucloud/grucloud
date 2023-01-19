@@ -14,13 +14,9 @@ const { defaultsDeep, identity, pluck, isEmpty, unless } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
-const { Tagger } = require("./GuardDutyCommon");
+const { Tagger, ignoreErrorMessages } = require("./GuardDutyCommon");
 
 const defaultName = "detector";
-
-const ignoreErrorMessages = [
-  "The request is rejected because the input detectorId is not owned by the current account",
-];
 
 const buildArn = () =>
   pipe([
@@ -31,10 +27,6 @@ const buildArn = () =>
   ]);
 
 const pickId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-
   tap(({ DetectorId }) => {
     assert(DetectorId);
   }),
@@ -57,9 +49,6 @@ const assignArn = ({ config }) =>
   ]);
 
 const statusToEnable = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   switchCase([
     eq(get("Status"), "ENABLED"),
     () => ({ Enable: true }),
@@ -187,9 +176,6 @@ exports.GuardDutyDetector = () => ({
         pipe([
           () => ({ DetectorId }),
           getById,
-          tap((params) => {
-            assert(true);
-          }),
           switchCase([
             eq(() => index, 0),
             defaultsDeep({ Name: defaultName }),
@@ -211,21 +197,20 @@ exports.GuardDutyDetector = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#deleteDetector-property
   destroy: {
     preDestroy: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(endpoint);
-        }),
-        endpoint().listInvitations,
-        get("Invitations"),
-        pluck("AccountId"),
-        tap((params) => {
-          assert(true);
-        }),
-        unless(
-          isEmpty,
-          pipe([(AccountIds) => ({ AccountIds }), endpoint().deleteInvitations])
-        ),
-      ]),
+      tap(
+        pipe([
+          endpoint().listInvitations,
+          get("Invitations"),
+          pluck("AccountId"),
+          unless(
+            isEmpty,
+            pipe([
+              (AccountIds) => ({ AccountIds }),
+              endpoint().deleteInvitations,
+            ])
+          ),
+        ])
+      ),
     method: "deleteDetector",
     pickId,
     ignoreErrorMessages,

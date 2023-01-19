@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project guardduty-invitations
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ GuardDuty
+++++ Detector (1)
+++++ Member (1)
+++++ OrganizationAdminAccount (1)
+++++ OrganizationConfiguration (1)
++++ Organisations
+++++ Account (2)
+-- aws-secondary
+
+@endmindmap

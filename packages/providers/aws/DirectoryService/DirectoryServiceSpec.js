@@ -13,7 +13,9 @@ const { DirectoryServiceDirectory } = require("./DirectoryServiceDirectory");
 //   DirectoryServiceLogSubscription,
 // } = require("./DirectoryServiceLogSubscription");
 //const { DirectoryServiceRegion } = require("./DirectoryServiceRegion");
-//const { DirectoryServiceSharedDirectory } = require("./DirectoryServiceSharedDirectory");
+const {
+  DirectoryServiceSharedDirectory,
+} = require("./DirectoryServiceSharedDirectory");
 //const { DirectoryServiceSharedDirectoryAccepter } = require("./DirectoryServiceSharedDirectoryAccepter");
 
 const GROUP = "DirectoryService";
@@ -26,7 +28,7 @@ module.exports = pipe([
     DirectoryServiceDirectory({ compare }),
     // DirectoryServiceLogSubscription({})
     // DirectoryServiceRegion({})
-    // DirectoryServiceSharedDirectory({})
+    DirectoryServiceSharedDirectory({}),
     // DirectoryServiceSharedDirectoryAccepter({})
   ],
   map(

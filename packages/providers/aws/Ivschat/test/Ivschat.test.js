@@ -3,10 +3,13 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe.skip("IvschatRoom", async function () {
+const config = () => ({ includeGroups: ["Ivschat"] });
+
+describe("IvschatRoom", async function () {
   it("LoggingConfiguration", () =>
     pipe([
       () => ({
+        config,
         groupType: "Ivschat::LoggingConfiguration",
         livesNotFound: ({ config }) => [
           {
@@ -21,6 +24,7 @@ describe.skip("IvschatRoom", async function () {
   it("Room", () =>
     pipe([
       () => ({
+        config,
         groupType: "Ivschat::Room",
         livesNotFound: ({ config }) => [
           {

@@ -11,13 +11,14 @@ const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
 const { SESV2ConfigurationSet } = require("./SESV2ConfigurationSet");
+const { SESV2DedicatedIpPool } = require("./SESV2DedicatedIpPool");
 
 const { SESV2EmailIdentity } = require("./SESV2EmailIdentity");
 
 module.exports = pipe([
   () => [
-    //
     SESV2ConfigurationSet({}),
+    SESV2DedicatedIpPool({}),
     SESV2EmailIdentity({}),
   ],
   map(

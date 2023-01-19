@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick } = require("rubico");
+const { pipe, tap, get, eq, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -15,11 +15,13 @@ const pickId = pipe([
   ({ AccountId, DetectorId }) => ({ AccountIds: [AccountId], DetectorId }),
 ]);
 
-const decorate = ({ endpoint }) =>
+const decorate = ({ endpoint, live }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
+    ({ DetectorId, ...other }) => ({ ...other, DetectorIdMember: DetectorId }),
+    assign({ DetectorId: () => live.DetectorId }),
   ]);
 
 const ignoreErrorMessages = [
@@ -34,12 +36,15 @@ exports.GuardDutyMember = () => ({
   client: "GuardDuty",
   propertiesDefault: {},
   omitProperties: [
+    "DetectorId",
+    "DetectorIdMember",
     "AccountId",
     "AdministratorId",
     "MasterId",
     "MemberStatus",
     "UpdatedAt",
     "InvitedAt",
+    "RelationshipStatus",
   ],
   inferName:
     ({ dependenciesSpec: { account } }) =>
@@ -59,6 +64,7 @@ exports.GuardDutyMember = () => ({
       lives.getById({
         type: "Account",
         group: "Organisations",
+        providerName: config.providerName,
       }),
       get("name"),
       tap((name) => {
@@ -83,7 +89,13 @@ exports.GuardDutyMember = () => ({
       type: "Detector",
       group: "GuardDuty",
       parent: true,
-      dependencyId: ({ lives, config }) => pipe([get("DetectorId")]),
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("DetectorId"),
+          tap((DetectorId) => {
+            assert(DetectorId);
+          }),
+        ]),
     },
   },
   ignoreErrorCodes,
@@ -105,7 +117,8 @@ exports.GuardDutyMember = () => ({
           method: "listMembers",
           getParam: "Members",
           config,
-          decorate,
+          decorate: ({ endpoint, parent }) =>
+            decorate({ endpoint, live: parent }),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#createMembers-property
@@ -120,9 +133,9 @@ exports.GuardDutyMember = () => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#deleteMembers-property
   destroy: {
-    method: "deleteMembers",
+    method: "disassociateMembers",
     pickId,
-    isInstanceDown: pipe([eq(get("MemberStatus"), "removed")]),
+    isInstanceDown: pipe([eq(get("RelationshipStatus"), "Removed")]),
     ignoreErrorMessages,
   },
   getByName: getByNameCore,

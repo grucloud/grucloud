@@ -1,121 +1,115 @@
 const assert = require("assert");
-const { map, pipe, tap, get, not, pick, assign } = require("rubico");
+const { pipe, tap, get, omit, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 
-const { getNewCallerReference } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
-const {
-  createCloudFront,
-  tagResource,
-  untagResource,
-} = require("./CloudFrontCommon");
-const ignoreErrorCodes = ["NoSuchCloudFrontOriginAccessIdentity"];
+const { Tagger, getNewCallerReference } = require("../AwsCommon");
 
-const findName = () =>
+const decorate = ({ endpoint, live }) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(live);
+      assert(live.Id);
     }),
-    get(
-      "CloudFrontOriginAccessIdentity.CloudFrontOriginAccessIdentityConfig.Comment"
-    ),
-    tap((Comment) => {
-      assert(Comment);
-    }),
+    defaultsDeep({ Id: live.Id }),
+    omitIfEmpty(["CloudFrontOriginAccessIdentityConfig.Comment"]),
   ]);
-
-const findId = () =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    get("CloudFrontOriginAccessIdentity.Id"),
-    tap((Id) => {
-      assert(Id);
-    }),
-  ]);
-
-const pickId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  get("CloudFrontOriginAccessIdentity"),
-  pick(["Id"]),
-  tap((Id) => {
-    assert(Id);
-  }),
-]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
-exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
-  const cloudFront = createCloudFront(config);
-  const client = AwsClient({ spec, config })(cloudFront);
-
+exports.CloudFrontOriginAccessIdentity = ({ compare }) => ({
+  type: "OriginAccessIdentity",
+  package: "cloudfront",
+  client: "CloudFront",
+  // inferName: () =>
+  //   pipe([
+  //     get("CloudFrontOriginAccessIdentityConfig.Comment"),
+  //     tap((name) => {
+  //       assert(name);
+  //     }),
+  //   ]),
+  filterLive: ({ lives }) => pipe([pick([])]),
+  findName: () =>
+    pipe([
+      get("CloudFrontOriginAccessIdentityConfig.Comment"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("Id"),
+      tap((Id) => {
+        assert(Id);
+      }),
+    ]),
+  ignoreErrorCodes: [
+    "NoSuchCloudFrontOriginAccessIdentity",
+    "InvalidIfMatchVersion",
+  ],
+  omitProperties: [
+    "Id",
+    "Type",
+    "ETag",
+    "LastModifiedTime",
+    "CloudFrontOriginAccessIdentityConfig.CallerReference",
+  ],
+  compare: compare({}),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#getCloudFrontOriginAccessIdentity-property
-  const getById = client.getById({
-    pickId,
-    method: "getCloudFrontOriginAccessIdentity",
-    ignoreErrorCodes,
-  });
-
+  getById: {
+    method: "getCloudFrontOriginAccessIdentityConfig",
+    decorate,
+    pickId: pipe([
+      tap(({ Id }) => {
+        assert(Id);
+      }),
+      pick(["Id"]),
+    ]),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listCloudFrontOriginAccessIdentities-property
-  const getList = client.getList({
+  getList: {
     method: "listCloudFrontOriginAccessIdentities",
     getParam: "CloudFrontOriginAccessIdentityList.Items",
-    decorate: () =>
+    decorate: ({ getById }) => pipe([getById]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createCloudFrontOriginAccessIdentity-property
+  create: {
+    method: "createCloudFrontOriginAccessIdentity",
+    pickCreated: ({ payload }) => pipe([get("CloudFrontOriginAccessIdentity")]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#updateCloudFrontOriginAccessIdentity-property
+  update: {
+    method: "updateCloudFrontOriginAccessIdentity",
+    filterParams: ({ payload, live }) =>
       pipe([
+        () => payload,
+        //TODO
+        //omit(["CloudFrontOriginAccessIdentityConfig.Name"]),
+        defaultsDeep({ Id: live.Id, IfMatch: live.ETag }),
         tap((params) => {
           assert(true);
         }),
-        ({ Id }) => ({ CloudFrontOriginAccessIdentity: { Id } }),
-        getById({}),
-      ]),
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createCloudFrontOriginAccessIdentity-property
-  const create = client.create({
-    method: "createCloudFrontOriginAccessIdentity",
-    getById,
-  });
-
+      ])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#deleteCloudFrontOriginAccessIdentity-property
-  const destroy = client.destroy({
-    pickId: pipe([
-      ({ ETag, CloudFrontOriginAccessIdentity: { Id } }) => ({
-        Id,
-        IfMatch: ETag,
-      }),
-    ]),
+  destroy: {
     method: "deleteCloudFrontOriginAccessIdentity",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const configDefault = ({ name, properties, dependencies: {} }) =>
+    pickId: pipe([
+      tap(({ Id, ETag }) => {
+        assert(Id);
+        assert(ETag);
+      }),
+      ({ Id, ETag }) => ({ Id, IfMatch: ETag }),
+    ]),
+  },
+  getByName: getByNameCore,
+  configDefault: ({ name, namespace, properties }) =>
     pipe([
       () => properties,
       defaultsDeep({
         CloudFrontOriginAccessIdentityConfig: {
-          CallerReference: getNewCallerReference(),
           Comment: name,
+          CallerReference: getNewCallerReference(),
         },
       }),
-    ])();
-
-  return {
-    spec,
-    findId,
-    getByName,
-    getById,
-    findName,
-    create,
-    destroy,
-    getList,
-    configDefault,
-    tagResource: tagResource({ cloudFront }),
-    untagResource: untagResource({ cloudFront }),
-  };
-};
+    ])(),
+});

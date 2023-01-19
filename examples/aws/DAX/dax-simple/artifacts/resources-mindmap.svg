@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="285px" preserveAspectRatio="none" style="width:475px;height:285px;background:#FFFFFF;" version="1.1" viewBox="0 0 475 285" width="475px" zoomAndPan="magnify"><defs/><g><rect height="26.4883" style="stroke:#00000000;stroke-width:1.0;fill:none;" width="252" x="85" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="242" x="90" y="33.5352">Resources for project dax-simple</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="52" x="10" y="142.2207"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="20" y="165.7559">Infra</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="112" y="142.2207"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="122" y="165.7559">aws</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="49" x="208" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29" x="218" y="109.2676">DAX</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="156" x="307" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136" x="317" y="81.0234">ParameterGroup (1)</text><path d="M257,103.9766 L267,103.9766 C282,103.9766 282,75.7324 297,75.7324 L307,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="134" x="307" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="114" x="317" y="137.5117">SubnetGroup (1)</text><path d="M257,103.9766 L267,103.9766 C282,103.9766 282,132.2207 297,132.2207 L307,132.2207 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,160.4648 L168,160.4648 C183,160.4648 183,103.9766 198,103.9766 L208,103.9766 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="47" x="208" y="198.709"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="27" x="218" y="222.2441">EC2</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="68" x="305" y="170.4648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="48" x="315" y="194">Vpc (1)</text><path d="M255,216.9531 L265,216.9531 C280,216.9531 280,188.709 295,188.709 L305,188.709 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="91" x="305" y="226.9531"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="71" x="315" y="250.4883">Subnet (2)</text><path d="M255,216.9531 L265,216.9531 C280,216.9531 280,245.1973 295,245.1973 L305,245.1973 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,160.4648 L168,160.4648 C183,160.4648 183,216.9531 198,216.9531 L208,216.9531 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M62,160.4648 L72,160.4648 C87,160.4648 87,160.4648 102,160.4648 L112,160.4648 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><!--MD5=[d6b94808de31ab9253c8824c86553ec1]
+@startmindmap
+title Resources for project dax-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ DAX
+++++ ParameterGroup (1)
+++++ SubnetGroup (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+@endmindmap
+
+PlantUML version 1.2022.6(Tue Jun 21 12:34:49 COT 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

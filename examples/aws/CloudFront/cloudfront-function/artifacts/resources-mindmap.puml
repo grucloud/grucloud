@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project cloudfront-function
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudFront
+++++ Function (1)
+@endmindmap

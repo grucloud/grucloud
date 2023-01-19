@@ -24,12 +24,14 @@ List of resources for provider aws:
 [Flow](./resources/Appflow/Flow.md), [ConnectorProfile](./resources/Appflow/ConnectorProfile.md)
 * ApplicationAutoScaling: 
 [Policy](./resources/ApplicationAutoScaling/Policy.md), [Target](./resources/ApplicationAutoScaling/Target.md)
+* ApplicationInsights: 
+[Application](./resources/ApplicationInsights/Application.md)
 * AppMesh: 
 [GatewayRoute](./resources/AppMesh/GatewayRoute.md), [Mesh](./resources/AppMesh/Mesh.md), [Route](./resources/AppMesh/Route.md), [VirtualGateway](./resources/AppMesh/VirtualGateway.md), [VirtualNode](./resources/AppMesh/VirtualNode.md), [VirtualRouter](./resources/AppMesh/VirtualRouter.md), [VirtualService](./resources/AppMesh/VirtualService.md)
 * AppRunner: 
 [AutoScalingConfiguration](./resources/AppRunner/AutoScalingConfiguration.md), [CustomDomain](./resources/AppRunner/CustomDomain.md), [Connection](./resources/AppRunner/Connection.md), [ObservabilityConfiguration](./resources/AppRunner/ObservabilityConfiguration.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
 * AppStream: 
-[AppBlock](./resources/AppStream/AppBlock.md), [Application](./resources/AppStream/Application.md), [DirectoryConfig](./resources/AppStream/DirectoryConfig.md), [Fleet](./resources/AppStream/Fleet.md), [ImageBuilder](./resources/AppStream/ImageBuilder.md), [Stack](./resources/AppStream/Stack.md), [User](./resources/AppStream/User.md), [UsageReportSubscription](./resources/AppStream/UsageReportSubscription.md)
+[AppBlock](./resources/AppStream/AppBlock.md), [Application](./resources/AppStream/Application.md), [DirectoryConfig](./resources/AppStream/DirectoryConfig.md), [Entitlement](./resources/AppStream/Entitlement.md), [Fleet](./resources/AppStream/Fleet.md), [ImageBuilder](./resources/AppStream/ImageBuilder.md), [Stack](./resources/AppStream/Stack.md), [User](./resources/AppStream/User.md), [UsageReportSubscription](./resources/AppStream/UsageReportSubscription.md)
 * AppSync: 
 [DataSource](./resources/AppSync/DataSource.md), [Function](./resources/AppSync/Function.md), [GraphqlApi](./resources/AppSync/GraphqlApi.md), [Resolver](./resources/AppSync/Resolver.md)
 * Athena: 
@@ -47,7 +49,7 @@ List of resources for provider aws:
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
 * CloudFront: 
-[CachePolicy](./resources/CloudFront/CachePolicy.md), [Distribution](./resources/CloudFront/Distribution.md), [Function](./resources/CloudFront/Function.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md), [OriginRequestPolicy](./resources/CloudFront/OriginRequestPolicy.md), [ResponseHeadersPolicy](./resources/CloudFront/ResponseHeadersPolicy.md)
+[CachePolicy](./resources/CloudFront/CachePolicy.md), [Distribution](./resources/CloudFront/Distribution.md), [Function](./resources/CloudFront/Function.md), [KeyGroup](./resources/CloudFront/KeyGroup.md), [OriginRequestPolicy](./resources/CloudFront/OriginRequestPolicy.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md), [PublicKey](./resources/CloudFront/PublicKey.md), [ResponseHeadersPolicy](./resources/CloudFront/ResponseHeadersPolicy.md)
 * CloudHSMV2: 
 [Cluster](./resources/CloudHSMV2/Cluster.md), [Hsm](./resources/CloudHSMV2/Hsm.md)
 * CloudTrail: 
@@ -74,10 +76,14 @@ List of resources for provider aws:
 [ConfigRule](./resources/Config/ConfigRule.md), [ConfigurationRecorder](./resources/Config/ConfigurationRecorder.md), [ConfigurationRecorderStatus](./resources/Config/ConfigurationRecorderStatus.md), [ConformancePack](./resources/Config/ConformancePack.md), [DeliveryChannel](./resources/Config/DeliveryChannel.md)
 * ControlTower: 
 [Control](./resources/ControlTower/Control.md)
+* DataSync: 
+[LocationEfs](./resources/DataSync/LocationEfs.md), [LocationFsxLustre](./resources/DataSync/LocationFsxLustre.md), [LocationFsxOpenZfs](./resources/DataSync/LocationFsxOpenZfs.md), [LocationFsxWindows](./resources/DataSync/LocationFsxWindows.md), [LocationS3](./resources/DataSync/LocationS3.md), [Task](./resources/DataSync/Task.md)
+* DAX: 
+[Cluster](./resources/DAX/Cluster.md), [ParameterGroup](./resources/DAX/ParameterGroup.md), [SubnetGroup](./resources/DAX/SubnetGroup.md)
 * DirectConnect: 
 [BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [MacSecKeyAssociation](./resources/DirectConnect/MacSecKeyAssociation.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
 * DMS: 
-[Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
+[Certificate](./resources/DMS/Certificate.md), [Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
 * DynamoDB: 
 [Table](./resources/DynamoDB/Table.md), [KinesisStreamingDestination](./resources/DynamoDB/KinesisStreamingDestination.md)
 * EC2: 
@@ -113,7 +119,7 @@ List of resources for provider aws:
 * Grafana: 
 [Workspace](./resources/Grafana/Workspace.md)
 * GuardDuty: 
-[Detector](./resources/GuardDuty/Detector.md), [Filter](./resources/GuardDuty/Filter.md), [IPSet](./resources/GuardDuty/IPSet.md), [Member](./resources/GuardDuty/Member.md), [OrganizationAdminAccount](./resources/GuardDuty/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/GuardDuty/OrganizationConfiguration.md)
+[Detector](./resources/GuardDuty/Detector.md), [Filter](./resources/GuardDuty/Filter.md), [IPSet](./resources/GuardDuty/IPSet.md), [Member](./resources/GuardDuty/Member.md), [OrganizationAdminAccount](./resources/GuardDuty/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/GuardDuty/OrganizationConfiguration.md), [PublishingDestination](./resources/GuardDuty/PublishingDestination.md), [ThreatIntelSet](./resources/GuardDuty/ThreatIntelSet.md)
 * IAM: 
 [OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
 * IdentityStore: 
@@ -122,8 +128,8 @@ List of resources for provider aws:
 [Component](./resources/Imagebuilder/Component.md), [ContainerRecipe](./resources/Imagebuilder/ContainerRecipe.md), [DistributionConfiguration](./resources/Imagebuilder/DistributionConfiguration.md), [Image](./resources/Imagebuilder/Image.md), [ImagePipeline](./resources/Imagebuilder/ImagePipeline.md), [ImageRecipe](./resources/Imagebuilder/ImageRecipe.md), [InfrastructureConfiguration](./resources/Imagebuilder/InfrastructureConfiguration.md)
 * Inspector2: 
 [DelegatedAdminAccount](./resources/Inspector2/DelegatedAdminAccount.md), [Enabler](./resources/Inspector2/Enabler.md), [OrganizationConfiguration](./resources/Inspector2/OrganizationConfiguration.md)
-* IVS: 
-[Channel](./resources/IVS/Channel.md), [PlaybackKeyPair](./resources/IVS/PlaybackKeyPair.md), [RecordingConfiguration](./resources/IVS/RecordingConfiguration.md)
+* Ivschat: 
+[Room](./resources/Ivschat/Room.md), [LoggingConfiguration](./resources/Ivschat/LoggingConfiguration.md)
 * Kinesis: 
 [Stream](./resources/Kinesis/Stream.md)
 * KMS: 
@@ -157,7 +163,7 @@ List of resources for provider aws:
 * Redshift: 
 [Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md), [EndpointAccess](./resources/Redshift/EndpointAccess.md), [EndpointAuthorization](./resources/Redshift/EndpointAuthorization.md), [UsageLimit](./resources/Redshift/UsageLimit.md)
 * Route53: 
-[HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
+[DelegationSet](./resources/Route53/DelegationSet.md), [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
 * Route53Domains: 
 [Domain](./resources/Route53Domains/Domain.md)
 * Route53RecoveryControlConfig: 
@@ -177,11 +183,11 @@ List of resources for provider aws:
 * SecretsManager: 
 [Secret](./resources/SecretsManager/Secret.md), [SecretRotation](./resources/SecretsManager/SecretRotation.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SecurityHub: 
-[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
+[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [ProductSubscription](./resources/SecurityHub/ProductSubscription.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
 * ServiceQuotas: 
 [ServiceQuota](./resources/ServiceQuotas/ServiceQuota.md)
 * SESV2: 
-[ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md)
+[ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [DedicatedIpPool](./resources/SESV2/DedicatedIpPool.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md)
 * Shield: 
 [Protection](./resources/Shield/Protection.md), [ProtectionGroup](./resources/Shield/ProtectionGroup.md)
 * SNS: 

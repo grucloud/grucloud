@@ -67,6 +67,15 @@ const managedByOther = () =>
 
 const octalReplace = pipe([callProp("replaceAll", "\\052", "*")]);
 
+//Check for the final dot
+const findName = () =>
+  pipe([
+    get("Name"),
+    tap((Name) => {
+      assert(Name);
+    }),
+  ]);
+
 const findId = () =>
   pipe([
     get("HostedZoneId"),
@@ -75,7 +84,12 @@ const findId = () =>
     }),
   ]);
 
-const pickId = pick(["Id"]);
+const pickId = pipe([
+  pick(["Id"]),
+  tap(({ Id }) => {
+    assert(Id);
+  }),
+]);
 
 const canDeleteRecord = (zoneName) =>
   not(
@@ -103,67 +117,77 @@ const findDnsServers = (live) =>
 
 exports.findDnsServers = findDnsServers;
 
-const decorate = ({ endpoint }) =>
-  pipe([
-    tap(({ Id }) => {
-      assert(Id);
-    }),
-    assign({ HostedZoneId: pipe([get("Id"), hostedZoneIdToResourceId]) }),
-    assign({
-      RecordSet: pipe([
-        pick(["HostedZoneId"]),
-        endpoint().listResourceRecordSets,
-        get("ResourceRecordSets"),
-        map(
-          pipe([
-            assign({
-              Name: pipe([get("Name"), octalReplace]),
-            }),
-            when(
-              get("AliasTarget"),
+const decorate =
+  ({ endpoint }) =>
+  ({ DelegationSet, HostedZone }) =>
+    pipe([
+      () => ({ ...HostedZone, DelegationSet }),
+      tap(({ Id }) => {
+        assert(Id);
+      }),
+      assign({ HostedZoneId: pipe([get("Id"), hostedZoneIdToResourceId]) }),
+      assign({
+        RecordSet: pipe([
+          pick(["HostedZoneId"]),
+          endpoint().listResourceRecordSets,
+          get("ResourceRecordSets"),
+          map(
+            pipe([
               assign({
-                AliasTarget: pipe([
-                  get("AliasTarget"),
-                  assign({
-                    DNSName: pipe([get("DNSName"), octalReplace]),
-                  }),
-                ]),
-              })
-            ),
-          ])
-        ),
-      ]),
-      Tags: pipe([
-        ({ HostedZoneId }) => ({
-          ResourceId: HostedZoneId,
-          ResourceType: "hostedzone",
-        }),
-        endpoint().listTagsForResource,
-        get("ResourceTagSet.Tags"),
-      ]),
-    }),
-    ({ Config, ...other }) => ({ ...other, HostedZoneConfig: Config }),
-    // arn:aws:route53:::hostedzone/hosted-zone-id
-    assign({
-      Arn: pipe([
-        ({ HostedZoneId }) => `arn:aws:route53:::hostedzone/${HostedZoneId}`,
-      ]),
-    }),
-  ]);
+                Name: pipe([get("Name"), octalReplace]),
+              }),
+              when(
+                get("AliasTarget"),
+                assign({
+                  AliasTarget: pipe([
+                    get("AliasTarget"),
+                    assign({
+                      DNSName: pipe([get("DNSName"), octalReplace]),
+                    }),
+                  ]),
+                })
+              ),
+            ])
+          ),
+        ]),
+        Tags: pipe([
+          ({ HostedZoneId }) => ({
+            ResourceId: HostedZoneId,
+            ResourceType: "hostedzone",
+          }),
+          endpoint().listTagsForResource,
+          get("ResourceTagSet.Tags"),
+        ]),
+      }),
+      ({ Config, ...other }) => ({ ...other, HostedZoneConfig: Config }),
+      // arn:aws:route53:::hostedzone/hosted-zone-id
+      assign({
+        Arn: pipe([
+          tap(({ HostedZoneId }) => {
+            assert(HostedZoneId);
+          }),
+          ({ HostedZoneId }) => `arn:aws:route53:::hostedzone/${HostedZoneId}`,
+        ]),
+      }),
+    ])();
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53HostedZone = ({ spec, config }) => {
   const route53 = createRoute53(config);
   const route53Domains = createRoute53Domains(config);
   const client = AwsClient({ spec, config })(route53);
 
-  //Check for the final dot
-  const findName = () => get("Name");
+  const getById = client.getById({
+    pickId,
+    method: "getHostedZone",
+    ignoreErrorCodes: ["NoSuchHostedZone"],
+    decorate,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
   const getList = client.getList({
     method: "listHostedZones",
     getParam: "HostedZones",
-    decorate,
+    decorate: () => pipe([getById({})]),
     // When at least one of the hosted zone is private:
     //   Get the list of VPCs
     //   For each VPCs, call listHostedZonesByVPC to get the hosted zones associated to the VPC
@@ -222,11 +246,6 @@ exports.Route53HostedZone = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getHostedZone-property
-  const getById = client.getById({
-    pickId,
-    method: "getHostedZone",
-    ignoreErrorCodes: ["NoSuchHostedZone"],
-  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createHostedZone-property
   const create = ({
@@ -348,9 +367,8 @@ exports.Route53HostedZone = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
   const destroy = client.destroy({
     pickId,
-    preDestroy:
-      ({ endpoint }) =>
-      (live) =>
+    preDestroy: ({ endpoint }) =>
+      tap((live) =>
         pipe([
           () => live,
           ({ Id: HostedZoneId }) =>
@@ -381,7 +399,8 @@ exports.Route53HostedZone = ({ spec, config }) => {
                 })
               ),
             ])(),
-        ])(),
+        ])()
+      ),
     method: "deleteHostedZone",
     getById,
     ignoreErrorCodes: ["NoSuchHostedZone"],
@@ -460,7 +479,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
     name,
     properties: { Tags, ...otherProp },
     namespace,
-    dependencies: { vpc },
+    dependencies: { vpc, delegationSet },
   }) =>
     pipe([
       () => otherProp,
@@ -478,6 +497,10 @@ exports.Route53HostedZone = ({ spec, config }) => {
         defaultsDeep({
           VPC: { VPCId: getField(vpc, "VpcId"), VPCRegion: config.region },
         })
+      ),
+      when(
+        () => delegationSet,
+        defaultsDeep({ DelegationSetId: getField(delegationSet, "Id") })
       ),
       tap((params) => {
         assert(true);

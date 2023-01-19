@@ -4,5 +4,6 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ DMS
+++++ Certificate (1)
 ++++ Endpoint (1)
 @endmindmap

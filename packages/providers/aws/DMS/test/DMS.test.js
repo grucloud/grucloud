@@ -4,11 +4,17 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("DMS", async function () {
-  it.skip("Certificate", () =>
+  it("Certificate", () =>
     pipe([
       () => ({
         groupType: "DMS::Certificate",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            CertificateArn: `arn:aws:dms:${
+              config.region
+            }:${config.accountId()}:cert:HDKU4NY5ETEZGOZZRMVURZALVJVWBSRJMUQHIIA`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

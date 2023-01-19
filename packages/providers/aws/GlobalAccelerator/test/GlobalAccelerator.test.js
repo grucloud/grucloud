@@ -16,6 +16,42 @@ describe("GlobalAccelerator", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("CustomRoutingAccelerator", () =>
+    pipe([
+      () => ({
+        groupType: "GlobalAccelerator::CustomRoutingAccelerator",
+        livesNotFound: ({ config }) => [
+          {
+            // AcceleratorArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/123`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("CustomRoutingEndpointGroup", () =>
+    pipe([
+      () => ({
+        groupType: "GlobalAccelerator::CustomRoutingEndpointGroup",
+        livesNotFound: ({ config }) => [
+          {
+            // AcceleratorArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/123`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("CustomRoutingListener", () =>
+    pipe([
+      () => ({
+        groupType: "GlobalAccelerator::CustomRoutingListener",
+        livesNotFound: ({ config }) => [
+          {
+            // AcceleratorArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/123`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("EndpointGroup", () =>
     pipe([
       () => ({

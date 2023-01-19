@@ -65,9 +65,8 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#deleteComputeEnvironment-property
   destroy: {
-    preDestroy:
-      ({ endpoint, getById }) =>
-      (live) =>
+    preDestroy: ({ endpoint, getById }) =>
+      tap((live) =>
         pipe([
           () => live,
           unless(
@@ -89,7 +88,8 @@ const model = ({ config }) => ({
                 }),
             ])
           ),
-        ])(),
+        ])()
+      ),
     method: "deleteComputeEnvironment",
     pickId: ({ computeEnvironmentName }) => ({
       computeEnvironment: computeEnvironmentName,

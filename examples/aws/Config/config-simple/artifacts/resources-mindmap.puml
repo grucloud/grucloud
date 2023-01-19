@@ -6,6 +6,7 @@ skinparam monochrome true
 +++ Config
 ++++ ConfigurationRecorder (1)
 ++++ ConfigurationRecorderStatus (1)
+++++ ConformancePack (1)
 ++++ DeliveryChannel (1)
 +++ S3
 ++++ Bucket (1)

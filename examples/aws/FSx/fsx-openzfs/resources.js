@@ -64,4 +64,46 @@ exports.createResources = () => [
       subnets: ["vpc-default::subnet-default-b"],
     }),
   },
+  {
+    type: "Volume",
+    group: "FSx",
+    properties: ({}) => ({
+      Name: "fsx",
+      OpenZFSConfiguration: {
+        CopyTagsToSnapshots: false,
+        DataCompressionType: "NONE",
+        NfsExports: [
+          {
+            ClientConfigurations: [
+              {
+                Clients: "*",
+                Options: ["rw", "crossmnt"],
+              },
+            ],
+          },
+        ],
+        ReadOnly: false,
+        RecordSizeKiB: 128,
+        StorageCapacityQuotaGiB: 64,
+        StorageCapacityReservationGiB: 0,
+        UserAndGroupQuotas: [
+          {
+            Id: 0,
+            StorageCapacityQuotaGiB: 0,
+            Type: "USER",
+          },
+          {
+            Id: 0,
+            StorageCapacityQuotaGiB: 0,
+            Type: "GROUP",
+          },
+        ],
+        VolumePath: "/fsx",
+      },
+      VolumeType: "OPENZFS",
+    }),
+    dependencies: ({}) => ({
+      fileSystem: "my-openzfs",
+    }),
+  },
 ];

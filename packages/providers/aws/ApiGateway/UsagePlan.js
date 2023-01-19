@@ -48,9 +48,8 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteUsagePlan-property
   destroy: {
-    preDestroy:
-      ({ endpoint }) =>
-      (live) =>
+    preDestroy: ({ endpoint }) =>
+      tap((live) =>
         pipe([
           () => live,
           get("apiStages"),
@@ -69,7 +68,8 @@ const model = ({ config }) => ({
               endpoint().updateUsagePlan,
             ])
           ),
-        ])(),
+        ])()
+      ),
     method: "deleteUsagePlan",
     pickId,
   },

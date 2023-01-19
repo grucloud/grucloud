@@ -38,6 +38,11 @@ const decorate = ({ endpoint, config }) =>
         defaultsDeep({ ClusterType: "single-node" }),
       ])
     ),
+    ({ AvailabilityZoneRelocationStatus, ...other }) => ({
+      AvailabilityZoneRelocation:
+        AvailabilityZoneRelocationStatus == "enabled" ? true : false,
+      ...other,
+    }),
   ]);
 
 exports.RedshiftCluster = ({ compare }) => ({
@@ -49,7 +54,7 @@ exports.RedshiftCluster = ({ compare }) => ({
   findId: () => pipe([get("ClusterIdentifier")]),
   environmentVariables,
   propertiesDefault: {
-    AvailabilityZoneRelocationStatus: "disabled",
+    AvailabilityZoneRelocation: false,
     PreferredMaintenanceWindow: "wed:04:30-wed:05:00",
     AutomatedSnapshotRetentionPeriod: 1,
     ManualSnapshotRetentionPeriod: -1,
@@ -224,7 +229,20 @@ exports.RedshiftCluster = ({ compare }) => ({
           ]),
           pipe([
             () => payload,
-            pick(["NumberOfNodes", "NodeType", "ClusterIdentifier"]),
+            pick([
+              "NumberOfNodes",
+              "NodeType",
+              "ClusterIdentifier",
+              "AvailabilityZoneRelocation",
+            ]),
+            endpoint().modifyCluster,
+          ])
+        ),
+        tap.if(
+          or([get("liveDiff.updated.AvailabilityZoneRelocation")]),
+          pipe([
+            () => payload,
+            pick(["ClusterIdentifier", "AvailabilityZoneRelocation"]),
             endpoint().modifyCluster,
           ])
         ),

@@ -1609,7 +1609,7 @@ module.exports = pipe([
               ]),
             }),
           ]),
-        filterAll: () => pipe([omit(["VpcId", "OwnerId", "GroupId"])]),
+        filterAll: () => pipe([omit(["Arn", "VpcId", "OwnerId", "GroupId"])]),
       }),
       filterLive: () => pick(["GroupName", "Description"]),
       inferName:

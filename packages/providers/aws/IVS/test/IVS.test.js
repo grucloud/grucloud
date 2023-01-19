@@ -3,10 +3,13 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
+const config = () => ({ includeGroups: ["IVS"] });
+
 describe("IVS", async function () {
   it("Channel", () =>
     pipe([
       () => ({
+        config,
         groupType: "IVS::Channel",
         livesNotFound: ({ config }) => [
           {
@@ -21,6 +24,7 @@ describe("IVS", async function () {
   it.skip("PlaybackKeyPair", () =>
     pipe([
       () => ({
+        config,
         groupType: "IVS::PlaybackKeyPair",
         livesNotFound: ({ config }) => [
           {
@@ -35,6 +39,7 @@ describe("IVS", async function () {
   it("RecordingConfiguration", () =>
     pipe([
       () => ({
+        config,
         groupType: "IVS::RecordingConfiguration",
         livesNotFound: ({ config }) => [
           {
@@ -46,12 +51,4 @@ describe("IVS", async function () {
       }),
       awsResourceTest,
     ])());
-  // it.skip("Room", () =>
-  //   pipe([
-  //     () => ({
-  //       groupType: "IVS::Room",
-  //       livesNotFound: ({ config }) => [{}],
-  //     }),
-  //     awsResourceTest,
-  //   ])());
 });

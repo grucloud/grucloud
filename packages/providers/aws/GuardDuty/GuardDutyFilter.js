@@ -5,7 +5,7 @@ const { defaultsDeep, append } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { ignoreErrorCodes } = require("./GuardDutyCommon");
+const { ignoreErrorMessages } = require("./GuardDutyCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
 const pickId = pipe([
@@ -24,10 +24,6 @@ const decorate = ({ endpoint }) =>
     ({ Name, ...other }) => ({ FilterName: Name, ...other }),
   ]);
 
-const ignoreErrorMessages = [
-  "The request is rejected because the input detectorId is not owned by the current account",
-];
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html
 exports.GuardDutyFilter = () => ({
   type: "Filter",
@@ -44,24 +40,27 @@ exports.GuardDutyFilter = () => ({
         }),
         () => `${detector}::${FilterName}`,
       ])(),
-  findName: () => (live) =>
-    pipe([
-      () => live,
-      get("DetectorId"),
-      tap((id) => {
-        assert(id);
-      }),
-      lives.getById({
-        type: "Detector",
-        group: "GuardDuty",
-      }),
-      get("name"),
-      tap((name) => {
-        assert(name);
-      }),
-      append("::"),
-      append(live.FilterName),
-    ])(),
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        get("DetectorId"),
+        tap((id) => {
+          assert(id);
+        }),
+        lives.getById({
+          type: "Detector",
+          group: "GuardDuty",
+          providerName: config.providerName,
+        }),
+        get("name"),
+        tap((name) => {
+          assert(name);
+        }),
+        append("::"),
+        append(live.FilterName),
+      ])(),
   findId:
     () =>
     ({ DetectorId, FilterName }) =>
@@ -74,7 +73,7 @@ exports.GuardDutyFilter = () => ({
       dependencyId: ({ lives, config }) => pipe([get("DetectorId")]),
     },
   },
-  ignoreErrorCodes,
+  //ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#getFilter-property
   getById: {
     method: "getFilter",

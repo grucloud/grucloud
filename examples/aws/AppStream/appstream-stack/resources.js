@@ -4,6 +4,23 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Entitlement",
+    group: "AppStream",
+    properties: ({}) => ({
+      AppVisibility: "ALL",
+      Attributes: [
+        {
+          Name: "costCenter",
+          Value: "gc",
+        },
+      ],
+      Name: "my-entitlement",
+    }),
+    dependencies: ({}) => ({
+      stack: "stack",
+    }),
+  },
+  {
     type: "Fleet",
     group: "AppStream",
     properties: ({}) => ({
@@ -30,7 +47,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       ApplicationSettings: {
         Enabled: false,
-        SettingsGroup: "stack",
       },
       Name: "stack",
       StorageConnectors: [

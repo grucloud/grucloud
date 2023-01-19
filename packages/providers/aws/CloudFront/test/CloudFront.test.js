@@ -11,8 +11,10 @@ describe("CloudFront", async function () {
         livesNotFound: ({ config }) => [
           {
             Id: "A123456789",
+            ETag: "E123456",
           },
         ],
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());
@@ -30,7 +32,7 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Function", () =>
+  it("Function", () =>
     pipe([
       () => ({
         groupType: "CloudFront::Function",
@@ -42,14 +44,15 @@ describe("CloudFront", async function () {
           },
         ],
         skipGetById: true,
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
-  it.skip("KeyGroup", () =>
+  it("KeyGroup", () =>
     pipe([
       () => ({
         groupType: "CloudFront::KeyGroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "123", ETag: "E123456" }],
         skipGetById: true,
       }),
       awsResourceTest,
@@ -61,7 +64,7 @@ describe("CloudFront", async function () {
         livesNotFound: ({ config }) => [
           {
             ETag: "ETVPDKIKX0DER",
-            CloudFrontOriginAccessIdentity: { Id: "a123s" },
+            Id: "a123s",
           },
         ],
       }),
@@ -80,7 +83,14 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
-  //
+  it("PublicKey", () =>
+    pipe([
+      () => ({
+        groupType: "CloudFront::PublicKey",
+        livesNotFound: ({ config }) => [{ Id: "123", ETag: "E123456" }],
+      }),
+      awsResourceTest,
+    ])());
   it("ResponseHeadersPolicy", () =>
     pipe([
       () => ({

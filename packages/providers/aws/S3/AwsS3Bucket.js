@@ -69,9 +69,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       pipe([
         () => params,
         s3().getBucketAccelerateConfiguration,
-        tap((params) => {
-          assert(true);
-        }),
         when(isEmpty, () => undefined),
       ]),
       (error) => {
@@ -334,6 +331,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
               name: `get s3 properties ${name}`,
               fn: fork({
                 Name: () => name,
+                Arn: () => `arn:aws:s3:::${name}`,
                 ...(getTags && { Tags: getBucketTagging(params) }),
                 ...(deep && {
                   AccelerateConfiguration: getAccelerateConfiguration({
@@ -678,6 +676,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         throw error;
       }),
       () => diff.liveDiff.updated,
+      tryCatch(updateProperties(payload), (error) => {
+        throw error;
+      }),
+      () => diff.liveDiff.deleted,
       tryCatch(updateProperties(payload), (error) => {
         throw error;
       }),

@@ -121,20 +121,26 @@ exports.AppConfigConfigurationProfile = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#deleteConfigurationProfile-property
   destroy: {
     preDestroy: ({ endpoint }) =>
-      pipe([
-        ({ Id, ApplicationId }) => ({
-          ConfigurationProfileId: Id,
-          ApplicationId,
-        }),
-        endpoint().listHostedConfigurationVersions,
-        get("Items"),
-        map(
-          pipe([
-            pick(["VersionNumber", "ApplicationId", "ConfigurationProfileId"]),
-            endpoint().deleteHostedConfigurationVersion,
-          ])
-        ),
-      ]),
+      tap(
+        pipe([
+          ({ Id, ApplicationId }) => ({
+            ConfigurationProfileId: Id,
+            ApplicationId,
+          }),
+          endpoint().listHostedConfigurationVersions,
+          get("Items"),
+          map(
+            pipe([
+              pick([
+                "VersionNumber",
+                "ApplicationId",
+                "ConfigurationProfileId",
+              ]),
+              endpoint().deleteHostedConfigurationVersion,
+            ])
+          ),
+        ])
+      ),
     method: "deleteConfigurationProfile",
     pickId,
   },

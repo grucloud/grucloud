@@ -28,12 +28,16 @@ describe("DirectoryService", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("SharedDirectory", () =>
+  it("SharedDirectory", () =>
     pipe([
       () => ({
         groupType: "DirectoryService::SharedDirectory",
         livesNotFound: ({ config }) => [
-          { DirectoryId: "d123", ShareTarget: { Id: "123456789012" } },
+          {
+            OwnerDirectoryId: "d-1234567890",
+            SharedAccountId: "123456789012",
+            SharedDirectoryId: "d-1234567891",
+          },
         ],
       }),
       awsResourceTest,

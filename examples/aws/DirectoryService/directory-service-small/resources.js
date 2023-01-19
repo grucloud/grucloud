@@ -10,6 +10,7 @@ exports.createResources = () => [
       Name: "grucloud.org",
       ShortName: "grucloud",
       Size: "Small",
+      Type: "SimpleAD",
       Password: process.env.GRUCLOUD_ORG_PASSWORD,
     }),
     dependencies: ({}) => ({

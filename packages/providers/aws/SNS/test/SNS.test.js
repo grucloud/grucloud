@@ -18,4 +18,18 @@ describe("SNS", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("PlatformApplication", () =>
+    pipe([
+      () => ({
+        groupType: "SNS::Topic",
+        livesNotFound: ({ config }) => [
+          {
+            // Attributes: {
+            //   TopicArn: `arn:aws:sns:us-east-1:${config.accountId()}:idnonotexist`,
+            // },
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });

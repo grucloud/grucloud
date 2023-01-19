@@ -1,14 +1,20 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map, omit } = require("rubico");
+const { pipe, tap, get, pick, eq, or } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./FSxCommon");
+const { Tagger, assignTags } = require("./FSxCommon");
 
-const managedByOther = () => pipe([eq(get("Name"), "fsx_root")]);
+const managedByOther = () =>
+  pipe([
+    or([
+      eq(get("Name"), "fsx_root"),
+      eq(get("OpenZFSConfiguration.VolumePath"), "/fsx"),
+    ]),
+  ]);
 
 const buildArn = () =>
   pipe([
@@ -30,6 +36,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 const findId = () =>
@@ -115,6 +122,7 @@ exports.FSxVolume = () => ({
   destroy: {
     shouldRetryOnExceptionMessages: [
       "Cannot delete volume while there is a backup in progress",
+      "Cannot take backup while",
     ],
     method: "deleteVolume",
     pickId,

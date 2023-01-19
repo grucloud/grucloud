@@ -42,7 +42,7 @@ describe("AppStream", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Entitlement", () =>
+  it("Entitlement", () =>
     pipe([
       () => ({
         groupType: "AppStream::Entitlement",

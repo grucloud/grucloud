@@ -29,6 +29,10 @@ const {
 } = require("./SecurityHubOrganizationConfiguration");
 
 const {
+  SecurityHubProductSubscription,
+} = require("./SecurityHubProductSubscription");
+
+const {
   SecurityHubStandardsSubscription,
 } = require("./SecurityHubStandardsSubscription");
 
@@ -41,6 +45,7 @@ module.exports = pipe([
     SecurityHubMember({}),
     SecurityHubOrganizationAdminAccount({}),
     SecurityHubOrganizationConfiguration({}),
+    SecurityHubProductSubscription({}),
     SecurityHubStandardsSubscription({}),
   ],
   map(

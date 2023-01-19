@@ -237,9 +237,8 @@ exports.SSOAdminPermissionSet = ({}) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#deletePermissionSet-property
   destroy: {
-    preDestroy:
-      ({ endpoint }) =>
-      (live) =>
+    preDestroy: ({ endpoint }) =>
+      tap((live) =>
         pipe([
           () => live,
           get("AccountIds"),
@@ -268,7 +267,8 @@ exports.SSOAdminPermissionSet = ({}) => ({
               ),
             ])
           ),
-        ])(),
+        ])()
+      ),
     method: "deletePermissionSet",
     pickId,
   },

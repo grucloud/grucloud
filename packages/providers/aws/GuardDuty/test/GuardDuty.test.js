@@ -78,19 +78,29 @@ describe("GuardDuty", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("PublishingDestination", () =>
+  it("PublishingDestination", () =>
     pipe([
       () => ({
         groupType: "GuardDuty::PublishingDestination",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            DetectorId: "6ec26c9c512c30d9260aeb71fdb9a9db",
+            DestinationId: "6ec26c9c512c30d9260aeb71fdb9a9db",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("ThreatIntelSet", () =>
+  it("ThreatIntelSet", () =>
     pipe([
       () => ({
         groupType: "GuardDuty::ThreatIntelSet",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            DetectorId: "6ec26c9c512c30d9260aeb71fdb9a9db",
+            ThreatIntelSetId: "6ec26c9c512c30d9260aeb71fdb9a9db",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

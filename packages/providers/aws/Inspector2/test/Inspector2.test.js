@@ -26,6 +26,16 @@ describe("Inspector2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("MemberAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "Inspector2::MemberAssociation",
+        livesNotFound: ({ config }) => [{}],
+        skipGetById: true,
+        skipGetByName: true,
+      }),
+      awsResourceTest,
+    ])());
   it("OrganizationConfiguration", () =>
     pipe([
       () => ({

@@ -3,11 +3,11 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("S3Glacier", async function () {
+describe("Glacier", async function () {
   it.skip("Vault", () =>
     pipe([
       () => ({
-        groupType: "S3Glacier::Vault",
+        groupType: "Glacier::Vault",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
@@ -15,7 +15,7 @@ describe("S3Glacier", async function () {
   it.skip("VaultLock", () =>
     pipe([
       () => ({
-        groupType: "S3Glacier::VaultLock",
+        groupType: "Glacier::VaultLock",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,

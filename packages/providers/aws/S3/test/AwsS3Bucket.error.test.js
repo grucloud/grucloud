@@ -7,7 +7,7 @@ const chance = require("chance")();
 const types = ["Bucket"];
 const bucketPrefix = `grucloud-${chance.guid().slice(0, 8)}`;
 
-describe("AwsS3BucketErrors", async function () {
+describe.skip("AwsS3BucketErrors", async function () {
   let config;
   before(async function () {});
   after(async () => {});

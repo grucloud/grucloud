@@ -31,6 +31,17 @@ exports.createResources = () => [
       ],
     }),
   },
+  {
+    type: "SharedDirectory",
+    group: "DirectoryService",
+    properties: ({}) => ({
+      ShareMethod: "HANDSHAKE",
+    }),
+    dependencies: ({}) => ({
+      account: "test account",
+      directory: "grucloud.org",
+    }),
+  },
   { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Subnet",
@@ -48,6 +59,16 @@ exports.createResources = () => [
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "Account",
+    group: "Organisations",
+    name: "test account",
+    readOnly: true,
+    properties: ({}) => ({
+      Email: "test@grucloud.com",
+      Name: "test account",
     }),
   },
 ];
