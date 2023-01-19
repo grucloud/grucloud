@@ -7,6 +7,11 @@ skinparam monochrome true
 ++++ Detector (1)
 ++++ OrganizationAdminAccount (1)
 ++++ OrganizationConfiguration (1)
+++++ PublishingDestination (1)
++++ KMS
+++++ Key (1)
 +++ Organisations
 ++++ Account (1)
++++ S3
+++++ Bucket (1)
 @endmindmap

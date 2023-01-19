@@ -180,6 +180,7 @@ exports.KmsKey = ({ spec, config }) => {
             ])()
         )
       ),
+
       tap.if(
         () => get("liveDiff.updated.Enabled")(diff),
         pipe([
@@ -227,7 +228,10 @@ exports.KmsKey = ({ spec, config }) => {
       ),
       // Update policy
       tap.if(
-        () => get("liveDiff.updated.Policy")(diff),
+        or([
+          () => get("liveDiff.updated.Policy")(diff),
+          () => get("liveDiff.deleted.Policy")(diff),
+        ]),
         pipe([putKeyPolicy(payload)])
       ),
       tap(() => {

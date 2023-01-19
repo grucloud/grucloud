@@ -9,3 +9,7 @@ exports.Tagger = createTagger({
   TagsKey: "Tags",
   UnTagsKey: "TagKeys",
 });
+
+exports.ignoreErrorMessages = [
+  "The request is rejected because the input detectorId is not owned by the current account",
+];

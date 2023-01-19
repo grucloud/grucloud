@@ -679,6 +679,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       tryCatch(updateProperties(payload), (error) => {
         throw error;
       }),
+      () => diff.liveDiff.deleted,
+      tryCatch(updateProperties(payload), (error) => {
+        throw error;
+      }),
       tap(() => {
         logger.info(`s3 updated ${name}`);
       }),

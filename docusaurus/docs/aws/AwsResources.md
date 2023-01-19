@@ -117,7 +117,7 @@ List of resources for provider aws:
 * Grafana: 
 [Workspace](./resources/Grafana/Workspace.md)
 * GuardDuty: 
-[Detector](./resources/GuardDuty/Detector.md), [Filter](./resources/GuardDuty/Filter.md), [IPSet](./resources/GuardDuty/IPSet.md), [Member](./resources/GuardDuty/Member.md), [OrganizationAdminAccount](./resources/GuardDuty/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/GuardDuty/OrganizationConfiguration.md)
+[Detector](./resources/GuardDuty/Detector.md), [Filter](./resources/GuardDuty/Filter.md), [IPSet](./resources/GuardDuty/IPSet.md), [Member](./resources/GuardDuty/Member.md), [OrganizationAdminAccount](./resources/GuardDuty/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/GuardDuty/OrganizationConfiguration.md), [PublishingDestination](./resources/GuardDuty/PublishingDestination.md), [ThreatIntelSet](./resources/GuardDuty/ThreatIntelSet.md)
 * IAM: 
 [OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
 * IdentityStore: 
@@ -181,7 +181,7 @@ List of resources for provider aws:
 * SecretsManager: 
 [Secret](./resources/SecretsManager/Secret.md), [SecretRotation](./resources/SecretsManager/SecretRotation.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SecurityHub: 
-[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
+[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [ProductSubscription](./resources/SecurityHub/ProductSubscription.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
 * ServiceQuotas: 
 [ServiceQuota](./resources/ServiceQuotas/ServiceQuota.md)
 * SESV2: 

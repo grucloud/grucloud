@@ -5,11 +5,8 @@ const { defaultsDeep } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { ignoreErrorCodes } = require("./GuardDutyCommon");
+const { ignoreErrorCodes, ignoreErrorMessages } = require("./GuardDutyCommon");
 
-const ignoreErrorMessages = [
-  "The request is rejected because the input detectorId is not owned by the current account",
-];
 const cannotBeDeleted = () => () => true;
 
 const pickId = pipe([

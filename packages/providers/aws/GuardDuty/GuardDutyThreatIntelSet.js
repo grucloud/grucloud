@@ -8,31 +8,31 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
 const {
-  //ignoreErrorCodes,
-  ignoreErrorMessages,
+  ignoreErrorCodes,
   Tagger,
+  ignoreErrorMessages,
 } = require("./GuardDutyCommon");
 
 const pickId = pipe([
-  tap(({ DetectorId, IpSetId }) => {
+  tap(({ DetectorId, ThreatIntelSetId }) => {
     assert(DetectorId);
-    assert(IpSetId);
+    assert(ThreatIntelSetId);
   }),
-  pick(["DetectorId", "IpSetId"]),
+  pick(["DetectorId", "ThreatIntelSetId"]),
 ]);
 
 const assignArn = ({ config }) =>
   pipe([
     assign({
       Arn: pipe([
-        tap(({ DetectorId, IpSetId }) => {
+        tap(({ DetectorId, ThreatIntelSetId }) => {
           assert(DetectorId);
-          assert(IpSetId);
+          assert(ThreatIntelSetId);
         }),
-        ({ DetectorId, IpSetId }) =>
+        ({ DetectorId, ThreatIntelSetId }) =>
           `arn:aws:guardduty:${
             config.region
-          }:${config.accountId()}:detector/${DetectorId}/ipset/${IpSetId}`,
+          }:${config.accountId()}:detector/${DetectorId}/threatintelset/${ThreatIntelSetId}`,
       ]),
     }),
   ]);
@@ -54,12 +54,12 @@ const decorate = ({ endpoint, config }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html
-exports.GuardDutyIPSet = () => ({
-  type: "IPSet",
+exports.GuardDutyThreatIntelSet = () => ({
+  type: "ThreatIntelSet",
   package: "guardduty",
   client: "GuardDuty",
   propertiesDefault: {},
-  omitProperties: ["Arn", "DetectorId", "IpSetId"],
+  omitProperties: ["Arn", "DetectorId", "ThreatIntelSetId"],
   inferName:
     ({ dependenciesSpec: { detector } }) =>
     ({ Name }) =>
@@ -106,18 +106,18 @@ exports.GuardDutyIPSet = () => ({
       dependencyId: ({ lives, config }) => pipe([get("DetectorId")]),
     },
   },
-  //ignoreErrorCodes,
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#getIPSet-property
+  ignoreErrorCodes,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#getThreatIntelSet-property
   getById: {
-    method: "getIPSet",
+    method: "getThreatIntelSet",
     pickId,
     decorate,
     ignoreErrorMessages,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#listIPSets-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#listThreatIntelSets-property
   getList: {
-    method: "listIPSets",
-    getParam: "IPSets",
+    method: "listThreatIntelSets",
+    getParam: "ThreatIntelSets",
     decorate,
   },
   getList: ({ client, endpoint, getById, config }) =>
@@ -126,24 +126,34 @@ exports.GuardDutyIPSet = () => ({
         client.getListWithParent({
           parent: { type: "Detector", group: "GuardDuty" },
           pickKey: pipe([pick(["DetectorId"])]),
-          method: "listIPSets",
-          getParam: "IpSetIds",
+          method: "listThreatIntelSets",
+          getParam: "ThreatIntelSetIds",
           config,
           decorate: ({ parent }) =>
             pipe([
-              (IpSetId) => ({ IpSetId, DetectorId: parent.DetectorId }),
+              (ThreatIntelSetId) => ({
+                ThreatIntelSetId,
+                DetectorId: parent.DetectorId,
+              }),
+              tap((params) => {
+                assert(true);
+              }),
+
               getById({}),
+              tap((params) => {
+                assert(true);
+              }),
             ]),
         }),
     ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#createIPSet-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#createThreatIntelSet-property
   create: {
-    method: "createIPSet",
+    method: "createThreatIntelSet",
     pickCreated: ({ payload }) => pipe([identity, defaultsDeep(payload)]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#deleteIPSet-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GuardDuty.html#deleteThreatIntelSet-property
   destroy: {
-    method: "deleteIPSet",
+    method: "deleteThreatIntelSet",
     pickId,
     ignoreErrorMessages,
   },
