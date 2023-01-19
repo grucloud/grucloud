@@ -109,6 +109,7 @@ exports.DMSEndpoint = ({ compare }) => ({
     "MySQLSettings.SecretsManagerSecretId",
     "PostgreSQLSettings.SecretsManagerAccessRoleArn",
     "PostgreSQLSettings.SecretsManagerSecretId",
+    "CertificateArn",
   ],
   inferName: () =>
     pipe([
@@ -168,7 +169,7 @@ exports.DMSEndpoint = ({ compare }) => ({
   dependencies: {
     certificate: {
       type: "Certificate",
-      group: "ACM",
+      group: "DMS",
       dependencyId: ({ lives, config }) => pipe([get("CertificateArn")]),
     },
     iamRoleServiceAccess: {
@@ -240,6 +241,7 @@ exports.DMSEndpoint = ({ compare }) => ({
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: {
+      certificate,
       kmsKey,
       iamRoleServiceAccess,
       //MySQL
@@ -256,6 +258,12 @@ exports.DMSEndpoint = ({ compare }) => ({
       defaultsDeep({
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
+      when(
+        () => certificate,
+        defaultsDeep({
+          CertificateArn: getField(certificate, "CertificateArn"),
+        })
+      ),
       when(
         () => kmsKey,
         defaultsDeep({

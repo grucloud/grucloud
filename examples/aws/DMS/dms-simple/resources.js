@@ -4,6 +4,32 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Certificate",
+    group: "DMS",
+    properties: ({}) => ({
+      CertificateIdentifier: "my-certificate",
+      CertificatePem: `-----BEGIN CERTIFICATE-----
+MIIC1jCCAb4CCQCuoFh5CDZbHDANBgkqhkiG9w0BAQsFADAtMQswCQYDVQQGEwJV
+UzELMAkGA1UECAwCTlkxETAPBgNVBAoMCEdydUNsb3VkMB4XDTIzMDExOTE3Mzcw
+MFoXDTMzMDExNjE3MzcwMFowLTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAk5ZMREw
+DwYDVQQKDAhHcnVDbG91ZDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+ALR5CLKcpoepbBwsOGCjAQ2hsfnrhSqq1NZsF7XQZTE07VohMbUVO+h1cCCtPb+u
+V+8KwLaRI2JZDAnC3KbumJzGcXPcI3jax6EAcSA2KgujTBZ/r4l794S/NcZk7rtb
+iPMI28MykQR5m+xhVWuh+wamYFhN+6yk4v93kqOXJo6l53Z8QMsjX7fpH42sIIh7
+fu2k6qJsD9J+VLXAuY6o4iPnAGmq2QaO1qMUATaplM+wyQbOsUFx5EsqFKtaZuHn
+vNesGRxk4/MTK88hBDF1AhnxF6arW8nnnwba1Hki/oXT24mKNEau7AQG/OFrxdCv
+p+fnAyauv430VnBFflcdxNECAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAYPen0ROw
+YL669xCN52eE62N0IfYkyPejZ3bT8u861Tf0v3bUF9MKu9EyhQsDgO22bGbP5qfT
+e9wulJACqHJoVid4IBmNCsk62zUTBtBXcF+h92mM/gx7ZyAhuveY2ZFwAIW5Wyzw
+AeJkJwFWd86xBwATDYNaA4Kz36wAh14BHxPvdDNcQP7aVO/j8sdJASjsKar48/ji
+1H6DmBbqbLoX83HAzWlBUbEVHpLqOrITBiqlarZuUk5fCbXhCuCCMnrJyT4dRbJe
++cM/Q6cc5bGP8gypst9YuU5YlBSNi20GOnt4GLrNyOdjgKTUktCIFG2HoB0/cqS4
+WHyJdecRfkuO4g==
+-----END CERTIFICATE-----
+`,
+    }),
+  },
+  {
     type: "Endpoint",
     group: "DMS",
     properties: ({}) => ({
@@ -21,9 +47,12 @@ exports.createResources = () => [
         Password: process.env.MY_ENDPOINT_POSTGRESSQL_PASSWORD,
       },
       ServerName: "myserver",
-      SslMode: "none",
+      SslMode: "verify-full",
       Username: "user",
       Password: process.env.MY_ENDPOINT_PASSWORD,
+    }),
+    dependencies: ({}) => ({
+      certificate: "my-certificate",
     }),
   },
 ];

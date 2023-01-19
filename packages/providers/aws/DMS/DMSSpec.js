@@ -7,7 +7,7 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DMS.html
 
-//const { DMSCertificate } = require("./DMSCertificate");
+const { DMSCertificate } = require("./DMSCertificate");
 const { DMSEndpoint } = require("./DMSEndpoint");
 const { DMSEventSubscription } = require("./DMSEventSubscription");
 const { DMSReplicationInstance } = require("./DMSReplicationInstance");
@@ -20,7 +20,7 @@ const compare = compareAws({});
 
 module.exports = pipe([
   () => [
-    // DMSCertificate({})
+    DMSCertificate({}),
     DMSEndpoint({ compare }),
     DMSEventSubscription({}),
     DMSReplicationInstance({}),
