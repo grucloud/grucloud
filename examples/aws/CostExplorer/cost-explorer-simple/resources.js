@@ -49,6 +49,13 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "CostAllocationTag",
+    group: "CostExplorer",
+    properties: ({}) => ({
+      TagKey: "Network",
+    }),
+  },
+  {
     type: "CostCategory",
     group: "CostExplorer",
     properties: ({ getId }) => ({

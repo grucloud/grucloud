@@ -6,6 +6,7 @@ skinparam monochrome true
 +++ CostExplorer
 ++++ AnomalyMonitor (1)
 ++++ AnomalySubscription (1)
+++++ CostAllocationTag (1)
 ++++ CostCategory (1)
 +++ Organisations
 ++++ Account (1)

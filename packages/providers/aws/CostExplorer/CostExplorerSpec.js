@@ -11,7 +11,9 @@ const { CostExplorerAnomalyMonitor } = require("./CostExplorerAnomalyMonitor");
 const {
   CostExplorerAnomalySubscription,
 } = require("./CostExplorerAnomalySubscription");
-//const { CostExplorerCostAllocationTag } = require("./CostExplorerCostAllocationTag");
+const {
+  CostExplorerCostAllocationTag,
+} = require("./CostExplorerCostAllocationTag");
 const { CostExplorerCostCategory } = require("./CostExplorerCostCategory");
 
 const GROUP = "CostExplorer";
@@ -21,7 +23,7 @@ module.exports = pipe([
   () => [
     CostExplorerAnomalyMonitor({}),
     CostExplorerAnomalySubscription({}),
-    // CostExplorerCostAllocationTag({})
+    CostExplorerCostAllocationTag({}),
     CostExplorerCostCategory({}),
   ],
   map(
