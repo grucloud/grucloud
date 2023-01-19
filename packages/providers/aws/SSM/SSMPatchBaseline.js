@@ -18,6 +18,7 @@ const {
   last,
   unless,
   first,
+  isEmpty,
 } = require("rubico/x");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");

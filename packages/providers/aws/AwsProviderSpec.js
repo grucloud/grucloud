@@ -29,6 +29,7 @@ const defaultExcludes = [
   //"CloudHSMV2",
   "IVS",
   "Isvchat",
+  "MediaConvert",
 ];
 
 const defaultIncludes = ["IAM", "CloudWatchLogs"];

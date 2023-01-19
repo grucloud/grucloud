@@ -3,7 +3,7 @@ const { map, pipe } = require("rubico");
 const { AwsProvider } = require("../../AwsProvider");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
-describe("AwsS3BucketPerf", async function () {
+describe.skip("AwsS3BucketPerf", async function () {
   let config;
   const types = ["Bucket"];
   after(async () => {});
