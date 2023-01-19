@@ -28,13 +28,13 @@ describe("SESV2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("DedicatedIpPool", () =>
+  it("DedicatedIpPool", () =>
     pipe([
       () => ({
         groupType: "SESV2::DedicatedIpPool",
         livesNotFound: ({ config }) => [
           {
-            Arn: ``,
+            PoolName: `p123`,
           },
         ],
       }),

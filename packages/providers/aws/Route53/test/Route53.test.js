@@ -4,6 +4,14 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Route53", async function () {
+  it.skip("CirdrLocation", () =>
+    pipe([
+      () => ({
+        groupType: "Route53::CirdrLocation",
+        livesNotFound: ({ config }) => [{ Id: "a-12345" }],
+      }),
+      awsResourceTest,
+    ])());
   it("DelegationSet", () =>
     pipe([
       () => ({
