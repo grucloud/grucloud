@@ -33,6 +33,16 @@ describe("AuditManager", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("AssessmentFrameworkShare", () =>
+    pipe([
+      () => ({
+        groupType: "AuditManager::AssessmentFrameworkShare",
+        livesNotFound: ({ config }) => [
+          { id: "5af4b834-7168-4ce3-8538-8fdb21300141" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("AssessmentReport", () =>
     pipe([
       () => ({
@@ -53,14 +63,6 @@ describe("AuditManager", async function () {
         livesNotFound: ({ config }) => [
           { id: "5af4b834-7168-4ce3-8538-8fdb21300141" },
         ],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("FrameworkShare", () =>
-    pipe([
-      () => ({
-        groupType: "AuditManager::FrameworkShare",
-        livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
