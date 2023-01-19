@@ -4212,6 +4212,7 @@
             "cloudhsmv2",
             "cloudtrail",
             "cloudwatch",
+            "codebuild",
             "codedeploy",
             "config",
             "datasync",

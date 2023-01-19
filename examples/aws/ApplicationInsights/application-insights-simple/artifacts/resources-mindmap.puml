@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project application-insights-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ ApplicationInsights
+++++ Application (1)
+@endmindmap

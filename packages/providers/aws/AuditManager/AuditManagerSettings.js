@@ -77,18 +77,18 @@ exports.AuditManagerSettings = () => ({
     enhanceParams: () => () => ({ attribute: "ALL" }),
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AuditManager.html#registerAccount-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AuditManager.html#updateSettings-property
   create: {
     method: "updateSettings",
     pickCreated: ({ payload }) => pipe([() => payload]),
     isInstanceUp: () => true,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AuditManager.html#registerAccount-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AuditManager.html#updateSettings-property
   update: {
     method: "updateSettings",
     filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AuditManager.html#deregisterAccount-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AuditManager.html#updateSettings-property
   destroy: {
     method: "updateSettings",
     pickId: () => defaultSettings,

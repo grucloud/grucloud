@@ -46,6 +46,7 @@ const GROUPS = [
   ["AppMesh", "appmesh"],
   ["AppRunner", "apprunner"],
   ["ApplicationAutoScaling", "application-autoscaling"],
+  ["ApplicationInsights", "application-insights"],
   ["Appflow", "appflow"],
   ["AppStream", "appstream"],
   ["AppSync", "appsync"],

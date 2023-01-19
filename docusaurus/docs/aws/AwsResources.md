@@ -24,6 +24,8 @@ List of resources for provider aws:
 [Flow](./resources/Appflow/Flow.md), [ConnectorProfile](./resources/Appflow/ConnectorProfile.md)
 * ApplicationAutoScaling: 
 [Policy](./resources/ApplicationAutoScaling/Policy.md), [Target](./resources/ApplicationAutoScaling/Target.md)
+* ApplicationInsights: 
+[Application](./resources/ApplicationInsights/Application.md)
 * AppMesh: 
 [GatewayRoute](./resources/AppMesh/GatewayRoute.md), [Mesh](./resources/AppMesh/Mesh.md), [Route](./resources/AppMesh/Route.md), [VirtualGateway](./resources/AppMesh/VirtualGateway.md), [VirtualNode](./resources/AppMesh/VirtualNode.md), [VirtualRouter](./resources/AppMesh/VirtualRouter.md), [VirtualService](./resources/AppMesh/VirtualService.md)
 * AppRunner: 
@@ -81,7 +83,7 @@ List of resources for provider aws:
 * DirectConnect: 
 [BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [MacSecKeyAssociation](./resources/DirectConnect/MacSecKeyAssociation.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
 * DMS: 
-[Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
+[Certificate](./resources/DMS/Certificate.md), [Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
 * DynamoDB: 
 [Table](./resources/DynamoDB/Table.md), [KinesisStreamingDestination](./resources/DynamoDB/KinesisStreamingDestination.md)
 * EC2: 

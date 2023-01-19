@@ -4,11 +4,11 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("ApplicationInsights", async function () {
-  it.skip("Application", () =>
+  it("Application", () =>
     pipe([
       () => ({
         groupType: "ApplicationInsights::Application",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ResourceGroupName: "123" }],
       }),
       awsResourceTest,
     ])());
