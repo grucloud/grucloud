@@ -29,20 +29,6 @@ describe("APIGateway", async function () {
       }),
       awsResourceTest,
     ])());
-  // it.only("Integration", () =>
-  //   pipe([
-  //     () => ({
-  //       groupType: "APIGateway::Integration",
-  //       livesNotFound: ({ config }) => [
-  //         {
-  //           restApiId: "12345",
-  //           resourceId: "12345",
-  //           httpMethod: "get",
-  //         },
-  //       ],
-  //     }),
-  //     awsResourceTest,
-  //   ])());
   it("RestApi", () =>
     pipe([
       () => ({
