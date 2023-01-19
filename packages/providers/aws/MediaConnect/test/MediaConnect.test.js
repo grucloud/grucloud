@@ -3,15 +3,15 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-const config = () => ({ includeGroups: ["MediaConvert"] });
+const config = () => ({ includeGroups: ["MediaConnect"] });
 
-describe("MediaConvert", async function () {
-  it.skip("Queue", () =>
+describe("MediaConnect", async function () {
+  it.skip("Flow", () =>
     pipe([
       () => ({
         config,
-        groupType: "MediaConvert::Queue",
-        livesNotFound: ({ config }) => [{ Name: "n123" }],
+        groupType: "MediaConnect::Flow",
+        livesNotFound: ({ config }) => [{ FlowArn: "n123" }],
       }),
       awsResourceTest,
     ])());
