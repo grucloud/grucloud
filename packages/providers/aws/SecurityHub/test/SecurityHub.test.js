@@ -86,11 +86,17 @@ describe("SecurityHub", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ProductSubscription", () =>
+  it("ProductSubscription", () =>
     pipe([
       () => ({
         groupType: "SecurityHub::ProductSubscription",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            ProductArn: `arn:aws:securityhub:${
+              config.region
+            }:${config.accountId()}:product/blabla/myproduct`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

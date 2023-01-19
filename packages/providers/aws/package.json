@@ -5,7 +5,9 @@
   "main": "AwsProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/aws",
   "scripts": {
-    "test": "dotenv -e ../../../secrets/default.env -- mocha  './{,!(node_modules)/**}/*.test.js' --parallel ",
+    "test": "dotenv -e ../../../secrets/default.env -- mocha  './{,!(node_modules)/**}/*.test.js' ",
+    "test-p": "dotenv -e ../../../secrets/default.env -- mocha  './{,!(node_modules)/**}/*.test.js' --parallel ",
+
     "test-examples": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/**/iac.test.js' ",
     "test-accessanalyzer": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/AccessAnalyzer/**/iac.test.js' ",
     "test-account": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Account/**/iac.test.js' ",
