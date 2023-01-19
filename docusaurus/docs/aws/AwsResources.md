@@ -31,7 +31,7 @@ List of resources for provider aws:
 * AppRunner: 
 [AutoScalingConfiguration](./resources/AppRunner/AutoScalingConfiguration.md), [CustomDomain](./resources/AppRunner/CustomDomain.md), [Connection](./resources/AppRunner/Connection.md), [ObservabilityConfiguration](./resources/AppRunner/ObservabilityConfiguration.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
 * AppStream: 
-[AppBlock](./resources/AppStream/AppBlock.md), [Application](./resources/AppStream/Application.md), [DirectoryConfig](./resources/AppStream/DirectoryConfig.md), [Fleet](./resources/AppStream/Fleet.md), [ImageBuilder](./resources/AppStream/ImageBuilder.md), [Stack](./resources/AppStream/Stack.md), [User](./resources/AppStream/User.md), [UsageReportSubscription](./resources/AppStream/UsageReportSubscription.md)
+[AppBlock](./resources/AppStream/AppBlock.md), [Application](./resources/AppStream/Application.md), [DirectoryConfig](./resources/AppStream/DirectoryConfig.md), [Entitlement](./resources/AppStream/Entitlement.md), [Fleet](./resources/AppStream/Fleet.md), [ImageBuilder](./resources/AppStream/ImageBuilder.md), [Stack](./resources/AppStream/Stack.md), [User](./resources/AppStream/User.md), [UsageReportSubscription](./resources/AppStream/UsageReportSubscription.md)
 * AppSync: 
 [DataSource](./resources/AppSync/DataSource.md), [Function](./resources/AppSync/Function.md), [GraphqlApi](./resources/AppSync/GraphqlApi.md), [Resolver](./resources/AppSync/Resolver.md)
 * Athena: 

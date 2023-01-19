@@ -4,6 +4,7 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ AppStream
+++++ Entitlement (1)
 ++++ Fleet (1)
 ++++ Stack (1)
 +++ EC2

@@ -3361,6 +3361,7 @@
             "ec2",
             "ecr",
             "ecs",
+            "efs",
             "elasticache",
             "elb",
             "emr",

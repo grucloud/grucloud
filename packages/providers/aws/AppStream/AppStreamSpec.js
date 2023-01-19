@@ -9,6 +9,7 @@ const { createAwsService } = require("../AwsService");
 const { AppStreamAppBlock } = require("./AppStreamAppBlock");
 const { AppStreamApplication } = require("./AppStreamApplication");
 const { AppStreamDirectoryConfig } = require("./AppStreamDirectoryConfig");
+const { AppStreamEntitlement } = require("./AppStreamEntitlement");
 const { AppStreamFleet } = require("./AppStreamFleet");
 const { AppStreamImageBuilder } = require("./AppStreamImageBuilder");
 const { AppStreamStack } = require("./AppStreamStack");
@@ -28,6 +29,7 @@ module.exports = pipe([
     AppStreamAppBlock({ compare }),
     AppStreamApplication({ compare }),
     AppStreamDirectoryConfig({ compare }),
+    AppStreamEntitlement({ compare }),
     AppStreamFleet({}),
     //AppStreamFleetStackAssociation({}),
     AppStreamImageBuilder({}),
