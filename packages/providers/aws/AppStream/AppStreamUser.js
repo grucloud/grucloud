@@ -42,7 +42,7 @@ exports.AppStreamUser = () => ({
   type: "User",
   package: "appstream",
   client: "AppStream",
-  propertiesDefault: { AuthenticationType: "USERPOOL" },
+  propertiesDefault: { Enabled: true, AuthenticationType: "USERPOOL" },
   inferName: () =>
     pipe([
       get("UserName"),
@@ -81,39 +81,40 @@ exports.AppStreamUser = () => ({
       ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppStream.html#describeUsers-property
-  // getList: {
-  //   method: "describeUsers",
-  //   getParam: "Users",
-  //   decorate,
-  // },
-  getList: ({ endpoint }) =>
-    pipe([
-      //() => ["API", "SAML", "USERPOOL", "AWS_AD"],
-      () => ["USERPOOL"],
-      flatMap(
-        tryCatch(
-          pipe([
-            (AuthenticationType) => ({
-              AuthenticationType,
-            }),
-            endpoint().describeUsers,
-            get("Users"),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-          // TODO throw if not  "ResourceNotFoundException" or "AccessDeniedException",
-          (error) =>
-            pipe([
-              tap((params) => {
-                assert(error);
-              }),
-              () => undefined,
-            ])()
-        )
-      ),
-      filter(not(isEmpty)),
-    ]),
+  getList: {
+    enhanceParams: () => () => ({ AuthenticationType: "USERPOOL" }),
+    method: "describeUsers",
+    getParam: "Users",
+    decorate,
+  },
+  // getList: ({ endpoint }) =>
+  //   pipe([
+  //     //() => ["API", "SAML", "USERPOOL", "AWS_AD"],
+  //     () => ["USERPOOL"],
+  //     flatMap(
+  //       tryCatch(
+  //         pipe([
+  //           (AuthenticationType) => ({
+  //             AuthenticationType,
+  //           }),
+  //           endpoint().describeUsers,
+  //           get("Users"),
+  //           tap((params) => {
+  //             assert(true);
+  //           }),
+  //         ]),
+  //         // TODO throw if not  "ResourceNotFoundException" or "AccessDeniedException",
+  //         (error) =>
+  //           pipe([
+  //             tap((params) => {
+  //               assert(error);
+  //             }),
+  //             () => undefined,
+  //           ])()
+  //       )
+  //     ),
+  //     filter(not(isEmpty)),
+  //   ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppStream.html#createUser-property
   create: {
     method: "createUser",
