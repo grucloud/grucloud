@@ -32,52 +32,55 @@ const lambdaUriToName = pipe([
 ]);
 
 // IntegrationUri:'arn:aws:elasticloadbalancing:us-east-1:00000000:listener/app/sam-a-LoadB-EC9ZTKNG2RSH/3c8adf5c996cb063/fe8cc6c608b3208e'
-const listenerUriToName = ({ lives, config }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    get("IntegrationUri"),
-    lives.getById({
-      type: "Listener",
-      group: "ElasticLoadBalancingV2",
-      providerName: config.providerName,
-    }),
-    get("name"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]);
+const listenerUriToName =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => live,
+      get("IntegrationUri"),
+      lives.getById({
+        type: "Listener",
+        group: "ElasticLoadBalancingV2",
+        providerName: config.providerName,
+      }),
+      get("name", live.IntegrationUri),
+      tap((name) => {
+        assert(name);
+      }),
+    ])();
 
 const eventBusUriToName = pipe([callProp("split", "/"), last]);
 
 const pickId = pick(["ApiId", "IntegrationId"]);
 
+const findName = ({ lives, config }) =>
+  pipe([
+    fork({
+      apiName: pipe([({ ApiName }) => `integration::${ApiName}::`]),
+      integration: switchCase([
+        get("IntegrationUri"),
+        pipe([
+          switchCase([
+            eq(get("ConnectionType"), "VPC_LINK"),
+            pipe([listenerUriToName({ lives, config })]),
+            pipe([get("IntegrationUri"), lambdaUriToName]),
+          ]),
+        ]),
+        get("RequestParameters.EventBusName"),
+        pipe([get("RequestParameters.EventBusName"), eventBusUriToName]),
+        () => "NO-INTEGRATION",
+      ]),
+    }),
+    ({ apiName, integration }) => `${apiName}${integration}`,
+  ]);
+
 exports.Integration = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);
   const lambda = createLambda(config);
   const client = AwsClient({ spec, config })(apiGateway);
-
-  const findName = ({ lives, config }) =>
-    pipe([
-      fork({
-        apiName: pipe([({ ApiName }) => `integration::${ApiName}::`]),
-        integration: switchCase([
-          get("IntegrationUri"),
-          pipe([
-            switchCase([
-              eq(get("ConnectionType"), "VPC_LINK"),
-              pipe([listenerUriToName({ lives, config })]),
-              pipe([get("IntegrationUri"), lambdaUriToName]),
-            ]),
-          ]),
-          get("RequestParameters.EventBusName"),
-          pipe([get("RequestParameters.EventBusName"), eventBusUriToName]),
-          () => "NO-INTEGRATION",
-        ]),
-      }),
-      ({ apiName, integration }) => `${apiName}${integration}`,
-    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getIntegration-property
   const getById = client.getById({

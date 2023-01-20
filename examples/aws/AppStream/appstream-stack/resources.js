@@ -63,6 +63,26 @@ exports.createResources = () => [
       fleet: "my-ondemand-fleet",
     }),
   },
+  {
+    type: "User",
+    group: "AppStream",
+    properties: ({}) => ({
+      FirstName: "gru",
+      LastName: "cloud",
+      UserName: "test@grucloud.com",
+    }),
+  },
+  {
+    type: "UserStackAssociation",
+    group: "AppStream",
+    properties: ({}) => ({
+      SendEmailNotification: false,
+    }),
+    dependencies: ({}) => ({
+      stack: "stack",
+      user: "test@grucloud.com",
+    }),
+  },
   { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Subnet",

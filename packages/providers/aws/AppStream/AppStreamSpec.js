@@ -14,7 +14,9 @@ const { AppStreamFleet } = require("./AppStreamFleet");
 const { AppStreamImageBuilder } = require("./AppStreamImageBuilder");
 const { AppStreamStack } = require("./AppStreamStack");
 const { AppStreamUser } = require("./AppStreamUser");
-//const { AppStreamUserStackAssociation } = require("./AppStreamUserStackAssociation");
+const {
+  AppStreamUserStackAssociation,
+} = require("./AppStreamUserStackAssociation");
 const {
   AppStreamUsageReportSubscription,
 } = require("./AppStreamUsageReportSubscription");
@@ -31,12 +33,11 @@ module.exports = pipe([
     AppStreamDirectoryConfig({ compare }),
     AppStreamEntitlement({ compare }),
     AppStreamFleet({}),
-    //AppStreamFleetStackAssociation({}),
     AppStreamImageBuilder({}),
     AppStreamStack({}),
     AppStreamUser({}),
     AppStreamUsageReportSubscription({}),
-    //AppStreamUserStackAssociation({}),
+    AppStreamUserStackAssociation({}),
   ],
   map(
     pipe([

@@ -101,11 +101,17 @@ describe("AppStream", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("UserStackAssociation", () =>
+  it("UserStackAssociation", () =>
     pipe([
       () => ({
         groupType: "AppStream::UserStackAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            StackName: "s123",
+            UserName: "idonotexit",
+            AuthenticationType: "USERPOOL",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

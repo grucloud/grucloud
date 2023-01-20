@@ -7,6 +7,8 @@ skinparam monochrome true
 ++++ Entitlement (1)
 ++++ Fleet (1)
 ++++ Stack (1)
+++++ User (1)
+++++ UserStackAssociation (1)
 +++ EC2
 ++++ Vpc (1)
 ++++ Subnet (2)
