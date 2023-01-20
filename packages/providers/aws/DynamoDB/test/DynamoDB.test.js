@@ -16,15 +16,17 @@ describe("DynamoDB", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("TableItem", () =>
+  it("TableItem", () =>
     pipe([
       () => ({
         groupType: "DynamoDB::TableItem",
         livesNotFound: ({ config }) => [
           {
             TableName: "12345",
+            Key: { Id: { S: "123" } },
           },
         ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
