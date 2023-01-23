@@ -221,14 +221,18 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
   const getById =
     ({ lives }) =>
     ({ Rule, Id }) =>
-      pipe([() => ({ lives }), getList, find(and([eq(get("Id"), Id)]))])();
+      pipe([
+        () => ({ lives, config }),
+        getList,
+        find(and([eq(get("Id"), Id)])),
+      ])();
 
-  const getByName = ({ name, lives }) =>
+  const getByName = ({ name, lives, config }) =>
     pipe([
       () => name,
       callProp("split", "::"),
       ([target, Rule, Id]) => ({ Rule, Id }),
-      getById({ lives }),
+      getById({ lives, config }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
