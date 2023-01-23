@@ -1,29 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, pick, reduce } = require("rubico");
+const { pipe, tap, get, assign, pick } = require("rubico");
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Firehose.html#tagDeliveryStream-property
-exports.tagResource =
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      tap((params) => {
-        assert(live.DeliveryStreamName);
-      }),
-      (Tags) => ({ DeliveryStreamName: live.DeliveryStreamName, Tags }),
-      endpoint().tagDeliveryStream,
-    ]);
+const { createTagger } = require("../AwsTagger");
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Firehose.html#untagDeliveryStream-property
-exports.untagResource =
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      tap((params) => {
-        assert(live.DeliveryStreamName);
-      }),
-      (TagKeys) => ({ DeliveryStreamName: live.DeliveryStreamName, TagKeys }),
-      endpoint().untagDeliveryStream,
-    ]);
+exports.Tagger = createTagger({
+  methodTagResource: "tagDeliveryStream",
+  methodUnTagResource: "untagDeliveryStream",
+  ResourceArn: "DeliveryStreamName",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kinesis.html#listTagsForDeliveryStream-property
 exports.assignTags = ({ endpoint }) =>

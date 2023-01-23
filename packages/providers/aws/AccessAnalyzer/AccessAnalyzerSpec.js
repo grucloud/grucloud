@@ -2,6 +2,7 @@ const assert = require("assert");
 const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
+const { createAwsService } = require("../AwsService");
 const { compareAws } = require("../AwsCommon");
 
 const GROUP = "AccessAnalyzer";
@@ -13,56 +14,18 @@ const { AccessAnalyzerArchiveRule } = require("./AccessAnalyzerArchiveRule");
 
 module.exports = pipe([
   () => [
-    {
-      type: "Analyzer",
-      Client: AccessAnalyzerAnalyzer,
-      propertiesDefault: {},
-      omitProperties: [
-        "arn",
-        "createdAt",
-        "lastResourceAnalyzed",
-        "lastResourceAnalyzedAt",
-        "status",
-        "statusReason",
-      ],
-      inferName: () =>
-        pipe([
-          get("analyzerName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-    },
-    {
-      type: "ArchiveRule",
-      Client: AccessAnalyzerArchiveRule,
-      propertiesDefault: {},
-      omitProperties: ["createdAt", "updatedAt", "analyzerName"],
-      inferName:
-        ({ dependenciesSpec: { analyzer } }) =>
-        ({ ruleName }) =>
-          pipe([
-            tap((params) => {
-              assert(analyzer);
-              assert(ruleName);
-            }),
-            () => `${analyzer}::${ruleName}`,
-          ])(),
-      dependencies: {
-        analyzer: {
-          type: "Analyzer",
-          group: "AccessAnalyzer",
-          parent: true,
-          dependencyId: () => pipe([get("analyzerName")]),
-        },
-      },
-    },
+    //
+    AccessAnalyzerAnalyzer({}),
+    AccessAnalyzerArchiveRule({}),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-      tagsKey,
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+        tagsKey,
+      }),
+    ])
   ),
 ]);

@@ -14,7 +14,6 @@ const {
 } = require("rubico");
 const {
   defaultsDeep,
-  values,
   size,
   isDeepEqual,
   append,
@@ -24,63 +23,7 @@ const {
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
-
-const createModel = ({ config }) => ({
-  package: "ec2",
-  client: "EC2",
-  ignoreErrorCodes: [
-    "InvalidDhcpOptionID.NotFound",
-    "InvalidDhcpOptionsID.NotFound",
-  ],
-
-  getById: {
-    pickId: pipe([
-      tap(({ DhcpOptionsId }) => {
-        assert(DhcpOptionsId);
-      }),
-      ({ DhcpOptionsId }) => ({ DhcpOptionsIds: [DhcpOptionsId] }),
-    ]),
-    method: "describeDhcpOptions",
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(endpoint);
-        }),
-      ]),
-  },
-  getList: {
-    method: "describeDhcpOptions",
-    getParam: "DhcpOptions",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        assign({
-          DhcpConfigurations: pipe([
-            get("DhcpConfigurations"),
-            map(
-              assign({
-                Values: pipe([get("Values"), map(pipe([get("Value")]))]),
-              })
-            ),
-          ]),
-        }),
-      ]),
-  },
-  create: {
-    method: "createDhcpOptions",
-    pickCreated: ({ payload }) => pipe([get("DhcpOptions")]),
-  },
-  destroy: {
-    method: "deleteDhcpOptions",
-    pickId: pipe([
-      tap(({ DhcpOptionsId }) => {
-        assert(DhcpOptionsId);
-      }),
-      pick(["DhcpOptionsId"]),
-    ]),
-  },
-});
 
 const findId = () =>
   pipe([
@@ -129,40 +72,89 @@ const managedByOther = ({ config }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkDhcpOptions.html
-exports.EC2DhcpOptions = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
-    config,
-    findName: findNameInTagsOrId({ findId }),
-    findId,
-    cannotBeDeleted: managedByOther,
-    managedByOther: managedByOther,
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
+exports.EC2DhcpOptions = ({ compare }) => ({
+  type: "DhcpOptions",
+  package: "ec2",
+  client: "EC2",
+  ignoreErrorCodes: [
+    "InvalidDhcpOptionID.NotFound",
+    "InvalidDhcpOptionsID.NotFound",
+  ],
+  omitProperties: ["DhcpOptionsId", "OwnerId"],
+  findName: findNameInTagsOrId({ findId }),
+  findId,
+  cannotBeDeleted: managedByOther,
+  managedByOther: managedByOther,
+  getById: {
+    pickId: pipe([
+      tap(({ DhcpOptionsId }) => {
+        assert(DhcpOptionsId);
+      }),
+      ({ DhcpOptionsId }) => ({ DhcpOptionsIds: [DhcpOptionsId] }),
+    ]),
+    method: "describeDhcpOptions",
+    decorate: ({ endpoint }) =>
       pipe([
         tap((params) => {
-          assert(true);
+          assert(endpoint);
         }),
-        () => otherProps,
-        defaultsDeep({
-          TagSpecifications: [
-            {
-              ResourceType: "dhcp-options",
-              Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-            },
-          ],
+      ]),
+  },
+  getList: {
+    method: "describeDhcpOptions",
+    getParam: "DhcpOptions",
+    decorate: ({ endpoint, getById }) =>
+      pipe([
+        assign({
+          DhcpConfigurations: pipe([
+            get("DhcpConfigurations"),
+            map(
+              assign({
+                Values: pipe([get("Values"), map(pipe([get("Value")]))]),
+              })
+            ),
+          ]),
         }),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-  });
+      ]),
+  },
+  create: {
+    method: "createDhcpOptions",
+    pickCreated: ({ payload }) => pipe([get("DhcpOptions")]),
+  },
+  destroy: {
+    method: "deleteDhcpOptions",
+    pickId: pipe([
+      tap(({ DhcpOptionsId }) => {
+        assert(DhcpOptionsId);
+      }),
+      pick(["DhcpOptionsId"]),
+    ]),
+  },
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        TagSpecifications: [
+          {
+            ResourceType: "dhcp-options",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])(),
+});

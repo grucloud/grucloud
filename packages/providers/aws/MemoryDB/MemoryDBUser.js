@@ -1,20 +1,44 @@
 const assert = require("assert");
-const { pipe, tap, get, eq } = require("rubico");
+const { pipe, tap, get, eq, omit } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource, assignTags } = require("./MemoryDBCommon");
+const { Tagger, assignTags } = require("./MemoryDBCommon");
 
 const pickId = pipe([({ Name }) => ({ UserName: Name })]);
 
 const managedByOther = () => pipe([eq(get("Name"), "default")]);
 
-const model = ({ config }) => ({
+const buildArn = () => pipe([get("ARN")]);
+
+exports.MemoryDBUser = ({ compare }) => ({
+  type: "User",
   package: "memorydb",
   client: "MemoryDB",
+  inferName: () => get("Name"),
+  findName: () => pipe([get("Name")]),
+  findId: () => pipe([get("Name")]),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   ignoreErrorCodes: ["UserNotFoundFault"],
+  omitProperties: [
+    "Authentication",
+    "ACLNames",
+    "ARN",
+    "MinimumEngineVersion",
+    "Status",
+  ],
+  environmentVariables: [
+    {
+      path: "AuthenticationMode.Passwords",
+      suffix: "MEMORYDB_USER_PASSWORDS",
+      array: true,
+    },
+  ],
+  compare: compare({
+    filterTarget: () => pipe([omit(["AuthenticationMode"])]),
+  }),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#describeUsers-property
   getById: {
     method: "describeUsers",
@@ -49,56 +73,41 @@ const model = ({ config }) => ({
     method: "deleteUser",
     pickId,
   },
-});
-
-const buildArn = () => pipe([get("ARN")]);
-
-exports.MemoryDBUser = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([
+      ({ name }) => ({
+        Name: name,
+      }),
+      getById({}),
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("Name")]),
-    findId: () => pipe([get("Name")]),
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    getByName: ({ getList, endpoint, getById }) =>
-      pipe([
-        ({ name }) => ({
-          Name: name,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-        getById({}),
-      ]),
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
+      }),
+      when(
+        get("AuthenticationMode.Passwords"),
         defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
-        }),
-        when(
-          get("AuthenticationMode.Passwords"),
-          defaultsDeep({
-            AuthenticationMode: {
-              Type: "password",
-            },
-          })
-        ),
-      ])(),
-  });
+          AuthenticationMode: {
+            Type: "password",
+          },
+        })
+      ),
+    ])(),
+});

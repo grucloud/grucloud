@@ -4,15 +4,19 @@ const { defaultsDeep, identity } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource } = require("./BatchCommon");
+const { Tagger } = require("./BatchCommon");
 
 const buildArn = () => get("arn");
 
-const model = ({ config }) => ({
+exports.BatchSchedulingPolicy = ({}) => ({
+  type: "SchedulingPolicy",
   package: "batch",
   client: "Batch",
+  inferName: () => get("name"),
+  findName: () => pipe([get("name")]),
+  findId: () => pipe([get("arn")]),
+  getByName: getByNameCore,
+  omitProperties: ["arn"],
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#describeSchedulingPolicies-property
   getById: {
@@ -49,33 +53,21 @@ const model = ({ config }) => ({
     method: "deleteSchedulingPolicy",
     pickId: pick(["arn"]),
   },
-});
-
-exports.BatchSchedulingPolicy = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("name")]),
-    findId: () => pipe([get("arn")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          tags: buildTagsObject({ name, config, namespace, userTags: tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
+      }),
+    ])(),
+});

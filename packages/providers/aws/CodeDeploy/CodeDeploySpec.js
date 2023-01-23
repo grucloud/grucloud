@@ -2,14 +2,15 @@ const assert = require("assert");
 const { tap, pipe, map, get, assign, flatMap } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
-const { replaceWithName } = require("@grucloud/core/Common");
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { createAwsService } = require("../AwsService");
+
+const { compareAws } = require("../AwsCommon");
 const { CodeDeployApplication } = require("./CodeDeployApplication");
 const { CodeDeployDeploymentGroup } = require("./CodeDeployDeploymentGroup");
 
 const GROUP = "CodeDeploy";
 const tagsKey = "tags";
-const compareCodeDeploy = compareAws({
+const compare = compareAws({
   tagsKey,
   // getTargetTags: () => [],
   // getLiveTags: () => [],
@@ -17,271 +18,18 @@ const compareCodeDeploy = compareAws({
 
 module.exports = pipe([
   () => [
-    {
-      type: "Application",
-      Client: CodeDeployApplication,
-      inferName: () => pipe([get("applicationName")]),
-      omitProperties: ["applicationId", "createTime", "linkedToGitHub"],
-      propertiesDefault: {},
-    },
-    {
-      type: "DeploymentGroup",
-      Client: CodeDeployDeploymentGroup,
-      inferName: () =>
-        pipe([
-          ({ applicationName, deploymentGroupName }) =>
-            `${applicationName}::${deploymentGroupName}`,
-        ]),
-      dependencies: {
-        application: {
-          type: "Application",
-          group: "CodeDeploy",
-          parent: true,
-          dependencyId: ({ lives, config }) =>
-            pipe([
-              get("applicationName"),
-              lives.getByName({
-                type: "Application",
-                group: "CodeDeploy",
-                providerName: config.providerName,
-              }),
-              get("id"),
-            ]),
-        },
-        serviceRole: {
-          type: "Role",
-          group: "IAM",
-          dependencyId: ({ lives, config }) => get("serviceRoleArn"),
-        },
-        autoScalingGroups: {
-          type: "AutoScalingGroup",
-          group: "AutoScaling",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("autoScalingGroups", []),
-              map(
-                pipe([
-                  lives.getByName({
-                    type: "AutoScalingGroup",
-                    group: "AutoScaling",
-                    providerName: config.providerName,
-                  }),
-                  get("id"),
-                ])
-              ),
-            ]),
-        },
-        ecsServices: {
-          type: "Service",
-          group: "ECS",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("ecsServices", []),
-              map(
-                pipe([
-                  get("serviceName"),
-                  lives.getByName({
-                    type: "Service",
-                    group: "ECS",
-                    providerName: config.providerName,
-                  }),
-                  get("id"),
-                ])
-              ),
-            ]),
-        },
-        ecsClusters: {
-          type: "Cluster",
-          group: "ECS",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("ecsServices", []),
-              map(
-                pipe([
-                  get("clusterName"),
-                  lives.getByName({
-                    type: "Cluster",
-                    group: "ECS",
-                    providerName: config.providerName,
-                  }),
-                  get("id"),
-                ])
-              ),
-            ]),
-        },
-        targetGroups: {
-          type: "TargetGroup",
-          group: "ElasticLoadBalancingV2",
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("loadBalancerInfo.targetGroupPairInfoList", []),
-              flatMap(
-                pipe([
-                  get("targetGroups"),
-                  map(
-                    pipe([
-                      get("name"),
-                      lives.getByName({
-                        type: "TargetGroup",
-                        group: "ElasticLoadBalancingV2",
-                        providerName: config.providerName,
-                      }),
-                      get("id"),
-                    ])
-                  ),
-                ])
-              ),
-            ]),
-          list: true,
-        },
-        listeners: {
-          type: "Listener",
-          group: "ElasticLoadBalancingV2",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("loadBalancerInfo.targetGroupPairInfoList", []),
-              flatMap(
-                pipe([
-                  get("prodTrafficRoute.listenerArns"),
-                  map(
-                    pipe([
-                      lives.getById({
-                        type: "Listener",
-                        group: "ElasticLoadBalancingV2",
-                        providerName: config.providerName,
-                      }),
-                      get("id"),
-                    ])
-                  ),
-                ])
-              ),
-            ]),
-        },
-        // SNS
-      },
-      compare: compareAws({ filterLive: () => pipe([]) }),
-      filterLive: ({ lives, providerConfig }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          assign({
-            loadBalancerInfo: pipe([
-              get("loadBalancerInfo"),
-              assign({
-                targetGroupPairInfoList: pipe([
-                  get("targetGroupPairInfoList", []),
-                  map(
-                    assign({
-                      prodTrafficRoute: pipe([
-                        get("prodTrafficRoute"),
-                        assign({
-                          listenerArns: pipe([
-                            get("listenerArns", []),
-                            map(
-                              replaceWithName({
-                                groupType: "ElasticLoadBalancingV2::Listener",
-                                path: "id",
-                                pathLive: "id",
-                                providerConfig,
-                                lives,
-                              })
-                            ),
-                          ]),
-                        }),
-                      ]),
-                      targetGroups: pipe([
-                        get("targetGroups", []),
-                        map(
-                          assign({
-                            name: pipe([
-                              get("name"),
-                              replaceWithName({
-                                groupType:
-                                  "ElasticLoadBalancingV2::TargetGroup",
-                                path: "name",
-                                pathLive: "name",
-                                providerConfig,
-                                lives,
-                              }),
-                            ]),
-                          })
-                        ),
-                      ]),
-                    })
-                  ),
-                ]),
-              }),
-            ]),
-          }),
-          when(
-            () => get("ecsServices"),
-            assign({
-              ecsServices: pipe([
-                get("ecsServices"),
-                map(
-                  assign({
-                    clusterName: pipe([
-                      get("clusterName"),
-                      replaceWithName({
-                        groupType: "ECS::Cluster",
-                        path: "name",
-                        pathLive: "name",
-                        providerConfig,
-                        lives,
-                      }),
-                    ]),
-                    serviceName: pipe([
-                      get("serviceName"),
-                      replaceWithName({
-                        groupType: "ECS::Service",
-                        path: "name",
-                        pathLive: "name",
-                        providerConfig,
-                        lives,
-                      }),
-                    ]),
-                  })
-                ),
-              ]),
-            })
-          ),
-          when(
-            () => get("triggerConfigurations"),
-            assign({
-              triggerConfigurations: pipe([
-                get("triggerConfigurations"),
-                map(
-                  assign({
-                    triggerTargetArn: pipe([
-                      get("triggerTargetArn"),
-                      tap((params) => {
-                        assert(true);
-                      }),
-                    ]),
-                  })
-                ),
-              ]),
-            })
-          ),
-        ]),
-      omitProperties: ["deploymentGroupId", "serviceRoleArn"],
-      propertiesDefault: {
-        outdatedInstancesStrategy: "UPDATE",
-        triggerConfigurations: [],
-      },
-    },
+    //
+    CodeDeployApplication({ compare }),
+    CodeDeployDeploymentGroup({ compare }),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      tagsKey,
-      isOurMinion,
-      compare: compareCodeDeploy({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        tagsKey,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

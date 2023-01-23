@@ -5,58 +5,10 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
-
-const { findDependenciesTransitGateway } = require("./EC2TransitGatewayCommon");
 
 const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 const isInstanceError = pipe([eq(get("State"), "failed")]);
-
-const createModel = ({ config }) => ({
-  package: "ec2",
-  client: "EC2",
-  ignoreErrorCodes: ["InvalidTransitGatewayAttachmentID.NotFound"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayVpcAttachments-property
-  // TODO
-  getById: {
-    method: "describeTransitGatewayVpcAttachments",
-    getField: "TransitGatewayVpcAttachments",
-    pickId: pipe([
-      ({ TransitGatewayAttachmentId }) => ({
-        TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
-      }),
-    ]),
-  },
-  getList: {
-    method: "describeTransitGatewayVpcAttachments",
-    getParam: "TransitGatewayVpcAttachments",
-    transformListPre: () => pipe([filter(not(isInstanceDown))]),
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
-  },
-  create: {
-    method: "createTransitGatewayVpcAttachment",
-    pickCreated: ({ payload }) => pipe([get("TransitGatewayVpcAttachment")]),
-    isInstanceUp: pipe([eq(get("State"), "available")]),
-  },
-  destroy: {
-    method: "deleteTransitGatewayVpcAttachment",
-    pickId: pipe([
-      tap(({ TransitGatewayAttachmentId }) => {
-        assert(TransitGatewayAttachmentId);
-      }),
-      pick(["TransitGatewayAttachmentId"]),
-    ]),
-    isInstanceDown,
-    isInstanceError,
-  },
-});
 
 const findNameInDependency =
   ({ lives, config }) =>
@@ -103,53 +55,128 @@ const findId = () =>
     }),
   ]);
 
+const pickId = pipe([
+  tap(({ TransitGatewayAttachmentId }) => {
+    assert(TransitGatewayAttachmentId);
+  }),
+  ({ TransitGatewayAttachmentId }) => ({
+    TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
+  }),
+]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
-    config,
-    findName: findNameInTagsOrId({ findId: findNameInDependency }),
+exports.EC2TransitGatewayVpcAttachment = ({ compare }) => ({
+  type: "TransitGatewayVpcAttachment",
+  package: "ec2",
+  client: "EC2",
+  ignoreErrorCodes: ["InvalidTransitGatewayAttachmentID.NotFound"],
+  findName: findNameInTagsOrId({ findId: findNameInDependency }),
+  pickId,
+  // TODO remove this
+  ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
+  omitProperties: [
+    "TransitGatewayAttachmentId",
+    "TransitGatewayId",
+    "VpcId",
+    "VpcOwnerId",
+    "SubnetIds",
+    "CreationTime",
+    "State",
+  ],
+  dependencies: {
+    transitGateway: {
+      type: "TransitGateway",
+      group: "EC2",
+      dependencyId: ({ lives, config }) => get("TransitGatewayId"),
+    },
+    vpc: {
+      type: "Vpc",
+      group: "EC2",
+      dependencyId: ({ lives, config }) => get("VpcId"),
+    },
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) => get("SubnetIds"),
+    },
+    //TODO remove ?
+    // transitGatewayRouteTables: {
+    //   type: "TransitGatewayRouteTable",
+    //   group: "EC2",
+    //   list: true,
+    // },
+  },
+  findId,
+  cannotBeDeleted: () => eq(get("State"), "deleted"),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayVpcAttachments-property
+  // TODO
+  getById: {
+    method: "describeTransitGatewayVpcAttachments",
+    getField: "TransitGatewayVpcAttachments",
     pickId: pipe([
-      tap(({ TransitGatewayAttachmentId }) => {
-        assert(TransitGatewayAttachmentId);
-      }),
       ({ TransitGatewayAttachmentId }) => ({
         TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
       }),
     ]),
-    findId,
-    cannotBeDeleted: () => eq(get("State"), "deleted"),
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { transitGateway, vpc, subnets },
-      config,
-    }) =>
+  },
+  getList: {
+    method: "describeTransitGatewayVpcAttachments",
+    getParam: "TransitGatewayVpcAttachments",
+    transformListPre: () => pipe([filter(not(isInstanceDown))]),
+    decorate: ({ endpoint, getById }) =>
       pipe([
         tap((params) => {
-          assert(transitGateway);
-          assert(vpc);
-          assert(subnets);
+          assert(getById);
+          assert(endpoint);
         }),
-        () => otherProps,
-        defaultsDeep({
-          TransitGatewayId: getField(transitGateway, "TransitGatewayId"),
-          VpcId: getField(vpc, "VpcId"),
-          SubnetIds: pipe([
-            () => subnets,
-            map((subnet) => getField(subnet, "SubnetId")),
-          ])(),
-          TagSpecifications: [
-            {
-              ResourceType: "transit-gateway-attachment",
-              Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-            },
-          ],
-        }),
-      ])(),
-  });
+      ]),
+  },
+  create: {
+    method: "createTransitGatewayVpcAttachment",
+    pickCreated: ({ payload }) => pipe([get("TransitGatewayVpcAttachment")]),
+    isInstanceUp: pipe([eq(get("State"), "available")]),
+  },
+  destroy: {
+    method: "deleteTransitGatewayVpcAttachment",
+    pickId: pipe([
+      tap(({ TransitGatewayAttachmentId }) => {
+        assert(TransitGatewayAttachmentId);
+      }),
+      pick(["TransitGatewayAttachmentId"]),
+    ]),
+    isInstanceDown,
+    isInstanceError,
+  },
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { transitGateway, vpc, subnets },
+    config,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(transitGateway);
+        assert(vpc);
+        assert(subnets);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        TransitGatewayId: getField(transitGateway, "TransitGatewayId"),
+        VpcId: getField(vpc, "VpcId"),
+        SubnetIds: pipe([
+          () => subnets,
+          map((subnet) => getField(subnet, "SubnetId")),
+        ])(),
+        TagSpecifications: [
+          {
+            ResourceType: "transit-gateway-attachment",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+    ])(),
+});

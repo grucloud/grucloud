@@ -3,8 +3,6 @@ const { pipe, tap, eq, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pipe([
   tap((params) => {
     assert(true);
@@ -14,9 +12,18 @@ const pickId = pipe([
 const cannotBeDeleted = () =>
   pipe([eq(get("isCrossAccountBackupEnabled"), "false")]);
 
-const model = ({ config }) => ({
+exports.BackupGlobalSettings = ({ spec, config }) => ({
+  type: "GlobalSettings",
   package: "backup",
   client: "Backup",
+  inferName: () => () => "global",
+  findName: () => pipe([() => "global"]),
+  findId: () => pipe([() => "global"]),
+  propertiesDefault: {},
+  omitProperties: ["LastUpdateTime"],
+  ignoreResource: () =>
+    pipe([get("live"), eq(get("isCrossAccountBackupEnabled"), "false")]),
+  cannotBeDeleted,
   ignoreErrorCodes: [],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#describeGlobalSettings-property
   getById: {
@@ -49,22 +56,12 @@ const model = ({ config }) => ({
     }),
     isInstanceDown: () => true,
   },
-});
-
-exports.BackupGlobalSettings = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([() => "global"]),
-    findId: () => pipe([() => "global"]),
-    cannotBeDeleted,
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: {},
-      config,
-    }) => pipe([() => otherProps, defaultsDeep({})])(),
-  });
+  }) => pipe([() => otherProps, defaultsDeep({})])(),
+});

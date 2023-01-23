@@ -4,8 +4,6 @@ const { defaultsDeep, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pipe([
   tap(({ name }) => {
     assert(name);
@@ -20,10 +18,33 @@ const decorate = ({ endpoint, config }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+exports.ConfigDeliveryChannel = ({}) => ({
+  type: "DeliveryChannel",
   package: "config-service",
   client: "ConfigService",
+  inferName: () => get("name"),
+  findName: () => pipe([get("name")]),
+  findId: () => pipe([get("name")]),
   ignoreErrorCodes: ["NoSuchDeliveryChannelException"],
+  propertiesDefault: {},
+  omitProperties: ["s3BucketName", "snsTopicARN"],
+  dependencies: {
+    configurationRecorder: {
+      type: "ConfigurationRecorder",
+      group: "Config",
+      dependencyId: ({ lives, config }) => pipe([get("name")]),
+    },
+    snsTopic: {
+      type: "Topic",
+      group: "SNS",
+      dependencyId: ({ lives, config }) => pipe([get("snsTopicARN")]),
+    },
+    s3Bucket: {
+      type: "Bucket",
+      group: "S3",
+      dependencyId: ({ lives, config }) => pipe([get("s3BucketName")]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#describeDeliveryChannels-property
   getById: {
     method: "describeDeliveryChannels",
@@ -60,34 +81,25 @@ const model = ({ config }) => ({
     method: "deleteDeliveryChannel",
     pickId,
   },
-});
-
-exports.ConfigDeliveryChannel = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: { snsTopic, s3Bucket },
     config,
-    findName: () => pipe([get("name")]),
-    findId: () => pipe([get("name")]),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: { snsTopic, s3Bucket },
-      config,
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(s3Bucket);
-        }),
-        () => otherProps,
-        defaultsDeep({ s3BucketName: s3Bucket.config.Name }),
-        when(
-          () => snsTopic,
-          defaultsDeep({
-            snsTopicARN: getField(snsTopic, "Attributes.TopicArn"),
-          })
-        ),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(s3Bucket);
+      }),
+      () => otherProps,
+      defaultsDeep({ s3BucketName: s3Bucket.config.Name }),
+      when(
+        () => snsTopic,
+        defaultsDeep({
+          snsTopicARN: getField(snsTopic, "Attributes.TopicArn"),
+        })
+      ),
+    ])(),
+});

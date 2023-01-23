@@ -1,10 +1,10 @@
 const assert = require("assert");
-const { tap, pipe, map, get, assign, eq } = require("rubico");
+const { tap, pipe, map } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { replaceWithName } = require("@grucloud/core/Common");
+const { createAwsService } = require("../AwsService");
 
-const { compareAws, assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
 
 const { BackupBackupPlan } = require("./BackupBackupPlan");
 const { BackupBackupSelection } = require("./BackupBackupSelection");
@@ -21,248 +21,31 @@ const { BackupGlobalSettings } = require("./BackupGlobalSettings");
 const { BackupRegionSettings } = require("./BackupRegionSettings");
 const { BackupReportPlan } = require("./BackupReportPlan");
 
-const GROUP = "Backup";
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
 module.exports = pipe([
   () => [
-    {
-      type: "BackupPlan",
-      Client: BackupBackupPlan,
-      propertiesDefault: {},
-      omitProperties: [
-        "BackupPlanArn",
-        "BackupPlanId",
-        "CreationDate",
-        "VersionId",
-        "Rules[].RuleId",
-        "CreatorRequestId",
-      ],
-      inferName: () => get("BackupPlanName"),
-      dependencies: {
-        backupVaults: {
-          type: "BackupVault",
-          group: GROUP,
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("Rules"),
-              map(
-                pipe([
-                  get("TargetBackupVaultName"),
-                  lives.getByName({
-                    type: "BackupVault",
-                    group: GROUP,
-                    providerName: config.providerName,
-                  }),
-                  get("id"),
-                ])
-              ),
-            ]),
-        },
-      },
-    },
-    {
-      type: "BackupSelection",
-      Client: BackupBackupSelection,
-      propertiesDefault: {},
-      omitProperties: [
-        "BackupPlanId",
-        "CreationDate",
-        "CreatorRequestId",
-        "SelectionId",
-        "IamRoleArn",
-      ],
-      inferName: () => get("SelectionName"),
-      dependencies: {
-        backupPlan: {
-          type: "BackupPlan",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) => pipe([get("BackupPlanId")]),
-        },
-        iamRole: {
-          type: "Role",
-          group: "IAM",
-          parent: true,
-          dependencyId: ({ lives, config }) => pipe([get("IamRoleArn")]),
-        },
-      },
-    },
-    {
-      type: "BackupVault",
-      Client: BackupBackupVault,
-      propertiesDefault: {},
-      omitProperties: [
-        "BackupVaultArn",
-        "EncryptionKeyArn",
-        "CreationDate",
-        "NumberOfRecoveryPoints",
-        "Locked",
-        "CreatorRequestId",
-        "MaxRetentionDays",
-        "MinRetentionDays",
-      ],
-      inferName: () => get("BackupVaultName"),
-      dependencies: {
-        kmsKey: {
-          type: "Key",
-          group: "KMS",
-          excludeDefaultDependencies: true,
-          dependencyId: ({ lives, config }) => pipe([get("EncryptionKeyArn")]),
-        },
-      },
-    },
-    {
-      type: "BackupVaultLockConfiguration",
-      Client: BackupBackupVaultLockConfiguration,
-      propertiesDefault: {},
-      omitProperties: ["BackupVaultName"],
-      inferName: ({ dependenciesSpec: { backupVault } }) =>
-        pipe([() => backupVault]),
-      dependencies: {
-        backupVault: {
-          type: "BackupVault",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) => pipe([get("BackupVaultName")]),
-        },
-      },
-    },
-    {
-      type: "BackupVaultNotification",
-      Client: BackupBackupVaultNotification,
-      omitProperties: ["BackupVaultName", "BackupVaultArn", "SNSTopicArn"],
-
-      inferName: ({ dependenciesSpec: { backupVault } }) =>
-        pipe([() => backupVault]),
-      dependencies: {
-        backupVault: {
-          type: "BackupVault",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) => pipe([get("BackupVaultName")]),
-        },
-        snsTopic: {
-          type: "Topic",
-          group: "SNS",
-          dependencyId: ({ lives, config }) => pipe([get("SNSTopicArn")]),
-        },
-      },
-    },
-    {
-      type: "BackupVaultPolicy",
-      Client: BackupBackupVaultPolicy,
-      omitProperties: ["BackupVaultName", "BackupVaultArn"],
-      inferName: ({ dependenciesSpec: { backupVault } }) =>
-        pipe([() => backupVault]),
-      dependencies: {
-        backupVault: {
-          type: "BackupVault",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) => pipe([get("BackupVaultName")]),
-        },
-      },
-      filterLive: ({ providerConfig, lives }) =>
-        pipe([
-          assign({
-            Policy: pipe([
-              get("Policy"),
-              assignPolicyAccountAndRegion({ providerConfig, lives }),
-            ]),
-          }),
-        ]),
-    },
-    {
-      type: "Framework",
-      Client: BackupFramework,
-      propertiesDefault: {},
-      omitProperties: [
-        "FrameworkStatus",
-        "FrameworkArn",
-        "DeploymentStatus",
-        "NumberOfControls",
-        "CreationTime",
-      ],
-      inferName: () => get("FrameworkName"),
-    },
-    {
-      type: "GlobalSettings",
-      Client: BackupGlobalSettings,
-      propertiesDefault: {},
-      omitProperties: ["LastUpdateTime"],
-      inferName: () => () => "global",
-      ignoreResource: () =>
-        pipe([get("live"), eq(get("isCrossAccountBackupEnabled"), "false")]),
-    },
-    {
-      type: "RegionSettings",
-      Client: BackupRegionSettings,
-      propertiesDefault: {},
-      omitProperties: [],
-      inferName: () => () => "region",
-      ignoreResource: () => true,
-    },
-    {
-      type: "ReportPlan",
-      Client: BackupReportPlan,
-      propertiesDefault: {},
-      omitProperties: [
-        "ReportPlanArn",
-        "CreationTime",
-        "DeploymentStatus",
-        "LastAttemptedExecutionTime",
-        "LastSuccessfulExecutionTime",
-        "ReportSetting.NumberOfFrameworks",
-      ],
-      inferName: () => get("ReportPlanName"),
-      dependencies: {
-        s3Bucket: {
-          type: "Bucket",
-          group: "S3",
-          dependencyId: ({ lives, config }) =>
-            pipe([get("ReportDeliveryChannel.S3BucketName")]),
-        },
-        frameworks: {
-          type: "Framework",
-          group: "Backup",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([get("ReportSetting.FrameworkArns")]),
-        },
-      },
-      filterLive: ({ providerConfig, lives }) =>
-        pipe([
-          assign({
-            ReportSetting: pipe([
-              get("ReportSetting"),
-              assign({
-                FrameworkArns: pipe([
-                  get("FrameworkArns"),
-                  map(
-                    pipe([
-                      replaceWithName({
-                        groupType: "Backup::Framework",
-                        path: "id",
-                        providerConfig,
-                        lives,
-                      }),
-                    ])
-                  ),
-                ]),
-              }),
-            ]),
-          }),
-        ]),
-    },
+    BackupBackupPlan({}),
+    BackupBackupSelection({}),
+    BackupBackupVault({}),
+    BackupBackupVaultLockConfiguration({}),
+    BackupBackupVaultNotification({}),
+    BackupBackupVaultPolicy({}),
+    BackupFramework({}),
+    BackupGlobalSettings({}),
+    BackupRegionSettings({}),
+    BackupRegionSettings({}),
+    BackupReportPlan({}),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-      tagsKey,
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: "Backup",
+        compare: compare({}),
+        tagsKey,
+      }),
+    ])
   ),
 ]);

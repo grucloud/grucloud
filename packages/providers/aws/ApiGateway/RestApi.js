@@ -15,8 +15,12 @@ const {
   switchCase,
   fork,
   reduce,
+  pick,
+  and,
 } = require("rubico");
 const {
+  uniq,
+  find,
   defaultsDeep,
   identity,
   isEmpty,
@@ -36,7 +40,9 @@ const logger = require("@grucloud/core/logger")({
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
+const { flattenObject } = require("@grucloud/core/Common");
+const { replaceAccountAndRegion } = require("../AwsCommon");
+
 const { throwIfNotAwsError } = require("../AwsCommon");
 const { diffToPatch, ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
 
@@ -488,9 +494,22 @@ const putRestApi =
       endpoint().putRestApi,
     ])();
 
-const model = ({ config }) => ({
+const model = ({ config }) => ({});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
+exports.RestApi = ({ compare }) => ({
+  type: "RestApi",
   package: "api-gateway",
   client: "APIGateway",
+  inferName: () => get("name"),
+  findName,
+  findId,
+  getByName: getByNameCore,
+  omitProperties: ["id", "createdDate", "deployments", "version"],
+  propertiesDefault: { disableExecuteApiEndpoint: false },
+  compare: compare({
+    filterTarget: () => pipe([omit(["deployment"])]),
+  }),
   ignoreErrorCodes,
   getById: {
     method: "getRestApi",
@@ -557,33 +576,133 @@ const model = ({ config }) => ({
     method: "deleteRestApi",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
-exports.RestApi = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName,
-    findId,
-    getByName: getByNameCore,
-    ...Tagger({ buildArn: buildArn(config) }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
+  filterLive:
+    ({ providerConfig, lives }) =>
+    (live) =>
       pipe([
-        () => otherProps,
-        defaultsDeep({
-          name,
-          tags: buildTagsObject({ config, namespace, name, userTags: tags }),
+        tap(() => {
+          assert(providerConfig);
         }),
+        () => live,
+        pick(["name", "apiKeySource", "endpointConfiguration", "schema"]),
         assign({
-          description: pipe([get("schema.info.description")]),
+          schema: pipe([
+            get("schema"),
+            assign({
+              paths: pipe([
+                get("paths"),
+                map(
+                  pipe([
+                    map(
+                      pipe([
+                        when(
+                          get("x-amazon-apigateway-integration"),
+                          assign({
+                            "x-amazon-apigateway-integration": pipe([
+                              get("x-amazon-apigateway-integration"),
+                              tap((params) => {
+                                assert(true);
+                              }),
+                              //TODO requestTemplates
+                              when(
+                                get("credentials"),
+                                assign({
+                                  credentials: pipe([
+                                    get("credentials"),
+                                    replaceAccountAndRegion({
+                                      providerConfig,
+                                      lives,
+                                    }),
+                                  ]),
+                                })
+                              ),
+                              when(
+                                get("uri"),
+                                assign({
+                                  uri: pipe([
+                                    get("uri"),
+                                    replaceAccountAndRegion({
+                                      providerConfig,
+                                      lives,
+                                    }),
+                                  ]),
+                                })
+                              ),
+                            ]),
+                          })
+                        ),
+                      ])
+                    ),
+                  ])
+                ),
+              ]),
+            }),
+          ]),
+          deployment: pipe([
+            () => live,
+            get("deployments"),
+            first,
+            get("id"),
+            (deploymentId) =>
+              pipe([
+                () => lives,
+                find(
+                  and([
+                    eq(get("groupType"), "APIGateway::Stage"),
+                    eq(get("live.deploymentId"), deploymentId),
+                  ])
+                ),
+                get("live.stageName"),
+              ])(),
+            (stageName) => ({
+              stageName,
+            }),
+          ]),
         }),
       ])(),
-  });
+  dependencies: {
+    roles: {
+      type: "Role",
+      group: "IAM",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("schema.paths"),
+          flattenObject({ filterKey: (key) => key === "credentials" }),
+          map(
+            pipe([
+              lives.getById({
+                type: "Role",
+                group: "IAM",
+                providerName: config.providerName,
+              }),
+              get("id"),
+            ])
+          ),
+          //TODO move uniq to flattenObject
+          uniq,
+        ]),
+    },
+  },
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        name,
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
+      }),
+      assign({
+        description: pipe([get("schema.info.description")]),
+      }),
+    ])(),
+});

@@ -1,12 +1,10 @@
 const assert = require("assert");
 const { pipe, map, tap, get, pick, assign } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
-const { tagResource, untagResource } = require("./CodeStarConnectionsCommon");
+const { Tagger } = require("./CodeStarConnectionsCommon");
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const pickId = pick(["ConnectionArn"]);
 
@@ -22,10 +20,33 @@ const assignTags = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+const buildArn = () =>
+  pipe([
+    get("ConnectionArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeStarconnections.html
+exports.CodeStarConnectionsConnection = ({}) => ({
+  type: "Connection",
   package: "codestar-connections",
   client: "CodeStarConnections",
+  inferName: () => pipe([get("ConnectionName")]),
+  findName: () => pipe([get("ConnectionName")]),
+  findId: () => pipe([get("ConnectionArn")]),
+  getByName: getByNameCore,
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  omitProperties: [
+    "ConnectionArn",
+    "ConnectionStatus",
+    "OwnerAccountId",
+    "HostArn",
+  ],
+  //TODO Host
+  //dependencies: { type: "Host", group: GROUP },
+  propertiesDefault: {},
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeStarconnections.html#getConnection-property
   getById: {
     method: "getConnection",
@@ -56,37 +77,28 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeStarconnections.html#deleteConnection-property
   destroy: { method: "deleteConnection", pickId },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeStarconnections.html
-exports.CodeStarConnectionsConnection = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: { host },
     config,
-    findName: () => pipe([get("ConnectionName")]),
-    findId: () => pipe([get("ConnectionArn")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({ property: "ConnectionArn" }),
-    untagResource: untagResource({ property: "ConnectionArn" }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: { host },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: tags,
         }),
-        //TODO
-        //when(() => host, defaultsDeep({})),
-      ])(),
-  });
+      }),
+      //TODO
+      //when(() => host, defaultsDeep({})),
+    ])(),
+});

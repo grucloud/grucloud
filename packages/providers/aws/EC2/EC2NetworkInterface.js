@@ -1,97 +1,97 @@
 const assert = require("assert");
-const { get, pipe, tap, pick, switchCase } = require("rubico");
-const { isEmpty, first, unless, pluck, prepend } = require("rubico/x");
+const { pipe, tap, get, pick, switchCase } = require("rubico");
+const { prepend, isEmpty } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "EC2NetworkInterface",
-});
+const { buildTags } = require("../AwsCommon");
+const { tagResource, untagResource } = require("./EC2Common");
 
-const { AwsClient } = require("../AwsClient");
-const { createEC2, tagResource, untagResource } = require("./EC2Common");
+const findId = () => get("NetworkInterfaceId");
+const pickId = pick(["NetworkInterfaceId"]);
 
-const { EC2SecurityGroup } = require("./EC2SecurityGroup");
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getNetworkInterfaceEntries-property
+const decorate = ({ endpoint }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
-exports.EC2NetworkInterface = ({ spec, config }) => {
-  const ec2 = createEC2(config);
-  const client = AwsClient({ spec, config })(ec2);
-  const awsSecurityGroup = EC2SecurityGroup({ config, spec });
-  const findId = () => get("NetworkInterfaceId");
-  const pickId = pick(["NetworkInterfaceId"]);
+const findName =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(config);
+        assert(live.NetworkInterfaceId);
+      }),
+      () => live,
+      get("Attachment.InstanceId"),
+      lives.getById({
+        providerName: config.providerName,
+        type: "Instance",
+        group: "EC2",
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+      get("name"),
+      switchCase([isEmpty, () => live.NetworkInterfaceId, prepend("eni::")]),
+    ])();
 
-  const findName =
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        tap((params) => {
-          assert(config);
-          assert(live.NetworkInterfaceId);
-        }),
-        () => live,
-        get("Attachment.InstanceId"),
-        lives.getById({
-          providerName: config.providerName,
-          type: "Instance",
-          group: "EC2",
-        }),
-        tap((params) => {
-          assert(true);
-        }),
-        get("name"),
-        switchCase([isEmpty, () => live.NetworkInterfaceId, prepend("eni::")]),
-      ])();
-
-  const findNamespace =
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        () => live,
-        get("Groups"),
-        first,
-        get("GroupId"),
-        lives.getById({
-          providerName: config.providerName,
-          type: "SecurityGroup",
-          group: "EC2",
-        }),
-        unless(
-          isEmpty,
-          pipe([
-            tap(({ live }) => {
-              assert(live);
-            }),
-            get("live"),
-            awsSecurityGroup.findNamespace({ lives, config }),
-          ])
-        ),
-        tap((namespace) => {
-          logger.debug(`findNamespace ${namespace}`);
-        }),
-      ])();
-
-  const getList = client.getList({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2NetworkInterface = ({ compare }) => ({
+  type: "NetworkInterface",
+  package: "ec2",
+  client: "EC2",
+  managedByOther: () => () => true,
+  cannotBeDeleted: () => () => true,
+  findName,
+  findId,
+  omitProperties: ["Attachment"],
+  filterLive: () => pipe([pick(["Description"])]),
+  dependencies: {
+    instance: {
+      type: "Instance",
+      group: "EC2",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("Attachment.InstanceId"),
+          lives.getById({
+            providerName: config.providerName,
+            type: "Instance",
+            group: "EC2",
+          }),
+          get("id"),
+        ]),
+    },
+  },
+  ignoreErrorCodes: ["InvalidNetworkInterfaceID.NotFound"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeNetworkInterfaces-property
+  // getById: {
+  //   pickId: pipe([({ PrefixListId }) => ({ PrefixListIds: [PrefixListId] })]),
+  //   method: "describeNetworkInterfaces",
+  //   getField: "PrefixLists",
+  //   ignoreErrorCodes,
+  //   decorate,
+  // },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeNetworkInterfaces-property
+  getList: {
     method: "describeNetworkInterfaces",
     getParam: "NetworkInterfaces",
-  });
-
-  const destroy = client.destroy({
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createNetworkInterface-property
+  // create: {
+  //   method: "createNetworkInterface",
+  //   pickCreated: () => pipe([get("PrefixList")]),
+  //   isInstanceUp: eq(get("State"), "create-complete"),
+  //   isInstanceError: eq(get("State"), "create-failed"),
+  //   getErrorMessage: get("StateMessage", "create-failed"),
+  // },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteNetworkInterface-property
+  destroy: {
     pickId,
     method: "deleteNetworkInterface",
-    //getById,
-    ignoreErrorCodes: ["InvalidNetworkInterfaceID.NotFound"],
-    config,
-  });
-
-  return {
-    spec,
-    managedByOther: () => () => true,
-    cannotBeDeleted: () => () => true,
-    findNamespace,
-    //getById,
-    findId,
-    findName,
-    getList,
-    destroy,
-    tagResource: tagResource({ endpoint: ec2 }),
-    untagResource: untagResource({ endpoint: ec2 }),
-  };
-};
+  },
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+});

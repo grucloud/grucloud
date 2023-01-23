@@ -4,8 +4,6 @@ const { defaultsDeep, when, first } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pipe([
   tap(({ ConformancePackName }) => {
     assert(ConformancePackName);
@@ -54,10 +52,52 @@ const decorate =
       defaultsDeep(live),
     ])();
 
-const model = ({ config }) => ({
+exports.ConfigConformancePack = ({}) => ({
+  type: "ConformancePack",
   package: "config-service",
   client: "ConfigService",
+  inferName: () => get("ConformancePackName"),
+  findName: () => pipe([get("ConformancePackName")]),
+  findId: () => pipe([get("ConformancePackName")]),
   ignoreErrorCodes: ["NoSuchConformancePackException"],
+  propertiesDefault: {},
+  omitProperties: [
+    "LastUpdateRequestedTime",
+    "ConformancePackArn",
+    "ConformancePackId",
+    "ConformancePackState",
+    "ConformancePackStatusReason",
+    "LastUpdateCompletedTime",
+    "StackArn",
+    "Rules[].ComplianceType",
+    "Rules[].Controls",
+  ],
+  dependencies: {
+    stack: {
+      type: "Stack",
+      group: "CloudFormation",
+      parent: true,
+      dependsOnTypeOnly: true,
+    },
+    s3BucketDelivery: {
+      type: "Bucket",
+      group: "S3",
+      dependencyId: ({ lives, config }) => pipe([get("DeliveryS3Bucket")]),
+    },
+    s3BucketTemplate: {
+      type: "Bucket",
+      group: "S3",
+      dependencyId: ({ lives, config }) => pipe([get("TemplateS3Uri")]),
+    },
+    // TODO
+    // deliveryChannel: {
+    //   type: "DeliveryChannel",
+    //   group: "Config",
+    //   parent: true,
+    //   dependencyId: ({ lives, config }) =>
+    //     pipe([get("ConfigurationRecorderName")]),
+    // },
+  },
   getById: {
     method: "describeConformancePacks",
     pickId: pipe([
@@ -88,32 +128,23 @@ const model = ({ config }) => ({
     method: "deleteConformancePack",
     pickId,
   },
-});
-
-exports.ConfigConformancePack = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: { s3BucketDelivery, s3BucketTemplate },
     config,
-    findName: () => pipe([get("ConformancePackName")]),
-    findId: () => pipe([get("ConformancePackName")]),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: { s3BucketDelivery, s3BucketTemplate },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        when(
-          () => s3BucketDelivery,
-          assign({ DeliveryS3Bucket: () => s3BucketDelivery.config.Name })
-        ),
-        when(
-          () => s3BucketTemplate,
-          assign({ TemplateS3Uri: () => s3BucketTemplate.config.Name })
-        ),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      when(
+        () => s3BucketDelivery,
+        assign({ DeliveryS3Bucket: () => s3BucketDelivery.config.Name })
+      ),
+      when(
+        () => s3BucketTemplate,
+        assign({ TemplateS3Uri: () => s3BucketTemplate.config.Name })
+      ),
+    ])(),
+});

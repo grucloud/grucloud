@@ -2,11 +2,12 @@ const assert = require("assert");
 const { pipe, tap, get, map } = require("rubico");
 const { defaultsDeep, unless, isEmpty } = require("rubico/x");
 
-const { createAwsResource } = require("../AwsClient");
 const { Tagger } = require("./ApiGatewayCommon");
 const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
 
 const findId = () => pipe([get("id")]);
+
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const buildArn =
   ({ config }) =>
@@ -15,9 +16,61 @@ const buildArn =
 
 const pickId = pipe([({ id }) => ({ usagePlanId: id })]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
+exports.UsagePlan = ({}) => ({
+  type: "UsagePlan",
   package: "api-gateway",
   client: "APIGateway",
+  inferName: () => get("name"),
+  findName: () => pipe([get("name")]),
+  findId,
+  omitProperties: ["id"],
+  propertiesDefault: {},
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        apiStages: pipe([
+          get("apiStages"),
+          map(
+            assign({
+              apiId: pipe([
+                get("apiId"),
+                replaceWithName({
+                  groupType: "APIGateway::RestApi",
+                  path: "id",
+                  pathLive: "live.id",
+                  providerConfig,
+                  lives,
+                }),
+              ]),
+            })
+          ),
+        ]),
+      }),
+    ]),
+  dependencies: {
+    stages: {
+      type: "Stage",
+      group: "APIGateway",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("apiStages"),
+          map(({ apiId, stage }) =>
+            pipe([
+              () =>
+                `arn:aws:apigateway:${config.region}::/restapis/${apiId}/stages/${stage}`,
+              lives.getById({
+                type: "Stage",
+                group: "APIGateway",
+                providerName: config.providerName,
+              }),
+              get("id"),
+            ])()
+          ),
+        ]),
+    },
+  },
   ignoreErrorCodes: ["NotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getUsagePlan-property
   getById: {
@@ -73,29 +126,22 @@ const model = ({ config }) => ({
     method: "deleteUsagePlan",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
-exports.UsagePlan = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("name")]),
-    findId,
-    getByName: getByNameCore,
-    ...Tagger({ buildArn: buildArn({ config }) }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      }),
+    ])(),
+});

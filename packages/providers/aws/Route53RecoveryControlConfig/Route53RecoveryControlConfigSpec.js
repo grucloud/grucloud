@@ -1,9 +1,9 @@
-const { replaceWithName } = require("@grucloud/core/Common");
 const assert = require("assert");
-const { tap, pipe, map, get, assign, switchCase } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { tap, pipe, map } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
+const { createAwsService } = require("../AwsService");
 
-const { isOurMinion, compareAws, replaceRegion } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
 const {
   Route53RecoveryControlConfigCluster,
 } = require("./Route53RecoveryControlConfigCluster");
@@ -20,173 +20,22 @@ const {
   Route53RecoveryControlConfigSafetyRule,
 } = require("./Route53RecoveryControlConfigSafetyRule");
 
-const GROUP = "Route53RecoveryControlConfig";
-
-const compareRoute53RecoveryControlConfig = compareAws({});
-
-const filterLiveRule = ({ lives, providerConfig }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    assign({
-      AssertedControls: pipe([
-        get("AssertedControls"),
-        map(
-          replaceWithName({
-            groupType: "Route53RecoveryControlConfig::RoutingControl",
-            providerConfig,
-            lives,
-            path: "id",
-          })
-        ),
-      ]),
-      ControlPanelArn: pipe([
-        get("ControlPanelArn"),
-        replaceWithName({
-          groupType: "Route53RecoveryControlConfig::ControlPanel",
-          providerConfig,
-          lives,
-          path: "id",
-        }),
-      ]),
-    }),
-  ]);
+const compare = compareAws({});
 
 module.exports = pipe([
   () => [
-    {
-      type: "Cluster",
-      Client: Route53RecoveryControlConfigCluster,
-      inferName: () => pipe([get("ClusterName")]),
-      omitProperties: ["ClusterArn", "Status", "ClusterEndpoints"],
-    },
-    {
-      type: "ControlPanel",
-      Client: Route53RecoveryControlConfigControlPanel,
-      inferName: () => pipe([get("ControlPanelName")]),
-      dependencies: {
-        cluster: {
-          type: "Cluster",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) => get("ClusterArn"),
-        },
-      },
-      omitProperties: [
-        "ClusterArn",
-        "ControlPanelArn",
-        "Status",
-        "RoutingControlCount",
-      ],
-      propertiesDefault: { DefaultControlPanel: false },
-    },
-    {
-      type: "RoutingControl",
-      Client: Route53RecoveryControlConfigRoutingControl,
-      inferName: () => pipe([get("RoutingControlName")]),
-      dependencies: {
-        controlPanel: {
-          type: "ControlPanel",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) => get("ControlPanelArn"),
-        },
-      },
-      omitProperties: [
-        "RoutingControlArn",
-        "ControlPanelArn",
-        "ClusterArn",
-        "Status",
-      ],
-      filterLive: ({ lives, providerConfig }) =>
-        pipe([
-          assign({
-            RoutingControlName: pipe([
-              get("RoutingControlName"),
-              replaceRegion({ providerConfig }),
-            ]),
-          }),
-        ]),
-    },
-    {
-      type: "SafetyRule",
-      Client: Route53RecoveryControlConfigSafetyRule,
-      inferName: () =>
-        pipe([
-          switchCase([
-            get("AssertionRule.Name"),
-            get("AssertionRule.Name"),
-            get("GatingRule.Name"),
-            get("GatingRule.Name"),
-            (properties) => {
-              assert(false, `no AssertionRule or GatingRule`);
-            },
-          ]),
-        ]),
-      dependencies: {
-        controlPanel: {
-          type: "ControlPanel",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) =>
-            pipe([
-              (live) =>
-                get("AssertionRule.ControlPanelArn")(live) ||
-                get("GatingRule.ControlPanelArn")(live),
-            ]),
-        },
-        routingControls: {
-          type: "RoutingControl",
-          group: GROUP,
-          list: true,
-          dependencyIds:
-            ({ lives, config }) =>
-            (live) =>
-              pipe([
-                () => live,
-                get("AssertionRule.AssertedControls"),
-                when(isEmpty, () =>
-                  get("GatingRule.AssertedControls", [])(live)
-                ),
-              ])(),
-        },
-      },
-      omitProperties: [
-        "AssertionRule.SafetyRuleArn",
-        "AssertionRule.Status",
-        "GatingRule.SafetyRuleArn",
-        "GatingRule.Status",
-      ],
-      filterLive: ({ lives, providerConfig }) =>
-        pipe([
-          switchCase([
-            get("AssertionRule"),
-            assign({
-              AssertionRule: pipe([
-                get("AssertionRule"),
-                filterLiveRule({ lives, providerConfig }),
-              ]),
-            }),
-            get("GatingRule"),
-            assign({
-              GatingRule: pipe([
-                get("GatingRule"),
-                filterLiveRule({ lives, providerConfig }),
-              ]),
-            }),
-            (live) => {
-              assert(false, "AssertionRule or GatingRule");
-            },
-          ]),
-        ]),
-    },
+    Route53RecoveryControlConfigCluster({}),
+    Route53RecoveryControlConfigControlPanel({}),
+    Route53RecoveryControlConfigRoutingControl({}),
+    Route53RecoveryControlConfigSafetyRule({}),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      isOurMinion,
-      compare: compareRoute53RecoveryControlConfig({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: "Route53RecoveryControlConfig",
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

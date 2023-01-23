@@ -3,7 +3,6 @@ const { pipe, tap, get, pick, map, or } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger } = require("./LightsailCommon");
 
@@ -30,9 +29,120 @@ const decorate = ({ endpoint }) =>
     ({ name, ...other }) => ({ domainName: name, ...other }),
   ]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
+exports.LightsailDomain = ({ compare }) => ({
+  type: "Domain",
   package: "lightsail",
   client: "Lightsail",
+  propertiesDefault: {},
+  omitProperties: [
+    "arn",
+    "supportCode",
+    "resourceType",
+    "createdAt",
+    "state",
+    "registeredDomainDelegationInfo",
+    //TODO,
+    //"domainEntries[].id"
+  ],
+  inferName: () => get("domainName"),
+  // compare: compare({
+  //   filterTarget: () => pipe([omit(["compare"])]),
+  // }),
+  findName: () =>
+    pipe([
+      get("domainName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("arn"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ domainName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        tap((params) => {
+          assert(payload.domainName);
+        }),
+        () => diff,
+        //TODO updated
+        get("liveDiff"),
+        tap.if(
+          or([get("added.domainEntries")]),
+          pipe([
+            get("added.domainEntries"),
+            tap((params) => {
+              assert(true);
+            }),
+            map(
+              pipe([
+                tap((params) => {
+                  assert(true);
+                }),
+                (domainEntry) => ({
+                  domainEntry,
+                  domainName: payload.domainName,
+                }),
+                endpoint().createDomainEntry,
+              ])
+            ),
+          ])
+        ),
+        tap.if(
+          or([get("deleted.domainEntries")]),
+          pipe([
+            get("deleted.domainEntries"),
+            tap((params) => {
+              assert(true);
+            }),
+            map(
+              pipe([
+                tap((params) => {
+                  assert(true);
+                }),
+                (domainEntry) => ({
+                  domainEntry,
+                  domainName: payload.domainName,
+                }),
+                endpoint().deleteDomainEntry,
+              ])
+            ),
+          ])
+        ),
+      ])(),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: tags,
+          key: "key",
+          value: "value",
+        }),
+      }),
+    ])(),
+
   ignoreErrorCodes: ["DoesNotExist"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getDomain-property
   getById: {
@@ -79,120 +189,4 @@ const model = ({ config }) => ({
     method: "deleteDomain",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
-exports.LightsailDomain = ({ compare }) => ({
-  type: "Domain",
-  propertiesDefault: {},
-  omitProperties: [
-    "arn",
-    "supportCode",
-    "resourceType",
-    "createdAt",
-    "state",
-    "registeredDomainDelegationInfo",
-    //TODO,
-    //"domainEntries[].id"
-  ],
-  inferName: () => get("domainName"),
-  // compare: compare({
-  //   filterTarget: () => pipe([omit(["compare"])]),
-  // }),
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("domainName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("arn"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ domainName: name }), getById({})]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      update:
-        ({ endpoint, getById }) =>
-        async ({ payload, live, diff }) =>
-          pipe([
-            tap((params) => {
-              assert(payload.domainName);
-            }),
-            () => diff,
-            //TODO updated
-            get("liveDiff"),
-            tap.if(
-              or([get("added.domainEntries")]),
-              pipe([
-                get("added.domainEntries"),
-                tap((params) => {
-                  assert(true);
-                }),
-                map(
-                  pipe([
-                    tap((params) => {
-                      assert(true);
-                    }),
-                    (domainEntry) => ({
-                      domainEntry,
-                      domainName: payload.domainName,
-                    }),
-                    endpoint().createDomainEntry,
-                  ])
-                ),
-              ])
-            ),
-            tap.if(
-              or([get("deleted.domainEntries")]),
-              pipe([
-                get("deleted.domainEntries"),
-                tap((params) => {
-                  assert(true);
-                }),
-                map(
-                  pipe([
-                    tap((params) => {
-                      assert(true);
-                    }),
-                    (domainEntry) => ({
-                      domainEntry,
-                      domainName: payload.domainName,
-                    }),
-                    endpoint().deleteDomainEntry,
-                  ])
-                ),
-              ])
-            ),
-          ])(),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { Tags, ...otherProps },
-        dependencies: {},
-        config,
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            tags: buildTags({
-              name,
-              config,
-              namespace,
-              UserTags: tags,
-              key: "key",
-              value: "value",
-            }),
-          }),
-        ])(),
-    }),
 });

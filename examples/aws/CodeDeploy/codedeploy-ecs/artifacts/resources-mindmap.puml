@@ -18,12 +18,12 @@ skinparam monochrome true
 ++++ SecurityGroupRuleIngress (4)
 +++ ECS
 ++++ Cluster (1)
-++++ TaskDefinition (1)
 ++++ Service (1)
+++++ TaskDefinition (1)
 +++ ElasticLoadBalancingV2
+++++ Listener (1)
 ++++ LoadBalancer (1)
 ++++ TargetGroup (3)
-++++ Listener (1)
 +++ IAM
 ++++ Role (2)
 @endmindmap

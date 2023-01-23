@@ -3,13 +3,16 @@ const { pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { createAwsResource } = require("../AwsClient");
-const { getField } = require("@grucloud/core/ProviderCommon");
 const { ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
 
 const findName = () => get("name");
 const findId = () => get("id");
-const pickId = ({ id }) => ({ apiKey: id });
+const pickId = pipe([
+  tap(({ id }) => {
+    assert(id);
+  }),
+  ({ id }) => ({ apiKey: id }),
+]);
 
 const buildArn =
   ({ config }) =>
@@ -18,10 +21,16 @@ const buildArn =
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
 
-const model = ({ config }) => ({
+exports.ApiKey = ({}) => ({
+  type: "ApiKey",
   package: "api-gateway",
   client: "APIGateway",
+  inferName: () => get("name"),
+  findName,
+  findId,
   ignoreErrorCodes,
+  omitProperties: ["id", "createdDate", "lastUpdatedDate", "stageKeys"],
+  propertiesDefault: { enabled: true },
   getById: {
     method: "getApiKey",
     pickId,
@@ -42,38 +51,32 @@ const model = ({ config }) => ({
     pickId,
     method: "deleteApiKey",
   },
-});
-
-exports.ApiKey = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      ({ name }) => ({ params: { nameQuery: name } }),
+      getList,
+      first,
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
     config,
-    findName,
-    findId,
-    getByName: ({ getList }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        ({ name }) => ({ params: { nameQuery: name } }),
-        getList,
-        first,
-      ]),
-    ...Tagger({ buildArn: buildArn({ config }) }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          name: name,
-          enabled: true,
-          tags: buildTagsObject({ name, config, namespace, userTags: tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        name: name,
+        enabled: true,
+        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
+      }),
+    ])(),
+});

@@ -8,7 +8,6 @@ const {
   and,
   get,
   eq,
-  gte,
   or,
   any,
   not,
@@ -29,7 +28,6 @@ const {
   isFunction,
   includes,
   when,
-  size,
   unless,
   pluck,
   keys,
@@ -335,7 +333,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
 const createEndpointOption = (config) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(config);
     }),
     (region) => ({ region }),
     when(
@@ -398,7 +396,7 @@ const createEndpointProxy =
 const createEndpoint = (packageName, entryPoint, regionForce) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(packageName);
     }),
     () => `@aws-sdk/client-${packageName}`,
     require,
@@ -856,10 +854,10 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
 
 //move to EC2 Common
 exports.revokeSecurityGroupIngress =
-  ({ ec2 }) =>
+  ({ endpoint }) =>
   (params) =>
     tryCatch(
-      () => ec2().revokeSecurityGroupIngress(params),
+      () => endpoint().revokeSecurityGroupIngress(params),
       tap.if(
         ({ name }) =>
           !includes(name)([

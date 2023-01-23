@@ -42,7 +42,7 @@ const {
 
 module.exports = pipe([
   () => [
-    createAwsService(LightsailBucket({})),
+    LightsailBucket({}),
     LightsailCertificate({ compare }),
     LightsailContainerService({ compare }),
     LightsailDatabase({ compare }),
@@ -60,10 +60,13 @@ module.exports = pipe([
     LightsailStaticIpAttachment({ compare }),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-      tagsKey,
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+        tagsKey,
+      }),
+    ])
   ),
 ]);

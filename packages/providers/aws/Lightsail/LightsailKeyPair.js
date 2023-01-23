@@ -3,7 +3,6 @@ const { pipe, tap, get, pick, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger } = require("./LightsailCommon");
 
@@ -34,9 +33,63 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+const model = ({ config }) => ({});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
+exports.LightsailKeyPair = () => ({
+  type: "KeyPair",
   package: "lightsail",
   client: "Lightsail",
+  propertiesDefault: {},
+  omitProperties: [
+    "arn",
+    "supportCode",
+    "resourceType",
+    "createdAt",
+    "fingerprint",
+    "location",
+  ],
+  inferName: () => get("keyPairName"),
+  findName: () =>
+    pipe([
+      get("keyPairName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("keyPairName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ keyPairName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: tags,
+          key: "key",
+          value: "value",
+        }),
+      }),
+    ])(),
   ignoreErrorCodes: ["DoesNotExist"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getKeyPair-property
   getById: {
@@ -61,62 +114,4 @@ const model = ({ config }) => ({
     method: "deleteKeyPair",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
-exports.LightsailKeyPair = () => ({
-  type: "KeyPair",
-  propertiesDefault: {},
-  omitProperties: [
-    "arn",
-    "supportCode",
-    "resourceType",
-    "createdAt",
-    "fingerprint",
-    "location",
-  ],
-  inferName: () => get("keyPairName"),
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("keyPairName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("keyPairName"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ keyPairName: name }), getById({})]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { tags, ...otherProps },
-        dependencies: {},
-        config,
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            tags: buildTags({
-              name,
-              config,
-              namespace,
-              UserTags: tags,
-              key: "key",
-              value: "value",
-            }),
-          }),
-        ])(),
-    }),
 });

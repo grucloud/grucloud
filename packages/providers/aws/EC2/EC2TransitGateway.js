@@ -5,7 +5,6 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { retryCall } = require("@grucloud/core/Retry");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
 const isInstanceDown = pipe([eq(get("State"), "deleted")]);
@@ -50,9 +49,37 @@ const deleteTransitGatewayPeeringAttachment = ({ endpoint }) =>
     ])
   );
 
-const createModel = ({ config }) => ({
+const findId = () =>
+  pipe([
+    get("TransitGatewayId"),
+    tap((TransitGatewayId) => {
+      assert(TransitGatewayId);
+    }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2TransitGateway = ({ compare }) => ({
+  type: "TransitGateway",
   package: "ec2",
   client: "EC2",
+  findName: findNameInTagsOrId({ findId }),
+  pickId: pipe([
+    tap(({ TransitGatewayId }) => {
+      assert(TransitGatewayId);
+    }),
+    ({ TransitGatewayId }) => ({ TransitGatewayIds: [TransitGatewayId] }),
+  ]),
+  findId,
+  cannotBeDeleted: () => eq(get("State"), "deleted"),
+  omitProperties: [
+    "TransitGatewayId",
+    "TransitGatewayArn",
+    "State",
+    "OwnerId",
+    "CreationTime",
+    "Options.AssociationDefaultRouteTableId",
+    "Options.PropagationDefaultRouteTableId",
+  ],
   ignoreErrorCodes: ["InvalidTransitGatewayID.NotFound"],
   getById: { method: "describeTransitGateways", getField: "TransitGateways" },
   getList: {
@@ -84,50 +111,24 @@ const createModel = ({ config }) => ({
     ]),
     preDestroy: deleteTransitGatewayPeeringAttachment,
   },
-});
-
-const findId = () =>
-  pipe([
-    get("TransitGatewayId"),
-    tap((TransitGatewayId) => {
-      assert(TransitGatewayId);
-    }),
-  ]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2TransitGateway = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, IpAddress, ...otherProps },
+    dependencies: {},
     config,
-    findName: findNameInTagsOrId({ findId }),
-    pickId: pipe([
-      tap(({ TransitGatewayId }) => {
-        assert(TransitGatewayId);
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        TagSpecifications: [
+          {
+            ResourceType: "transit-gateway",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
       }),
-      ({ TransitGatewayId }) => ({ TransitGatewayIds: [TransitGatewayId] }),
-    ]),
-    findId,
-    cannotBeDeleted: () => eq(get("State"), "deleted"),
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, IpAddress, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          TagSpecifications: [
-            {
-              ResourceType: "transit-gateway",
-              Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-            },
-          ],
-        }),
-      ])(),
-  });
+    ])(),
+});

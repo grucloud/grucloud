@@ -11,8 +11,7 @@ const {
 } = require("rubico");
 const { defaultsDeep, first, values } = require("rubico/x");
 
-const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
+const { buildTags, replaceRegion } = require("../AwsCommon");
 const { tagResource, untagResource } = require("./EC2Common");
 
 const findId = () => get("PrefixListId");
@@ -36,9 +35,36 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const createModel = () => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2ManagedPrefixList = ({ compare }) => ({
+  type: "ManagedPrefixList",
   package: "ec2",
   client: "EC2",
+  inferName: () => get("PrefixListName"),
+  managedByOther: cannotBeDeleted,
+  cannotBeDeleted: cannotBeDeleted,
+  findName,
+  findId,
+  compare: compare({
+    filterAll: () => pipe([pick(["Entries", "MaxEntries"])]),
+  }),
+  omitProperties: [
+    "PrefixListId",
+    "State",
+    "PrefixListArn",
+    "Version",
+    "OwnerId",
+  ],
+  filterLive: ({ providerConfig, lives }) =>
+    pipe([
+      pick(["PrefixListName", "AddressFamily", "MaxEntries", "Entries"]),
+      assign({
+        PrefixListName: pipe([
+          get("PrefixListName"),
+          replaceRegion({ providerConfig }),
+        ]),
+      }),
+    ]),
   ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeManagedPrefixLists-property
   getById: {
@@ -94,50 +120,37 @@ const createModel = () => ({
       "The action is not supported for an AWS-managed prefix list",
     ],
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2ManagedPrefixList = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  getByName: ({ endpoint }) =>
+    pipe([
+      ({ name }) => ({
+        Filters: [
+          {
+            Name: "prefix-list-name",
+            Values: [name],
+          },
+        ],
+      }),
+      endpoint().describeManagedPrefixLists,
+      get("PrefixLists"),
+      first,
+    ]),
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies,
     config,
-    managedByOther: cannotBeDeleted,
-    cannotBeDeleted: cannotBeDeleted,
-    findName,
-    findId,
-    getByName: ({ endpoint }) =>
-      pipe([
-        ({ name }) => ({
-          Filters: [
-            {
-              Name: "prefix-list-name",
-              Values: [name],
-            },
-          ],
-        }),
-        endpoint().describeManagedPrefixLists,
-        get("PrefixLists"),
-        first,
-      ]),
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies,
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          TagSpecifications: [
-            {
-              ResourceType: "prefix-list",
-              Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-            },
-          ],
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        TagSpecifications: [
+          {
+            ResourceType: "prefix-list",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+    ])(),
+});

@@ -4,11 +4,7 @@ const { defaultsDeep } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const {
-  tagResource,
-  untagResource,
-} = require("./Route53RecoveryReadinessCommon");
+const { Tagger } = require("./Route53RecoveryReadinessCommon");
 
 const pickId = pipe([
   pick(["RecoveryGroupName"]),
@@ -17,11 +13,33 @@ const pickId = pipe([
   }),
 ]);
 
-const model = ({ config }) => ({
+const buildArn = () =>
+  pipe([
+    get("RecoveryGroupArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html
+exports.Route53RecoveryReadinessRecoveryGroup = ({ spec, config }) => ({
+  type: "RecoveryGroup",
   package: "route53-recovery-readiness",
   client: "Route53RecoveryReadiness",
   region: "us-west-2",
+  inferName: () => get("RecoveryGroupName"),
+  findName: () => pipe([get("RecoveryGroupName")]),
+  findId: () => pipe([get("RecoveryGroupArn")]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  dependencies: {
+    cells: {
+      type: "Cell",
+      group: "Route53RecoveryReadiness",
+      list: true,
+      dependencyIds: ({ lives, config }) => get("Cells"),
+    },
+  },
+  omitProperties: ["RecoveryGroupArn", "Cells"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#getRecoveryGroup-property
   getById: {
     method: "getRecoveryGroup",
@@ -50,35 +68,24 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#deleteRecoveryGroup-property
   destroy: { method: "deleteRecoveryGroup", pickId },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html
-exports.Route53RecoveryReadinessRecoveryGroup = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([({ name }) => ({ RecoveryGroupName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { cells },
     config,
-    findName: () => pipe([get("RecoveryGroupName")]),
-    findId: () => pipe([get("RecoveryGroupArn")]),
-    getByName: ({ getList, endpoint, getById }) =>
-      pipe([({ name }) => ({ RecoveryGroupName: name }), getById({})]),
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { cells },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-          Cells: pipe([
-            () => cells,
-            map((cell) => getField(cell, "CellArn")),
-          ])(),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+        Cells: pipe([() => cells, map((cell) => getField(cell, "CellArn"))])(),
+      }),
+    ])(),
+});

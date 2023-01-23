@@ -1,9 +1,7 @@
 const assert = require("assert");
-const { pipe, tap, get, flatMap, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, eq, flatMap, pick, switchCase } = require("rubico");
+const { defaultsDeep, callProp, last } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
-
-const { createAwsResource } = require("../AwsClient");
 
 const pickId = pipe([
   pick(["ResourceId", "ScalableDimension", "ServiceNamespace"]),
@@ -20,9 +18,97 @@ const findName = () =>
       `${ResourceId}::${ScalableDimension}`,
   ]);
 
-const model = ({ config }) => ({
+const findDependencyId =
+  ({ type, group, ServiceNamespace }) =>
+  ({ lives, config }) =>
+    pipe([
+      switchCase([
+        eq(get("ServiceNamespace"), ServiceNamespace),
+        pipe([
+          get("ResourceId"),
+          callProp("split", "/"),
+          last,
+          lives.getByName({
+            type,
+            group,
+            providerName: config.providerName,
+          }),
+          get("id"),
+        ]),
+        () => undefined,
+      ]),
+    ]);
+
+exports.ApplicationAutoScalingTarget = ({}) => ({
+  type: "Target",
   package: "application-auto-scaling",
   client: "ApplicationAutoScaling",
+  inferName: () =>
+    pipe([
+      ({ ResourceId, ScalableDimension }) =>
+        `${ResourceId}::${ScalableDimension}`,
+    ]),
+  findName,
+  findId: findName,
+  propertiesDefault: {},
+  omitProperties: ["RoleARN", "CreationTime", "SuspendedState"],
+  dependencies: {
+    role: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: () => get("RoleARN"),
+    },
+    dynamoDbTable: {
+      type: "Table",
+      group: "DynamoDB",
+      dependencyId: findDependencyId({
+        type: "Table",
+        group: "DynamoDB",
+        ServiceNamespace: "dynamodb",
+      }),
+    },
+    ecsService: {
+      type: "Service",
+      group: "ECS",
+      dependencyId: findDependencyId({
+        type: "Service",
+        group: "ECS",
+        ServiceNamespace: "ecs",
+      }),
+    },
+  },
+  getByName: getByNameCore,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#describeScalableTargets-property
+  getList: ({ endpoint }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      //TODO
+      () => [
+        "appstream",
+        "dynamodb",
+        "ecs",
+        "ec2",
+        "elasticache",
+        "elasticmapreduce",
+        "kafka",
+        "lambda",
+        "neptune",
+        "rds",
+        //"sagemaker",
+        //"custom-resource",
+        //"comprehend",
+        //"cassandra",
+      ],
+      flatMap(
+        pipe([
+          (ServiceNamespace) => ({ ServiceNamespace }),
+          endpoint().describeScalableTargets,
+          get("ScalableTargets"),
+        ])
+      ),
+    ]),
   ignoreErrorCodes: ["ObjectNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#describeScalableTargets-property
   getById: {
@@ -53,52 +139,11 @@ const model = ({ config }) => ({
     method: "deregisterScalableTarget",
     pickId,
   },
+  //TODO Tags
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
+  }) => pipe([() => otherProps, defaultsDeep({})])(),
 });
-
-exports.ApplicationAutoScalingTarget = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName,
-    findId: findName,
-    getByName: getByNameCore,
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#describeScalableTargets-property
-    getList: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        //TODO
-        () => [
-          "appstream",
-          "dynamodb",
-          "ecs",
-          "ec2",
-          "elasticache",
-          "elasticmapreduce",
-          "kafka",
-          "lambda",
-          "neptune",
-          "rds",
-          //"sagemaker",
-          //"custom-resource",
-          //"comprehend",
-          //"cassandra",
-        ],
-        flatMap(
-          pipe([
-            (ServiceNamespace) => ({ ServiceNamespace }),
-            endpoint().describeScalableTargets,
-            get("ScalableTargets"),
-          ])
-        ),
-      ]),
-    //TODO Tags
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: {},
-    }) => pipe([() => otherProps, defaultsDeep({})])(),
-  });

@@ -2,6 +2,8 @@ const assert = require("assert");
 const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
+const { createAwsService } = require("../AwsService");
+
 const { compareAws } = require("../AwsCommon");
 
 const GROUP = "Athena";
@@ -19,10 +21,13 @@ module.exports = pipe([
     AthenaWorkGroup({ compare }),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-      tagsKey,
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+        tagsKey,
+      }),
+    ])
   ),
 ]);

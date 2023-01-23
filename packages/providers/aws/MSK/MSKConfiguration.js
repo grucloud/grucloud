@@ -5,8 +5,6 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
 const ignoreErrorMessages = ["Configuration ARN does not exist"];
 
 const pickId = pipe([pick(["Arn"])]);
@@ -31,9 +29,22 @@ const decorate =
       omitIfEmpty(["KafkaVersions"]),
     ])();
 
-const model = ({ config }) => ({
+exports.MSKConfiguration = ({}) => ({
+  type: "Configuration",
   package: "kafka",
   client: "Kafka",
+  inferName: () => get("Name"),
+  findName: () => pipe([get("Name")]),
+  findId: () => pipe([get("Arn")]),
+  omitProperties: [
+    "Arn",
+    "CreationTime",
+    "State",
+    "LatestRevision",
+    "Revision",
+  ],
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([omitIfEmpty(["KafkaVersions"])]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kafka.html#describeConfiguration-property
   getById: {
     method: "describeConfiguration",
@@ -72,20 +83,11 @@ const model = ({ config }) => ({
     ignoreErrorMessages,
     //TODO should retry on "The request could not be processed because of an internal error. Try again."
   },
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: {},
+  }) => pipe([() => otherProps, defaultsDeep({})])(),
 });
-
-exports.MSKConfiguration = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () => pipe([get("Name")]),
-    findId: () => pipe([get("Arn")]),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) => pipe([() => otherProps, defaultsDeep({})])(),
-  });

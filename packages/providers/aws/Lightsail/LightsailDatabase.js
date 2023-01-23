@@ -3,7 +3,6 @@ const { pipe, tap, get, pick, eq, omit } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger, filterLiveDefault } = require("./LightsailCommon");
 
@@ -31,10 +30,80 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
+exports.LightsailDatabase = ({ compare }) => ({
+  type: "Database",
   package: "lightsail",
   client: "Lightsail",
+  propertiesDefault: {
+    publiclyAccessible: false,
+    backupRetentionEnabled: true,
+  },
+  omitProperties: [
+    "arn",
+    "supportCode",
+    "resourceType",
+    "createdAt",
+    "state",
+    "masterEndpoint",
+    "pendingMaintenanceActions",
+    "caCertificateIdentifier",
+    "masterUserPassword",
+    "parameterApplyStatus",
+    "pendingModifiedValues",
+    "latestRestorableTime",
+  ],
+  inferName: () => get("relationalDatabaseName"),
+  environmentVariables: [
+    { path: "masterUsername", suffix: "MASTER_USERNAME" },
+    { path: "masterUserPassword", suffix: "MASTER_USER_PASSWORD" },
+  ],
+  compare: compare({
+    filterTarget: () => pipe([omit(["commasterUserPasswordpare"])]),
+  }),
+  filterLive: filterLiveDefault,
+  findName: () =>
+    pipe([
+      get("relationalDatabaseName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("relationalDatabaseName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ relationalDatabaseName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
   ignoreErrorCodes: ["DoesNotExist"],
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: tags,
+          key: "key",
+          value: "value",
+        }),
+      }),
+    ])(),
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getRelationalDatabase-property
   getById: {
     method: "getRelationalDatabase",
@@ -66,79 +135,4 @@ const model = ({ config }) => ({
     method: "deleteRelationalDatabase",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
-exports.LightsailDatabase = ({ compare }) => ({
-  type: "Database",
-  propertiesDefault: {
-    publiclyAccessible: false,
-    backupRetentionEnabled: true,
-  },
-  omitProperties: [
-    "arn",
-    "supportCode",
-    "resourceType",
-    "createdAt",
-    "state",
-    "masterEndpoint",
-    "pendingMaintenanceActions",
-    "caCertificateIdentifier",
-    "masterUserPassword",
-    "parameterApplyStatus",
-    "pendingModifiedValues",
-    "latestRestorableTime",
-  ],
-  inferName: () => get("relationalDatabaseName"),
-  environmentVariables: [
-    { path: "masterUsername", suffix: "MASTER_USERNAME" },
-    { path: "masterUserPassword", suffix: "MASTER_USER_PASSWORD" },
-  ],
-  compare: compare({
-    filterTarget: () => pipe([omit(["commasterUserPasswordpare"])]),
-  }),
-  filterLive: filterLiveDefault,
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("relationalDatabaseName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("relationalDatabaseName"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ relationalDatabaseName: name }), getById({})]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { tags, ...otherProps },
-        dependencies: {},
-        config,
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            tags: buildTags({
-              name,
-              config,
-              namespace,
-              UserTags: tags,
-              key: "key",
-              value: "value",
-            }),
-          }),
-        ])(),
-    }),
 });

@@ -1,86 +1,184 @@
 const assert = require("assert");
-const { map, pipe, tap, get, not, eq, omit, pick } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, pick, eq, assign, map, not } = require("rubico");
+const { defaultsDeep, pluck, when, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { tos } = require("@grucloud/core/tos");
-const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { buildTagsObject, shellRun } = require("@grucloud/core/Common");
-const { findNamespaceInTagsObject } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
+const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
+const { buildTagsObject } = require("@grucloud/core/Common");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const {
-  createEKS,
+  Tagger,
+  kubeConfigUpdate,
+  kubeConfigRemove,
   waitForUpdate,
-  tagResource,
-  untagResource,
 } = require("./EKSCommon");
 
-const findName = () => get("name");
-const findId = () => get("arn");
-const pickId = pick(["name"]);
+const buildArn = () =>
+  pipe([
+    get("arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const pickId = pipe([
+  tap(({ name }) => {
+    assert(name);
+  }),
+  pick(["name"]),
+]);
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
-exports.EKSCluster = ({ spec, config }) => {
-  const eks = createEKS(config);
-  const client = AwsClient({ spec, config })(eks);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
-
-  const getById = client.getById({
-    pickId,
+exports.EKSCluster = ({ compare }) => ({
+  type: "Cluster",
+  package: "eks",
+  client: "EKS",
+  inferName: () =>
+    pipe([
+      get("name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
+  findName: () =>
+    pipe([
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("arn"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  inferName: () =>
+    pipe([
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  dependencies: {
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("resourcesVpcConfig.subnetIds")]),
+    },
+    securityGroups: {
+      type: "SecurityGroup",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("resourcesVpcConfig.securityGroupIds")]),
+      filterDependency:
+        ({ resource }) =>
+        (dependency) =>
+          pipe([
+            () => dependency,
+            get("live.Tags"),
+            not(find(eq(get("Key"), "aws:eks:cluster-name"))),
+          ])(),
+    },
+    role: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => get("roleArn"),
+    },
+    kmsKeys: {
+      type: "Key",
+      group: "KMS",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("encryptionConfig"), pluck("provider.keyArn")]),
+    },
+  },
+  propertiesDefault: {
+    resourcesVpcConfig: {
+      endpointPublicAccess: true,
+      endpointPrivateAccess: false,
+    },
+  },
+  omitProperties: [
+    "arn",
+    "createdAt",
+    "endpoint",
+    "resourcesVpcConfig.clusterSecurityGroupId",
+    "resourcesVpcConfig.vpcId",
+    "resourcesVpcConfig.subnetIds",
+    "resourcesVpcConfig.publicAccessCidrs",
+    "kubernetesNetworkConfig",
+    "identity",
+    "logging",
+    "status",
+    "certificateAuthority",
+    "clientRequestToken",
+    "eks.2",
+    "version",
+    "platformVersion",
+  ],
+  compare: compare({}),
+  filterLive: ({ providerConfig, lives }) =>
+    pipe([
+      pick(["name", "version", "encryptionConfig"]),
+      when(
+        get("encryptionConfig"),
+        assign({
+          encryptionConfig: pipe([
+            get("encryptionConfig"),
+            map(
+              assign({
+                provider: pipe([
+                  get("provider"),
+                  assign({
+                    keyArn: pipe([
+                      get("keyArn"),
+                      replaceWithName({
+                        groupType: "KMS::Key",
+                        path: "id",
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        })
+      ),
+    ]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#getCluster-property
+  getById: {
     method: "describeCluster",
     getField: "cluster",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
-  });
-
+    pickId,
+    decorate,
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listClusters-property
-  const getList = client.getList({
+  getList: {
     method: "listClusters",
     getParam: "clusters",
-    decorate: () => pipe([(name) => ({ name }), getById({})]),
-  });
-
-  const getByName = getById({});
-
-  const kubeConfigUpdate = ({ name }) =>
-    pipe([
-      tap(() => {
-        assert(name);
-        logger.debug(`kubeConfigUpdate: ${name}`);
-      }),
-      tap.if(
-        () => !process.env.CONTINUOUS_INTEGRATION,
-        pipe([
-          () =>
-            `aws eks --region ${config.region} update-kubeconfig --name ${name}`,
-          shellRun,
-        ])
-      ),
-    ])();
-
-  const kubeConfigRemove =
-    ({ endpoint }) =>
-    ({ arn }) =>
-      pipe([
-        tap(() => {
-          //assert(arn);
-          logger.debug(`kubeConfigRemove: ${arn}`);
-        }),
-        tap.if(
-          () => !process.env.CONTINUOUS_INTEGRATION && arn,
-          pipe([
-            () =>
-              `kubectl config delete-context ${arn}; kubectl config delete-cluster ${arn}`,
-            shellRun,
-          ])
-        ),
-      ])();
-
+    decorate: ({ getById }) => pipe([(name) => ({ name }), getById]),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property
-
-  const create = client.create({
+  create: {
     method: "createCluster",
     pickId,
     pickCreated:
@@ -93,57 +191,58 @@ exports.EKSCluster = ({ spec, config }) => {
       "The KeyArn in encryptionConfig provider",
       "Role with arn: ",
     ],
-    getById,
     postCreate:
-      ({ name }) =>
+      ({ name, config }) =>
       () =>
-        kubeConfigUpdate({ name }),
+        kubeConfigUpdate({ name, config }),
     configIsUp: { retryCount: 12 * 25, retryDelay: 5e3 },
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateClusterConfig-property
-  // TODO update
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`updateClusterConfig: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      pick(["name", "clientRequestToken", "logging", "resourcesVpcConfig"]),
-      omit([
-        "resourcesVpcConfig.securityGroupIds",
-        "resourcesVpcConfig.subnetIds",
-      ]),
-      eks().updateClusterConfig,
-      get("update"),
-      tap((result) => {
-        logger.info(`updateClusterConfig: ${tos({ result })}`);
-      }),
-      get("id"),
-      (updateId) =>
-        waitForUpdate({ eks })({
-          name,
-          updateId: updateId,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateCluster-property
+  update:
+    ({ endpoint, getById }) =>
+    async ({ name, payload, live, diff }) =>
+      pipe([
+        tap(() => {
+          logger.info(`updateClusterConfig: ${name}`);
+          //logger.debug(tos({ payload, diff, live }));
         }),
-    ])();
-
-  // https://docs.aws.amazon.com/eks/latest/APIReference/API_DeleteCluster.html
+        () => payload,
+        pick(["name", "clientRequestToken", "logging", "resourcesVpcConfig"]),
+        omit([
+          "resourcesVpcConfig.securityGroupIds",
+          "resourcesVpcConfig.subnetIds",
+        ]),
+        endpoint().updateClusterConfig,
+        get("update"),
+        tap((result) => {
+          logger.info(`updateClusterConfig: ${tos({ result })}`);
+        }),
+        get("id"),
+        (updateId) =>
+          waitForUpdate({ endpoint })({
+            name,
+            updateId: updateId,
+          }),
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteCluster-property
-  const destroy = client.destroy({
-    pickId,
+  destroy: {
     method: "deleteCluster",
-    getById,
+    pickId,
     ignoreErrorCodes: ["ResourceNotFoundException"],
     ignoreErrorMessages: ["No cluster found for name"],
     postDestroy: kubeConfigRemove,
-  });
-
-  const configDefault = ({
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { tags, ...otherProps },
     dependencies: { subnets, securityGroups, role },
+    config,
   }) =>
     pipe([
       tap(() => {
@@ -168,21 +267,5 @@ exports.EKSCluster = ({ spec, config }) => {
         })
       ),
       when(() => role, defaultsDeep({ roleArn: getField(role, "Arn") })),
-    ])();
-
-  return {
-    spec,
-    findId,
-    findNamespace: findNamespaceInTagsObject,
-    getById,
-    getByName,
-    findName,
-    create,
-    update,
-    destroy,
-    getList,
-    configDefault,
-    tagResource: tagResource({ eks }),
-    untagResource: untagResource({ eks }),
-  };
-};
+    ])(),
+});

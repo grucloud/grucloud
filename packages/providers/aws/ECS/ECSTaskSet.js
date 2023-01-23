@@ -12,7 +12,13 @@ const {
   untagResource,
 } = require("./ECSCommon");
 
-const findId = () => get("taskSetArn");
+const findId = () =>
+  pipe([
+    get("taskSetArn"),
+    tap((id) => {
+      assert(id);
+    }),
+  ]);
 const findName = () => get("taskDefinition");
 const pickId = pick(["cluster", "service", "taskSet"]);
 

@@ -3,8 +3,6 @@ const { pipe, tap, get, eq, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pipe([
   pick(["analyzerName", "ruleName"]),
   tap(({ analyzerName, ruleName }) => {
@@ -13,9 +11,41 @@ const pickId = pipe([
   }),
 ]);
 
-const model = ({ config }) => ({
+const findName = () =>
+  pipe([
+    tap(({ analyzerName, ruleName }) => {
+      assert(analyzerName);
+      assert(ruleName);
+    }),
+    ({ analyzerName, ruleName }) => `${analyzerName}::${ruleName}`,
+  ]);
+
+exports.AccessAnalyzerArchiveRule = ({ compare }) => ({
+  type: "ArchiveRule",
   package: "accessanalyzer",
   client: "AccessAnalyzer",
+  inferName:
+    ({ dependenciesSpec: { analyzer } }) =>
+    ({ ruleName }) =>
+      pipe([
+        tap((params) => {
+          assert(analyzer);
+          assert(ruleName);
+        }),
+        () => `${analyzer}::${ruleName}`,
+      ])(),
+  findName,
+  findId: findName,
+  propertiesDefault: {},
+  omitProperties: ["createdAt", "updatedAt", "analyzerName"],
+  dependencies: {
+    analyzer: {
+      type: "Analyzer",
+      group: "AccessAnalyzer",
+      parent: true,
+      dependencyId: () => pipe([get("analyzerName")]),
+    },
+  },
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html#getArchiveRule-property
   getById: {
@@ -33,50 +63,32 @@ const model = ({ config }) => ({
     method: "deleteArchiveRule",
     pickId,
   },
-});
-
-const findName = () =>
-  pipe([
-    tap(({ analyzerName, ruleName }) => {
-      assert(analyzerName);
-      assert(ruleName);
-    }),
-    ({ analyzerName, ruleName }) => `${analyzerName}::${ruleName}`,
-  ]);
-
-exports.AccessAnalyzerArchiveRule = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName,
-    findId: findName,
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () =>
-          client.getListWithParent({
-            parent: { type: "Analyzer", group: "AccessAnalyzer" },
-            pickKey: pipe([pick(["analyzerName"])]),
-            method: "listArchiveRules",
-            getParam: "archiveRules",
-            config,
-            decorate: ({ parent }) =>
-              pipe([defaultsDeep({ analyzerName: parent.analyzerName })]),
-          }),
-      ])(),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: { analyzer },
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(analyzer);
-          assert(analyzer.config.analyzerName);
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Analyzer", group: "AccessAnalyzer" },
+          pickKey: pipe([pick(["analyzerName"])]),
+          method: "listArchiveRules",
+          getParam: "archiveRules",
+          config,
+          decorate: ({ parent }) =>
+            pipe([defaultsDeep({ analyzerName: parent.analyzerName })]),
         }),
-        () => otherProps,
-        defaultsDeep({ analyzerName: analyzer.config.analyzerName }),
-      ])(),
-  });
+    ])(),
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: { analyzer },
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(analyzer);
+        assert(analyzer.config.analyzerName);
+      }),
+      () => otherProps,
+      defaultsDeep({ analyzerName: analyzer.config.analyzerName }),
+    ])(),
+});

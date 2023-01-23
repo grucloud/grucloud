@@ -3,10 +3,18 @@ const { pipe, tap, get, pick, eq, omit, assign, map, not } = require("rubico");
 const { defaultsDeep, find, when, isEmpty } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { buildTags, findNameInTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./EC2Common");
+const { buildTags, findNameInTags, replaceRegion } = require("../AwsCommon");
+const { tagResource, untagResource, assignIpamRegion } = require("./EC2Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+
+const assignLocale = ({ providerConfig }) =>
+  when(
+    get("Locale"),
+    assign({
+      Locale: pipe([get("Locale"), replaceRegion({ providerConfig })]),
+    })
+  );
+const omitLocaleNone = when(eq(get("Locale"), "None"), omit(["Locale"]));
 
 const findName =
   ({ lives, config }) =>
@@ -25,10 +33,63 @@ const findName =
       }),
     ])();
 
-const createModel = ({ config }) => ({
+const findId = () => pipe([get("IpamPoolId")]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2IpamPool = ({ compare }) => ({
+  type: "IpamPool",
   package: "ec2",
   client: "EC2",
   ignoreErrorCodes: ["InvalidIpamPoolId.NotFound"],
+  findName,
+  findId,
+  omitProperties: [
+    "SourceIpamPoolId",
+    "IpamArn",
+    "IpamPoolArn",
+    "IpamPoolId",
+    "IpamScopeId",
+    "IpamScopeArn",
+    "PoolDepth",
+    "OwnerId",
+    "State",
+    "Allocations",
+  ],
+  compare: compare({
+    filterLive: () => pipe([omitLocaleNone]),
+  }),
+  filterLive: ({ providerConfig }) =>
+    pipe([
+      assignIpamRegion({ providerConfig }),
+      omitLocaleNone,
+      assignLocale({ providerConfig }),
+    ]),
+  dependencies: {
+    ipamPoolSource: {
+      type: "IpamPool",
+      group: "EC2",
+      dependencyId: ({ lives, config }) => get("SourceIpamPoolId"),
+    },
+    ipamScope: {
+      type: "IpamScope",
+      group: "EC2",
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              type: "IpamScope",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+            find(eq(get("live.IpamScopeArn"), live.IpamScopeArn)),
+            get("id"),
+            tap((id) => {
+              assert(id);
+            }),
+          ])(),
+    },
+  },
   getById: {
     pickId: pipe([
       tap(({ IpamPoolId }) => {
@@ -74,44 +135,31 @@ const createModel = ({ config }) => ({
     method: "deleteIpamPool",
     pickId: pipe([pick(["IpamPoolId"])]),
   },
-});
-
-const findId = () => pipe([get("IpamPoolId")]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2IpamPool = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { ipamScope, ipamPoolSource },
     config,
-    findName,
-    findId,
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { ipamScope, ipamPoolSource },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        IpamScopeId: getField(ipamScope, "IpamScopeId"),
+        TagSpecifications: [
+          {
+            ResourceType: "ipam-pool",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+      when(
+        () => ipamPoolSource,
         defaultsDeep({
-          IpamScopeId: getField(ipamScope, "IpamScopeId"),
-          TagSpecifications: [
-            {
-              ResourceType: "ipam-pool",
-              Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-            },
-          ],
-        }),
-        when(
-          () => ipamPoolSource,
-          defaultsDeep({
-            SourceIpamPoolId: getField(ipamPoolSource, "IpamPoolId"),
-          })
-        ),
-      ])(),
-  });
+          SourceIpamPoolId: getField(ipamPoolSource, "IpamPoolId"),
+        })
+      ),
+    ])(),
+});

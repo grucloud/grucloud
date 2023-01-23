@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
+const { createAwsService } = require("../AwsService");
 
 const { compareAws } = require("../AwsCommon");
 
@@ -14,32 +15,17 @@ const { CURReportDefinition } = require("./CURReportDefinition");
 
 module.exports = pipe([
   () => [
-    {
-      type: "ReportDefinition",
-      Client: CURReportDefinition,
-      propertiesDefault: {},
-      omitProperties: [],
-      inferName: () => get("ReportName"),
-      dependencies: {
-        s3Bucket: {
-          type: "Bucket",
-          group: "S3",
-          dependencyId: () =>
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              get("S3Bucket"),
-            ]),
-        },
-      },
-    },
+    //
+    CURReportDefinition({}),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-      tagsKey,
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+        tagsKey,
+      }),
+    ])
   ),
 ]);

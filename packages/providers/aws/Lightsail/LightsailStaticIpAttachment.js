@@ -11,8 +11,6 @@ const {
 } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 
-const { createAwsResource } = require("../AwsClient");
-
 const findName = () =>
   pipe([
     get("staticIpName"),
@@ -22,10 +20,6 @@ const findName = () =>
   ]);
 
 const pickId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-
   tap(({ staticIpName }) => {
     assert(staticIpName);
   }),
@@ -47,32 +41,11 @@ const decorate = ({ endpoint }) =>
     ]),
   ]);
 
-const model = ({ config }) => ({
-  package: "lightsail",
-  client: "Lightsail",
-  ignoreErrorCodes: ["DoesNotExist"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getMyResource-property
-  getById: {
-    method: "getStaticIp",
-    getField: "staticIp",
-    pickId,
-    decorate,
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#attachStaticIp-property
-  create: {
-    method: "attachStaticIp",
-    pickCreated: ({ payload }) => pipe([() => payload]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#detachStaticIp-property
-  destroy: {
-    method: "detachStaticIp",
-    pickId,
-  },
-});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
 exports.LightsailStaticIpAttachment = ({ compare }) => ({
   type: "StaticIpAttachment",
+  package: "lightsail",
+  client: "Lightsail",
   propertiesDefault: {},
   omitProperties: ["staticIpName", "instanceName"],
   inferName: ({ dependenciesSpec: { staticIp } }) =>
@@ -95,57 +68,69 @@ exports.LightsailStaticIpAttachment = ({ compare }) => ({
       dependencyId: ({ lives, config }) => pipe([get("instanceName")]),
     },
   },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName,
-      findId: findName,
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ staticIpName: name }), getById({})]),
-      getList:
-        ({ client, endpoint, getById, config }) =>
-        ({ lives }) =>
+  findName,
+  findId: findName,
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ staticIpName: name }), getById({})]),
+  getList:
+    ({ client, endpoint, getById, config }) =>
+    ({ lives }) =>
+      pipe([
+        lives.getByType({
+          providerName: config.providerName,
+          type: "StaticIp",
+          group: "Lightsail",
+        }),
+        map(
           pipe([
-            lives.getByType({
-              providerName: config.providerName,
-              type: "StaticIp",
-              group: "Lightsail",
+            get("live"),
+            ({ staticIpName, ...other }) => ({
+              name: staticIpName,
+              ...other,
             }),
-            map(
-              pipe([
-                get("live"),
-                ({ staticIpName, ...other }) => ({
-                  name: staticIpName,
-                  ...other,
-                }),
-                decorate({}),
-              ])
-            ),
-            filter(not(isEmpty)),
-            tap((params) => {
-              assert(true);
-            }),
-          ])(),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { ...otherProps },
-        dependencies: { staticIp, instance },
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(staticIp);
-            assert(staticIp.config.staticIpName);
-            assert(instance);
-            assert(instance.config.instanceName);
-          }),
-          () => otherProps,
-          defaultsDeep({
-            instanceName: instance.config.instanceName,
-            staticIpName: staticIp.config.staticIpName,
-          }),
-        ])(),
-    }),
+            decorate({}),
+          ])
+        ),
+        filter(not(isEmpty)),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: { staticIp, instance },
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(staticIp);
+        assert(staticIp.config.staticIpName);
+        assert(instance);
+        assert(instance.config.instanceName);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        instanceName: instance.config.instanceName,
+        staticIpName: staticIp.config.staticIpName,
+      }),
+    ])(),
+  ignoreErrorCodes: ["DoesNotExist"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getMyResource-property
+  getById: {
+    method: "getStaticIp",
+    getField: "staticIp",
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#attachStaticIp-property
+  create: {
+    method: "attachStaticIp",
+    pickCreated: ({ payload }) => pipe([() => payload]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#detachStaticIp-property
+  destroy: {
+    method: "detachStaticIp",
+    pickId,
+  },
 });

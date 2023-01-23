@@ -1614,6 +1614,7 @@ function CoreProvider({
               name: resource.name,
               resource,
               lives: getLives(),
+              config: getProviderConfig(),
             }),
           isExpectedResult: () => true,
           shouldRetryOnException: client.shouldRetryOnExceptionDelete,

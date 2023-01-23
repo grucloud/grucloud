@@ -1,11 +1,8 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick, assign } = require("rubico");
-const { defaultsDeep, identity, when } = require("rubico/x");
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { pipe, tap, get, eq, pick, assign, not, any, and } = require("rubico");
+const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-
-const { createAwsResource } = require("../AwsClient");
 
 const ignoreErrorMessages = ["Configuration ARN does not exist"];
 const ignoreErrorCodes = ["NotFoundException"];
@@ -45,10 +42,39 @@ const dataToBase64 = assign({
   Data: ({ Data }) => Buffer.from(Data).toString("base64"),
 });
 
-const model = ({ config }) => ({
+exports.MQConfiguration = ({}) => ({
+  type: "Configuration",
   package: "mq",
   client: "Mq",
+  inferName: () => get("Name"),
+  findName: () => pipe([get("Name")]),
+  findId: () => pipe([get("Id")]),
+  ignoreResource:
+    ({ lives }) =>
+    ({ live }) =>
+      pipe([
+        () => lives,
+        not(
+          any(
+            and([
+              eq(get("groupType"), "MQ::Broker"),
+              eq(get("live.Configuration.Id"), live.Id),
+            ])
+          )
+        ),
+      ])(),
+  omitProperties: [
+    "Arn",
+    "ConfigurationId",
+    "Id",
+    "Created",
+    "State",
+    "LatestRevision",
+    "Revision",
+  ],
+  propertiesDefault: {},
   ignoreErrorCodes,
+  cannotBeDeleted: () => () => true,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MQ.html#describeConfiguration-property
   getById: {
     method: "describeConfiguration",
@@ -80,21 +106,11 @@ const model = ({ config }) => ({
         defaultsDeep({ ConfigurationId: live.Id }),
       ])(),
   },
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) => pipe([() => otherProps, defaultsDeep({})])(),
 });
-
-exports.MQConfiguration = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () => pipe([get("Name")]),
-    findId: () => pipe([get("Id")]),
-    cannotBeDeleted: () => () => true,
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) => pipe([() => otherProps, defaultsDeep({})])(),
-  });

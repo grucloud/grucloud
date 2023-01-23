@@ -4,7 +4,6 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger } = require("./RDSCommon");
 

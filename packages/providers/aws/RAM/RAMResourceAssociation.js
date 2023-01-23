@@ -1,9 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, filter, not, map, switchCase } = require("rubico");
-const { defaultsDeep, first, find, isEmpty, values } = require("rubico/x");
+const { defaultsDeep, first, find, isEmpty, append } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
-
-const { createAwsResource } = require("../AwsClient");
 
 const findDependencyFromEntity =
   ({ type, group, arnKey }) =>
@@ -112,10 +110,76 @@ const associatedEntityArn = ({ resourceDependencies }) =>
       getField(resource, RamResourceDependencies[resourceKey].arnKey),
   ])();
 
-const model = ({ config }) => ({
+const model = ({ config }) => ({});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
+exports.RAMResourceAssociation = ({}) => ({
+  type: "ResourceAssociation",
   package: "ram",
   client: "RAM",
+  inferName: ({
+    dependenciesSpec: {
+      resourceShare,
+      appMesh,
+      ipamPool,
+      resolverRule,
+      subnet,
+      transitGateway,
+    },
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(resourceShare);
+      }),
+      () => `ram-resource-assoc::${resourceShare}::`,
+      switchCase([
+        () => appMesh,
+        append(appMesh),
+        () => ipamPool,
+        append(ipamPool),
+        () => resolverRule,
+        append(resolverRule),
+        () => subnet,
+        append(subnet),
+        () => transitGateway,
+        append(transitGateway),
+        () => {
+          assert(false, "missing RAMResourceAssociation dependencies");
+        },
+      ]),
+    ]),
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        findResourceName({ lives, config }),
+        (resourceName) =>
+          `ram-resource-assoc::${live.resourceShareName}::${resourceName}`,
+      ])(),
+  findId: () =>
+    pipe([
+      ({ resourceShareArn, associatedEntity }) =>
+        `${resourceShareArn}::${associatedEntity}`,
+    ]),
   ignoreErrorCodes: ["UnknownResourceException"],
+  dependencies: {
+    resourceShare: {
+      type: "ResourceShare",
+      group: "RAM",
+      dependencyId: ({ lives, config }) => get("resourceShareArn"),
+    },
+    ...RamResourceDependencies,
+  },
+  omitProperties: [
+    "associatedEntity",
+    "creationTime",
+    "lastUpdatedTime",
+    "associationType",
+    "resourceShareName",
+    "resourceShareArn",
+    "status",
+  ],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#getResourceShareAssociations-property
   getById: {
     method: "getResourceShareAssociations",
@@ -163,50 +227,28 @@ const model = ({ config }) => ({
     ]),
     isInstanceDown: pipe([eq(get("status"), "DISASSOCIATED")]),
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
-exports.RAMResourceAssociation = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList, endpoint }) =>
+    pipe([
+      ({ name }) => ({ name, resourceShareStatus: "ACTIVE" }),
+      getList,
+      first,
+    ]),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otheProps },
+    dependencies: { resourceShare, ...resourceDependencies },
     config,
-    findName:
-      ({ lives, config }) =>
-      (live) =>
-        pipe([
-          () => live,
-          findResourceName({ lives, config }),
-          (resourceName) =>
-            `ram-resource-assoc::${live.resourceShareName}::${resourceName}`,
-        ])(),
-    findId: () =>
-      pipe([
-        ({ resourceShareArn, associatedEntity }) =>
-          `${resourceShareArn}::${associatedEntity}`,
-      ]),
-    getByName: ({ getList, endpoint }) =>
-      pipe([
-        ({ name }) => ({ name, resourceShareStatus: "ACTIVE" }),
-        getList,
-        first,
-      ]),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otheProps },
-      dependencies: { resourceShare, ...resourceDependencies },
-      config,
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(resourceShare);
-          assert(resourceDependencies);
-        }),
-        () => otheProps,
-        defaultsDeep({
-          resourceShareArn: getField(resourceShare, "resourceShareArn"),
-          associatedEntity: associatedEntityArn({ resourceDependencies }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(resourceShare);
+        assert(resourceDependencies);
+      }),
+      () => otheProps,
+      defaultsDeep({
+        resourceShareArn: getField(resourceShare, "resourceShareArn"),
+        associatedEntity: associatedEntityArn({ resourceDependencies }),
+      }),
+    ])(),
+});

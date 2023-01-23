@@ -14,7 +14,14 @@ const {
   untagResource,
 } = require("./ECSCommon");
 
-const findId = () => get("taskArn");
+const findId = () =>
+  pipe([
+    get("taskArn"),
+    tap((id) => {
+      assert(id);
+    }),
+  ]);
+
 const findName = findNameInTagsOrId({ findId });
 
 const pickId = pipe([

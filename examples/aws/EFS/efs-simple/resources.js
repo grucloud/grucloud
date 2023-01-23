@@ -90,8 +90,6 @@ exports.createResources = () => [
     name: "fs-0c95a09faadb73087",
     properties: ({}) => ({
       Encrypted: false,
-      PerformanceMode: "generalPurpose",
-      ThroughputMode: "bursting",
     }),
   },
   {

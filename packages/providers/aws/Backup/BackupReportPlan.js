@@ -1,12 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, eq } = require("rubico");
+const { pipe, tap, get, pick, assign, eq, map } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
 const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { replaceWithName } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource, assignTags } = require("./BackupCommon");
+const { Tagger, assignTags } = require("./BackupCommon");
 
 const buildArn = () => get("ReportPlanArn");
 //TODO
@@ -35,10 +34,63 @@ const decorate = ({ endpoint, live }) =>
 
 const pickId = pipe([pick(["ReportPlanName"])]);
 
-const model = ({ config }) => ({
+exports.BackupReportPlan = ({}) => ({
+  type: "ReportPlan",
   package: "backup",
   client: "Backup",
+  inferName: () => get("ReportPlanName"),
+  findName: () => pipe([get("ReportPlanName")]),
+  findId: () => pipe([get("ReportPlanName")]),
+  getByName: getByNameCore,
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  propertiesDefault: {},
+  omitProperties: [
+    "ReportPlanArn",
+    "CreationTime",
+    "DeploymentStatus",
+    "LastAttemptedExecutionTime",
+    "LastSuccessfulExecutionTime",
+    "ReportSetting.NumberOfFrameworks",
+  ],
+
+  dependencies: {
+    s3Bucket: {
+      type: "Bucket",
+      group: "S3",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("ReportDeliveryChannel.S3BucketName")]),
+    },
+    frameworks: {
+      type: "Framework",
+      group: "Backup",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("ReportSetting.FrameworkArns")]),
+    },
+  },
+  filterLive: ({ providerConfig, lives }) =>
+    pipe([
+      assign({
+        ReportSetting: pipe([
+          get("ReportSetting"),
+          assign({
+            FrameworkArns: pipe([
+              get("FrameworkArns"),
+              map(
+                pipe([
+                  replaceWithName({
+                    groupType: "Backup::Framework",
+                    path: "id",
+                    providerConfig,
+                    lives,
+                  }),
+                ])
+              ),
+            ]),
+          }),
+        ]),
+      }),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#describeReportPlan-property
   getById: {
     method: "describeReportPlan",
@@ -71,38 +123,26 @@ const model = ({ config }) => ({
     method: "deleteReportPlan",
     pickId,
   },
-});
-
-exports.BackupReportPlan = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("ReportPlanName")]),
-    findId: () => pipe([get("ReportPlanName")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTagsObject({
-            name,
-            config,
-            namespace,
-            userTags: Tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({
+          name,
+          config,
+          namespace,
+          userTags: Tags,
         }),
-      ])(),
-  });
+      }),
+    ])(),
+});

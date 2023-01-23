@@ -1,9 +1,8 @@
 const assert = require("assert");
-const { pipe, tap, get, not } = require("rubico");
+const { pipe, tap, get, not, omit } = require("rubico");
 const { defaultsDeep, isEmpty, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { diffToPatch } = require("./ApiGatewayCommon");
 const { differenceObject } = require("@grucloud/core/Common");
@@ -29,9 +28,28 @@ const cannotBeDeleted = () =>
     isEmpty,
   ]);
 
-const model = ({ config }) => ({
+exports.Account = ({}) => ({
+  type: "Account",
   package: "api-gateway",
   client: "APIGateway",
+  inferName: () => () => "default",
+  findName,
+  findId,
+  cannotBeDeleted,
+  managedByOther: isDefault,
+  isDefault,
+  omitProperties: ["apiKeyVersion", "throttleSettings"],
+  propertiesDefault: {
+    features: ["UsagePlans"],
+  },
+  filterLive: () => pipe([omit(["features", "cloudwatchRoleArn"])]),
+  dependencies: {
+    cloudwatchRole: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => get("cloudwatchRoleArn"),
+    },
+  },
   ignoreErrorCodes: [],
   getById: {
     method: "getAccount",
@@ -54,7 +72,6 @@ const model = ({ config }) => ({
     shouldRetryOnExceptionMessages: [
       "The role ARN does not have required permissions configured. Please grant trust permission for API Gateway and add the required role policy.",
     ],
-    config,
   },
   destroy: {
     pickId: () => ({
@@ -65,42 +82,30 @@ const model = ({ config }) => ({
     method: "updateAccount",
     isInstanceDown: () => true,
   },
+  getByName: ({ getById }) =>
+    pipe([
+      tap((params) => {
+        assert(getById);
+      }),
+      () => ({}),
+      getById({}),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
+  configDefault: ({
+    name,
+    namespace,
+    properties,
+    dependencies: { cloudwatchRole },
+  }) =>
+    pipe([
+      () => properties,
+      when(
+        () => cloudwatchRole,
+        defaultsDeep({
+          cloudwatchRoleArn: getField(cloudwatchRole, "Arn"),
+        })
+      ),
+    ])(),
 });
-
-exports.Account = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    cannotBeDeleted,
-    managedByOther: isDefault,
-    isDefault,
-    findName,
-    findId,
-    getByName: ({ getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-        }),
-        () => ({}),
-        getById({}),
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-    configDefault: ({
-      name,
-      namespace,
-      properties,
-      dependencies: { cloudwatchRole },
-    }) =>
-      pipe([
-        () => properties,
-        when(
-          () => cloudwatchRole,
-          defaultsDeep({
-            cloudwatchRoleArn: getField(cloudwatchRole, "Arn"),
-          })
-        ),
-      ])(),
-  });

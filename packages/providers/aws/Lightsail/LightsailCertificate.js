@@ -3,7 +3,6 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger } = require("./LightsailCommon");
 
@@ -29,9 +28,74 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
+exports.LightsailCertificate = () => ({
+  type: "Certificate",
   package: "lightsail",
   client: "Lightsail",
+  propertiesDefault: {},
+  inferName: () => get("certificateName"),
+  omitProperties: [
+    "createdAt",
+    "arn",
+    "supportCode",
+    "resourceType",
+    "issuedAt",
+    "notBefore",
+    "notAfter",
+    "renewalSummary",
+    "revokedAt",
+    "revocationReason",
+  ],
+  findName: () =>
+    pipe([
+      get("certificateName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("certificateName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ certificateName: name }), getById({})]),
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        tap((params) => {
+          assert(false, "cannot update certificate");
+        }),
+      ])(),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: tags,
+          key: "key",
+          value: "value",
+        }),
+      }),
+    ])(),
+
   ignoreErrorCodes: ["NotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getCertificate-property
   getById: {
@@ -61,74 +125,4 @@ const model = ({ config }) => ({
     method: "deleteCertificate",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
-exports.LightsailCertificate = () => ({
-  type: "Certificate",
-  propertiesDefault: {},
-  inferName: () => get("certificateName"),
-  omitProperties: [
-    "createdAt",
-    "arn",
-    "supportCode",
-    "resourceType",
-    "issuedAt",
-    "notBefore",
-    "notAfter",
-    "renewalSummary",
-    "revokedAt",
-    "revocationReason",
-  ],
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("certificateName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("certificateName"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ certificateName: name }), getById({})]),
-      update:
-        ({ endpoint, getById }) =>
-        async ({ payload, live, diff }) =>
-          pipe([
-            tap((params) => {
-              assert(false, "cannot update certificate");
-            }),
-          ])(),
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { tags, ...otherProps },
-        dependencies: {},
-        config,
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            tags: buildTags({
-              name,
-              config,
-              namespace,
-              UserTags: tags,
-              key: "key",
-              value: "value",
-            }),
-          }),
-        ])(),
-    }),
 });

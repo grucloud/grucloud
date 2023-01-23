@@ -3,8 +3,15 @@ const { pipe, tap, get, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./CloudTrailCommon");
+const { Tagger } = require("./CloudTrailCommon");
+
+const buildArn = () =>
+  pipe([
+    get("EventDataStoreArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
 
 const pickId = pipe([
   tap(({ EventDataStoreArn }) => {
@@ -13,10 +20,16 @@ const pickId = pipe([
   ({ EventDataStoreArn }) => ({ EventDataStore: EventDataStoreArn }),
 ]);
 
-const model = {
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudTrail.html
+exports.CloudTrailEventDataStore = ({}) => ({
+  type: "EventDataStore",
   package: "cloudtrail",
   client: "CloudTrail",
+  inferName: () => get("Name"),
+  findName: () => get("Name"),
+  findId: () => pipe([get("EventDataStoreArn")]),
   ignoreErrorCodes: ["EventDataStoreNotFoundException"],
+  omitProperties: [],
   getById: { method: "getEventDataStore", pickId },
   getList: {
     method: "listEventDataStores",
@@ -30,30 +43,22 @@ const model = {
   },
   update: { method: "updateEventDataStore" },
   destroy: { method: "deleteEventDataStore", pickId },
-};
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudTrail.html
-exports.CloudTrailEventDataStore = ({ spec, config }) =>
-  createAwsResource({
-    model,
-    spec,
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ EventDataStoreArn: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
     config,
-    findName: () => get("Name"),
-    findId: () => pipe([get("EventDataStoreArn")]),
-    getByName: ({ getById }) =>
-      pipe([({ name }) => ({ EventDataStoreArn: name }), getById({})]),
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          TagsList: buildTags({ name, config, namespace, UserTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        TagsList: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])(),
+});

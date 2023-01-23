@@ -36,7 +36,6 @@ module.exports = pipe([
     {
       type: "Task",
       Client: ECSTask,
-      compare: compare({}),
       filterLive: () =>
         pick(["enableExecuteCommand", "launchType", "overrides"]),
       dependencies: {
@@ -53,30 +52,29 @@ module.exports = pipe([
         },
       },
     },
-    {
-      type: "TaskSet",
-      dependencies: {
-        cluster: {
-          type: "Cluster",
-          group: "ECS",
-          dependencyId: ({ lives, config }) => get("clusterArn"),
-        },
-        service: {
-          type: "Service",
-          group: "ECS",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("serviceArn"),
-        },
-        taskDefinition: {
-          type: "TaskDefinition",
-          group: "ECS",
-          dependencyId: ({ lives, config }) => get("taskDefinitionArn"),
-        },
-        targetGroups: dependencyTargetGroups,
-      },
-      Client: ECSTaskSet,
-      compare: compare({}),
-    },
+    // {
+    //   type: "TaskSet",
+    //   dependencies: {
+    //     cluster: {
+    //       type: "Cluster",
+    //       group: "ECS",
+    //       dependencyId: ({ lives, config }) => get("clusterArn"),
+    //     },
+    //     service: {
+    //       type: "Service",
+    //       group: "ECS",
+    //       parent: true,
+    //       dependencyId: ({ lives, config }) => get("serviceArn"),
+    //     },
+    //     taskDefinition: {
+    //       type: "TaskDefinition",
+    //       group: "ECS",
+    //       dependencyId: ({ lives, config }) => get("taskDefinitionArn"),
+    //     },
+    //     targetGroups: dependencyTargetGroups,
+    //   },
+    //   Client: ECSTaskSet,
+    // },
 
     // {
     //   type: "ContainerInstance",
@@ -91,5 +89,5 @@ module.exports = pipe([
     //   Client: ECSContainerInstance,
     // },
   ],
-  map(defaultsDeep({ group: GROUP, tagsKey, isOurMinion })),
+  map(defaultsDeep({ group: GROUP, tagsKey, compare: compare({}) })),
 ]);

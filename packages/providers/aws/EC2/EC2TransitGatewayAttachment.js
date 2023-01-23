@@ -1,33 +1,10 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  eq,
-  filter,
-  not,
-  fork,
-  switchCase,
-  pick,
-} = require("rubico");
+const { pipe, tap, get, eq, filter, not, fork, switchCase } = require("rubico");
 const { prepend } = require("rubico/x");
 
 const { findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const isInstanceDown = pipe([eq(get("State"), "deleted")]);
-
-const createModel = ({ config }) => ({
-  package: "ec2",
-  client: "EC2",
-  ignoreErrorCodes: ["InvalidTransitGatewayAttachmentID.NotFound"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayAttachments-property
-  getList: {
-    method: "describeTransitGatewayAttachments",
-    getParam: "TransitGatewayAttachments",
-    transformListPre: () => pipe([filter(not(isInstanceDown))]),
-  },
-});
 
 const findNameInDependency =
   ({ lives, config }) =>
@@ -103,13 +80,49 @@ const findId = () =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2TransitGatewayAttachment = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
-    config,
-    findName: findNameInTagsOrId({ findId: findNameInDependency }),
-    findId,
-    cannotBeDeleted: () => () => true,
-    managedByOther: () => () => true,
-  });
+exports.EC2TransitGatewayAttachment = ({}) => ({
+  type: "TransitGatewayAttachment",
+  package: "ec2",
+  client: "EC2",
+  findName: findNameInTagsOrId({ findId: findNameInDependency }),
+  findId,
+  // TODO remove this
+  //ignoreResource: () => true,
+  omitProperties: [
+    "TransitGatewayOwnerId",
+    "ResourceOwnerId",
+    "ResourceId",
+    "Association",
+    "TransitGatewayAttachmentId",
+    "TransitGatewayId",
+    "CreationTime",
+    "State",
+  ],
+  dependencies: {
+    transitGateway: {
+      type: "TransitGateway",
+      group: "EC2",
+      dependencyId: ({ lives, config }) => get("TransitGatewayId"),
+    },
+    //TODO do we need vpc ?
+    vpc: {
+      type: "Vpc",
+      group: "EC2",
+      dependencyId: ({ lives, config }) => get("ResourceId"),
+    },
+    vpnConnection: {
+      type: "VpnConnection",
+      group: "EC2",
+      dependencyId: ({ lives, config }) => get("ResourceId"),
+    },
+  },
+  cannotBeDeleted: () => () => true,
+  managedByOther: () => () => true,
+  ignoreErrorCodes: ["InvalidTransitGatewayAttachmentID.NotFound"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayAttachments-property
+  getList: {
+    method: "describeTransitGatewayAttachments",
+    getParam: "TransitGatewayAttachments",
+    transformListPre: () => pipe([filter(not(isInstanceDown))]),
+  },
+});

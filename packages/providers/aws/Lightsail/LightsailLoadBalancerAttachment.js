@@ -2,8 +2,6 @@ const assert = require("assert");
 const { pipe, tap, get, pick, map, flatMap, eq } = require("rubico");
 const { defaultsDeep, find } = require("rubico/x");
 
-const { createAwsResource } = require("../AwsClient");
-
 const findName = () =>
   pipe([
     ({ loadBalancerName, instanceName }) =>
@@ -21,9 +19,87 @@ const pickId = pipe([
   }),
 ]);
 
-const model = ({ config }) => ({
+const model = ({ config }) => ({});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
+exports.LightsailLoadBalancerAttachment = ({ compare }) => ({
+  type: "LoadBalancerAttachment",
   package: "lightsail",
   client: "Lightsail",
+  propertiesDefault: {},
+  omitProperties: ["loadBalancerName", "instanceName"],
+  inferName: ({ dependenciesSpec: { loadBalancer, instance } }) =>
+    pipe([
+      tap((params) => {
+        assert(loadBalancer);
+        assert(instance);
+      }),
+      () => `${loadBalancer}::${instance}`,
+    ]),
+  dependencies: {
+    loadBalancer: {
+      type: "LoadBalancer",
+      group: "Lightsail",
+      parent: true,
+      dependencyId: ({ lives, config }) => pipe([get("loadBalancerName")]),
+    },
+    instance: {
+      type: "Instance",
+      group: "Lightsail",
+      dependencyId: ({ lives, config }) => pipe([get("instanceName")]),
+    },
+  },
+  findName,
+  findId: findName,
+  getByName: ({ getById }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      ({ resolvedDependencies: { loadBalancer, instance } }) => ({
+        loadBalancerName: loadBalancer.config.loadBalancerName,
+        instanceName: instance.config.instanceName,
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+      getById({}),
+    ]),
+  getList:
+    ({ client, endpoint, getById, config }) =>
+    ({ lives }) =>
+      pipe([
+        lives.getByType({
+          providerName: config.providerName,
+          type: "LoadBalancer",
+          group: "Lightsail",
+        }),
+        flatMap(({ live: { loadBalancerName, instanceHealthSummary } }) =>
+          pipe([
+            () => instanceHealthSummary,
+            map(
+              pipe([pick(["instanceName"]), defaultsDeep({ loadBalancerName })])
+            ),
+          ])()
+        ),
+      ])(),
+  configDefault: ({
+    properties: { ...otherProps },
+    dependencies: { loadBalancer, instance },
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(loadBalancer);
+        assert(instance);
+        assert(instance.config.instanceName);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        loadBalancerName: loadBalancer.config.loadBalancerName,
+        instanceName: instance.config.instanceName,
+      }),
+    ])(),
+
   ignoreErrorCodes: ["DoesNotExist"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getLoadBalancer-property
   getById: {
@@ -57,91 +133,4 @@ const model = ({ config }) => ({
     method: "detachInstancesFromLoadBalancer",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
-exports.LightsailLoadBalancerAttachment = ({ compare }) => ({
-  type: "LoadBalancerAttachment",
-  propertiesDefault: {},
-  omitProperties: ["loadBalancerName", "instanceName"],
-  inferName: ({ dependenciesSpec: { loadBalancer, instance } }) =>
-    pipe([
-      tap((params) => {
-        assert(loadBalancer);
-        assert(instance);
-      }),
-      () => `${loadBalancer}::${instance}`,
-    ]),
-  dependencies: {
-    loadBalancer: {
-      type: "LoadBalancer",
-      group: "Lightsail",
-      parent: true,
-      dependencyId: ({ lives, config }) => pipe([get("loadBalancerName")]),
-    },
-    instance: {
-      type: "Instance",
-      group: "Lightsail",
-      dependencyId: ({ lives, config }) => pipe([get("instanceName")]),
-    },
-  },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName,
-      findId: findName,
-      getByName: ({ getById }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          ({ resolvedDependencies: { loadBalancer, instance } }) => ({
-            loadBalancerName: loadBalancer.config.loadBalancerName,
-            instanceName: instance.config.instanceName,
-          }),
-          tap((params) => {
-            assert(true);
-          }),
-          getById({}),
-        ]),
-      getList:
-        ({ client, endpoint, getById, config }) =>
-        ({ lives }) =>
-          pipe([
-            lives.getByType({
-              providerName: config.providerName,
-              type: "LoadBalancer",
-              group: "Lightsail",
-            }),
-            flatMap(({ live: { loadBalancerName, instanceHealthSummary } }) =>
-              pipe([
-                () => instanceHealthSummary,
-                map(
-                  pipe([
-                    pick(["instanceName"]),
-                    defaultsDeep({ loadBalancerName }),
-                  ])
-                ),
-              ])()
-            ),
-          ])(),
-      configDefault: ({
-        properties: { ...otherProps },
-        dependencies: { loadBalancer, instance },
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(loadBalancer);
-            assert(instance);
-            assert(instance.config.instanceName);
-          }),
-          () => otherProps,
-          defaultsDeep({
-            loadBalancerName: loadBalancer.config.loadBalancerName,
-            instanceName: instance.config.instanceName,
-          }),
-        ])(),
-    }),
 });

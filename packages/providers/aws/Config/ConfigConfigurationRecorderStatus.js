@@ -4,8 +4,6 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pipe([
   tap(({ ConfigurationRecorderName }) => {
     assert(ConfigurationRecorderName);
@@ -21,10 +19,57 @@ const decorate = ({ parent }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#startConfigurationRecorder-property
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#stopConfigurationRecorder-property
+
+const updateOrCreate =
+  ({ endpoint, getById }) =>
+  ({ payload }) =>
+    pipe([
+      tap((params) => {
+        assert(getById);
+      }),
+      () => payload,
+      switchCase([
+        get("recording"),
+        pipe([pickId, endpoint().startConfigurationRecorder]),
+        pipe([pickId, endpoint().stopConfigurationRecorder]),
+      ]),
+    ])();
+
+exports.ConfigConfigurationRecorderStatus = ({}) => ({
+  type: "ConfigurationRecorderStatus",
   package: "config-service",
   client: "ConfigService",
+  inferName: ({ dependenciesSpec: { deliveryChannel } }) =>
+    pipe([
+      tap((params) => {
+        assert(deliveryChannel);
+      }),
+      () => deliveryChannel,
+    ]),
+  findName: () => pipe([get("ConfigurationRecorderName")]),
+  findId: () => pipe([get("ConfigurationRecorderName")]),
   ignoreErrorCodes: ["NoSuchConfigurationRecorderException"],
+  propertiesDefault: {},
+  omitProperties: [
+    "ConfigurationRecorderName",
+    "lastStartTime",
+    "lastStopTime",
+    "lastStatus",
+    "lastErrorCode",
+    "lastErrorMessage",
+    "lastStatusChangeTime",
+  ],
+  dependencies: {
+    deliveryChannel: {
+      type: "DeliveryChannel",
+      group: "Config",
+      parent: true,
+      dependencyId: ({ lives, config }) =>
+        pipe([get("ConfigurationRecorderName")]),
+    },
+  },
   getById: {
     method: "describeConfigurationRecorderStatus",
     pickId: pipe([
@@ -49,46 +94,20 @@ const model = ({ config }) => ({
     pickId,
     isInstanceDown: pipe([eq(get("recording"), false)]),
   },
-});
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#startConfigurationRecorder-property
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#stopConfigurationRecorder-property
-
-const updateOrCreate =
-  ({ endpoint, getById }) =>
-  ({ payload }) =>
-    pipe([
-      tap((params) => {
-        assert(getById);
-      }),
-      () => payload,
-      switchCase([
-        get("recording"),
-        pipe([pickId, endpoint().startConfigurationRecorder]),
-        pipe([pickId, endpoint().stopConfigurationRecorder]),
-      ]),
-    ])();
-
-exports.ConfigConfigurationRecorderStatus = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  create: updateOrCreate,
+  update: updateOrCreate,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: { deliveryChannel },
     config,
-    findName: () => pipe([get("ConfigurationRecorderName")]),
-    findId: () => pipe([get("ConfigurationRecorderName")]),
-    getByName: getByNameCore,
-    create: updateOrCreate,
-    update: updateOrCreate,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: { deliveryChannel },
-      config,
-    }) =>
-      pipe([
-        () => ({
-          ...otherProps,
-          ConfigurationRecorderName: deliveryChannel.config.name,
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => ({
+        ...otherProps,
+        ConfigurationRecorderName: deliveryChannel.config.name,
+      }),
+    ])(),
+});

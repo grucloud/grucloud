@@ -4,12 +4,22 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
-const createModel = ({ config }) => ({
+const findId = () => pipe([get("VpnGatewayId")]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2VpnGateway = ({ compare }) => ({
+  type: "VpnGateway",
   package: "ec2",
   client: "EC2",
+  findName: findNameInTagsOrId({ findId }),
+  findId,
+  omitProperties: ["VpnGatewayId", "State", "VpcAttachments"],
+  propertiesDefault: { Type: "ipsec.1" },
+  compare: compare({ filterAll: () => pick([]) }),
+  ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
+  cannotBeDeleted: () => eq(get("State"), "deleted"),
   ignoreErrorCodes: ["InvalidVpnGatewayID.NotFound"],
   getById: {
     method: "describeVpnGateways",
@@ -31,37 +41,23 @@ const createModel = ({ config }) => ({
     pickId: pipe([pick(["VpnGatewayId"])]),
     isInstanceDown: pipe([eq(get("State"), "deleted")]),
   },
-});
-
-const findId = () => pipe([get("VpnGatewayId")]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2VpnGateway = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
     config,
-    findName: findNameInTagsOrId({ findId }),
-    findId,
-    cannotBeDeleted: () => eq(get("State"), "deleted"),
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          TagSpecifications: [
-            {
-              ResourceType: "vpn-gateway",
-              Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-            },
-          ],
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        TagSpecifications: [
+          {
+            ResourceType: "vpn-gateway",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+    ])(),
+});

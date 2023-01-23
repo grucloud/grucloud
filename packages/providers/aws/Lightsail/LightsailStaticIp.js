@@ -2,8 +2,6 @@ const assert = require("assert");
 const { pipe, tap, get, pick, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pipe([
   tap(({ staticIpName }) => {
     assert(staticIpName);
@@ -20,9 +18,47 @@ const decorate = ({ endpoint }) =>
     ({ name, ...other }) => ({ staticIpName: name, ...other }),
   ]);
 
-const model = ({ config }) => ({
+const model = ({ config }) => ({});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
+exports.LightsailStaticIp = () => ({
+  type: "StaticIp",
   package: "lightsail",
   client: "Lightsail",
+  propertiesDefault: {},
+  omitProperties: [
+    "arn",
+    "supportCode",
+    "resourceType",
+    "createdAt",
+    "isAttached",
+    "attachedTo",
+    "ipAddress",
+    "location",
+  ],
+  inferName: () => get("staticIpName"),
+  findName: () =>
+    pipe([
+      get("staticIpName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("staticIpName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ staticIpName: name }), getById({})]),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: {},
+  }) => pipe([() => otherProps])(),
   ignoreErrorCodes: ["DoesNotExist"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getStaticIp-property
   getById: {
@@ -47,49 +83,4 @@ const model = ({ config }) => ({
     method: "releaseStaticIp",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
-exports.LightsailStaticIp = () => ({
-  type: "StaticIp",
-  propertiesDefault: {},
-  omitProperties: [
-    "arn",
-    "supportCode",
-    "resourceType",
-    "createdAt",
-    "isAttached",
-    "attachedTo",
-    "ipAddress",
-    "location",
-  ],
-  inferName: () => get("staticIpName"),
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("staticIpName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("staticIpName"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ staticIpName: name }), getById({})]),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { ...otherProps },
-        dependencies: {},
-      }) => pipe([() => otherProps])(),
-    }),
 });

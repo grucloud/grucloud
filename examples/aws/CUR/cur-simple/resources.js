@@ -6,17 +6,19 @@ exports.createResources = () => [
   {
     type: "ReportDefinition",
     group: "CUR",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       AdditionalSchemaElements: ["RESOURCES"],
       Compression: "GZIP",
       Format: "textORcsv",
+      RefreshClosedReports: true,
       ReportName: "ExampleReport",
+      ReportVersioning: "CREATE_NEW_REPORT",
       S3Bucket: "grucloud-cost-report-2022",
       S3Prefix: "report",
       S3Region: "us-east-1",
       TimeUnit: "HOURLY",
     }),
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       s3Bucket: "grucloud-cost-report-2022",
     }),
   },

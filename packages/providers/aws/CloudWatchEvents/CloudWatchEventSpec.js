@@ -2,6 +2,8 @@ const assert = require("assert");
 const { tap, pipe, map, omit, pick, get, assign, not } = require("rubico");
 const { defaultsDeep, unless, callProp, when } = require("rubico/x");
 
+const { createAwsService } = require("../AwsService");
+
 const {
   compareAws,
   isOurMinion,
@@ -21,74 +23,12 @@ const {
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
 const GROUP = "CloudWatchEvents";
-const compareCloudWatchEvent = compareAws({});
+const compare = compareAws({});
 
 module.exports = pipe([
   () => [
-    {
-      type: "ApiDestination",
-      inferName: () => get("Name"),
-      Client: CloudWatchEventApiDestination,
-      dependencies: {
-        connection: {
-          type: "Connection",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) => get("ConnectionArn"),
-        },
-      },
-      omitProperties: [
-        "ConnectionArn",
-        "ApiDestinationArn",
-        "ApiDestinationState",
-        "CreationTime",
-        "LastModifiedTime",
-      ],
-    },
-    {
-      type: "Connection",
-      Client: CloudWatchEventConnection,
-      inferName: () => get("Name"),
-      dependencies: {
-        secret: {
-          type: "Secret",
-          group: "SecretsManager",
-          excludeDefaultDependencies: true,
-          dependencyId: ({ lives, config }) => get("SecretArn"),
-        },
-      },
-      omitProperties: [
-        "ConnectionArn",
-        "CreationTime",
-        "LastAuthorizedTime",
-        "LastModifiedTime",
-        "ConnectionState",
-        "SecretArn",
-      ],
-      environmentVariables: [
-        {
-          path: "AuthParameters.ApiKeyAuthParameters.ApiKeyValue",
-          suffix: "API_KEY_VALUE",
-          rejectEnvironmentVariable: () =>
-            pipe([not(get("AuthParameters.ApiKeyAuthParameters"))]),
-        },
-        {
-          path: "AuthParameters.BasicAuthParameters.Password",
-          suffix: "PASSWORD",
-          rejectEnvironmentVariable: () =>
-            pipe([not(get("AuthParameters.BasicAuthParameters"))]),
-        },
-      ],
-      compare: compareCloudWatchEvent({
-        filterAll: () =>
-          pipe([
-            omit([
-              "AuthParameters.ApiKeyAuthParameters.ApiKeyValue",
-              "AuthParameters.BasicAuthParameters.Password",
-            ]),
-          ]),
-      }),
-    },
+    createAwsService(CloudWatchEventApiDestination({ compare })),
+    createAwsService(CloudWatchEventConnection({ compare })),
     {
       type: "EventBus",
       Client: CloudWatchEventBus,
@@ -101,7 +41,7 @@ module.exports = pipe([
       Client: CloudWatchEventRule,
       inferName: () => get("Name"),
       omitProperties: ["Arn", "CreatedBy", "EventBusName"],
-      compare: compareCloudWatchEvent({
+      compare: compare({
         filterTarget: () => pipe([defaultsDeep({ EventBusName: "default" })]),
         filterLive: () => pipe([omit(["Arn", "CreatedBy"])]),
       }),
@@ -203,7 +143,7 @@ module.exports = pipe([
   map(
     defaultsDeep({
       group: GROUP,
-      compare: compareCloudWatchEvent({}),
+      compare: compare({}),
       isOurMinion,
     })
   ),

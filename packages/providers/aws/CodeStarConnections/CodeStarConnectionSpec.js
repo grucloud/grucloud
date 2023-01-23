@@ -1,8 +1,9 @@
 const assert = require("assert");
 const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
+const { createAwsService } = require("../AwsService");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
 const {
   CodeStarConnectionsConnection,
 } = require("./CodeStarConnectionsConnection");
@@ -11,31 +12,21 @@ const {
 
 const GROUP = "CodeStarConnections";
 const tagsKey = "tags";
-const compareCodeStarConnection = compareAws({ tagsKey });
+const compare = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
-    {
-      type: "Connection",
-      Client: CodeStarConnectionsConnection,
-      inferName: () => pipe([get("ConnectionName")]),
-      omitProperties: [
-        "ConnectionArn",
-        "ConnectionStatus",
-        "OwnerAccountId",
-        "HostArn",
-      ],
-      //TODO Host
-      //dependencies: { type: "Host", group: GROUP },
-      propertiesDefault: {},
-    },
+    //
+    CodeStarConnectionsConnection({}),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      isOurMinion,
-      tagsKey,
-      compare: compareCodeStarConnection({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        tagsKey,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

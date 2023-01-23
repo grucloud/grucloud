@@ -6,16 +6,44 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource, assignTags } = require("./MemoryDBCommon");
+const { Tagger, assignTags } = require("./MemoryDBCommon");
 
 const pickId = pipe([({ Name }) => ({ ACLName: Name })]);
 
 const managedByOther = () => pipe([eq(get("Name"), "open-access")]);
 
-const model = ({ config }) => ({
+const buildArn = () => pipe([get("ARN")]);
+
+exports.MemoryDBACL = ({}) => ({
   package: "memorydb",
   client: "MemoryDB",
+  type: "ACL",
+  inferName: () => get("Name"),
+  findName: () => pipe([get("Name")]),
+  findId: () => pipe([get("Name")]),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
+  omitProperties: [
+    "Status",
+    "Clusters",
+    "ARN",
+    "MinimumEngineVersion",
+    "UserNames",
+  ],
+  dependencies: {
+    users: {
+      type: "User",
+      group: "MemoryDB",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("UserNames"),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+    },
+  },
   ignoreErrorCodes: ["ACLNotFoundFault"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#describeACLs-property
   getById: {
@@ -51,51 +79,36 @@ const model = ({ config }) => ({
     method: "deleteACL",
     pickId,
   },
-});
-
-const buildArn = () => pipe([get("ARN")]);
-
-exports.MemoryDBACL = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([
+      ({ name }) => ({
+        Name: name,
+      }),
+      getById({}),
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { users },
     config,
-    findName: () => pipe([get("Name")]),
-    findId: () => pipe([get("Name")]),
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    getByName: ({ getList, endpoint, getById }) =>
-      pipe([
-        ({ name }) => ({
-          Name: name,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-        getById({}),
-      ]),
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { users },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
-        }),
-        assign({
-          UserNames: pipe([() => users, map((user) => getField(user, "Name"))]),
-        }),
-      ])(),
-  });
+      }),
+      assign({
+        UserNames: pipe([() => users, map((user) => getField(user, "Name"))]),
+      }),
+    ])(),
+});

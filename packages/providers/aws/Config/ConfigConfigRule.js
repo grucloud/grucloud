@@ -1,10 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, or } = require("rubico");
-const { defaultsDeep, when, first } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-
-const { createAwsResource } = require("../AwsClient");
 
 const managedByOther = () =>
   pipe([
@@ -28,9 +25,23 @@ const decorate = ({ endpoint, parent }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+exports.ConfigConfigRule = ({}) => ({
+  type: "ConfigRule",
   package: "config-service",
   client: "ConfigService",
+  inferName: () => get("ConfigRuleName"),
+  findName: () => pipe([get("ConfigRuleName")]),
+  findId: () => pipe([get("ConfigRuleName")]),
+  propertiesDefault: {},
+  omitProperties: [
+    "ConfigRuleArn",
+    "ConfigRuleId",
+    "ConfigRuleState",
+    "CreatedBy",
+  ],
+  getByName: getByNameCore,
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   ignoreErrorCodes: ["NoSuchConfigRuleException"],
   getById: {
     method: "describeConfigRules",
@@ -60,27 +71,15 @@ const model = ({ config }) => ({
     method: "deleteConfigRule",
     pickId,
   },
-});
-
-exports.ConfigConfigRule = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("ConfigRuleName")]),
-    findId: () => pipe([get("ConfigRuleName")]),
-    getByName: getByNameCore,
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        // TODO Tags
-        () => otherProps,
-      ])(),
-  });
+  }) =>
+    pipe([
+      // TODO Tags
+      () => otherProps,
+    ])(),
+});

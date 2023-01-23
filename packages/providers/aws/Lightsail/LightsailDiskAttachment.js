@@ -11,8 +11,6 @@ const {
 } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 
-const { createAwsResource } = require("../AwsClient");
-
 const findName = () =>
   pipe([
     tap((params) => {
@@ -50,35 +48,13 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
-  package: "lightsail",
-  client: "Lightsail",
-  ignoreErrorCodes: ["DoesNotExist"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getMyResource-property
-  getById: {
-    method: "getDisk",
-    getField: "disk",
-    pickId,
-    decorate,
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#attachDisk-property
-  create: {
-    method: "attachDisk",
-    pickCreated: ({ payload }) => pipe([() => payload]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#detachDisk-property
-  destroy: {
-    method: "detachDisk",
-    pickId,
-    ignoreErrorMessages: [
-      "You can only detach the disk when the target instance is stopped",
-    ],
-  },
-});
+const model = ({ config }) => ({});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
 exports.LightsailDiskAttachment = ({ compare }) => ({
   type: "DiskAttachment",
+  package: "lightsail",
+  client: "Lightsail",
   propertiesDefault: {},
   omitProperties: ["diskName", "instanceName"],
   inferName: ({ dependenciesSpec: { disk } }) =>
@@ -101,59 +77,75 @@ exports.LightsailDiskAttachment = ({ compare }) => ({
       dependencyId: ({ lives, config }) => pipe([get("instanceName")]),
     },
   },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName,
-      findId: findName,
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ diskName: name }), getById({})]),
-      getList:
-        ({ client, endpoint, getById }) =>
-        ({ lives, config }) =>
+  findName,
+  findId: findName,
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ diskName: name }), getById({})]),
+  getList:
+    ({ client, endpoint, getById }) =>
+    ({ lives, config }) =>
+      pipe([
+        tap((params) => {
+          assert(config);
+        }),
+        lives.getByType({
+          providerName: config.providerName,
+          type: "Disk",
+          group: "Lightsail",
+        }),
+        map(
           pipe([
-            tap((params) => {
-              assert(config);
+            get("live"),
+            ({ diskName, ...other }) => ({
+              name: diskName,
+              ...other,
             }),
-            lives.getByType({
-              providerName: config.providerName,
-              type: "Disk",
-              group: "Lightsail",
-            }),
-            map(
-              pipe([
-                get("live"),
-                ({ diskName, ...other }) => ({
-                  name: diskName,
-                  ...other,
-                }),
-                decorate({}),
-              ])
-            ),
-            filter(not(isEmpty)),
-          ])(),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { ...otherProps },
-        dependencies: { disk, instance },
-        config,
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(disk);
-            assert(instance);
-            assert(instance.config.instanceName);
-            assert(disk.config.diskName);
-          }),
-          () => otherProps,
-          defaultsDeep({
-            instanceName: instance.config.instanceName,
-            diskName: disk.config.diskName,
-            diskPath: "/dev/xvdf",
-          }),
-        ])(),
-    }),
+            decorate({}),
+          ])
+        ),
+        filter(not(isEmpty)),
+      ])(),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: { disk, instance },
+    config,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(disk);
+        assert(instance);
+        assert(instance.config.instanceName);
+        assert(disk.config.diskName);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        instanceName: instance.config.instanceName,
+        diskName: disk.config.diskName,
+        diskPath: "/dev/xvdf",
+      }),
+    ])(),
+
+  ignoreErrorCodes: ["DoesNotExist"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getMyResource-property
+  getById: {
+    method: "getDisk",
+    getField: "disk",
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#attachDisk-property
+  create: {
+    method: "attachDisk",
+    pickCreated: ({ payload }) => pipe([() => payload]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#detachDisk-property
+  destroy: {
+    method: "detachDisk",
+    pickId,
+    ignoreErrorMessages: [
+      "You can only detach the disk when the target instance is stopped",
+    ],
+  },
 });

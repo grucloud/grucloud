@@ -1,13 +1,18 @@
 const assert = require("assert");
 const { pipe, tap, get, omit, pick, map, flatMap } = require("rubico");
-const { defaultsDeep, callProp, last } = require("rubico/x");
+const { defaultsDeep, callProp } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
+const { replaceWithName } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-const {
-  tagResource,
-  untagResource,
-} = require("./Route53RecoveryReadinessCommon");
+const { Tagger } = require("./Route53RecoveryReadinessCommon");
+
+const buildArn = () =>
+  pipe([
+    get("ResourceSetArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
 
 const ResourceSetDependencies = {
   apiGatewayStage: { type: "Stage", group: "APIGateway" },
@@ -36,44 +41,7 @@ const ResourceSetDependencies = {
   },
 };
 
-exports.ResourceSetDependencies = ResourceSetDependencies;
-
 const pickId = pipe([pick(["ResourceSetName"])]);
-
-const model = ({ config }) => ({
-  package: "route53-recovery-readiness",
-  client: "Route53RecoveryReadiness",
-  region: "us-west-2",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#getResourceSet-property
-  getById: {
-    method: "getResourceSet",
-    pickId,
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#listResourceSets-property
-  getList: {
-    method: "listResourceSets",
-    getParam: "ResourceSets",
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#createResourceSet-property
-  create: {
-    method: "createResourceSet",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#updateResourceSet-property
-  update: {
-    method: "updateResourceSet",
-    filterParams: ({ payload, live }) =>
-      pipe([() => payload, omit(["Tags"])])(),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#deleteResourceSet-property
-  destroy: { method: "deleteResourceSet", pickId },
-});
 
 const findDependenciesResourceSet = ({ live, lives, config }) =>
   pipe([
@@ -148,39 +116,122 @@ const findDependenciesReadinessScope = ({ live, lives, config }) =>
   ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html
-exports.Route53RecoveryReadinessResourceSet = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () => pipe([get("ResourceSetName")]),
-    findId: () => pipe([get("ResourceSetArn")]),
-    getByName: ({ getList, endpoint, getById }) =>
+exports.Route53RecoveryReadinessResourceSet = ({}) => ({
+  type: "ResourceSet",
+  package: "route53-recovery-readiness",
+  client: "Route53RecoveryReadiness",
+  region: "us-west-2",
+  inferName: () => get("ResourceSetName"),
+  findName: () => pipe([get("ResourceSetName")]),
+  findId: () => pipe([get("ResourceSetArn")]),
+
+  dependencies: {
+    cells: {
+      type: "Cell",
+      group: "Route53RecoveryReadiness",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("Resources"), flatMap(get("ReadinessScopes"))]),
+    },
+    ...ResourceSetDependencies,
+  },
+
+  omitProperties: ["ResourceSetArn"],
+  filterLive:
+    ({ lives, providerConfig }) =>
+    (live) =>
       pipe([
-        ({ name }) => ({ ResourceSetName: name }),
-        getById({}),
+        () => live,
+        assign({
+          Resources: pipe([
+            get("Resources"),
+            map(
+              assign({
+                ReadinessScopes: pipe([
+                  get("ReadinessScopes"),
+                  map(
+                    replaceWithName({
+                      groupType: "Route53RecoveryReadiness::Cell",
+                      providerConfig,
+                      lives,
+                      path: "id",
+                    })
+                  ),
+                ]),
+                ResourceArn: pipe([
+                  get("ResourceArn"),
+                  replaceWithName({
+                    groupType: pipe([
+                      () => live.ResourceSetType,
+                      callProp("replace", "AWS::", ""),
+                    ])(),
+                    providerConfig,
+                    lives,
+                    path: "id",
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        }),
+      ])(),
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#getResourceSet-property
+  getById: {
+    method: "getResourceSet",
+    pickId,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#listResourceSets-property
+  getList: {
+    method: "listResourceSets",
+    getParam: "ResourceSets",
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#createResourceSet-property
+  create: {
+    method: "createResourceSet",
+    pickCreated: ({ payload }) =>
+      pipe([
         tap((params) => {
           assert(true);
         }),
       ]),
-    findDependencies: ({ live, lives }) => [
-      findDependenciesResourceSet({ live, lives, config }),
-      findDependenciesReadinessScope({ live, lives, config }),
-    ],
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          ResourceSetName: name,
-          Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-        }),
-      ])(),
-  });
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#updateResourceSet-property
+  update: {
+    method: "updateResourceSet",
+    filterParams: ({ payload, live }) =>
+      pipe([() => payload, omit(["Tags"])])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#deleteResourceSet-property
+  destroy: { method: "deleteResourceSet", pickId },
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([
+      ({ name }) => ({ ResourceSetName: name }),
+      getById({}),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
+  findDependencies: ({ live, lives, config }) => [
+    findDependenciesResourceSet({ live, lives, config }),
+    findDependenciesReadinessScope({ live, lives, config }),
+  ],
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        ResourceSetName: name,
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      }),
+    ])(),
+});

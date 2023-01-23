@@ -49,7 +49,7 @@ const { Route53HealthCheck } = require("./Route53HealthCheck");
 
 const {
   Route53Record,
-  compareRoute53Record,
+  compareRecord,
   Route53RecordDependencies,
 } = require("./Route53Record");
 const { Route53TrafficPolicy } = require("./Route53TrafficPolicy");
@@ -63,7 +63,7 @@ const { Route53ZoneVpcAssociation } = require("./Route53ZoneVpcAssociation");
 
 const GROUP = "Route53";
 
-const compareRoute53 = compareAws({});
+const compare = compareAws({});
 
 const omitHostedZoneConfigComment = pipe([
   omitIfEmpty(["HostedZoneConfig.Comment"]),
@@ -139,82 +139,8 @@ const assignResourceRecords = ({ lives, providerConfig }) =>
 
 module.exports = pipe([
   () => [
-    createAwsService(Route53DelegationSet({})),
-    {
-      type: "HealthCheck",
-      dependencies: {
-        cloudWatchAlarm: {
-          type: "Alarm",
-          group: "CloudWatch",
-          dependencyId: ({ lives, config }) =>
-            pipe([
-              get("AlarmIdentifier.Name"),
-              lives.getByName({
-                type: "Alarm",
-                group: "CloudWatch",
-                config: config.providerName,
-              }),
-              get("id"),
-            ]),
-        },
-        routingControl: {
-          type: "RoutingControl",
-          group: "Route53RecoveryControlConfig",
-          dependencyId: ({ lives, config }) =>
-            get("HealthCheckConfig.RoutingControlArn"),
-        },
-      },
-      Client: Route53HealthCheck,
-      compare: compareRoute53({
-        filterTarget: () => pipe([() => ({})]),
-        filterLive: () => pipe([() => ({})]),
-      }),
-      inferName:
-        ({ dependenciesSpec: { routingControl } }) =>
-        (properties) =>
-          pipe([
-            () => properties,
-            get("HealthCheckConfig"),
-            switchCase([
-              ({ Type }) =>
-                pipe([
-                  () => [
-                    "HTTP",
-                    "HTTPS",
-                    "HTTP_STR_MATCH",
-                    "HTTPS_STR_MATCH",
-                    "TCP",
-                  ],
-                  includes(Type),
-                ])(),
-              ({ Type, FullyQualifiedDomainName, IPAddress }) =>
-                `heathcheck::${Type}::${FullyQualifiedDomainName || IPAddress}`,
-              //TODO
-              eq(get("Type"), "CALCULATED"),
-              pipe([get("ResourcePath"), prepend("heathcheck::CALCULATED::")]),
-              eq(get("Type"), "CLOUDWATCH_METRIC"),
-              pipe([
-                get("AlarmIdentifier.Name"),
-                prepend("heathcheck::CLOUDWATCH_METRIC::"),
-              ]),
-              eq(get("Type"), "RECOVERY_CONTROL"),
-              () => `heathcheck::RECOVERY_CONTROL::${routingControl}`,
-            ]),
-          ])(),
-      propertiesDefault: {
-        HealthCheckConfig: {
-          Inverted: false,
-          Disabled: false,
-        },
-      },
-      omitProperties: [
-        "Id",
-        "CallerReference",
-        "LinkedService",
-        "HealthCheckConfig.RoutingControlArn",
-        "HealthCheckVersion",
-      ],
-    },
+    createAwsService(Route53DelegationSet({ compare })),
+    createAwsService(Route53HealthCheck({ compare })),
     {
       type: "HostedZone",
       dependencies: {
@@ -285,7 +211,7 @@ module.exports = pipe([
       },
       omitProperties: ["Arn", "DelegationSetId"],
       Client: Route53HostedZone,
-      compare: compareRoute53({
+      compare: compare({
         filterAll: () =>
           pipe([
             pick(["HostedZoneConfig.Comment"]),
@@ -320,8 +246,8 @@ module.exports = pipe([
       },
       Client: Route53Record,
       isOurMinion: () => true,
-      compare: compareRoute53Record,
-      omitProperties: [],
+      compare: compareRecord,
+      omitProperties: ["HostedZoneId"],
       inferName:
         ({ dependenciesSpec }) =>
         (properties) =>
@@ -411,7 +337,6 @@ module.exports = pipe([
             ResourceRecords: assignResourceRecords({ lives, providerConfig }),
           }),
           omitIfEmpty(["ResourceRecords"]),
-          omit(["HostedZoneId"]),
         ]),
       hasNoProperty: ({ lives, resource }) =>
         pipe([
@@ -432,85 +357,10 @@ module.exports = pipe([
       //TODO remove ?
       ignoreResource: () => get("cannotBeDeleted"),
     },
-    createAwsService(Route53TrafficPolicy({})),
-    createAwsService(Route53TrafficPolicyInstance({})),
-    {
-      type: "ZoneVpcAssociation",
-      Client: Route53ZoneVpcAssociation,
-      dependencies: {
-        hostedZone: {
-          type: "HostedZone",
-          group: "Route53",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("HostedZoneId"),
-        },
-        vpc: {
-          type: "Vpc",
-          group: "EC2",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("VPC.VPCId"),
-        },
-      },
-      omitProperties: ["HostedZoneId", "Name", "Owner", "VPC"],
-      inferName: ({ dependenciesSpec: { hostedZone, vpc } }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => hostedZone,
-          when(isObject, get("name")),
-          (hostedZone) => `zone-assoc::${hostedZone}::${vpc}`,
-        ]),
-      compare: compareRoute53({
-        filterTarget: () => pipe([() => ({})]),
-        filterLive: () => pipe([() => ({})]),
-      }),
-      // TODO region
-      //filterLive: () => pick([]),
-    },
-    {
-      type: "VpcAssociationAuthorization",
-      Client: Route53VpcAssociationAuthorization,
-      dependencies: {
-        hostedZone: {
-          type: "HostedZone",
-          group: "Route53",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("HostedZoneId"),
-        },
-        vpc: {
-          type: "Vpc",
-          group: "EC2",
-          parent: true,
-          dependencyId: ({ lives, config }) =>
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              get("VPC"),
-              ({ VPCRegion, VPCId }) =>
-                pipe([
-                  () => VPCId,
-                  lives.getById({ type: "Vpc", group: "EC2" }),
-                  pick(["id", "providerName"]),
-                ])(),
-            ]),
-        },
-      },
-      omitProperties: ["HostedZoneId", "VPC"],
-      inferName: ({ dependenciesSpec: { hostedZone, vpc } }) =>
-        pipe([
-          () => vpc,
-          when(isObject, get("name")),
-          (vpc) => `vpc-assoc-auth::${hostedZone}::${vpc}`,
-        ]),
-      compare: compareRoute53({
-        filterTarget: () => pipe([() => ({})]),
-        filterLive: () => pipe([() => ({})]),
-      }),
-      // TODO region
-      //filterLive: () => pick([]),
-    },
+    createAwsService(Route53TrafficPolicy({ compare })),
+    createAwsService(Route53TrafficPolicyInstance({ compare })),
+    createAwsService(Route53ZoneVpcAssociation({ compare })),
+    createAwsService(Route53VpcAssociationAuthorization({ compare })),
   ],
-  map(defaultsDeep({ group: GROUP, compare: compareRoute53({}), isOurMinion })),
+  map(defaultsDeep({ group: GROUP, compare: compare({}), isOurMinion })),
 ]);
