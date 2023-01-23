@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, map } = require("rubico");
+const { pipe, tap, get, map, assign } = require("rubico");
 const { defaultsDeep, unless, isEmpty } = require("rubico/x");
 
 const { Tagger } = require("./ApiGatewayCommon");

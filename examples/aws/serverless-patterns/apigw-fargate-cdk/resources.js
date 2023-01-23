@@ -13,14 +13,16 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Stage",
+    type: "Deployment",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      AutoDeploy: true,
-      StageName: "$default",
+      Description:
+        "Automatic deployment triggered by changes to the Api configuration",
+      AutoDeployed: true,
     }),
     dependencies: ({}) => ({
       api: "ApigwFargate",
+      stage: "ApigwFargate::$default",
     }),
   },
   {
@@ -53,16 +55,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
+    type: "Stage",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
-      AutoDeployed: true,
+      AutoDeploy: true,
+      StageName: "$default",
     }),
     dependencies: ({}) => ({
       api: "ApigwFargate",
-      stage: "ApigwFargate::$default",
     }),
   },
   {
@@ -507,6 +507,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Listener",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      Port: 80,
+      Protocol: "HTTP",
+    }),
+    dependencies: ({}) => ({
+      loadBalancer: "CdkSt-MyFar-RZX6AW5H3B08",
+      targetGroup: "CdkSt-MyFar-JZPHMT1E0V5K",
+    }),
+  },
+  {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
@@ -537,18 +549,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
-    }),
-  },
-  {
-    type: "Listener",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Port: 80,
-      Protocol: "HTTP",
-    }),
-    dependencies: ({}) => ({
-      loadBalancer: "CdkSt-MyFar-RZX6AW5H3B08",
-      targetGroup: "CdkSt-MyFar-JZPHMT1E0V5K",
     }),
   },
   {

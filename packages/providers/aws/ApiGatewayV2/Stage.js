@@ -1,98 +1,159 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq } = require("rubico");
-const { defaultsDeep, when, append, find } = require("rubico/x");
-
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { defaultsDeep, when, find, append } = require("rubico/x");
+const { getByNameCore } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
+const { buildTagsObject } = require("@grucloud/core/Common");
+
 const {
-  createApiGatewayV2,
+  Tagger,
   ignoreErrorCodes,
-  tagResource,
-  untagResource,
-} = require("./ApiGatewayCommon");
+  dependencyIdApi,
+} = require("./ApiGatewayV2Common");
 
-exports.Stage = ({ spec, config }) => {
-  const apiGateway = createApiGatewayV2(config);
-  const client = AwsClient({ spec, config })(apiGateway);
+const buildArn = ({ config }) =>
+  pipe([
+    tap(({ ApiId, StageName }) => {
+      assert(ApiId);
+      assert(StageName);
+    }),
+    ({ ApiId, StageName }) =>
+      `arn:aws:apigateway:${config.region}::/apis/${ApiId}/stages/${StageName}`,
+  ]);
 
-  const buildResourceArn = ({ ApiId, StageName }) =>
-    `arn:aws:apigateway:${config.region}::/apis/${ApiId}/stages/${StageName}`;
+const findName =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(live.ApiId);
+        assert(live.StageName);
+      }),
+      lives.getByType({
+        type: "Api",
+        group: "ApiGatewayV2",
+        providerName: config.providerName,
+      }),
+      find(eq(get("live.ApiId"), live.ApiId)),
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+      append(`::${live.StageName}`),
+    ])();
 
-  const findId = () => pipe([buildResourceArn]);
+const pickId = pipe([
+  tap(({ ApiId, StageName }) => {
+    assert(ApiId);
+    assert(StageName);
+  }),
+  pick(["ApiId", "StageName"]),
+]);
 
-  const findName =
-    ({ lives, config }) =>
-    (live) =>
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
+exports.ApiGatewayV2Stage = () => ({
+  type: "Stage",
+  package: "apigatewayv2",
+  client: "ApiGatewayV2",
+  inferName:
+    ({ dependenciesSpec: { api } }) =>
+    ({ StageName }) =>
       pipe([
         tap(() => {
-          assert(live.ApiId);
-          assert(live.StageName);
+          assert(StageName);
+          assert(api);
         }),
-        lives.getByType({
-          type: "Api",
-          group: "ApiGatewayV2",
-          providerName: config.providerName,
-        }),
-        find(eq(get("live.ApiId"), live.ApiId)),
-        get("name"),
-        tap((name) => {
-          assert(name);
-        }),
-        append(`::${live.StageName}`),
-      ])();
-
-  const pickId = pick(["ApiId", "StageName"]);
-
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getStage-property
-  const getById = client.getById({
-    pickId,
+        () => `${api}::${StageName}`,
+      ])(),
+  findName,
+  findId: buildArn,
+  ignoreErrorCodes,
+  propertiesDefault: {
+    RouteSettings: {},
+    DefaultRouteSettings: {
+      DetailedMetricsEnabled: false,
+    },
+    StageVariables: {},
+  },
+  omitProperties: [
+    "CreatedDate",
+    "DeploymentId",
+    "LastUpdatedDate",
+    "AccessLogSettings.DestinationArn",
+    "LastDeploymentStatusMessage",
+    "ApiId",
+  ],
+  filterLive: () => pipe([omitIfEmpty(["StageVariables"])]),
+  dependencies: {
+    api: {
+      type: "Api",
+      group: "ApiGatewayV2",
+      parent: true,
+      dependencyId: dependencyIdApi,
+    },
+    logGroup: {
+      type: "LogGroup",
+      group: "CloudWatchLogs",
+      dependencyId: ({ lives, config }) =>
+        get("AccessLogSettings.DestinationArn"),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getStage-property
+  getById: {
     method: "getStage",
-    ignoreErrorCodes,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getStages-property
-  const getList = client.getListWithParent({
-    parent: { type: "Api", group: "ApiGatewayV2" },
-    pickKey: pipe([pick(["ApiId"])]),
-    method: "getStages",
-    getParam: "Items",
-    config,
-    decorate: ({ parent: { ApiId } }) => pipe([defaultsDeep({ ApiId })]),
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listStages-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Api", group: "ApiGatewayV2" },
+          pickKey: pipe([pick(["ApiId"])]),
+          method: "getStages",
+          getParam: "Items",
+          config,
+          decorate: ({ parent: { ApiId } }) => pipe([defaultsDeep({ ApiId })]),
+        }),
+    ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createStage-property
-  const create = client.create({
+  create: {
     method: "createStage",
     pickCreated:
       ({ payload }) =>
       () =>
         payload,
-    getById,
-  });
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateStage-property
-  const update = client.update({
-    pickId,
+  update: {
     method: "updateStage",
-    getById,
-  });
-
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteStage-property
-  const destroy = client.destroy({
-    pickId,
+  destroy: {
     method: "deleteStage",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const configDefault = ({
+    pickId,
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: { api, logGroup },
+    config,
   }) =>
     pipe([
       tap(() => {
@@ -114,22 +175,5 @@ exports.Stage = ({ spec, config }) => {
           },
         })
       ),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    update,
-    destroy,
-    getById,
-    getByName,
-    getList,
-    configDefault,
-    tagResource: tagResource({ buildResourceArn })({ endpoint: apiGateway }),
-    untagResource: untagResource({ buildResourceArn })({
-      endpoint: apiGateway,
-    }),
-  };
-};
+    ])(),
+});

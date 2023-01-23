@@ -1,11 +1,9 @@
 const assert = require("assert");
 const { map, pipe, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { compareAws, isOurMinionFactory } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
 
 const { createAwsService } = require("../AwsService");
-
-const { dependencyTargetGroups } = require("./ECSCommon");
 
 const { ECSCluster } = require("./ECSCluster");
 const { ECSCapacityProvider } = require("./ECSCapacityProvider");
@@ -21,37 +19,13 @@ const tagsKey = "tags";
 
 const compare = compareAws({ tagsKey, key: "key" });
 
-const isOurMinion = isOurMinionFactory({
-  key: "key",
-  value: "value",
-  tags: tagsKey,
-});
-
 module.exports = pipe([
   () => [
-    createAwsService(ECSCapacityProvider({ compare })),
-    createAwsService(ECSCluster({ compare })),
-    createAwsService(ECSService({ compare })),
-    createAwsService(ECSTaskDefinition({ compare })),
-    {
-      type: "Task",
-      Client: ECSTask,
-      filterLive: () =>
-        pick(["enableExecuteCommand", "launchType", "overrides"]),
-      dependencies: {
-        cluster: {
-          type: "Cluster",
-          group: "ECS",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("clusterArn"),
-        },
-        taskDefinition: {
-          type: "TaskDefinition",
-          group: "ECS",
-          dependencyId: ({ lives, config }) => get("taskDefinitionArn"),
-        },
-      },
-    },
+    ECSCapacityProvider({ compare }),
+    ECSCluster({ compare }),
+    ECSService({ compare }),
+    ECSTask({ compare }),
+    ECSTaskDefinition({ compare }),
     // {
     //   type: "TaskSet",
     //   dependencies: {
@@ -75,7 +49,6 @@ module.exports = pipe([
     //   },
     //   Client: ECSTaskSet,
     // },
-
     // {
     //   type: "ContainerInstance",
     //   dependencies: {
@@ -89,5 +62,10 @@ module.exports = pipe([
     //   Client: ECSContainerInstance,
     // },
   ],
-  map(defaultsDeep({ group: GROUP, tagsKey, compare: compare({}) })),
+  map(
+    pipe([
+      createAwsService,
+      defaultsDeep({ group: GROUP, tagsKey, compare: compare({}) }),
+    ])
+  ),
 ]);

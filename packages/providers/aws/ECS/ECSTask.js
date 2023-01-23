@@ -1,18 +1,34 @@
 const assert = require("assert");
-const { pipe, tap, get } = require("rubico");
-const { defaultsDeep, callProp, when } = require("rubico/x");
+const { pipe, tap, get, pick } = require("rubico");
+const { defaultsDeep, callProp } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { AwsClient } = require("../AwsClient");
-
 const { findNameInTagsOrId } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const {
-  createECS,
-  buildTagsEcs,
-  tagResource,
-  untagResource,
-} = require("./ECSCommon");
+
+const { Tagger, buildTagsEcs } = require("./ECSCommon");
+
+const buildArn = () =>
+  pipe([
+    get("taskArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const managedByOther = () =>
+  pipe([get("group"), callProp("startsWith", "service:")]);
+
+const pickId = pipe([
+  tap(({ taskArn, clusterArn }) => {
+    assert(taskArn);
+    assert(clusterArn);
+  }),
+  ({ taskArn, clusterArn }) => ({
+    task: taskArn,
+    cluster: clusterArn,
+  }),
+]);
 
 const findId = () =>
   pipe([
@@ -24,64 +40,103 @@ const findId = () =>
 
 const findName = findNameInTagsOrId({ findId });
 
-const pickId = pipe([
-  ({ taskArn, clusterArn }) => ({
-    task: taskArn,
-    cluster: clusterArn,
-  }),
-]);
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
-
-exports.ECSTask = ({ spec, config }) => {
-  const ecs = createECS(config);
-  const client = AwsClient({ spec, config })(ecs);
-
-  const managedByOther = () =>
-    pipe([get("group"), callProp("startsWith", "service:")]);
-
-  const ignoreErrorCodes = [
-    "ClusterNotFoundException",
-    "InvalidParameterException",
-  ];
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTasks-property
-  const getById = client.getById({
-    pickId,
+exports.ECSTask = () => ({
+  type: "Task",
+  package: "ecs",
+  client: "ECS",
+  propertiesDefault: {},
+  omitProperties: ["taskDefinitionArn", "clusterArn"],
+  // inferName: () =>
+  //   pipe([
+  //     get("Name"),
+  //     tap((Name) => {
+  //       assert(Name);
+  //     }),
+  //   ]),
+  findName,
+  findId: () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      get("taskArn"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  managedByOther,
+  ignoreErrorCodes: ["ClusterNotFoundException", "InvalidParameterException"],
+  filterLive: () => pick(["enableExecuteCommand", "launchType", "overrides"]),
+  dependencies: {
+    cluster: {
+      type: "Cluster",
+      group: "ECS",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("clusterArn"),
+    },
+    taskDefinition: {
+      type: "TaskDefinition",
+      group: "ECS",
+      dependencyId: ({ lives, config }) => get("taskDefinitionArn"),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#getTask-property
+  getById: {
+    pickId: pipe([pickId, defaultsDeep({ include: ["TAGS"] })]),
     method: "describeTasks",
     getField: "tasks",
-    extraParams: { include: ["TAGS"] },
-    ignoreErrorCodes,
-  });
-
+    decorate,
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTasks-property
-  const getList = client.getListWithParent({
-    parent: { type: "Cluster", group: "ECS" },
-    pickKey: pipe([({ clusterName }) => ({ cluster: clusterName })]),
+  getList: {
     method: "listTasks",
-    getParam: "taskArns",
-    config,
-    decorate: ({ lives, parent: { clusterArn } }) =>
-      pipe([(taskArn) => ({ taskArn, clusterArn }), getById]),
-  });
+    getParam: "Tasks",
+    decorate: ({ getById }) => pipe([getById]),
+  },
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Cluster", group: "ECS" },
+          pickKey: pipe([({ clusterName }) => ({ cluster: clusterName })]),
+          method: "listTasks",
+          getParam: "taskArns",
+          config,
+          decorate: ({ lives, parent: { clusterArn } }) =>
+            pipe([(taskArn) => ({ taskArn, clusterArn }), getById({})]),
+        }),
+    ])(),
 
-  const getByName = getByNameCore({ getList, findName });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#runTask-property
-  //TODO create
-  const create = ({ payload, name, namespace }) =>
-    pipe([() => payload, ecs().runTask])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#stopTask-property
-  const destroy = client.destroy({
-    pickId,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createTask-property
+  create: {
+    method: "runTask",
+    pickCreated: ({ payload }) => pipe([() => payload]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateTask-property
+  update: {
+    method: "updateTask",
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteTask-property
+  destroy: {
     method: "stopTask",
-    getById,
-    ignoreErrorCodes,
-    config,
-  });
-
-  const configDefault = ({
+    pickId,
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { tags, ...otherProps },
@@ -107,20 +162,5 @@ exports.ECSTask = ({ spec, config }) => {
           tags,
         }),
       }),
-    ])();
-
-  return {
-    spec,
-    findId,
-    managedByOther,
-    getByName,
-    getById,
-    findName,
-    create,
-    destroy,
-    getList,
-    configDefault,
-    tagResource: tagResource({ ecs }),
-    untagResource: untagResource({ ecs }),
-  };
-};
+    ])(),
+});

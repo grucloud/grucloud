@@ -1,70 +1,130 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, pick, eq, switchCase, omit } = require("rubico");
+const { defaultsDeep, callProp, when, isEmpty, last } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
+const { dependencyIdApi, ignoreErrorCodes } = require("./ApiGatewayV2Common");
 
 const findId = () => get("AuthorizerId");
 const findName = () => get("Name");
 const pickId = pick(["ApiId", "AuthorizerId"]);
 
-exports.Authorizer = ({ spec, config }) => {
-  const apiGateway = createApiGatewayV2(config);
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+  ]);
 
-  const client = AwsClient({ spec, config })(apiGateway);
-
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
+exports.ApiGatewayV2Authorizer = () => ({
+  type: "Authorizer",
+  package: "apigatewayv2",
+  client: "ApiGatewayV2",
+  inferName: () => get("Name"),
+  findName,
+  findId,
+  propertiesDefault: {},
+  ignoreErrorCodes,
+  omitProperties: ["AuthorizerId", "ApiName"],
+  filterLive: () =>
+    pipe([
+      pick([
+        "Name",
+        "AuthorizerType",
+        "IdentitySource",
+        "AuthorizerPayloadFormatVersion",
+        "AuthorizerResultTtlInSeconds",
+        "EnableSimpleResponses",
+        "IdentityValidationExpression",
+        "JwtConfiguration",
+      ]),
+      when(
+        pipe([
+          get("JwtConfiguration.Issuer", ""),
+          callProp("startsWith", "https://cognito-idp"),
+        ]),
+        omit(["JwtConfiguration.Issuer"])
+      ),
+    ]),
+  dependencies: {
+    api: {
+      type: "Api",
+      group: "ApiGatewayV2",
+      parent: true,
+      dependencyId: dependencyIdApi,
+    },
+    userPool: {
+      type: "UserPool",
+      group: "CognitoIdentityServiceProvider",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("JwtConfiguration.Issuer", ""),
+          callProp("split", "/"),
+          last,
+          switchCase([
+            isEmpty,
+            () => undefined,
+            (Id) =>
+              pipe([
+                lives.getByType({
+                  type: "UserPool",
+                  group: "CognitoIdentityServiceProvider",
+                  providerName: config.providerName,
+                }),
+                find(eq(get("live.Id"), Id)),
+              ])(),
+          ]),
+        ]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizer-property
-  const getById = client.getById({
+  getById: {
     pickId,
     method: "getAuthorizer",
     ignoreErrorCodes,
-  });
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listAuthorizers-property
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizers-property
-  const getList = client.getListWithParent({
-    parent: { type: "Api", group: "ApiGatewayV2" },
-    pickKey: pipe([pick(["ApiId"])]),
-    method: "getAuthorizers",
-    getParam: "Items",
-    config,
-    decorate: ({ parent: { ApiId, Name: ApiName, Tags } }) =>
-      pipe([defaultsDeep({ ApiId, ApiName /*, Tags*/ })]),
-  });
-
-  // Get Authorizer by name
-  const getByName = getByNameCore({ getList, findName });
-
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Api", group: "ApiGatewayV2" },
+          pickKey: pipe([pick(["ApiId"])]),
+          method: "getAuthorizers",
+          getParam: "Items",
+          config,
+          decorate: ({ parent: { ApiId, Name: ApiName, Tags } }) =>
+            pipe([defaultsDeep({ ApiId, ApiName /*, Tags*/ })]),
+        }),
+    ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createAuthorizer-property
-  const create = client.create({
+  create: {
     method: "createAuthorizer",
     pickCreated: ({ payload }) =>
       pipe([defaultsDeep({ ApiId: payload.ApiId })]),
-    getById,
-  });
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateAuthorizer-property
-  const update = client.update({
-    pickId,
+  update: {
     method: "updateAuthorizer",
-    getById,
-  });
-
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteAuthorizer-property
-  const destroy = client.destroy({
-    pickId,
+  destroy: {
     method: "deleteAuthorizer",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const configDefault = ({
+    pickId,
+  },
+  getByName: getByNameCore,
+  configDefault: ({
     name,
     namespace,
     properties,
     dependencies: { api, userPool },
+    config,
   }) =>
     pipe([
       tap(() => {
@@ -85,18 +145,5 @@ exports.Authorizer = ({ spec, config }) => {
           },
         })
       ),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    update,
-    destroy,
-    getByName,
-    getById,
-    getList,
-    configDefault,
-  };
-};
+    ])(),
+});

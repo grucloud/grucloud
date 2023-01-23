@@ -872,7 +872,13 @@ exports.revokeSecurityGroupIngress =
 
 exports.removeRoleFromInstanceProfile = ({ endpoint }) =>
   tryCatch(
-    pipe([endpoint().removeRoleFromInstanceProfile]),
+    pipe([
+      tap(({ RoleName, InstanceProfileName }) => {
+        assert(RoleName);
+        assert(InstanceProfileName);
+      }),
+      endpoint().removeRoleFromInstanceProfile,
+    ]),
     switchCase([
       //TODO use throwIfNotAwsError
       isAwsError("NoSuchEntityException"),

@@ -12,19 +12,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "DomainName",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      DomainName: "grucloud.org",
-      Tags: {
-        mykey1: "value",
-      },
-    }),
-    dependencies: ({}) => ({
-      certificate: "grucloud.org",
-    }),
-  },
-  {
     type: "Api",
     group: "ApiGatewayV2",
     properties: ({}) => ({
@@ -32,24 +19,6 @@ exports.createResources = () => [
       Tags: {
         mykey1: "value",
       },
-    }),
-  },
-  {
-    type: "Stage",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      AccessLogSettings: {
-        Format:
-          '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
-      },
-      StageName: "stage-dev",
-      Tags: {
-        mykey1: "value",
-      },
-    }),
-    dependencies: ({}) => ({
-      api: "my-api",
-      logGroup: "lg-http-test",
     }),
   },
   {
@@ -61,6 +30,27 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       domainName: "grucloud.org",
       stage: "my-api::stage-dev",
+    }),
+  },
+  {
+    type: "Deployment",
+    group: "ApiGatewayV2",
+    dependencies: ({}) => ({
+      api: "my-api",
+      stage: "my-api::stage-dev",
+    }),
+  },
+  {
+    type: "DomainName",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      DomainName: "grucloud.org",
+      Tags: {
+        mykey1: "value",
+      },
+    }),
+    dependencies: ({}) => ({
+      certificate: "grucloud.org",
     }),
   },
   {
@@ -89,11 +79,21 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
+    type: "Stage",
     group: "ApiGatewayV2",
+    properties: ({}) => ({
+      AccessLogSettings: {
+        Format:
+          '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
+      },
+      StageName: "stage-dev",
+      Tags: {
+        mykey1: "value",
+      },
+    }),
     dependencies: ({}) => ({
       api: "my-api",
-      stage: "my-api::stage-dev",
+      logGroup: "lg-http-test",
     }),
   },
   {

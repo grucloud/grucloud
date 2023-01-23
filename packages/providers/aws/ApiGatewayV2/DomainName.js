@@ -1,75 +1,103 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, pick, eq, omit } = require("rubico");
+const { defaultsDeep, pluck, when } = require("rubico/x");
 
-const { tos } = require("@grucloud/core/tos");
-const { buildTagsObject } = require("@grucloud/core/Common");
-const { AwsClient } = require("../AwsClient");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const {
-  createApiGatewayV2,
-  ignoreErrorCodes,
-  tagResource,
-  untagResource,
-} = require("./ApiGatewayCommon");
+const { buildTagsObject } = require("@grucloud/core/Common");
 
-const findId = () => get("DomainName");
-const findName = () => get("DomainName");
-const pickId = pipe([pick(["DomainName"])]);
+const { Tagger, ignoreErrorCodes } = require("./ApiGatewayV2Common");
 
-exports.DomainName = ({ spec, config }) => {
-  const apiGateway = createApiGatewayV2(config);
+const buildArn =
+  ({ config }) =>
+  ({ DomainName }) =>
+    `arn:aws:apigateway:${config.region}::/domainnames/${DomainName}`;
 
-  const client = AwsClient({ spec, config })(apiGateway);
+const pickId = pipe([
+  tap(({ DomainName }) => {
+    assert(DomainName);
+  }),
+  pick(["DomainName"]),
+]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDomainNames-property
-  const getList = client.getList({
-    method: "getDomainNames",
-    getParam: "Items",
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDomainName-property
-  const getById = client.getById({
-    pickId,
-    method: "getDomainName",
-    ignoreErrorCodes,
-  });
-
-  const getByName = pipe([
-    ({ name: DomainName }) => ({ DomainName }),
-    getById({}),
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
   ]);
 
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
+exports.ApiGatewayV2DomainName = () => ({
+  type: "DomainName",
+  package: "apigatewayv2",
+  client: "ApiGatewayV2",
+  propertiesDefault: {},
+  inferName: () => get("DomainName"),
+  findName: () => get("DomainName"),
+  findId: () => get("DomainName"),
+  ignoreErrorCodes,
+  propertiesDefault: {
+    ApiMappingSelectionExpression: "$request.basepath",
+  },
+  omitProperties: ["DomainNameConfigurations"],
+  filterLive: () =>
+    pipe([
+      when(
+        eq(get("ApiMappingSelectionExpression"), "$request.basepath"),
+        omit(["ApiMappingSelectionExpression"])
+      ),
+    ]),
+  dependencies: {
+    certificate: {
+      type: "Certificate",
+      group: "ACM",
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("DomainNameConfigurations"), pluck("CertificateArn")]),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDomainName-property
+  getById: {
+    method: "getDomainName",
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listDomainNames-property
+  getList: {
+    method: "getDomainNames",
+    getParam: "Items",
+    decorate,
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDomainName-property
-  const create = client.create({
+  create: {
     method: "createDomainName",
     shouldRetryOnExceptionCodes: [
       "UnsupportedCertificate",
       "BadRequestException",
     ],
-    getById,
-  });
-
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateDomainName-property
+  // update: {
+  //   method: "updateDomainName",
+  //   filterParams: ({ payload, diff, live }) =>
+  //     pipe([() => payload, defaultsDeep(pickId(live))])(),
+  // },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDomainName-property
-  const update = client.update({
-    pickId,
+  destroy: {
     method: "deleteDomainName",
-    getById,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDomainName-property
-  const destroy = client.destroy({
     pickId,
-    method: "deleteDomainName",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const configDefault = ({
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: { certificate },
+    config,
   }) =>
     pipe([
       tap(() => {
@@ -85,25 +113,5 @@ exports.DomainName = ({ spec, config }) => {
         ],
         Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
       }),
-    ])();
-
-  const buildResourceArn = ({ DomainName }) =>
-    `arn:aws:apigateway:${config.region}::/domainnames/${DomainName}`;
-
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    update,
-    destroy,
-    getByName,
-    getById,
-    getList,
-    configDefault,
-    tagResource: tagResource({ buildResourceArn })({ endpoint: apiGateway }),
-    untagResource: untagResource({ buildResourceArn })({
-      endpoint: apiGateway,
-    }),
-  };
-};
+    ])(),
+});

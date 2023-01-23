@@ -56,15 +56,3 @@ exports.destroyAutoScalingGroupById = ({ lives, config }) =>
       ])
     ),
   ]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#tagResource-property
-exports.tagResource =
-  ({ ecs }) =>
-  ({ id }) =>
-    pipe([(tags) => ({ resourceArn: id, tags }), ecs().tagResource]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#untagResource-property
-exports.untagResource =
-  ({ ecs }) =>
-  ({ id }) =>
-    pipe([(tagKeys) => ({ resourceArn: id, tagKeys }), ecs().untagResource]);

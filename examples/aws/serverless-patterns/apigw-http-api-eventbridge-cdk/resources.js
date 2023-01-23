@@ -11,14 +11,16 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Stage",
+    type: "Deployment",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      AutoDeploy: true,
-      StageName: "$default",
+      Description:
+        "Automatic deployment triggered by changes to the Api configuration",
+      AutoDeployed: true,
     }),
     dependencies: ({}) => ({
       api: "MyHttpApi",
+      stage: "MyHttpApi::$default",
     }),
   },
   {
@@ -55,16 +57,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
+    type: "Stage",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
-      AutoDeployed: true,
+      AutoDeploy: true,
+      StageName: "$default",
     }),
     dependencies: ({}) => ({
       api: "MyHttpApi",
-      stage: "MyHttpApi::$default",
     }),
   },
   {

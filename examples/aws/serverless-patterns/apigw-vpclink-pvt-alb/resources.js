@@ -11,14 +11,16 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Stage",
+    type: "Deployment",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      AutoDeploy: true,
-      StageName: "$default",
+      Description:
+        "Automatic deployment triggered by changes to the Api configuration",
+      AutoDeployed: true,
     }),
     dependencies: ({}) => ({
       api: "serverlessland-pvt-endpoint",
+      stage: "serverlessland-pvt-endpoint::$default",
     }),
   },
   {
@@ -50,16 +52,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
+    type: "Stage",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
-      AutoDeployed: true,
+      AutoDeploy: true,
+      StageName: "$default",
     }),
     dependencies: ({}) => ({
       api: "serverlessland-pvt-endpoint",
-      stage: "serverlessland-pvt-endpoint::$default",
     }),
   },
   {
@@ -318,6 +318,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Listener",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      Port: 80,
+      Protocol: "HTTP",
+    }),
+    dependencies: ({}) => ({
+      loadBalancer: "sam-a-LoadB-EC9ZTKNG2RSH",
+      targetGroup: "sam-a-LoadB-29TIQLVPQQY9",
+    }),
+  },
+  {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
@@ -348,18 +360,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "vpclink-ex-vpc",
-    }),
-  },
-  {
-    type: "Listener",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Port: 80,
-      Protocol: "HTTP",
-    }),
-    dependencies: ({}) => ({
-      loadBalancer: "sam-a-LoadB-EC9ZTKNG2RSH",
-      targetGroup: "sam-a-LoadB-29TIQLVPQQY9",
     }),
   },
   {

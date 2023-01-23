@@ -31,6 +31,8 @@ const {
 const logger = require("@grucloud/core/logger")({ prefix: "EC2Subnet" });
 
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { tos } = require("@grucloud/core/tos");
+
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
   cidrSubnetV6,
@@ -170,7 +172,7 @@ const filterLiveSubnetV6 = when(
 
 const extractSubnetName = pipe([callProp("split", "::"), last]);
 
-const modifySubnetAttribute = ({ SubnetId }) =>
+const modifySubnetAttribute = ({ endpoint, SubnetId }) =>
   pipe([
     tap((params) => {
       assert(SubnetId);
@@ -183,7 +185,7 @@ const modifySubnetAttribute = ({ SubnetId }) =>
             tap((params) => {
               logger.debug(`modifySubnetAttribute ${JSON.stringify(params)}`);
             }),
-            ec2().modifySubnetAttribute,
+            endpoint().modifySubnetAttribute,
             () => [key, Value],
           ])(),
         (error, [key]) =>
@@ -350,13 +352,13 @@ exports.EC2Subnet = ({ compare }) => ({
     pickCreated: () => get("Subnet"),
     pickId,
     postCreate:
-      ({ payload }) =>
+      ({ endpoint, payload }) =>
       ({ SubnetId }) =>
         pipe([
           () => payload,
           pick(SubnetAttributes),
           filter(identity),
-          modifySubnetAttribute({ SubnetId }),
+          modifySubnetAttribute({ endpoint, SubnetId }),
         ])(),
   },
   update:
@@ -368,7 +370,7 @@ exports.EC2Subnet = ({ compare }) => ({
           //logger.debug(tos({ payload, diff }));
         }),
         () => diff.liveDiff.updated,
-        modifySubnetAttribute({ SubnetId: live.SubnetId }),
+        modifySubnetAttribute({ endpoint, SubnetId: live.SubnetId }),
         tap(() => {
           logger.info(`updated subnet ${name}`);
         }),

@@ -1,49 +1,101 @@
 const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, identity } = require("rubico/x");
 
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const { AwsClient } = require("../AwsClient");
-const {
-  createApiGatewayV2,
-  ignoreErrorCodes,
-  tagResource,
-  untagResource,
-} = require("./ApiGatewayCommon");
+const { getByNameCore } = require("@grucloud/core/Common");
+const { buildTagsObject } = require("@grucloud/core/Common");
 
-const findId =
+const { Tagger, ignoreErrorCodes } = require("./ApiGatewayV2Common");
+
+const buildArn =
   ({ config }) =>
   ({ ApiId }) =>
-    `arn:aws:execute-api:${config.region}:${config.accountId()}:${ApiId}`;
+    `arn:aws:apigateway:${config.region}::/apis/${ApiId}`;
 
-const findName = () => get("Name");
-const pickId = pick(["ApiId"]);
+const pickId = pipe([
+  tap(({ ApiId }) => {
+    assert(ApiId);
+  }),
+  pick(["ApiId"]),
+]);
 
-exports.Api = ({ spec, config }) => {
-  const apiGateway = createApiGatewayV2(config);
-  const client = AwsClient({ spec, config })(apiGateway);
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+  ]);
 
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
+exports.ApiGatewayV2Api = () => ({
+  type: "Api",
+  package: "apigatewayv2",
+  client: "ApiGatewayV2",
+  inferName: () => get("Name"),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId:
+    ({ config }) =>
+    ({ ApiId }) =>
+      `arn:aws:execute-api:${config.region}:${config.accountId()}:${ApiId}`,
+  ignoreErrorCodes,
+  omitProperties: [
+    "ApiEndpoint",
+    "ApiId",
+    "CreatedDate",
+    "AccessLogSettings.DestinationArn",
+  ],
+  propertiesDefault: {
+    Version: "1.0",
+    ProtocolType: "HTTP",
+    ApiKeySelectionExpression: "$request.header.x-api-key",
+    RouteSelectionExpression: "$request.method $request.path",
+    DisableExecuteApiEndpoint: false,
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApi-property
-  const getById = client.getById({
-    pickId,
+  getById: {
     method: "getApi",
-    ignoreErrorCodes,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApis-property
-  const getList = client.getList({
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listApis-property
+  getList: {
     method: "getApis",
     getParam: "Items",
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
+    decorate,
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createApi-property
-  const configDefault = ({
+  create: {
+    method: "createApi",
+    pickCreated: ({ payload }) => pipe([identity]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateApi-property
+  update: {
+    method: "updateApi",
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteApi-property
+  destroy: {
+    method: "deleteApi",
+    pickId,
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: {},
+    config,
   }) =>
     pipe([
       () => otherProps,
@@ -52,45 +104,5 @@ exports.Api = ({ spec, config }) => {
         ProtocolType: "HTTP",
         Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
       }),
-    ])();
-
-  const create = client.create({
-    method: "createApi",
-    getById,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateApi-property
-  const update = client.update({
-    pickId,
-    method: "updateApi",
-    getById,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteApi-property
-  const destroy = client.destroy({
-    pickId,
-    method: "deleteApi",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const buildResourceArn = ({ ApiId }) =>
-    `arn:aws:apigateway:${config.region}::/apis/${ApiId}`;
-
-  return {
-    spec,
-    findName,
-    findId,
-    getById,
-    create,
-    update,
-    destroy,
-    getByName,
-    getList,
-    configDefault,
-    tagResource: tagResource({ buildResourceArn })({ endpoint: apiGateway }),
-    untagResource: untagResource({ buildResourceArn })({
-      endpoint: apiGateway,
-    }),
-  };
-};
+    ])(),
+});

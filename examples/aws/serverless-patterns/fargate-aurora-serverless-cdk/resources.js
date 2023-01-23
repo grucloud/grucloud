@@ -466,6 +466,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Listener",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      Port: 80,
+      Protocol: "HTTP",
+    }),
+    dependencies: ({}) => ({
+      loadBalancer: "CdkSt-Farga-SRS4XA0Y0M8",
+      targetGroup: "CdkSt-Farga-1SEGM16UZSRPF",
+    }),
+  },
+  {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
@@ -496,18 +508,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
-    }),
-  },
-  {
-    type: "Listener",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Port: 80,
-      Protocol: "HTTP",
-    }),
-    dependencies: ({}) => ({
-      loadBalancer: "CdkSt-Farga-SRS4XA0Y0M8",
-      targetGroup: "CdkSt-Farga-1SEGM16UZSRPF",
     }),
   },
   {

@@ -6,14 +6,14 @@ skinparam monochrome true
 +++ ACM
 ++++ Certificate (1)
 +++ ApiGatewayV2
-++++ DomainName (1)
 ++++ Api (1)
-++++ Stage (1)
-++++ Authorizer (1)
 ++++ ApiMapping (1)
+++++ Authorizer (1)
+++++ Deployment (1)
+++++ DomainName (1)
 ++++ Integration (1)
 ++++ Route (1)
-++++ Deployment (1)
+++++ Stage (1)
 +++ CloudWatchLogs
 ++++ LogGroup (1)
 +++ IAM

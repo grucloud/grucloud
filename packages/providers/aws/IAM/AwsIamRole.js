@@ -370,11 +370,13 @@ exports.AwsIamRole = ({ spec, config }) => {
               get("InstanceProfiles"),
               forEach(
                 tryCatch(
-                  ({ InstanceProfileName }) => ({
-                    RoleName,
-                    InstanceProfileName,
-                  }),
-                  removeRoleFromInstanceProfile({ endpoint }),
+                  pipe([
+                    ({ InstanceProfileName }) => ({
+                      RoleName,
+                      InstanceProfileName,
+                    }),
+                    removeRoleFromInstanceProfile({ endpoint }),
+                  ]),
                   (error, { InstanceProfileName }) =>
                     pipe([
                       tap(() => {
