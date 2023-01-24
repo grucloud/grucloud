@@ -63,12 +63,6 @@ exports.EC2TransitGateway = ({ compare }) => ({
   package: "ec2",
   client: "EC2",
   findName: findNameInTagsOrId({ findId }),
-  pickId: pipe([
-    tap(({ TransitGatewayId }) => {
-      assert(TransitGatewayId);
-    }),
-    ({ TransitGatewayId }) => ({ TransitGatewayIds: [TransitGatewayId] }),
-  ]),
   findId,
   cannotBeDeleted: () => eq(get("State"), "deleted"),
   omitProperties: [
@@ -81,7 +75,16 @@ exports.EC2TransitGateway = ({ compare }) => ({
     "Options.PropagationDefaultRouteTableId",
   ],
   ignoreErrorCodes: ["InvalidTransitGatewayID.NotFound"],
-  getById: { method: "describeTransitGateways", getField: "TransitGateways" },
+  getById: {
+    method: "describeTransitGateways",
+    getField: "TransitGateways",
+    pickId: pipe([
+      tap(({ TransitGatewayId }) => {
+        assert(TransitGatewayId);
+      }),
+      ({ TransitGatewayId }) => ({ TransitGatewayIds: [TransitGatewayId] }),
+    ]),
+  },
   getList: {
     method: "describeTransitGateways",
     getParam: "TransitGateways",

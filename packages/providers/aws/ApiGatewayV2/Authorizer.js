@@ -1,6 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, switchCase, omit } = require("rubico");
-const { defaultsDeep, callProp, when, isEmpty, last } = require("rubico/x");
+const {
+  defaultsDeep,
+  callProp,
+  when,
+  isEmpty,
+  last,
+  find,
+} = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");

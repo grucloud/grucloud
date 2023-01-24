@@ -29,7 +29,7 @@ exports.EC2VpnGatewayAttachment = ({ compare }) => ({
   client: "EC2",
   ignoreErrorCodes: ["InvalidVpnGatewayID.NotFound"],
   findName:
-    ({ lives }) =>
+    ({ lives, config }) =>
     (live) =>
       pipe([
         () => live,

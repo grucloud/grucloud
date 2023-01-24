@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -7,10 +7,25 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 
 const { Tagger, ignoreErrorCodes } = require("./ApiGatewayV2Common");
 
-const buildArn =
-  ({ config }) =>
-  ({ ApiId }) =>
-    `arn:aws:apigateway:${config.region}::/apis/${ApiId}`;
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        tap(({ ApiId }) => {
+          assert(ApiId);
+        }),
+        ({ ApiId }) => `arn:aws:apigateway:${config.region}::/apis/${ApiId}`,
+      ]),
+    }),
+  ]);
 
 const pickId = pipe([
   tap(({ ApiId }) => {
@@ -24,6 +39,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignArn({ config }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
@@ -45,6 +61,7 @@ exports.ApiGatewayV2Api = () => ({
       `arn:aws:execute-api:${config.region}:${config.accountId()}:${ApiId}`,
   ignoreErrorCodes,
   omitProperties: [
+    "Arn",
     "ApiEndpoint",
     "ApiId",
     "CreatedDate",

@@ -9,6 +9,7 @@ const {
   findDependenciesTgwAttachment,
   findNameRouteTableArm,
   transitGatewayAttachmentDependencies,
+  inferNameRouteTableArm,
 } = require("./EC2TransitGatewayCommon");
 
 //TODO cannotBeDelete State = Deleted

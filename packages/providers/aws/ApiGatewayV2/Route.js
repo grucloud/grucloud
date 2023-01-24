@@ -60,7 +60,13 @@ exports.ApiGatewayV2Route = () => ({
       group: "ApiGatewayV2",
       parent: true,
       dependencyId: ({ lives, config }) =>
-        pipe([get("Target", ""), callProp("replace", "integrations/", "")]),
+        pipe([
+          get("Target", ""),
+          callProp("replace", "integrations/", ""),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
     },
     authorizer: {
       type: "Authorizer",

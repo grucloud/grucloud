@@ -56,6 +56,8 @@ exports.DynamoDBTable = () => ({
     "CreationDateTime",
     "TableStatus",
     "SSEDescription",
+    "LatestStreamArn",
+    "LatestStreamLabel",
   ],
   inferName: findName,
   findName,
@@ -78,6 +80,7 @@ exports.DynamoDBTable = () => ({
         "BillingMode",
         "GlobalSecondaryIndexes",
         "LocalSecondaryIndexes",
+        "StreamSpecification",
       ]),
     ]),
   dependencies: {

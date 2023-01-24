@@ -34,6 +34,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { dependencyIdApi, ignoreErrorCodes } = require("./ApiGatewayV2Common");
 
 const pickId = pick(["ApiId", "IntegrationId"]);
+
 const lambdaUriToName = pipe([
   callProp("split", ":"),
   last,

@@ -11,7 +11,7 @@ const {
   filter,
   and,
 } = require("rubico");
-const { isEmpty, includes, isObject } = require("rubico/x");
+const { isEmpty, includes, when, isObject } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const logger = require("@grucloud/core/logger")({

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, map } = require("rubico");
+const { pipe, tap, get, pick, assign, map, omit } = require("rubico");
 const { defaultsDeep, append, when, unless } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -7,6 +7,8 @@ const { buildTags } = require("../AwsCommon");
 const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const { Tagger } = require("./CloudWatchEventCommon");
+
+const cannotBeDeleted = () => get("ManagedBy");
 
 const buildArn = () =>
   pipe([
@@ -75,7 +77,7 @@ const decorate = ({ endpoint, config }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvent.html
-exports.CloudWatchEventRule = () => ({
+exports.CloudWatchEventRule = ({ compare }) => ({
   type: "Rule",
   package: "cloudwatch-events",
   client: "CloudWatchEvents",
@@ -95,6 +97,8 @@ exports.CloudWatchEventRule = () => ({
       }),
     ]),
   propertiesDefault: {},
+  cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
   ignoreErrorCodes: ["ResourceNotFoundException"],
   omitProperties: ["Arn", "CreatedBy", "EventBusName"],
   compare: compare({
@@ -170,7 +174,6 @@ exports.CloudWatchEventRule = () => ({
       ({ payload }) =>
       () =>
         payload,
-    getById,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvent.html#updateRule-property
   update: {
@@ -210,6 +213,7 @@ exports.CloudWatchEventRule = () => ({
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: { eventBus },
+    config,
   }) =>
     pipe([
       () => otherProps,
