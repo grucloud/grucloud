@@ -88,6 +88,7 @@
     "test-opensearch": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/OpenSearch/**/iac.test.js' ",
     "test-opensearchseverless": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/OpenSearchServerless/**/iac.test.js' ",
     "test-organisations": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Organisation/**/iac.test.js' ",
+    "test-pipes": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Pipes/**/iac.test.js' ",
     "test-ram": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/RAM/**/iac.test.js' ",
     "test-redshift": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Redshift/**/iac.test.js' ",
     "test-redshift-serverless": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/RedshiftServerless/**/iac.test.js' ",

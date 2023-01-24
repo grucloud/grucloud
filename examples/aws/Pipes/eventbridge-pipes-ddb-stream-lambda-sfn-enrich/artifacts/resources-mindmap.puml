@@ -1,0 +1,33 @@
+@startmindmap
+title Resources for project eventbridge-pipes-ddb-stream-lambda-sfn-enrich
+skinparam monochrome true
++ Infra
+++ aws
++++ ApiGatewayV2
+++++ Api (1)
+++++ Authorizer (1)
+++++ Deployment (1)
+++++ Integration (1)
+++++ Route (1)
+++++ Stage (1)
++++ CloudWatchEvents
+++++ Rule (2)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ CognitoIdentityServiceProvider
+++++ UserPool (1)
+++++ UserPoolClient (1)
+++++ UserPoolDomain (1)
++++ DynamoDB
+++++ Table (1)
++++ ElasticBeanstalk
+++++ Application (1)
++++ IAM
+++++ Role (3)
++++ Lambda
+++++ Function (1)
++++ Pipes
+++++ Pipe (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

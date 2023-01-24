@@ -113,6 +113,7 @@ const GROUPS = [
   ["NetworkManager", "networkmanager"],
   ["OpenSearchServerless", "opensearchserverless"],
   ["Organisations", "organizations"],
+  ["Pipes", "pipes"],
   ["RAM", "ram"],
   ["Redshift", "redshift"],
   //["RedshiftData", "redshift-data"],
