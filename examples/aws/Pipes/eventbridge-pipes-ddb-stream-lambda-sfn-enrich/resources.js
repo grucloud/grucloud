@@ -49,7 +49,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-EnrichmentStateMachineRole-1OHXE3YOK1PN4",
+      RoleName: "sam-app-EnrichmentStateMachineRole-1CSLFSVO8ZHVT",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -92,7 +92,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config, getId }) => ({
-      RoleName: "sam-app-PipeRole-74XVET47HYJQ",
+      RoleName: "sam-app-PipeRole-3TWYQY17M651",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -115,7 +115,7 @@ exports.createResources = () => [
                 Resource: `${getId({
                   type: "StateMachine",
                   group: "StepFunctions",
-                  name: "EnrichmentStateMachine-THWjKaMqSX7V",
+                  name: "EnrichmentStateMachine-uACOjGX6Zbhn",
                 })}`,
                 Effect: "Allow",
               },
@@ -138,7 +138,8 @@ exports.createResources = () => [
                   type: "Table",
                   group: "DynamoDB",
                   name: "SampleTable",
-                })}/stream/2023-01-24T03:55:42.684`,
+                  path: "live.LatestStreamArn",
+                })}`,
                 Effect: "Allow",
               },
             ],
@@ -164,14 +165,14 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       table: "SampleTable",
-      stateMachines: ["EnrichmentStateMachine-THWjKaMqSX7V"],
+      stateMachines: ["EnrichmentStateMachine-uACOjGX6Zbhn"],
     }),
   },
   {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-TargetRole-O14LKMH531RF",
+      RoleName: "sam-app-TargetRole-PV9BQWKMZUCP",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -215,7 +216,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-TargetRole-O14LKMH531RF",
+      role: "sam-app-TargetRole-PV9BQWKMZUCP",
     }),
   },
   {
@@ -237,18 +238,44 @@ exports.createResources = () => [
         FilterCriteria: {
           Filters: [
             {
-              Pattern:
-                '{ "eventName": ["INSERT"], "dynamodb": { "NewImage": { "messageId": { "S": [{ "exists": true }] }, "PK": { "S": [{ "prefix": "Message#" }] }, "SK": { "S": [{ "prefix": "Channel#" }] } } } }',
+              Pattern: {
+                eventName: ["INSERT"],
+                dynamodb: {
+                  NewImage: {
+                    messageId: {
+                      S: [
+                        {
+                          exists: true,
+                        },
+                      ],
+                    },
+                    PK: {
+                      S: [
+                        {
+                          prefix: "Message#",
+                        },
+                      ],
+                    },
+                    SK: {
+                      S: [
+                        {
+                          prefix: "Channel#",
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
             },
           ],
         },
       },
-      TargetParameters: {},
     }),
     dependencies: ({}) => ({
-      iamRole: "sam-app-PipeRole-74XVET47HYJQ",
+      iamRole: "sam-app-PipeRole-3TWYQY17M651",
+      sourceDynamoDB: "SampleTable",
       enrichmentStepFunctionsStateMachine:
-        "EnrichmentStateMachine-THWjKaMqSX7V",
+        "EnrichmentStateMachine-uACOjGX6Zbhn",
       targetLambdaFunction: "sam-app-target-lambda",
     }),
   },
@@ -286,7 +313,7 @@ exports.createResources = () => [
         includeExecutionData: true,
         level: "ALL",
       },
-      name: "EnrichmentStateMachine-THWjKaMqSX7V",
+      name: "EnrichmentStateMachine-uACOjGX6Zbhn",
       type: "EXPRESS",
       tags: [
         {
@@ -296,7 +323,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      role: "sam-app-EnrichmentStateMachineRole-1OHXE3YOK1PN4",
+      role: "sam-app-EnrichmentStateMachineRole-1CSLFSVO8ZHVT",
       logGroups: ["stepfunctions/StateMachine"],
     }),
   },

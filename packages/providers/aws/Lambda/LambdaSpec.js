@@ -162,6 +162,8 @@ module.exports = pipe([
         "Configuration.StateReasonCode",
         "Configuration.Version",
         "Configuration.VpcConfig",
+        "Configuration.SigningProfileVersionArn",
+        "Configuration.SigningJobArn",
       ],
       propertiesDefault: {
         Configuration: {
@@ -300,6 +302,7 @@ module.exports = pipe([
               ])
             ),
           ])(),
+      // TODO SigningJobArn
       dependencies: {
         layers: {
           type: "Layer",

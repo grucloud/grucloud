@@ -1,19 +1,37 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, reduce } = require("rubico");
-const { defaultsDeep, identity, find, unless, isEmpty } = require("rubico/x");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  assign,
+  reduce,
+  switchCase,
+  map,
+} = require("rubico");
+const {
+  defaultsDeep,
+  identity,
+  find,
+  unless,
+  isEmpty,
+  callProp,
+  includes,
+  when,
+  append,
+} = require("rubico/x");
 const { camelCase } = require("change-case");
 
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./PipesCommon");
+const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const sourceDependencies = [
-  { type: "DeliveryStream", group: "Kinesis", arnKey: "DeliveryStreamARN" },
+  { type: "Stream", group: "Kinesis", arnKey: "StreamARN" },
   { type: "Queue", group: "SQS", arnKey: "Attributes.QueueArn" },
-  //TODO
-  //{ type: "Stream", group: "DynamoDB" },
   { type: "Broker", group: "MQ", arnKey: "BrokerArn" },
   //TODO
   //{ type: "Stream", group: "MSK", arnKey: "" },
@@ -40,7 +58,6 @@ const targetDependencies = [
   { type: "Function", group: "Lambda", arnKey: "Configuration.FunctionArn" },
   //TODO
   //{ type: "JobQueue", group: "Batch" },
-  { type: "LogGroup", group: "CloudWatchLogs", arnKey: "arn" },
   { type: "Cluster", group: "ECS", arnKey: "clusterArn" },
   { type: "EventBus", group: "CloudWatchEvents", arnKey: "Arn" },
   { type: "DeliveryStream", group: "Firehose", arnKey: "DeliveryStreamARN" },
@@ -92,22 +109,12 @@ const buildDependencies = ({ side, sourceTargetDependencies }) =>
         ])(),
       {}
     ),
-    tap((params) => {
-      assert(true);
-    }),
   ])();
 
 const findSourceTargetDeps = ({ side, optional }) =>
   pipe([
-    tap((params) => {
-      assert(side);
-    }),
     Object.entries,
     find(([name, dep]) => name.startsWith(side)),
-    tap((params) => {
-      assert(true);
-    }),
-
     tap.if(
       () => !optional,
       ([name, dep]) => {
@@ -138,7 +145,59 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    JSON.stringify,
+    JSON.parse,
+    omitIfEmpty(["TargetParameters", "EnrichmentParameters"]),
+    assign({
+      SourceParameters: pipe([
+        get("SourceParameters"),
+        when(
+          get("FilterCriteria"),
+          assign({
+            FilterCriteria: pipe([
+              get("FilterCriteria"),
+              assign({
+                Filters: pipe([
+                  get("Filters"),
+                  map(
+                    assign({
+                      Pattern: pipe([get("Pattern"), JSON.parse]),
+                    })
+                  ),
+                ]),
+              }),
+            ]),
+          })
+        ),
+      ]),
+    }),
   ]);
+
+const payloadStringify = pipe([
+  assign({
+    SourceParameters: pipe([
+      get("SourceParameters"),
+      when(
+        get("FilterCriteria"),
+        assign({
+          FilterCriteria: pipe([
+            get("FilterCriteria"),
+            assign({
+              Filters: pipe([
+                get("Filters"),
+                map(
+                  assign({
+                    Pattern: pipe([get("Pattern"), JSON.stringify]),
+                  })
+                ),
+              ]),
+            }),
+          ]),
+        })
+      ),
+    ]),
+  }),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Pipes.html
 exports.PipesPipe = () => ({
@@ -186,6 +245,25 @@ exports.PipesPipe = () => ({
       group: "IAM",
       dependencyId: ({ lives, config }) => pipe([get("RoleArn")]),
     },
+    sourceDynamoDB: {
+      type: "Table",
+      group: "DynamoDB",
+      dependencyId: () =>
+        pipe([
+          get("Source"),
+          callProp("split", "/"),
+          callProp("slice", 0, -2),
+          callProp("join", "/"),
+        ]),
+    },
+    sqsQueueDeadLetter: {
+      type: "Queue",
+      group: "SQS",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("SourceParameters.DynamoDBStreamParameters.DeadLetterConfig.Arn"),
+        ]),
+    },
     ...buildDependencies({
       side: "Source",
       sourceTargetDependencies: sourceDependencies,
@@ -194,11 +272,58 @@ exports.PipesPipe = () => ({
       side: "Enrichment",
       sourceTargetDependencies: enrichmentDependencies,
     }),
+    destinationCloudWatchLogGroup: {
+      type: "LogGroup",
+      group: "CloudWatchLogs",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("Target"),
+          tap((params) => {
+            assert(true);
+          }),
+          switchCase([
+            callProp("startsWith", "arn:aws:logs"),
+            callProp("replace", ":*", ""),
+            () => undefined,
+          ]),
+        ]),
+    },
     ...buildDependencies({
       side: "Target",
       sourceTargetDependencies: targetDependencies,
     }),
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        SourceParameters: pipe([
+          get("SourceParameters"),
+          when(
+            get("DynamoDBStreamParameters"),
+            assign({
+              DynamoDBStreamParameters: pipe([
+                get("DynamoDBStreamParameters"),
+                when(
+                  get("DeadLetterConfig"),
+                  assign({
+                    DeadLetterConfig: pipe([
+                      get("DeadLetterConfig"),
+                      assign({
+                        Arn: pipe([
+                          get("Arn"),
+                          replaceAccountAndRegion({ lives, providerConfig }),
+                        ]),
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
+        ]),
+      }),
+    ]),
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Pipes.html#describePipe-property
   getById: {
     method: "describePipe",
@@ -213,18 +338,21 @@ exports.PipesPipe = () => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Pipes.html#createPipe-property
   create: {
+    filterPayload: payloadStringify,
     method: "createPipe",
     pickCreated: ({ payload }) => pipe([identity]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Pipes.html#updatePipe-property
   update: {
     method: "updatePipe",
-    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, payloadStringify])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Pipes.html#deletePipe-property
   destroy: {
     method: "deletePipe",
     pickId,
+    shouldRetryOnExceptionCodes: ["ConflictException"],
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>
@@ -235,7 +363,12 @@ exports.PipesPipe = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { iamRole, ...sourceTargetDeps },
+    dependencies: {
+      iamRole,
+      sourceDynamoDB,
+      destinationCloudWatchLogGroup,
+      ...sourceTargetDeps
+    },
     config,
   }) =>
     pipe([
@@ -248,15 +381,29 @@ exports.PipesPipe = () => ({
         Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
         RoleArn: getField(iamRole, "Arn"),
       }),
+      switchCase([
+        () => sourceDynamoDB,
+        assign({ Source: () => getField(sourceDynamoDB, "LatestStreamArn") }),
+        assign({
+          Source: pipe([
+            () => sourceTargetDeps,
+            findSourceTargetDeps({ side: "source" }),
+          ]),
+        }),
+      ]),
+      switchCase([
+        () => destinationCloudWatchLogGroup,
+        assign({
+          Target: () => `${getField(destinationCloudWatchLogGroup, "arn")}:*`,
+        }),
+        assign({
+          Target: pipe([
+            () => sourceTargetDeps,
+            findSourceTargetDeps({ side: "target" }),
+          ]),
+        }),
+      ]),
       assign({
-        Source: pipe([
-          () => sourceTargetDeps,
-          findSourceTargetDeps({ side: "source" }),
-        ]),
-        Target: pipe([
-          () => sourceTargetDeps,
-          findSourceTargetDeps({ side: "target" }),
-        ]),
         Enrichment: pipe([
           () => sourceTargetDeps,
           findSourceTargetDeps({ side: "enrichment", optional: true }),

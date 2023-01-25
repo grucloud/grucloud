@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project eventbridge-pipes-sqs-to-stepfunctions
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (2)
++++ Pipes
+++++ Pipe (1)
++++ SQS
+++++ Queue (2)
+++++ QueueRedrivePolicy (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

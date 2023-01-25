@@ -215,7 +215,7 @@ module.exports = pipe([
       inferName: () => get("RoleName"),
       propertiesDefault: { Path: "/" },
       compare: compareIAM({
-        filterAll: () => pipe([pick(["AssumeRolePolicyDocument"])]),
+        filterAll: () => pipe([pick(["AssumeRolePolicyDocument", "Policies"])]),
       }),
       ignoreResource: ignoreResourceCdk,
       transformDependencies: ({ provider }) =>

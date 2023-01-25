@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project eventbridge-pipes-ddbstream-to-eventbridge
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ EventBus (1)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (1)
++++ Pipes
+++++ Pipe (1)
++++ SQS
+++++ Queue (1)
+@endmindmap

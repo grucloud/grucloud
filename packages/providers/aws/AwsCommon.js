@@ -1001,6 +1001,24 @@ const replaceArnWithAccountAndRegion =
       }),
       () => lives,
       switchCase([
+        // DynamoDB stream
+        pipe([
+          and([
+            () => Id.startsWith("arn:aws:dynamodb"),
+            () => Id.includes("/stream/"),
+          ]),
+        ]),
+        pipe([
+          () => Id,
+          replaceWithName({
+            groupType: "DynamoDB::Table",
+            path: "live.LatestStreamArn",
+            pathLive: "live.LatestStreamArn",
+            providerConfig,
+            lives,
+          }),
+        ]),
+        //  replaceWithName
         or([
           () =>
             Id.startsWith(
@@ -1013,6 +1031,7 @@ const replaceArnWithAccountAndRegion =
               () =>
                 !Id.endsWith("amazonaws.com") &&
                 Id != providerConfig.accountId() &&
+                !Id.startsWith("arn:aws:kinesis") &&
                 !Id.startsWith("arn:aws:lambda") &&
                 !Id.startsWith("arn:aws:es") &&
                 !Id.startsWith("arn:aws:firehose") &&
@@ -1027,6 +1046,9 @@ const replaceArnWithAccountAndRegion =
           ),
         ]),
         pipe([
+          tap((params) => {
+            assert(true);
+          }),
           () => Id,
           replaceWithName({
             path: "id",
@@ -1034,7 +1056,12 @@ const replaceArnWithAccountAndRegion =
             lives,
           }),
         ]),
+
+        // Default - replace region and account
         pipe([
+          tap((params) => {
+            assert(true);
+          }),
           () => Id,
           callProp(
             "replace",
@@ -1049,6 +1076,9 @@ const replaceArnWithAccountAndRegion =
           when(not(eq(identity, Id)), (resource) => () => "`" + resource + "`"),
         ]),
       ]),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
 exports.replaceArnWithAccountAndRegion = replaceArnWithAccountAndRegion;

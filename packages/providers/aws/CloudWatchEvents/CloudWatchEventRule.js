@@ -50,7 +50,7 @@ const assignTags = ({ endpoint, config }) =>
 const pickId = pipe([
   tap(({ Name, EventBusName }) => {
     assert(Name);
-    assert(EventBusName);
+    //assert(EventBusName);
   }),
   pick(["Name", "EventBusName"]),
 ]);
