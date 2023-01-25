@@ -16,6 +16,11 @@ exports.Tagger = createTagger({
   UnTagsKey: "TagKeys",
 });
 
+exports.dependencyIdApi =
+  ({ lives, config }) =>
+  (live) =>
+    `arn:aws:execute-api:${config.region}:${config.accountId()}:${live.ApiId}`;
+
 exports.ignoreErrorCodes = ["NotFoundException"];
 
 exports.buildPayloadDescriptionTags = pipe([

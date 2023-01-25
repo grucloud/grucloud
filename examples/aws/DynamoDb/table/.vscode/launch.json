@@ -10,7 +10,7 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": []
     },
     {
       "name": "Graph",
@@ -54,7 +54,7 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
-      "port": 9229
+      "outFiles": []
     },
     {
       "name": "Destroy",

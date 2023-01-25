@@ -3,8 +3,7 @@ const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./CodeDeployCommon");
+const { Tagger } = require("./CodeDeployCommon");
 
 const pickId = pick(["applicationName"]);
 
@@ -30,10 +29,17 @@ const decorate = ({ endpoint, config }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeDeploy.html
+exports.CodeDeployApplication = ({}) => ({
+  type: "Application",
   package: "codedeploy",
   client: "CodeDeploy",
+  inferName: () => pipe([get("applicationName")]),
+  findName: () => pipe([get("applicationName")]),
+  findId: () => pipe([get("applicationId")]),
   ignoreErrorCodes: ["ApplicationDoesNotExistException"],
+  omitProperties: ["applicationId", "createTime", "linkedToGitHub"],
+  propertiesDefault: {},
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeDeploy.html#getApplication-property
   getById: {
     method: "getApplication",
@@ -63,36 +69,28 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeDeploy.html#deleteApplication-property
   destroy: { method: "deleteApplication", pickId },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeDeploy.html
-exports.CodeDeployApplication = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ applicationName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("applicationName")]),
-    findId: () => pipe([get("applicationId")]),
-    getByName: ({ getById }) =>
-      pipe([({ name }) => ({ applicationName: name }), getById({})]),
-    tagResource: tagResource({ buildArn: buildArn({ config }) }),
-    untagResource: untagResource({ buildArn: buildArn({ config }) }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: tags,
         }),
-      ])(),
-  });
+      }),
+    ])(),
+});

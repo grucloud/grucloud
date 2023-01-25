@@ -3,10 +3,7 @@ const { pipe, tap, get, switchCase, eq } = require("rubico");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { retryCall } = require("@grucloud/core/Retry");
-
-const { createEndpoint } = require("../AwsCommon");
-
-exports.createEKS = createEndpoint("eks", "EKS");
+const { shellRun } = require("@grucloud/core/Common");
 
 const { createTagger } = require("../AwsTagger");
 
@@ -19,9 +16,12 @@ exports.Tagger = createTagger({
 });
 
 exports.waitForUpdate =
-  ({ eks }) =>
+  ({ endpoint }) =>
   (params) =>
     pipe([
+      tap((params) => {
+        assert(endpoint);
+      }),
       () =>
         retryCall({
           name: `describeUpdate: ${JSON.stringify(params)}`,
@@ -31,7 +31,7 @@ exports.waitForUpdate =
               logger.debug(`describeUpdate:  ${JSON.stringify(params)}`);
             }),
             // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeUpdate-property
-            eks().describeUpdate,
+            endpoint().describeUpdate,
             get("update"),
             switchCase([
               eq(get("status"), "Failed"),
@@ -57,14 +57,37 @@ exports.waitForUpdate =
         }),
     ])();
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#tagResource-property
-exports.tagResource =
-  ({ eks }) =>
-  ({ id }) =>
-    pipe([(tags) => ({ resourceArn: id, tags }), eks().tagResource]);
+exports.kubeConfigUpdate = ({ name, config }) =>
+  pipe([
+    tap(() => {
+      assert(name);
+      assert(config);
+      logger.debug(`kubeConfigUpdate: ${name}, region ${config.region}`);
+    }),
+    tap.if(
+      () => !process.env.CONTINUOUS_INTEGRATION,
+      pipe([
+        () =>
+          `aws eks --region ${config.region} update-kubeconfig --name ${name}`,
+        shellRun,
+      ])
+    ),
+  ])();
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#untagResource-property
-exports.untagResource =
-  ({ eks }) =>
-  ({ id }) =>
-    pipe([(tagKeys) => ({ resourceArn: id, tagKeys }), eks().untagResource]);
+exports.kubeConfigRemove =
+  ({ endpoint }) =>
+  ({ arn }) =>
+    pipe([
+      tap(() => {
+        //assert(arn);
+        logger.debug(`kubeConfigRemove: ${arn}`);
+      }),
+      tap.if(
+        () => !process.env.CONTINUOUS_INTEGRATION && arn,
+        pipe([
+          () =>
+            `kubectl config delete-context ${arn}; kubectl config delete-cluster ${arn}`,
+          shellRun,
+        ])
+      ),
+    ])();

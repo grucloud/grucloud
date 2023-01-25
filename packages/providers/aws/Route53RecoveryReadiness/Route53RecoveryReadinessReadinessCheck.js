@@ -4,11 +4,7 @@ const { defaultsDeep } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const {
-  tagResource,
-  untagResource,
-} = require("./Route53RecoveryReadinessCommon");
+const { Tagger } = require("./Route53RecoveryReadinessCommon");
 
 const pickId = pipe([
   pick(["ReadinessCheckName"]),
@@ -17,11 +13,47 @@ const pickId = pipe([
   }),
 ]);
 
-const model = ({ config }) => ({
+const buildArn = () =>
+  pipe([
+    get("ReadinessCheckArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html
+exports.Route53RecoveryReadinessReadinessCheck = ({}) => ({
+  type: "ReadinessCheck",
   package: "route53-recovery-readiness",
   client: "Route53RecoveryReadiness",
   region: "us-west-2",
+  inferName: () => pipe([get("ReadinessCheckName")]),
+  findName: () => pipe([get("ReadinessCheckName")]),
+  findId: () => pipe([get("ReadinessCheckArn")]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  dependencies: {
+    resourceSet: {
+      type: "ResourceSet",
+      group: "Route53RecoveryReadiness",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          tap((live) => {
+            assert(live.ResourceSetName);
+          }),
+          get("ResourceSetName"),
+          lives.getByName({
+            type: "ResourceSet",
+            group: "Route53RecoveryReadiness",
+            config: config.providerName,
+          }),
+          get("id"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
+    },
+  },
+  omitProperties: ["ReadinessCheckArn", "ResourceSetName"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#getReadinessCheck-property
   getById: {
     method: "getReadinessCheck",
@@ -64,41 +96,33 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#deleteReadinessCheck-property
   destroy: { method: "deleteReadinessCheck", pickId },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html
-exports.Route53RecoveryReadinessReadinessCheck = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([
+      ({ name }) => ({ ReadinessCheckName: name }),
+      getById({}),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { resourceSet },
     config,
-    findName: () => pipe([get("ReadinessCheckName")]),
-    findId: () => pipe([get("ReadinessCheckArn")]),
-    getByName: ({ getList, endpoint, getById }) =>
-      pipe([
-        ({ name }) => ({ ReadinessCheckName: name }),
-        getById({}),
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { resourceSet },
-      config,
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(resourceSet);
-        }),
-        () => otherProps,
-        defaultsDeep({
-          ResourceSetName: getField(resourceSet, "ResourceSetName"),
-          Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(resourceSet);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        ResourceSetName: getField(resourceSet, "ResourceSetName"),
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      }),
+    ])(),
+});

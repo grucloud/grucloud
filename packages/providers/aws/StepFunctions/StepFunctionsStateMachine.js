@@ -246,8 +246,8 @@ exports.StepFunctionsStateMachine = () => ({
   update: { method: "updateStateMachine" },
   destroy: { method: "deleteStateMachine", pickId },
   getByName: getByNameCore,
-  tagResource: tagResource,
-  untagResource: untagResource,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+
   configDefault: ({
     name,
     namespace,

@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, switchCase, map, not, eq } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  switchCase,
+  map,
+  not,
+  eq,
+  omit,
+  assign,
+} = require("rubico");
 const {
   defaultsDeep,
   first,
@@ -15,8 +25,14 @@ const {
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
+const { replaceWithName } = require("@grucloud/core/Common");
+
+const {
+  buildTags,
+  findNameInTagsOrId,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
+
 const { tagResource, untagResource } = require("./EC2Common");
 
 const FlowLogsDependencies = {
@@ -61,38 +77,6 @@ const FlowLogsDependencies = {
 exports.FlowLogsDependencies = FlowLogsDependencies;
 
 const findId = () => pipe([get("FlowLogId")]);
-
-const createModel = ({ config }) => ({
-  package: "ec2",
-  client: "EC2",
-  ignoreErrorCodes: ["InvalidFlowLogId.NotFound"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeFlowLogs-property
-  getById: {
-    pickId: pipe([
-      ({ FlowLogId }) => ({
-        FlowLogIds: [FlowLogId],
-      }),
-    ]),
-    method: "describeFlowLogs",
-    getField: "FlowLogs",
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeFlowLogs-property
-  getList: {
-    method: "describeFlowLogs",
-    getParam: "FlowLogs",
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createFlowLogs-property
-  create: {
-    method: "createFlowLogs",
-    pickCreated: ({ payload }) =>
-      pipe([get("FlowLogIds"), first, (FlowLogId) => ({ FlowLogId })]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteFlowLogs-property
-  destroy: {
-    method: "deleteFlowLogs",
-    pickId: ({ FlowLogId }) => ({ FlowLogIds: [FlowLogId] }),
-  },
-});
 
 const findDependencyFlowLog =
   ({ live, lives, config }) =>
@@ -165,150 +149,248 @@ const findDependenciesFlowLog = ({ live, lives, config }) =>
     ),
     find(not(isEmpty)),
   ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2FlowLogs = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
-    config,
-    findName: pipe([findNameInTagsOrId({ findId: findNameInDependencies })]),
-    findId,
-    findDependencies: ({ live, lives }) => [
-      findDependenciesFlowLog({ live, lives, config }),
-      {
-        type: "Role",
-        group: "IAM",
-        ids: [pipe([() => live.DeliverLogsPermissionArn])()],
-      },
-      {
-        type: "LogGroup",
-        group: "CloudWatchLogs",
-        ids: [
-          pipe([
-            () => live.LogGroupName,
-            lives.getByName({
-              type: "LogGroup",
-              group: "CloudWatchLogs",
-              providerName: config.providerName,
-            }),
-            get("id"),
-          ])(),
-        ],
-      },
-      {
-        type: "DeliveryStream",
-        group: "Firehose",
-        ids: [
-          pipe([
-            () => live,
-            switchCase([
-              eq(get("LogDestinationType"), "kinesis-data-firehose"),
-              pipe([get("LogDestination")]),
-              () => undefined,
+exports.EC2FlowLogs = ({ compare }) => ({
+  type: "FlowLogs",
+  package: "ec2",
+  client: "EC2",
+  ignoreErrorCodes: ["InvalidFlowLogId.NotFound"],
+  findName: pipe([findNameInTagsOrId({ findId: findNameInDependencies })]),
+  findId,
+  dependencies: {
+    ...FlowLogsDependencies,
+    iamRole: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => get("DeliverLogsPermissionArn"),
+    },
+    cloudWatchLogGroup: {
+      type: "LogGroup",
+      group: "CloudWatchLogs",
+    },
+    firehoseDeliveryStream: {
+      type: "DeliveryStream",
+      group: "Firehose",
+    },
+    s3Bucket: {
+      type: "Bucket",
+      group: "S3",
+    },
+  },
+  findDependencies: ({ live, lives, config }) => [
+    findDependenciesFlowLog({ live, lives, config }),
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [pipe([() => live.DeliverLogsPermissionArn])()],
+    },
+    {
+      type: "LogGroup",
+      group: "CloudWatchLogs",
+      ids: [
+        pipe([
+          () => live.LogGroupName,
+          lives.getByName({
+            type: "LogGroup",
+            group: "CloudWatchLogs",
+            providerName: config.providerName,
+          }),
+          get("id"),
+        ])(),
+      ],
+    },
+    {
+      type: "DeliveryStream",
+      group: "Firehose",
+      ids: [
+        pipe([
+          () => live,
+          switchCase([
+            eq(get("LogDestinationType"), "kinesis-data-firehose"),
+            pipe([get("LogDestination")]),
+            () => undefined,
+          ]),
+        ])(),
+      ],
+    },
+    {
+      type: "Bucket",
+      group: "S3",
+      ids: [
+        pipe([
+          () => live,
+          switchCase([
+            eq(get("LogDestinationType"), "s3"),
+            pipe([
+              get("LogDestination"),
+              callProp("replace", "arn:aws:s3:::", ""),
             ]),
-          ])(),
-        ],
-      },
-      {
-        type: "Bucket",
-        group: "S3",
-        ids: [
-          pipe([
-            () => live,
-            switchCase([
-              eq(get("LogDestinationType"), "s3"),
-              pipe([
-                get("LogDestination"),
-                callProp("replace", "arn:aws:s3:::", ""),
-              ]),
-              () => undefined,
-            ]),
-          ])(),
-        ],
-      },
-    ],
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {
-        s3Bucket,
-        iamRole,
-        firehoseDeliveryStream,
-        cloudWatchLogGroup,
-        ...deps
-      },
-      config,
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => otherProps,
+            () => undefined,
+          ]),
+        ])(),
+      ],
+    },
+  ],
+  propertiesDefault: {
+    LogFormat:
+      "${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}",
+  },
+  omitProperties: [
+    "ResourceId",
+    "CreationTime",
+    "DeliverLogsStatus",
+    "DeliverLogsErrorMessage",
+    "LogGroupName",
+    "FlowLogId",
+    "FlowLogStatus",
+    "LogDestinationType",
+    "LogDestination",
+  ],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeFlowLogs-property
+  getById: {
+    pickId: pipe([
+      ({ FlowLogId }) => ({
+        FlowLogIds: [FlowLogId],
+      }),
+    ]),
+    method: "describeFlowLogs",
+    getField: "FlowLogs",
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeFlowLogs-property
+  getList: {
+    method: "describeFlowLogs",
+    getParam: "FlowLogs",
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createFlowLogs-property
+  create: {
+    method: "createFlowLogs",
+    pickCreated: ({ payload }) =>
+      pipe([get("FlowLogIds"), first, (FlowLogId) => ({ FlowLogId })]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteFlowLogs-property
+  destroy: {
+    method: "deleteFlowLogs",
+    pickId: ({ FlowLogId }) => ({ FlowLogIds: [FlowLogId] }),
+  },
+  compare: compare({
+    filterTarget: () => pipe([omit(["ResourceIds", "ResourceType"])]),
+  }),
+  filterLive: ({ providerConfig, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      switchCase([
+        ({ DeliverLogsPermissionArn }) =>
+          pipe([() => lives, find(eq(get("id"), DeliverLogsPermissionArn))])(),
+        omit(["DeliverLogsPermissionArn"]),
         when(
-          () => iamRole,
-          pipe([
-            defaultsDeep({
-              DeliverLogsPermissionArn: getField(iamRole, "Arn"),
-            }),
-          ])
+          get("DeliverLogsPermissionArn"),
+          assign({
+            DeliverLogsPermissionArn: pipe([
+              get("DeliverLogsPermissionArn"),
+              replaceAccountAndRegion({ providerConfig, lives }),
+            ]),
+          })
         ),
-        switchCase([
-          () => s3Bucket,
-          defaultsDeep({
-            LogDestinationType: "s3",
-            LogDestination: `arn:aws:s3:::${getField(s3Bucket, "Name")}`,
+      ]),
+      when(
+        eq(get("LogDestinationType"), "s3"),
+        pipe([
+          assign({
+            LogDestination: pipe([
+              get("LogDestination"),
+              replaceWithName({
+                groupType: "S3::Bucket",
+                path: "id",
+                providerConfig,
+                lives,
+              }),
+            ]),
           }),
-          () => cloudWatchLogGroup,
+        ])
+      ),
+    ]),
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {
+      s3Bucket,
+      iamRole,
+      firehoseDeliveryStream,
+      cloudWatchLogGroup,
+      ...deps
+    },
+    config,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => otherProps,
+      when(
+        () => iamRole,
+        pipe([
           defaultsDeep({
-            LogDestinationType: "cloud-watch-logs",
-            LogGroupName: get("resource.name")(cloudWatchLogGroup),
+            DeliverLogsPermissionArn: getField(iamRole, "Arn"),
           }),
-          () => firehoseDeliveryStream,
-          defaultsDeep({
-            LogDestinationType: "kinesis-data-firehose",
-            LogDestination: getField(
-              firehoseDeliveryStream,
-              "DeliveryStreamARN"
-            ),
-          }),
-          () => {
-            assert(false, "missing flow logs destination dependencies");
-          },
-        ]),
-        defaultsDeep(
-          pipe([
-            () => deps,
-            keys,
-            first,
-            (key) =>
-              pipe([
-                tap((params) => {
-                  assert(key, `missing dependencies`);
-                  assert(FlowLogsDependencies[key]);
-                }),
-                () => ({
-                  ResourceType: FlowLogsDependencies[key].ResourceType,
-                  ResourceIds: [
-                    getField(deps[key], FlowLogsDependencies[key].ResourceId),
-                  ],
-                }),
-              ])(),
-          ])()
-        ),
+        ])
+      ),
+      switchCase([
+        () => s3Bucket,
         defaultsDeep({
-          TagSpecifications: [
-            {
-              ResourceType: "vpc-flow-log",
-              Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-            },
-          ],
+          LogDestinationType: "s3",
+          LogDestination: `arn:aws:s3:::${getField(s3Bucket, "Name")}`,
         }),
-        tap((params) => {
-          assert(true);
+        () => cloudWatchLogGroup,
+        defaultsDeep({
+          LogDestinationType: "cloud-watch-logs",
+          LogGroupName: get("resource.name")(cloudWatchLogGroup),
         }),
-      ])(),
-  });
+        () => firehoseDeliveryStream,
+        defaultsDeep({
+          LogDestinationType: "kinesis-data-firehose",
+          LogDestination: getField(firehoseDeliveryStream, "DeliveryStreamARN"),
+        }),
+        () => {
+          assert(false, "missing flow logs destination dependencies");
+        },
+      ]),
+      defaultsDeep(
+        pipe([
+          () => deps,
+          keys,
+          first,
+          (key) =>
+            pipe([
+              tap((params) => {
+                assert(key, `missing dependencies`);
+                assert(FlowLogsDependencies[key]);
+              }),
+              () => ({
+                ResourceType: FlowLogsDependencies[key].ResourceType,
+                ResourceIds: [
+                  getField(deps[key], FlowLogsDependencies[key].ResourceId),
+                ],
+              }),
+            ])(),
+        ])()
+      ),
+      defaultsDeep({
+        TagSpecifications: [
+          {
+            ResourceType: "vpc-flow-log",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])(),
+});

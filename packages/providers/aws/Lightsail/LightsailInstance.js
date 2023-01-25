@@ -3,7 +3,6 @@ const { pipe, tap, get, pick, eq, omit, assign } = require("rubico");
 const { defaultsDeep, when, pluck } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger, filterLiveDefault } = require("./LightsailCommon");
 
@@ -35,9 +34,121 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+const model = ({ config }) => ({});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
+exports.LightsailInstance = ({ compare }) => ({
+  type: "Instance",
   package: "lightsail",
   client: "Lightsail",
+  propertiesDefault: {},
+  omitProperties: [
+    "arn",
+    "supportCode",
+    "resourceType",
+    "createdAt",
+    "powerId",
+    "state",
+    "networking",
+    "privateIpAddress",
+    "publicIpAddress",
+    "ipv6Addresses",
+    "isStaticIp",
+    "hardware",
+    "username",
+    "metadataOptions",
+  ],
+  inferName: () => get("instanceName"),
+  compare: compare({
+    filterAll: () => pipe([omit(["sshKeyName"])]),
+  }),
+  filterLive: filterLiveDefault,
+  dependencies: {
+    keyPair: {
+      type: "KeyPair",
+      group: "Lightsail",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("sshKeyName"),
+          lives.getByName({
+            type: "KeyPair",
+            group: "Lightsail",
+            providerName: config.providerName,
+          }),
+          get("id"),
+        ]),
+    },
+    disks: {
+      type: "Disk",
+      group: "Lightsail",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("hardware.disks"), pluck("name")]),
+    },
+  },
+  findName: () =>
+    pipe([
+      get("instanceName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("instanceName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ instanceName: name }), getById({})]),
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        () => diff,
+        tap.if(
+          or([get("liveDiff.updated.metadataOptions")]),
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => ({
+              instanceName: payload.instanceName,
+              ...payload.metadataOptions,
+            }),
+            endpoint().updateInstanceMetadataOptions,
+          ])
+        ),
+      ])(),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: { keyPair },
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: tags,
+          key: "key",
+          value: "value",
+        }),
+      }),
+      when(
+        () => keyPair,
+        assign({ sshKeyName: () => keyPair.config.keyPairName })
+      ),
+    ])(),
   ignoreErrorCodes: ["DoesNotExist"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getInstance-property
   getById: {
@@ -89,120 +200,4 @@ const model = ({ config }) => ({
     pickId,
     // isInstanceDown: pipe([eq(get("status"), "INACTIVE")]),
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
-exports.LightsailInstance = ({ compare }) => ({
-  type: "Instance",
-  propertiesDefault: {},
-  omitProperties: [
-    "arn",
-    "supportCode",
-    "resourceType",
-    "createdAt",
-    "powerId",
-    "state",
-    "networking",
-    "privateIpAddress",
-    "publicIpAddress",
-    "ipv6Addresses",
-    "isStaticIp",
-    "hardware",
-    "username",
-    "metadataOptions",
-  ],
-  inferName: () => get("instanceName"),
-  compare: compare({
-    filterAll: () => pipe([omit(["sshKeyName"])]),
-  }),
-  filterLive: filterLiveDefault,
-  dependencies: {
-    keyPair: {
-      type: "KeyPair",
-      group: "Lightsail",
-      dependencyId: ({ lives, config }) =>
-        pipe([
-          get("sshKeyName"),
-          lives.getByName({
-            type: "KeyPair",
-            group: "Lightsail",
-            providerName: config.providerName,
-          }),
-          get("id"),
-        ]),
-    },
-    disks: {
-      type: "Disk",
-      group: "Lightsail",
-      list: true,
-      dependencyIds: ({ lives, config }) =>
-        pipe([get("hardware.disks"), pluck("name")]),
-    },
-  },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("instanceName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("instanceName"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ instanceName: name }), getById({})]),
-      update:
-        ({ endpoint, getById }) =>
-        async ({ payload, live, diff }) =>
-          pipe([
-            () => diff,
-            tap.if(
-              or([get("liveDiff.updated.metadataOptions")]),
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                () => ({
-                  instanceName: payload.instanceName,
-                  ...payload.metadataOptions,
-                }),
-                endpoint().updateInstanceMetadataOptions,
-              ])
-            ),
-          ])(),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { tags, ...otherProps },
-        dependencies: { keyPair },
-        config,
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            tags: buildTags({
-              name,
-              config,
-              namespace,
-              UserTags: tags,
-              key: "key",
-              value: "value",
-            }),
-          }),
-          when(
-            () => keyPair,
-            assign({ sshKeyName: () => keyPair.config.keyPairName })
-          ),
-        ])(),
-    }),
 });

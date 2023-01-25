@@ -33,12 +33,52 @@ const util = require("util");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { compareAws, throwIfNotAwsError, isAwsError } = require("../AwsCommon");
+const { hasDependency } = require("@grucloud/core/generatorUtils");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
-const { createEC2 } = require("./EC2Common");
+
+const omitPort = ({ port }) => when(eq(get(port), -1), omit([port]));
+
+const securityGroupRulePickProperties = pipe([
+  ({ resource }) =>
+    pipe([
+      when(
+        () => hasDependency({ type: "SecurityGroup", group: "EC2" })(resource),
+        omit(["IpPermission.UserIdGroupPairs"])
+      ),
+      omit(["GroupId", "GroupName", "UserIdGroupPairs", "PrefixListIds"]),
+      omitPort({ port: "FromPort" }),
+      omitPort({ port: "ToPort" }),
+    ]),
+]);
+
+const securityGroupRuleDependencies = {
+  securityGroup: {
+    type: "SecurityGroup",
+    group: "EC2",
+    parent: true,
+    dependencyId: ({ lives, config }) => get("GroupId"),
+  },
+  securityGroupFrom: {
+    type: "SecurityGroup",
+    group: "EC2",
+    list: true,
+    dependencyIds:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([() => live, get("UserIdGroupPairs", []), pluck("GroupId")])(),
+  },
+  prefixLists: {
+    type: "ManagedPrefixList",
+    group: "EC2",
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([get("PrefixListIds"), pluck("PrefixListId")]),
+  },
+};
 
 const protocolFromToPortToName = ({ IpProtocol, FromPort, ToPort }) =>
   switchCase([
@@ -112,7 +152,7 @@ const addIcmpPorts = when(
 
 exports.addIcmpPorts = addIcmpPorts;
 
-exports.inferNameSecurityGroupRule =
+const inferNameSecurityGroupRule =
   ({ kind }) =>
   ({ dependenciesSpec: { securityGroup, securityGroupFrom } }) =>
   ({ ...IpPermission }) =>
@@ -222,8 +262,6 @@ const isDefault =
 const managedByOther = isDefault;
 
 const SecurityGroupRuleBase = ({ config }) => {
-  const ec2 = createEC2(config);
-
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([
       when(
@@ -244,6 +282,7 @@ const SecurityGroupRuleBase = ({ config }) => {
     namespace,
     properties: { Tags, ...IpPermission },
     dependencies: { securityGroup, securityGroupFrom, prefixLists },
+    config,
   }) =>
     pipe([
       tap(() => {
@@ -318,7 +357,7 @@ const SecurityGroupRuleBase = ({ config }) => {
   //TODO add common describeSecurityGroupRules
   const getList =
     ({ IsEgress = false }) =>
-    ({ resources = [], lives } = {}) =>
+    ({ resources = [], lives, config } = {}) =>
       pipe([
         lives.getByType({
           type: "SecurityGroup",
@@ -334,11 +373,13 @@ const SecurityGroupRuleBase = ({ config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroupRules-property
   const getByName =
-    ({ kind, IsEgress = false, config }) =>
-    ({ name, lives, resolvedDependencies, ...otherProp }) =>
+    ({ endpoint, kind, IsEgress = false }) =>
+    ({ name, lives, resolvedDependencies, config, ...otherProp }) =>
       pipe([
         tap(() => {
           logger.info(`getByName sgr ${kind} ${name}`);
+          assert(endpoint);
+          assert(config);
           assert(otherProp);
           assert(lives);
           assert(resolvedDependencies);
@@ -356,7 +397,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         tap((params) => {
           assert(true);
         }),
-        ec2().describeSecurityGroups,
+        endpoint().describeSecurityGroups,
         get("SecurityGroups"),
         tap((SecurityGroups) => {
           logger.debug(`getByName ${name} ${tos({ SecurityGroups })}`);
@@ -485,7 +526,6 @@ const SecurityGroupRuleBase = ({ config }) => {
     destroy,
     isDefault,
     managedByOther,
-    ec2,
   };
 };
 
@@ -498,7 +538,6 @@ exports.EC2SecurityGroupRuleIngress = ({ spec, config }) => {
     update,
     destroy,
     findNamespace,
-    ec2,
     managedByOther,
     isDefault,
   } = SecurityGroupRuleBase({
@@ -506,7 +545,8 @@ exports.EC2SecurityGroupRuleIngress = ({ spec, config }) => {
   });
   return {
     type: "SecurityGroupRuleIngress",
-    spec,
+    package: "ec2",
+    client: "EC2",
     findId: () =>
       pipe([
         ({ GroupId, ...IpPermission }) =>
@@ -514,21 +554,30 @@ exports.EC2SecurityGroupRuleIngress = ({ spec, config }) => {
       ]),
     findName: findName({ kind: "ingress" }),
     findNamespace,
-    getByName: getByName({ kind: "ingress", IsEgress: false, config }),
-    getList: getList({ kind: "ingress", IsEgress: false }),
-    create: create({
-      kind: "ingress",
-      authorizeSecurityGroup: () => ec2().authorizeSecurityGroupIngress,
-    }),
-    update: update({
-      kind: "ingress",
-      authorizeSecurityGroup: () => ec2().authorizeSecurityGroupIngress,
-      revokeSecurityGroup: () => ec2().revokeSecurityGroupIngress,
-    }),
-    destroy: destroy({
-      kind: "ingress",
-      revokeSecurityGroup: () => ec2().revokeSecurityGroupIngress,
-    }),
+    omitProperties: [],
+    compare: compareSecurityGroupRule,
+    filterLive: securityGroupRulePickProperties,
+    dependencies: securityGroupRuleDependencies,
+    inferName: inferNameSecurityGroupRule({ kind: "ingress" }),
+    getByName: ({ endpoint, config }) =>
+      getByName({ endpoint, kind: "ingress", IsEgress: false, config }),
+    getList: ({ endpoint }) => getList({ kind: "ingress", IsEgress: false }),
+    create: ({ endpoint }) =>
+      create({
+        kind: "ingress",
+        authorizeSecurityGroup: () => endpoint().authorizeSecurityGroupIngress,
+      }),
+    update: ({ endpoint }) =>
+      update({
+        kind: "ingress",
+        authorizeSecurityGroup: () => endpoint().authorizeSecurityGroupIngress,
+        revokeSecurityGroup: () => endpoint().revokeSecurityGroupIngress,
+      }),
+    destroy: ({ endpoint }) =>
+      destroy({
+        kind: "ingress",
+        revokeSecurityGroup: () => endpoint().revokeSecurityGroupIngress,
+      }),
     configDefault,
     managedByOther: managedByOther({ IsEgress: false }),
     isDefault: isDefault({ IsEgress: false }),
@@ -546,13 +595,14 @@ exports.EC2SecurityGroupRuleEgress = ({ spec, config }) => {
     findNamespace,
     isDefault,
     managedByOther,
-    ec2,
   } = SecurityGroupRuleBase({
     config,
   });
 
   return {
-    spec,
+    type: "SecurityGroupRuleEgress",
+    package: "ec2",
+    client: "EC2",
     findNamespace,
     findId: () =>
       pipe([
@@ -562,29 +612,38 @@ exports.EC2SecurityGroupRuleEgress = ({ spec, config }) => {
         ({ GroupId, ...IpPermission }) =>
           `egress::${GroupId}::${JSON.stringify(IpPermission)}`,
       ]),
+    omitProperties: [],
     findName: findName({ kind: "egress" }),
-    getByName: getByName({ kind: "egress", IsEgress: true, config }),
-    getList: getList({ kind: "egress", IsEgress: true }),
-    create: create({
-      kind: "egress",
-      authorizeSecurityGroup: () => ec2().authorizeSecurityGroupEgress,
-    }),
-    update: update({
-      kind: "egress",
-      authorizeSecurityGroup: () => ec2().authorizeSecurityGroupEgress,
-      revokeSecurityGroup: () => ec2().revokeSecurityGroupEgress,
-    }),
-    destroy: destroy({
-      kind: "egress",
-      revokeSecurityGroup: () => ec2().revokeSecurityGroupEgress,
-    }),
+    compare: compareSecurityGroupRule,
+    filterLive: securityGroupRulePickProperties,
+    dependencies: securityGroupRuleDependencies,
+    inferName: inferNameSecurityGroupRule({ kind: "egress" }),
+    getByName: ({ endpoint, config }) =>
+      getByName({ endpoint, kind: "egress", IsEgress: true, config }),
+    getList: ({ endpoint }) => getList({ kind: "egress", IsEgress: true }),
+    create: ({ endpoint }) =>
+      create({
+        kind: "egress",
+        authorizeSecurityGroup: () => endpoint().authorizeSecurityGroupEgress,
+      }),
+    update: ({ endpoint }) =>
+      update({
+        kind: "egress",
+        authorizeSecurityGroup: () => endpoint().authorizeSecurityGroupEgress,
+        revokeSecurityGroup: () => endpoint().revokeSecurityGroupEgress,
+      }),
+    destroy: ({ endpoint }) =>
+      destroy({
+        kind: "egress",
+        revokeSecurityGroup: () => endpoint().revokeSecurityGroupEgress,
+      }),
     configDefault,
     managedByOther: managedByOther({ IsEgress: true }),
     isDefault: isDefault({ IsEgress: true }),
   };
 };
 
-exports.compareSecurityGroupRule = compareAws({
+const compareSecurityGroupRule = compareAws({
   getTargetTags: () => [],
   getLiveTags: () => [],
 })({

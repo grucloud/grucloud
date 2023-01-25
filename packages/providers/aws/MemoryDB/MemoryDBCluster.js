@@ -1,13 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map, assign, or } = require("rubico");
-const { defaultsDeep, when, first } = require("rubico/x");
+const { pipe, tap, get, eq, map, assign } = require("rubico");
+const { defaultsDeep, when, pluck } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
-const { tagResource, untagResource, assignTags } = require("./MemoryDBCommon");
+const { Tagger, assignTags } = require("./MemoryDBCommon");
 
 const pickId = pipe([
   tap(({ Name }) => {
@@ -28,10 +27,85 @@ const decorate = ({ endpoint }) =>
     assignTags({ endpoint }),
   ]);
 
-const model = ({ config }) => ({
+const buildArn = () => pipe([get("ARN")]);
+
+exports.MemoryDBCluster = ({}) => ({
+  type: "Cluster",
   package: "memorydb",
   client: "MemoryDB",
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
+  findId: () => pipe([get("ARN")]),
   ignoreErrorCodes: ["ClusterNotFoundFault"],
+  propertiesDefault: {
+    TLSEnabled: true,
+    AutoMinorVersionUpgrade: true,
+    SnapshotRetentionLimit: 1,
+    DataTiering: "false",
+  },
+  omitProperties: [
+    "ARN",
+    "SecurityGroups",
+    "EnginePatchVersion",
+    "KmsKeyId",
+    "Status",
+    "PendingUpdates",
+    "ClusterEndpoint",
+    "ParameterGroupStatus",
+    "SnsTopicStatus",
+    "SnsTopicArn",
+    "SubnetGroupName",
+    "SecurityGroupIds",
+    "NumberOfShards",
+  ],
+  dependencies: {
+    acl: {
+      type: "ACL",
+      group: "MemoryDB",
+      dependencyId: ({ lives, config }) => get("ACLName"),
+      excludeDefaultDependencies: true,
+    },
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      dependencyId: ({ lives, config }) => get("KmsKeyId"),
+    },
+    parameterGroup: {
+      type: "ParameterGroup",
+      group: "MemoryDB",
+      dependencyId: ({ lives, config }) => pipe([get("ParameterGroupName")]),
+      excludeDefaultDependencies: true,
+    },
+    securityGroups: {
+      type: "SecurityGroup",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("SecurityGroups"), pluck("SecurityGroupId")]),
+    },
+    snsTopic: {
+      type: "Topic",
+      group: "SNS",
+      dependencyId: ({ lives, config }) => get("SnsTopicArn"),
+    },
+    subnetGroup: {
+      type: "SubnetGroup",
+      group: "MemoryDB",
+      dependencyId: ({ lives, config }) => get("SubnetGroupName"),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#describeClusters-property
   getById: {
     method: "describeClusters",
@@ -64,81 +138,62 @@ const model = ({ config }) => ({
     pickId,
     shouldRetryOnExceptionCodes: ["InvalidClusterStateFault"],
   },
-});
-
-const buildArn = () => pipe([get("ARN")]);
-
-exports.MemoryDBCluster = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () =>
-      pipe([
-        get("Name"),
-        tap((Name) => {
-          assert(Name);
-        }),
-      ]),
-    findId: () => pipe([get("ARN")]),
-    getByName: ({ getList, endpoint, getById }) =>
-      pipe([
-        ({ name }) => ({
-          Name: name,
-        }),
-        getById({}),
-      ]),
-    tagResource: tagResource({
-      buildArn: buildArn(config),
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([
+      ({ name }) => ({
+        Name: name,
+      }),
+      getById({}),
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
     }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#modifyCluster-property
-    update:
-      ({ endpoint }) =>
-      async ({ pickId, payload, diff, live }) =>
-        pipe([
-          tap((params) => {
-            assert(endpoint);
-          }),
-          () => diff,
-        ])(),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { kmsKey, subnetGroup, securityGroups },
-      config,
-    }) =>
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#modifyCluster-property
+  update:
+    ({ endpoint }) =>
+    async ({ pickId, payload, diff, live }) =>
       pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
-        }),
-        when(
-          () => subnetGroup,
-          assign({
-            SubnetGroupName: () => subnetGroup.config.Name,
-          })
-        ),
-        when(() => kmsKey, defaultsDeep({ KmsKeyId: getField(kmsKey, "Arn") })),
-        when(
-          () => securityGroups,
-          assign({
-            SecurityGroupIds: pipe([
-              () => securityGroups,
-              map((sg) => getField(sg, "GroupId")),
-            ]),
-          })
-        ),
         tap((params) => {
-          assert(true);
+          assert(endpoint);
         }),
+        () => diff,
       ])(),
-  });
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { kmsKey, subnetGroup, securityGroups },
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
+        }),
+      }),
+      when(
+        () => subnetGroup,
+        assign({
+          SubnetGroupName: () => subnetGroup.config.Name,
+        })
+      ),
+      when(() => kmsKey, defaultsDeep({ KmsKeyId: getField(kmsKey, "Arn") })),
+      when(
+        () => securityGroups,
+        assign({
+          SecurityGroupIds: pipe([
+            () => securityGroups,
+            map((sg) => getField(sg, "GroupId")),
+          ]),
+        })
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+    ])(),
+});

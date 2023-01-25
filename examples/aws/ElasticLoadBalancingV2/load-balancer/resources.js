@@ -143,58 +143,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LoadBalancer",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Name: "load-balancer",
-      Scheme: "internet-facing",
-      Type: "application",
-      IpAddressType: "ipv4",
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "value",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      subnets: ["vpc::subnet-a", "vpc::subnet-b"],
-      securityGroups: ["sg::vpc::default"],
-    }),
-  },
-  {
-    type: "TargetGroup",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Name: "target-group-rest",
-      Protocol: "HTTP",
-      Port: 30020,
-      HealthCheckProtocol: "HTTP",
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "value",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "TargetGroup",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Name: "target-group-web",
-      Protocol: "HTTP",
-      Port: 30010,
-      HealthCheckProtocol: "HTTP",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
@@ -223,6 +171,26 @@ exports.createResources = () => [
       loadBalancer: "load-balancer",
       targetGroup: "target-group-rest",
       certificate: "grucloud.org",
+    }),
+  },
+  {
+    type: "LoadBalancer",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      Name: "load-balancer",
+      Scheme: "internet-facing",
+      Type: "application",
+      IpAddressType: "ipv4",
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "value",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      subnets: ["vpc::subnet-a", "vpc::subnet-b"],
+      securityGroups: ["sg::vpc::default"],
     }),
   },
   {
@@ -293,6 +261,38 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       listener: "listener::load-balancer::HTTPS::443",
       targetGroup: "target-group-web",
+    }),
+  },
+  {
+    type: "TargetGroup",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      Name: "target-group-rest",
+      Protocol: "HTTP",
+      Port: 30020,
+      HealthCheckProtocol: "HTTP",
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "value",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "TargetGroup",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      Name: "target-group-web",
+      Protocol: "HTTP",
+      Port: 30010,
+      HealthCheckProtocol: "HTTP",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
     }),
   },
   {

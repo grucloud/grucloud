@@ -1,15 +1,14 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, map, omit, or } = require("rubico");
+const { pipe, tap, get, eq, map, omit, or, assign } = require("rubico");
 const { defaultsDeep, when, unless } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { retryCall } = require("@grucloud/core/Retry");
+const { replaceAccountAndRegion } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource } = require("./BatchCommon");
+const { Tagger } = require("./BatchCommon");
 
 const buildArn = () => get("computeEnvironmentArn");
 
@@ -22,9 +21,91 @@ const decorate = () =>
     ]),
   ]);
 
-const model = ({ config }) => ({
+exports.BatchComputeEnvironment = ({}) => ({
+  type: "ComputeEnvironment",
   package: "batch",
   client: "Batch",
+  inferName: () => get("computeEnvironmentName"),
+  findName: () => pipe([get("computeEnvironmentName")]),
+  findId: () => pipe([get("computeEnvironmentArn")]),
+  getByName: getByNameCore,
+  propertiesDefault: {
+    state: "ENABLED",
+  },
+  omitProperties: [
+    "status",
+    "statusReason",
+    "ecsClusterArn",
+    "eksConfiguration.eksClusterArn",
+    "computeEnvironmentArn",
+    "computeResources.ec2KeyPair",
+    "computeResources.instanceRole",
+    "computeResources.launchTemplate",
+    "computeResources.placementGroup",
+    "computeResources.securityGroupIds",
+    "computeResources.subnets",
+    "uuid",
+  ],
+
+  dependencies: {
+    eksCluster: {
+      type: "Cluster",
+      group: "EKS",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("eksConfiguration.eksClusterArn")]),
+    },
+    keyPair: {
+      type: "KeyPair",
+      group: "EC2",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("computeResources.ec2KeyPair")]),
+    },
+    instanceRole: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("computeResources.instanceRole")]),
+    },
+    launchTemplate: {
+      type: "LaunchTemplate",
+      group: "EC2",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("computeResources.launchTemplate.launchTemplateId")]),
+    },
+    placementGroup: {
+      type: "PlacementGroup",
+      group: "EC2",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("computeResources.placementGroup")]),
+    },
+    securityGroups: {
+      type: "SecurityGroup",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        get("computeResources.securityGroupIds"),
+    },
+    serviceRole: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => pipe([get("serviceRole")]),
+    },
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) => get("computeResources.subnets"),
+    },
+  },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        serviceRole: pipe([
+          get("serviceRole"),
+          replaceAccountAndRegion({ providerConfig }),
+        ]),
+      }),
+    ]),
   ignoreErrorCodes: ["ResourceNotFoundException", "ClientException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#describeComputeEnvironments-property
   getById: {
@@ -95,93 +176,81 @@ const model = ({ config }) => ({
       computeEnvironment: computeEnvironmentName,
     }),
   },
-});
-
-exports.BatchComputeEnvironment = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {
+      eksCluster,
+      instanceRole,
+      keyPair,
+      launchTemplate,
+      placementGroup,
+      subnets,
+      securityGroups,
+    },
     config,
-    findName: () => pipe([get("computeEnvironmentName")]),
-    findId: () => pipe([get("computeEnvironmentArn")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: {
-        eksCluster,
-        instanceRole,
-        keyPair,
-        launchTemplate,
-        placementGroup,
-        subnets,
-        securityGroups,
-      },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        computeResources: {
+          securityGroupIds: pipe([
+            () => securityGroups,
+            map((sg) => getField(sg, "GroupId")),
+          ])(),
+          subnets: pipe([
+            () => subnets,
+            map((subnet) => getField(subnet, "SubnetId")),
+          ])(),
+        },
+        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
+      }),
+      when(
+        () => eksCluster,
+        defaultsDeep({
+          eksConfiguration: {
+            eksClusterArn: getField(eksCluster, "arn"),
+          },
+        })
+      ),
+      when(
+        () => instanceRole,
         defaultsDeep({
           computeResources: {
-            securityGroupIds: pipe([
-              () => securityGroups,
-              map((sg) => getField(sg, "GroupId")),
-            ])(),
-            subnets: pipe([
-              () => subnets,
-              map((subnet) => getField(subnet, "SubnetId")),
-            ])(),
+            instanceRole: getField(instanceRole, "Arn"),
           },
-          tags: buildTagsObject({ name, config, namespace, userTags: tags }),
-        }),
-        when(
-          () => eksCluster,
-          defaultsDeep({
-            eksConfiguration: {
-              eksClusterArn: getField(eksCluster, "arn"),
+        })
+      ),
+      when(
+        () => keyPair,
+        defaultsDeep({
+          computeResources: {
+            ec2KeyPair: getField(keyPair, "KeyPairId"),
+          },
+        })
+      ),
+      when(
+        () => launchTemplate,
+        defaultsDeep({
+          computeResources: {
+            launchTemplate: {
+              launchTemplateId: getField(launchTemplate, "GroupId"),
             },
-          })
-        ),
-        when(
-          () => instanceRole,
-          defaultsDeep({
-            computeResources: {
-              instanceRole: getField(instanceRole, "Arn"),
-            },
-          })
-        ),
-        when(
-          () => keyPair,
-          defaultsDeep({
-            computeResources: {
-              ec2KeyPair: getField(keyPair, "KeyPairId"),
-            },
-          })
-        ),
-        when(
-          () => launchTemplate,
-          defaultsDeep({
-            computeResources: {
-              launchTemplate: {
-                launchTemplateId: getField(launchTemplate, "GroupId"),
-              },
-            },
-          })
-        ),
-        when(
-          () => placementGroup,
-          defaultsDeep({
-            computeResources: {
-              placementGroup: getField(placementGroup, "GroupId"),
-            },
-          })
-        ),
-      ])(),
-  });
+          },
+        })
+      ),
+      when(
+        () => placementGroup,
+        defaultsDeep({
+          computeResources: {
+            placementGroup: getField(placementGroup, "GroupId"),
+          },
+        })
+      ),
+    ])(),
+});

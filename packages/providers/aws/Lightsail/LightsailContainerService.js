@@ -3,7 +3,6 @@ const { pipe, tap, get, pick, eq, map } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger } = require("./LightsailCommon");
 
@@ -33,47 +32,11 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
-  package: "lightsail",
-  client: "Lightsail",
-  ignoreErrorCodes: ["NotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getContainerServices-property
-  getById: {
-    method: "getContainerServices",
-    getField: "containerServices",
-    pickId,
-    decorate,
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getContainerServices-property
-  getList: {
-    method: "getContainerServices",
-    getParam: "containerServices",
-    decorate,
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#createContainerService-property
-  create: {
-    method: "createContainerService",
-    pickCreated: ({ payload }) => pipe([() => payload]),
-    //pickCreated: ({ payload }) => pipe([get("containerService")]),
-    isInstanceUp: pipe([eq(get("state"), "RUNNING")]),
-    // isInstanceError: pipe([eq(get("Status"), "ACTION_NEEDED")]),
-    // getErrorMessage: get("stateDetail.message", "error"),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#updateContainerService-property
-  update: {
-    method: "updateContainerService",
-    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#deleteContainerService-property
-  destroy: {
-    method: "deleteContainerService",
-    pickId,
-  },
-});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
 exports.LightsailContainerService = () => ({
   type: "ContainerService",
+  package: "lightsail",
+  client: "Lightsail",
   propertiesDefault: { isDisabled: false },
   omitProperties: [
     "arn",
@@ -113,47 +76,78 @@ exports.LightsailContainerService = () => ({
         ]),
     },
   },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("serviceName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("serviceName"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ serviceName: name }), getById({})]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { tags, ...otherProps },
-        dependencies: {},
-        config,
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            tags: buildTags({
-              name,
-              config,
-              namespace,
-              UserTags: tags,
-              key: "key",
-              value: "value",
-            }),
-          }),
-        ])(),
+  findName: () =>
+    pipe([
+      get("serviceName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("serviceName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ serviceName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
     }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: tags,
+          key: "key",
+          value: "value",
+        }),
+      }),
+    ])(),
+
+  ignoreErrorCodes: ["NotFoundException"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getContainerServices-property
+  getById: {
+    method: "getContainerServices",
+    getField: "containerServices",
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getContainerServices-property
+  getList: {
+    method: "getContainerServices",
+    getParam: "containerServices",
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#createContainerService-property
+  create: {
+    method: "createContainerService",
+    pickCreated: ({ payload }) => pipe([() => payload]),
+    //pickCreated: ({ payload }) => pipe([get("containerService")]),
+    isInstanceUp: pipe([eq(get("state"), "RUNNING")]),
+    // isInstanceError: pipe([eq(get("Status"), "ACTION_NEEDED")]),
+    // getErrorMessage: get("stateDetail.message", "error"),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#updateContainerService-property
+  update: {
+    method: "updateContainerService",
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#deleteContainerService-property
+  destroy: {
+    method: "deleteContainerService",
+    pickId,
+  },
 });

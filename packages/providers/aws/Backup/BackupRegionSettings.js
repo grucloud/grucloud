@@ -3,17 +3,23 @@ const { pipe, tap } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pipe([
   tap((params) => {
     assert(true);
   }),
 ]);
 
-const model = ({ config }) => ({
+exports.BackupRegionSettings = ({}) => ({
+  type: "RegionSettings",
   package: "backup",
   client: "Backup",
+  cannotBeDeleted: () => () => true,
+  inferName: () => () => "region",
+  findName: () => pipe([() => "region"]),
+  findId: () => pipe([() => "region"]),
+  propertiesDefault: {},
+  omitProperties: [],
+  ignoreResource: () => true,
   ignoreErrorCodes: [],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#describeRegionSettings-property
   getById: {
@@ -43,22 +49,12 @@ const model = ({ config }) => ({
     }),
     isInstanceDown: () => true,
   },
-});
-
-exports.BackupRegionSettings = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: {},
     config,
-    cannotBeDeleted: () => () => true,
-    findName: () => pipe([() => "region"]),
-    findId: () => pipe([() => "region"]),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: {},
-      config,
-    }) => pipe([() => otherProps, defaultsDeep({})])(),
-  });
+  }) => pipe([() => otherProps, defaultsDeep({})])(),
+});

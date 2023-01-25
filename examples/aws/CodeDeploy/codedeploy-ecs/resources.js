@@ -451,6 +451,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Listener",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      Port: 80,
+      Protocol: "HTTP",
+    }),
+    dependencies: ({}) => ({
+      loadBalancer: "EC2Co-EcsEl-GK4BG406T8NP",
+      targetGroup: "EC2Co-Defau-MMUISWY3DEAQ",
+    }),
+  },
+  {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
@@ -521,18 +533,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "ECS cluster - VPC",
-    }),
-  },
-  {
-    type: "Listener",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Port: 80,
-      Protocol: "HTTP",
-    }),
-    dependencies: ({}) => ({
-      loadBalancer: "EC2Co-EcsEl-GK4BG406T8NP",
-      targetGroup: "EC2Co-Defau-MMUISWY3DEAQ",
     }),
   },
   {

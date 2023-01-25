@@ -1,9 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, get, assign, pick, map, or, eq } = require("rubico");
 const { defaultsDeep, find } = require("rubico/x");
-const { getByNameCore } = require("@grucloud/core/Common");
-
-const { createAwsResource } = require("../AwsClient");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 
 const pickId = pipe([
   pick(["ReportName"]),
@@ -17,12 +15,32 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(true);
     }),
+    omitIfEmpty(["AdditionalArtifacts"]),
   ]);
 
-const model = ({ config }) => ({
+exports.CURReportDefinition = ({}) => ({
+  type: "ReportDefinition",
   package: "cost-and-usage-report-service",
   client: "CostAndUsageReportService",
+  inferName: () => get("ReportName"),
+  findName: () => pipe([get("ReportName")]),
+  findId: () => pipe([get("ReportName")]),
   ignoreErrorCodes: ["NotFoundException"],
+  propertiesDefault: {},
+  omitProperties: [],
+  dependencies: {
+    s3Bucket: {
+      type: "Bucket",
+      group: "S3",
+      dependencyId: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          get("S3Bucket"),
+        ]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CUR.html#describeCUR-property
   getList: {
     method: "describeReportDefinitions",
@@ -46,41 +64,32 @@ const model = ({ config }) => ({
     method: "deleteReportDefinition",
     pickId,
   },
-});
-
-exports.CURReportDefinition = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () => pipe([get("ReportName")]),
-    findId: () => pipe([get("ReportName")]),
-    getByName: getByNameCore,
-    getById:
-      ({ endpoint }) =>
-      ({ lives }) =>
-      (live) =>
-        pipe([
-          tap((params) => {
-            assert(live);
-          }),
-          () => ({}),
-          endpoint().describeReportDefinitions,
-          get("ReportDefinitions"),
-          find(eq(get("ReportName"), live.ReportName)),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: { s3Bucket },
-      config,
-    }) =>
+  getByName: getByNameCore,
+  getById:
+    ({ endpoint }) =>
+    ({ lives }) =>
+    (live) =>
       pipe([
-        () => otherProps,
-        defaultsDeep({ S3Bucket: s3Bucket.config.Name }),
+        tap((params) => {
+          assert(live);
+        }),
+        () => ({}),
+        endpoint().describeReportDefinitions,
+        get("ReportDefinitions"),
+        find(eq(get("ReportName"), live.ReportName)),
+        tap((params) => {
+          assert(true);
+        }),
       ])(),
-  });
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: { s3Bucket },
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({ S3Bucket: s3Bucket.config.Name }),
+    ])(),
+});

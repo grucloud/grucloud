@@ -15,18 +15,11 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Stage",
+    type: "Deployment",
     group: "ApiGatewayV2",
-    properties: ({}) => ({
-      DefaultRouteSettings: {
-        DataTraceEnabled: false,
-        LoggingLevel: "OFF",
-      },
-      Description: "Prod Stage",
-      StageName: "prod",
-    }),
     dependencies: ({}) => ({
       api: "sam-app",
+      stage: "sam-app::prod",
     }),
   },
   {
@@ -120,11 +113,18 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
+    type: "Stage",
     group: "ApiGatewayV2",
+    properties: ({}) => ({
+      DefaultRouteSettings: {
+        DataTraceEnabled: false,
+        LoggingLevel: "OFF",
+      },
+      Description: "Prod Stage",
+      StageName: "prod",
+    }),
     dependencies: ({}) => ({
       api: "sam-app",
-      stage: "sam-app::prod",
     }),
   },
   {

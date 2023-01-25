@@ -1,20 +1,35 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map, assign } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, map, assign } = require("rubico");
+const { defaultsDeep, pluck } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource, assignTags } = require("./MemoryDBCommon");
+const { Tagger, assignTags } = require("./MemoryDBCommon");
 
 const pickId = pipe([({ Name }) => ({ SubnetGroupName: Name })]);
 
-const model = ({ config }) => ({
+const buildArn = () => pipe([get("ARN")]);
+
+exports.MemoryDBSubnetGroup = ({}) => ({
+  type: "SubnetGroup",
   package: "memorydb",
   client: "MemoryDB",
+  inferName: () => get("Name"),
+  findName: () => pipe([get("Name")]),
+  findId: () => pipe([get("Name")]),
   ignoreErrorCodes: ["SubnetGroupNotFoundFault"],
+  omitProperties: ["ARN", "VpcId", "Subnets", "SubnetIds"],
+  dependencies: {
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("Subnets"), pluck("Identifier")]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#describeSubnetGroups-property
   getById: {
     method: "describeSubnetGroups",
@@ -48,52 +63,39 @@ const model = ({ config }) => ({
     method: "deleteSubnetGroup",
     pickId,
   },
-});
-
-const buildArn = () => pipe([get("ARN")]);
-
-exports.MemoryDBSubnetGroup = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([
+      ({ name }) => ({
+        Name: name,
+      }),
+      getById({}),
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { subnets },
     config,
-    findName: () => pipe([get("Name")]),
-    findId: () => pipe([get("Name")]),
-    getByName: ({ getList, endpoint, getById }) =>
-      pipe([
-        ({ name }) => ({
-          Name: name,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-        getById({}),
-      ]),
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { subnets },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
-        }),
-        assign({
-          SubnetIds: pipe([
-            () => subnets,
-            map((subnet) => getField(subnet, "SubnetId")),
-          ]),
-        }),
-      ])(),
-  });
+      }),
+      assign({
+        SubnetIds: pipe([
+          () => subnets,
+          map((subnet) => getField(subnet, "SubnetId")),
+        ]),
+      }),
+    ])(),
+});

@@ -3,13 +3,32 @@ const { pipe, tap, get, pick, eq, filter, not } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./RAMCommon");
+const { Tagger } = require("./RAMCommon");
 
-const model = ({ config }) => ({
+const buildArn = () =>
+  pipe([
+    get("resourceShareArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
+exports.RAMResourceShare = ({}) => ({
+  type: "ResourceShare",
   package: "ram",
   client: "RAM",
+  inferName: () => get("name"),
+  findName: () => pipe([get("name")]),
+  findId: () => pipe([get("resourceShareArn")]),
   ignoreErrorCodes: ["UnknownResourceException"],
+  omitProperties: [
+    "creationTime",
+    "lastUpdatedTime",
+    "owningAccountId",
+    "resourceShareArn",
+    "status",
+  ],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#getResourceShares-property
   getById: {
     method: "getResourceShares",
@@ -66,50 +85,42 @@ const model = ({ config }) => ({
     pickId: pipe([pick(["resourceShareArn"])]),
     isInstanceDown: pipe([eq(get("status"), "DELETED")]),
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
-exports.RAMResourceShare = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList, endpoint }) =>
+    pipe([
+      ({ name }) => ({
+        name,
+        resourceShareStatus: "ACTIVE",
+        resourceOwner: "SELF",
+      }),
+      endpoint().getResourceShares,
+      get("resourceShares"),
+      //TODO
+      // getList,
+      first,
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("name")]),
-    findId: () => pipe([get("resourceShareArn")]),
-    getByName: ({ getList, endpoint }) =>
-      pipe([
-        ({ name }) => ({
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        name: name,
+        tags: buildTags({
           name,
-          resourceShareStatus: "ACTIVE",
-          resourceOwner: "SELF",
+          config,
+          namespace,
+          userTags: tags,
+          key: "key",
+          value: "value",
         }),
-        endpoint().getResourceShares,
-        get("resourceShares"),
-        //TODO
-        // getList,
-        first,
-      ]),
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          name: name,
-          tags: buildTags({
-            name,
-            config,
-            namespace,
-            userTags: tags,
-            key: "key",
-            value: "value",
-          }),
-        }),
-      ])(),
-  });
+      }),
+    ])(),
+});

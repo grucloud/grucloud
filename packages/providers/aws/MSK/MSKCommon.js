@@ -11,25 +11,6 @@ exports.Tagger = createTagger({
   UnTagsKey: "TagKeys",
 });
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kafka.html#tagResource-property
-exports.tagResource =
-  ({ buildArn }) =>
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      (Tags) => ({ ResourceArn: buildArn(live), Tags }),
-      endpoint().tagResource,
-    ]);
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kafka.html#untagResource-property
-exports.untagResource =
-  ({ buildArn }) =>
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      (TagKeys) => ({ ResourceArn: buildArn(live), TagKeys }),
-      endpoint().untagResource,
-    ]);
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kafka.html#listTagsForResource-property
 exports.assignTags = ({ endpoint }) =>
   pipe([

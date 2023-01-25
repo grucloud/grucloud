@@ -3,27 +3,37 @@ const {
   pipe,
   tap,
   get,
-  eq,
-  fork,
-  and,
-  tryCatch,
   pick,
+  eq,
+  and,
+  fork,
   switchCase,
+  tryCatch,
 } = require("rubico");
-const { defaultsDeep, callProp, last, when } = require("rubico/x");
+const {
+  defaultsDeep,
+  callProp,
+  when,
+  find,
+  last,
+  append,
+  includes,
+} = require("rubico/x");
+
 const logger = require("@grucloud/core/logger")({
   prefix: "IntegrationV2",
 });
-
-const { tos } = require("@grucloud/core/tos");
-const { getByNameCore } = require("@grucloud/core/Common");
 const { throwIfNotAwsError } = require("../AwsCommon");
-const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
-const { createLambda } = require("../Lambda/LambdaCommon");
+const { tos } = require("@grucloud/core/tos");
 
-const findId = () => get("IntegrationId");
+const { createEndpoint } = require("../AwsCommon");
+
+const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
+
+const { dependencyIdApi, ignoreErrorCodes } = require("./ApiGatewayV2Common");
+
+const pickId = pick(["ApiId", "IntegrationId"]);
 
 const lambdaUriToName = pipe([
   callProp("split", ":"),
@@ -31,13 +41,12 @@ const lambdaUriToName = pipe([
   callProp("replace", "/invocations", ""),
 ]);
 
-// IntegrationUri:'arn:aws:elasticloadbalancing:us-east-1:00000000:listener/app/sam-a-LoadB-EC9ZTKNG2RSH/3c8adf5c996cb063/fe8cc6c608b3208e'
 const listenerUriToName =
   ({ lives, config }) =>
   (live) =>
     pipe([
       tap((params) => {
-        assert(true);
+        assert(config);
       }),
       () => live,
       get("IntegrationUri"),
@@ -53,8 +62,6 @@ const listenerUriToName =
     ])();
 
 const eventBusUriToName = pipe([callProp("split", "/"), last]);
-
-const pickId = pick(["ApiId", "IntegrationId"]);
 
 const findName = ({ lives, config }) =>
   pipe([
@@ -77,62 +84,30 @@ const findName = ({ lives, config }) =>
     ({ apiName, integration }) => `${apiName}${integration}`,
   ]);
 
-exports.Integration = ({ spec, config }) => {
-  const apiGateway = createApiGatewayV2(config);
-  const lambda = createLambda(config);
-  const client = AwsClient({ spec, config })(apiGateway);
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+  ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getIntegration-property
-  const getById = client.getById({
-    pickId,
-    method: "getIntegration",
-    ignoreErrorCodes,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getIntegrations-property
-  const getList = client.getListWithParent({
-    parent: { type: "Api", group: "ApiGatewayV2" },
-    pickKey: pipe([pick(["ApiId"])]),
-    method: "getIntegrations",
-    getParam: "Items",
-    config,
-    decorate:
-      ({ parent: { ApiId, Name, Tags } }) =>
-      (live) =>
-        pipe([() => live, defaultsDeep({ ApiId, ApiName: Name })])(),
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createIntegration-property
-  const create = client.create({
-    method: "createIntegration",
-    pickCreated: ({ payload }) =>
-      pipe([defaultsDeep({ ApiId: payload.ApiId })]),
-    getById,
-  });
-
-  const update = client.update({
-    pickId,
-    method: "updateIntegration",
-    getById,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#removePermission-property
-  const lambdaRemovePermission = ({ endpoint }) =>
-    pipe([
-      tap.if(
-        and([
-          eq(get("IntegrationType"), "AWS_PROXY"),
-          get("IntegrationUri"),
-          get("IntegrationId"),
-        ]),
-        pipe([
-          ({ IntegrationUri, IntegrationId }) => ({
-            FunctionName: IntegrationUri,
-            StatementId: IntegrationId,
-          }),
-          tryCatch(lambda().removePermission, (error) =>
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#removePermission-property
+const lambdaRemovePermission = ({ endpoint, config }) =>
+  pipe([
+    tap.if(
+      and([
+        eq(get("IntegrationType"), "AWS_PROXY"),
+        get("IntegrationUri"),
+        get("IntegrationId"),
+      ]),
+      pipe([
+        ({ IntegrationUri, IntegrationId }) => ({
+          FunctionName: IntegrationUri,
+          StatementId: IntegrationId,
+        }),
+        tryCatch(
+          createEndpoint("lambda", "Lambda")(config)().removePermission,
+          (error) =>
             pipe([
               tap(() => {
                 logger.info(`lambdaRemovePermission ${tos(error)}`);
@@ -140,24 +115,168 @@ exports.Integration = ({ spec, config }) => {
               () => error,
               throwIfNotAwsError("ResourceNotFoundException"),
             ])()
-          ),
-        ])
-      ),
-    ]);
+        ),
+      ])
+    ),
+  ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteIntegration-property
-  const destroy = client.destroy({
-    preDestroy: lambdaRemovePermission,
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
+exports.ApiGatewayV2Integration = ({}) => ({
+  type: "Integration",
+  package: "apigatewayv2",
+  client: "ApiGatewayV2",
+  inferName: ({
+    dependenciesSpec: { api, lambdaFunction, listener, eventBus },
+  }) =>
+    pipe([
+      //TODO other target
+      tap(() => {
+        assert(api);
+      }),
+      () =>
+        pipe([
+          () => `integration::${api}`,
+          switchCase([
+            () => lambdaFunction,
+            append(`::${lambdaFunction}`),
+            () => eventBus,
+            append(`::${eventBus}`),
+            () => listener,
+            append(`::${listener}`),
+            append(`::NO-INTEGRATION`),
+          ]),
+        ])(),
+    ]),
+  findName,
+  findId: () =>
+    pipe([
+      get("IntegrationId"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  ignoreErrorCodes,
+  propertiesDefault: { TimeoutInMillis: 30e3, Description: "" },
+  omitProperties: [
+    "RouteId",
+    "ConnectionId",
+    "IntegrationId",
+    "IntegrationUri",
+    "ApiName",
+    "RequestParameters.EventBusName",
+    "CredentialsArn",
+    "ApiId",
+  ],
+  dependencies: {
+    api: {
+      type: "Api",
+      group: "ApiGatewayV2",
+      parent: true,
+      dependencyId: dependencyIdApi,
+    },
+    listener: {
+      type: "Listener",
+      group: "ElasticLoadBalancingV2",
+      parent: true,
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              type: "Listener",
+              group: "ElasticLoadBalancingV2",
+              providerName: config.providerName,
+            }),
+            find(eq(get("id"), live.IntegrationUri)),
+          ])(),
+    }, //Integration name depends on listener name
+    vpcLink: {
+      type: "VpcLink",
+      group: "ApiGatewayV2",
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              type: "VpcLink",
+              group: "ApiGatewayV2",
+              providerName: config.providerName,
+            }),
+            find(eq(get("id"), live.ConnectionId)),
+          ])(),
+    },
+    lambdaFunction: {
+      type: "Function",
+      group: "Lambda",
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              type: "Function",
+              group: "Lambda",
+              providerName: config.providerName,
+            }),
+            find(pipe([get("id"), (id) => includes(id)(live.IntegrationUri)])),
+          ])(),
+    },
+    eventBus: {
+      type: "EventBus",
+      group: "CloudWatchEvents",
+      dependencyId: ({ lives, config }) =>
+        get("RequestParameters.EventBusName"),
+    },
+    role: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => get("CredentialsArn"),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getIntegration-property
+  getById: {
+    method: "getIntegration",
     pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listIntegrations-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Api", group: "ApiGatewayV2" },
+          pickKey: pipe([pick(["ApiId"])]),
+          method: "getIntegrations",
+          getParam: "Items",
+          config,
+          decorate:
+            ({ parent: { ApiId, Name, Tags } }) =>
+            (live) =>
+              pipe([() => live, defaultsDeep({ ApiId, ApiName: Name })])(),
+        }),
+    ])(),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createIntegration-property
+  create: {
+    method: "createIntegration",
+    pickCreated: ({ payload }) =>
+      pipe([defaultsDeep({ ApiId: payload.ApiId })]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateIntegration-property
+  update: {
+    method: "updateIntegration",
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteIntegration-property
+  destroy: {
+    preDestroy: lambdaRemovePermission,
     method: "deleteIntegration",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const configDefault = ({
+    pickId,
+  },
+  getByName: getByNameCore,
+  configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { ...otherProps },
     dependencies: { api, lambdaFunction, eventBus, role, listener, vpcLink },
   }) =>
     pipe([
@@ -198,18 +317,5 @@ exports.Integration = ({ spec, config }) => {
           CredentialsArn: getField(role, "Arn"),
         })
       ),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    getById,
-    create,
-    update,
-    destroy,
-    getByName,
-    getList,
-    configDefault,
-  };
-};
+    ])(),
+});

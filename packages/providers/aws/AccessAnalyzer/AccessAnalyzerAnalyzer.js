@@ -4,9 +4,7 @@ const { defaultsDeep } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource } = require("./AccessAnalyzerCommon");
+const { Tagger } = require("./AccessAnalyzerCommon");
 
 const buildArn = () => get("arn");
 
@@ -16,9 +14,28 @@ const decorate =
   () =>
   ({ name, ...other }) => ({ analyzerName: name, ...other });
 
-const model = ({ config }) => ({
+exports.AccessAnalyzerAnalyzer = ({ compare }) => ({
+  type: "Analyzer",
   package: "accessanalyzer",
   client: "AccessAnalyzer",
+  inferName: () =>
+    pipe([
+      get("analyzerName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findName: () => pipe([get("analyzerName")]),
+  findId: () => pipe([get("analyzerName")]),
+  propertiesDefault: {},
+  omitProperties: [
+    "arn",
+    "createdAt",
+    "lastResourceAnalyzed",
+    "lastResourceAnalyzedAt",
+    "status",
+    "statusReason",
+  ],
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html#getAnalyzer-property
   getById: {
@@ -45,33 +62,22 @@ const model = ({ config }) => ({
     method: "deleteAnalyzer",
     pickId,
   },
-});
-
-exports.AccessAnalyzerAnalyzer = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("analyzerName")]),
-    findId: () => pipe([get("analyzerName")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          tags: buildTagsObject({ name, config, namespace, userTags: tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
+      }),
+    ])(),
+});

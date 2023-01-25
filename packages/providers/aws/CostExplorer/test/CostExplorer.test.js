@@ -28,11 +28,11 @@ describe("CostExplorer", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("CostAllocationTag", () =>
+  it("CostAllocationTag", () =>
     pipe([
       () => ({
         groupType: "CostExplorer::CostAllocationTag",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ TagKey: "myTagKey" }],
       }),
       awsResourceTest,
     ])());

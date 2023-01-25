@@ -1,20 +1,69 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, assign } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, eq, assign, map } = require("rubico");
+const { defaultsDeep, when, pluck } = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { replaceWithName } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource } = require("./BatchCommon");
+const { Tagger } = require("./BatchCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const buildArn = () => get("jobQueueArn");
 
-const model = ({ config }) => ({
+exports.BatchJobQueue = ({}) => ({
+  type: "JobQueue",
   package: "batch",
   client: "Batch",
+  inferName: () => get("jobQueueName"),
+  findName: () => pipe([get("jobQueueName")]),
+  findId: () => pipe([get("jobQueueArn")]),
+  propertiesDefault: {
+    state: "ENABLED",
+  },
+  omitProperties: [
+    "status",
+    "statusReason",
+    "jobQueueArn",
+    "schedulingPolicyArn",
+  ],
+
+  dependencies: {
+    computeEnvironments: {
+      type: "ComputeEnvironment",
+      group: "Batch",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("computeEnvironmentOrder"), pluck("computeEnvironment")]),
+    },
+    schedulingPolicy: {
+      type: "SchedulingPolicy",
+      group: "Batch",
+      dependencyId: ({ lives, config }) => pipe([get("schedulingPolicyArn")]),
+    },
+  },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        computeEnvironmentOrder: pipe([
+          get("computeEnvironmentOrder"),
+          map(
+            assign({
+              computeEnvironment: pipe([
+                get("computeEnvironment"),
+                replaceWithName({
+                  groupType: "Batch::ComputeEnvironment",
+                  path: "id",
+                  providerConfig,
+                  lives,
+                }),
+              ]),
+            })
+          ),
+        ]),
+      }),
+    ]),
+  getByName: getByNameCore,
   ignoreErrorCodes: ["ClientException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#describeJobQueues-property
   getById: {
@@ -68,41 +117,27 @@ const model = ({ config }) => ({
       jobQueue: jobQueueName,
     }),
   },
-});
-
-exports.BatchJobQueue = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: { schedulingPolicy },
     config,
-    findName: () => pipe([get("jobQueueName")]),
-    findId: () => pipe([get("jobQueueArn")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: { schedulingPolicy },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          tags: buildTagsObject({ name, config, namespace, userTags: tags }),
-        }),
-        when(
-          () => schedulingPolicy,
-          assign({
-            schedulingPolicyArn: pipe([
-              () => getField(schedulingPolicy, "arn"),
-            ]),
-          })
-        ),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
+      }),
+      when(
+        () => schedulingPolicy,
+        assign({
+          schedulingPolicyArn: pipe([() => getField(schedulingPolicy, "arn")]),
+        })
+      ),
+    ])(),
+});

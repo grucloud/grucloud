@@ -1,10 +1,9 @@
 const assert = require("assert");
 const { pipe, tap, get, omit, pick, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-
-const { createAwsResource } = require("../AwsClient");
+const { replaceRegion } = require("../AwsCommon");
 
 const findId = () => pipe([get("RoutingControlArn")]);
 
@@ -18,10 +17,59 @@ const pickId = pipe([
 const decorate = ({ endpoint }) =>
   pipe([({ Name, ...other }) => ({ RoutingControlName: Name, ...other })]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html
+exports.Route53RecoveryControlConfigRoutingControl = ({}) => ({
+  type: "RoutingControl",
   package: "route53-recovery-control-config",
   client: "Route53RecoveryControlConfig",
   region: "us-west-2",
+  inferName: () => pipe([get("RoutingControlName")]),
+  findName: () => pipe([get("RoutingControlName")]),
+  findId,
+  dependencies: {
+    controlPanel: {
+      type: "ControlPanel",
+      group: "Route53RecoveryControlConfig",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("ControlPanelArn"),
+    },
+  },
+  omitProperties: [
+    "RoutingControlArn",
+    "ControlPanelArn",
+    "ClusterArn",
+    "Status",
+  ],
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        RoutingControlName: pipe([
+          get("RoutingControlName"),
+          replaceRegion({ providerConfig }),
+        ]),
+      }),
+    ]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listRoutingControls-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: {
+            type: "ControlPanel",
+            group: "Route53RecoveryControlConfig",
+          },
+          pickKey: pipe([
+            tap(({ ControlPanelArn }) => {
+              assert(ControlPanelArn);
+            }),
+            pick(["ControlPanelArn"]),
+          ]),
+          method: "listRoutingControls",
+          getParam: "RoutingControls",
+          decorate,
+          config,
+        }),
+    ])(),
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#describeRoutingControl-property
   getById: {
@@ -44,53 +92,22 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#deleteRoutingControl-property
   destroy: { method: "deleteRoutingControl", pickId },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html
-exports.Route53RecoveryControlConfigRoutingControl = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { controlPanel },
     config,
-    findName: () => pipe([get("RoutingControlName")]),
-    findId,
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listRoutingControls-property
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () =>
-          client.getListWithParent({
-            parent: {
-              type: "ControlPanel",
-              group: "Route53RecoveryControlConfig",
-            },
-            pickKey: pipe([
-              tap(({ ControlPanelArn }) => {
-                assert(ControlPanelArn);
-              }),
-              pick(["ControlPanelArn"]),
-            ]),
-            method: "listRoutingControls",
-            getParam: "RoutingControls",
-            decorate,
-            config,
-          }),
-      ])(),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { controlPanel },
-      config,
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(controlPanel);
-        }),
-        () => otherProps,
-        defaultsDeep({
-          ClusterArn: getField(controlPanel, "ClusterArn"),
-          ControlPanelArn: getField(controlPanel, "ControlPanelArn"),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(controlPanel);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        ClusterArn: getField(controlPanel, "ClusterArn"),
+        ControlPanelArn: getField(controlPanel, "ControlPanelArn"),
+      }),
+    ])(),
+});

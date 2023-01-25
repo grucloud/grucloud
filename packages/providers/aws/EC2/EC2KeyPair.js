@@ -1,61 +1,94 @@
 const assert = require("assert");
-const { pipe, get, tap, not, pick } = require("rubico");
+const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const fs = require("fs").promises;
 const path = require("path");
-const logger = require("@grucloud/core/logger")({ prefix: "AwsKp" });
+
 const { buildTags } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
-const { createEC2, tagResource, untagResource } = require("./EC2Common");
+const { tagResource, untagResource } = require("./EC2Common");
 
-exports.EC2ClientKeyPair = ({ spec, config }) => {
-  const ec2 = createEC2(config);
-  const client = AwsClient({ spec, config })(ec2);
+const pickId = pipe([
+  tap(({ KeyName }) => {
+    assert(KeyName);
+  }),
+  pick(["KeyName"]),
+]);
 
-  const findName = () => get("KeyName");
-  const findId = () => get("KeyPairId");
-  const pickId = pick(["KeyName"]);
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+  ]);
 
-  const getList = client.getList({
-    method: "describeKeyPairs",
-    getParam: "KeyPairs",
-  });
+const saveKeyToFile =
+  ({ directory = process.cwd() }) =>
+  ({ KeyMaterial, KeyName }) =>
+    pipe([
+      tap(() => {
+        //logger.info(`saveKeyToFile '${directory}'`);
+        assert(KeyMaterial);
+        assert(KeyName);
+      }),
+      () =>
+        fs.writeFile(
+          path.resolve(directory, `${KeyName}.pem`),
+          KeyMaterial,
+          "utf8"
+        ),
+      () => fs.chmod(path.resolve(directory, `${KeyName}.pem`), "600"),
+    ])();
 
-  const getById = client.getById({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2KeyPair = () => ({
+  type: "KeyPair",
+  package: "ec2",
+  client: "EC2",
+  propertiesDefault: { KeyType: "rsa" },
+  omitProperties: ["KeyPairId", "KeyFingerprint", "CreateTime"],
+  // inferName: () =>
+  //   pipe([
+  //     get("KeyName"),
+  //     tap((Name) => {
+  //       assert(Name);
+  //     }),
+  //   ]),
+  findName: () =>
+    pipe([
+      get("KeyName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("KeyPairId"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  ignoreErrorCodes: ["InvalidKeyPair.NotFound"],
+  filterLive: () => pick([]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getKeyPair-property
+  getById: {
     pickId: ({ KeyName }) => ({ KeyNames: [KeyName] }),
     method: "describeKeyPairs",
     getField: "KeyPairs",
-    ignoreErrorCodes: ["InvalidKeyPair.NotFound"],
-  });
-
-  const getByName = pipe([({ name }) => ({ KeyName: name }), getById({})]);
-
-  const saveKeyToFile =
-    ({ directory = process.cwd() }) =>
-    ({ KeyMaterial, KeyName }) =>
-      pipe([
-        tap(() => {
-          logger.info(`saveKeyToFile '${directory}'`);
-          assert(KeyMaterial);
-          assert(KeyName);
-        }),
-        () =>
-          fs.writeFile(
-            path.resolve(directory, `${KeyName}.pem`),
-            KeyMaterial,
-            "utf8"
-          ),
-        () => fs.chmod(path.resolve(directory, `${KeyName}.pem`), "600"),
-      ])();
-
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#listKeyPairs-property
+  getList: {
+    method: "describeKeyPairs",
+    getParam: "KeyPairs",
+    decorate,
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createKeyPair-property
-  const create = client.create({
+  create: {
     method: "createKeyPair",
     pickCreated:
       ({ payload }) =>
       () =>
         payload,
-    getById,
     postCreate: ({ programOptions, created }) =>
       pipe([
         tap((params) => {
@@ -64,20 +97,20 @@ exports.EC2ClientKeyPair = ({ spec, config }) => {
         () => created,
         saveKeyToFile({ directory: programOptions.workingDirectory }),
       ]),
-  });
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteKeyPair-property
-  const destroy = client.destroy({
+  destroy: {
     pickId,
     method: "deleteKeyPair",
-    getById,
-    ignoreErrorCodes: ["InvalidKeyPair.NotFound"],
-  });
-
-  const configDefault = ({
+  },
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ KeyName: name }), getById({})]),
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+  configDefault: ({
     name,
     properties: { Tags, ...otherProps },
     namespace,
+    config,
   }) =>
     pipe([
       () => otherProps,
@@ -90,19 +123,5 @@ exports.EC2ClientKeyPair = ({ spec, config }) => {
           },
         ],
       }),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    getById,
-    getByName,
-    getList,
-    create,
-    destroy,
-    configDefault,
-    tagResource: tagResource({ endpoint: ec2 }),
-    untagResource: untagResource({ endpoint: ec2 }),
-  };
-};
+    ])(),
+});

@@ -14,17 +14,16 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Stage",
+    type: "Deployment",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      AutoDeploy: true,
-      StageName: "$default",
-      Tags: {
-        "httpapi:createdBy": "SAM",
-      },
+      Description:
+        "Automatic deployment triggered by changes to the Api configuration",
+      AutoDeployed: true,
     }),
     dependencies: ({}) => ({
       api: "API Gateway HTTP API to EventBridge",
+      stage: "API Gateway HTTP API to EventBridge::$default",
     }),
   },
   {
@@ -60,16 +59,17 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
+    type: "Stage",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
-      AutoDeployed: true,
+      AutoDeploy: true,
+      StageName: "$default",
+      Tags: {
+        "httpapi:createdBy": "SAM",
+      },
     }),
     dependencies: ({}) => ({
       api: "API Gateway HTTP API to EventBridge",
-      stage: "API Gateway HTTP API to EventBridge::$default",
     }),
   },
   {

@@ -89,8 +89,8 @@ exports.FirewallRuleGroup = ({ compare }) => ({
     ],
   },
   getByName: getByNameCore,
-  tagResource: tagResource,
-  untagResource: untagResource,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+
   configDefault: ({
     name,
     namespace,

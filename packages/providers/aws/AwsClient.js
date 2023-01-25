@@ -237,7 +237,7 @@ const AwsClient =
               tap((params) => {
                 assert(true);
               }),
-              transformListPre({ lives, endpoint }),
+              transformListPre({ lives, endpoint, config }),
               filter(filterResource),
               tap((params) => {
                 assert(true);
@@ -293,9 +293,8 @@ const AwsClient =
         decorate = () => identity,
         filterParent = () => true,
         transformListPost = () => identity,
-        config,
       }) =>
-      ({ lives }) =>
+      ({ lives, config }) =>
         pipe([
           tap(() => {
             logger.debug(`getListWithParent ${group}::${type}`);
@@ -948,7 +947,7 @@ exports.createAwsResource = ({
               ]),
               create: switchCase([
                 () => isFunction(create),
-                ({ getById }) => create({ endpoint, getById }),
+                ({ getById }) => create({ endpoint, getById, client }),
                 () => isFunction(model.create),
                 ({ getById }) => model.create({ endpoint, getById }),
                 () => isObject(model.create),
@@ -959,24 +958,9 @@ exports.createAwsResource = ({
                   }),
                 identity,
               ]),
-              update: switchCase([
-                () => isFunction(update),
-                ({ getById }) => update({ endpoint, getById, pickId }),
-                () => isFunction(model.update),
-                ({ getById }) => model.update({ endpoint, getById, pickId }),
-                () => isObject(model.update),
-                ({ getById, pickId }) =>
-                  client.update({
-                    pickId,
-                    getById,
-                    ...model.update,
-                  }),
-
-                identity,
-              ]),
               destroy: switchCase([
                 () => isFunction(destroy),
-                ({ getById }) => destroy({ endpoint, getById }),
+                ({ getById }) => destroy({ endpoint, getById, client }),
                 () => isFunction(model.destroy),
                 ({ getById }) => model.destroy({ endpoint, getById }),
                 () => isObject(model.destroy),
@@ -986,6 +970,27 @@ exports.createAwsResource = ({
                     ignoreErrorCodes: model.ignoreErrorCodes,
                     ...model.destroy,
                   }),
+                identity,
+              ]),
+            }),
+            assign({
+              update: switchCase([
+                () => isFunction(update),
+                ({ getById, create, destroy }) =>
+                  update({ endpoint, getById, create, destroy, pickId }),
+                () => isFunction(model.update),
+                ({ getById, create, destroy }) =>
+                  model.update({ endpoint, getById, pickId, create, destroy }),
+                () => isObject(model.update),
+                ({ getById, pickId, create, destroy }) =>
+                  client.update({
+                    pickId,
+                    getById,
+                    create,
+                    destroy,
+                    ...model.update,
+                  }),
+
                 identity,
               ]),
             }),

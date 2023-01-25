@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project eventbridge-pipes-kinesis-to-kinesis-with-filtering
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ Kinesis
+++++ Stream (3)
++++ Pipes
+++++ Pipe (2)
+@endmindmap

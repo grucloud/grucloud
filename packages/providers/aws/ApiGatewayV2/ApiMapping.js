@@ -1,11 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, filter, eq, pick, and } = require("rubico");
+const { pipe, tap, get, pick, eq, assign, and } = require("rubico");
 const { defaultsDeep, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
+
+const { ignoreErrorCodes } = require("./ApiGatewayV2Common");
 
 const findId = () => get("ApiMappingId");
 
@@ -22,73 +22,127 @@ const findName = () =>
 
 const pickId = pick(["ApiMappingId", "DomainName"]);
 
-exports.ApiMapping = ({ spec, config }) => {
-  const apiGateway = createApiGatewayV2(config);
-  const client = AwsClient({ spec, config })(apiGateway);
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+  ]);
 
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
+exports.ApiGatewayV2ApiMapping = ({}) => ({
+  type: "ApiMapping",
+  package: "apigatewayv2",
+  client: "ApiGatewayV2",
+  propertiesDefault: {},
+  inferName:
+    ({ dependenciesSpec: { domainName, stage } }) =>
+    ({ ApiMappingKey }) =>
+      pipe([
+        tap(() => {
+          assert(domainName);
+          assert(stage);
+        }),
+        () => `apimapping::${domainName}::${stage}::${ApiMappingKey}`,
+      ])(),
+  findName,
+  findId,
+  ignoreErrorCodes,
+  omitProperties: ["ApiMappingId", "ApiName"],
+  filterLive: () => pipe([pick(["ApiMappingKey"])]),
+  dependencies: {
+    domainName: {
+      type: "DomainName",
+      group: "ApiGatewayV2",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("DomainName"),
+    },
+    stage: {
+      type: "Stage",
+      group: "ApiGatewayV2",
+      parent: true,
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Stage",
+              group: "ApiGatewayV2",
+            }),
+            find(
+              and([
+                eq(get("live.StageName"), live.Stage),
+                eq(get("live.ApiId"), live.ApiId),
+              ])
+            ),
+            get("id"),
+          ])(),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApiMapping-property
-  const getById = client.getById({
+  getById: {
     pickId,
     method: "getApiMapping",
-    ignoreErrorCodes,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApiMappings-property
-  const getList = client.getListWithParent({
-    parent: { type: "DomainName", group: "ApiGatewayV2" },
-    pickKey: pick(["DomainName"]),
-    method: "getApiMappings",
-    getParam: "Items",
-    config,
-    decorate:
-      ({ lives, parent: { DomainName, Tags } }) =>
-      (live) =>
-        pipe([
-          () => live,
-          defaultsDeep({ DomainName }),
-          assign({
-            ApiName: pipe([
-              ({ ApiId }) =>
-                `arn:aws:execute-api:${
-                  config.region
-                }:${config.accountId()}:${ApiId}`,
-              lives.getById({
-                providerName: config.providerName,
-                type: "Api",
-                group: "ApiGatewayV2",
-              }),
-              get("name"),
-            ]),
-          }),
-        ])(),
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listApiMappings-property
+  getList: {
+    method: "listApiMappings",
+    getParam: "ApiMappings",
+    decorate,
+  },
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "DomainName", group: "ApiGatewayV2" },
+          pickKey: pick(["DomainName"]),
+          method: "getApiMappings",
+          getParam: "Items",
+          config,
+          decorate:
+            ({ lives, parent: { DomainName, Tags } }) =>
+            (live) =>
+              pipe([
+                () => live,
+                defaultsDeep({ DomainName }),
+                assign({
+                  ApiName: pipe([
+                    ({ ApiId }) =>
+                      `arn:aws:execute-api:${
+                        config.region
+                      }:${config.accountId()}:${ApiId}`,
+                    lives.getById({
+                      providerName: config.providerName,
+                      type: "Api",
+                      group: "ApiGatewayV2",
+                    }),
+                    get("name"),
+                  ]),
+                }),
+              ])(),
+        }),
+    ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createApiMapping-property
-  const create = client.create({
+  create: {
     method: "createApiMapping",
     pickCreated: ({ payload }) =>
       pipe([defaultsDeep({ DomainName: payload.DomainName })]),
-    getById,
-  });
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateApiMapping-property
-  const update = client.update({
-    pickId,
+  update: {
     method: "updateApiMapping",
-    getById,
-  });
-
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteApiMapping-property
-  const destroy = client.destroy({
-    pickId,
+  destroy: {
     method: "deleteApiMapping",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const configDefault = ({
+    pickId,
+  },
+  getByName: getByNameCore,
+  configDefault: ({
     name,
     namespace,
     properties,
@@ -105,18 +159,5 @@ exports.ApiMapping = ({ spec, config }) => {
         DomainName: getField(domainName, "DomainName"),
         Stage: getField(stage, "StageName"),
       }),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    update,
-    destroy,
-    getByName,
-    getById,
-    getList,
-    configDefault,
-  };
-};
+    ])(),
+});

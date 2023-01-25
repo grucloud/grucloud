@@ -90,13 +90,13 @@ exports.createResources = () => [
     type: "EventSourceMapping",
     group: "Lambda",
     properties: ({}) => ({
-      StartingPosition: "LATEST",
       BatchSize: 100,
-      MaximumBatchingWindowInSeconds: 0,
-      ParallelizationFactor: 1,
-      MaximumRecordAgeInSeconds: -1,
       BisectBatchOnFunctionError: false,
+      MaximumBatchingWindowInSeconds: 0,
+      MaximumRecordAgeInSeconds: -1,
       MaximumRetryAttempts: -1,
+      ParallelizationFactor: 1,
+      StartingPosition: "LATEST",
       TumblingWindowInSeconds: 0,
     }),
     dependencies: ({}) => ({

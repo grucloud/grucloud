@@ -1,71 +1,149 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, filter, pick } = require("rubico");
-const { pluck, defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, pick, eq, omit } = require("rubico");
+const { defaultsDeep, isEmpty, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
-const findId = () => get("DeploymentId");
-const pickId = pick(["ApiId", "DeploymentId"]);
-const findName = () =>
+const { dependencyIdApi } = require("./ApiGatewayV2Common");
+
+const pickId = pipe([
+  tap(({ ApiId, DeploymentId }) => {
+    assert(ApiId);
+    assert(DeploymentId);
+  }),
+  pick(["ApiId", "DeploymentId"]),
+]);
+
+const decorate = ({ endpoint, config }) =>
   pipe([
-    //TODO Stage ?
-    ({ ApiName }) => `deployment::${ApiName}`,
+    tap((params) => {
+      assert(endpoint);
+    }),
   ]);
 
-exports.Deployment = ({ spec, config }) => {
-  const apiGateway = createApiGatewayV2(config);
-  const client = AwsClient({ spec, config })(apiGateway);
-
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
+exports.ApiGatewayV2Deployment = ({ compare }) => ({
+  type: "Deployment",
+  package: "apigatewayv2",
+  client: "ApiGatewayV2",
+  inferName: ({ dependenciesSpec: { api } }) =>
+    pipe([
+      tap((params) => {
+        assert(api);
+      }),
+      () => `deployment::${api}`,
+    ]),
+  findName: () => pipe([({ ApiName }) => `deployment::${ApiName}`]),
+  findId: () =>
+    pipe([
+      get("DeploymentId"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  propertiesDefault: {},
+  ignoreErrorCodes: ["NotFoundException", "BadRequestException"],
+  ignoreResource: () =>
+    pipe([
+      get("dependencies"),
+      find(eq(get("type"), "Stage")),
+      get("ids"),
+      isEmpty,
+    ]),
+  omitProperties: [
+    "StageName",
+    "CreatedDate",
+    "DeploymentId",
+    "DeploymentStatus",
+    "DeploymentStatusMessage",
+    "ApiName",
+  ],
+  compare: compare({ filterAll: () => omit(["AutoDeployed"]) }),
+  propertiesDefault: { AutoDeployed: false, Description: "" },
+  filterLive: () => pick(["Description", "AutoDeployed"]),
+  dependencies: {
+    api: {
+      type: "Api",
+      group: "ApiGatewayV2",
+      parent: true,
+      dependencyId: dependencyIdApi,
+    },
+    stage: {
+      type: "Stage",
+      group: "ApiGatewayV2",
+      parent: true,
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Stage",
+              group: "ApiGatewayV2",
+            }),
+            find(eq(get("live.DeploymentId"), live.DeploymentId)),
+            get("id"),
+          ])(),
+    },
+    route: {
+      type: "Route",
+      group: "ApiGatewayV2",
+      dependsOnTypeOnly: true,
+    },
+    integration: {
+      type: "Integration",
+      group: "ApiGatewayV2",
+      dependsOnTypeOnly: true,
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDeployment-property
-  const getById = client.getById({
-    pickId,
+  getById: {
     method: "getDeployment",
-    ignoreErrorCodes,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDeployments-property
-  const getList = client.getListWithParent({
-    parent: { type: "Api", group: "ApiGatewayV2" },
-    pickKey: pipe([pick(["ApiId"])]),
-    method: "getDeployments",
-    getParam: "Items",
-    config,
-    decorate: ({ parent: { ApiId, Name: ApiName } }) =>
-      pipe([defaultsDeep({ ApiId, ApiName })]),
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listDeployments-property
+  getList: {
+    method: "listDeployments",
+    getParam: "Deployments",
+    decorate: ({ getById }) => pipe([getById]),
+  },
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Api", group: "ApiGatewayV2" },
+          pickKey: pipe([pick(["ApiId"])]),
+          method: "getDeployments",
+          getParam: "Items",
+          config,
+          decorate: ({ parent: { ApiId, Name: ApiName } }) =>
+            pipe([defaultsDeep({ ApiId, ApiName })]),
+        }),
+    ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDeployment-property
-  const create = client.create({
+  create: {
     method: "createDeployment",
     shouldRetryOnExceptionMessages: [
       "Unable to deploy API because no routes exist in this API",
     ],
     pickCreated: ({ payload }) =>
       pipe([defaultsDeep({ ApiId: payload.ApiId })]),
-    getById,
-  });
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateDeployment-property
-  const update = client.update({
-    pickId,
+  update: {
     method: "updateDeployment",
-    getById,
-  });
-
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDeployment-property
-  const destroy = client.destroy({
-    pickId,
+  destroy: {
     method: "deleteDeployment",
-    getById,
-    ignoreErrorCodes: ["NotFoundException", "BadRequestException"],
-  });
-
-  const configDefault = ({
+    pickId,
+  },
+  getByName: getByNameCore,
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
@@ -81,18 +159,5 @@ exports.Deployment = ({ spec, config }) => {
         //TODO is StageName required ?
         StageName: getField(stage, "StageName"),
       }),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    update,
-    destroy,
-    getByName,
-    getById,
-    getList,
-    configDefault,
-  };
-};
+    ])(),
+});

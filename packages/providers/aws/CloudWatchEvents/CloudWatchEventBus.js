@@ -1,82 +1,125 @@
 const assert = require("assert");
-const { assign, pipe, tap, get, eq, pick } = require("rubico");
+const { pipe, tap, get, pick, eq, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
+
+const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
-const {
-  createCloudWatchEvents,
-  ignoreErrorCodes,
-  tagResource,
-  untagResource,
-} = require("./CloudWatchEventCommon");
 
-const findId = () => get("Arn");
-const pickId = pick(["Name"]);
-
-const findName = () => get("Name", "default");
+const { Tagger } = require("./CloudWatchEventCommon");
 
 const isDefault = () => eq(get("Name"), "default");
 
-const buildArn =
-  ({ config }) =>
-  ({ Name }) =>
-    `arn:aws:events:${config.region}:${config.accountId()}:event-bus/${Name}`;
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
 
-exports.CloudWatchEventBus = ({ spec, config }) => {
-  const cloudWatchEvents = createCloudWatchEvents(config);
-  const client = AwsClient({ spec, config })(cloudWatchEvents);
+const pickId = pipe([
+  tap(({ Name }) => {
+    assert(Name);
+  }),
+  pick(["Name"]),
+]);
 
-  // findDependencies for CloudWatchEventBus
-  const findDependencies = ({ live, lives }) => [];
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        tap(({ Name }) => {
+          assert(Name);
+        }),
+        ({ Name }) =>
+          `arn:aws:events:${
+            config.region
+          }:${config.accountId()}:event-bus/${Name}`,
+      ]),
+    }),
+  ]);
 
-  const decorate = () =>
+const assignTags = ({ endpoint }) =>
+  pipe([
+    assign({
+      Tags: pipe([
+        ({ Arn }) => ({ ResourceARN: Arn }),
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTagsForResource-property
+        endpoint().listTagsForResource,
+        get("Tags"),
+      ]),
+    }),
+  ]);
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+    assignArn({ config }),
+    assignTags({ endpoint }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
+exports.CloudWatchEventBus = () => ({
+  type: "EventBus",
+  package: "cloudwatch-events",
+  client: "CloudWatchEvents",
+  inferName: () => get("Name", "default"),
+  findName: () => get("Name", "default"),
+  findId: () =>
     pipe([
-      assign({
-        Tags: pipe([
-          buildArn({ config }),
-          (ResourceARN) => ({ ResourceARN }),
-          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTagsForResource-property
-          cloudWatchEvents().listTagsForResource,
-          get("Tags"),
-        ]),
+      get("Arn"),
+      tap((id) => {
+        assert(id);
       }),
-    ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listEventBuses-property
-  const getList = client.getList({
+    ]),
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  omitProperties: ["Arn"],
+  filterLive: () => pipe([pick(["Name"])]),
+  cannotBeDeleted: isDefault,
+  managedByOther: isDefault,
+  isDefault,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#getEventBus-property
+  getById: {
+    method: "describeEventBus",
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listEventBuss-property
+  getList: {
     method: "listEventBuses",
     getParam: "EventBuses",
     decorate,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#describeEventBus-property
-  const getById = client.getById({
-    pickId,
-    method: "describeEventBus",
-    ignoreErrorCodes,
-  });
-
-  const getByName = pipe([({ name }) => ({ Name: name }), getById({})]);
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#createEventBus-property
-  const create = client.create({
+  create: {
     method: "createEventBus",
-    getById,
-  });
-
+    pickCreated: ({ payload }) => pipe([() => payload]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#updateEventBus-property
+  // TODO
+  // update: {
+  //   method: "updateEventBus",
+  //   filterParams: ({ payload, diff, live }) =>
+  //     pipe([() => payload, defaultsDeep(pickId(live))])(),
+  // },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#deleteEventBus-property
-  const destroy = client.destroy({
-    pickId,
+  destroy: {
     method: "deleteEventBus",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const configDefault = async ({
+    pickId,
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProp },
     dependencies: {},
+    config,
   }) =>
     pipe([
       () => otherProp,
@@ -84,23 +127,5 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
         Name: name,
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    destroy,
-    getByName,
-    getById,
-    getList,
-    configDefault,
-    findDependencies,
-    cannotBeDeleted: isDefault,
-    managedByOther: isDefault,
-    isDefault,
-    tagResource: tagResource({ cloudWatchEvents }),
-    untagResource: untagResource({ cloudWatchEvents }),
-  };
-};
+    ])(),
+});

@@ -125,8 +125,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: ({ config }) => `elasticbeanstalk-${config.region}-840541460064`,
     properties: ({ config }) => ({
+      Name: `elasticbeanstalk-${config.region}-${config.accountId()}`,
       Policy: {
         Version: "2008-10-17",
         Statement: [

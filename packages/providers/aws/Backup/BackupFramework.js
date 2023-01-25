@@ -4,9 +4,7 @@ const { defaultsDeep, identity } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource, assignTags } = require("./BackupCommon");
+const { Tagger, assignTags } = require("./BackupCommon");
 
 const buildArn = () => get("FrameworkArn");
 //TODO
@@ -16,9 +14,22 @@ const decorate = ({ endpoint, live }) =>
 
 const pickId = pipe([pick(["FrameworkName"])]);
 
-const model = ({ config }) => ({
+exports.BackupFramework = ({}) => ({
+  type: "Framework",
   package: "backup",
   client: "Backup",
+  inferName: () => get("FrameworkName"),
+  findName: () => pipe([get("FrameworkName")]),
+  findId: () => pipe([get("FrameworkArn")]),
+  propertiesDefault: {},
+  omitProperties: [
+    "FrameworkStatus",
+    "FrameworkArn",
+    "DeploymentStatus",
+    "NumberOfControls",
+    "CreationTime",
+  ],
+  getByName: getByNameCore,
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#describeFramework-property
   getById: {
@@ -51,38 +62,26 @@ const model = ({ config }) => ({
     method: "deleteFramework",
     pickId,
   },
-});
-
-exports.BackupFramework = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("FrameworkName")]),
-    findId: () => pipe([get("FrameworkArn")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTagsObject({
-            name,
-            config,
-            namespace,
-            userTags: Tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({
+          name,
+          config,
+          namespace,
+          userTags: Tags,
         }),
-      ])(),
-  });
+      }),
+    ])(),
+});

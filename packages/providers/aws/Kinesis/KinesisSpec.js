@@ -1,6 +1,7 @@
 const assert = require("assert");
-const { map, pipe, tap, assign, eq, get, omit } = require("rubico");
-const { defaultsDeep, size, when } = require("rubico/x");
+const { map, pipe, tap } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
+const { createAwsService } = require("../AwsService");
 
 const { isOurMinion, compareAws } = require("../AwsCommon");
 const { KinesisStream } = require("./KinesisStream");
@@ -9,39 +10,22 @@ const GROUP = "Kinesis";
 
 const tagsKey = "Tags";
 
-const compareKinesis = compareAws({ tagsKey });
+const compare = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
-    {
-      type: "Stream",
-      Client: KinesisStream,
-      inferName: () => get("StreamName"),
-      omitProperties: [
-        "StreamARN",
-        "StreamCreationTimestamp",
-        "StreamStatus",
-        "HasMoreShards",
-        "Shards",
-        "EnhancedMonitoring", // TODO
-      ],
-      propertiesDefault: { EncryptionType: "NONE", RetentionPeriodHours: 24 },
-      compare: compareAws({ filterTarget: () => pipe([omit(["ShardCount"])]) }),
-      filterLive: () =>
-        pipe([
-          when(
-            eq(get("StreamModeDetails.StreamMode"), "PROVISIONED"),
-            pipe([assign({ ShardCount: pipe([get("Shards"), size]) })])
-          ),
-        ]),
-    },
+    //
+    KinesisStream({ compare }),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      isOurMinion,
-      tagsKey,
-      compare: compareKinesis({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        isOurMinion,
+        tagsKey,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

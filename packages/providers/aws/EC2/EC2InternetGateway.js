@@ -1,34 +1,36 @@
-const {
-  pipe,
-  map,
-  get,
-  tap,
-  eq,
-  switchCase,
-  tryCatch,
-  any,
-  pick,
-  not,
-  or,
-} = require("rubico");
-const { find, defaultsDeep, first, isEmpty, when } = require("rubico/x");
 const assert = require("assert");
+const { pipe, tap, get, pick, eq, switchCase } = require("rubico");
+const { defaultsDeep, first, find } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "InternetGateway" });
-const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore } = require("@grucloud/core/Common");
-const {
-  getByIdCore,
-  findNameInTagsOrId,
-  buildTags,
-  findNamespaceInTags,
-  isAwsError,
-} = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
-const { createEC2, tagResource, untagResource } = require("./EC2Common");
+
+const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
+const { tagResource, untagResource } = require("./EC2Common");
 
 const findVpcId = pipe([get("Attachments"), first, get("VpcId")]);
+
+const pickId = pipe([
+  pick(["InternetGatewayId"]),
+  tap(({ InternetGatewayId }) => {
+    assert(InternetGatewayId);
+  }),
+]);
+const findId = () =>
+  pipe([
+    get("InternetGatewayId"),
+    tap((InternetGatewayId) => {
+      assert(InternetGatewayId);
+    }),
+  ]);
+
+const findName = ({ lives, config }) =>
+  pipe([
+    switchCase([
+      isDefault({ lives, config }),
+      () => "ig-default",
+      findNameInTagsOrId({ findId })({ lives, config }),
+    ]),
+  ]);
 
 const isDefault =
   ({ lives, config: { providerName } }) =>
@@ -43,164 +45,68 @@ const isDefault =
       ]),
     ])();
 
-exports.isDefault = isDefault;
-
-exports.EC2InternetGateway = ({ spec, config }) => {
-  const ec2 = createEC2(config);
-  const client = AwsClient({ spec, config })(ec2);
-
-  const pickId = pick(["InternetGatewayId"]);
-  const findId = () => get("InternetGatewayId");
-
-  const findName = ({ lives, config }) =>
-    pipe([
-      switchCase([
-        isDefault({ lives, config }),
-        () => "ig-default",
-        findNameInTagsOrId({ findId })({ lives, config }),
-      ]),
-    ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
-  const getList = client.getList({
-    method: "describeInternetGateways",
-    getParam: "InternetGateways",
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-  const getById = () =>
-    pipe([
-      ({ InternetGatewayId }) => ({ id: InternetGatewayId }),
-      getByIdCore({ fieldIds: "InternetGatewayIds", getList }),
-    ]);
-
-  const getStateName = pipe([
-    get("Attachments"),
-    first,
-    get("State"),
-    tap((State) => {
-      logger.debug(`ig stateName ${State}`);
+const decorate = () =>
+  pipe([
+    tap((params) => {
+      assert(true);
     }),
   ]);
 
-  const isAttached = eq(getStateName, "available");
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createInternetGateway-property
-  const create = client.create({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2InternetGateway = ({ compare }) => ({
+  type: "InternetGateway",
+  package: "ec2",
+  client: "EC2",
+  ignoreErrorCodes: [
+    "InvalidInternetGatewayID.NotFound",
+    "InvalidInternetGatewayId.Malformed",
+  ],
+  findName,
+  findId,
+  omitProperties: ["Attachments", "InternetGatewayId", "OwnerId"],
+  isDefault,
+  cannotBeDeleted: isDefault,
+  managedByOther: isDefault,
+  getById: {
+    pickId: pipe([
+      tap(({ InternetGatewayId }) => {
+        assert(InternetGatewayId);
+      }),
+      ({ InternetGatewayId }) => ({ InternetGatewayIds: [InternetGatewayId] }),
+    ]),
+    method: "describeInternetGateways",
+    getField: "InternetGateways",
+    decorate,
+  },
+  getList: {
+    method: "describeInternetGateways",
+    getParam: "InternetGateways",
+  },
+  create: {
     method: "createInternetGateway",
-    pickCreated: () => get("InternetGateway"),
-    getById,
-    //TODO do we need this ?
-    postCreate:
-      ({ resolvedDependencies: { vpc } }) =>
-      ({ InternetGatewayId }) =>
-        when(
-          () => vpc,
-          pipe([
-            () => vpc,
-            get("live.VpcId"),
-            (VpcId) => ({
-              InternetGatewayId,
-              VpcId,
-            }),
-            ec2().attachInternetGateway,
-            () =>
-              retryCall({
-                name: `attachInternetGateway ${InternetGatewayId}`,
-                fn: pipe([() => ({ InternetGatewayId }), getById, isAttached]),
-                isExpectedResult: not(isEmpty),
-                config: { retryCount: 20, retryDelay: 5e3 },
-              }),
-          ])
-        )(),
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#detachInternetGateway-property
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteInternetGateway-property
-  const detachInternetGateway = ({ InternetGatewayId, VpcId }) =>
-    pipe([
-      () =>
-        retryCall({
-          name: `destroy ig detachInternetGateway ${InternetGatewayId}, VpcId: ${VpcId}`,
-          fn: () =>
-            ec2().detachInternetGateway({
-              InternetGatewayId,
-              VpcId,
-            }),
-
-          shouldRetryOnException: ({ error, name }) =>
-            pipe([
-              () => error,
-              tap(() => {
-                // "Network vpc-xxxxxxx has some mapped public address(es). Please unmap those public address(es) before detaching the gateway."
-                logger.error(`detachInternetGateway ${name}: ${tos(error)}`);
-              }),
-              or([
-                isAwsError("DependencyViolation"),
-                isAwsError("Gateway.NotAttached"),
-              ]),
-            ])(),
-          config: { retryCount: 10, retryDelay: 5e3 },
-        }),
-    ])();
-
-  const detachInternetGateways = ({ endpoint }) =>
-    tap(({ InternetGatewayId }) =>
+    pickCreated: () =>
       pipe([
-        tap(() => {
-          assert(InternetGatewayId);
-        }),
-        () => InternetGatewayId,
-        getById({}),
+        get("InternetGateway"),
         tap((params) => {
           assert(true);
         }),
-        get("Attachments"),
-        map(
-          tryCatch(
-            pipe([
-              get("VpcId"),
-              tap((VpcId) => {
-                assert(VpcId);
-              }),
-              (VpcId) => ({ InternetGatewayId, VpcId }),
-              detachInternetGateway,
-            ]),
-            (error, Attachment) =>
-              pipe([
-                tap(() => {
-                  logger.error(
-                    `error associateRouteTable ${tos({
-                      Attachment,
-                      error,
-                    })}`
-                  );
-                }),
-                () => ({ error, InternetGatewayId, Attachment }),
-              ])()
-          )
-        ),
-        tap.if(any(get("error")), (results) => {
-          throw results;
-        }),
-      ])()
-    );
-
-  const destroy = client.destroy({
-    preDestroy: detachInternetGateways,
+      ]),
+  },
+  destroy: {
     pickId,
     method: "deleteInternetGateway",
-    getById,
     ignoreErrorCodes: [
       "InvalidInternetGatewayID.NotFound",
       "InvalidInternetGatewayId.Malformed",
     ],
-  });
-
-  const configDefault = ({
+  },
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource, untagResource }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
+    config,
   }) =>
     pipe([
       () => otherProps,
@@ -212,23 +118,5 @@ exports.EC2InternetGateway = ({ spec, config }) => {
           },
         ],
       }),
-    ])();
-
-  return {
-    spec,
-    findId,
-    findName,
-    findNamespace: findNamespaceInTags,
-    getByName,
-    getById,
-    isDefault: isDefault,
-    cannotBeDeleted: isDefault,
-    managedByOther: isDefault,
-    getList,
-    create,
-    destroy,
-    configDefault,
-    tagResource: tagResource({ endpoint: ec2 }),
-    untagResource: untagResource({ endpoint: ec2 }),
-  };
-};
+    ])(),
+});

@@ -11,7 +11,7 @@ const {
   filter,
   and,
 } = require("rubico");
-const { isEmpty, includes } = require("rubico/x");
+const { isEmpty, includes, when, isObject } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const logger = require("@grucloud/core/logger")({
@@ -19,8 +19,11 @@ const logger = require("@grucloud/core/logger")({
 });
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./EC2Common");
+const {
+  tagResource,
+  untagResource,
+  replacePeeringInfo,
+} = require("./EC2Common");
 
 const isInstanceDown = pipe([
   tap(({ Status }) => {
@@ -43,58 +46,6 @@ const managedByOther =
       }),
       eq(get("providerName"), config.providerName),
     ])();
-
-const createModel = ({ config }) => ({
-  package: "ec2",
-  client: "EC2",
-  ignoreErrorCodes: ["InvalidVpcPeeringConnectionID.NotFound"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcPeeringConnections-property
-  getById: {
-    method: "describeVpcPeeringConnections",
-    getField: "VpcPeeringConnections",
-    pickId: pipe([
-      ({ VpcPeeringConnectionId }) => ({
-        VpcPeeringConnectionIds: [VpcPeeringConnectionId],
-      }),
-    ]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcPeeringConnections-property
-  getList: {
-    method: "describeVpcPeeringConnections",
-    getParam: "VpcPeeringConnections",
-    transformListPre: () =>
-      pipe([
-        filter(
-          and([
-            eq(get("RequesterVpcInfo.Region"), config.region),
-            not(isInstanceDown),
-          ])
-        ),
-      ]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpcPeeringConnection-property
-  create: {
-    method: "createVpcPeeringConnection",
-    pickCreated: ({ payload }) => pipe([get("VpcPeeringConnection")]),
-    configIsUp: { retryCount: 20 * 10, retryDelay: 5e3 },
-    isInstanceError: eq(get("Status.Code"), "failed"),
-    getErrorMessage: get("Status.Message", "failed"),
-    isInstanceUp: pipe([
-      tap(({ Status }) => {
-        logger.debug(`VpcPeeringConnection State: ${JSON.stringify(Status)}`);
-      }),
-      get("Status.Code"),
-      (Code) =>
-        pipe([() => ["available", "pending-acceptance"], includes(Code)])(),
-    ]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteVpcPeeringConnection-property
-  destroy: {
-    method: "deleteVpcPeeringConnection",
-    pickId: pipe([pick(["VpcPeeringConnectionId"])]),
-    isInstanceDown,
-  },
-});
 
 const findId = () => pipe([get("VpcPeeringConnectionId")]);
 
@@ -142,41 +93,145 @@ const findName =
     ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2VpcPeeringConnection = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
-    config,
-    managedByOther,
-    findName,
-    findId,
-    cannotBeDeleted: () => eq(get("Status.Code"), "failed"),
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, AccepterVpcInfo },
-      dependencies: { vpc, vpcPeer },
-      config,
-    }) =>
+exports.EC2VpcPeeringConnection = ({ compare }) => ({
+  type: "VpcPeeringConnection",
+  package: "ec2",
+  client: "EC2",
+  managedByOther,
+  findName,
+  findId,
+  inferName:
+    ({ dependenciesSpec: { vpc, vpcPeer } }) =>
+    (properties) =>
       pipe([
-        tap(() => {
+        tap((params) => {
           assert(vpc);
           assert(vpcPeer);
+          assert(properties);
         }),
-        () => ({
-          PeerOwnerId: AccepterVpcInfo.OwnerId,
-          PeerRegion: AccepterVpcInfo.Region,
-          PeerVpcId: getField(vpcPeer, "VpcId"),
-          VpcId: getField(vpc, "VpcId"),
-          TagSpecifications: [
-            {
-              ResourceType: "vpc-peering-connection",
-              Tags: buildTags({ config, namespace, UserTags: Tags }),
-            },
-          ],
-        }),
+        () => vpcPeer,
+        when(isObject, get("name")),
+        (vpcPeerName) => `vpc-peering::${vpc}::${vpcPeerName}`,
       ])(),
-  });
+  ignoreResource: () =>
+    pipe([
+      get("live.Status.Code"),
+      (code) => pipe([() => ["deleted", "failed"], includes(code)])(),
+    ]),
+  omitProperties: [
+    "Status",
+    "ExpirationTime",
+    "VpcPeeringConnectionId",
+    "AccepterVpcInfo.VpcId",
+    "RequesterVpcInfo.CidrBlock",
+    "RequesterVpcInfo.CidrBlockSet",
+    "RequesterVpcInfo.PeeringOptions",
+    "RequesterVpcInfo.VpcId",
+  ],
+  filterLive: ({ providerConfig }) =>
+    pipe([
+      assign({
+        RequesterVpcInfo: replacePeeringInfo({
+          resourceType: "RequesterVpcInfo",
+          providerConfig,
+        }),
+        AccepterVpcInfo: replacePeeringInfo({
+          resourceType: "AccepterVpcInfo",
+          providerConfig,
+        }),
+      }),
+    ]),
+  compare: compare({
+    filterTarget: () => pipe([pick([])]),
+    filterLive: () => pipe([pick([])]),
+  }),
+  dependencies: {
+    vpc: {
+      type: "Vpc",
+      group: "EC2",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("RequesterVpcInfo.VpcId"),
+    },
+    vpcPeer: {
+      type: "Vpc",
+      group: "EC2",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("AccepterVpcInfo.VpcId"),
+    },
+  },
+  cannotBeDeleted: () => eq(get("Status.Code"), "failed"),
+  ignoreErrorCodes: ["InvalidVpcPeeringConnectionID.NotFound"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcPeeringConnections-property
+  getById: {
+    method: "describeVpcPeeringConnections",
+    getField: "VpcPeeringConnections",
+    pickId: pipe([
+      ({ VpcPeeringConnectionId }) => ({
+        VpcPeeringConnectionIds: [VpcPeeringConnectionId],
+      }),
+    ]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcPeeringConnections-property
+  getList: {
+    method: "describeVpcPeeringConnections",
+    getParam: "VpcPeeringConnections",
+    transformListPre: ({ config }) =>
+      pipe([
+        filter(
+          and([
+            eq(get("RequesterVpcInfo.Region"), config.region),
+            not(isInstanceDown),
+          ])
+        ),
+      ]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpcPeeringConnection-property
+  create: {
+    method: "createVpcPeeringConnection",
+    pickCreated: ({ payload }) => pipe([get("VpcPeeringConnection")]),
+    configIsUp: { retryCount: 20 * 10, retryDelay: 5e3 },
+    isInstanceError: eq(get("Status.Code"), "failed"),
+    getErrorMessage: get("Status.Message", "failed"),
+    isInstanceUp: pipe([
+      tap(({ Status }) => {
+        logger.debug(`VpcPeeringConnection State: ${JSON.stringify(Status)}`);
+      }),
+      get("Status.Code"),
+      (Code) =>
+        pipe([() => ["available", "pending-acceptance"], includes(Code)])(),
+    ]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteVpcPeeringConnection-property
+  destroy: {
+    method: "deleteVpcPeeringConnection",
+    pickId: pipe([pick(["VpcPeeringConnectionId"])]),
+    isInstanceDown,
+  },
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, AccepterVpcInfo },
+    dependencies: { vpc, vpcPeer },
+    config,
+  }) =>
+    pipe([
+      tap(() => {
+        assert(vpc);
+        assert(vpcPeer);
+      }),
+      () => ({
+        PeerOwnerId: AccepterVpcInfo.OwnerId,
+        PeerRegion: AccepterVpcInfo.Region,
+        PeerVpcId: getField(vpcPeer, "VpcId"),
+        VpcId: getField(vpc, "VpcId"),
+        TagSpecifications: [
+          {
+            ResourceType: "vpc-peering-connection",
+            Tags: buildTags({ config, namespace, UserTags: Tags }),
+          },
+        ],
+      }),
+    ])(),
+});

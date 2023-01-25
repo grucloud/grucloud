@@ -4,7 +4,6 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
 const findId = () =>
@@ -22,10 +21,18 @@ const pickId = pipe([
   pick(["GroupName"]),
 ]);
 
-const createModel = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkPlacementGroup.html
+exports.EC2PlacementGroup = ({ compare }) => ({
+  type: "PlacementGroup",
   package: "ec2",
   client: "EC2",
+  inferName: () => pipe([get("GroupName")]),
+  findName: () => get("GroupName"),
+  findId,
+  omitProperties: ["State", "GroupId", "GroupArn", "PartitionCount"],
   ignoreErrorCodes: ["InvalidPlacementGroup.Unknown"],
+  dependencies: {},
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describePlacementGroups-property
   getById: {
     pickId: pipe([
@@ -52,34 +59,23 @@ const createModel = ({ config }) => ({
     method: "deletePlacementGroup",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkPlacementGroup.html
-exports.EC2PlacementGroup = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
     config,
-    findName: () => get("GroupName"),
-    findId,
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          TagSpecifications: [
-            {
-              ResourceType: "placement-group",
-              Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-            },
-          ],
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        TagSpecifications: [
+          {
+            ResourceType: "placement-group",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+    ])(),
+});

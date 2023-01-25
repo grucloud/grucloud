@@ -1,0 +1,7 @@
+@startmindmap
+title Resources for project eventbridge-pipes-dynamodbstream-sns
+skinparam monochrome true
++ Infra
+++ aws
+
+@endmindmap

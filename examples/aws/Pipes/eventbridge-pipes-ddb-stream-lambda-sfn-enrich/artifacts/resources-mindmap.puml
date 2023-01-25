@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project eventbridge-pipes-ddb-stream-lambda-sfn-enrich
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (3)
++++ Lambda
+++++ Function (1)
++++ Pipes
+++++ Pipe (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

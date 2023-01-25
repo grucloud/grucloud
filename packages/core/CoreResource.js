@@ -167,7 +167,9 @@ exports.ResourceMaker = ({
           throw Error(
             `resource name ${JSON.stringify(
               resourceName
-            )} is neither empty, nor a string, nor a function`
+            )} is neither empty, nor a string, nor a function, ${
+              spec.groupType
+            }`
           );
         },
       ]),
@@ -935,6 +937,7 @@ exports.ResourceMaker = ({
     pipe([
       tap(() => {
         assert(filterLives);
+        assert(lives);
       }),
       getClient,
       (client) =>

@@ -1,8 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
-
-const { createAwsResource } = require("../AwsClient");
+const { defaultsDeep } = require("rubico/x");
 
 const findName = () =>
   pipe([
@@ -28,9 +26,67 @@ const decorate = ({ endpoint, live }) =>
     defaultsDeep({ instanceName: live.instanceName }),
   ]);
 
-const model = ({ config }) => ({
+const model = ({ config }) => ({});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
+exports.LightsailInstancePublicPorts = ({ compare }) => ({
+  type: "InstancePublicPorts",
   package: "lightsail",
   client: "Lightsail",
+  propertiesDefault: {},
+  omitProperties: ["instanceName", "portInfos[].state"],
+  inferName: ({ dependenciesSpec: { instance } }) =>
+    pipe([
+      tap((params) => {
+        assert(instance);
+      }),
+      () => instance,
+    ]),
+  dependencies: {
+    instance: {
+      type: "Instance",
+      group: "Lightsail",
+      parent: true,
+      dependencyId: ({ lives, config }) => pipe([get("instanceName")]),
+    },
+  },
+  findName,
+  findId: findName,
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ instanceName: name }), getById({})]),
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Instance", group: "Lightsail" },
+          pickKey: pipe([pick(["instanceName"])]),
+          method: "getInstancePortStates",
+          config,
+          decorate: ({ parent }) =>
+            pipe([
+              tap((params) => {
+                assert(parent.instanceName);
+              }),
+              ({ portStates }) => ({ portInfos: portStates }),
+              defaultsDeep({ instanceName: parent.instanceName }),
+            ]),
+        }),
+    ])(),
+  configDefault: ({
+    properties: { ...otherProps },
+    dependencies: { instance },
+    config,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(instance);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        instanceName: instance.config.instanceName,
+      }),
+    ])(),
+
   ignoreErrorCodes: ["DoesNotExist"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getMyResource-property
   getById: {
@@ -60,68 +116,4 @@ const model = ({ config }) => ({
     ]),
     isInstanceDown: () => true,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
-exports.LightsailInstancePublicPorts = ({ compare }) => ({
-  type: "InstancePublicPorts",
-  propertiesDefault: {},
-  omitProperties: ["instanceName", "portInfos[].state"],
-  inferName: ({ dependenciesSpec: { instance } }) =>
-    pipe([
-      tap((params) => {
-        assert(instance);
-      }),
-      () => instance,
-    ]),
-  dependencies: {
-    instance: {
-      type: "Instance",
-      group: "Lightsail",
-      parent: true,
-      dependencyId: ({ lives, config }) => pipe([get("instanceName")]),
-    },
-  },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName,
-      findId: findName,
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ instanceName: name }), getById({})]),
-      getList: ({ client, endpoint, getById, config }) =>
-        pipe([
-          () =>
-            client.getListWithParent({
-              parent: { type: "Instance", group: "Lightsail" },
-              pickKey: pipe([pick(["instanceName"])]),
-              method: "getInstancePortStates",
-              config,
-              decorate: ({ parent }) =>
-                pipe([
-                  tap((params) => {
-                    assert(parent.instanceName);
-                  }),
-                  ({ portStates }) => ({ portInfos: portStates }),
-                  defaultsDeep({ instanceName: parent.instanceName }),
-                ]),
-            }),
-        ])(),
-      configDefault: ({
-        properties: { ...otherProps },
-        dependencies: { instance },
-        config,
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(instance);
-          }),
-          () => otherProps,
-          defaultsDeep({
-            instanceName: instance.config.instanceName,
-          }),
-        ])(),
-    }),
 });

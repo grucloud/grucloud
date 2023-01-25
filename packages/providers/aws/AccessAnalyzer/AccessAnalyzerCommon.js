@@ -1,25 +1,12 @@
 const assert = require("assert");
 const { pipe, tap, assign, get } = require("rubico");
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html#tagResource-property
-exports.tagResource =
-  ({ buildArn }) =>
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      tap((params) => {
-        assert(live);
-      }),
-      (tags) => ({ resourceArn: buildArn(live), tags }),
-      endpoint().tagResource,
-    ]);
+const { createTagger } = require("../AwsTagger");
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html#untagResource-property
-exports.untagResource =
-  ({ buildArn }) =>
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      (tagKeys) => ({ resourceArn: buildArn(live), tagKeys }),
-      endpoint().untagResource,
-    ]);
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "resourceArn",
+  TagsKey: "tags",
+  UnTagsKey: "tagKeys",
+});

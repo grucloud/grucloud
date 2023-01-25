@@ -1,11 +1,10 @@
 const assert = require("assert");
-const { pipe, tap, get, eq } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, assign, switchCase } = require("rubico");
+const { defaultsDeep, when, includes } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-
-const { createAwsResource } = require("../AwsClient");
-
+const { replaceAccountAndRegion } = require("../AwsCommon");
+const { replaceWithName } = require("@grucloud/core/Common");
 const pickId = pipe([
   tap(({ name }) => {
     assert(name);
@@ -20,10 +19,41 @@ const decorate = ({ endpoint, config }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+exports.ConfigConfigurationRecorder = ({}) => ({
+  type: "ConfigurationRecorder",
   package: "config-service",
   client: "ConfigService",
+  findName: () => pipe([get("name")]),
+  findId: () => pipe([get("name")]),
   ignoreErrorCodes: ["NoSuchConfigurationRecorderException"],
+  propertiesDefault: {},
+  omitProperties: [],
+  inferName: () => get("name"),
+  dependencies: {
+    iamRole: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => pipe([get("roleARN")]),
+    },
+  },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        roleARN: pipe([
+          get("roleARN"),
+          switchCase([
+            includes("AWSServiceRoleForConfig"),
+            replaceAccountAndRegion({ lives, providerConfig }),
+            replaceWithName({
+              groupType: "IAM::Role",
+              path: "id",
+              providerConfig,
+              lives,
+            }),
+          ]),
+        ]),
+      }),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#describeConfigurationRecorders-property
   getById: {
     method: "describeConfigurationRecorders",
@@ -66,28 +96,16 @@ const model = ({ config }) => ({
     method: "deleteConfigurationRecorder",
     pickId,
   },
-});
-
-exports.ConfigConfigurationRecorder = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: { iamRole },
     config,
-    findName: () => pipe([get("name")]),
-    findId: () => pipe([get("name")]),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: { iamRole },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        when(
-          () => iamRole,
-          defaultsDeep({ roleARN: getField(iamRole, "Arn") })
-        ),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      when(() => iamRole, defaultsDeep({ roleARN: getField(iamRole, "Arn") })),
+    ])(),
+});

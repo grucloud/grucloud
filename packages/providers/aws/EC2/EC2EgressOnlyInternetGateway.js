@@ -5,15 +5,39 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
 const findId = () => pipe([get("EgressOnlyInternetGatewayId")]);
 
-const createModel = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2EgressOnlyInternetGateway = () => ({
+  type: "EgressOnlyInternetGateway",
   package: "ec2",
   client: "EC2",
   ignoreErrorCodes: ["InvalidGatewayID.NotFound"],
+  findName: pipe([findNameInTagsOrId({ findId })]),
+  findId,
+  omitProperties: [
+    "Attachments",
+    "EgressOnlyInternetGatewayId",
+    "OwnerId",
+    "VpcId",
+  ],
+  dependencies: {
+    vpc: {
+      type: "Vpc",
+      group: "EC2",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("Attachments"), first, get("VpcId")]),
+    },
+  },
+  // findDependencies: ({ live, lives }) => [
+  //   {
+  //     type: "Vpc",
+  //     group: "EC2",
+  //     ids: [pipe([() => live, get("Attachments"), first, get("VpcId")])()],
+  //   },
+  // ],
   getById: {
     pickId: pipe([
       ({ EgressOnlyInternetGatewayId }) => ({
@@ -40,46 +64,28 @@ const createModel = ({ config }) => ({
     method: "deleteEgressOnlyInternetGateway",
     pickId: pick(["EgressOnlyInternetGatewayId"]),
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2EgressOnlyInternetGateway = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { vpc },
     config,
-    findName: pipe([findNameInTagsOrId({ findId })]),
-    findId,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [pipe([() => live, get("Attachments"), first, get("VpcId")])()],
-      },
-    ],
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { vpc },
-      config,
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(vpc);
-        }),
-        () => otherProps,
-        defaultsDeep({
-          VpcId: getField(vpc, "VpcId"),
-          TagSpecifications: [
-            {
-              ResourceType: "egress-only-internet-gateway",
-              Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-            },
-          ],
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(vpc);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        VpcId: getField(vpc, "VpcId"),
+        TagSpecifications: [
+          {
+            ResourceType: "egress-only-internet-gateway",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+    ])(),
+});

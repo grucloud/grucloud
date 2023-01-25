@@ -13,6 +13,7 @@ exports.createAwsService = ({
   inferName,
   dependencies,
   isDefault,
+  findDefault,
   cannotBeDeleted,
   managedByOther,
   filterLive,
@@ -33,6 +34,7 @@ exports.createAwsService = ({
   tagger = () => ({}),
   getEndpointConfig,
   onDeployed,
+  findDependencies,
   ...other
 }) =>
   pipe([
@@ -80,8 +82,10 @@ exports.createAwsService = ({
           destroy,
           getByName,
           configDefault,
+          findDependencies,
           ...tagger({ config }),
         }),
+      findDefault,
       ...other,
     }),
   ])();

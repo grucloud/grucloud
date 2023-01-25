@@ -1,84 +1,99 @@
 const assert = require("assert");
-const { tap, get, pipe, map, fork, eq, pick } = require("rubico");
-const { defaultsDeep, find, when } = require("rubico/x");
+const { pipe, tap, get, pick, eq, map, fork } = require("rubico");
+const { defaultsDeep, when, find } = require("rubico/x");
 
-const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 
-const ignoreErrorCodes = ["InvalidVolume.NotFound"];
+const { compareAws } = require("../AwsCommon");
 
-exports.EC2VolumeAttachment = ({ spec, config }) => {
-  const ec2 = createEC2(config);
+const findId = () =>
+  pipe([({ VolumeId, InstanceId }) => `${VolumeId}::${InstanceId}`]);
 
-  const client = AwsClient({ spec, config })(ec2);
-  const findId = () =>
-    pipe([({ VolumeId, InstanceId }) => `${VolumeId}::${InstanceId}`]);
+const findName =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      () => live,
+      fork({
+        volume: pipe([
+          tap(() => {
+            assert(live.VolumeId);
+          }),
+          get("VolumeId"),
+          lives.getById({
+            providerName: config.providerName,
+            type: "Volume",
+            group: "EC2",
+          }),
+          get("name"),
+          tap((volume) => {
+            assert(volume);
+          }),
+        ]),
+        instance: pipe([
+          tap(() => {
+            assert(live.InstanceId);
+          }),
+          get("InstanceId"),
+          lives.getById({
+            providerName: config.providerName,
+            type: "Instance",
+            group: "EC2",
+          }),
+          get("name"),
+          tap((instance) => {
+            assert(instance);
+          }),
+        ]),
+      }),
+      ({ volume, instance }) => `vol-attachment::${volume}::${instance}`,
+    ])();
 
-  const findName =
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        () => live,
-        fork({
-          volume: pipe([
-            tap(() => {
-              assert(live.VolumeId);
-            }),
-            get("VolumeId"),
-            lives.getById({
-              providerName: config.providerName,
-              type: "Volume",
-              group: "EC2",
-            }),
-            get("name"),
-            tap((volume) => {
-              assert(volume);
-            }),
-          ]),
-          instance: pipe([
-            tap(() => {
-              assert(live.InstanceId);
-            }),
-            get("InstanceId"),
-            lives.getById({
-              providerName: config.providerName,
-              type: "Instance",
-              group: "EC2",
-            }),
-            get("name"),
-            tap((instance) => {
-              assert(instance);
-            }),
-          ]),
-        }),
-        ({ volume, instance }) => `vol-attachment::${volume}::${instance}`,
-      ])();
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+  ]);
 
-  const getList = client.getListWithParent({
-    parent: { type: "Volume", group: "EC2" },
-    config,
-    decorate: ({
-      name,
-      managedByOther,
-      parent: { VolumeId, Attachments = [] },
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(VolumeId);
-        }),
-        () => undefined,
-        when(
-          () => !managedByOther,
-          pipe([() => Attachments, map(defaultsDeep({ VolumeId }))])
-        ),
-      ]),
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
-  const getById = client.getById({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2VolumeAttachment = () => ({
+  type: "VolumeAttachment",
+  package: "ec2",
+  client: "EC2",
+  findName,
+  findId,
+  omitProperties: [],
+  ignoreErrorCodes: ["InvalidVolume.NotFound"],
+  dependencies: {
+    volume: {
+      type: "Volume",
+      group: "EC2",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("VolumeId"),
+    },
+    instance: {
+      type: "Instance",
+      group: "EC2",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("InstanceId"),
+    },
+  },
+  compare: compareAws({ getLiveTags: () => [], getTargetTags: () => [] })({
+    filterAll: () => pipe([pick([])]),
+  }),
+  inferName: ({ dependenciesSpec: { volume, instance } }) =>
+    pipe([
+      tap(() => {
+        assert(volume);
+        assert(instance);
+      }),
+      () => `vol-attachment::${volume}::${instance}`,
+    ]),
+  filterLive: () => pipe([pick(["Device", "DeleteOnTermination"])]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getVolumeAttachment-property
+  getById: {
     pickId: ({ InstanceId, VolumeId }) => ({
       VolumeIds: [VolumeId],
       Filters: [
@@ -86,15 +101,15 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
           Name: "attachment.instance-id",
           Values: [InstanceId],
         },
-        {
-          Name: "tag-key",
-          Values: [config.managedByKey],
-        },
+        // TODO
+        // {
+        //   Name: "tag-key",
+        //   Values: [config.managedByKey],
+        // },
       ],
     }),
     method: "describeVolumes",
     getField: "Volumes",
-    ignoreErrorCodes,
     decorate: ({ live: { VolumeId, InstanceId } }) =>
       pipe([
         tap((params) => {
@@ -108,13 +123,35 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
         }),
         defaultsDeep({ VolumeId }),
       ]),
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#attachVolume-property
-  const create = client.create({
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#listVolumeAttachments-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Volume", group: "EC2" },
+          config,
+          decorate: ({
+            name,
+            managedByOther,
+            parent: { VolumeId, Attachments = [] },
+          }) =>
+            pipe([
+              tap((params) => {
+                assert(VolumeId);
+              }),
+              () => undefined,
+              when(
+                () => !managedByOther,
+                pipe([() => Attachments, map(defaultsDeep({ VolumeId }))])
+              ),
+            ]),
+        }),
+    ])(),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVolumeAttachment-property
+  create: {
     method: "attachVolume",
     isInstanceUp: eq(get("State"), "attached"),
-    getById,
     postCreate: ({ dependencies, lives, resolvedDependencies }) =>
       pipe([
         tap((params) => {
@@ -124,19 +161,16 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
           dependencies().volume.getLive({ lives, resolvedDependencies })
         ),
       ]),
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#detachVolume-property
-  const destroy = client.destroy({
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteVolumeAttachment-property
+  destroy: {
     pickId: pick(["VolumeId"]),
     extraParam: { Force: true },
     method: "detachVolume",
-    config,
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const configDefault = ({
+  },
+  getByName: getByNameCore,
+  managedByOther: () => () => false,
+  configDefault: ({
     name,
     namespace,
     properties = {},
@@ -155,22 +189,5 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
         InstanceId: getField(instance, "InstanceId"),
         VolumeId: getField(volume, "VolumeId"),
       }),
-    ])();
-
-  const isOurMinion = () => isOurMinion;
-  const managedByOther = () => () => false;
-
-  return {
-    spec,
-    findId,
-    findName,
-    getByName,
-    getById,
-    getList,
-    create,
-    destroy,
-    configDefault,
-    managedByOther,
-    isOurMinion,
-  };
-};
+    ])(),
+});

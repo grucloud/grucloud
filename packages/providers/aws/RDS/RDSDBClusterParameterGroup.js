@@ -3,7 +3,6 @@ const { pipe, tap, get, pick, assign, map, not } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger } = require("./RDSCommon");
 

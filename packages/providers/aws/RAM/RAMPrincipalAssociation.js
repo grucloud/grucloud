@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, eq, filter, not, map } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  assign,
+  eq,
+  filter,
+  not,
+  switchCase,
+  omit,
+} = require("rubico");
 const {
   defaultsDeep,
   first,
@@ -8,10 +18,12 @@ const {
   prepend,
   find,
   keys,
+  callProp,
+  values,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
+const { assignValueFromConfig } = require("../AwsCommon");
 
 const findAssociatedEntity =
   ({ type, group }) =>
@@ -71,10 +83,87 @@ const PrincipalAssociationDependencies = {
 
 exports.PrincipalAssociationDependencies = PrincipalAssociationDependencies;
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
+exports.RAMPrincipalAssociation = ({}) => ({
+  type: "PrincipalAssociation",
   package: "ram",
   client: "RAM",
+  inferName:
+    ({ dependenciesSpec: { resourceShare, ...dependencies } }) =>
+    ({ associatedEntity }) =>
+      pipe([
+        tap((params) => {
+          // assert(associatedEntity);
+          assert(resourceShare);
+          assert(dependencies);
+        }),
+        () => dependencies,
+        values,
+        first,
+        when(isEmpty, () => associatedEntity),
+        prepend(`ram-principal-assoc::${resourceShare}::`),
+      ])(),
+  findName:
+    ({ lives }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(live.associatedEntity);
+        }),
+        lives.getByType({
+          type: "Organisation",
+          group: "Organisations",
+        }),
+        find(eq(get("live.Arn"), live.associatedEntity)),
+        get("name"),
+        //TODO
+        when(
+          isEmpty,
+          pipe([
+            () => live.associatedEntity,
+            lives.getById({
+              type: "User",
+              group: "IAM",
+            }),
+            get("name"),
+          ])
+        ),
+        when(isEmpty, () => live.associatedEntity),
+        prepend(`ram-principal-assoc::${live.resourceShareName}::`),
+      ])(),
+  findId: () =>
+    pipe([
+      ({ resourceShareArn, associatedEntity }) =>
+        `${resourceShareArn}::${associatedEntity}`,
+    ]),
   ignoreErrorCodes: ["UnknownResourceException"],
+  dependencies: {
+    resourceShare: {
+      type: "ResourceShare",
+      group: "RAM",
+      dependencyId: ({ lives, config }) => get("resourceShareArn"),
+    },
+    ...PrincipalAssociationDependencies,
+  },
+  omitProperties: [
+    "creationTime",
+    "lastUpdatedTime",
+    "associationType",
+    "resourceShareName",
+    "resourceShareArn",
+    "status",
+  ],
+  filterLive: ({ providerConfig }) =>
+    pipe([
+      switchCase([
+        pipe([
+          get("associatedEntity"),
+          callProp("startsWith", "arn:aws:organizations"),
+        ]),
+        omit(["associatedEntity"]),
+        assignValueFromConfig({ providerConfig, key: "associatedEntity" }),
+      ]),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#getResourceShareAssociations-property
   getById: {
     method: "getResourceShareAssociations",
@@ -122,85 +211,44 @@ const model = ({ config }) => ({
     ]),
     isInstanceDown: pipe([eq(get("status"), "DISASSOCIATED")]),
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
-exports.RAMPrincipalAssociation = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList, endpoint }) =>
+    pipe([
+      ({ name }) => ({ params: { name, resourceShareStatus: "ACTIVE" } }),
+      getList,
+      tap((params) => {
+        assert(true);
+      }),
+      first,
+    ]),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otheProps },
+    dependencies: { resourceShare, ...principalDependencies },
     config,
-    findName:
-      ({ lives }) =>
-      (live) =>
-        pipe([
-          tap(() => {
-            assert(live.associatedEntity);
-          }),
-          lives.getByType({
-            type: "Organisation",
-            group: "Organisations",
-          }),
-          find(eq(get("live.Arn"), live.associatedEntity)),
-          get("name"),
-          //TODO
-          when(
-            isEmpty,
-            pipe([
-              () => live.associatedEntity,
-              lives.getById({
-                type: "User",
-                group: "IAM",
-              }),
-              get("name"),
-            ])
-          ),
-          when(isEmpty, () => live.associatedEntity),
-          prepend(`ram-principal-assoc::${live.resourceShareName}::`),
-        ])(),
-    findId: () =>
-      pipe([
-        ({ resourceShareArn, associatedEntity }) =>
-          `${resourceShareArn}::${associatedEntity}`,
-      ]),
-    getByName: ({ getList, endpoint }) =>
-      pipe([
-        ({ name }) => ({ params: { name, resourceShareStatus: "ACTIVE" } }),
-        getList,
-        tap((params) => {
-          assert(true);
-        }),
-        first,
-      ]),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otheProps },
-      dependencies: { resourceShare, ...principalDependencies },
-      config,
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(resourceShare);
-        }),
-        () => otheProps,
-        defaultsDeep({
-          resourceShareArn: getField(resourceShare, "resourceShareArn"),
-        }),
-        when(
-          () => !isEmpty(principalDependencies),
-          assign({
-            associatedEntity: pipe([
-              () => principalDependencies,
-              keys,
-              first,
-              (depKey) =>
-                getField(
-                  principalDependencies[depKey],
-                  PrincipalAssociationDependencies[depKey].arnKey || "Arn"
-                ),
-            ]),
-          })
-        ),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(resourceShare);
+      }),
+      () => otheProps,
+      defaultsDeep({
+        resourceShareArn: getField(resourceShare, "resourceShareArn"),
+      }),
+      when(
+        () => !isEmpty(principalDependencies),
+        assign({
+          associatedEntity: pipe([
+            () => principalDependencies,
+            keys,
+            first,
+            (depKey) =>
+              getField(
+                principalDependencies[depKey],
+                PrincipalAssociationDependencies[depKey].arnKey || "Arn"
+              ),
+          ]),
+        })
+      ),
+    ])(),
+});

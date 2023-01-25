@@ -8,7 +8,6 @@ const {
   and,
   get,
   eq,
-  gte,
   or,
   any,
   not,
@@ -29,7 +28,6 @@ const {
   isFunction,
   includes,
   when,
-  size,
   unless,
   pluck,
   keys,
@@ -335,7 +333,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
 const createEndpointOption = (config) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(config);
     }),
     (region) => ({ region }),
     when(
@@ -398,7 +396,7 @@ const createEndpointProxy =
 const createEndpoint = (packageName, entryPoint, regionForce) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(packageName);
     }),
     () => `@aws-sdk/client-${packageName}`,
     require,
@@ -856,10 +854,10 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
 
 //move to EC2 Common
 exports.revokeSecurityGroupIngress =
-  ({ ec2 }) =>
+  ({ endpoint }) =>
   (params) =>
     tryCatch(
-      () => ec2().revokeSecurityGroupIngress(params),
+      () => endpoint().revokeSecurityGroupIngress(params),
       tap.if(
         ({ name }) =>
           !includes(name)([
@@ -874,7 +872,13 @@ exports.revokeSecurityGroupIngress =
 
 exports.removeRoleFromInstanceProfile = ({ endpoint }) =>
   tryCatch(
-    pipe([endpoint().removeRoleFromInstanceProfile]),
+    pipe([
+      tap(({ RoleName, InstanceProfileName }) => {
+        assert(RoleName);
+        assert(InstanceProfileName);
+      }),
+      endpoint().removeRoleFromInstanceProfile,
+    ]),
     switchCase([
       //TODO use throwIfNotAwsError
       isAwsError("NoSuchEntityException"),
@@ -997,6 +1001,24 @@ const replaceArnWithAccountAndRegion =
       }),
       () => lives,
       switchCase([
+        // DynamoDB stream
+        pipe([
+          and([
+            () => Id.startsWith("arn:aws:dynamodb"),
+            () => Id.includes("/stream/"),
+          ]),
+        ]),
+        pipe([
+          () => Id,
+          replaceWithName({
+            groupType: "DynamoDB::Table",
+            path: "live.LatestStreamArn",
+            pathLive: "live.LatestStreamArn",
+            providerConfig,
+            lives,
+          }),
+        ]),
+        //  replaceWithName
         or([
           () =>
             Id.startsWith(
@@ -1009,6 +1031,7 @@ const replaceArnWithAccountAndRegion =
               () =>
                 !Id.endsWith("amazonaws.com") &&
                 Id != providerConfig.accountId() &&
+                !Id.startsWith("arn:aws:kinesis") &&
                 !Id.startsWith("arn:aws:lambda") &&
                 !Id.startsWith("arn:aws:es") &&
                 !Id.startsWith("arn:aws:firehose") &&
@@ -1023,6 +1046,9 @@ const replaceArnWithAccountAndRegion =
           ),
         ]),
         pipe([
+          tap((params) => {
+            assert(true);
+          }),
           () => Id,
           replaceWithName({
             path: "id",
@@ -1030,7 +1056,12 @@ const replaceArnWithAccountAndRegion =
             lives,
           }),
         ]),
+
+        // Default - replace region and account
         pipe([
+          tap((params) => {
+            assert(true);
+          }),
           () => Id,
           callProp(
             "replace",
@@ -1045,6 +1076,9 @@ const replaceArnWithAccountAndRegion =
           when(not(eq(identity, Id)), (resource) => () => "`" + resource + "`"),
         ]),
       ]),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
 exports.replaceArnWithAccountAndRegion = replaceArnWithAccountAndRegion;

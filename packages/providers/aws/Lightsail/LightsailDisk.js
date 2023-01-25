@@ -3,7 +3,6 @@ const { pipe, tap, get, pick, eq, omit } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger, filterLiveDefault } = require("./LightsailCommon");
 
@@ -37,9 +36,70 @@ const decorate = ({ endpoint }) =>
 
 const managedByOther = () => pipe([get("isSystemDisk")]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
+exports.LightsailDisk = ({ compare }) => ({
+  type: "Disk",
   package: "lightsail",
   client: "Lightsail",
+  propertiesDefault: {},
+  omitProperties: [
+    "arn",
+    "supportCode",
+    "resourceType",
+    "createdAt",
+    "state",
+    "attachedTo",
+    "isAttached",
+    "attachmentState",
+    "gbInUse",
+    "isSystemDisk",
+  ],
+  compare: compare({
+    filterAll: () => pipe([omit(["path"])]),
+  }),
+  inferName: () => get("diskName"),
+  filterLive: filterLiveDefault,
+  findName: () =>
+    pipe([
+      get("diskName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("diskName"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ diskName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: tags,
+          key: "key",
+          value: "value",
+        }),
+      }),
+    ])(),
+
   ignoreErrorCodes: ["DoesNotExist"],
   managedByOther,
   cannotBeDeleted: managedByOther,
@@ -72,70 +132,4 @@ const model = ({ config }) => ({
       "You can't perform this operation since the resource is in transition",
     ],
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
-exports.LightsailDisk = ({ compare }) => ({
-  type: "Disk",
-  propertiesDefault: {},
-  omitProperties: [
-    "arn",
-    "supportCode",
-    "resourceType",
-    "createdAt",
-    "state",
-    "attachedTo",
-    "isAttached",
-    "attachmentState",
-    "gbInUse",
-    "isSystemDisk",
-  ],
-  compare: compare({
-    filterAll: () => pipe([omit(["path"])]),
-  }),
-  inferName: () => get("diskName"),
-  filterLive: filterLiveDefault,
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("diskName"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("diskName"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: ({ getById }) =>
-        pipe([({ name }) => ({ diskName: name }), getById({})]),
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { tags, ...otherProps },
-        dependencies: {},
-        config,
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            tags: buildTags({
-              name,
-              config,
-              namespace,
-              UserTags: tags,
-              key: "key",
-              value: "value",
-            }),
-          }),
-        ])(),
-    }),
 });

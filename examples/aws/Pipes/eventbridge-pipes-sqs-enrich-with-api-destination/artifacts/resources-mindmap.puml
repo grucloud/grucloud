@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project eventbridge-pipes-sqs-enrich-with-api-destination
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ ApiDestination (1)
+++++ Connection (1)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (1)
++++ Pipes
+++++ Pipe (1)
++++ SQS
+++++ Queue (2)
+++++ QueueRedrivePolicy (1)
+@endmindmap

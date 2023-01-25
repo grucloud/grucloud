@@ -1,101 +1,138 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick, assign, omit } = require("rubico");
+const { pipe, tap, get, pick, eq, assign, omit } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
-const {
-  createDynamoDB,
-  ignoreErrorCodes,
-  tagResource,
-  untagResource,
-} = require("./DynamoDBCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const findName = () => get("TableName");
-const findId = () => get("TableArn");
+
+const { Tagger, assignTags } = require("./DynamoDBCommon");
+
+const isInstanceUp = eq(get("TableStatus"), "ACTIVE");
+
+const findName = () =>
+  pipe([
+    get("TableName"),
+    tap((TableName) => {
+      assert(TableName);
+    }),
+  ]);
+
 const pickId = pick(["TableName"]);
 
+const buildArn = () =>
+  pipe([
+    get("TableArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    assignTags({ buildArn: buildArn(config), endpoint }),
+    when(
+      eq(get("BillingModeSummary.BillingMode"), "PAY_PER_REQUEST"),
+      pipe([
+        assign({ BillingMode: () => "PAY_PER_REQUEST" }),
+        omit(["ProvisionedThroughput", "BillingModeSummary"]),
+      ])
+    ),
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html
-exports.DynamoDBTable = ({ spec, config }) => {
-  const dynamoDB = createDynamoDB(config);
-  const client = AwsClient({ spec, config })(dynamoDB);
-
-  const tableArn = ({ TableName, config }) =>
-    `arn:aws:dynamodb:${
-      config.region
-    }:${config.accountId()}:table/${TableName}`;
-
-  const decorate = () =>
+exports.DynamoDBTable = () => ({
+  type: "Table",
+  package: "dynamodb",
+  client: "DynamoDB",
+  propertiesDefault: {},
+  omitProperties: [
+    "TableSizeBytes",
+    "ItemCount",
+    "TableArn",
+    "TableId",
+    "ProvisionedThroughput.NumberOfDecreasesToday",
+    "ProvisionedThroughput.LastIncreaseDateTime",
+    "ProvisionedThroughput.LastDecreaseDateTime",
+    "CreationDateTime",
+    "TableStatus",
+    "SSEDescription",
+    "LatestStreamArn",
+    "LatestStreamLabel",
+  ],
+  inferName: findName,
+  findName,
+  findId: () =>
     pipe([
-      assign({
-        Tags: pipe([
-          ({ TableName }) => ({
-            ResourceArn: tableArn({ TableName, config }),
-          }),
-          dynamoDB().listTagsOfResource,
-          get("Tags"),
-        ]),
+      get("TableArn"),
+      tap((id) => {
+        assert(id);
       }),
-      when(
-        eq(get("BillingModeSummary.BillingMode"), "PAY_PER_REQUEST"),
-        pipe([
-          assign({ BillingMode: () => "PAY_PER_REQUEST" }),
-          omit(["ProvisionedThroughput", "BillingModeSummary"]),
-        ])
-      ),
-    ]);
-
-  const getById = client.getById({
-    pickId,
+    ]),
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  filterLive: () =>
+    pipe([
+      //TODO remove pick
+      pick([
+        "TableName",
+        "AttributeDefinitions",
+        "KeySchema",
+        "ProvisionedThroughput",
+        "BillingMode",
+        "GlobalSecondaryIndexes",
+        "LocalSecondaryIndexes",
+        "StreamSpecification",
+      ]),
+    ]),
+  dependencies: {
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      dependencyId: ({ lives, config }) => get("SSEDescription.KMSMasterKeyId"),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#getTable-property
+  getById: {
     method: "describeTable",
     getField: "Table",
-    ignoreErrorCodes,
+    pickId,
     decorate,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#describeTable-property
-  const getByName = pipe([({ name }) => ({ TableName: name }), getById({})]);
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#listTables-property
-  const getList = client.getList({
+  getList: {
     method: "listTables",
     getParam: "TableNames",
-    decorate: () => pipe([(TableName) => ({ TableName }), getById({})]),
-  });
+    decorate: ({ getById }) => pipe([(TableName) => ({ TableName }), getById]),
+  },
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#createTable-property
-  const create = client.create({
+  create: {
     method: "createTable",
-    pickCreated:
-      ({ payload }) =>
-      () =>
-        payload,
-    getById,
-    isInstanceUp: eq(get("TableStatus"), "ACTIVE"),
-  });
-
+    isInstanceUp,
+    pickCreated: ({ payload }) => pipe([() => payload]),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#updateTable-property
-  const update = client.update({
-    pickId,
+  update: {
     method: "updateTable",
-    getById,
-    isInstanceUp: eq(get("TableStatus"), "ACTIVE"),
+    isInstanceUp,
     filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
-  });
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#deleteTable-property
-  const destroy = client.destroy({
-    pickId,
+  destroy: {
     method: "deleteTable",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const configDefault = ({
+    pickId,
+  },
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ TableName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: { kmsKey },
+    config,
   }) =>
     pipe([
       () => otherProps,
@@ -108,20 +145,5 @@ exports.DynamoDBTable = ({ spec, config }) => {
           SSEDescription: { KMSMasterKeyId: getField(kmsKey, "Arn") },
         })
       ),
-    ])();
-
-  return {
-    spec,
-    findId,
-    getByName,
-    getById,
-    findName,
-    create,
-    update,
-    destroy,
-    getList,
-    configDefault,
-    tagResource: tagResource({ dynamoDB }),
-    untagResource: untagResource({ dynamoDB }),
-  };
-};
+    ])(),
+});

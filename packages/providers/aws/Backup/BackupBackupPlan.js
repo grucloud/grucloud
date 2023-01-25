@@ -1,17 +1,10 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, identity, callProp } = require("rubico/x");
+const { pipe, tap, get, pick, map } = require("rubico");
+const { defaultsDeep, identity } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
-const {
-  tagResource,
-  untagResource,
-  assignTags,
-  managedByEFS,
-} = require("./BackupCommon");
+const { Tagger, assignTags, managedByEFS } = require("./BackupCommon");
 
 const buildArn = () => get("BackupPlanArn");
 
@@ -24,10 +17,49 @@ const managedByOther = () => pipe([managedByEFS]);
 
 const pickId = pipe([pick(["BackupPlanId"])]);
 
-const model = ({ config }) => ({
+exports.BackupBackupPlan = ({}) => ({
+  type: "BackupPlan",
   package: "backup",
   client: "Backup",
+  inferName: () => get("BackupPlanName"),
+  findName: () => pipe([get("BackupPlanName")]),
+  findId: () => pipe([get("BackupPlanId")]),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
+  getByName: getByNameCore,
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  propertiesDefault: {},
+  omitProperties: [
+    "BackupPlanArn",
+    "BackupPlanId",
+    "CreationDate",
+    "VersionId",
+    "Rules[].RuleId",
+    "CreatorRequestId",
+  ],
+  dependencies: {
+    backupVaults: {
+      type: "BackupVault",
+      group: "Backup",
+      list: true,
+      excludeDefaultDependencies: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("Rules"),
+          map(
+            pipe([
+              get("TargetBackupVaultName"),
+              lives.getByName({
+                type: "BackupVault",
+                group: "Backup",
+                providerName: config.providerName,
+              }),
+              get("id"),
+            ])
+          ),
+        ]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#getBackupPlan-property
   getById: {
     method: "getBackupPlan",
@@ -62,40 +94,26 @@ const model = ({ config }) => ({
     method: "deleteBackupPlan",
     pickId,
   },
-});
-
-exports.BackupBackupPlan = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    findName: () => pipe([get("BackupPlanName")]),
-    findId: () => pipe([get("BackupPlanId")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTagsObject({
-            name,
-            config,
-            namespace,
-            userTags: Tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({
+          name,
+          config,
+          namespace,
+          userTags: Tags,
         }),
-      ])(),
-  });
+      }),
+    ])(),
+});

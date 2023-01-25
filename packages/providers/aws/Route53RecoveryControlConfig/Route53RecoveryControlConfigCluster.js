@@ -3,12 +3,15 @@ const { pipe, tap, get, omit, pick, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-const {
-  tagResource,
-  untagResource,
-  assignTags,
-} = require("./Route53RecoveryControlConfigCommon");
+const { Tagger, assignTags } = require("./Route53RecoveryControlConfigCommon");
+
+const buildArn = () =>
+  pipe([
+    get("ClusterArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
 
 const findId = () => pipe([get("ClusterArn")]);
 
@@ -25,10 +28,18 @@ const decorate = ({ endpoint }) =>
     ({ Name, ...other }) => ({ ClusterName: Name, ...other }),
   ]);
 
-const model = ({ config }) => ({
+const model = ({ config }) => ({});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html
+exports.Route53RecoveryControlConfigCluster = ({ spec, config }) => ({
+  type: "Cluster",
   package: "route53-recovery-control-config",
   client: "Route53RecoveryControlConfig",
   region: "us-west-2",
+  inferName: () => pipe([get("ClusterName")]),
+  findName: () => pipe([get("ClusterName")]),
+  findId,
+  omitProperties: ["ClusterArn", "Status", "ClusterEndpoints"],
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#describeCluster-property
   getById: {
@@ -57,29 +68,21 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#deleteCluster-property
   destroy: { method: "deleteCluster", pickId },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html
-exports.Route53RecoveryControlConfigCluster = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
     config,
-    findName: () => pipe([get("ClusterName")]),
-    findId,
-    getByName: getByNameCore,
-    tagResource: tagResource({ findId: findId() }),
-    untagResource: untagResource({ findId: findId() }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      }),
+    ])(),
+});

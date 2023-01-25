@@ -3,8 +3,6 @@ const { pipe, tap, get, flatMap, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pipe([
   pick(["PolicyName", "ResourceId", "ScalableDimension", "ServiceNamespace"]),
   tap(({ PolicyName, ResourceId, ScalableDimension, ServiceNamespace }) => {
@@ -15,10 +13,35 @@ const pickId = pipe([
   }),
 ]);
 
-const model = ({ config }) => ({
+exports.ApplicationAutoScalingPolicy = ({}) => ({
+  type: "Policy",
   package: "application-auto-scaling",
   client: "ApplicationAutoScaling",
+  findName: () =>
+    pipe([
+      ({ ResourceId, ScalableDimension, PolicyName }) =>
+        `${ResourceId}::${ScalableDimension}::${PolicyName}`,
+    ]),
+  findId: () => pipe([get("PolicyARN")]),
   ignoreErrorCodes: ["ObjectNotFoundException"],
+  propertiesDefault: {},
+  omitProperties: ["Alarms", "PolicyARN", "CreationTime"],
+  inferName: () =>
+    pipe([
+      ({ ResourceId, ScalableDimension, PolicyName }) =>
+        `${ResourceId}::${ScalableDimension}::${PolicyName}`,
+    ]),
+  dependencies: {
+    target: {
+      type: "Target",
+      group: "ApplicationAutoScaling",
+      dependencyId: () =>
+        pipe([
+          ({ ResourceId, ScalableDimension }) =>
+            `${ResourceId}::${ScalableDimension}`,
+        ]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#describeScalingPolicies-property
   getById: {
     pickId: pipe([
@@ -49,56 +72,43 @@ const model = ({ config }) => ({
     method: "deleteScalingPolicy",
     pickId,
   },
+  getByName: getByNameCore,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#describeScalingPolicies-property
+  getList: ({ endpoint }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      //TODO
+      () => [
+        "appstream",
+        "dynamodb",
+        "ecs",
+        "ec2",
+        "elasticache",
+        "elasticmapreduce",
+        "kafka",
+        "lambda",
+        "neptune",
+        "rds",
+        //"sagemaker",
+        //"custom-resource",
+        //"comprehend",
+        //"cassandra",
+      ],
+      flatMap(
+        pipe([
+          (ServiceNamespace) => ({ ServiceNamespace }),
+          endpoint().describeScalingPolicies,
+          get("ScalingPolicies"),
+        ])
+      ),
+    ]),
+  // TODO Tag
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
+  }) => pipe([() => otherProps, defaultsDeep({})])(),
 });
-
-exports.ApplicationAutoScalingPolicy = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () =>
-      pipe([
-        ({ ResourceId, ScalableDimension, PolicyName }) =>
-          `${ResourceId}::${ScalableDimension}::${PolicyName}`,
-      ]),
-    findId: () => pipe([get("PolicyARN")]),
-    getByName: getByNameCore,
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#describeScalingPolicies-property
-    getList: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        //TODO
-        () => [
-          "appstream",
-          "dynamodb",
-          "ecs",
-          "ec2",
-          "elasticache",
-          "elasticmapreduce",
-          "kafka",
-          "lambda",
-          "neptune",
-          "rds",
-          //"sagemaker",
-          //"custom-resource",
-          //"comprehend",
-          //"cassandra",
-        ],
-        flatMap(
-          pipe([
-            (ServiceNamespace) => ({ ServiceNamespace }),
-            endpoint().describeScalingPolicies,
-            get("ScalingPolicies"),
-          ])
-        ),
-      ]),
-    // TODO Tag
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: {},
-    }) => pipe([() => otherProps, defaultsDeep({})])(),
-  });

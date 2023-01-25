@@ -191,6 +191,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           ({ Roles, InstanceProfileName }) =>
             pipe([
               () => Roles,
+              //TODO
               forEach(({ RoleName }) =>
                 removeRoleFromInstanceProfile({ endpoint })({
                   RoleName,

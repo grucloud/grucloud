@@ -1,20 +1,50 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get, pick, omit } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./EFSCommon");
+const { Tagger, dependencyIdFileSystem } = require("./EFSCommon");
 
 const pickId = pipe([pick(["AccessPointId"])]);
 const findId = () => pipe([get("AccessPointArn")]);
 
-const model = {
+const buildArn = () =>
+  pipe([
+    get("AccessPointId"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EFS.html
+exports.EFSAccessPoint = ({ compare }) => ({
+  type: "AccessPoint",
   package: "efs",
   client: "EFS",
+  findName: findNameInTagsOrId({ findId: () => get("AccessPointId") }),
+  findId,
   ignoreErrorCodes: ["AccessPointNotFound", "BadRequest"],
+  dependencies: {
+    fileSystem: {
+      type: "FileSystem",
+      group: "EFS",
+      dependencyId: dependencyIdFileSystem,
+    },
+  },
+  omitProperties: [
+    "ClientToken",
+    "AccessPointId",
+    "AccessPointArn",
+    "FileSystemId",
+    "OwnerId",
+    "LifeCycleState",
+    "Name",
+  ],
+  compare: compare({
+    filterAll: () => pipe([omit([])]),
+  }),
   getById: {
     method: "describeAccessPoints",
     pickId,
@@ -30,34 +60,26 @@ const model = {
     filterParams: ({ payload }) => pipe([() => payload]),
   },
   destroy: { method: "deleteAccessPoint", pickId },
-};
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EFS.html
-exports.EFSAccessPoint = ({ spec, config }) =>
-  createAwsResource({
-    model,
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { fileSystem },
     config,
-    findName: findNameInTagsOrId({ findId: () => get("AccessPointId") }),
-    findId,
-    getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { fileSystem },
-      config,
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(fileSystem);
-        }),
-        () => otherProps,
-        defaultsDeep({
-          FileSystemId: getField(fileSystem, "FileSystemId"),
-          Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(fileSystem);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        FileSystemId: getField(fileSystem, "FileSystemId"),
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])(),
+});

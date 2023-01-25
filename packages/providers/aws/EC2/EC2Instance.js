@@ -14,6 +14,7 @@ const {
   assign,
   pick,
   any,
+  fork,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -26,35 +27,40 @@ const {
   when,
   keys,
   forEach,
+  find,
+  size,
 } = require("rubico/x");
-const { AwsClient } = require("../AwsClient");
-const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsEc2" });
-const { getByNameCore } = require("@grucloud/core/Common");
-const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
+const { retryCall } = require("@grucloud/core/Retry");
+
+const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const {
-  getByIdCore,
+  omitIfEmpty,
+  replaceWithName,
+  differenceObject,
+} = require("@grucloud/core/Common");
+
+const {
   findNameInTags,
   buildTags,
   findValueInTags,
-  findNamespaceInTagsOrEksCluster,
-  isOurMinion,
   findEksCluster,
+  hasKeyInTags,
   compareAws,
 } = require("../AwsCommon");
-const { getField } = require("@grucloud/core/ProviderCommon");
-const { hasKeyInTags } = require("../AwsCommon");
+
 const {
-  createEC2,
   tagResource,
   untagResource,
   fetchImageIdFromDescription,
   imageDescriptionFromId,
   assignUserDataToBase64,
   getLaunchTemplateIdFromTags,
+  buildAvailabilityZone,
 } = require("./EC2Common");
 
 const AttributesNoRestart = ["DisableApiStop", "DisableApiTermination"];
@@ -66,8 +72,16 @@ const StateRunning = "running";
 const StateTerminated = "terminated";
 const StateStopped = "stopped";
 
+const getByIdFromLives =
+  ({ lives, groupType }) =>
+  (id) =>
+    pipe([
+      () => lives,
+      find(and([eq(get("groupType"), groupType), eq(get("id"), id)])),
+    ])();
+
 const configDefault =
-  ({ config, ec2 }) =>
+  ({}) =>
   ({
     name,
     namespace,
@@ -84,7 +98,7 @@ const configDefault =
   }) =>
     pipe([
       tap((params) => {
-        assert(ec2);
+        assert(config);
       }),
       () => Image,
       fetchImageIdFromDescription({ config }),
@@ -149,150 +163,140 @@ const configDefault =
 
 exports.configDefault = configDefault;
 
-exports.EC2Instance = ({ spec, config }) => {
-  const ec2 = createEC2(config);
-  const client = AwsClient({ spec, config })(ec2);
+const pickId = pipe([
+  tap(({ InstanceId }) => {
+    assert(InstanceId);
+  }),
+  ({ InstanceId }) => ({ InstanceIds: [InstanceId] }),
+  tap((params) => {
+    assert(true);
+  }),
+]);
 
-  const { providerName } = config;
-  assert(providerName);
+const managedByOther = ({ lives, config }) =>
+  or([
+    hasKeyInTags({
+      key: "eks:cluster-name",
+    }),
+    hasKeyInTags({
+      key: "aws:autoscaling:groupName",
+    }),
+  ]);
 
-  const managedByOther = ({ lives, config }) =>
-    or([
-      hasKeyInTags({
-        key: "eks:cluster-name",
-      }),
-      hasKeyInTags({
-        key: "aws:autoscaling:groupName",
-      }),
-    ]);
+// const findNamespace = findNamespaceInTagsOrEksCluster({
+//   config,
+//   key: "eks:cluster-name",
+// });
 
-  const findNamespace = findNamespaceInTagsOrEksCluster({
-    config,
-    key: "eks:cluster-name",
-  });
+const findEksName = (live) =>
+  pipe([
+    () => live,
+    findValueInTags({ key: "eks:nodegroup-name" }),
+    switchCase([
+      isEmpty,
+      () => undefined,
+      (nodegroupName) => `${nodegroupName}::${live.InstanceId}`,
+    ]),
+  ])();
 
-  const findEksName = (live) =>
-    pipe([
-      () => live,
-      findValueInTags({ key: "eks:nodegroup-name" }),
-      switchCase([
-        isEmpty,
-        () => undefined,
-        (nodegroupName) => `${nodegroupName}::${live.InstanceId}`,
-      ]),
-    ])();
+const findId = () => get("InstanceId");
 
-  const findId = () => get("InstanceId");
+const findName = (params) => (live) => {
+  assert(live);
+  assert(params.lives);
 
-  const findName = (params) => (live) => {
-    assert(live);
-    assert(params.lives);
-
-    const fns = [findNameInTags(), findEksName, findId(params)];
-    for (fn of fns) {
-      const name = fn(live);
-      if (!isEmpty(name)) {
-        return name;
-      }
+  const fns = [findNameInTags(), findEksName, findId(params)];
+  for (fn of fns) {
+    const name = fn(live);
+    if (!isEmpty(name)) {
+      return name;
     }
-  };
+  }
+};
 
-  const getStateName = get("State.Name");
-  const isInstanceUp = eq(getStateName, StateRunning);
-  const isInstanceTerminated = (instance) =>
-    pipe([() => [StateTerminated], includes(getStateName(instance))])();
-  const isInstanceDown = (instance) =>
-    pipe([
-      () => [StateTerminated, StateStopped],
-      includes(getStateName(instance)),
-    ])();
+const getStateName = get("State.Name");
+const isInstanceUp = eq(getStateName, StateRunning);
+const isInstanceTerminated = (instance) =>
+  pipe([() => [StateTerminated], includes(getStateName(instance))])();
+const isInstanceDown = (instance) =>
+  pipe([
+    () => [StateTerminated, StateStopped],
+    includes(getStateName(instance)),
+  ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
-  const decorate = ({ endpoint, config }) =>
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+    assign({
+      Image: imageDescriptionFromId({ config }),
+    }),
+    assign({
+      UserData: pipe([
+        ({ InstanceId }) => ({
+          Attribute: "userData",
+          InstanceId,
+        }),
+        endpoint().describeInstanceAttribute,
+        get("UserData.Value"),
+        unless(isEmpty, (UserData) =>
+          Buffer.from(UserData, "base64").toString()
+        ),
+      ]),
+      DisableApiStop: pipe([
+        ({ InstanceId }) => ({
+          Attribute: "disableApiStop",
+          InstanceId,
+        }),
+        endpoint().describeInstanceAttribute,
+        get("DisableApiStop.Value"),
+      ]),
+      DisableApiTermination: pipe([
+        ({ InstanceId }) => ({
+          Attribute: "disableApiTermination",
+          InstanceId,
+        }),
+        endpoint().describeInstanceAttribute,
+        get("DisableApiTermination.Value"),
+      ]),
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstanceCreditSpecifications-property
+    }),
+    when(
+      ({ InstanceType }) =>
+        pipe([
+          () => ["t2", "t3"],
+          any((type) => InstanceType.startsWith(type)),
+        ])(),
+      assign({
+        CreditSpecification: pipe([
+          ({ InstanceId }) => ({
+            InstanceIds: [InstanceId],
+          }),
+          endpoint().describeInstanceCreditSpecifications,
+          get("InstanceCreditSpecifications"),
+          first,
+          pick(["CpuCredits"]),
+        ]),
+      })
+    ),
+    when(
+      not(eq(get("CreditSpecification.CpuCredits"), "unlimited")),
+      omit(["CreditSpecification"])
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+const updateAttributes =
+  ({ endpoint }) =>
+  ({ InstanceId, updated, added }) =>
     pipe([
       tap((params) => {
         assert(endpoint);
       }),
-      assign({
-        Image: imageDescriptionFromId({ config }),
-      }),
-      assign({
-        UserData: pipe([
-          ({ InstanceId }) => ({
-            Attribute: "userData",
-            InstanceId,
-          }),
-          endpoint().describeInstanceAttribute,
-          get("UserData.Value"),
-          unless(isEmpty, (UserData) =>
-            Buffer.from(UserData, "base64").toString()
-          ),
-        ]),
-        DisableApiStop: pipe([
-          ({ InstanceId }) => ({
-            Attribute: "disableApiStop",
-            InstanceId,
-          }),
-          endpoint().describeInstanceAttribute,
-          get("DisableApiStop.Value"),
-        ]),
-        DisableApiTermination: pipe([
-          ({ InstanceId }) => ({
-            Attribute: "disableApiTermination",
-            InstanceId,
-          }),
-          endpoint().describeInstanceAttribute,
-          get("DisableApiTermination.Value"),
-        ]),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstanceCreditSpecifications-property
-      }),
-      when(
-        ({ InstanceType }) =>
-          pipe([
-            () => ["t2", "t3"],
-            any((type) => InstanceType.startsWith(type)),
-          ])(),
-        assign({
-          CreditSpecification: pipe([
-            ({ InstanceId }) => ({
-              InstanceIds: [InstanceId],
-            }),
-            endpoint().describeInstanceCreditSpecifications,
-            get("InstanceCreditSpecifications"),
-            first,
-            pick(["CpuCredits"]),
-          ]),
-        })
-      ),
-      when(
-        not(eq(get("CreditSpecification.CpuCredits"), "unlimited")),
-        omit(["CreditSpecification"])
-      ),
-      tap((params) => {
-        assert(true);
-      }),
-    ]);
-
-  const getList = client.getList({
-    method: "describeInstances",
-    getParam: "Reservations",
-    transformListPre: () =>
-      pipe([pluck("Instances"), flatten, filter(not(isInstanceTerminated))]),
-    decorate,
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-  const getById = () =>
-    pipe([
-      ({ InstanceId }) => ({ id: InstanceId }),
-      getByIdCore({ fieldIds: "InstanceIds", getList }),
-    ]);
-
-  const isUpById = pipe([getById({}), isInstanceUp]);
-  const isDownById = pipe([getById({}), isInstanceDown]);
-
-  const updateAttributes = ({ InstanceId, updated, added }) =>
-    pipe([
       () => ({ ...updated, ...added }),
       Object.entries,
       filter(([key]) =>
@@ -309,7 +313,7 @@ exports.EC2Instance = ({ spec, config }) => {
             (Value) => Buffer.from(Value, "utf-8")
           ),
           (Value) => ({ InstanceId, [key]: { Value } }),
-          ec2().modifyInstanceAttribute,
+          endpoint().modifyInstanceAttribute,
           tap((params) => {
             assert(true);
           }),
@@ -320,132 +324,38 @@ exports.EC2Instance = ({ spec, config }) => {
       }),
     ])();
 
-  const instanceStart = ({ InstanceId }) =>
+const instanceStart =
+  ({ endpoint, getById }) =>
+  ({ InstanceId }) =>
     pipe([
       tap(() => {
+        assert(endpoint);
         logger.info(`instanceStart ${tos(InstanceId)}`);
       }),
-      () => ec2().startInstances({ InstanceIds: [InstanceId] }),
+      () => ({ InstanceIds: [InstanceId] }),
+      endpoint().startInstances,
       () =>
         retryCall({
           name: `startInstances: ${InstanceId}`,
-          fn: () => isUpById({ InstanceId }),
-          config,
+          fn: pipe([() => ({ InstanceId }), getById({}), isInstanceUp]),
         }),
     ])();
 
-  const instanceStop = ({ InstanceId }) =>
+const instanceStop =
+  ({ endpoint, getById }) =>
+  ({ InstanceId }) =>
     pipe([
       tap(() => {
         logger.info(`instanceStop ${tos(InstanceId)}`);
+        assert(endpoint);
       }),
-      () => ec2().stopInstances({ InstanceIds: [InstanceId] }),
+      () => endpoint().stopInstances({ InstanceIds: [InstanceId] }),
       () =>
         retryCall({
           name: `stopInstances: ${InstanceId}`,
-          fn: () => isDownById({ InstanceId }),
-          config,
+          fn: pipe([() => ({ InstanceId }), getById({}), isInstanceDown]),
         }),
     ])();
-
-  const update = async ({
-    name,
-    payload,
-    live: { InstanceId },
-    diff,
-    dependencies,
-    resolvedDependencies,
-  }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update ec2 ${tos({ name, InstanceId, diff })}`);
-      }),
-      () => diff,
-      switchCase([
-        get("updateNeedDestroy"),
-        pipe([
-          tap(() => {
-            logger.info(`ec2 updateNeedDestroy ${name}`);
-          }),
-          () => destroy({ live: { InstanceId } }),
-          () => create({ name, payload, resolvedDependencies }),
-        ]),
-        get("updateNeedRestart"),
-        pipe([
-          () => instanceStop({ InstanceId }),
-          () => ({
-            InstanceId,
-            updated: diff.liveDiff.updated,
-            added: diff.liveDiff.added,
-          }),
-          updateAttributes,
-          () => instanceStart({ InstanceId }),
-        ]),
-        get("updateNoRestart"),
-        pipe([
-          tap(() => {
-            logger.info(`ec2 updateNoRestart ${name}`);
-          }),
-          () => ({
-            InstanceId,
-            updated: diff.liveDiff.updated,
-            added: diff.liveDiff.added,
-          }),
-          updateAttributes,
-        ]),
-        () => {
-          throw Error(
-            `Either updateNeedDestroy or updateNeedRestart or updateNoRestart is required`
-          );
-        },
-      ]),
-      tap(() => {
-        logger.info(`ec2 updated ${name}`);
-      }),
-    ])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
-  const create = client.create({
-    method: "runInstances",
-    shouldRetryOnExceptionMessages: ["Invalid IAM Instance Profile ARN"],
-    filterPayload: pipe([assignUserDataToBase64]),
-    isInstanceUp,
-    pickCreated: () =>
-      pipe([
-        tap(({ Instances }) => {
-          assert(Instances);
-        }),
-        get("Instances"),
-        first,
-      ]),
-    getById,
-    config,
-  });
-
-  const destroy = client.destroy({
-    pickId: ({ InstanceId }) => ({ InstanceIds: [InstanceId] }),
-    method: "terminateInstances",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  return {
-    spec,
-    findId,
-    findNamespace,
-    getByName,
-    findName,
-    getById,
-    create,
-    update,
-    destroy,
-    getList,
-    configDefault: configDefault({ config, ec2 }),
-    managedByOther,
-    tagResource: tagResource({ endpoint: ec2 }),
-    untagResource: untagResource({ endpoint: ec2 }),
-  };
-};
 
 const isInOurCluster = ({ config, lives }) =>
   pipe([
@@ -460,13 +370,15 @@ exports.isOurMinionEC2Instance =
   (live) =>
     pipe([
       () => live,
-      or([isInOurCluster({ lives, config }), isOurMinion({ lives, config })]),
+      or([
+        isInOurCluster({ lives, config }) /*isOurMinion({ lives, config })*/,
+      ]),
       tap((isOurMinion) => {
         //logger.debug(`isOurMinionEC2Instance ${isOurMinion}`);
       }),
     ])();
 
-exports.compareEC2Instance = pipe([
+const compare = pipe([
   tap((params) => {
     assert(true);
   }),
@@ -545,3 +457,387 @@ exports.compareEC2Instance = pipe([
     assert(true);
   }),
 ]);
+
+const omitNetworkInterfacesForDefaultSubnetAndSecurityGroup = ({ lives }) =>
+  pipe([
+    tap((params) => {
+      assert(lives);
+    }),
+    get("NetworkInterfaces"),
+    and([
+      eq(size, 1),
+      pipe([
+        first,
+        and([
+          // default subnet ?
+          pipe([
+            get("SubnetId"),
+            getByIdFromLives({ lives, groupType: "EC2::Subnet" }),
+            tap((params) => {
+              assert(true);
+            }),
+            get("isDefault"),
+          ]),
+          // only one default security group ?
+          pipe([
+            get("Groups"),
+            and([
+              eq(size, 1),
+              pipe([
+                first,
+                get("GroupId"),
+                getByIdFromLives({ lives, groupType: "EC2::SecurityGroup" }),
+                get("isDefault"),
+              ]),
+            ]),
+          ]),
+        ]),
+      ]),
+    ]),
+  ]);
+
+const getLaunchTemplateVersionFromTags = pipe([
+  get("Tags"),
+  find(eq(get("Key"), "aws:ec2launchtemplate:version")),
+  get("Value"),
+]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2Instance = () => ({
+  type: "Instance",
+  package: "EC2",
+  client: "EC2",
+  findName,
+  findId,
+  ignoreErrorCodes,
+  managedByOther,
+  omitProperties: [
+    "KeyName",
+    "PublicIpAddress",
+    "AmiLaunchIndex",
+    "ImageId",
+    "InstanceId",
+    "VpcId",
+    "LaunchTime",
+    "PrivateDnsName",
+    "PrivateIpAddress",
+    "ProductCodes",
+    "PublicDnsName",
+    "State",
+    "StateTransitionReason",
+    "SubnetId",
+    "Architecture",
+    "ClientToken",
+    "IamInstanceProfile",
+    "SecurityGroups",
+    "PlatformDetails",
+    "UsageOperation",
+    "UsageOperationUpdateTime",
+    "RootDeviceName",
+    "RootDeviceType",
+    "PrivateDnsNameOptions",
+    "MetadataOptions.State",
+    "BlockDeviceMappings",
+    "VirtualizationType",
+    "Hypervisor",
+    "CpuOptions",
+    "StateReason",
+    "Placement.GroupId",
+  ],
+  propertiesDefault: {
+    DisableApiStop: false,
+    DisableApiTermination: false,
+    MaxCount: 1,
+    MinCount: 1,
+    Placement: { GroupName: "", Tenancy: "default" },
+    Monitoring: {
+      State: "disabled",
+    },
+    EbsOptimized: false,
+    EnaSupport: true,
+    SourceDestCheck: true,
+    // The t2.micro instance type does not support specifying CpuOptions.
+    // CpuOptions: {
+    //   CoreCount: 1,
+    //   ThreadsPerCore: 1,
+    // },
+    CapacityReservationSpecification: {
+      CapacityReservationPreference: "open",
+    },
+    HibernationOptions: {
+      Configured: false,
+    },
+    MetadataOptions: {
+      HttpTokens: "optional",
+      HttpPutResponseHopLimit: 1,
+      HttpEndpoint: "enabled",
+      HttpProtocolIpv6: "disabled",
+      InstanceMetadataTags: "disabled",
+    },
+    EnclaveOptions: {
+      Enabled: false,
+    },
+    MaintenanceOptions: {
+      AutoRecovery: "default",
+    },
+  },
+  filterLive:
+    ({ lives, providerConfig }) =>
+    (live) =>
+      pipe([
+        () => live,
+        differenceObject(
+          pipe([
+            () => live,
+            getLaunchTemplateIdFromTags,
+            getByIdFromLives({ lives, groupType: "EC2::LaunchTemplate" }),
+            get("live.LaunchTemplateData"),
+          ])()
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        switchCase([
+          or([
+            pipe([
+              getLaunchTemplateIdFromTags,
+              getByIdFromLives({ lives, groupType: "EC2::LaunchTemplate" }),
+              get("live.LaunchTemplateData.SecurityGroupIds"),
+            ]),
+            omitNetworkInterfacesForDefaultSubnetAndSecurityGroup({
+              lives,
+            }),
+          ]),
+          omit(["NetworkInterfaces"]),
+          assign({
+            NetworkInterfaces: pipe([
+              get("NetworkInterfaces"),
+              map((networkInterface) =>
+                pipe([
+                  () => networkInterface,
+                  when(
+                    get("Description"),
+                    assign({ Description: get("Description") })
+                  ),
+                  fork({
+                    DeviceIndex: get("Attachment.DeviceIndex"),
+                    Groups: pipe([
+                      get("Groups"),
+                      map(
+                        pipe([
+                          get("GroupId"),
+                          replaceWithName({
+                            groupType: "EC2::SecurityGroup",
+                            path: "id",
+                            providerConfig,
+                            lives,
+                          }),
+                        ])
+                      ),
+                    ]),
+                    SubnetId: pipe([
+                      get("SubnetId"),
+                      replaceWithName({
+                        groupType: "EC2::Subnet",
+                        path: "id",
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  }),
+                ])()
+              ),
+            ]),
+          }),
+        ]),
+        when(
+          getLaunchTemplateIdFromTags,
+          assign({
+            LaunchTemplate: pipe([
+              fork({
+                LaunchTemplateId: pipe([
+                  getLaunchTemplateIdFromTags,
+                  replaceWithName({
+                    groupType: "EC2::LaunchTemplate",
+                    path: "id",
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+                Version: getLaunchTemplateVersionFromTags,
+              }),
+            ]),
+          })
+        ),
+        assign({
+          Placement: pipe([
+            get("Placement"),
+            assign({
+              AvailabilityZone: buildAvailabilityZone,
+            }),
+          ]),
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+  compare,
+  dependencies: {
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      //TODO no list
+      list: true,
+      dependencyId: ({ lives, config }) => get("SubnetId"),
+    },
+    keyPair: {
+      type: "KeyPair",
+      group: "EC2",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("KeyName"),
+          lives.getByName({
+            type: "KeyPair",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
+          get("id"),
+        ]),
+    },
+    iamInstanceProfile: {
+      type: "InstanceProfile",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => get("IamInstanceProfile.Arn"),
+    },
+    securityGroups: {
+      type: "SecurityGroup",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("SecurityGroups"), pluck("GroupId")]),
+    },
+    launchTemplate: {
+      type: "LaunchTemplate",
+      group: "EC2",
+      dependencyId: ({ lives, config }) => getLaunchTemplateIdFromTags,
+    },
+    placementGroup: {
+      type: "PlacementGroup",
+      group: "EC2",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("Placement.GroupName"),
+          lives.getByName({
+            type: "PlacementGroup",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
+          get("id"),
+        ]),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getInstance-property
+  getById: {
+    method: "describeInstances",
+    getField: "Reservations",
+    pickId,
+    decorate: ({ endpoint, config }) =>
+      pipe([get("Instances"), first, decorate({ endpoint, config })]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#listInstances-property
+  getList: {
+    method: "describeInstances",
+    getParam: "Reservations",
+    transformListPre: () =>
+      pipe([pluck("Instances"), flatten, filter(not(isInstanceTerminated))]),
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createInstance-property
+  create: {
+    method: "runInstances",
+    shouldRetryOnExceptionMessages: ["Invalid IAM Instance Profile ARN"],
+    filterPayload: pipe([assignUserDataToBase64]),
+    isInstanceUp,
+    pickCreated: () =>
+      pipe([
+        tap(({ Instances }) => {
+          assert(Instances);
+        }),
+        get("Instances"),
+        first,
+      ]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#updateInstance-property
+  update:
+    ({ endpoint, getById, create, destroy }) =>
+    async ({
+      name,
+      payload,
+      live: { InstanceId },
+      diff,
+      dependencies,
+      resolvedDependencies,
+    }) =>
+      pipe([
+        tap(() => {
+          logger.info(`update ec2 ${tos({ name, InstanceId, diff })}`);
+          assert(create);
+          assert(destroy);
+        }),
+        () => diff,
+        switchCase([
+          get("updateNeedDestroy"),
+          pipe([
+            tap(() => {
+              logger.info(`ec2 updateNeedDestroy ${name}`);
+            }),
+            () => ({ live: { InstanceId } }),
+            destroy,
+            () => ({ name, payload, resolvedDependencies }),
+            create,
+          ]),
+          get("updateNeedRestart"),
+          pipe([
+            () => ({ InstanceId }),
+            instanceStop({ endpoint, getById }),
+            () => ({
+              InstanceId,
+              updated: diff.liveDiff.updated,
+              added: diff.liveDiff.added,
+            }),
+            updateAttributes({ endpoint }),
+            () => ({ InstanceId }),
+            instanceStart({ endpoint, getById }),
+          ]),
+          get("updateNoRestart"),
+          pipe([
+            tap(() => {
+              logger.info(`ec2 updateNoRestart ${name}`);
+            }),
+            () => ({
+              InstanceId,
+              updated: diff.liveDiff.updated,
+              added: diff.liveDiff.added,
+            }),
+            updateAttributes({ endpoint }),
+          ]),
+          () => {
+            throw Error(
+              `Either updateNeedDestroy or updateNeedRestart or updateNoRestart is required`
+            );
+          },
+        ]),
+        tap(() => {
+          logger.info(`ec2 updated ${name}`);
+        }),
+      ])(),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteInstance-property
+  destroy: {
+    pickId,
+    method: "terminateInstances",
+    isInstanceDown,
+  },
+  getByName: getByNameCore,
+  tagger: () => ({ tagResource, untagResource }),
+  configDefault: configDefault({}),
+});

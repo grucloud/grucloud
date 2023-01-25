@@ -3,13 +3,43 @@ const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { createAwsResource } = require("../AwsClient");
-
 const pickId = pick(["BackupVaultName"]);
 
-const model = ({ config }) => ({
+exports.BackupBackupVaultNotification = ({}) => ({
+  type: "BackupVaultNotification",
   package: "backup",
   client: "Backup",
+  inferName: ({ dependenciesSpec: { backupVault } }) =>
+    pipe([() => backupVault]),
+  findName: () => pipe([get("BackupVaultName")]),
+  findId: () => pipe([get("BackupVaultName")]),
+  omitProperties: ["BackupVaultName", "BackupVaultArn", "SNSTopicArn"],
+  dependencies: {
+    backupVault: {
+      type: "BackupVault",
+      group: "Backup",
+      parent: true,
+      dependencyId: ({ lives, config }) => pipe([get("BackupVaultName")]),
+    },
+    snsTopic: {
+      type: "Topic",
+      group: "SNS",
+      dependencyId: ({ lives, config }) => pipe([get("SNSTopicArn")]),
+    },
+  },
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ BackupVaultName: name }), getById({})]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#getBackupVaultNotifications-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "BackupVault", group: "Backup" },
+          pickKey: pipe([pickId]),
+          method: "getBackupVaultNotification",
+          config,
+        }),
+    ])(),
   ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#getBackupVaultNotifications-property
   getById: {
@@ -30,44 +60,22 @@ const model = ({ config }) => ({
     method: "deleteBackupVaultNotifications",
     pickId,
   },
-});
-
-exports.BackupBackupVaultNotification = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { ...otherProps },
+    dependencies: { backupVault, snsTopic },
     config,
-    findName: () => pipe([get("BackupVaultName")]),
-    findId: () => pipe([get("BackupVaultName")]),
-    getByName: ({ getById }) =>
-      pipe([({ name }) => ({ BackupVaultName: name }), getById({})]),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#getBackupVaultNotifications-property
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () =>
-          client.getListWithParent({
-            parent: { type: "BackupVault", group: "Backup" },
-            pickKey: pipe([pickId]),
-            method: "getBackupVaultNotification",
-            config,
-          }),
-      ])(),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { ...otherProps },
-      dependencies: { backupVault, snsTopic },
-      config,
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(backupVault);
-          assert(snsTopic);
-        }),
-        () => otherProps,
-        defaultsDeep({
-          BackupVaultName: backupVault.config.BackupVaultName,
-          SNSTopicArn: getField(snsTopic, "Attributes.TopicArn"),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(backupVault);
+        assert(snsTopic);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        BackupVaultName: backupVault.config.BackupVaultName,
+        SNSTopicArn: getField(snsTopic, "Attributes.TopicArn"),
+      }),
+    ])(),
+});

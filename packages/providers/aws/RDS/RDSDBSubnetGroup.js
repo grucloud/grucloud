@@ -103,6 +103,7 @@ exports.RDSDBSubnetGroup = ({ compare }) => ({
     pickId,
   },
   managedByOther,
+  cannotBeDeleted: managedByOther,
   findName: () =>
     pipe([
       get("DBSubnetGroupName"),

@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, or, get, omit, filter, eq, assign } = require("rubico");
+const {
+  pipe,
+  tap,
+  or,
+  get,
+  omit,
+  filter,
+  eq,
+  assign,
+  switchCase,
+} = require("rubico");
 const {
   defaultsDeep,
   pluck,
@@ -7,13 +17,36 @@ const {
   find,
   unless,
   isEmpty,
+  values,
 } = require("rubico/x");
 
-const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./CloudWatchCommon");
+const { buildTags, replaceAccountAndRegion } = require("../AwsCommon");
+const { Tagger } = require("./CloudWatchCommon");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const buildArn = () => pipe([get("AlarmArn")]);
+
+const replaceDimension =
+  ({ providerConfig, lives }) =>
+  ({ Name, Value, ...other }) =>
+    pipe([
+      () => AlarmDependenciesDimensions,
+      values,
+      find(eq(get("dimensionId"), Name)),
+      switchCase([
+        isEmpty,
+        () => ({ Value }),
+        ({ type, group }) => ({
+          Value: replaceWithName({
+            groupType: `${group}::${type}`,
+            providerConfig,
+            lives,
+            path: "id",
+          })(Value),
+        }),
+      ]),
+      defaultsDeep({ Name, ...other }),
+    ])();
 
 const findDependencyDimension =
   ({ type, group, dimensionId }) =>
@@ -68,8 +101,6 @@ const AlarmDependenciesDimensions = {
   },
 };
 
-exports.AlarmDependenciesDimensions = AlarmDependenciesDimensions;
-
 const managedByOther = () =>
   pipe([
     or([
@@ -96,10 +127,61 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({
+const model = ({ config }) => ({});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html
+exports.CloudWatchMetricAlarm = ({ spec, config }) => ({
+  type: "MetricAlarm",
   package: "cloudwatch",
   client: "CloudWatch",
+  inferName: () => get("AlarmName"),
+  findName: () => pipe([get("AlarmName")]),
+  findId: () => pipe([get("AlarmArn")]),
+  managedByOther,
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  omitProperties: [
+    "AlarmArn",
+    "AlarmConfigurationUpdatedTimestamp",
+    "StateValue",
+    "StateReason",
+    "StateReasonData",
+    "StateUpdatedTimestamp",
+    "StateTransitionedTimestamp",
+  ],
+  dependencies: {
+    snsTopic: {
+      type: "Topic",
+      group: "SNS",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("AlarmActions"),
+          find(callProp("startsWith", "arn:aws:sns")),
+        ]),
+    },
+    ...AlarmDependenciesDimensions,
+  },
+  propertiesDefault: {
+    ActionsEnabled: true,
+    OKActions: [],
+    InsufficientDataActions: [],
+    AlarmActions: [],
+  },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        AlarmActions: pipe([
+          get("AlarmActions"),
+          map(replaceAccountAndRegion({ providerConfig })),
+        ]),
+        Dimensions: pipe([
+          get("Dimensions"),
+          map(pipe([replaceDimension({ providerConfig, lives })])),
+        ]),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#describeAlarms-property
   getById: {
     method: "describeAlarms",
@@ -133,36 +215,23 @@ const model = ({ config }) => ({
     method: "deleteAlarms",
     pickId: pipe([({ AlarmName }) => ({ AlarmNames: [AlarmName] })]),
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html
-exports.CloudWatchMetricAlarm = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([({ name }) => ({ AlarmName: name }), getById({})]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
     config,
-    findName: () => pipe([get("AlarmName")]),
-    findId: () => pipe([get("AlarmArn")]),
-    managedByOther,
-    getByName: ({ getList, endpoint, getById }) =>
-      pipe([({ name }) => ({ AlarmName: name }), getById({})]),
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          AlarmName: name,
-          Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        AlarmName: name,
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])(),
+});

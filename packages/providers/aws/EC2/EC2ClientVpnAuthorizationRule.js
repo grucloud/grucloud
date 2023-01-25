@@ -1,10 +1,9 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, pick } = require("rubico");
-const { defaultsDeep, unless, when } = require("rubico/x");
+const { defaultsDeep, unless } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-
-const { createAwsResource } = require("../AwsClient");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "ClientVpnAuthorizationRule",
@@ -25,10 +24,74 @@ const decorate = () =>
     }),
   ]);
 
-const createModel = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2ClientVpnAuthorizationRule = ({ compare }) => ({
+  type: "ClientVpnAuthorizationRule",
   package: "ec2",
   client: "EC2",
   ignoreErrorCodes: ["InvalidClientVpnEndpointId.NotFound"],
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(live.TargetNetworkCidr);
+          assert(live.ClientVpnEndpointId);
+        }),
+        () => live,
+        get("ClientVpnEndpointId"),
+        lives.getById({
+          type: "ClientVpnEndpoint",
+          group: "EC2",
+          providerName: config.providerName,
+        }),
+        get("name", live.ClientVpnEndpointId),
+        (clientVpnEndpoint) =>
+          `client-vpn-rule-assoc::${clientVpnEndpoint}::${live.TargetNetworkCidr}`,
+      ])(),
+  findId,
+  omitProperties: ["ClientVpnEndpointId", "Status"],
+  inferName:
+    ({ dependenciesSpec: { clientVpnEndpoint } }) =>
+    ({ TargetNetworkCidr }) =>
+      pipe([
+        tap((params) => {
+          assert(clientVpnEndpoint);
+          assert(TargetNetworkCidr);
+        }),
+        () =>
+          `client-vpn-rule-assoc::${clientVpnEndpoint}::${TargetNetworkCidr}`,
+      ])(),
+  propertiesDefault: {},
+  compare: compare({ filterAll: () => pick([]) }),
+  filterLive: () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      omitIfEmpty(["GroupId"]),
+    ]),
+  dependencies: {
+    clientVpnEndpoint: {
+      type: "ClientVpnEndpoint",
+      group: "EC2",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("ClientVpnEndpointId"),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeClientVpnAuthorizationRules-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "ClientVpnEndpoint", group: "EC2" },
+          pickKey: pipe([pick(["ClientVpnEndpointId"])]),
+          method: "describeClientVpnAuthorizationRules",
+          getParam: "AuthorizationRules",
+          config,
+          decorate,
+        }),
+    ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeClientVpnAuthorizationRules-property
   getById: {
     method: "describeClientVpnAuthorizationRules",
@@ -70,73 +133,29 @@ const createModel = ({ config }) => ({
     isInstanceError: eq(get("Status.Code"), "failed"),
     getErrorMessage: get("Status.Message", "error"),
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2ClientVpnAuthorizationRule = ({ spec, config }) =>
-  createAwsResource({
-    model: createModel({ config }),
-    spec,
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties,
+    // TODO AD
+    dependencies: { clientVpnEndpoint, activeDirectoryGroup },
     config,
-    findName:
-      ({ lives }) =>
-      (live) =>
-        pipe([
-          tap(() => {
-            assert(live.TargetNetworkCidr);
-            assert(live.ClientVpnEndpointId);
-          }),
-          () => live,
-          get("ClientVpnEndpointId"),
-          lives.getById({
-            type: "ClientVpnEndpoint",
-            group: "EC2",
-            providerName: config.providerName,
-          }),
-          get("name", live.ClientVpnEndpointId),
-          (clientVpnEndpoint) =>
-            `client-vpn-rule-assoc::${clientVpnEndpoint}::${live.TargetNetworkCidr}`,
-        ])(),
-    findId,
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeClientVpnAuthorizationRules-property
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () =>
-          client.getListWithParent({
-            parent: { type: "ClientVpnEndpoint", group: "EC2" },
-            pickKey: pipe([pick(["ClientVpnEndpointId"])]),
-            method: "describeClientVpnAuthorizationRules",
-            getParam: "AuthorizationRules",
-            config,
-            decorate,
-          }),
-      ])(),
-    getByName: getByNameCore,
-    configDefault: ({
-      name,
-      namespace,
-      properties,
-      // TODO AD
-      dependencies: { clientVpnEndpoint, activeDirectoryGroup },
-      config,
-    }) =>
-      pipe([
-        tap((params) => {
-          assert(clientVpnEndpoint);
-        }),
-        () => properties,
-        defaultsDeep({
-          ClientVpnEndpointId: getField(
-            clientVpnEndpoint,
-            "ClientVpnEndpointId"
-          ),
-        }),
-        // TODO
-        // when(
-        //   () => activeDirectoryGroup,
-        //   defaultsDeep({
-        //     AccessGroupId: getField(activeDirectoryGroup, "TODOId"),
-        //   })
-        // ),
-      ])(),
-  });
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(clientVpnEndpoint);
+      }),
+      () => properties,
+      defaultsDeep({
+        ClientVpnEndpointId: getField(clientVpnEndpoint, "ClientVpnEndpointId"),
+      }),
+      // TODO
+      // when(
+      //   () => activeDirectoryGroup,
+      //   defaultsDeep({
+      //     AccessGroupId: getField(activeDirectoryGroup, "TODOId"),
+      //   })
+      // ),
+    ])(),
+});

@@ -90,6 +90,19 @@ exports.AppflowFlow = () => ({
       dependencyIds: ({ lives, config }) =>
         pipe([get("destinationFlowConfigList"), pluck("connectorProfileName")]),
     },
+    //TODO
+    // glueDataCatalog: {
+    //   type: "DataCatalog",
+    //   group: "Athena",
+    //   dependencyId: ({ lives, config }) =>
+    //     pipe([get("metadataCatalogConfig.glueDataCatalog.databaseName")]),
+    // },
+    // iamRoleDataCatalog: {
+    //   type: "Role",
+    //   group: "IAM",
+    //   dependencyId: ({ lives, config }) =>
+    //     pipe([get("metadataCatalogConfig.glueDataCatalog.roleArn")]),
+    // },
     eventBusDestinations: {
       type: "EventBus",
       group: "CloudWatchEvents",

@@ -5,14 +5,7 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
-
-const {
-  tagResource,
-  untagResource,
-  assignTags,
-  managedByEFS,
-} = require("./BackupCommon");
+const { Tagger, assignTags, managedByEFS } = require("./BackupCommon");
 
 const buildArn = () => get("BackupVaultArn");
 
@@ -27,10 +20,35 @@ const managedByOther = () =>
     managedByEFS,
   ]);
 
-const model = ({ config }) => ({
+exports.BackupBackupVault = ({ spec, config }) => ({
+  type: "BackupVault",
   package: "backup",
   client: "Backup",
+  inferName: () => get("BackupVaultName"),
+  findName: () => pipe([get("BackupVaultName")]),
+  findId: () => pipe([get("BackupVaultName")]),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
+  propertiesDefault: {},
+  omitProperties: [
+    "BackupVaultArn",
+    "EncryptionKeyArn",
+    "CreationDate",
+    "NumberOfRecoveryPoints",
+    "Locked",
+    "CreatorRequestId",
+    "MaxRetentionDays",
+    "MinRetentionDays",
+  ],
+  dependencies: {
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      excludeDefaultDependencies: true,
+      dependencyId: ({ lives, config }) => pipe([get("EncryptionKeyArn")]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#describeBackupVault-property
   getById: {
     method: "describeBackupVault",
@@ -78,44 +96,31 @@ const model = ({ config }) => ({
         ])
       ),
   },
-});
-
-exports.BackupBackupVault = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { kmsKey },
     config,
-    findName: () => pipe([get("BackupVaultName")]),
-    findId: () => pipe([get("BackupVaultName")]),
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { kmsKey },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTagsObject({
-            name,
-            config,
-            namespace,
-            userTags: Tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({
+          name,
+          config,
+          namespace,
+          userTags: Tags,
         }),
-        when(
-          () => kmsKey,
-          defaultsDeep({ EncryptionKeyArn: getField(kmsKey, "Arn") })
-        ),
-      ])(),
-  });
+      }),
+      when(
+        () => kmsKey,
+        defaultsDeep({ EncryptionKeyArn: getField(kmsKey, "Arn") })
+      ),
+    ])(),
+});

@@ -18,6 +18,7 @@ const {
   switchCase,
   flatMap,
   gte,
+  set,
 } = require("rubico");
 const {
   uniq,
@@ -105,6 +106,23 @@ const omitIfEmpty = (paths) => (obj) =>
     }),
   ])();
 exports.omitIfEmpty = omitIfEmpty;
+
+const jsonParsePath = (path) =>
+  pipe([
+    tap((params) => {
+      assert(path);
+    }),
+    when(get(path), pipe([set(path, pipe([get(path), JSON.parse]))])),
+  ]);
+
+exports.jsonParsePaths = (paths) => (obj) =>
+  pipe([
+    tap(() => {
+      assert(paths);
+    }),
+    () => paths,
+    reduce((acc, path) => pipe([() => acc, jsonParsePath(path)])(), obj),
+  ])();
 
 const differenceObject =
   (exclude = {}) =>

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq } = require("rubico");
+const { pipe, tap, get, eq, or, not } = require("rubico");
 const {
   defaultsDeep,
   callProp,
@@ -12,9 +12,7 @@ const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createAwsResource } = require("../AwsClient");
-
-const { tagResource, untagResource } = require("./BatchCommon");
+const { Tagger } = require("./BatchCommon");
 
 const buildArn = () => get("jobDefinitionArn");
 
@@ -41,10 +39,62 @@ const decorate = () =>
     ]),
   ]);
 
-const model = ({ config }) => ({
+exports.BatchJobDefinition = ({}) => ({
+  type: "JobDefinition",
   package: "batch",
   client: "Batch",
+  inferName: () => get("jobDefinitionName"),
+  findName: () => pipe([get("jobDefinitionName")]),
+  findName:
+    ({ lives }) =>
+    (live) =>
+      pipe([
+        () => live,
+        get("jobDefinitionName"),
+        unless(
+          eq(() => live.status, "ACTIVE"),
+          append(`::${live.revision}`)
+        ),
+      ])(),
+  findId: () => pipe([get("jobDefinitionArn")]),
+  cannotBeDeleted,
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreResource: () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      or([not(get("live.latest")), not(eq(get("live.status"), "ACTIVE"))]),
+    ]),
+  propertiesDefault: {
+    propagateTags: false,
+    containerOrchestrationType: "ECS",
+    containerProperties: {
+      networkConfiguration: {
+        assignPublicIp: "DISABLED",
+      },
+    },
+  },
+  omitProperties: [
+    "status",
+    "revision",
+    "jobDefinitionArn",
+    "containerProperties.executionRoleArn",
+    "latest",
+  ],
+  dependencies: {
+    roleExecution: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("containerProperties.executionRoleArn")]),
+    },
+    jobRole: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => pipe([get("jobRoleArn")]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#describeJobDefinitions-property
   getById: {
     method: "describeJobDefinitions",
@@ -84,48 +134,25 @@ const model = ({ config }) => ({
     pickId,
     isInstanceDown: eq(get("status"), "INACTIVE"),
   },
-});
-
-exports.BatchJobDefinition = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: { roleExecution },
     config,
-    findName: () => pipe([get("jobDefinitionName")]),
-    findName:
-      ({ lives }) =>
-      (live) =>
-        pipe([
-          () => live,
-          get("jobDefinitionName"),
-          unless(
-            eq(() => live.status, "ACTIVE"),
-            append(`::${live.revision}`)
-          ),
-        ])(),
-    findId: () => pipe([get("jobDefinitionArn")]),
-    cannotBeDeleted,
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { tags, ...otherProps },
-      dependencies: { roleExecution },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          tags: buildTagsObject({ name, config, namespace, userTags: tags }),
-          containerProperties: {
-            executionRoleArn: getField(roleExecution, "Arn"),
-          },
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
+        containerProperties: {
+          executionRoleArn: getField(roleExecution, "Arn"),
+        },
+      }),
+    ])(),
+});

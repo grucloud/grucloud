@@ -1,16 +1,39 @@
 const assert = require("assert");
-const { pipe, tap, get, omit, pick, eq } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
-const { buildTags } = require("../AwsCommon");
+const { pipe, tap, get, omit, pick, eq, assign } = require("rubico");
+const { defaultsDeep, size, when } = require("rubico/x");
+const { buildTags, compareAws } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource, assignTags } = require("./KinesisCommon");
 
 const pickId = pipe([pick(["StreamName"])]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kinesis.html
+exports.KinesisStream = ({}) => ({
+  type: "Stream",
   package: "kinesis",
   client: "Kinesis",
+  inferName: () => get("StreamName"),
+  findName: () => pipe([get("StreamName")]),
+  findId: () => pipe([get("StreamARN")]),
+  omitProperties: [
+    "StreamARN",
+    "StreamCreationTimestamp",
+    "StreamStatus",
+    "HasMoreShards",
+    "Shards",
+    "EnhancedMonitoring", // TODO
+  ],
+  propertiesDefault: { EncryptionType: "NONE", RetentionPeriodHours: 24 },
+  compare: compareAws({ filterTarget: () => pipe([omit(["ShardCount"])]) }),
+  filterLive: () =>
+    pipe([
+      when(
+        eq(get("StreamModeDetails.StreamMode"), "PROVISIONED"),
+        pipe([assign({ ShardCount: pipe([get("Shards"), size]) })])
+      ),
+    ]),
+  getByName: ({ getList, endpoint, getById }) =>
+    pipe([({ name }) => ({ StreamName: name }), getById({})]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kinesis.html#describeStream-property
   getById: {
@@ -48,30 +71,17 @@ const model = ({ config }) => ({
     pickId,
     //EnforceConsumerDeletion
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kinesis.html
-exports.KinesisStream = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) => ({ tagResource, untagResource }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
     config,
-    findName: () => pipe([get("StreamName")]),
-    findId: () => pipe([get("StreamARN")]),
-    getByName: ({ getList, endpoint, getById }) =>
-      pipe([({ name }) => ({ StreamName: name }), getById({})]),
-    tagResource: tagResource,
-    untagResource: untagResource,
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-        }),
-      ])(),
-  });
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])(),
+});

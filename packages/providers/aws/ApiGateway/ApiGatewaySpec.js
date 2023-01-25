@@ -1,17 +1,10 @@
 const assert = require("assert");
-const { pipe, assign, map, tap, omit, pick, get, eq, and } = require("rubico");
-const { defaultsDeep, first, find, when, uniq } = require("rubico/x");
+const { pipe, map } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
-const {
-  omitIfEmpty,
-  replaceWithName,
-  flattenObject,
-} = require("@grucloud/core/Common");
-const {
-  isOurMinionObject,
-  compareAws,
-  replaceAccountAndRegion,
-} = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
+
+const { createAwsService } = require("../AwsService");
 
 const { RestApi } = require("./RestApi");
 const { Stage } = require("./Stage");
@@ -23,329 +16,29 @@ const { UsagePlanKey } = require("./UsagePlanKey");
 
 const GROUP = "APIGateway";
 const tagsKey = "tags";
-const compareAPIGateway = compareAws({ tagsKey });
+const compare = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
-    {
-      type: "Account",
-      Client: Account,
-      inferName: () => () => "default",
-      // TODO remove
-      isOurMinion:
-        ({ config }) =>
-        () =>
-          true,
-      omitProperties: ["apiKeyVersion", "throttleSettings"],
-      propertiesDefault: {
-        features: ["UsagePlans"],
-      },
-      filterLive: () => pipe([omit(["features", "cloudwatchRoleArn"])]),
-      dependencies: {
-        cloudwatchRole: {
-          type: "Role",
-          group: "IAM",
-          dependencyId: ({ lives, config }) => get("cloudwatchRoleArn"),
-        },
-      },
-    },
-    {
-      type: "ApiKey",
-      Client: ApiKey,
-      inferName: () => get("name"),
-      omitProperties: ["id", "createdDate", "lastUpdatedDate", "stageKeys"],
-      propertiesDefault: { enabled: true },
-    },
-    {
-      type: "RestApi",
-      Client: RestApi,
-      inferName: () => get("name"),
-      omitProperties: ["id", "createdDate", "deployments", "version"],
-      propertiesDefault: { disableExecuteApiEndpoint: false },
-      compare: compareAPIGateway({
-        filterTarget: () => pipe([omit(["deployment"])]),
-      }),
-      filterLive:
-        ({ providerConfig, lives }) =>
-        (live) =>
-          pipe([
-            tap(() => {
-              assert(providerConfig);
-            }),
-            () => live,
-            pick(["name", "apiKeySource", "endpointConfiguration", "schema"]),
-            assign({
-              schema: pipe([
-                get("schema"),
-                assign({
-                  paths: pipe([
-                    get("paths"),
-                    map(
-                      pipe([
-                        map(
-                          pipe([
-                            when(
-                              get("x-amazon-apigateway-integration"),
-                              assign({
-                                "x-amazon-apigateway-integration": pipe([
-                                  get("x-amazon-apigateway-integration"),
-                                  tap((params) => {
-                                    assert(true);
-                                  }),
-                                  //TODO requestTemplates
-                                  when(
-                                    get("credentials"),
-                                    assign({
-                                      credentials: pipe([
-                                        get("credentials"),
-                                        replaceAccountAndRegion({
-                                          providerConfig,
-                                          lives,
-                                        }),
-                                      ]),
-                                    })
-                                  ),
-                                  when(
-                                    get("uri"),
-                                    assign({
-                                      uri: pipe([
-                                        get("uri"),
-                                        replaceAccountAndRegion({
-                                          providerConfig,
-                                          lives,
-                                        }),
-                                      ]),
-                                    })
-                                  ),
-                                ]),
-                              })
-                            ),
-                          ])
-                        ),
-                      ])
-                    ),
-                  ]),
-                }),
-              ]),
-              deployment: pipe([
-                () => live,
-                get("deployments"),
-                first,
-                get("id"),
-                (deploymentId) =>
-                  pipe([
-                    () => lives,
-                    find(
-                      and([
-                        eq(get("groupType"), "APIGateway::Stage"),
-                        eq(get("live.deploymentId"), deploymentId),
-                      ])
-                    ),
-                    get("live.stageName"),
-                  ])(),
-                (stageName) => ({
-                  stageName,
-                }),
-              ]),
-            }),
-          ])(),
-      dependencies: {
-        roles: {
-          type: "Role",
-          group: "IAM",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("schema.paths"),
-              flattenObject({ filterKey: (key) => key === "credentials" }),
-              map(
-                pipe([
-                  lives.getById({
-                    type: "Role",
-                    group: "IAM",
-                    providerName: config.providerName,
-                  }),
-                  get("id"),
-                ])
-              ),
-              //TODO move uniq to flattenObject
-              uniq,
-            ]),
-        },
-      },
-    },
-    {
-      type: "Stage",
-      Client: Stage,
-      omitProperties: [
-        "deploymentId",
-        "clientCertificateId",
-        "createdDate",
-        "lastUpdatedDate",
-        "cacheClusterStatus",
-        "webAclArn",
-        "accessLogSettings",
-        "restApiId",
-        "restApiName",
-      ],
-      inferName:
-        ({ dependenciesSpec: { restApi } }) =>
-        ({ stageName }) =>
-          pipe([
-            tap(() => {
-              assert(stageName);
-              assert(restApi);
-            }),
-            () => `${restApi}::${stageName}`,
-          ])(),
-      propertiesDefault: { cacheClusterEnabled: false, tracingEnabled: false },
-      compare: compareAPIGateway({
-        filterLive: () => pipe([omitIfEmpty(["methodSettings"])]),
-      }),
-      filterLive: () =>
-        pipe([
-          pick([
-            "stageName",
-            "description",
-            "StageVariables",
-            "methodSettings",
-            "accessLogSettings",
-            "cacheClusterEnabled",
-            "cacheClusterSize",
-            "tracingEnabled",
-          ]),
-          omitIfEmpty(["methodSettings"]),
-          omit(["accessLogSettings.destinationArn"]),
-        ]),
-      dependencies: {
-        restApi: {
-          type: "RestApi",
-          group: "APIGateway",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("restApiId"),
-        },
-        // deployment: {
-        //   type: "Deployment",
-        //   group: "APIGateway",
-        //   dependencyId: ({ lives, config }) => get(""),
-        // },
-        account: {
-          type: "Account",
-          group: "APIGateway",
-          excludeDefaultDependencies: true,
-          dependencyId:
-            ({ lives, config }) =>
-            () =>
-              "default",
-        },
-      },
-    },
-    {
-      type: "Authorizer",
-      Client: Authorizer,
-      inferName: () => get("name"),
-      omitProperties: ["id", "restApiId", "providerARNs"],
-      dependencies: {
-        restApi: {
-          type: "RestApi",
-          group: "APIGateway",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("restApiId"),
-        },
-        lambdaFunction: {
-          type: "Function",
-          group: "Lambda",
-          dependencyId: ({ lives, config }) => get("authorizerUri"),
-        },
-        userPools: {
-          type: "UserPool",
-          group: "CognitoIdentityServiceProvider",
-          list: true,
-          dependencyId: ({ lives, config }) => get("providerARNs"),
-        },
-      },
-    },
-    {
-      type: "UsagePlan",
-      Client: UsagePlan,
-      omitProperties: ["id"],
-      propertiesDefault: {},
-      inferName: () => get("name"),
-      filterLive: ({ lives, providerConfig }) =>
-        pipe([
-          assign({
-            apiStages: pipe([
-              get("apiStages"),
-              map(
-                assign({
-                  apiId: pipe([
-                    get("apiId"),
-                    replaceWithName({
-                      groupType: "APIGateway::RestApi",
-                      path: "id",
-                      pathLive: "live.id",
-                      providerConfig,
-                      lives,
-                    }),
-                  ]),
-                })
-              ),
-            ]),
-          }),
-        ]),
-      dependencies: {
-        stages: {
-          type: "Stage",
-          group: GROUP,
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("apiStages"),
-              map(({ apiId, stage }) =>
-                pipe([
-                  () =>
-                    `arn:aws:apigateway:${config.region}::/restapis/${apiId}/stages/${stage}`,
-                  lives.getById({
-                    type: "Stage",
-                    group: "APIGateway",
-                    providerName: config.providerName,
-                  }),
-                  get("id"),
-                ])()
-              ),
-            ]),
-        },
-      },
-    },
-    {
-      type: "UsagePlanKey",
-      Client: UsagePlanKey,
-      omitProperties: ["id", "keyId", "usagePlanId"],
-      inferName: () => pipe([get("name")]),
-      propertiesDefault: { keyType: "API_KEY" },
-      dependencies: {
-        usagePlan: {
-          type: "UsagePlan",
-          group: GROUP,
-          parent: true,
-          dependencyId: ({ lives, config }) => get("usagePlanId"),
-        },
-        apiKey: {
-          type: "ApiKey",
-          group: GROUP,
-          dependencyId: ({ lives, config }) => get("keyId"),
-        },
-      },
-    },
+    Account({}),
+    ApiKey({}),
+    Authorizer({}),
+    RestApi({ compare }),
+    Stage({ compare }),
+    UsagePlan({ compare }),
+    UsagePlanKey({ compare }),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      tagsKey,
-      compare: compareAPIGateway({}),
-      // TODO remove
-      // isOurMinion: ({ live, config }) =>
-      //   isOurMinionObject({ tags: live.tags, config }),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        tagsKey,
+        compare: compare({}),
+        // TODO remove
+        // isOurMinion: ({ live, config }) =>
+        //   isOurMinionObject({ tags: live.tags, config }),
+      }),
+    ])
   ),
 ]);

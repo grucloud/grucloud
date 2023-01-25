@@ -1,78 +1,129 @@
 const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { defaultsDeep, callProp, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
-const findId = () => get("RouteId");
-const findName = () =>
-  pipe([({ ApiName, RouteKey }) => `route::${ApiName}::${RouteKey}`]);
+const { dependencyIdApi, ignoreErrorCodes } = require("./ApiGatewayV2Common");
 
 const pickId = pick(["ApiId", "RouteId"]);
 
-exports.Route = ({ spec, config }) => {
-  const apiGateway = createApiGatewayV2(config);
-  const client = AwsClient({ spec, config })(apiGateway);
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+  ]);
 
-  const getById = client.getById({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
+exports.ApiGatewayV2Route = () => ({
+  type: "Route",
+  package: "apigatewayv2",
+  client: "ApiGatewayV2",
+  inferName:
+    ({ dependenciesSpec: { api } }) =>
+    ({ RouteKey }) =>
+      pipe([
+        tap((params) => {
+          assert(RouteKey);
+          assert(api);
+        }),
+        () => `route::${api}::${RouteKey}`,
+      ])(),
+  findName: () =>
+    pipe([({ ApiName, RouteKey }) => `route::${ApiName}::${RouteKey}`]),
+  findId: () =>
+    pipe([
+      get("RouteId"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  ignoreErrorCodes,
+  propertiesDefault: {
+    ApiKeyRequired: false,
+    AuthorizationScopes: [],
+    AuthorizationType: "NONE",
+    RequestModels: {},
+  },
+  omitProperties: ["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"],
+  dependencies: {
+    api: {
+      type: "Api",
+      group: "ApiGatewayV2",
+      parent: true,
+      dependencyId: dependencyIdApi,
+    },
+    integration: {
+      type: "Integration",
+      group: "ApiGatewayV2",
+      parent: true,
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("Target", ""),
+          callProp("replace", "integrations/", ""),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
+    },
+    authorizer: {
+      type: "Authorizer",
+      group: "ApiGatewayV2",
+      dependencyId: ({ lives, config }) => get("AuthorizerId"),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getRoute-property
+  getById: {
     pickId,
     method: "getRoute",
-    ignoreErrorCodes,
     decorate: ({ live: { ApiId } }) =>
       pipe([
         defaultsDeep({
           ApiId,
         }),
       ]),
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getRoutes-property
-  const getList = client.getListWithParent({
-    parent: { type: "Api", group: "ApiGatewayV2" },
-    pickKey: pipe([pick(["ApiId"])]),
-    method: "getRoutes",
-    getParam: "Items",
-    config,
-    decorate: ({ parent: { ApiId, Name: ApiName } }) =>
-      pipe([
-        tap((params) => {
-          assert(ApiId);
-          assert(ApiName);
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listRoutes-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Api", group: "ApiGatewayV2" },
+          pickKey: pipe([pick(["ApiId"])]),
+          method: "getRoutes",
+          getParam: "Items",
+          config,
+          decorate: ({ parent: { ApiId, Name: ApiName } }) =>
+            pipe([
+              tap((params) => {
+                assert(ApiId);
+                assert(ApiName);
+              }),
+              defaultsDeep({ ApiId, ApiName }),
+            ]),
         }),
-        defaultsDeep({ ApiId, ApiName }),
-      ]),
-  });
-
-  // Get Route by name
-  const getByName = getByNameCore({ getList, findName });
-
+    ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createRoute-property
-  const create = client.create({
+  create: {
     method: "createRoute",
     pickCreated: ({ payload }) =>
       pipe([defaultsDeep({ ApiId: payload.ApiId })]),
-    getById,
-  });
-
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateRoute-property
-  const update = client.update({
-    pickId,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateRoute-property
+  update: {
     method: "updateRoute",
-    getById,
-  });
-
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteRoute-property
-  const destroy = client.destroy({
-    pickId,
+  destroy: {
     method: "deleteRoute",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const configDefault = ({
+    pickId,
+  },
+  getByName: getByNameCore,
+  configDefault: ({
     name,
     namespace,
     properties,
@@ -92,18 +143,5 @@ exports.Route = ({ spec, config }) => {
         () => authorizer,
         defaultsDeep({ AuthorizerId: getField(authorizer, "AuthorizerId") })
       ),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    update,
-    destroy,
-    getById,
-    getByName,
-    getList,
-    configDefault,
-  };
-};
+    ])(),
+});

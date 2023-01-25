@@ -162,6 +162,8 @@ module.exports = pipe([
         "Configuration.StateReasonCode",
         "Configuration.Version",
         "Configuration.VpcConfig",
+        "Configuration.SigningProfileVersionArn",
+        "Configuration.SigningJobArn",
       ],
       propertiesDefault: {
         Configuration: {
@@ -300,6 +302,7 @@ module.exports = pipe([
               ])
             ),
           ])(),
+      // TODO SigningJobArn
       dependencies: {
         layers: {
           type: "Layer",
@@ -492,10 +495,10 @@ module.exports = pipe([
             omitIfEmpty([
               "StartingPosition",
               "StartingPositionTimestamp",
-              "ParallelizationFactor",
-              "BisectBatchOnFunctionError",
-              "MaximumRetryAttempts",
-              "TumblingWindowInSeconds",
+              //"ParallelizationFactor",
+              //"BisectBatchOnFunctionError",
+              //"MaximumRetryAttempts",
+              //"TumblingWindowInSeconds",
               "FunctionResponseTypes",
             ]),
             omitDestinationConfig,

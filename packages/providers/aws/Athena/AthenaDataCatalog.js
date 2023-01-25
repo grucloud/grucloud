@@ -5,8 +5,6 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-
 const { Tagger } = require("./AthenaCommon");
 
 const ignoreErrorMessages = ["was not found"];
@@ -32,9 +30,49 @@ const decorate = ({ endpoint }) =>
 
 const cannotBeDeleted = () => pipe([eq(get("Name"), "AwsDataCatalog")]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html
+exports.AthenaDataCatalog = ({ compare }) => ({
+  type: "DataCatalog",
   package: "athena",
   client: "Athena",
+  propertiesDefault: {},
+  omitProperties: [],
+  inferName: () => get("Name"),
+  cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("Name"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])(),
+
   ignoreErrorCodes: ["ResourceNotFoundException"],
   ignoreErrorMessages,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#getDataCatalog-property
@@ -74,49 +112,4 @@ const model = ({ config }) => ({
     pickId,
     ignoreErrorMessages,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html
-exports.AthenaDataCatalog = ({ compare }) => ({
-  type: "DataCatalog",
-  propertiesDefault: {},
-  omitProperties: [],
-  inferName: () => get("Name"),
-  cannotBeDeleted,
-  managedByOther: cannotBeDeleted,
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      findName: () =>
-        pipe([
-          get("Name"),
-          tap((name) => {
-            assert(name);
-          }),
-        ]),
-      findId: () =>
-        pipe([
-          get("Name"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
-      getByName: getByNameCore,
-      ...Tagger({ buildArn: buildArn(config) }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { Tags, ...otherProps },
-        dependencies: {},
-        config,
-      }) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-          }),
-        ])(),
-    }),
 });

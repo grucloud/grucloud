@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, map, tap, get, assign } = require("rubico");
-const { defaultsDeep, pluck } = require("rubico/x");
+const { pipe, map, tap } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { createAwsService } = require("../AwsService");
 

@@ -5,9 +5,10 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createAwsResource } = require("../AwsClient");
+const { envVarName } = require("@grucloud/core/generatorUtils");
+const { deepOmit } = require("@grucloud/core/deepOmit");
 
-const { tagResource, untagResource } = require("./MQCommon");
+const { Tagger } = require("./MQCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const buildArn = () => get("BrokerArn");
@@ -19,9 +20,100 @@ const pickId = pipe([
   pick(["BrokerId"]),
 ]);
 
-const model = ({ config }) => ({
+exports.MQBroker = ({ compare }) => ({
+  type: "Broker",
   package: "mq",
   client: "Mq",
+  inferName: () => get("BrokerName"),
+  findName: () => pipe([get("BrokerName")]),
+  findId: () => pipe([get("BrokerId")]),
+  omitProperties: [
+    "BrokerArn",
+    "BrokerId",
+    "BrokerState",
+    "Created",
+    "SubnetIds",
+    "SecurityGroups",
+    "BrokerInstances",
+    "Configuration",
+    "Logs.AuditLogGroup",
+    "Logs.GeneralLogGroup",
+  ],
+  propertiesDefault: {},
+  dependencies: {
+    configuration: {
+      type: "Configuration",
+      group: "MQ",
+      dependencyId: ({ lives, config }) => pipe([get("Configuration.Id")]),
+    },
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      excludeDefaultDependencies: true,
+      dependencyId: ({ lives, config }) => get("EncryptionOptions.KmsKeyId"),
+    },
+    logGroupAudit: {
+      type: "LogGroup",
+      group: "CloudWatchLogs",
+      dependencyId: ({ lives, config }) => get("Logs.AuditLogGroup"),
+    },
+    logGroupGeneral: {
+      type: "LogGroup",
+      group: "CloudWatchLogs",
+      dependencyId: ({ lives, config }) => get("Logs.GeneralLogGroup"),
+    },
+    securityGroups: {
+      type: "SecurityGroup",
+      group: "EC2",
+      list: true,
+      excludeDefaultDependencies: true,
+      dependencyIds: ({ lives, config }) => get("SecurityGroups"),
+    },
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      excludeDefaultDependencies: true,
+      dependencyIds: ({ lives, config }) => get("SubnetIds"),
+    },
+  },
+  compare: compare({
+    filterTarget: () => pipe([deepOmit(["Users[].Password"])]),
+  }),
+  environmentVariables: [
+    {
+      path: "Users[].Password",
+      suffix: "PASSWORD",
+      array: true,
+      rejectEnvironmentVariable: () => () => true,
+      writeInEnvFile: () => () => true,
+    },
+  ],
+  filterLive:
+    ({ lives, providerConfig }) =>
+    (live) =>
+      pipe([
+        () => live,
+        assign({
+          Users: pipe([
+            get("Users"),
+            map.withIndex((user, index) =>
+              pipe([
+                () => user,
+                assign({
+                  Password: pipe([
+                    () => () =>
+                      `JSON.parse(process.env.${envVarName({
+                        name: live.BrokerName,
+                        suffix: `PASSWORD`,
+                      })})[${index}]`,
+                  ]),
+                }),
+              ])()
+            ),
+          ]),
+        }),
+      ])(),
   ignoreErrorCodes: ["NotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MQ.html#describeBroker-property
   getById: {
@@ -71,64 +163,53 @@ const model = ({ config }) => ({
     method: "deleteBroker",
     pickId,
   },
-});
-
-exports.MQBroker = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {
+      configuration,
+      //TODO
+      logGroupAudit,
+      logGroupGeneral,
+      subnets,
+      securityGroups,
+    },
     config,
-    findName: () => pipe([get("BrokerName")]),
-    findId: () => pipe([get("BrokerId")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {
-        configuration,
-        //TODO
-        logGroupAudit,
-        logGroupGeneral,
-        subnets,
-        securityGroups,
-      },
-      config,
-    }) =>
-      pipe([
-        () => otherProps,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      }),
+      when(
+        () => configuration,
         defaultsDeep({
-          Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-        }),
-        when(
-          () => configuration,
-          defaultsDeep({
-            Configuration: { Id: getField(configuration, "Id") },
-          })
-        ),
-        when(
-          () => subnets,
-          defaultsDeep({
-            SubnetIds: pipe([
-              () => subnets,
-              map((subnet) => getField(subnet, "SubnetId")),
-            ])(),
-          })
-        ),
-        when(
-          () => securityGroups,
-          defaultsDeep({
-            SecurityGroups: pipe([
-              () => securityGroups,
-              map((sg) => getField(sg, "GroupId")),
-            ])(),
-          })
-        ),
-      ])(),
-  });
+          Configuration: { Id: getField(configuration, "Id") },
+        })
+      ),
+      when(
+        () => subnets,
+        defaultsDeep({
+          SubnetIds: pipe([
+            () => subnets,
+            map((subnet) => getField(subnet, "SubnetId")),
+          ])(),
+        })
+      ),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          SecurityGroups: pipe([
+            () => securityGroups,
+            map((sg) => getField(sg, "GroupId")),
+          ])(),
+        })
+      ),
+    ])(),
+});

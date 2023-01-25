@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { map, tap, pipe, get, pick, assign, switchCase, eq } = require("rubico");
+const {
+  map,
+  tap,
+  pipe,
+  get,
+  pick,
+  assign,
+  switchCase,
+  eq,
+  and,
+} = require("rubico");
 const {
   pluck,
   unless,
@@ -9,8 +19,15 @@ const {
   append,
   identity,
   find,
+  last,
 } = require("rubico/x");
-const { createEndpoint, compareAws } = require("../AwsCommon");
+const {
+  createEndpoint,
+  compareAws,
+  replaceRegion,
+  replaceRegionAll,
+  replaceOwner,
+} = require("../AwsCommon");
 
 const createEC2 = createEndpoint("ec2", "EC2");
 exports.createEC2 = createEC2;
@@ -21,6 +38,58 @@ exports.compareEC2 = compareAws({
   getTargetTags,
   omitTargetKey: "TagSpecifications",
 });
+
+exports.buildAvailabilityZone = pipe([
+  get("AvailabilityZone"),
+  last,
+  (az) => () => "`${config.region}" + az + "`",
+]);
+
+exports.findDefaultWithVpcDependency = ({ resources, dependencies }) =>
+  pipe([
+    tap(() => {
+      assert(resources);
+      assert(dependencies);
+      assert(dependencies.vpc);
+    }),
+    () => resources,
+    find(
+      and([
+        get("isDefault"),
+        eq(get("live.VpcId"), get("vpc.live.VpcId")(dependencies)),
+      ])
+    ),
+  ])();
+
+exports.replacePeeringInfo = ({ resourceType, providerConfig }) =>
+  pipe([
+    get(resourceType),
+    assign({
+      OwnerId: pipe([get("OwnerId"), replaceOwner({ providerConfig })]),
+      Region: pipe([get("Region"), replaceRegionAll({ providerConfig })]),
+    }),
+  ]);
+
+exports.assignIpamRegion = ({ providerConfig }) =>
+  assign({
+    IpamRegion: pipe([get("IpamRegion"), replaceRegion({ providerConfig })]),
+  });
+
+exports.getResourceNameFromTag =
+  () =>
+  ({ Tags }) =>
+    pipe([
+      () => Tags,
+      find(eq(get("Key"), "Name")),
+      when(
+        isEmpty,
+        pipe([
+          () => Tags,
+          find(eq(get("Key"), "aws:cloudformation:logical-id")),
+        ])
+      ),
+      get("Value"),
+    ])();
 
 exports.findDependenciesVpc = ({ live }) => ({
   type: "Vpc",
