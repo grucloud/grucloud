@@ -43,6 +43,7 @@ describe("CloudWatchEvents", async function () {
         livesNotFound: ({ config }) => [
           { Rule: "my-rule", EventBusName: "default", Id: "invalid" },
         ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
