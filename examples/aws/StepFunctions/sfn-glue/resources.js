@@ -83,20 +83,15 @@ exports.createResources = () => [
                 Sid: "Stmt1647307985962",
                 Action: ["states:StartExecution"],
                 Effect: "Allow",
-                Resource: `${getId({
-                  type: "StateMachine",
-                  group: "StepFunctions",
-                  name: "aws-step-function-workflow",
-                })}`,
+                Resource: `arn:aws:states:${
+                  config.region
+                }:${config.accountId()}:stateMachine:aws-step-function-workflow`,
               },
             ],
           },
           PolicyName: "state_execution_policy",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      stateMachines: ["aws-step-function-workflow"],
     }),
   },
   {
