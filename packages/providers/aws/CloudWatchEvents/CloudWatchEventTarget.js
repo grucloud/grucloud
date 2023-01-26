@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, or, and, eq } = require("rubico");
+const { pipe, tap, get, pick, assign, or, and, eq, omit } = require("rubico");
 const {
   defaultsDeep,
   first,
@@ -202,7 +202,7 @@ const managedByOther = () =>
     ]),
   ]);
 
-const assignArnTarget = ({ dependencies }) =>
+const assignArnTarget = ({ dependencies, config }) =>
   pipe([
     assign({
       Arn: pipe([
@@ -287,10 +287,9 @@ exports.CloudWatchEventTarget = () => ({
     //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putTargets-property
     ...EventTargetDependencies,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#getTarget-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTargetsByRule-property
   getById: {
     method: "listTargetsByRule",
-    getField: "Targets",
     pickId: pipe([
       tap(({ Rule, EventBusName }) => {
         assert(Rule);
@@ -347,7 +346,13 @@ exports.CloudWatchEventTarget = () => ({
         Targets: [otherProps],
       }),
     ]),
-    pickCreated: ({ payload }) => pipe([() => payload]),
+    pickCreated: ({ payload }) =>
+      pipe([
+        () => payload,
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvent.html#updateTarget-property
   update: {
@@ -368,11 +373,22 @@ exports.CloudWatchEventTarget = () => ({
   },
   getByName:
     ({ getById }) =>
-    ({ name, lives, config }) =>
+    ({ name, lives, config, resolvedDependencies: { rule } }) =>
       pipe([
+        tap((params) => {
+          assert(rule);
+        }),
         () => name,
         callProp("split", "::"),
-        ([target, Rule, Id]) => ({ Rule, Id }),
+        tap(([target, Rule, Id]) => {
+          assert(Rule);
+          assert(Id);
+        }),
+        ([target, Rule, Id]) => ({
+          EventBusName: rule.live.EventBusName,
+          Rule,
+          Id,
+        }),
         getById({ lives, config }),
       ])(),
   configDefault: ({
@@ -394,6 +410,6 @@ exports.CloudWatchEventTarget = () => ({
           RoleArn: getField(role, "Arn"),
         })
       ),
-      assignArnTarget({ dependencies: otherDeps }),
+      assignArnTarget({ dependencies: otherDeps, config }),
     ])(),
 });
