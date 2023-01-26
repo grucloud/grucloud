@@ -5,11 +5,11 @@ skinparam monochrome true
 ++ aws
 +++ ApiGatewayV2
 ++++ Api (1)
-++++ Stage (1)
 ++++ Authorizer (1)
+++++ Deployment (1)
 ++++ Integration (1)
 ++++ Route (1)
-++++ Deployment (1)
+++++ Stage (1)
 +++ CognitoIdentityServiceProvider
 ++++ UserPool (1)
 ++++ UserPoolClient (1)
