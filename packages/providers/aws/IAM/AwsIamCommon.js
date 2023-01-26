@@ -75,12 +75,12 @@ exports.dependenciesPolicy = {
   //   list: true,
   //   ignoreOnDestroy: true,
   // },
-  stateMachines: {
-    type: "StateMachine",
-    group: "StepFunctions",
-    list: true,
-    ignoreOnDestroy: true,
-  },
+  // stateMachines: {
+  //   type: "StateMachine",
+  //   group: "StepFunctions",
+  //   list: true,
+  //   ignoreOnDestroy: true,
+  // },
   logGroups: {
     type: "LogGroup",
     group: "CloudWatchLogs",

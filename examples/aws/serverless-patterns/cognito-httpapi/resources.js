@@ -16,17 +16,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Stage",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      AutoDeploy: true,
-      StageName: "$default",
-    }),
-    dependencies: ({}) => ({
-      api: "sam-app",
-    }),
-  },
-  {
     type: "Authorizer",
     group: "ApiGatewayV2",
     properties: ({}) => ({
@@ -40,6 +29,19 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       api: "sam-app",
       userPool: "UserPool-3Fx2HozhHSsp",
+    }),
+  },
+  {
+    type: "Deployment",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      Description:
+        "Automatic deployment triggered by changes to the Api configuration",
+      AutoDeployed: true,
+    }),
+    dependencies: ({}) => ({
+      api: "sam-app",
+      stage: "sam-app::$default",
     }),
   },
   {
@@ -72,16 +74,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
+    type: "Stage",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
-      AutoDeployed: true,
+      AutoDeploy: true,
+      StageName: "$default",
     }),
     dependencies: ({}) => ({
       api: "sam-app",
-      stage: "sam-app::$default",
     }),
   },
   {

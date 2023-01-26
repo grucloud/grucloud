@@ -91,7 +91,7 @@ List of resources for provider aws:
 * ECR: 
 [Repository](./resources/ECR/Repository.md), [Registry](./resources/ECR/Registry.md)
 * ECS: 
-[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [Service](./resources/ECS/Service.md), [TaskDefinition](./resources/ECS/TaskDefinition.md), [Task](./resources/ECS/Task.md)
+[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [Service](./resources/ECS/Service.md), [Task](./resources/ECS/Task.md), [TaskDefinition](./resources/ECS/TaskDefinition.md)
 * EFS: 
 [FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
@@ -156,6 +156,8 @@ List of resources for provider aws:
 [AccessPolicy](./resources/OpenSearchServerless/AccessPolicy.md), [Collection](./resources/OpenSearchServerless/Collection.md), [SecurityConfig](./resources/OpenSearchServerless/SecurityConfig.md), [SecurityPolicy](./resources/OpenSearchServerless/SecurityPolicy.md), [VpcEndpoint](./resources/OpenSearchServerless/VpcEndpoint.md)
 * Organisations: 
 [Account](./resources/Organisations/Account.md), [Policy](./resources/Organisations/Policy.md), [PolicyAttachment](./resources/Organisations/PolicyAttachment.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md), [Root](./resources/Organisations/Root.md)
+* Pipes: 
+[Pipe](./resources/Pipes/Pipe.md)
 * RAM: 
 [ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * RDS: 
