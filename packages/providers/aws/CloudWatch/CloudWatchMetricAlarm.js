@@ -9,6 +9,7 @@ const {
   eq,
   assign,
   switchCase,
+  map,
 } = require("rubico");
 const {
   defaultsDeep,
