@@ -53,7 +53,7 @@ exports.RDSDBCluster = ({ compare }) => ({
   client: "RDS",
   inferName: () => get("DBClusterIdentifier"),
   findName: () => get("DBClusterIdentifier"),
-  findId: () => get("DBClusterArn"),
+  findId: () => get("DBClusterIdentifier"),
   dependencies: {
     dbSubnetGroup: {
       type: "DBSubnetGroup",

@@ -1,6 +1,8 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, map, eq } = require("rubico");
-const { defaultsDeep, when, identity } = require("rubico/x");
+const { defaultsDeep, when, pluck } = require("rubico/x");
+
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -80,9 +82,30 @@ exports.MediaLiveInput = () => ({
       tap((params) => {
         assert(true);
       }),
-      get("Name"),
+      get("InputId"),
       tap((id) => {
         assert(id);
+      }),
+    ]),
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        MediaConnectFlows: pipe([
+          get("MediaConnectFlows"),
+          map(
+            assign({
+              FlowArn: pipe([
+                get("FlowArn"),
+                replaceWithName({
+                  groupType: "MediaConnect::Flow",
+                  path: "id",
+                  providerConfig,
+                  lives,
+                }),
+              ]),
+            })
+          ),
+        ]),
       }),
     ]),
   ignoreErrorCodes: ["NotFoundException"],
@@ -97,6 +120,13 @@ exports.MediaLiveInput = () => ({
       group: "MediaLive",
       list: true,
       dependencyIds: ({ lives, config }) => get("InputSecurityGroups"),
+    },
+    mediaConnectFlows: {
+      type: "Flow",
+      group: "MediaConnect",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("MediaConnectFlows"), pluck("FlowArn")]),
     },
     subnets: {
       type: "Subnet",
@@ -127,6 +157,7 @@ exports.MediaLiveInput = () => ({
   create: {
     method: "createInput",
     pickCreated: ({ payload }) => pipe([get("Input"), toInputId]),
+    shouldRetryOnExceptionMessages: ["MediaLive was denied access to this"],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaLive.html#updateInput-property
   update: {
@@ -144,6 +175,7 @@ exports.MediaLiveInput = () => ({
       }),
       eq(get("State"), "DELETED"),
     ]),
+    shouldRetryOnExceptionMessages: ["is busy, it cannot be deleted"],
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>
@@ -166,7 +198,7 @@ exports.MediaLiveInput = () => ({
         ])(),
         Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
       }),
-      when(() => iamRole, assign({ RoleArn: getField(iamRole, "Arn") })),
+      when(() => iamRole, assign({ RoleArn: () => getField(iamRole, "Arn") })),
       when(
         () => subnets,
         defaultsDeep({

@@ -313,6 +313,9 @@ exports.RDSDBInstance = ({ compare }) => ({
     pickId: pipe([pickId, defaultsDeep({ SkipFinalSnapshot: true })]),
     method: "deleteDBInstance",
     shouldRetryOnExceptionCodes: ["InvalidDBInstanceState"],
+    ignoreErrorMessages: [
+      "Deleting cluster instances isn't supported for DB engine postgres",
+    ],
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

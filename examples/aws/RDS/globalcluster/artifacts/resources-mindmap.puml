@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project globalcluster
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (6)
++++ IAM
+++++ Role (1)
++++ RDS
+++++ DBCluster (1)
+++++ DBSubnetGroup (1)
+@endmindmap
