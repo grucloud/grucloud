@@ -73,7 +73,6 @@ exports.FirehoseDeliveryStream = ({}) => ({
   inferName: () => get("DeliveryStreamName"),
   findName: () => pipe([get("DeliveryStreamName")]),
   findId: () => pipe([get("DeliveryStreamARN")]),
-  omitProperties: [],
   propertiesDefault: {},
   compare: compareAws({ filterTarget: () => pipe([omit([])]) }),
   omitProperties: [
@@ -306,7 +305,8 @@ exports.FirehoseDeliveryStream = ({}) => ({
             filter(not(isEmpty)),
           ])(),
     },
-    // Redshift
+    // TODO Redshift
+    // TODO  OpenSearch
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Firehose.html#describeDeliveryStream-property

@@ -92,19 +92,30 @@ describe("SecurityHub", async function () {
         groupType: "SecurityHub::ProductSubscription",
         livesNotFound: ({ config }) => [
           {
-            ProductArn: `arn:aws:securityhub:${
+            ProductArn: `arn:aws:securityhub:${config.region}::product/blabla/myproduct`,
+            ProductSubscriptionArn: `arn:aws:securityhub:${
               config.region
-            }:${config.accountId()}:product/blabla/myproduct`,
+            }:${config.accountId()}:product-subscription/blabla/myproduct`,
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("StandardsControl", () =>
+  it("StandardsControl", () =>
     pipe([
       () => ({
         groupType: "SecurityHub::StandardsControl",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            StandardsSubscriptionArn: `arn:aws:securityhub:${
+              config.region
+            }:${config.accountId()}:subscription/cis-aws-foundations-benchmark-ko/v/1.2.0`,
+            StandardsControlArn: `arn:aws:securityhub:${
+              config.region
+            }:${config.accountId()}:control/cis-aws-foundations-benchmark/v/1.2.0/1.10`,
+          },
+        ],
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());
