@@ -1,23 +1,25 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, pick, eq } = require("rubico");
-const { defaultsDeep, find, identity, unless, isEmpty } = require("rubico/x");
+const { pipe, tap, get, assign, pick, eq, fork, map } = require("rubico");
+const {
+  defaultsDeep,
+  find,
+  identity,
+  unless,
+  isEmpty,
+  callProp,
+  last,
+  prepend,
+} = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { replaceAccountAndRegion } = require("../AwsCommon");
 const { ignoreErrorCodes } = require("./SecurityHubCommon");
 
-const pickId = pipe([
-  tap(({ ProductArn }) => {
-    assert(ProductArn);
-  }),
-  pick(["ProductSubscriptionArn"]),
-]);
-
-const decorate = ({ endpoint }) =>
+const subscriptionToProduct = ({ config }) =>
   pipe([
-    tap((params) => {
-      assert(endpoint);
-    }),
+    callProp("split", "product-subscription/"),
+    last,
+    prepend(`arn:aws:securityhub:${config.region}::product/`),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html
@@ -26,7 +28,7 @@ exports.SecurityHubProductSubscription = () => ({
   package: "securityhub",
   client: "SecurityHub",
   propertiesDefault: {},
-  omitProperties: [],
+  omitProperties: ["ProductSubscriptionArn"],
   inferName: () =>
     pipe([
       get("ProductArn"),
@@ -68,10 +70,15 @@ exports.SecurityHubProductSubscription = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#getProductSubscription-property
   getById: {
     method: "listEnabledProductsForImport",
-    pickId,
-    decorate: ({ ProductArn }) =>
+    pickId: () => ({}),
+    decorate: ({ live: { ProductArn }, config }) =>
       pipe([
+        tap((params) => {
+          assert(ProductArn);
+          assert(config);
+        }),
         get("ProductSubscriptions"),
+        map(subscriptionToProduct({ config })),
         find(eq(identity, ProductArn)),
         unless(isEmpty, (ProductArn) => ({ ProductArn })),
       ]),
@@ -80,12 +87,19 @@ exports.SecurityHubProductSubscription = () => ({
   getList: {
     method: "listEnabledProductsForImport",
     getParam: "ProductSubscriptions",
-    decorate: ({ getById }) =>
+    decorate: ({ config }) =>
       pipe([
         tap((params) => {
           assert(true);
         }),
-        (ProductArn) => ({ ProductArn }),
+
+        fork({
+          ProductArn: subscriptionToProduct({ config }),
+          ProductSubscriptionArn: identity,
+        }),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#enableImportFindingsForProduct-property
@@ -97,10 +111,10 @@ exports.SecurityHubProductSubscription = () => ({
   destroy: {
     method: "disableImportFindingsForProduct",
     pickId: pipe([
-      tap(({ ProductArn }) => {
-        assert(ProductArn);
+      tap(({ ProductSubscriptionArn }) => {
+        assert(ProductSubscriptionArn);
       }),
-      ({ ProductArn }) => ({ ProductSubscriptionArn: ProductArn }),
+      pick(["ProductSubscriptionArn"]),
     ]),
   },
   getByName: getByNameCore,

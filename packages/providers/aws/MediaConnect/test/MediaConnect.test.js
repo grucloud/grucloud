@@ -6,7 +6,7 @@ const { awsResourceTest } = require("../../AwsResourceTester");
 const config = () => ({ includeGroups: ["MediaConnect"] });
 
 describe("MediaConnect", async function () {
-  it.skip("Flow", () =>
+  it("Flow", () =>
     pipe([
       () => ({
         config,

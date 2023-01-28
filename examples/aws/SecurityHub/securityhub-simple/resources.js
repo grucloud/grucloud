@@ -62,6 +62,110 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "ProductSubscription",
+    group: "SecurityHub",
+    properties: ({ config }) => ({
+      ProductArn: `arn:aws:securityhub:${config.region}::product/aws/access-analyzer`,
+    }),
+    dependencies: ({}) => ({
+      securityHubAccount: "default",
+    }),
+  },
+  {
+    type: "ProductSubscription",
+    group: "SecurityHub",
+    properties: ({ config }) => ({
+      ProductArn: `arn:aws:securityhub:${config.region}::product/aws/config`,
+    }),
+    dependencies: ({}) => ({
+      securityHubAccount: "default",
+    }),
+  },
+  {
+    type: "ProductSubscription",
+    group: "SecurityHub",
+    properties: ({ config }) => ({
+      ProductArn: `arn:aws:securityhub:${config.region}::product/aws/firewall-manager`,
+    }),
+    dependencies: ({}) => ({
+      securityHubAccount: "default",
+    }),
+  },
+  {
+    type: "ProductSubscription",
+    group: "SecurityHub",
+    properties: ({ config }) => ({
+      ProductArn: `arn:aws:securityhub:${config.region}::product/aws/guardduty`,
+    }),
+    dependencies: ({}) => ({
+      securityHubAccount: "default",
+    }),
+  },
+  {
+    type: "ProductSubscription",
+    group: "SecurityHub",
+    properties: ({ config }) => ({
+      ProductArn: `arn:aws:securityhub:${config.region}::product/aws/health`,
+    }),
+    dependencies: ({}) => ({
+      securityHubAccount: "default",
+    }),
+  },
+  {
+    type: "ProductSubscription",
+    group: "SecurityHub",
+    properties: ({ config }) => ({
+      ProductArn: `arn:aws:securityhub:${config.region}::product/aws/inspector`,
+    }),
+    dependencies: ({}) => ({
+      securityHubAccount: "default",
+    }),
+  },
+  {
+    type: "ProductSubscription",
+    group: "SecurityHub",
+    properties: ({ config }) => ({
+      ProductArn: `arn:aws:securityhub:${config.region}::product/aws/macie`,
+    }),
+    dependencies: ({}) => ({
+      securityHubAccount: "default",
+    }),
+  },
+  {
+    type: "ProductSubscription",
+    group: "SecurityHub",
+    properties: ({ config }) => ({
+      ProductArn: `arn:aws:securityhub:${config.region}::product/aws/securityhub`,
+    }),
+    dependencies: ({}) => ({
+      securityHubAccount: "default",
+    }),
+  },
+  {
+    type: "ProductSubscription",
+    group: "SecurityHub",
+    properties: ({ config }) => ({
+      ProductArn: `arn:aws:securityhub:${config.region}::product/aws/ssm-patch-manager`,
+    }),
+    dependencies: ({}) => ({
+      securityHubAccount: "default",
+    }),
+  },
+  {
+    type: "StandardsControl",
+    group: "SecurityHub",
+    properties: ({ config }) => ({
+      ControlStatus: "DISABLED",
+      DisabledReason: "test grucloud",
+      StandardsControlArn: `arn:aws:securityhub:${
+        config.region
+      }:${config.accountId()}:control/aws-foundational-security-best-practices/v/1.0.0/CloudFront.1`,
+    }),
+    dependencies: ({ config }) => ({
+      standardsSubscription: `arn:aws:securityhub:${config.region}::standards/aws-foundational-security-best-practices/v/1.0.0`,
+    }),
+  },
+  {
     type: "StandardsSubscription",
     group: "SecurityHub",
     properties: ({}) => ({

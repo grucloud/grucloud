@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project elemental-mediaconnect-medialive-mediapackage
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ MediaConnect
+++++ Flow (2)
++++ MediaLive
+++++ Channel (1)
+++++ Input (1)
++++ MediaPackage
+++++ Channel (1)
+@endmindmap

@@ -24,7 +24,7 @@ const {
   identity,
 } = require("rubico/x");
 
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { replaceWithName } = require("@grucloud/core/Common");
@@ -53,6 +53,13 @@ const decorate = ({ endpoint, config }) =>
       assert(endpoint);
     }),
     assignTags({ buildArn: buildArn(config), endpoint }),
+    omitIfEmpty(["Entitlements", "MediaStreams"]),
+    assign({
+      Source: pipe([
+        get("Source"),
+        ({ Transport, ...other }) => ({ ...other, ...Transport }),
+      ]),
+    }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConnect.html
@@ -61,7 +68,17 @@ exports.MediaConnectFlow = () => ({
   package: "mediaconnect",
   client: "MediaConnect",
   propertiesDefault: {},
-  omitProperties: ["FlowArn", "Status"],
+  omitProperties: [
+    "FlowArn",
+    "Status",
+    "EgressIp",
+    "Source.IngestIp",
+    "Source.SourceArn",
+    "Outputs",
+    //"Outputs[].MediaLiveInputArn",
+    //"Outputs[].OutputArn",
+    "Sources",
+  ],
   inferName: () =>
     pipe([
       get("Name"),
@@ -83,7 +100,7 @@ exports.MediaConnectFlow = () => ({
         assert(id);
       }),
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["NotFoundException"],
   filterLive: ({ lives, providerConfig }) =>
     pipe([
       assign({
@@ -93,6 +110,7 @@ exports.MediaConnectFlow = () => ({
         ]),
       }),
     ]),
+  dependencies: {},
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConnect.html#getFlow-property
   getById: {
     method: "describeFlow",
@@ -111,9 +129,18 @@ exports.MediaConnectFlow = () => ({
   create: {
     method: "createFlow",
     pickCreated: ({ payload }) => pipe([get("Flow")]),
-    // pickCreated: ({ payload }) => pipe([() => payload]),
-    // pickCreated: ({ payload }) => pipe([identity]),
     // Status ACTIVE
+    postCreate:
+      ({ endpoint, payload, created }) =>
+      (live) =>
+        pipe([
+          () => live,
+          tap(({ FlowArn }) => {
+            assert(FlowArn);
+          }),
+          ({ FlowArn }) => ({ ResourceArn: FlowArn, Tags: payload.Tags }),
+          endpoint().tagResource,
+        ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConnect.html#updateFlow-property
   update: {

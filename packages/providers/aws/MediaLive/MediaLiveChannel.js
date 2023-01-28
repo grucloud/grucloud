@@ -42,6 +42,7 @@ const decorate = ({ endpoint, config }) =>
         map(pipe([omitIfEmpty(["CaptionDescriptions"])])),
       ]),
     }),
+    omitIfEmpty(["AvailBlanking"]),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaLive.html
@@ -60,6 +61,11 @@ exports.MediaLiveChannel = () => ({
     "PipelineDetails",
     "EgressEndpoints",
     "EncoderSettings.MotionGraphicsConfiguration",
+    "EncoderSettings.AvailBlanking",
+    "EncoderSettings.BlackoutSlate",
+    "EncoderSettings.FeatureActivations",
+    "EncoderSettings.GlobalConfiguration",
+    "EncoderSettings.NielsenConfiguration",
   ],
   inferName: () =>
     pipe([
@@ -94,7 +100,7 @@ exports.MediaLiveChannel = () => ({
       group: "MediaLive",
       list: true,
       dependencyIds: ({ lives, config }) =>
-        pipe([get("InputAttachments"), pluck("InputAttachmentName")]),
+        pipe([get("InputAttachments"), pluck("InputId")]),
     },
     subnets: {
       type: "Subnet",
@@ -120,8 +126,8 @@ exports.MediaLiveChannel = () => ({
                 get("InputId"),
                 replaceWithName({
                   groupType: "MediaLive::Input",
-                  path: "live.InputId",
-                  pathLive: "live.InputId",
+                  path: "id",
+                  //pathLive: "live.InputId",
                   providerConfig,
                   lives,
                 }),
@@ -182,7 +188,7 @@ exports.MediaLiveChannel = () => ({
       defaultsDeep({
         Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
       }),
-      when(() => iamRole, assign({ RoleArn: getField(iamRole, "Arn") })),
+      when(() => iamRole, assign({ RoleArn: () => getField(iamRole, "Arn") })),
       when(
         () => subnets,
         defaultsDeep({

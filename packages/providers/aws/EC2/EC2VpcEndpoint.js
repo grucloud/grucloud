@@ -22,6 +22,7 @@ const {
   unless,
   append,
   find,
+  size,
 } = require("rubico/x");
 
 const { getByNameCore, differenceObject } = require("@grucloud/core/Common");

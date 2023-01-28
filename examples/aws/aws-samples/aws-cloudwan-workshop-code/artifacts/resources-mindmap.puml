@@ -2,7 +2,29 @@
 title Resources for project aws-cloudwan-workshop-code
 skinparam monochrome true
 + Infra
-++ aws-primary
+++ aws-cloudwan
++++ NetworkManager
+++++ CoreNetwork (1)
+++++ GlobalNetwork (1)
+++++ SiteToSiteVpnAttachment (1)
+++++ VpcAttachment (1)
+-- aws-primary
+--- EC2
+---- CustomerGateway (1)
+---- Vpc (4)
+---- InternetGateway (2)
+---- InternetGatewayAttachment (2)
+---- NatGateway (2)
+---- Subnet (9)
+---- RouteTable (9)
+---- RouteTableAssociation (9)
+---- Route (5)
+---- ElasticIpAddress (2)
+---- VpnGateway (1)
+---- VpnGatewayAttachment (1)
+---- VpnGatewayRoutePropagation (1)
+---- VpnConnection (1)
+++ aws-secondary
 +++ EC2
 ++++ Vpc (3)
 ++++ InternetGateway (1)
@@ -13,21 +35,4 @@ skinparam monochrome true
 ++++ RouteTableAssociation (8)
 ++++ Route (4)
 ++++ ElasticIpAddress (2)
-+++ NetworkManager
-++++ GlobalNetwork (1)
-++++ CoreNetwork (1)
--- aws-secondary
---- EC2
----- Vpc (3)
----- InternetGateway (1)
----- InternetGatewayAttachment (1)
----- NatGateway (2)
----- Subnet (8)
----- RouteTable (8)
----- RouteTableAssociation (8)
----- Route (4)
----- ElasticIpAddress (2)
---- NetworkManager
----- GlobalNetwork (1)
----- CoreNetwork (1)
 @endmindmap

@@ -473,7 +473,7 @@ const AwsClient =
               () => created,
               pickCreated({
                 endpoint,
-                pickId,
+                pickId, //TODO remove
                 payload,
                 name,
                 resolvedDependencies,
