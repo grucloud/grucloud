@@ -2466,6 +2466,38 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "LoggingConfiguration",
+    group: "NetworkFirewall",
+    properties: ({}) => ({
+      LoggingConfiguration: {
+        LogDestinationConfigs: [
+          {
+            LogDestination: {
+              logGroup: "/aws/network-firewall/flows",
+            },
+            LogDestinationType: "CloudWatchLogs",
+            LogType: "FLOW",
+          },
+          {
+            LogDestination: {
+              logGroup: "/aws/network-firewall/alerts",
+            },
+            LogDestinationType: "CloudWatchLogs",
+            LogType: "ALERT",
+          },
+        ],
+      },
+      FirewallName: "NetworkFirewall",
+    }),
+    dependencies: ({}) => ({
+      firewall: "NetworkFirewall",
+      logGroups: [
+        "/aws/network-firewall/alerts",
+        "/aws/network-firewall/flows",
+      ],
+    }),
+  },
+  {
     type: "Policy",
     group: "NetworkFirewall",
     properties: ({ getId }) => ({
@@ -2515,38 +2547,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LoggingConfiguration",
-    group: "NetworkFirewall",
-    properties: ({}) => ({
-      LoggingConfiguration: {
-        LogDestinationConfigs: [
-          {
-            LogDestination: {
-              logGroup: "/aws/network-firewall/flows",
-            },
-            LogDestinationType: "CloudWatchLogs",
-            LogType: "FLOW",
-          },
-          {
-            LogDestination: {
-              logGroup: "/aws/network-firewall/alerts",
-            },
-            LogDestinationType: "CloudWatchLogs",
-            LogType: "ALERT",
-          },
-        ],
-      },
-      FirewallName: "NetworkFirewall",
-    }),
-    dependencies: ({}) => ({
-      firewall: "NetworkFirewall",
-      logGroups: [
-        "/aws/network-firewall/alerts",
-        "/aws/network-firewall/flows",
-      ],
-    }),
-  },
-  {
     type: "Organisation",
     group: "Organisations",
     name: "frederic.heem@gmail.com",
@@ -2561,6 +2561,9 @@ exports.createResources = () => [
       FeatureSet: "ALL",
       MasterAccountEmail: "frederic.heem@gmail.com",
       serviceAccessPrincipals: [
+        "account.amazonaws.com",
+        "auditmanager.amazonaws.com",
+        "guardduty.amazonaws.com",
         "inspector2.amazonaws.com",
         "member.org.stacksets.cloudformation.amazonaws.com",
         "ram.amazonaws.com",

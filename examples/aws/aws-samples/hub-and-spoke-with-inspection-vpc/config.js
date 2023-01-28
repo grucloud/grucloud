@@ -5,6 +5,7 @@ const pkg = require("./package.json");
 
 module.exports = () => ({
   projectName: pkg.name,
+  includeGroups: ["CloudWatchLogs", "EC2", "IAM", "KMS", "NetworkFirewall"],
   filterTags: pipe([
     get("Key"),
     (key) =>

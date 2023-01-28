@@ -50,7 +50,7 @@ exports.EC2TransitGatewayRoute = ({ compare }) => ({
         append(`::${properties.DestinationCidrBlock}`),
       ])(),
   findName:
-    ({ lives }) =>
+    ({ lives, config }) =>
     (live) =>
       pipe([
         tap((params) => {
@@ -66,7 +66,7 @@ exports.EC2TransitGatewayRoute = ({ compare }) => ({
         }),
       ])(),
   findId,
-  findDependencies: ({ live, lives }) => [
+  findDependencies: ({ live, lives, config }) => [
     {
       type: "TransitGatewayRouteTable",
       group: "EC2",

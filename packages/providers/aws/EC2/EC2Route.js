@@ -532,7 +532,9 @@ exports.EC2Route = ({ compare }) => ({
     ]),
   create: ({ client, endpoint, getById }) =>
     pipe([
-      tap((params) => {
+      tap(({ payload, resolvedDependencies }) => {
+        assert(payload);
+        assert(resolvedDependencies);
         assert(client);
         assert(endpoint);
         assert(getById);

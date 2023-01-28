@@ -5,6 +5,15 @@ const pkg = require("./package.json");
 
 module.exports = () => ({
   projectName: pkg.name,
+  includeGroups: [
+    "CloudWatchLogs",
+    "EC2",
+    "IAM",
+    "KMS",
+    "Route53",
+    "Route53Resolver",
+  ],
+
   filterTags: pipe([
     tap((params) => {
       //assert(true);

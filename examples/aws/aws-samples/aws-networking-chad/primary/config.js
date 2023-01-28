@@ -7,6 +7,7 @@ const pkg = require("../package.json");
 module.exports = () => ({
   projectName: pkg.name,
   credentials: { profile: "regionA" },
+  includeGroups: ["CloudWatchLogs", "DynamoDB", "EC2", "S3"],
   filterTags: pipe([
     tap((params) => {
       //assert(true);
