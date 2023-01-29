@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { tap, pipe, map, get, switchCase, assign } = require("rubico");
+const { tap, pipe, map } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { createAwsService } = require("../AwsService");
 
@@ -14,10 +14,13 @@ const {
   ComprehendDocumentClassifier,
 } = require("./ComprehendDocumentClassifier");
 
+const { ComprehendEntityRecognizer } = require("./ComprehendEntityRecognizer");
+
 module.exports = pipe([
   () => [
     //
     ComprehendDocumentClassifier({}),
+    ComprehendEntityRecognizer({}),
   ],
   map(
     pipe([

@@ -30,12 +30,18 @@ describe("Comprehend", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("EntityRecognizer", () =>
+  it("EntityRecognizer", () =>
     pipe([
       () => ({
         config,
         groupType: "Comprehend::EntityRecognizer",
-        livesNotFound: ({ config }) => [{ EntityRecognizerArn: "b123" }],
+        livesNotFound: ({ config }) => [
+          {
+            EntityRecognizerArn: `arn:aws:comprehend:${
+              config.region
+            }:${config.accountId()}:entity-recognizer/m1`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

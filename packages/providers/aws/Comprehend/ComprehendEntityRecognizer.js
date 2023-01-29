@@ -10,26 +10,25 @@ const { Tagger, assignTags } = require("./ComprehendCommon");
 
 const buildArn = () =>
   pipe([
-    get("DocumentClassifierArn"),
+    get("EntityRecognizerArn"),
     tap((arn) => {
       assert(arn);
     }),
   ]);
 
 const pickId = pipe([
-  tap(({ DocumentClassifierArn }) => {
-    assert(DocumentClassifierArn);
+  tap(({ EntityRecognizerArn }) => {
+    assert(EntityRecognizerArn);
   }),
-  pick(["DocumentClassifierArn"]),
+  pick(["EntityRecognizerArn"]),
 ]);
 
-// TODO ModelPolicy
 const decorate = ({ endpoint, config }) =>
   pipe([
     assign({
-      DocumentClassifierName: pipe([
-        get("DocumentClassifierArn"),
-        callProp("split", "document-classifier/"),
+      RecognizerName: pipe([
+        get("EntityRecognizerArn"),
+        callProp("split", "entity-recognizer/"),
         last,
       ]),
     }),
@@ -37,13 +36,13 @@ const decorate = ({ endpoint, config }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html
-exports.ComprehendDocumentClassifier = () => ({
-  type: "DocumentClassifier",
+exports.ComprehendEntityRecognizer = () => ({
+  type: "EntityRecognizer",
   package: "comprehend",
   client: "Comprehend",
   propertiesDefault: {},
   omitProperties: [
-    "DocumentClassifierArn",
+    "EntityRecognizerArn",
     "Status",
     "Message",
     "SubmitTime",
@@ -59,21 +58,21 @@ exports.ComprehendDocumentClassifier = () => ({
   ],
   inferName: () =>
     pipe([
-      get("DocumentClassifierName"),
+      get("RecognizerName"),
       tap((Name) => {
         assert(Name);
       }),
     ]),
   findName: () =>
     pipe([
-      get("DocumentClassifierName"),
+      get("RecognizerName"),
       tap((name) => {
         assert(name);
       }),
     ]),
   findId: () =>
     pipe([
-      get("DocumentClassifierArn"),
+      get("EntityRecognizerArn"),
       tap((id) => {
         assert(id);
       }),
@@ -115,12 +114,12 @@ exports.ComprehendDocumentClassifier = () => ({
       group: "IAM",
       dependencyId: ({ lives, config }) => pipe([get("DataAccessRoleArn")]),
     },
-    s3BucketInput: {
+    s3BucketAnnotation: {
       type: "Bucket",
       group: "S3",
       dependencyId: ({ lives, config }) =>
         pipe([
-          get("InputDataConfig.S3Uri", ""),
+          get("InputDataConfig.Annotations.S3Uri"),
           callProp("replace", "s3://", ""),
           lives.getByName({
             type: "Bucket",
@@ -130,12 +129,12 @@ exports.ComprehendDocumentClassifier = () => ({
           get("id"),
         ]),
     },
-    s3BucketOutput: {
+    s3BucketDocument: {
       type: "Bucket",
       group: "S3",
       dependencyId: ({ lives, config }) =>
         pipe([
-          get("OutputDataConfig.S3Uri", ""),
+          get("InputDataConfig.Documents.S3Uri"),
           callProp("replace", "s3://", ""),
           lives.getByName({
             type: "Bucket",
@@ -146,34 +145,34 @@ exports.ComprehendDocumentClassifier = () => ({
         ]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html#getDocumentClassifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html#getEntityRecognizer-property
   getById: {
-    method: "describeDocumentClassifier",
-    getField: "DocumentClassifierProperties",
+    method: "describeEntityRecognizer",
+    getField: "EntityRecognizerProperties",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html#listDocumentClassifiers-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html#listEntityRecognizers-property
   getList: {
-    method: "listDocumentClassifiers",
-    getParam: "DocumentClassifierPropertiesList",
+    method: "listEntityRecognizers",
+    getParam: "EntityRecognizerPropertiesList",
     decorate: ({ getById }) => pipe([getById]),
   },
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html#createDocumentClassifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html#createEntityRecognizer-property
   create: {
-    method: "createDocumentClassifier",
+    method: "createEntityRecognizer",
     pickCreated: ({ payload }) => pipe([identity]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html#updateDocumentClassifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html#updateEntityRecognizer-property
   update: {
-    method: "updateDocumentClassifier",
+    method: "updateEntityRecognizer",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html#deleteDocumentClassifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Comprehend.html#deleteEntityRecognizer-property
   destroy: {
-    method: "deleteDocumentClassifier",
+    method: "deleteEntityRecognizer",
     pickId,
   },
   getByName: getByNameCore,

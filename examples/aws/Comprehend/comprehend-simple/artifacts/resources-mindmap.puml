@@ -5,9 +5,10 @@ skinparam monochrome true
 ++ aws
 +++ Comprehend
 ++++ DocumentClassifier (1)
+++++ EntityRecognizer (1)
 +++ IAM
-++++ Role (1)
-++++ Policy (1)
+++++ Role (2)
+++++ Policy (2)
 +++ S3
 ++++ Bucket (1)
 @endmindmap

@@ -22,6 +22,34 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "EntityRecognizer",
+    group: "Comprehend",
+    properties: ({}) => ({
+      InputDataConfig: {
+        Annotations: {
+          S3Uri: "s3://gc-comprehend-annotation",
+        },
+        DataFormat: "COMPREHEND_CSV",
+        Documents: {
+          InputFormat: "ONE_DOC_PER_LINE",
+          S3Uri: "s3://gc-comprehend-dataset",
+        },
+        EntityTypes: [
+          {
+            Type: "engineer",
+          },
+        ],
+      },
+      LanguageCode: "en",
+      RecognizerName: "my-entity-recognizer",
+    }),
+    dependencies: ({}) => ({
+      iamRole: "AmazonComprehendServiceRole-entity-recognizer",
+      s3BucketAnnotation: "gc-comprehend-annotation",
+      s3BucketDocument: "gc-comprehend-dataset",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -47,6 +75,31 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "AmazonComprehendServiceRole-entity-recognizer",
+      Description:
+        "Amazon Comprehend service role for creating custom models and analysis jobs.",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "comprehend.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["AmazonComprehendServicePolicy-entity-recognizer"],
+    }),
+  },
+  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -67,6 +120,46 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "AmazonComprehendServicePolicy-entity-recognizer",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: "s3:GetObject",
+            Resource: ["arn:aws:s3:::gc-comprehend-dataset/*"],
+            Effect: "Allow",
+          },
+          {
+            Action: "s3:ListBucket",
+            Resource: ["arn:aws:s3:::gc-comprehend-dataset"],
+            Effect: "Allow",
+          },
+        ],
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "gc-comprehend-annotation",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+            BucketKeyEnabled: true,
+          },
+        ],
+      },
     }),
   },
   {
