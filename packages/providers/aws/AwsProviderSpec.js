@@ -90,6 +90,7 @@ const GROUPS = [
   ["Firehose", "firehose"],
   ["FMS", "fms"],
   ["FSx", "fsx"],
+  ["Glacier", "glacier"],
   ["Imagebuilder", "imagebuilder"],
   ["IVS", "ivs"],
   ["Ivschat", "ivschat"],

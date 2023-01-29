@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project glacier-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Glacier
+++++ Vault (1)
++++ SNS
+++++ Topic (1)
+@endmindmap
