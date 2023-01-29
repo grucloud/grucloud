@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project comprehend-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Comprehend
+++++ DocumentClassifier (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

@@ -39,6 +39,7 @@
     "test-cognitoidentity": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CognitoIdentity/**/iac.test.js' ",
     "test-cognitoidentityserviceprovider": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CognitoIdentityServiceProvider/**/iac.test.js' ",
     "test-configservice": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Config/**/iac.test.js' ",
+    "test-comprehend": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Comprehend/**/iac.test.js' ",
     "test-costexplorer": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CostExplorer/**/iac.test.js' ",
     "test-cur": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CUR/**/iac.test.js' ",
     "test-datasync": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/DataSync/**/iac.test.js' ",

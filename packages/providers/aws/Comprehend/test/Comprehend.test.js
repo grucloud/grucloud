@@ -6,13 +6,17 @@ const { awsResourceTest } = require("../../AwsResourceTester");
 const config = () => ({ includeGroups: ["Comprehend"] });
 
 describe("Comprehend", async function () {
-  it.skip("DocumentClassifier", () =>
+  it("DocumentClassifier", () =>
     pipe([
       () => ({
         config,
         groupType: "Comprehend::DocumentClassifier",
         livesNotFound: ({ config }) => [
-          { EndpointArn: "DocumentClassifierArn" },
+          {
+            DocumentClassifierArn: `arn:aws:comprehend:${
+              config.region
+            }:${config.accountId()}:document-classifier/m1`,
+          },
         ],
       }),
       awsResourceTest,

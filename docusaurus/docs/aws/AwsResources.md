@@ -72,6 +72,8 @@ List of resources for provider aws:
 [IdentityPool](./resources/Cognito/IdentityPool.md), [IdentityPoolProviderPrincipalTag](./resources/Cognito/IdentityPoolProviderPrincipalTag.md), [IdentityPoolRolesAttachments](./resources/Cognito/IdentityPoolRolesAttachments.md)
 * CognitoIdentityServiceProvider: 
 [IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [RiskConfiguration](./resources/CognitoIdentityServiceProvider/RiskConfiguration.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
+* Comprehend: 
+[DocumentClassifier](./resources/Comprehend/DocumentClassifier.md)
 * Config: 
 [ConfigRule](./resources/Config/ConfigRule.md), [ConfigurationRecorder](./resources/Config/ConfigurationRecorder.md), [ConfigurationRecorderStatus](./resources/Config/ConfigurationRecorderStatus.md), [ConformancePack](./resources/Config/ConformancePack.md), [DeliveryChannel](./resources/Config/DeliveryChannel.md)
 * ControlTower: 
