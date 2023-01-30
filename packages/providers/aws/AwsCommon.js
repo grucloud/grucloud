@@ -1087,10 +1087,10 @@ exports.replaceArnWithAccountAndRegion = replaceArnWithAccountAndRegion;
 
 const replaceAccountAndRegion =
   ({ providerConfig }) =>
-  (prop) =>
+  (prop = "") =>
     pipe([
       tap((params) => {
-        assert(prop);
+        //assert(prop);
       }),
       () => prop,
       callProp(
