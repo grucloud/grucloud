@@ -1,10 +1,11 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign } = require("rubico");
-const { defaultsDeep, append } = require("rubico/x");
+const { defaultsDeep, append, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
+const { Tagger } = require("./AmplifyCommon");
 
 const pickId = pipe([
   tap(({ appId, branchName }) => {
@@ -13,6 +14,14 @@ const pickId = pipe([
   }),
   pick(["appId", "branchName"]),
 ]);
+
+const buildArn = () =>
+  pipe([
+    get("branchArn"),
+    tap((branchArn) => {
+      assert(branchArn);
+    }),
+  ]);
 
 const decorate = ({ endpoint, live }) =>
   pipe([
@@ -36,6 +45,7 @@ exports.AmplifyBranch = () => ({
     "updateTime",
     "activeJobId",
     "backendEnvironmentArn",
+    "thumbnailUrl",
   ],
   inferName:
     ({ dependenciesSpec: { app } }) =>
@@ -114,7 +124,7 @@ exports.AmplifyBranch = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#createBranch-property
   create: {
     method: "createBranch",
-    pickCreated: ({ payload }) => pipe([get("branch")]),
+    pickCreated: ({ payload }) => pipe([get("branch"), defaultsDeep(payload)]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#updateBranch-property
   update: {
@@ -128,6 +138,10 @@ exports.AmplifyBranch = () => ({
     pickId,
   },
   getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
   configDefault: ({
     name,
     namespace,

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, not } = require("rubico");
+const { pipe, tap, get, pick, assign, not, omit } = require("rubico");
 const { defaultsDeep, when, callProp } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -36,7 +36,7 @@ const isGitRepo = pipe([
 ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html
-exports.AmplifyApp = () => ({
+exports.AmplifyApp = ({ compare }) => ({
   type: "App",
   package: "amplify",
   client: "Amplify",
@@ -96,22 +96,26 @@ exports.AmplifyApp = () => ({
     },
   },
   ignoreErrorCodes: ["NotFoundException"],
+  compare: compare({ filterAll: () => pipe([omit(["accessToken"])]) }),
   filterLive: ({ lives, providerConfig }) =>
     pipe([
-      assign({
-        productionBranch: pipe([
-          get("productionBranch"),
-          assign({
-            thumbnailUrl: pipe([
-              get("thumbnailUrl"),
-              replaceAccountAndRegion({
-                providerConfig,
-                lives,
-              }),
-            ]),
-          }),
-        ]),
-      }),
+      when(
+        get("productionBranch"),
+        assign({
+          productionBranch: pipe([
+            get("productionBranch"),
+            assign({
+              thumbnailUrl: pipe([
+                get("thumbnailUrl"),
+                replaceAccountAndRegion({
+                  providerConfig,
+                  lives,
+                }),
+              ]),
+            }),
+          ]),
+        })
+      ),
     ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#getApp-property
   getById: {
