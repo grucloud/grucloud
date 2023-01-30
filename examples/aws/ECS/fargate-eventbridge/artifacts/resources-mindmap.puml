@@ -26,9 +26,9 @@ skinparam monochrome true
 ++++ Service (1)
 ++++ TaskDefinition (1)
 +++ ElasticLoadBalancingV2
+++++ Listener (1)
 ++++ LoadBalancer (1)
 ++++ TargetGroup (1)
-++++ Listener (1)
 +++ IAM
 ++++ Role (2)
 @endmindmap

@@ -201,6 +201,7 @@ exports.EC2RouteTable = ({ compare }) => ({
         tap((VpcId) => {
           assert(VpcId);
         }),
+        // TODO also check for cloud formation name
         fork({
           filterName: switchCase([
             () => isDefault,

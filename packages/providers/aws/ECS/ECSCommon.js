@@ -1,5 +1,6 @@
+const assert = require("assert");
 const { pipe, tap, get } = require("rubico");
-const { pluck, unless, isEmpty } = require("rubico/x");
+const { pluck, unless, isEmpty, first, last, callProp } = require("rubico/x");
 const { buildTags } = require("../AwsCommon");
 
 const { createEndpoint } = require("../AwsCommon");
@@ -56,3 +57,33 @@ exports.destroyAutoScalingGroupById = ({ lives, config }) =>
       ])
     ),
   ]);
+
+exports.dependencyTaskDefinition = {
+  type: "TaskDefinition",
+  group: "ECS",
+  dependencyId: ({ lives, config }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      get("taskDefinition"),
+      unless(
+        isEmpty,
+        pipe([
+          callProp("split", "/"),
+          last,
+          callProp("split", ":"),
+          first,
+          tap((name) => {
+            assert(name);
+          }),
+          lives.getByName({
+            type: "TaskDefinition",
+            group: "ECS",
+            providerName: config.config,
+          }),
+          get("id"),
+        ])
+      ),
+    ]),
+};

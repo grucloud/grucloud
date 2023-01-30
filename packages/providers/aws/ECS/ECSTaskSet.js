@@ -1,19 +1,26 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, assign, omit, map, pick } = require("rubico");
+const { pipe, tap, get, eq, assign, flatMap, map, pick } = require("rubico");
 const {
   defaultsDeep,
   when,
   last,
-  first,
+  find,
   callProp,
   pluck,
+  filterOut,
+  isEmpty,
 } = require("rubico/x");
 
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
 
-const { Tagger, buildTagsEcs, dependencyTargetGroups } = require("./ECSCommon");
+const {
+  Tagger,
+  buildTagsEcs,
+  dependencyTargetGroups,
+  dependencyTaskDefinition,
+} = require("./ECSCommon");
 
 const buildArn = () =>
   pipe([
@@ -23,18 +30,25 @@ const buildArn = () =>
     }),
   ]);
 
+const renameKeys = pipe([
+  assign({
+    service: pipe([get("serviceArn"), callProp("split", "service/"), last]),
+  }),
+  ({ clusterArn, taskDefinitionArn, id, ...other }) => ({
+    taskSet: id,
+    cluster: clusterArn,
+    taskDefinition: taskDefinitionArn,
+    ...other,
+  }),
+]);
+
 const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
-    ({ clusterArn, serviceArn, taskDefinitionArn, id, ...other }) => ({
-      taskSet: id,
-      cluster: clusterArn,
-      service: serviceArn,
-      taskDefinition: taskDefinitionArn,
-      ...other,
-    }),
+    omitIfEmpty(["loadBalancers"]),
+    renameKeys,
   ]);
 
 const findName = () => (live) =>
@@ -63,6 +77,8 @@ exports.ECSTaskSet = ({ compare }) => ({
   findId: () => get("taskSet"),
   ignoreErrorCodes: ["ClusterNotFoundException", "InvalidParameterException"],
   omitProperties: [
+    "serviceArn",
+    "taskSetArn",
     "taskSet",
     "taskDefinition",
     "cluster",
@@ -76,7 +92,6 @@ exports.ECSTaskSet = ({ compare }) => ({
     "updatedAt",
     "networkConfiguration.awsvpcConfiguration.securityGroups",
     "networkConfiguration.awsvpcConfiguration.subnets",
-    "serviceRegistries[].registryArn",
     "stabilityStatus",
     "stabilityStatusAt",
     "failures",
@@ -84,7 +99,29 @@ exports.ECSTaskSet = ({ compare }) => ({
   propertiesDefault: { platformVersion: "LATEST" },
   filterLive: ({ lives, providerConfig }) =>
     pipe([
-      // serviceRegistries[].registryArn
+      when(
+        get("serviceRegistries"),
+        assign({
+          serviceRegistries: pipe([
+            get("serviceRegistries"),
+            map(
+              pipe([
+                assign({
+                  registryArn: pipe([
+                    get("registryArn"),
+                    replaceWithName({
+                      groupType: "ServiceDiscovery::Service",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                }),
+              ])
+            ),
+          ]),
+        })
+      ),
       when(
         get("loadBalancers"),
         assign({
@@ -129,27 +166,7 @@ exports.ECSTaskSet = ({ compare }) => ({
           }),
         ]),
     },
-    taskDefinition: {
-      type: "TaskDefinition",
-      group: "ECS",
-      dependencyId: ({ lives, config }) =>
-        pipe([
-          get("taskDefinition"),
-          callProp("split", "/"),
-          last,
-          callProp("split", ":"),
-          first,
-          tap((name) => {
-            assert(name);
-          }),
-          lives.getByName({
-            type: "TaskDefinition",
-            group: "ECS",
-            providerName: config.config,
-          }),
-          get("id"),
-        ]),
-    },
+    taskDefinition: dependencyTaskDefinition,
     service: {
       type: "Service",
       group: "ECS",
@@ -157,6 +174,25 @@ exports.ECSTaskSet = ({ compare }) => ({
       dependencyId: ({ lives, config }) =>
         pipe([
           get("service"),
+          lives.getByName({
+            type: "Service",
+            group: "ECS",
+            providerName: config.config,
+          }),
+          get("id"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
+    },
+    serviceDiscoveryService: {
+      type: "Service",
+      group: "ServiceDiscovery",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("serviceRegistries"),
+          pluck("registryArn"),
           tap((id) => {
             assert(id);
           }),
@@ -196,35 +232,28 @@ exports.ECSTaskSet = ({ compare }) => ({
     ignoreErrorCodes: ["ClusterNotFoundException", "InvalidParameterException"],
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTaskSets-property
-  getList: ({ client, endpoint, getById, config }) =>
-    pipe([
-      () =>
-        client.getListWithParent({
-          parent: { type: "Service", group: "ECS" },
-          pickKey: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            ({ clusterName, serviceName }) => ({
-              cluster: clusterName,
-              service: serviceName,
-            }),
-          ]),
-          method: "describeTaskSets",
-          getParam: "taskSets",
-          config,
-          decorate,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
+  getList:
+    ({ lives, client, endpoint, getById, config }) =>
+    ({ lives }) =>
+      pipe([
+        lives.getByType({
+          type: "Service",
+          group: "ECS",
+          providerName: config.providerName,
         }),
-    ])(),
+        flatMap(pipe([get("live.taskSets")])),
+        filterOut(isEmpty),
+        map(pipe([decorate({ endpoint }), getById({})])),
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createTaskSet-property
   create: {
     method: "createTaskSet",
     shouldRetryOnExceptionMessages: [
       "does not have an associated load balancer",
     ],
-    pickCreated: ({ name }) => pipe([get("taskSet")]),
-    //isInstanceUp: eq(get("status"), "ACTIVE"),
+    pickCreated: ({ endpoint, name }) =>
+      pipe([get("taskSet"), decorate({ endpoint })]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateTaskSet-property
   update: {
@@ -243,9 +272,26 @@ exports.ECSTaskSet = ({ compare }) => ({
       defaultsDeep({ force: true }),
     ]),
     method: "deleteTaskSet",
-    //isInstanceDown: eq(get("status"), "INACTIVE"),
   },
-  getByName: getByNameCore,
+  getByName:
+    ({ endpoint }) =>
+    ({ name, resolvedDependencies: { cluster, service } }) =>
+      pipe([
+        tap((params) => {
+          assert(name);
+          assert(cluster.live.clusterName);
+          assert(service.live.serviceName);
+        }),
+        () => ({
+          cluster: cluster.live.clusterName,
+          services: [service.live.serviceName],
+        }),
+        endpoint().describeServices,
+        get("services"),
+        flatMap(get("taskSets")),
+        find(eq(get("externalId"), name)),
+        decorate({ endpoint }),
+      ])(),
   tagger: ({ config }) =>
     Tagger({
       buildArn: buildArn({ config }),
@@ -260,14 +306,13 @@ exports.ECSTaskSet = ({ compare }) => ({
     pipe([
       tap(() => {
         assert(cluster, "missing 'cluster' dependency");
-        assert(service, "missing 'cluster' dependency");
+        assert(service, "missing 'service' dependency");
         assert(taskDefinition, "missing 'taskDefinition' dependency");
       }),
       () => otherProps,
       defaultsDeep({
-        TaskSetName: name,
         cluster: getField(cluster, "clusterArn"),
-        service: getField(service, "clusterArn"),
+        service: getField(service, "serviceArn"),
         taskDefinition: getField(taskDefinition, "taskDefinitionArn"),
         tags: buildTagsEcs({
           name,

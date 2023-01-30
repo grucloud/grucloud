@@ -131,6 +131,7 @@ const GROUPS = [
   ["Schemas", "schemas"],
   ["SecretsManager", "secretsmanager"],
   ["SecurityHub", "securityhub"],
+  ["ServiceDiscovery", "servicediscovery"],
   ["ServiceQuotas", "service-quotas"],
   ["SESV2", "ses"],
   ["ServiceCatalog", "servicecatalog"],

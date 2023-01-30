@@ -7,7 +7,12 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
 
-const { Tagger, buildTagsEcs, dependencyTargetGroups } = require("./ECSCommon");
+const {
+  Tagger,
+  buildTagsEcs,
+  dependencyTargetGroups,
+  dependencyTaskDefinition,
+} = require("./ECSCommon");
 
 const buildArn = () =>
   pipe([
@@ -17,11 +22,28 @@ const buildArn = () =>
     }),
   ]);
 
+const isDeploymentControllerExternal = eq(
+  get("deploymentController.type"),
+  "EXTERNAL"
+);
+
+const filterPayload = pipe([
+  when(
+    isDeploymentControllerExternal,
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+    ])
+  ),
+]);
+
 const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
+    when(isDeploymentControllerExternal, pipe([omit(["launchType"])])),
     omitIfEmpty([
       "placementConstraints",
       "placementStrategy",
@@ -128,11 +150,7 @@ exports.ECSService = ({ compare }) => ({
       parent: true,
       dependencyId: ({ lives, config }) => get("clusterArn"),
     },
-    taskDefinition: {
-      type: "TaskDefinition",
-      group: "ECS",
-      dependencyId: ({ lives, config }) => pipe([get("taskDefinition")]),
-    },
+    taskDefinition: dependencyTaskDefinition,
     subnets: {
       type: "Subnet",
       group: "EC2",
@@ -184,6 +202,7 @@ exports.ECSService = ({ compare }) => ({
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createService-property
   create: {
+    filterPayload,
     method: "createService",
     shouldRetryOnExceptionMessages: [
       "does not have an associated load balancer",
@@ -216,6 +235,7 @@ exports.ECSService = ({ compare }) => ({
           "serviceName",
           "tags",
         ]),
+        filterPayload,
       ])(),
     method: "updateService",
   },
@@ -244,13 +264,11 @@ exports.ECSService = ({ compare }) => ({
     pipe([
       tap(() => {
         assert(cluster, "missing 'cluster' dependency");
-        assert(taskDefinition, "missing 'taskDefinition' dependency");
       }),
       () => otherProps,
       defaultsDeep({
         serviceName: name,
         cluster: getField(cluster, "clusterArn"),
-        taskDefinition: getField(taskDefinition, "taskDefinitionArn"),
         tags: buildTagsEcs({
           name,
           config,
@@ -258,6 +276,12 @@ exports.ECSService = ({ compare }) => ({
           tags,
         }),
       }),
+      when(
+        () => taskDefinition,
+        defaultsDeep({
+          taskDefinition: getField(taskDefinition, "taskDefinitionArn"),
+        })
+      ),
       when(
         () => subnets,
         defaultsDeep({

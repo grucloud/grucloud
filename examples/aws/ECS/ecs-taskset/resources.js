@@ -26,7 +26,7 @@ exports.createResources = () => [
     group: "AutoScaling",
     dependencies: ({}) => ({
       autoScalingGroup: "Ruby-AutoScalingGroup-appmesh-workshop",
-      targetGroup: "appmes-RubyT-BJKWQYTZBC7W",
+      targetGroup: "appmes-RubyT-HRLNYR1HFN6J",
     }),
   },
   { type: "KeyPair", group: "EC2", name: "id_rsa" },
@@ -53,7 +53,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "NatGatewayOne",
     properties: ({}) => ({
-      PrivateIpAddressIndex: 25,
+      PrivateIpAddressIndex: 49,
     }),
     dependencies: ({}) => ({
       subnet: "VPC-appmesh-workshop::PublicOne-appmesh-workshop",
@@ -65,7 +65,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "NatGatewayThree",
     properties: ({}) => ({
-      PrivateIpAddressIndex: 24,
+      PrivateIpAddressIndex: 58,
     }),
     dependencies: ({}) => ({
       subnet: "VPC-appmesh-workshop::PublicThree-appmesh-workshop",
@@ -77,7 +77,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "NatGatewayTwo",
     properties: ({}) => ({
-      PrivateIpAddressIndex: 81,
+      PrivateIpAddressIndex: 40,
     }),
     dependencies: ({}) => ({
       subnet: "VPC-appmesh-workshop::PublicTwo-appmesh-workshop",
@@ -377,7 +377,7 @@ exports.createResources = () => [
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
-      GroupName: "appmesh-workshop-EC2InstanceSecurityGroup-DJEOSK477L9Z",
+      GroupName: "appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
       Description: "Access to the instance",
     }),
     dependencies: ({}) => ({
@@ -441,7 +441,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-DJEOSK477L9Z",
+        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
     }),
   },
   {
@@ -459,7 +459,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-DJEOSK477L9Z",
+        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
     }),
   },
   {
@@ -549,7 +549,7 @@ exports.createResources = () => [
             `${getId({
               type: "SecurityGroup",
               group: "EC2",
-              name: "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-DJEOSK477L9Z",
+              name: "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
             })}`,
           ],
           SubnetId: `${getId({
@@ -603,9 +603,9 @@ chmod +x /home/ec2-user/install-tools
       subnets: ["VPC-appmesh-workshop::PrivateOne-appmesh-workshop"],
       keyPair: "id_rsa",
       iamInstanceProfile:
-        "appmesh-workshop-InstanceProfileExternal-jm5jVOrSfU0A",
+        "appmesh-workshop-InstanceProfileExternal-Gyr3M1YtaL0v",
       securityGroups: [
-        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-DJEOSK477L9Z",
+        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
       ],
     }),
   },
@@ -664,9 +664,9 @@ nohup ./startup.sh &
     }),
     dependencies: ({}) => ({
       keyPair: "id_rsa",
-      iamInstanceProfile: "appmesh-workshop-InstanceProfile-NxnyevHaRavo",
+      iamInstanceProfile: "appmesh-workshop-InstanceProfile-KMl4m5zQVs1I",
       securityGroups: [
-        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-DJEOSK477L9Z",
+        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
       ],
     }),
   },
@@ -834,7 +834,7 @@ nohup ./startup.sh &
     type: "Repository",
     group: "ECR",
     properties: ({}) => ({
-      repositoryName: "appmesh-workshop-crystal-utmqshorw0li",
+      repositoryName: "appmesh-workshop-crystal-wbwhxedgaxgq",
       imageTagMutability: "MUTABLE",
       imageScanningConfiguration: {
         scanOnPush: false,
@@ -848,7 +848,7 @@ nohup ./startup.sh &
     type: "Repository",
     group: "ECR",
     properties: ({}) => ({
-      repositoryName: "appmesh-workshop-nodejs-orynv154ch1x",
+      repositoryName: "appmesh-workshop-nodejs-01dx0xe86szs",
       imageTagMutability: "MUTABLE",
       imageScanningConfiguration: {
         scanOnPush: false,
@@ -889,7 +889,7 @@ nohup ./startup.sh &
           targetGroupArn: `${getId({
             type: "TargetGroup",
             group: "ElasticLoadBalancingV2",
-            name: "appmes-Cryst-VYRMQ1FMRTM5",
+            name: "appmes-Cryst-XSTMVZJTLVER",
           })}`,
         },
       ],
@@ -905,6 +905,7 @@ nohup ./startup.sh &
     }),
     dependencies: ({}) => ({
       cluster: "cluster-appmesh-workshop",
+      taskDefinition: "crystal-task-appmesh-workshop",
       subnets: [
         "VPC-appmesh-workshop::PrivateOne-appmesh-workshop",
         "VPC-appmesh-workshop::PrivateThree-appmesh-workshop",
@@ -913,7 +914,7 @@ nohup ./startup.sh &
       securityGroups: [
         "sg::VPC-appmesh-workshop::SecurityGroup-Container-appmesh-workshop",
       ],
-      targetGroups: ["appmes-Cryst-VYRMQ1FMRTM5"],
+      targetGroups: ["appmes-Cryst-XSTMVZJTLVER"],
     }),
   },
   {
@@ -930,12 +931,54 @@ nohup ./startup.sh &
       desiredCount: 6,
       enableECSManagedTags: false,
       enableExecuteCommand: false,
-      launchType: "EC2",
       schedulingStrategy: "REPLICA",
       serviceName: "crystal-service-sd",
     }),
     dependencies: ({}) => ({
       cluster: "cluster-appmesh-workshop",
+    }),
+  },
+  {
+    type: "TaskSet",
+    group: "ECS",
+    properties: ({ getId }) => ({
+      computedDesiredCount: 3,
+      externalId: "vanilla-task-set",
+      launchType: "FARGATE",
+      networkConfiguration: {
+        awsvpcConfiguration: {
+          assignPublicIp: "DISABLED",
+        },
+      },
+      platformFamily: "Linux",
+      platformVersion: "1.4.0",
+      scale: {
+        unit: "PERCENT",
+        value: 50,
+      },
+      serviceRegistries: [
+        {
+          registryArn: `${getId({
+            type: "Service",
+            group: "ServiceDiscovery",
+            name: "crystal",
+          })}`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      cluster: "cluster-appmesh-workshop",
+      taskDefinition: "crystal-task-appmesh-workshop",
+      service: "crystal-service-sd",
+      serviceDiscoveryService: ["crystal"],
+      securityGroups: [
+        "sg::VPC-appmesh-workshop::SecurityGroup-Container-appmesh-workshop",
+      ],
+      subnets: [
+        "VPC-appmesh-workshop::PrivateOne-appmesh-workshop",
+        "VPC-appmesh-workshop::PrivateThree-appmesh-workshop",
+        "VPC-appmesh-workshop::PrivateTwo-appmesh-workshop",
+      ],
     }),
   },
   {
@@ -956,7 +999,7 @@ nohup ./startup.sh &
             startPeriod: 10,
             timeout: 2,
           },
-          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/appmesh-workshop-crystal-utmqshorw0li:vanilla`,
+          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/appmesh-workshop-crystal-wbwhxedgaxgq:epoch`,
           name: "crystal-service",
           portMappings: [
             {
@@ -974,8 +1017,8 @@ nohup ./startup.sh &
       requiresCompatibilities: ["FARGATE"],
     }),
     dependencies: ({}) => ({
-      taskRole: "appmesh-workshop-ECSTaskRole-1W9VKAWMGE0YR",
-      executionRole: "appmesh-workshop-ECSServiceRole-B78OQ6CEJ0ZF",
+      taskRole: "appmesh-workshop-ECSTaskRole-U9NTCA3G3INQ",
+      executionRole: "appmesh-workshop-ECSServiceRole-RIAPE76QVW0Z",
     }),
   },
   {
@@ -987,7 +1030,7 @@ nohup ./startup.sh &
     }),
     dependencies: ({}) => ({
       loadBalancer: "ExtLB-appmesh-workshop",
-      targetGroup: "appmes-RubyT-BJKWQYTZBC7W",
+      targetGroup: "appmes-RubyT-HRLNYR1HFN6J",
     }),
   },
   {
@@ -999,7 +1042,7 @@ nohup ./startup.sh &
     }),
     dependencies: ({}) => ({
       loadBalancer: "IntLB-appmesh-workshop",
-      targetGroup: "appmes-Cryst-VYRMQ1FMRTM5",
+      targetGroup: "appmes-Cryst-XSTMVZJTLVER",
     }),
   },
   {
@@ -1046,7 +1089,7 @@ nohup ./startup.sh &
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "appmes-Cryst-VYRMQ1FMRTM5",
+      Name: "appmes-Cryst-XSTMVZJTLVER",
       Protocol: "HTTP",
       Port: 3000,
       HealthCheckProtocol: "HTTP",
@@ -1062,7 +1105,7 @@ nohup ./startup.sh &
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "appmes-RubyT-BJKWQYTZBC7W",
+      Name: "appmes-RubyT-HRLNYR1HFN6J",
       Protocol: "HTTP",
       Port: 3000,
       HealthCheckProtocol: "HTTP",
@@ -1080,7 +1123,7 @@ nohup ./startup.sh &
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "appmesh-workshop-EC2ExternalInstanceRole-UCOEZ13O2NMD",
+      RoleName: "appmesh-workshop-EC2ExternalInstanceRole-7TP1XLCF2830",
       AssumeRolePolicyDocument: {
         Version: "2008-10-17",
         Statement: [
@@ -1119,7 +1162,7 @@ nohup ./startup.sh &
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "appmesh-workshop-EC2InstanceRole-1RDA5IGCL7O17",
+      RoleName: "appmesh-workshop-EC2InstanceRole-P65NSC5SSWJH",
       AssumeRolePolicyDocument: {
         Version: "2008-10-17",
         Statement: [
@@ -1177,7 +1220,7 @@ nohup ./startup.sh &
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "appmesh-workshop-ECSServiceRole-B78OQ6CEJ0ZF",
+      RoleName: "appmesh-workshop-ECSServiceRole-RIAPE76QVW0Z",
       AssumeRolePolicyDocument: {
         Version: "2008-10-17",
         Statement: [
@@ -1232,7 +1275,7 @@ nohup ./startup.sh &
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "appmesh-workshop-ECSTaskRole-1W9VKAWMGE0YR",
+      RoleName: "appmesh-workshop-ECSTaskRole-U9NTCA3G3INQ",
       AssumeRolePolicyDocument: {
         Version: "2008-10-17",
         Statement: [
@@ -1279,7 +1322,7 @@ nohup ./startup.sh &
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "appmesh-workshop-KeyPairHelperExecutionRole-1CBI3B1E1303N",
+      RoleName: "appmesh-workshop-KeyPairHelperExecutionRole-14336BINEI2BQ",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -1327,17 +1370,17 @@ nohup ./startup.sh &
   {
     type: "InstanceProfile",
     group: "IAM",
-    name: "appmesh-workshop-InstanceProfile-NxnyevHaRavo",
+    name: "appmesh-workshop-InstanceProfile-KMl4m5zQVs1I",
     dependencies: ({}) => ({
-      roles: ["appmesh-workshop-EC2InstanceRole-1RDA5IGCL7O17"],
+      roles: ["appmesh-workshop-EC2InstanceRole-P65NSC5SSWJH"],
     }),
   },
   {
     type: "InstanceProfile",
     group: "IAM",
-    name: "appmesh-workshop-InstanceProfileExternal-jm5jVOrSfU0A",
+    name: "appmesh-workshop-InstanceProfileExternal-Gyr3M1YtaL0v",
     dependencies: ({}) => ({
-      roles: ["appmesh-workshop-EC2ExternalInstanceRole-UCOEZ13O2NMD"],
+      roles: ["appmesh-workshop-EC2ExternalInstanceRole-7TP1XLCF2830"],
     }),
   },
   {
@@ -1397,14 +1440,14 @@ nohup ./startup.sh &
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "appmesh-workshop-KeyPairHelperLambda-sR0V9E5JM8E1",
+        FunctionName: "appmesh-workshop-KeyPairHelperLambda-LhMHddWOuSgf",
         Handler: "index.handler",
         Runtime: "python3.7",
         Timeout: 30,
       },
     }),
     dependencies: ({}) => ({
-      role: "appmesh-workshop-KeyPairHelperExecutionRole-1CBI3B1E1303N",
+      role: "appmesh-workshop-KeyPairHelperExecutionRole-14336BINEI2BQ",
     }),
   },
   {
@@ -1433,6 +1476,47 @@ nohup ./startup.sh &
     dependencies: ({}) => ({
       hostedZone: "appmeshworkshop.hosted.local.",
       loadBalancer: "IntLB-appmesh-workshop",
+    }),
+  },
+  {
+    type: "PrivateDnsNamespace",
+    group: "ServiceDiscovery",
+    properties: ({}) => ({
+      Description: "App Mesh Workshop private DNS namespace",
+      Name: "appmeshworkshop.pvt.local",
+      Properties: {
+        DnsProperties: {
+          SOA: {
+            TTL: 15,
+          },
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC-appmesh-workshop",
+    }),
+  },
+  {
+    type: "Service",
+    group: "ServiceDiscovery",
+    properties: ({}) => ({
+      Description: "Discovery service for the Crystal service",
+      DnsConfig: {
+        DnsRecords: [
+          {
+            TTL: 300,
+            Type: "A",
+          },
+        ],
+        RoutingPolicy: "MULTIVALUE",
+      },
+      HealthCheckCustomConfig: {
+        FailureThreshold: 1,
+      },
+      Name: "crystal",
+    }),
+    dependencies: ({}) => ({
+      namespacePrivateDns: "appmeshworkshop.pvt.local",
     }),
   },
 ];

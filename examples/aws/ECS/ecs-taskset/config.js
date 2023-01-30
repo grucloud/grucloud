@@ -11,5 +11,7 @@ module.exports = () => ({
     "Lambda",
     "KMS",
     "Route53",
+    "ServiceDiscovery",
+    "SSM",
   ],
 });

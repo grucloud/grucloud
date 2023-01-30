@@ -93,7 +93,7 @@ List of resources for provider aws:
 * ECR: 
 [Repository](./resources/ECR/Repository.md), [Registry](./resources/ECR/Registry.md)
 * ECS: 
-[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [Service](./resources/ECS/Service.md), [Task](./resources/ECS/Task.md), [TaskDefinition](./resources/ECS/TaskDefinition.md)
+[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [Service](./resources/ECS/Service.md), [Task](./resources/ECS/Task.md), [TaskSet](./resources/ECS/TaskSet.md), [TaskDefinition](./resources/ECS/TaskDefinition.md)
 * EFS: 
 [FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
@@ -194,6 +194,8 @@ List of resources for provider aws:
 [Secret](./resources/SecretsManager/Secret.md), [SecretRotation](./resources/SecretsManager/SecretRotation.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SecurityHub: 
 [Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [ProductSubscription](./resources/SecurityHub/ProductSubscription.md), [StandardsControl](./resources/SecurityHub/StandardsControl.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
+* ServiceDiscovery: 
+[HttpNamespace](./resources/ServiceDiscovery/HttpNamespace.md), [PrivateDnsNamespace](./resources/ServiceDiscovery/PrivateDnsNamespace.md), [PublicDnsNamespace](./resources/ServiceDiscovery/PublicDnsNamespace.md)
 * ServiceQuotas: 
 [ServiceQuota](./resources/ServiceQuotas/ServiceQuota.md)
 * SESV2: 
