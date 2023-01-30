@@ -332,12 +332,6 @@ exports.createResources = () => [
     group: "ECS",
     properties: ({}) => ({
       clusterName: "cluster",
-      settings: [
-        {
-          name: "containerInsights",
-          value: "disabled",
-        },
-      ],
     }),
   },
   {
@@ -424,26 +418,6 @@ exports.createResources = () => [
       family: "first-run-task-definition",
       memory: "512",
       networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
-        },
-        {
-          name: "ecs.capability.execution-role-awslogs",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.21",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
       requiresCompatibilities: ["FARGATE"],
     }),
     dependencies: ({}) => ({

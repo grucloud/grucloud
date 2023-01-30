@@ -461,26 +461,6 @@ exports.createResources = () => [
       family: "ECSServiceStackamazonecssampleTaskDef499685C5",
       memory: "1024",
       networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
-        },
-        {
-          name: "ecs.capability.execution-role-awslogs",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.task-iam-role",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
       requiresCompatibilities: ["FARGATE"],
     }),
     dependencies: ({}) => ({

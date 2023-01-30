@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, omit } = require("rubico");
+const { pipe, tap, get, pick, assign, omit, tryCatch } = require("rubico");
 const { defaultsDeep, when, callProp } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -17,9 +17,11 @@ const decorate =
       () => live,
       pick(["Name"]),
       defaultsDeep({ WithDecryption: true }),
-      endpoint().getParameter,
-      get("Parameter"),
-      defaultsDeep(live),
+      tryCatch(
+        pipe([endpoint().getParameter, get("Parameter"), defaultsDeep(live)]),
+        // InvalidKeyId
+        (error) => live
+      ),
       assignTags({ endpoint, ResourceType: "Parameter" }),
     ])();
 

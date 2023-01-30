@@ -299,17 +299,6 @@ exports.createResources = () => [
       family: "sam-app-ECSServiceTaskDefinition-7P836RFsrg3O",
       memory: "1024",
       networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.task-iam-role",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
       requiresCompatibilities: ["FARGATE"],
     }),
     dependencies: ({}) => ({

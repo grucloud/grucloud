@@ -22,6 +22,7 @@ const {
   buildTagsEcs,
   destroyAutoScalingGroupById,
 } = require("./ECSCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const buildArn = () =>
   pipe([
@@ -38,6 +39,12 @@ const pickId = pipe([({ clusterName }) => ({ clusters: [clusterName] })]);
 const managedByOther = () =>
   pipe([get("tags"), any(eq(get("key"), "AWSBatchServiceTag"))]);
 
+const decorate = () =>
+  pipe([
+    //
+    omitIfEmpty(["capacityProviders"]),
+  ]);
+
 const destroyAutoScalingGroup = ({ endpoint, lives, config }) =>
   pipe([
     tap((params) => {
@@ -51,7 +58,7 @@ const destroyAutoScalingGroup = ({ endpoint, lives, config }) =>
           group: "ECS",
           providerName: config.providerName,
         }),
-        get("autoScalingGroupProvider.autoScalingGroupArn"),
+        get("live.autoScalingGroupProvider.autoScalingGroupArn"),
         destroyAutoScalingGroupById({ lives, config }),
       ])
     ),
@@ -94,7 +101,20 @@ exports.ECSCluster = ({ compare }) => ({
   findId,
   ignoreErrorCodes: ["ClusterNotFoundException", "InvalidParameterException"],
   managedByOther,
-  propertiesDefault: { defaultCapacityProviderStrategy: [] },
+  propertiesDefault: {
+    defaultCapacityProviderStrategy: [],
+    settings: [
+      {
+        name: "containerInsights",
+        value: "disabled",
+      },
+    ],
+    configuration: {
+      executeCommandConfiguration: {
+        logging: "DEFAULT",
+      },
+    },
+  },
   compare: compare({}),
   omitProperties: [
     "clusterArn",
@@ -107,30 +127,25 @@ exports.ECSCluster = ({ compare }) => ({
     "attachments",
     "attachmentsStatus",
     "configuration.executeCommandConfiguration.kmsKeyId",
+    "serviceConnectDefaults",
   ],
   filterLive: () =>
     pipe([
-      pick(["clusterName", "settings", "defaultCapacityProviderStrategy"]),
+      pick([
+        "clusterName",
+        "settings",
+        "capacityProviders",
+        "configuration",
+        "defaultCapacityProviderStrategy",
+      ]),
     ]),
   dependencies: {
     capacityProviders: {
       type: "CapacityProvider",
       group: "ECS",
       list: true,
-      dependencyIds: ({ lives, config }) =>
-        pipe([
-          get("capacityProviders"),
-          map(
-            pipe([
-              lives.getByName({
-                type: "CapacityProvider",
-                group: "ECS",
-                providerName: config.providerName,
-              }),
-              get("id"),
-            ])
-          ),
-        ]),
+      excludeDefaultDependencies: true,
+      dependencyIds: ({ lives, config }) => pipe([get("capacityProviders")]),
     },
     kmsKey: {
       type: "Key",
@@ -171,6 +186,7 @@ exports.ECSCluster = ({ compare }) => ({
     ]),
     method: "describeClusters",
     getField: "clusters",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listClusters-property
   getList: {
@@ -232,16 +248,12 @@ exports.ECSCluster = ({ compare }) => ({
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { capacityProviders = [], kmsKey },
+    dependencies: { capacityProviders, kmsKey },
     config,
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
-        capacityProviders: pipe([
-          () => capacityProviders,
-          map((capacityProvider) => getField(capacityProvider, "name")),
-        ])(),
         tags: buildTagsEcs({
           name,
           config,
@@ -249,6 +261,15 @@ exports.ECSCluster = ({ compare }) => ({
           tags,
         }),
       }),
+      when(
+        () => capacityProviders,
+        defaultsDeep({
+          capacityProviders: pipe([
+            () => capacityProviders,
+            map((capacityProvider) => getField(capacityProvider, "name")),
+          ])(),
+        })
+      ),
       when(
         () => kmsKey,
         defaultsDeep({

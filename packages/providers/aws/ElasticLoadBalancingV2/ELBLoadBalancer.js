@@ -1,6 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, assign, map, or } = require("rubico");
-const { defaultsDeep, first, isEmpty, unless, pluck } = require("rubico/x");
+const {
+  defaultsDeep,
+  first,
+  isEmpty,
+  unless,
+  pluck,
+  callProp,
+} = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags, hasKeyInTags } = require("../AwsCommon");
@@ -39,6 +46,7 @@ const decorate = ({ endpoint }) =>
       ...other,
     }),
     assignTags({ endpoint }),
+    assign({ DNSName: pipe([get("DNSName", ""), callProp("toLowerCase")]) }),
   ]);
 
 const managedByOther = () =>
@@ -67,7 +75,6 @@ exports.ElasticLoadBalancingV2LoadBalancer = () => ({
   package: "elastic-load-balancing-v2",
   client: "ElasticLoadBalancingV2",
   propertiesDefault: {},
-  omitProperties: [],
   inferName: () =>
     pipe([
       get("Name"),

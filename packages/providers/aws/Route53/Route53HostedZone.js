@@ -62,8 +62,27 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 // parseInt("052",8) => 42
 // String.fromCharCode(42) => *
 
+const isCreatedByCloudMap = pipe([
+  get("HostedZoneConfig.Comment", ""),
+  callProp("startsWith", "Created by AWS Cloud Map namespace with ARN"),
+]);
+
 const managedByOther = () =>
-  pipe([get("Name"), callProp("endsWith", ".aoss.amazonaws.com.")]);
+  pipe([
+    or([
+      //
+      pipe([get("Name"), callProp("endsWith", ".aoss.amazonaws.com.")]),
+      isCreatedByCloudMap,
+    ]),
+  ]);
+
+const cannotBeDeleted = () =>
+  pipe([
+    or([
+      //
+      isCreatedByCloudMap,
+    ]),
+  ]);
 
 const octalReplace = pipe([callProp("replaceAll", "\\052", "*")]);
 
@@ -520,6 +539,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
+    cannotBeDeleted,
     findNamespace: findNamespaceInTags,
     tagResource: tagResource({ ResourceType })({ endpoint: route53 }),
     untagResource: untagResource({ ResourceType })({ endpoint: route53 }),

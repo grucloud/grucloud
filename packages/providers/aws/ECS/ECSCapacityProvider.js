@@ -19,7 +19,7 @@ const buildArn = () =>
 
 const findId = () =>
   pipe([
-    get("capacityProviderArn"),
+    get("name"),
     tap((id) => {
       assert(id);
     }),
@@ -30,6 +30,13 @@ const findName = () =>
     get("name"),
     tap((name) => {
       assert(name);
+    }),
+  ]);
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
     }),
   ]);
 
@@ -64,7 +71,6 @@ exports.ECSCapacityProvider = ({ compare }) => ({
   ],
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
-  isDefault: cannotBeDeleted,
   compare: compare({}),
   filterLive: () =>
     pipe([
@@ -90,6 +96,7 @@ exports.ECSCapacityProvider = ({ compare }) => ({
     enhanceParams: () => () => ({ include: ["TAGS"] }),
     method: "describeCapacityProviders",
     getParam: "capacityProviders",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createCapacityProvider-property
   create: {

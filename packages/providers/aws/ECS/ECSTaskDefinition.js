@@ -10,6 +10,8 @@ const {
   switchCase,
   or,
   not,
+  and,
+  omit,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -59,6 +61,10 @@ const decorate = () =>
     }),
     ({ taskDefinition, tags }) => ({ ...taskDefinition, tags }),
     omitIfEmpty(["placementConstraints", "volumes"]),
+    unless(
+      pipe([get("requiresCompatibilities"), includes("EC2")]),
+      omit(["requiresAttributes"])
+    ),
     assign({
       containerDefinitions: pipe([
         get("containerDefinitions"),
@@ -380,7 +386,7 @@ exports.ECSTaskDefinition = ({ compare }) => ({
   getByName:
     ({ getList }) =>
     ({ name }) =>
-      pipe([() => ({ familyPrefix: name }), getList, first])(),
+      pipe([getList, find(and([eq(get("family"), name), get("latest")]))])(),
   tagger: ({ config }) =>
     Tagger({
       buildArn: buildArn({ config }),

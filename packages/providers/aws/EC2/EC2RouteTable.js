@@ -122,7 +122,6 @@ exports.EC2RouteTable = ({ compare }) => ({
   findName,
   findId,
   ignoreErrorCodes: ["InvalidRouteTableID.NotFound"],
-  dependencies: {},
   isDefault,
   managedByOther: isDefault,
   cannotBeDeleted: isDefault,

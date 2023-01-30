@@ -131,23 +131,7 @@ exports.ECSService = ({ compare }) => ({
     taskDefinition: {
       type: "TaskDefinition",
       group: "ECS",
-      dependencyId: ({ lives, config }) =>
-        pipe([
-          get("taskDefinition"),
-          callProp("split", "/"),
-          last,
-          callProp("split", ":"),
-          first,
-          tap((name) => {
-            assert(name);
-          }),
-          lives.getByName({
-            type: "TaskDefinition",
-            group: "ECS",
-            providerName: config.config,
-          }),
-          get("id"),
-        ]),
+      dependencyId: ({ lives, config }) => pipe([get("taskDefinition")]),
     },
     subnets: {
       type: "Subnet",

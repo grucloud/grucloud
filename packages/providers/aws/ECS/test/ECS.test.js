@@ -26,7 +26,9 @@ describe("ECS", async function () {
         groupType: "ECS::TaskDefinition",
         livesNotFound: ({ config }) => [
           {
-            taskDefinitionArn: `arn:aws:ecs:eu-west-2:${config.accountId()}:task-definition/not-exist:1`,
+            taskDefinitionArn: `arn:aws:ecs:${
+              config.region
+            }:${config.accountId()}:task-definition/not-exist:1`,
           },
         ],
       }),
@@ -38,7 +40,9 @@ describe("ECS", async function () {
         groupType: "ECS::Service",
         livesNotFound: ({ config }) => [
           {
-            clusterArn: `arn:aws:ecs:eu-west-2:${config.accountId()}:cluster/not-existing`,
+            clusterArn: `arn:aws:ecs:${
+              config.region
+            }:${config.accountId()}:cluster/not-existing`,
             serviceName: "12345",
           },
         ],
@@ -51,18 +55,37 @@ describe("ECS", async function () {
         groupType: "ECS::Task",
         livesNotFound: ({ config }) => [
           {
-            clusterArn: `arn:aws:ecs:eu-west-2:${config.accountId()}:cluster/not-existing`,
-            taskArn: `arn:aws:ecs:eu-west-2:${config.accountId()}:task/demo/ee0e3ce2ad9a49ce90e6a257303c1773`,
+            clusterArn: `arn:aws:ecs:${
+              config.region
+            }:${config.accountId()}:cluster/not-existing`,
+            taskArn: `arn:aws:ecs:${
+              config.region
+            }:${config.accountId()}:task/demo/ee0e3ce2ad9a49ce90e6a257303c1773`,
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("TaskSet", () =>
+  it("TaskSet", () =>
     pipe([
       () => ({
         groupType: "ECS::TaskSet",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            cluster: `arn:aws:ecs:${
+              config.region
+            }:${config.accountId()}:cluster/not-existing`,
+            service: `arn:aws:ecs:${
+              config.region
+            }:${config.accountId()}:service/ee0e3ce2ad9a49ce90e6a257303c1773`,
+            taskDefinition: `arn:aws:ecs:${
+              config.region
+            }:${config.accountId()}:task-definition/demo/ee0e3ce2ad9a49ce90e6a257303c1773`,
+            taskSet: `arn:aws:ecs:${
+              config.region
+            }:${config.accountId()}:task-set/demo/ee0e3ce2ad9a49ce90e6a257303c1773`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

@@ -380,12 +380,6 @@ exports.createResources = () => [
     group: "ECS",
     properties: ({}) => ({
       clusterName: "CdkStack-MyCluster4C1BA579-fZi4x9tf2fSV",
-      settings: [
-        {
-          name: "containerInsights",
-          value: "disabled",
-        },
-      ],
     }),
   },
   {
@@ -471,32 +465,6 @@ exports.createResources = () => [
       family: "CdkStackMyFargateServiceTaskDef846A07DE",
       memory: "2048",
       networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
-        },
-        {
-          name: "ecs.capability.execution-role-awslogs",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.ecr-auth",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.task-iam-role",
-        },
-        {
-          name: "ecs.capability.execution-role-ecr-pull",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
       requiresCompatibilities: ["FARGATE"],
     }),
     dependencies: ({}) => ({

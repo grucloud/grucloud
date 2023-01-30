@@ -191,6 +191,7 @@ const ignoredTags = [
   "alpha.eksctl.io",
   "eksctl.cluster.k8s.io",
   "eks",
+  "ecs:",
   "AmazonECSManaged",
   "directconnect",
 ];

@@ -100,7 +100,12 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
     ProtocolVersion: "HTTP1",
     IpAddressType: "ipv4",
   },
-  omitProperties: ["TargetGroupArn", "LoadBalancerArns"],
+  omitProperties: [
+    "TargetGroupArn",
+    "LoadBalancerArns",
+    "UnhealthyThresholdCount",
+    "HealthyThresholdCount",
+  ],
   filterLive: () =>
     pick([
       "Name",
@@ -111,7 +116,6 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
       "HealthCheckEnabled",
       "HealthCheckIntervalSeconds",
       "HealthCheckTimeoutSeconds",
-      "HealthyThresholdCount",
       "HealthCheckPath",
       "Matcher",
       "TargetType",
