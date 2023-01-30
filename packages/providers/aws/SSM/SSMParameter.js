@@ -16,12 +16,18 @@ const decorate =
     pipe([
       () => live,
       pick(["Name"]),
-      defaultsDeep({ WithDecryption: true }),
       tryCatch(
-        pipe([endpoint().getParameter, get("Parameter"), defaultsDeep(live)]),
+        pipe([defaultsDeep({ WithDecryption: true }), endpoint().getParameter]),
         // InvalidKeyId
-        (error) => live
+        (error, input) =>
+          pipe([
+            () => input,
+            defaultsDeep({ WithDecryption: false }),
+            endpoint().getParameter,
+          ])()
       ),
+      get("Parameter"),
+      defaultsDeep(live),
       assignTags({ endpoint, ResourceType: "Parameter" }),
     ])();
 

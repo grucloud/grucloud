@@ -86,6 +86,7 @@ describe("ECS", async function () {
             }:${config.accountId()}:task-set/demo/ee0e3ce2ad9a49ce90e6a257303c1773`,
           },
         ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
