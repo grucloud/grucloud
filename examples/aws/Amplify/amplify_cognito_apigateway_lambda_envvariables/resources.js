@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "App",
     group: "Amplify",
-    properties: ({}) => ({
+    properties: ({ config, getId }) => ({
       customHeaders: "",
       customRules: [
         {
@@ -22,19 +22,35 @@ exports.createResources = () => [
       enableBranchAutoBuild: false,
       enableBranchAutoDeletion: false,
       environmentVariables: {
-        APIURL: "https://f8fd5524q2.execute-api.us-east-1.amazonaws.com/dev",
-        cognito_region: "us-east-1",
-        user_pools_id: "us-east-1_wWgfLVztf",
-        user_pools_web_client_id: "7j6oltlv7jbna36mpijlao0dfs",
+        APIURL: `${getId({
+          type: "RestApi",
+          group: "APIGateway",
+          name: "sam-app",
+          path: "live.url",
+        })}/dev`,
+        cognito_region: `${config.region}`,
+        user_pools_id: `${getId({
+          type: "UserPool",
+          group: "CognitoIdentityServiceProvider",
+          name: "rUserPool-MufyeNINjvqO",
+        })}`,
+        user_pools_web_client_id: `${getId({
+          type: "UserPoolClient",
+          group: "CognitoIdentityServiceProvider",
+          name: "rAmplifyCognitoClient-M2if5Dht55Th",
+        })}`,
       },
       name: "sam-app",
       platform: "WEB",
-      repository: "https://github.com/fredericheem/amplify-js-samples",
+      repository: "https://github.com/FredericHeem/amplify-js-samples",
       repositoryCloneMethod: "SSH",
       accessToken: process.env.SAM_APP_APP_ACCESSTOKEN,
     }),
     dependencies: ({}) => ({
-      iamRole: "sam-app-rAmplifyRole-1G6MZMKRYST54",
+      iamRole: "sam-app-rAmplifyRole-FGBJTH6267JJ",
+      apiGatewayRestApis: ["sam-app"],
+      cognitoUserPools: ["rUserPool-MufyeNINjvqO"],
+      cognitoUserPoolClient: ["rAmplifyCognitoClient-M2if5Dht55Th"],
     }),
   },
   {
@@ -44,14 +60,7 @@ exports.createResources = () => [
       branchName: "main",
       description: "Branch",
       displayName: "main",
-      enableAutoBuild: true,
-      enableBasicAuth: false,
-      enableNotification: false,
-      enablePerformanceMode: false,
-      enablePullRequestPreview: false,
       stage: "DEVELOPMENT",
-      totalNumberOfJobs: "0",
-      ttl: "5",
     }),
     dependencies: ({}) => ({
       app: "sam-app",
@@ -69,7 +78,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       restApi: "sam-app",
-      userPools: ["rUserPool-Q693L6lTFlCl"],
+      userPools: ["rUserPool-MufyeNINjvqO"],
     }),
   },
   {
@@ -100,7 +109,7 @@ exports.createResources = () => [
                   config.region
                 }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:sam-app-myFunction-eio4yWq2YSR2/invocations`,
+                }:${config.accountId()}:function:sam-app-myFunction-GTNczhNZIqkv/invocations`,
               },
             },
             options: {
@@ -195,7 +204,7 @@ exports.createResources = () => [
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
     properties: ({}) => ({
-      PoolName: "rUserPool-Q693L6lTFlCl",
+      PoolName: "rUserPool-MufyeNINjvqO",
       AdminCreateUserConfig: {
         AllowAdminCreateUserOnly: true,
       },
@@ -216,7 +225,7 @@ exports.createResources = () => [
         "profile",
       ],
       CallbackURLs: ["http://localhost"],
-      ClientName: "rAmplifyCognitoClient-XBef8QRc5euQ",
+      ClientName: "rAmplifyCognitoClient-M2if5Dht55Th",
       ExplicitAuthFlows: [
         "ALLOW_ADMIN_USER_PASSWORD_AUTH",
         "ALLOW_CUSTOM_AUTH",
@@ -235,14 +244,14 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      userPool: "rUserPool-Q693L6lTFlCl",
+      userPool: "rUserPool-MufyeNINjvqO",
     }),
   },
   {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-myFunctionRole-1QJAIG8RD8HTR",
+      RoleName: "sam-app-myFunctionRole-10QCFQGG5G3TV",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -262,19 +271,13 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
   },
   {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-rAmplifyRole-1G6MZMKRYST54",
+      RoleName: "sam-app-rAmplifyRole-FGBJTH6267JJ",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -314,52 +317,46 @@ exports.createResources = () => [
             user_pools_id: `${getId({
               type: "UserPool",
               group: "CognitoIdentityServiceProvider",
-              name: "rUserPool-Q693L6lTFlCl",
+              name: "rUserPool-MufyeNINjvqO",
             })}`,
             cognito_region: `${config.region}`,
             user_pools_web_client_id: `${getId({
               type: "UserPoolClient",
               group: "CognitoIdentityServiceProvider",
-              name: "rAmplifyCognitoClient-XBef8QRc5euQ",
+              name: "rAmplifyCognitoClient-M2if5Dht55Th",
             })}`,
           },
         },
-        FunctionName: "sam-app-myFunction-eio4yWq2YSR2",
+        FunctionName: "sam-app-myFunction-GTNczhNZIqkv",
         Handler: "app.lambda_handler",
         Runtime: "python3.7",
       },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
-      Policy: {
-        Version: "2012-10-17",
-        Id: "default",
-        Statement: [
-          {
-            Sid: "sam-app-myFunctionEmyFunctionPermissiondev-1VIV8TFCY8404",
-            Effect: "Allow",
-            Principal: {
-              Service: "apigateway.amazonaws.com",
-            },
-            Action: "lambda:InvokeFunction",
-            Resource: `arn:aws:lambda:${
-              config.region
-            }:${config.accountId()}:function:sam-app-myFunction-eio4yWq2YSR2`,
-            Condition: {
-              ArnLike: {
-                "AWS:SourceArn": `arn:aws:execute-api:${
-                  config.region
-                }:${config.accountId()}:f8fd5524q2/*/GET/lambdaExample`,
-              },
-            },
-          },
-        ],
-      },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-myFunctionRole-1QJAIG8RD8HTR",
-      cognitoUserPools: ["rUserPool-Q693L6lTFlCl"],
-      cognitoUserPoolClient: ["rAmplifyCognitoClient-XBef8QRc5euQ"],
+      role: "sam-app-myFunctionRole-10QCFQGG5G3TV",
+      cognitoUserPools: ["rUserPool-MufyeNINjvqO"],
+      cognitoUserPoolClient: ["rAmplifyCognitoClient-M2if5Dht55Th"],
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ config }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "sam-app-myFunction-GTNczhNZIqkv",
+          Principal: "apigateway.amazonaws.com",
+          StatementId:
+            "sam-app-myFunctionEmyFunctionPermissiondev-7AHT5CTHRFKS",
+          SourceArn: `arn:aws:execute-api:${
+            config.region
+          }:${config.accountId()}:kpqhd4gd6e/*/GET/lambdaExample`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "sam-app-myFunction-GTNczhNZIqkv",
     }),
   },
 ];

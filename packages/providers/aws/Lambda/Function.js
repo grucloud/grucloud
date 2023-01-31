@@ -69,27 +69,27 @@ const removeVersion = pipe([
 ]);
 exports.removeVersion = removeVersion;
 
+const managedByOther =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      lives.getByType({
+        type: "Stack",
+        group: "CloudFormation",
+        providerName: config.providerName,
+      }),
+      any(
+        pipe([
+          get("name"),
+          append("-AWS"),
+          (stackName) => live.Configuration.FunctionName.includes(stackName),
+        ])
+      ),
+    ])();
+
 exports.Function = ({ spec, config }) => {
   const lambda = createLambda(config);
   const client = AwsClient({ spec, config })(lambda);
-
-  const managedByOther =
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        lives.getByType({
-          type: "Stack",
-          group: "CloudFormation",
-          providerName: config.providerName,
-        }),
-        any(
-          pipe([
-            get("name"),
-            append("-AWS"),
-            (stackName) => live.Configuration.FunctionName.includes(stackName),
-          ])
-        ),
-      ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
   const getById = client.getById({
@@ -227,6 +227,7 @@ exports.Function = ({ spec, config }) => {
       },
     }) =>
       pipe([
+        //TODO
         when(() => Policy, lambdaAddPermission({ Policy, FunctionName })),
         when(
           () => FunctionUrlConfig,
@@ -299,18 +300,19 @@ exports.Function = ({ spec, config }) => {
           lambda().updateFunctionUrlConfig,
         ])
       ),
-      when(
-        () =>
-          get("liveDiff.updated.Policy")(diff) ||
-          get("liveDiff.added.Policy")(diff),
-        pipe([
-          () => ({
-            FunctionName: payload.Configuration.FunctionName,
-            Policy: payload.Policy,
-          }),
-          lambdaAddPermission,
-        ])
-      ),
+      // TODO
+      // when(
+      //   () =>
+      //     get("liveDiff.updated.Policy")(diff) ||
+      //     get("liveDiff.added.Policy")(diff),
+      //   pipe([
+      //     () => ({
+      //       FunctionName: payload.Configuration.FunctionName,
+      //       Policy: payload.Policy,
+      //     }),
+      //     lambdaAddPermission,
+      //   ])
+      // ),
       tap(() => {
         logger.info(`updated function done ${name}`);
       }),

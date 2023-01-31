@@ -52,6 +52,11 @@ const {
 } = require("@grucloud/core/Common");
 
 const dependenciesFromEnv = {
+  apiGatewayRestApis: {
+    pathLive: "live.url",
+    type: "RestApi",
+    group: "APIGateway",
+  },
   apiGatewayV2Apis: {
     pathLive: "id",
     type: "Api",
@@ -112,15 +117,22 @@ exports.replaceEnv =
       find(({ type, group, pathLive }) =>
         pipe([
           () => lives,
+          tap((params) => {
+            assert(true);
+          }),
+
           any(
             and([
               eq(get("type"), type),
               eq(get("group"), group),
-              pipe([get(pathLive), (id) => idToMatch.match(new RegExp(id))]),
+              pipe([get(pathLive), (id) => idToMatch.startsWith(id)]),
             ])
           ),
         ])()
       ),
+      tap((params) => {
+        assert(true);
+      }),
       switchCase([
         isEmpty,
         pipe([() => idToMatch, replaceAccountAndRegion({ providerConfig })]),
@@ -133,6 +145,7 @@ exports.replaceEnv =
               pathLive,
               providerConfig,
               lives,
+              withSuffix: true,
             }),
           ])(),
       ]),
@@ -158,7 +171,7 @@ const buildDependencyFromEnv =
               type,
               group,
             }),
-            find(eq(get(pathLive), value)),
+            find(pipe([get(pathLive), (id) => value.startsWith(id)])),
             get("id"),
           ])()
         ),
@@ -1095,24 +1108,6 @@ exports.destroyNetworkInterfaces =
         ])
       ),
     ])();
-
-exports.lambdaAddPermission = ({ lambda, lambdaFunction, SourceArn }) =>
-  pipe([
-    tap.if(
-      () => lambdaFunction,
-      ({ IntegrationId }) =>
-        pipe([
-          () => ({
-            Action: "lambda:InvokeFunction",
-            FunctionName: lambdaFunction.resource.name,
-            Principal: "apigateway.amazonaws.com",
-            StatementId: IntegrationId,
-            SourceArn: SourceArn(),
-          }),
-          lambda().addPermission,
-        ])()
-    ),
-  ]);
 
 exports.ignoreResourceCdk = () =>
   pipe([get("name"), callProp("startsWith", "cdk-")]);

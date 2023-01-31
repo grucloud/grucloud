@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, not, omit } = require("rubico");
+const { pipe, tap, get, pick, assign, not, omit, map } = require("rubico");
 const { defaultsDeep, when, callProp } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -7,7 +7,11 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./AmplifyCommon");
-const { replaceAccountAndRegion } = require("../AwsCommon");
+const {
+  replaceAccountAndRegion,
+  buildDependenciesFromEnv,
+  replaceEnv,
+} = require("../AwsCommon");
 
 const buildArn = () =>
   pipe([
@@ -94,11 +98,23 @@ exports.AmplifyApp = ({ compare }) => ({
       group: "IAM",
       dependencyId: ({ lives, config }) => pipe([get("iamServiceRoleArn")]),
     },
+    ...buildDependenciesFromEnv({
+      pathEnvironment: "environmentVariables",
+    }),
   },
   ignoreErrorCodes: ["NotFoundException"],
   compare: compare({ filterAll: () => pipe([omit(["accessToken"])]) }),
   filterLive: ({ lives, providerConfig }) =>
     pipe([
+      when(
+        get("environmentVariables"),
+        assign({
+          environmentVariables: pipe([
+            get("environmentVariables"),
+            map(replaceEnv({ lives, providerConfig })),
+          ]),
+        })
+      ),
       when(
         get("productionBranch"),
         assign({

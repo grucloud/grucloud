@@ -148,41 +148,37 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ config, getId }) => ({
+    properties: ({}) => ({
       Configuration: {
         FunctionName: "my-function",
         Handler: "my-function.handler",
         Runtime: "nodejs14.x",
       },
-      Policy: {
-        Version: "2012-10-17",
-        Id: "default",
-        Statement: [
-          {
-            Sid: "lambda-f9a2e0dc-5300-469d-8bc9-25daea82056c",
-            Effect: "Allow",
-            Principal: {
-              Service: "apigateway.amazonaws.com",
-            },
-            Action: "lambda:InvokeFunction",
-            Resource: `arn:aws:lambda:${
-              config.region
-            }:${config.accountId()}:function:my-function`,
-            Condition: {
-              ArnLike: {
-                "AWS:SourceArn": `${getId({
-                  type: "Api",
-                  group: "ApiGatewayV2",
-                  name: "my-api",
-                })}/*/*/my-function`,
-              },
-            },
-          },
-        ],
-      },
     }),
     dependencies: ({}) => ({
       role: "lambda-role",
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ getId }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "my-function",
+          Principal: "apigateway.amazonaws.com",
+          StatementId: "lambda-f9a2e0dc-5300-469d-8bc9-25daea82056c",
+          SourceArn: `${getId({
+            type: "Api",
+            group: "ApiGatewayV2",
+            name: "my-api",
+          })}/*/*/my-function`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "my-function",
       apiGatewayV2Apis: ["my-api"],
     }),
   },

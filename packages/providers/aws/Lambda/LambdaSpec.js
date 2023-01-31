@@ -15,6 +15,7 @@ const {
   filter,
 } = require("rubico");
 const { defaultsDeep, when, includes, pluck, prepend } = require("rubico/x");
+const { createAwsService } = require("../AwsService");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
@@ -24,9 +25,7 @@ const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const {
   compareAws,
   isOurMinionObject,
-  replaceArnWithAccountAndRegion,
   replaceEnv,
-  assignPolicyAccountAndRegion,
   buildDependenciesFromEnv,
 } = require("../AwsCommon");
 
@@ -37,11 +36,13 @@ const {
   removeVersion,
 } = require("./Function");
 const { Layer, compareLayer } = require("./Layer");
+const { LambdaPermission } = require("./LambdaPermission");
+
 const { EventSourceMapping } = require("./EventSourceMapping");
 const logger = require("@grucloud/core/logger")({ prefix: "Lambda" });
 
 const GROUP = "Lambda";
-const compareLambda = compareAws({});
+const compare = compareAws({});
 
 const createTempDir = () => os.tmpdir();
 
@@ -151,6 +152,7 @@ module.exports = pipe([
         "Configuration.VpcConfig",
         "Configuration.SigningProfileVersionArn",
         "Configuration.SigningJobArn",
+        "Policy",
       ],
       propertiesDefault: {
         Configuration: {
@@ -217,15 +219,15 @@ module.exports = pipe([
                 ),
               ]),
             }),
-            when(
-              get("Policy"),
-              assign({
-                Policy: pipe([
-                  get("Policy"),
-                  assignPolicyAccountAndRegion({ providerConfig, lives }),
-                ]),
-              })
-            ),
+            // when(
+            //   get("Policy"),
+            //   assign({
+            //     Policy: pipe([
+            //       get("Policy"),
+            //       assignPolicyAccountAndRegion({ providerConfig, lives }),
+            //     ]),
+            //   })
+            // ),
             omitIfEmpty(["FunctionUrlConfig"]),
             tap(
               pipe([
@@ -315,6 +317,7 @@ module.exports = pipe([
         }),
       },
     },
+    createAwsService(LambdaPermission({})),
     {
       type: "EventSourceMapping",
       Client: EventSourceMapping,
@@ -346,7 +349,7 @@ module.exports = pipe([
         "StateTransitionReason",
         "State",
       ],
-      compare: compareLambda({
+      compare: compare({
         filterTarget: () =>
           pipe([
             defaultsDeep({
@@ -416,8 +419,7 @@ Apache Kafka
   map(
     defaultsDeep({
       group: GROUP,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
+      compare: compare({}),
     })
   ),
 ]);

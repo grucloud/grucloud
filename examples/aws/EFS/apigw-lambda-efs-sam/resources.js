@@ -266,12 +266,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       efsFileSystems: ["fs-088a52d52514435ea"],
@@ -281,7 +275,7 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ config, getId }) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         FileSystemConfigs: [
           {
@@ -298,35 +292,6 @@ exports.createResources = () => [
         Runtime: "python3.8",
         Timeout: 15,
       },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
-      Policy: {
-        Version: "2012-10-17",
-        Id: "default",
-        Statement: [
-          {
-            Sid: "sam-app-HelloEfsFunctionAPIPermission-YH0N0K1GR7XB",
-            Effect: "Allow",
-            Principal: {
-              Service: "apigateway.amazonaws.com",
-            },
-            Action: "lambda:InvokeFunction",
-            Resource: `arn:aws:lambda:${
-              config.region
-            }:${config.accountId()}:function:sam-app-HelloEfsFunction-UmbGAb1UVtxg`,
-            Condition: {
-              ArnLike: {
-                "AWS:SourceArn": `${getId({
-                  type: "Api",
-                  group: "ApiGatewayV2",
-                  name: "sam-app",
-                })}/*/*`,
-              },
-            },
-          },
-        ],
-      },
     }),
     dependencies: ({}) => ({
       role: "sam-app-HelloEfsFunctionRole-WCHGT7XY468H",
@@ -338,6 +303,28 @@ exports.createResources = () => [
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1E39G8T9GYK9C",
       ],
       efsAccessPoints: ["fsap-02d7fc476a7e960ba"],
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ getId }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "sam-app-HelloEfsFunction-UmbGAb1UVtxg",
+          Principal: "apigateway.amazonaws.com",
+          StatementId: "sam-app-HelloEfsFunctionAPIPermission-YH0N0K1GR7XB",
+          SourceArn: `${getId({
+            type: "Api",
+            group: "ApiGatewayV2",
+            name: "sam-app",
+          })}/*/*`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "sam-app-HelloEfsFunction-UmbGAb1UVtxg",
       apiGatewayV2Apis: ["sam-app"],
     }),
   },

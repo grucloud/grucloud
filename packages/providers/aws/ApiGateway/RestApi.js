@@ -46,10 +46,41 @@ const { replaceAccountAndRegion } = require("../AwsCommon");
 const { throwIfNotAwsError } = require("../AwsCommon");
 const { diffToPatch, ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
 
-const buildArn =
-  ({ config }) =>
-  ({ id }) =>
-    `arn:aws:apigateway:${config.region}::/restapis/${id}`;
+const buildArn = () =>
+  pipe([
+    get("arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+// https://kpqhd4gd6e.execute-api.us-east-1.amazonaws.com
+const assignUrl = ({ config }) =>
+  pipe([
+    assign({
+      url: pipe([
+        tap(({ id }) => {
+          assert(id);
+        }),
+        ({ id }) => `https://${id}.execute-api.${config.region}.amazonaws.com`,
+      ]),
+    }),
+  ]);
+
+const assignArn = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config.region);
+    }),
+    assign({
+      arn: pipe([
+        tap(({ id }) => {
+          assert(id);
+        }),
+        ({ id }) => `arn:aws:apigateway:${config.region}::/restapis/${id}`,
+      ]),
+    }),
+  ]);
 
 const findId = () => get("id");
 const findName = () => get("name");
@@ -456,8 +487,10 @@ const fetchRestApiChilds =
       ]),
     })();
 
-const decorate = ({ endpoint }) =>
+const decorate = ({ endpoint, config }) =>
   pipe([
+    assignArn({ config }),
+    assignUrl({ config }),
     assign({
       deployments: ({ id: restApiId }) =>
         pipe([
@@ -505,7 +538,7 @@ exports.RestApi = ({ compare }) => ({
   findName,
   findId,
   getByName: getByNameCore,
-  omitProperties: ["id", "createdDate", "deployments", "version"],
+  omitProperties: ["id", "arn", "url", "createdDate", "deployments", "version"],
   propertiesDefault: { disableExecuteApiEndpoint: false },
   compare: compare({
     filterTarget: () => pipe([omit(["deployment"])]),

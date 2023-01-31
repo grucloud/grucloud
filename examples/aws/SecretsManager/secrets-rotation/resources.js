@@ -65,32 +65,32 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       Configuration: {
         FunctionName: "secret-rotation",
         Handler: "index.handler",
         Runtime: "nodejs18.x",
       },
-      Policy: {
-        Version: "2012-10-17",
-        Id: "default",
-        Statement: [
-          {
-            Sid: "stmt",
-            Effect: "Allow",
-            Principal: {
-              Service: "secretsmanager.amazonaws.com",
-            },
-            Action: "lambda:InvokeFunction",
-            Resource: `arn:aws:lambda:${
-              config.region
-            }:${config.accountId()}:function:secret-rotation`,
-          },
-        ],
-      },
     }),
     dependencies: ({}) => ({
       role: "secret-rotation-role-er1abb4h",
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({}) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "secret-rotation",
+          Principal: "secretsmanager.amazonaws.com",
+          StatementId: "stmt",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "secret-rotation",
     }),
   },
   {

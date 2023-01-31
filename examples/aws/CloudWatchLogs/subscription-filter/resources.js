@@ -79,42 +79,36 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       Configuration: {
         FunctionName: "receive-cloudwatch-log-group",
         Handler: "index.handler",
         Runtime: "nodejs16.x",
       },
-      Policy: {
-        Version: "2012-10-17",
-        Id: "default",
-        Statement: [
-          {
-            Sid: "InvokePermissionsForCWL9b3c8372cdca158bb90409322a153feb",
-            Effect: "Allow",
-            Principal: {
-              Service: "logs.amazonaws.com",
-            },
-            Action: "lambda:InvokeFunction",
-            Resource: `arn:aws:lambda:${
-              config.region
-            }:${config.accountId()}:function:receive-cloudwatch-log-group`,
-            Condition: {
-              StringEquals: {
-                "AWS:SourceAccount": `${config.accountId()}`,
-              },
-              ArnLike: {
-                "AWS:SourceArn": `arn:aws:logs:${
-                  config.region
-                }:${config.accountId()}:log-group:my-log-group:*`,
-              },
-            },
-          },
-        ],
-      },
     }),
     dependencies: ({}) => ({
       role: "receive-cloudwatch-log-group-role-cv4x40qb",
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ config }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "receive-cloudwatch-log-group",
+          Principal: "logs.amazonaws.com",
+          StatementId:
+            "InvokePermissionsForCWL9b3c8372cdca158bb90409322a153feb",
+          SourceArn: `arn:aws:logs:${
+            config.region
+          }:${config.accountId()}:log-group:my-log-group:*`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "receive-cloudwatch-log-group",
     }),
   },
 ];
