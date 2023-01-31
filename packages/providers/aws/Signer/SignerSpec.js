@@ -9,8 +9,8 @@ const { SignerSigningProfile } = require("./SignerSigningProfile");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Signer.html
 const GROUP = "Signer";
-
-const compare = compareAws({});
+const tagsKey = "tags";
+const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
@@ -22,6 +22,7 @@ module.exports = pipe([
       createAwsService,
       defaultsDeep({
         group: GROUP,
+        tagsKey,
         compare: compare({}),
       }),
     ])

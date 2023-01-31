@@ -35,7 +35,14 @@ exports.SignerSigningProfile = () => ({
   type: "SigningProfile",
   package: "signer",
   client: "Signer",
-  propertiesDefault: {},
+  propertiesDefault: {
+    signatureValidityPeriod: {
+      type: "MONTHS",
+      value: 135,
+    },
+  },
+  //TODO
+  cannotBeDeleted: () => () => true,
   omitProperties: [
     "profileVersion",
     "profileVersionArn",
