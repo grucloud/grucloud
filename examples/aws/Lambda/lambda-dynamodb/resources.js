@@ -76,12 +76,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       table: "sam-app-DynamoTable-1TM3ILOZ1A36J",
@@ -100,9 +94,6 @@ exports.createResources = () => [
         FunctionName: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
         Handler: "app.handler",
         Runtime: "nodejs12.x",
-      },
-      Tags: {
-        "lambda:createdBy": "SAM",
       },
     }),
     dependencies: ({}) => ({

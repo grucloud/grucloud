@@ -54,12 +54,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
   },
   {
@@ -75,9 +69,6 @@ exports.createResources = () => [
         FunctionName: "sam-app-PutObjectFunction-UHg0AjQBqco2",
         Handler: "app.lambda_handler",
         Runtime: "python3.8",
-      },
-      Tags: {
-        "lambda:createdBy": "SAM",
       },
     }),
     dependencies: ({}) => ({

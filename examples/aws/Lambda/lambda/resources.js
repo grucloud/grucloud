@@ -27,12 +27,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
   },
   {
@@ -44,9 +38,6 @@ exports.createResources = () => [
         Handler: "app.handler",
         MemorySize: 512,
         Runtime: "nodejs14.x",
-      },
-      Tags: {
-        "lambda:createdBy": "SAM",
       },
     }),
     dependencies: ({}) => ({
