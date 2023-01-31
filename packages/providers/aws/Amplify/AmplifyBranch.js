@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
+const { pipe, tap, get, pick, assign, eq } = require("rubico");
 const { defaultsDeep, append, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -30,6 +30,7 @@ const decorate = ({ endpoint, live }) =>
       assert(live.appId);
     }),
     defaultsDeep({ appId: live.appId }),
+    when(eq(get("stage"), "NONE"), assign({ stage: () => "DEVELOPMENT" })),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html
@@ -37,7 +38,14 @@ exports.AmplifyBranch = () => ({
   type: "Branch",
   package: "amplify",
   client: "Amplify",
-  propertiesDefault: {},
+  propertiesDefault: {
+    enableAutoBuild: true,
+    enableBasicAuth: false,
+    enableNotification: false,
+    enablePerformanceMode: false,
+    enablePullRequestPreview: false,
+    ttl: "5",
+  },
   omitProperties: [
     "branchArn",
     "appId",
@@ -46,6 +54,7 @@ exports.AmplifyBranch = () => ({
     "activeJobId",
     "backendEnvironmentArn",
     "thumbnailUrl",
+    "totalNumberOfJobs",
   ],
   inferName:
     ({ dependenciesSpec: { app } }) =>
@@ -118,7 +127,7 @@ exports.AmplifyBranch = () => ({
           getParam: "branches",
           config,
           decorate: ({ parent }) =>
-            pipe([defaultsDeep({ appId: parent.appId })]),
+            pipe([defaultsDeep({ appId: parent.appId }), getById({})]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#createBranch-property
