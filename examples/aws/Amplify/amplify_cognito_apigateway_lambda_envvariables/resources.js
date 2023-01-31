@@ -358,6 +358,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-myFunctionRole-1QJAIG8RD8HTR",
+      cognitoUserPools: ["rUserPool-Q693L6lTFlCl"],
+      cognitoUserPoolClient: ["rAmplifyCognitoClient-XBef8QRc5euQ"],
     }),
   },
 ];

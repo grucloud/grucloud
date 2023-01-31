@@ -115,7 +115,7 @@ $util.qr($context.args.put("updatedAt", $createdAt))
     }),
     dependencies: ({}) => ({
       role: "CdkLambdaCallAppSyncStack-triggerServiceRole07E9AB-5S1U4A7Y9DDX",
-      graphqlApis: ["TriggeredByLambda"],
+      appsyncGraphqlApis: ["TriggeredByLambda"],
     }),
   },
 ];

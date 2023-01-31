@@ -107,7 +107,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
-      dynamoDbTables: ["sam-app-DynamoTable-1TM3ILOZ1A36J"],
     }),
   },
 ];

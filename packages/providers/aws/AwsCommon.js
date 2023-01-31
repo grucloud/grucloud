@@ -34,6 +34,7 @@ const {
   isDeepEqual,
   differenceWith,
   isObject,
+  values,
 } = require("rubico/x");
 const { v4: uuidv4 } = require("uuid");
 const util = require("util");
@@ -49,6 +50,130 @@ const {
   assignHasDiff,
   replaceWithName,
 } = require("@grucloud/core/Common");
+
+const dependenciesFromEnv = {
+  apiGatewayV2Apis: {
+    pathLive: "id",
+    type: "Api",
+    group: "ApiGatewayV2",
+  },
+  appsyncGraphqlApis: {
+    pathLive: "live.uris.GRAPHQL",
+    type: "GraphqlApi",
+    group: "AppSync",
+  },
+  cognitoUserPools: {
+    pathLive: "id",
+    type: "UserPool",
+    group: "CognitoIdentityServiceProvider",
+  },
+  cognitoUserPoolClient: {
+    pathLive: "id",
+    type: "UserPoolClient",
+    group: "CognitoIdentityServiceProvider",
+  },
+  // dynamoDbTables: {
+  //   pathLive: "live.TableName",
+  //   type: "Table",
+  //   group: "DynamoDB",
+  // },
+  rdsDbClusters: {
+    pathLive: "live.DBClusterArn",
+    type: "DBCluster",
+    group: "RDS",
+  },
+  // s3Buckets: {
+  //   pathLive: "name",
+  //   type: "Bucket",
+  //   group: "S3",
+  // },
+  secretsManagerSecrets: {
+    pathLive: "live.ARN",
+    type: "Secret",
+    group: "SecretsManager",
+  },
+  snsTopics: {
+    pathLive: "id",
+    type: "Topic",
+    group: "SNS",
+  },
+  // ssmParameters: {
+  //   pathLive: "name",
+  //   type: "Parameter",
+  //   group: "SSM",
+  // },
+};
+
+exports.replaceEnv =
+  ({ lives, providerConfig }) =>
+  (idToMatch) =>
+    pipe([
+      () => dependenciesFromEnv,
+      find(({ type, group, pathLive }) =>
+        pipe([
+          () => lives,
+          any(
+            and([
+              eq(get("type"), type),
+              eq(get("group"), group),
+              pipe([get(pathLive), (id) => idToMatch.match(new RegExp(id))]),
+            ])
+          ),
+        ])()
+      ),
+      switchCase([
+        isEmpty,
+        pipe([() => idToMatch, replaceAccountAndRegion({ providerConfig })]),
+        ({ type, group, pathLive }) =>
+          pipe([
+            () => idToMatch,
+            replaceWithName({
+              groupType: `${group}::${type}`,
+              path: pathLive,
+              pathLive,
+              providerConfig,
+              lives,
+            }),
+          ])(),
+      ]),
+    ])();
+
+const buildDependencyFromEnv =
+  ({ pathEnvironment }) =>
+  ({ pathLive, type, group }) => ({
+    type,
+    group,
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([
+        get(pathEnvironment),
+        map((value) =>
+          pipe([
+            tap((params) => {
+              assert(value);
+              assert(pathLive);
+            }),
+            lives.getByType({
+              providerName: config.providerName,
+              type,
+              group,
+            }),
+            find(eq(get(pathLive), value)),
+            get("id"),
+          ])()
+        ),
+        values,
+      ]),
+  });
+
+exports.buildDependenciesFromEnv = ({ pathEnvironment }) =>
+  pipe([
+    () => dependenciesFromEnv,
+    map(buildDependencyFromEnv({ pathEnvironment })),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const sortObject = pipe([
   Object.entries,

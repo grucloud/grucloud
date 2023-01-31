@@ -77,7 +77,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-LambdaFunctionRole-1C9B4X0VUWW95",
-      ssmParameters: ["ExampleParameterName"],
     }),
   },
   {

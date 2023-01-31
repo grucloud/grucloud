@@ -4,7 +4,6 @@ const { defaultsDeep, append } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { buildTagsObject } = require("@grucloud/core/Common");
 
 const pickId = pipe([
   tap(({ appId, environmentName }) => {
@@ -80,7 +79,13 @@ exports.AmplifyBackendEnvironment = () => ({
       type: "App",
       group: "Amplify",
       parent: true,
-      dependencyId: ({ lives, config }) => pipe([get("appId")]),
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("appId"),
+          tap((appId) => {
+            assert(appId);
+          }),
+        ]),
     },
   },
   ignoreErrorCodes: ["NotFoundException"],
@@ -101,13 +106,14 @@ exports.AmplifyBackendEnvironment = () => ({
           getParam: "backendEnvironments",
           config,
           decorate: ({ parent }) =>
-            pipe([defaultsDeep({ appId: parent.appId })]),
+            pipe([defaultsDeep({ appId: parent.appId }), getById({})]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#createBackendEnvironment-property
   create: {
     method: "createBackendEnvironment",
-    pickCreated: ({ payload }) => pipe([get("backendEnvironment")]),
+    pickCreated: ({ payload }) =>
+      pipe([get("backendEnvironment"), defaultsDeep(payload)]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#deleteBackendEnvironment-property
   destroy: {
@@ -118,7 +124,7 @@ exports.AmplifyBackendEnvironment = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { tags, ...otherProps },
+    properties: { ...otherProps },
     dependencies: { app },
     config,
   }) =>
@@ -128,8 +134,7 @@ exports.AmplifyBackendEnvironment = () => ({
       }),
       () => otherProps,
       defaultsDeep({
-        app: getField(app, "appId"),
-        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
+        appId: getField(app, "appId"),
       }),
     ])(),
 });

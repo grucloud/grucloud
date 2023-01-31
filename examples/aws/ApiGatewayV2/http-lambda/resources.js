@@ -183,7 +183,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "lambda-role",
-      apiGatewayV2s: ["my-api"],
+      apiGatewayV2Apis: ["my-api"],
     }),
   },
   {

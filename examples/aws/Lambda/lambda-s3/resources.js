@@ -65,15 +65,11 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ getId }) => ({
+    properties: ({}) => ({
       Configuration: {
         Environment: {
           Variables: {
-            DestinationBucketName: `${getId({
-              type: "Bucket",
-              group: "S3",
-              name: "gc-destination-example",
-            })}`,
+            DestinationBucketName: "gc-destination-example",
           },
         },
         FunctionName: "sam-app-PutObjectFunction-UHg0AjQBqco2",

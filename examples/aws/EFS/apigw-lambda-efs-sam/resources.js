@@ -338,7 +338,7 @@ exports.createResources = () => [
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1E39G8T9GYK9C",
       ],
       efsAccessPoints: ["fsap-02d7fc476a7e960ba"],
-      apiGatewayV2s: ["sam-app"],
+      apiGatewayV2Apis: ["sam-app"],
     }),
   },
 ];

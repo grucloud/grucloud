@@ -382,11 +382,16 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         Environment: {
           Variables: {
-            TABLE_NAME: "sam-app-websocket_connections",
+            TABLE_NAME: `${getId({
+              type: "Table",
+              group: "DynamoDB",
+              name: "sam-app-websocket_connections",
+              path: "live.TableName",
+            })}`,
           },
         },
         FunctionName: "sam-app-onconnect-function",
@@ -407,11 +412,16 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         Environment: {
           Variables: {
-            TABLE_NAME: "sam-app-websocket_connections",
+            TABLE_NAME: `${getId({
+              type: "Table",
+              group: "DynamoDB",
+              name: "sam-app-websocket_connections",
+              path: "live.TableName",
+            })}`,
           },
         },
         FunctionName: "sam-app-ondisconnect-function",
@@ -432,11 +442,16 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         Environment: {
           Variables: {
-            TABLE_NAME: "sam-app-websocket_connections",
+            TABLE_NAME: `${getId({
+              type: "Table",
+              group: "DynamoDB",
+              name: "sam-app-websocket_connections",
+              path: "live.TableName",
+            })}`,
           },
         },
         FunctionName: "sam-app-post-function",

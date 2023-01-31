@@ -196,7 +196,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-AppFunctionRole-BXPIJ03LGY2Y",
-      apiGatewayV2s: ["sam-app"],
+      apiGatewayV2Apis: ["sam-app"],
     }),
   },
 ];

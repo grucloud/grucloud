@@ -25,7 +25,9 @@ const {
   compareAws,
   isOurMinionObject,
   replaceArnWithAccountAndRegion,
+  replaceEnv,
   assignPolicyAccountAndRegion,
+  buildDependenciesFromEnv,
 } = require("../AwsCommon");
 
 const {
@@ -40,21 +42,6 @@ const logger = require("@grucloud/core/logger")({ prefix: "Lambda" });
 
 const GROUP = "Lambda";
 const compareLambda = compareAws({});
-
-const hasIdInLive = ({ idToMatch, lives, groupType }) =>
-  pipe([
-    tap(() => {
-      assert(groupType);
-      assert(idToMatch);
-    }),
-    () => lives,
-    any(
-      and([
-        eq(get("groupType"), groupType),
-        ({ id }) => idToMatch.match(new RegExp(id)),
-      ])
-    ),
-  ]);
 
 const createTempDir = () => os.tmpdir();
 
@@ -222,55 +209,7 @@ module.exports = pipe([
                       assign({
                         Variables: pipe([
                           get("Variables"),
-                          map((value) =>
-                            pipe([
-                              () => value,
-                              switchCase([
-                                () => value.endsWith(".amazonaws.com/graphql"),
-                                pipe([
-                                  replaceWithName({
-                                    groupType: "AppSync::GraphqlApi",
-                                    pathLive: "live.uris.GRAPHQL",
-                                    path: "live.uris.GRAPHQL",
-                                    providerConfig,
-                                    lives,
-                                  }),
-                                ]),
-                                hasIdInLive({
-                                  idToMatch: value,
-                                  lives,
-                                  groupType: "SecretsManager::Secret",
-                                }),
-                                pipe([
-                                  replaceWithName({
-                                    groupType: "SecretsManager::Secret",
-                                    path: "id",
-                                    providerConfig,
-                                    lives,
-                                  }),
-                                ]),
-                                hasIdInLive({
-                                  idToMatch: value,
-                                  lives,
-                                  groupType: "SNS::Topic",
-                                }),
-                                pipe([
-                                  replaceWithName({
-                                    groupType: "SNS::Topic",
-                                    path: "id",
-                                    providerConfig,
-                                    lives,
-                                  }),
-                                ]),
-                                pipe([
-                                  replaceArnWithAccountAndRegion({
-                                    providerConfig,
-                                    lives,
-                                  }),
-                                ]),
-                              ]),
-                            ])()
-                          ),
+                          map(replaceEnv({ lives, providerConfig })),
                         ]),
                       }),
                     ]),
@@ -371,81 +310,9 @@ module.exports = pipe([
           dependencyIds: () =>
             pipe([get("Configuration.FileSystemConfigs"), pluck("Arn")]),
         },
-        secrets: {
-          type: "Secret",
-          group: "SecretsManager",
-          parent: true,
-          list: true,
-          // dependencyIds: findDependenciesInEnvironment({
-          //   pathLive: "live.ARN",
-          //   type: "Secret",
-          //   group: "SecretsManager",
-          // }),
-        },
-        graphqlApis: {
-          type: "GraphqlApi",
-          group: "AppSync",
-          parent: true,
-          list: true,
-          // dependencyIds: findDependenciesInEnvironment({
-          //   pathLive: "live.ARN",
-          //   type: "GraphqlApi",
-          //   group: "AppSync",
-          // }),
-        },
-        dynamoDbTables: {
-          type: "Table",
-          group: "DynamoDB",
-          parent: true,
-          list: true,
-          // dependencyIds: findDependenciesInEnvironment({
-          //   pathLive: "live.ARN",
-          //   type: "GraphqlApi",
-          //   group: "AppSync",
-          // }),
-        },
-        snsTopics: {
-          type: "Topic",
-          group: "SNS",
-          parent: true,
-          list: true,
-          // dependencyIds: findDependenciesInEnvironment({
-          //   pathLive: "live.ARN",
-          //   type: "GraphqlApi",
-          //   group: "AppSync",
-          // }),
-        },
-        dbClusters: {
-          type: "DBCluster",
-          group: "RDS",
-          parent: true,
-          list: true,
-          // dependencyIds: findDependenciesInEnvironment({
-          //   pathLive: "live.ARN",
-          //   type: "GraphqlApi",
-          //   group: "AppSync",
-          // }),
-        },
-        apiGatewayV2s: {
-          type: "Api",
-          group: "ApiGatewayV2",
-          list: true,
-          // dependencyIds: findDependenciesInEnvironment({
-          //   pathLive: "live.ARN",
-          //   type: "GraphqlApi",
-          //   group: "AppSync",
-          // }),
-        },
-        ssmParameters: {
-          type: "Parameter",
-          group: "SSM",
-          list: true,
-          // dependencyIds: findDependenciesInEnvironment({
-          //   pathLive: "live.ARN",
-          //   type: "GraphqlApi",
-          //   group: "AppSync",
-          // }),
-        },
+        ...buildDependenciesFromEnv({
+          pathEnvironment: "Configuration.Environment.Variables",
+        }),
       },
     },
     {
