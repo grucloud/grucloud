@@ -22,12 +22,12 @@ const pickId = pipe([
 ]);
 
 const buildArn =
-  ({ region, accountId }) =>
+  ({ config: { region, accountId } }) =>
   ({ ApplicationId, EnvironmentId, DeploymentNumber }) =>
     `arn:aws:appconfig:${region}:${accountId()}:application/${ApplicationId}/environment/${EnvironmentId}/deployment/${DeploymentNumber}`;
 
 const decorate = ({ endpoint, config }) =>
-  pipe([assignTags({ buildArn: buildArn(config), endpoint })]);
+  pipe([assignTags({ buildArn: buildArn({ config }), endpoint })]);
 
 exports.AppConfigDeployment = () => ({
   type: "Deployment",
@@ -107,7 +107,7 @@ exports.AppConfigDeployment = () => ({
         }),
         unless(() => live.Latest, append(`::${live.DeploymentNumber}`)),
       ])(),
-  findId: ({ config }) => pipe([buildArn(config)]),
+  findId: ({ config }) => pipe([buildArn({ config })]),
   getByName: getByNameCore,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#listDeployments-property
   getList: ({ client, endpoint, getById, config }) =>

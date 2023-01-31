@@ -110,6 +110,7 @@ const lambdaRemovePermission = ({ endpoint, config }) =>
               `arn:aws:apigateway:${config.region}:lambda:path/2015-03-31/functions/`,
               ""
             ),
+            callProp("replace", `/invocations`, ""),
           ]),
           StatementId: get("IntegrationId"),
         }),

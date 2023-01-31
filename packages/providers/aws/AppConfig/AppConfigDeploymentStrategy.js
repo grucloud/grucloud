@@ -8,17 +8,24 @@ const { Tagger, assignTags } = require("./AppConfigCommon");
 
 const pickId = pipe([({ Id }) => ({ DeploymentStrategyId: Id })]);
 
-const buildArn =
-  ({ region, accountId }) =>
-  ({ Id }) =>
-    `arn:aws:appconfig:${region}:${accountId()}:deploymentstrategy/${Id}`;
+const buildArn = ({ config }) =>
+  pipe([
+    tap(({ Id }) => {
+      assert(Id);
+      assert(config.region);
+    }),
+    ({ Id }) =>
+      `arn:aws:appconfig:${
+        config.region
+      }:${config.accountId()}:deploymentstrategy/${Id}`,
+  ]);
 
 const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(config);
     }),
-    assignTags({ buildArn: buildArn(config), endpoint }),
+    assignTags({ buildArn: buildArn({ config }), endpoint }),
   ]);
 
 const managedByOther = () =>
