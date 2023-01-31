@@ -73,6 +73,23 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "EventSourceMapping",
+    group: "Lambda",
+    properties: ({}) => ({
+      BatchSize: 100,
+      BisectBatchOnFunctionError: false,
+      MaximumRecordAgeInSeconds: -1,
+      MaximumRetryAttempts: -1,
+      ParallelizationFactor: 1,
+      StartingPosition: "LATEST",
+      TumblingWindowInSeconds: 0,
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "read-kinesis-stream",
+      kinesisStream: "my-stream",
+    }),
+  },
+  {
     type: "Function",
     group: "Lambda",
     properties: ({}) => ({
@@ -84,24 +101,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "read-kinesis-stream-role-wmuwr9bv",
-    }),
-  },
-  {
-    type: "EventSourceMapping",
-    group: "Lambda",
-    properties: ({}) => ({
-      BatchSize: 100,
-      BisectBatchOnFunctionError: false,
-      MaximumBatchingWindowInSeconds: 0,
-      MaximumRecordAgeInSeconds: -1,
-      MaximumRetryAttempts: -1,
-      ParallelizationFactor: 1,
-      StartingPosition: "LATEST",
-      TumblingWindowInSeconds: 0,
-    }),
-    dependencies: ({}) => ({
-      lambdaFunction: "read-kinesis-stream",
-      kinesisStream: "my-stream",
     }),
   },
 ];

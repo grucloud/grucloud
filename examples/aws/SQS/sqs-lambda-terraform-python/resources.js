@@ -62,6 +62,19 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "EventSourceMapping",
+    group: "Lambda",
+    properties: ({}) => ({
+      ScalingConfig: {
+        MaximumConcurrency: 3,
+      },
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "sqs-lambda-demo",
+      sqsQueue: "sqs-lambda-demo",
+    }),
+  },
+  {
     type: "Function",
     group: "Lambda",
     properties: ({}) => ({
@@ -78,21 +91,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sqs_lambda_demo_functionrole",
-    }),
-  },
-  {
-    type: "EventSourceMapping",
-    group: "Lambda",
-    properties: ({}) => ({
-      BatchSize: 10,
-      MaximumBatchingWindowInSeconds: 0,
-      ScalingConfig: {
-        MaximumConcurrency: 3,
-      },
-    }),
-    dependencies: ({}) => ({
-      lambdaFunction: "sqs-lambda-demo",
-      sqsQueue: "sqs-lambda-demo",
     }),
   },
   {
