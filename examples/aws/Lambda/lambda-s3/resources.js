@@ -82,7 +82,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-PutObjectFunctionRole-TFR4FTCB12K2",
-      s3Buckets: ["gc-destination-example"],
     }),
   },
   {

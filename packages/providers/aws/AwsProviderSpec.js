@@ -135,6 +135,7 @@ const GROUPS = [
   ["ServiceQuotas", "service-quotas"],
   ["SESV2", "ses"],
   ["ServiceCatalog", "servicecatalog"],
+  ["Signer", "signer"],
   ["Shield", "shield"],
   ["StepFunctions", "sns"],
   ["SNS", "sns"],

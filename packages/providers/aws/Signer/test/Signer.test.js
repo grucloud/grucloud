@@ -12,12 +12,12 @@ describe("Signer", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("SigningProfile", () =>
+  it("SigningProfile", () =>
     pipe([
       () => ({
         groupType: "Signer::SigningProfile",
         livesNotFound: ({ config }) => [
-          { profileName: "p", profileVersion: "1", reason: "r" },
+          { profileName: "pr123", profileVersion: "1", reason: "r" },
         ],
       }),
       awsResourceTest,

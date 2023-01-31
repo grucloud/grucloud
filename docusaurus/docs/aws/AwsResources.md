@@ -202,6 +202,8 @@ List of resources for provider aws:
 [ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [DedicatedIpPool](./resources/SESV2/DedicatedIpPool.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md)
 * Shield: 
 [Protection](./resources/Shield/Protection.md), [ProtectionGroup](./resources/Shield/ProtectionGroup.md)
+* Signer: 
+[SigningProfile](./resources/Signer/SigningProfile.md)
 * SNS: 
 [Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 

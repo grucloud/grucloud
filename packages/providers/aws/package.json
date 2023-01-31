@@ -246,6 +246,7 @@
     "@aws-sdk/client-sesv2": "3.245.0",
     "@aws-sdk/client-sfn": "3.245.0",
     "@aws-sdk/client-shield": "3.245.0",
+    "@aws-sdk/client-signer": "3.245.0",
     "@aws-sdk/client-sns": "3.245.0",
     "@aws-sdk/client-sqs": "3.245.0",
     "@aws-sdk/client-ssm": "3.245.0",

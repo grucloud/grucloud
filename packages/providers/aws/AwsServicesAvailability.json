@@ -4359,6 +4359,7 @@
             "fsx",
             "fsx-lustre",
             "fsx-windows",
+            "glue",
             "guardduty",
             "iam",
             "imagebuilder",
