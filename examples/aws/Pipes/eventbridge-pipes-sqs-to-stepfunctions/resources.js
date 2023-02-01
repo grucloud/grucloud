@@ -82,9 +82,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      queue: "sam-app-SourceQueue-7tNa5vbmnIiP",
-    }),
   },
   {
     type: "Role",

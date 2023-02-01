@@ -114,9 +114,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      queue: "sam-app-SourceQueue-ncHASMZwgjNq",
-    }),
   },
   {
     type: "Pipe",

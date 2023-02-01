@@ -38,9 +38,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      queue: "sam-app-MyQueue-AqSTiBlPUT32",
-    }),
   },
   {
     type: "Queue",

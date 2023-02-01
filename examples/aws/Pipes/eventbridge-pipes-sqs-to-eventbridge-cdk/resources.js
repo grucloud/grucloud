@@ -65,11 +65,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      queue:
-        "EventbridgePipesSqsToEventbridgeStack-sqsqueueE70CFDBB-JHT9xJPmXwFr",
-      eventBus: "EventbridgePipesSqsToEventbridgeStackeventbus5FFF751F",
-    }),
   },
   {
     type: "Pipe",

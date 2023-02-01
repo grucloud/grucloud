@@ -57,9 +57,6 @@ exports.createResources = () => [
       Path: "/",
       Description: "Policy for sqs to lambda demo",
     }),
-    dependencies: ({}) => ({
-      queue: "sqs-lambda-demo",
-    }),
   },
   {
     type: "EventSourceMapping",

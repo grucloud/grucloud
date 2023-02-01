@@ -58,9 +58,6 @@ exports.createResources = () => [
       },
       Path: "/service-role/",
     }),
-    dependencies: ({}) => ({
-      queue: "queue-scheduler",
-    }),
   },
   {
     type: "Schedule",
