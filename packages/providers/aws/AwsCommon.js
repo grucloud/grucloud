@@ -1153,14 +1153,17 @@ const replaceArnWithAccountAndRegion =
                 Id != providerConfig.accountId() &&
                 !Id.startsWith("arn:aws:kinesis") &&
                 !Id.startsWith("arn:aws:lambda") &&
+                !Id.startsWith("arn:aws:dynamodb") &&
                 !Id.startsWith("arn:aws:es") &&
                 !Id.startsWith("arn:aws:firehose") &&
+                !Id.startsWith("arn:aws:events") &&
                 !Id.startsWith("arn:aws:rds") &&
                 !Id.startsWith("arn:aws:sqs") &&
                 !Id.startsWith("arn:aws:code") &&
                 !Id.startsWith("arn:aws:logs") &&
                 !Id.startsWith("arn:aws:glacier") &&
                 !Id.startsWith("arn:aws:states") &&
+                !Id.startsWith("arn:aws:ssm") &&
                 !Id.startsWith(`arn:aws:iam::${providerConfig.accountId()}`) &&
                 !Id.startsWith("arn:aws:sns") &&
                 !Id.startsWith("arn:aws:s3"),

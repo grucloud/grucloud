@@ -40,7 +40,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       RoleName: "sam-app-PipeRole-19SXRFUEF1TVT",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -84,11 +84,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["events:PutEvents"],
-                Resource: `${getId({
-                  type: "EventBus",
-                  group: "CloudWatchEvents",
-                  name: "sam-app-bus",
-                })}`,
+                Resource: `arn:aws:events:${
+                  config.region
+                }:${config.accountId()}:event-bus/sam-app-bus`,
                 Effect: "Allow",
               },
             ],

@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project appsync-direct-lambda-resolver
+skinparam monochrome true
++ Infra
+++ aws
++++ AppSync
+++++ DataSource (1)
+++++ GraphqlApi (1)
+++++ Resolver (5)
++++ IAM
+++++ Role (3)
++++ Lambda
+++++ Function (1)
+@endmindmap

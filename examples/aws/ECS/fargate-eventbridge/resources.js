@@ -338,7 +338,7 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.events`,
       PolicyDocument: {
@@ -351,11 +351,9 @@ exports.createResources = () => [
               },
             },
             Action: "events:PutEvents",
-            Resource: `${getId({
-              type: "EventBus",
-              group: "CloudWatchEvents",
-              name: "DemoEventBus",
-            })}`,
+            Resource: `arn:aws:events:${
+              config.region
+            }:${config.accountId()}:event-bus/DemoEventBus`,
             Effect: "Allow",
             Principal: {
               AWS: "*",
@@ -521,6 +519,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({
@@ -585,7 +584,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -606,11 +605,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `${getId({
-                  type: "EventBus",
-                  group: "CloudWatchEvents",
-                  name: "DemoEventBus",
-                })}`,
+                Resource: `arn:aws:events:${
+                  config.region
+                }:${config.accountId()}:event-bus/DemoEventBus`,
                 Effect: "Allow",
               },
             ],

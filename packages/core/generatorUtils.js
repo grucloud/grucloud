@@ -68,6 +68,7 @@ const ignoredTags = [
   "AmazonECSManaged",
   "directconnect",
   "lambda:createdBy",
+  "stateMachine:createdBy",
 ];
 
 exports.filterModel = ({ field }) =>

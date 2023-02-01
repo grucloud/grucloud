@@ -112,11 +112,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["states:StartExecution", "states:StartSyncExecution"],
-                Resource: `${getId({
-                  type: "StateMachine",
-                  group: "StepFunctions",
-                  name: "EnrichmentStateMachine-uACOjGX6Zbhn",
-                })}`,
+                Resource: `arn:aws:states:${
+                  config.region
+                }:${config.accountId()}:stateMachine:EnrichmentStateMachine-uACOjGX6Zbhn`,
                 Effect: "Allow",
               },
             ],
@@ -165,7 +163,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       table: "SampleTable",
-      stateMachines: ["EnrichmentStateMachine-uACOjGX6Zbhn"],
     }),
   },
   {
@@ -192,12 +189,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
   },
   {
@@ -210,9 +201,6 @@ exports.createResources = () => [
         Handler: "lambda_function.lambda_handler",
         Runtime: "python3.9",
         Timeout: 15,
-      },
-      Tags: {
-        "lambda:createdBy": "SAM",
       },
     }),
     dependencies: ({}) => ({

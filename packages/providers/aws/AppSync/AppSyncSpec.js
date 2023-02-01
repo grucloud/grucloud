@@ -11,6 +11,7 @@ const {
   eq,
 } = require("rubico");
 const { when, defaultsDeep } = require("rubico/x");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const fs = require("fs").promises;
 const path = require("path");
@@ -229,11 +230,38 @@ module.exports = pipe([
             "xrayEnabled",
             "logConfig",
             "apiKeys",
+            "additionalAuthenticationProviders",
           ]),
           assign({
             schemaFile: () => `${live.name}.graphql`,
             apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
           }),
+          when(
+            get("additionalAuthenticationProviders"),
+            assign({
+              additionalAuthenticationProviders: pipe([
+                get("additionalAuthenticationProviders"),
+                map(
+                  assign({
+                    userPoolConfig: pipe([
+                      get("userPoolConfig"),
+                      assign({
+                        userPoolId: pipe([
+                          get("userPoolId"),
+                          replaceWithName({
+                            groupType:
+                              "CognitoIdentityServiceProvider::UserPool",
+                            path: "id",
+                            ...input,
+                          }),
+                        ]),
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
         ])(),
       dependencies: {
         cloudWatchLogsRole: {
@@ -241,6 +269,16 @@ module.exports = pipe([
           group: "IAM",
           dependencyId: ({ lives, config }) =>
             get("logConfig.cloudWatchLogsRoleArn"),
+        },
+        userPools: {
+          type: "UserPool",
+          group: "CognitoIdentityServiceProvider",
+          list: true,
+          dependencyIds: () =>
+            pipe([
+              get("additionalAuthenticationProviders"),
+              map(get("userPoolConfig.userPoolId")),
+            ]),
         },
       },
     },
