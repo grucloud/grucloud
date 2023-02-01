@@ -97,7 +97,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "sam-app-MyHttpApiRole-KV1DOMSBSRDO",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -118,11 +118,9 @@ exports.createResources = () => [
             Statement: {
               Action: ["events:PutEvents"],
               Resource: [
-                `${getId({
-                  type: "EventBus",
-                  group: "CloudWatchEvents",
-                  name: "default",
-                })}`,
+                `arn:aws:events:${
+                  config.region
+                }:${config.accountId()}:event-bus/default`,
               ],
               Effect: "Allow",
             },
@@ -156,12 +154,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
   },
   {
@@ -172,9 +164,6 @@ exports.createResources = () => [
         FunctionName: "sam-app-MyTriggeredLambda-QtqMTZc89naA",
         Handler: "app.lambdaHandler",
         Runtime: "nodejs14.x",
-      },
-      Tags: {
-        "lambda:createdBy": "SAM",
       },
     }),
     dependencies: ({}) => ({

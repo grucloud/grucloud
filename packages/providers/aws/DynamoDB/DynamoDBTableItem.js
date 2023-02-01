@@ -82,7 +82,16 @@ exports.DynamoDBTableItem = () => ({
       type: "Table",
       group: "DynamoDB",
       parent: true,
-      dependencyId: ({ lives, config }) => get("TableName"),
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("TableName"),
+          lives.getByName({
+            type: "Table",
+            group: "DynamoDB",
+            providerName: config.providerName,
+          }),
+          get("id"),
+        ]),
     },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#getTableItem-property

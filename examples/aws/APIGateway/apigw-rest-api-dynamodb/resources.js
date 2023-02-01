@@ -190,7 +190,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -224,11 +224,9 @@ exports.createResources = () => [
                   "dynamodb:DeleteItem",
                 ],
                 Resource: [
-                  `${getId({
-                    type: "Table",
-                    group: "DynamoDB",
-                    name: "ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN",
-                  })}`,
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN`,
                 ],
                 Effect: "Allow",
               },

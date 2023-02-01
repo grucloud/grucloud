@@ -58,9 +58,6 @@ exports.createResources = () => [
       },
       Path: "/service-role/",
     }),
-    dependencies: ({}) => ({
-      snsTopic: "topic-scheduler",
-    }),
   },
   {
     type: "Schedule",

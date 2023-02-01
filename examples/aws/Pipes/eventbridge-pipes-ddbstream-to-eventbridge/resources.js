@@ -97,7 +97,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       table: "Users",
-      eventBus: "MyPipesEventBus",
     }),
   },
   {

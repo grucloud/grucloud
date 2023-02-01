@@ -11,7 +11,7 @@ const {
   assign,
   any,
 } = require("rubico");
-const { defaultsDeep, size, when } = require("rubico/x");
+const { defaultsDeep, size, when, unless, isEmpty } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ECSCluster" });
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -261,8 +261,8 @@ exports.ECSCluster = ({ compare }) => ({
           tags,
         }),
       }),
-      when(
-        () => capacityProviders,
+      unless(
+        () => isEmpty(capacityProviders),
         defaultsDeep({
           capacityProviders: pipe([
             () => capacityProviders,

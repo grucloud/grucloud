@@ -33,15 +33,15 @@ exports.ignoreErrorCodes = ["NoSuchEntity", "NoSuchEntityException"];
 exports.dependenciesPoliciesKind = [
   { type: "IdentityPool", group: "Cognito" },
   { type: "Table", group: "DynamoDB" },
-  { type: "Topic", group: "SNS" },
-  { type: "Queue", group: "SQS" },
+  //{ type: "Topic", group: "SNS" },
+  // { type: "Queue", group: "SQS" },
   { type: "FileSystem", group: "EFS" },
   { type: "AccessPoint", group: "EFS" },
-  { type: "EventBus", group: "CloudWatchEvents" },
-  { type: "StateMachine", group: "StepFunctions" },
+  //{ type: "EventBus", group: "CloudWatchEvents" },
+  //{ type: "StateMachine", group: "StepFunctions" },
   //{ type: "LogGroup", group: "CloudWatchLogs" },
   { type: "Secret", group: "SecretsManager" },
-  { type: "Parameter", group: "SSM" },
+  //{ type: "Parameter", group: "SSM" },
   { type: "Organisation", group: "Organisations" },
 
   //{ type: "Function", group: "Lambda" },
@@ -55,9 +55,10 @@ exports.dependenciesPolicy = {
     parent: true,
   },
   cognitoIdentityPool: { type: "IdentityPool", group: "Cognito", parent: true },
+  // TODO
   table: { type: "Table", group: "DynamoDB", parent: true },
-  queue: { type: "Queue", group: "SQS", parent: true },
-  snsTopic: { type: "Topic", group: "SNS", parent: true },
+  //queue: { type: "Queue", group: "SQS", parent: true },
+  //snsTopic: { type: "Topic", group: "SNS", parent: true },
   efsFileSystems: {
     type: "FileSystem",
     group: "EFS",
@@ -68,7 +69,7 @@ exports.dependenciesPolicy = {
     group: "EFS",
     list: true,
   },
-  eventBus: { type: "EventBus", group: "CloudWatchEvents" },
+  //eventBus: { type: "EventBus", group: "CloudWatchEvents" },
   // lambdaFunctions: {
   //   type: "Function",
   //   group: "Lambda",

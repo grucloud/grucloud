@@ -144,8 +144,5 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      eventBus: "MyEventBus",
-    }),
   },
 ];

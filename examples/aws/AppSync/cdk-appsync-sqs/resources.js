@@ -22,7 +22,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       graphqlApi: "ToSqSApi",
-      serviceRole: "CdkAppSyncSqSStack-ApisqsServiceRole50810242-1KDSFQITP7CBL",
+      serviceRole: "CdkAppSyncSqSStack-ApisqsServiceRole50810242-6VLJHOBNQI7H",
     }),
   },
   {
@@ -45,13 +45,13 @@ exports.createResources = () => [
       requestMappingTemplate: `
 #set ($body = "Action=SendMessage&Version=2012-11-05")
 #set ($messageBody = $util.urlEncode($util.toJson($ctx.args)))
-#set ($queueUrl = $util.urlEncode("https://sqs.us-east-1.amazonaws.com/840541460064/CdkAppSyncSqSStack-queue276F7297-MkpvHfntiIdW"))
+#set ($queueUrl = $util.urlEncode("https://sqs.us-east-1.amazonaws.com/840541460064/CdkAppSyncSqSStack-queue276F7297-0rAF1nELClh9"))
 #set ($body = "$body&MessageBody=$messageBody&QueueUrl=$queueUrl")
 
 {
   "version": "2018-05-29",
   "method": "POST",
-  "resourcePath": "/840541460064/CdkAppSyncSqSStack-queue276F7297-MkpvHfntiIdW",
+  "resourcePath": "/840541460064/CdkAppSyncSqSStack-queue276F7297-0rAF1nELClh9",
   "params": {
     "body": "$body",
     "headers": {
@@ -83,7 +83,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
-      RoleName: "CdkAppSyncSqSStack-ApisqsServiceRole50810242-1KDSFQITP7CBL",
+      RoleName: "CdkAppSyncSqSStack-ApisqsServiceRole50810242-6VLJHOBNQI7H",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -109,7 +109,7 @@ exports.createResources = () => [
                 ],
                 Resource: `arn:aws:sqs:${
                   config.region
-                }:${config.accountId()}:CdkAppSyncSqSStack-queue276F7297-MkpvHfntiIdW`,
+                }:${config.accountId()}:CdkAppSyncSqSStack-queue276F7297-0rAF1nELClh9`,
                 Effect: "Allow",
               },
             ],
@@ -123,7 +123,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
-      RoleName: "sam-app-SamStepFunctionStateMachineRole-15QEGFRVJ5CQ3",
+      RoleName: "sam-app-WorkflowExecutionRole-WM87YTOPGZ2D",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -139,53 +139,27 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
+            Version: "2012-10-17",
             Statement: [
               {
-                Action: [
-                  "dynamodb:PutItem",
-                  "dynamodb:UpdateItem",
-                  "dynamodb:BatchWriteItem",
-                ],
-                Resource: [
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/sam-app-SamStepFunctionsTable-1O67WMRRPTIDD`,
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/sam-app-SamStepFunctionsTable-1O67WMRRPTIDD/index/*`,
-                ],
+                Action: "events:PutEvents",
+                Resource: `arn:aws:events:${
+                  config.region
+                }:${config.accountId()}:event-bus/sam-app-EventBus`,
                 Effect: "Allow",
               },
             ],
           },
-          PolicyName: "SamStepFunctionStateMachineRolePolicy0",
-        },
-        {
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: [
-                  "dynamodb:GetItem",
-                  "dynamodb:Scan",
-                  "dynamodb:Query",
-                  "dynamodb:BatchGetItem",
-                  "dynamodb:DescribeTable",
-                ],
-                Resource: [
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/sam-app-SamStepFunctionsTable-1O67WMRRPTIDD`,
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/sam-app-SamStepFunctionsTable-1O67WMRRPTIDD/index/*`,
-                ],
-                Effect: "Allow",
-              },
-            ],
-          },
-          PolicyName: "SamStepFunctionStateMachineRolePolicy1",
+          PolicyName: "AllowEventBridgePutEvents",
         },
       ],
+    }),
+  },
+  {
+    type: "Queue",
+    group: "SQS",
+    properties: ({}) => ({
+      QueueName: "CdkAppSyncSqSStack-queue276F7297-0rAF1nELClh9",
     }),
   },
 ];

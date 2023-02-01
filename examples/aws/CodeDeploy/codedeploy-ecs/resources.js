@@ -39,18 +39,8 @@ exports.createResources = () => [
       },
       ecsServices: [
         {
-          clusterName: `${getId({
-            type: "Cluster",
-            group: "ECS",
-            name: "cluster",
-            path: "name",
-          })}`,
-          serviceName: `${getId({
-            type: "Service",
-            group: "ECS",
-            name: "api",
-            path: "name",
-          })}`,
+          clusterName: "cluster",
+          serviceName: "api",
         },
       ],
       loadBalancerInfo: {
@@ -469,6 +459,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       TargetType: "ip",
       Tags: [
         {
@@ -489,6 +480,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({
@@ -503,6 +495,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({

@@ -97,7 +97,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       table: "sam-app-orders",
-      eventBus: "sam-app-bus",
     }),
   },
   {

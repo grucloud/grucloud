@@ -303,12 +303,6 @@ exports.createResources = () => [
       },
       name: "EnrichmentStateMachine-uACOjGX6Zbhn",
       type: "EXPRESS",
-      tags: [
-        {
-          key: "stateMachine:createdBy",
-          value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       role: "sam-app-EnrichmentStateMachineRole-1CSLFSVO8ZHVT",

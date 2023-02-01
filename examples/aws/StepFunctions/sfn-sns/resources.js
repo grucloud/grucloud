@@ -39,9 +39,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      snsTopic: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
-    }),
   },
   {
     type: "Topic",

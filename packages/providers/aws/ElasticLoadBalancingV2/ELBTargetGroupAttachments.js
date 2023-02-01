@@ -77,6 +77,7 @@ exports.ElasticLoadBalancingV2TargetGroupAttachments = () => ({
       }),
     ]),
   cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
   ignoreErrorCodes: [
     "TargetGroupNotFoundException",
     "ResourceNotFoundException",

@@ -616,8 +616,5 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      eventBus: "DemoEventBus",
-    }),
   },
 ];

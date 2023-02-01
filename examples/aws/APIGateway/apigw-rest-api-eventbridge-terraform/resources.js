@@ -214,8 +214,5 @@ exports.createResources = () => [
       },
       Path: "/",
     }),
-    dependencies: ({}) => ({
-      eventBus: "MyIntegrationCustomBus",
-    }),
   },
 ];

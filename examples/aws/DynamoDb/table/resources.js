@@ -32,20 +32,4 @@ exports.createResources = () => [
       ],
     }),
   },
-  {
-    type: "TableItem",
-    group: "DynamoDB",
-    properties: ({}) => ({
-      Attributes: {
-        name: {
-          S: "foo",
-        },
-      },
-      Key: {
-        Id: {
-          S: "123",
-        },
-      },
-    }),
-  },
 ];

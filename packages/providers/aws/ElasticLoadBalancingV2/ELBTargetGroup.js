@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, or } = require("rubico");
+const { pipe, tap, get, pick, assign, or, eq } = require("rubico");
 const {
   defaultsDeep,
   first,
@@ -109,7 +109,6 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
   },
   propertiesDefault: {
     HealthCheckPath: "/",
-    //HealthCheckPort: "traffic-port",
     HealthCheckEnabled: true,
     HealthCheckIntervalSeconds: 30,
     HealthCheckTimeoutSeconds: 5,
@@ -195,5 +194,9 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
         Tags: buildTags({ name, namespace, config, UserTags: Tags }),
       }),
       when(() => vpc, assign({ VpcId: () => getField(vpc, "VpcId") })),
+      when(
+        eq(get("HealthCheckProtocol"), "HTTP"),
+        defaultsDeep({ HealthCheckPort: "traffic-port" })
+      ),
     ])(),
 });

@@ -22,6 +22,8 @@ const {
   dependencyTaskDefinition,
 } = require("./ECSCommon");
 
+const managedByOther = () => pipe([get("externalId"), isEmpty]);
+
 const buildArn = () =>
   pipe([
     get("taskSetArn"),
@@ -75,6 +77,7 @@ exports.ECSTaskSet = ({ compare }) => ({
       }),
     ]),
   findId: () => get("taskSet"),
+  managedByOther,
   ignoreErrorCodes: ["ClusterNotFoundException", "InvalidParameterException"],
   omitProperties: [
     "serviceArn",

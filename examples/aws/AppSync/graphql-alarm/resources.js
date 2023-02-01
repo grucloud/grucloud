@@ -308,7 +308,7 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       PolicyName: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
       PolicyDocument: {
         Version: "2012-10-17",
@@ -324,16 +324,12 @@ exports.createResources = () => [
               "dynamodb:UpdateItem",
             ],
             Resource: [
-              `${getId({
-                type: "Table",
-                group: "DynamoDB",
-                name: "MyModelTypeTable",
-              })}`,
-              `${getId({
-                type: "Table",
-                group: "DynamoDB",
-                name: "MyModelTypeTable",
-              })}/*`,
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/MyModelTypeTable`,
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/MyModelTypeTable/*`,
             ],
           },
         ],
