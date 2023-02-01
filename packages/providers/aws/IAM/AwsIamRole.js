@@ -67,15 +67,20 @@ const untagResource = untagResourceIam({
 
 const cannotBeDeleted = () =>
   pipe([
-    get("Path"),
     or([
-      //
-      includes("/aws-service-role"),
-      includes("/aws-reserved/"),
+      // Name
+      // Do not mess with CloudFormation/CDK roles.
+      pipe([get("Name"), or([includes("cdk-")])]),
+      //Path
+      pipe([
+        get("Path"),
+        or([
+          //
+          includes("/aws-service-role"),
+          includes("/aws-reserved/"),
+        ]),
+      ]),
     ]),
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 
 const managedByOther =
