@@ -324,6 +324,42 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: "sam-app-WorkflowExecutionRole-WM87YTOPGZ2D",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "states.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      Policies: [
+        {
+          PolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Action: "events:PutEvents",
+                Resource: `arn:aws:events:${
+                  config.region
+                }:${config.accountId()}:event-bus/sam-app-EventBus`,
+                Effect: "Allow",
+              },
+            ],
+          },
+          PolicyName: "AllowEventBridgePutEvents",
+        },
+      ],
+    }),
+  },
+  {
     type: "Function",
     group: "Lambda",
     properties: ({ config }) => ({
@@ -342,6 +378,38 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-lambdaStepFunctionRole-1P92ECNW1QOVX",
+    }),
+  },
+  {
+    type: "StateMachine",
+    group: "StepFunctions",
+    properties: ({}) => ({
+      definition: {
+        StartAt: "SendCustomEvent",
+        States: {
+          SendCustomEvent: {
+            End: true,
+            Parameters: {
+              Entries: [
+                {
+                  Detail: {
+                    Message: "Hello from Step Functions!",
+                  },
+                  DetailType: "MyTestMessage",
+                  EventBusName: "sam-app-EventBus",
+                  Source: "MyTestApp",
+                },
+              ],
+            },
+            Resource: "arn:aws:states:::events:putEvents",
+            Type: "Task",
+          },
+        },
+      },
+      name: "MyStateMachine-nfd2eDd0064T",
+    }),
+    dependencies: ({}) => ({
+      role: "sam-app-WorkflowExecutionRole-WM87YTOPGZ2D",
     }),
   },
   {

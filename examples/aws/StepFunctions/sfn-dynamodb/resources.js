@@ -98,12 +98,6 @@ exports.createResources = () => [
         },
       },
       name: "StateMachinetoDDB-OZxx41bNDei3",
-      tags: [
-        {
-          key: "stateMachine:createdBy",
-          value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       role: "sam-app-MyStateMachineExecutionRole-ZVCE4J344HAN",
