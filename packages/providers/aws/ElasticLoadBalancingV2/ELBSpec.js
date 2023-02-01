@@ -5,7 +5,11 @@ const { compareAws, isOurMinion } = require("../AwsCommon");
 const { createAwsService } = require("../AwsService");
 
 const { ElasticLoadBalancingV2LoadBalancer } = require("./ELBLoadBalancer");
+
 const { ElasticLoadBalancingV2TargetGroup } = require("./ELBTargetGroup");
+const {
+  ElasticLoadBalancingV2TargetGroupAttachments,
+} = require("./ELBTargetGroupAttachments");
 const { ElasticLoadBalancingV2Listener } = require("./ELBListener");
 const { ElasticLoadBalancingV2Rule } = require("./ELBRule");
 
@@ -19,6 +23,7 @@ module.exports = pipe([
     ElasticLoadBalancingV2LoadBalancer({ compare }),
     ElasticLoadBalancingV2Rule({ compare }),
     ElasticLoadBalancingV2TargetGroup({ compare }),
+    ElasticLoadBalancingV2TargetGroupAttachments({ compare }),
   ],
   map(
     pipe([

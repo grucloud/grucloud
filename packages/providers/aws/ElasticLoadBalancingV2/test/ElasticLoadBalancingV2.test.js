@@ -10,7 +10,9 @@ describe("ElasticLoadBalancingV2", async function () {
         groupType: "ElasticLoadBalancingV2::Listener",
         livesNotFound: ({ config }) => [
           {
-            ListenerArn: `arn:aws:elasticloadbalancing:us-east-1:${config.accountId()}:listener/app/load-balancer/e6f97c90654062f0/db2d92e8196bc8c1`,
+            ListenerArn: `arn:aws:elasticloadbalancing:${
+              config.region
+            }:${config.accountId()}:listener/app/load-balancer/e6f97c90654062f0/db2d92e8196bc8c1`,
           },
         ],
       }),
@@ -23,7 +25,9 @@ describe("ElasticLoadBalancingV2", async function () {
         livesNotFound: ({ config }) => [
           {
             Name: "alb",
-            LoadBalancerArn: `arn:aws:elasticloadbalancing:us-east-1:${config.accountId()}:loadbalancer/app/load-balancer/e6f97c90654062f0`,
+            LoadBalancerArn: `arn:aws:elasticloadbalancing:${
+              config.region
+            }:${config.accountId()}:loadbalancer/app/load-balancer/e6f97c90654062f0`,
           },
         ],
       }),
@@ -35,20 +39,46 @@ describe("ElasticLoadBalancingV2", async function () {
         groupType: "ElasticLoadBalancingV2::TargetGroup",
         livesNotFound: ({ config }) => [
           {
-            TargetGroupArn: `arn:aws:elasticloadbalancing:us-east-1:${config.accountId()}:targetgroup/target-group-web/6d67bc913cf24fdd`,
+            TargetGroupArn: `arn:aws:elasticloadbalancing:${
+              config.region
+            }:${config.accountId()}:targetgroup/target-group-web/6d67bc913cf24fdd`,
           },
         ],
       }),
       awsResourceTest,
     ])());
-
+  it("TargetGroupAttachments", () =>
+    pipe([
+      () => ({
+        groupType: "ElasticLoadBalancingV2::TargetGroupAttachments",
+        livesNotFound: ({ config }) => [
+          {
+            TargetGroupArn: `arn:aws:elasticloadbalancing:${
+              config.region
+            }:${config.accountId()}:targetgroup/target-group-web/6d67bc913cf24fdd`,
+            Targets: [
+              {
+                Id: `arn:aws:lambda:${
+                  config.region
+                }:${config.accountId()}:function:AlbLambdaCdkStack-LambdaFunctionBF21E41F-VSCEutUH57C2`,
+              },
+            ],
+          },
+        ],
+        skipGetByName: true,
+      }),
+      awsResourceTest,
+    ])());
+  //TargetGroupArn
   it("Rule", () =>
     pipe([
       () => ({
         groupType: "ElasticLoadBalancingV2::Rule",
         livesNotFound: ({ config }) => [
           {
-            RuleArn: `arn:aws:elasticloadbalancing:us-east-1:${config.accountId()}:listener-rule/app/load-balancer/e6f97c90654062f0/db2d92e8196bc8c1/b902c6929ac9bcd7`,
+            RuleArn: `arn:aws:elasticloadbalancing:${
+              config.region
+            }:${config.accountId()}:listener-rule/app/load-balancer/e6f97c90654062f0/db2d92e8196bc8c1/b902c6929ac9bcd7`,
           },
         ],
       }),
