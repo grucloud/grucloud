@@ -4,7 +4,13 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ AppStream
+++++ AppBlock (1)
+++++ Application (1)
 ++++ DirectoryConfig (1)
+++++ Fleet (1)
+++++ User (1)
 +++ IAM
 ++++ Role (3)
++++ S3
+++++ Bucket (1)
 @endmindmap

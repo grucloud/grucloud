@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project cdk-appsync-sqs
+skinparam monochrome true
++ Infra
+++ aws
++++ AppSync
+++++ DataSource (1)
+++++ GraphqlApi (1)
+++++ Resolver (1)
++++ IAM
+++++ Role (2)
++++ SQS
+++++ Queue (1)
+@endmindmap

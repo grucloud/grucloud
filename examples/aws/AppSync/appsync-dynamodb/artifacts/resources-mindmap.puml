@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project appsync-dynamodb
+skinparam monochrome true
++ Infra
+++ aws
++++ AppSync
+++++ DataSource (1)
+++++ GraphqlApi (1)
+++++ Resolver (4)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (1)
+@endmindmap
