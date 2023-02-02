@@ -132,6 +132,7 @@ module.exports = pipe([
         "Configuration.VpcConfig",
         "Configuration.SigningProfileVersionArn",
         "Configuration.SigningJobArn",
+        "Configuration.RuntimeVersionConfig",
         "Policy",
       ],
       propertiesDefault: {
