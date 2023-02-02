@@ -4,11 +4,11 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Glacier", async function () {
-  it.skip("Vault", () =>
+  it("Vault", () =>
     pipe([
       () => ({
         groupType: "Glacier::Vault",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ accountId: "-", vaultName: "123" }],
       }),
       awsResourceTest,
     ])());

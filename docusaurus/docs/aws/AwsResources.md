@@ -112,6 +112,8 @@ List of resources for provider aws:
 [AdminAccount](./resources/FMS/AdminAccount.md), [Policy](./resources/FMS/Policy.md)
 * FSx: 
 [FileSystem](./resources/FSx/FileSystem.md), [StorageVirtualMachine](./resources/FSx/StorageVirtualMachine.md), [Volume](./resources/FSx/Volume.md)
+* Glacier: 
+[Vault](./resources/Glacier/Vault.md)
 * GlobalAccelerator: 
 [Accelerator](./resources/GlobalAccelerator/Accelerator.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
 * Glue: 

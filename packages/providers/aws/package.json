@@ -9,6 +9,7 @@
     "test-p": "dotenv -e ../../../secrets/default.env -- mocha  './{,!(node_modules)/**}/*.test.js' --parallel ",
 
     "test-examples": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/**/iac.test.js' ",
+    "test-a": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/A*/**/iac.test.js' ",
     "test-accessanalyzer": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/AccessAnalyzer/**/iac.test.js' ",
     "test-account": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Account/**/iac.test.js' ",
     "test-acm": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ACM/**/iac.test.js' ",
@@ -66,6 +67,7 @@
     "test-fms": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/FMS/**/iac.test.js' ",
     "test-fsx": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/FSx/**/iac.test.js' ",
     "test-guardduty": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/GuardDuty/**/iac.test.js' ",
+    "test-glacier": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Glacier/**/iac.test.js' ",
     "test-glue": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Glue/**/iac.test.js' ",
     "test-globalaccelerator": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/GlobalAccelerator/**/iac.test.js' ",
     "test-grafana": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Grafana/**/iac.test.js' ",
