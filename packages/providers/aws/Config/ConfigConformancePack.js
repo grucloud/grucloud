@@ -121,8 +121,10 @@ exports.ConfigConformancePack = ({}) => ({
     pickCreated: ({ payload }) => pipe([() => payload]),
     // TODO ConformancePackState: CREATE_COMPLETE
   },
-  // TODO update
-
+  update: {
+    method: "putConformancePack",
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#deleteConformancePack-property
   destroy: {
     method: "deleteConformancePack",
