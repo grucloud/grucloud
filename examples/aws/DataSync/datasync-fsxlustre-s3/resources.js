@@ -106,9 +106,7 @@ exports.createResources = () => [
         DataCompressionType: "NONE",
         DeploymentType: "PERSISTENT_2",
         LogConfiguration: {
-          Destination:
-            "arn:aws:logs:us-east-1:840541460064:log-group:/aws/fsx/lustre:log-stream:datarepo_fs-0a23c69b0a349a454",
-          Level: "WARN_ERROR",
+          Level: "DISABLED",
         },
         PerUnitStorageThroughput: 125,
         WeeklyMaintenanceStartTime: "1:07:30",
@@ -117,8 +115,8 @@ exports.createResources = () => [
       StorageType: "SSD",
     }),
     dependencies: ({}) => ({
-      logStreamLustre: "/aws/fsx/lustre::datarepo_fs-0a23c69b0a349a454",
       subnets: ["vpc-default::subnet-default-f"],
+      securityGroups: ["sg::vpc-default::fsx-lustre"],
     }),
   },
   {

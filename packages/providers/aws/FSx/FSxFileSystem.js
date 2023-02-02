@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map, omit } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, pick, eq, map, omit, flatMap } = require("rubico");
+const { defaultsDeep, when, pluck } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -66,6 +66,7 @@ exports.FSxFileSystem = () => ({
     "DNSName",
     "Lifecycle",
     "NetworkInterfaceIds",
+    "SecurityGroupIds",
     "OntapConfiguration.EndpointIpAddressRange",
     "OntapConfiguration.Endpoints",
     "OntapConfiguration.PreferredSubnetId",
@@ -108,7 +109,21 @@ exports.FSxFileSystem = () => ({
       type: "SecurityGroup",
       group: "EC2",
       list: true,
-      dependencyIds: ({ lives, config }) => get("SecurityGroupIds"),
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("NetworkInterfaceIds"),
+          flatMap(
+            pipe([
+              lives.getById({
+                type: "NetworkInterface",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+              get("live.Groups"),
+              pluck("GroupId"),
+            ])
+          ),
+        ]),
     },
     // CloudWatchLogs::LogStream
   },

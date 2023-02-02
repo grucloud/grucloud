@@ -142,6 +142,7 @@ exports.createResources = () => [
       StorageType: "SSD",
     }),
     dependencies: ({}) => ({
+      securityGroups: ["sg::vpc-default::openzfs"],
       subnets: ["vpc-default::subnet-default-f"],
     }),
   },

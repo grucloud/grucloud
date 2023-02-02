@@ -132,6 +132,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       directory: "corp.grucloud.org",
+      securityGroups: ["sg::vpc-default::fxs-windows"],
       subnets: ["vpc-default::subnet-default-d"],
     }),
   },
