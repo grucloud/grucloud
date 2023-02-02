@@ -71,12 +71,6 @@ exports.createResources = () => [
       },
       name: "StateMachineExpressSynctoSNS-s4flfbpCO2tF",
       type: "EXPRESS",
-      tags: [
-        {
-          key: "stateMachine:createdBy",
-          value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       role: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",

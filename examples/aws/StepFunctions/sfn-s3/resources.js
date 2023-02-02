@@ -64,12 +64,6 @@ exports.createResources = () => [
         },
       },
       name: "MyStateMachine-SwVayjQIlTdv",
-      tags: [
-        {
-          key: "stateMachine:createdBy",
-          value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       role: "sam-app-WorkflowExecutionRole-7I137IX4DEEI",

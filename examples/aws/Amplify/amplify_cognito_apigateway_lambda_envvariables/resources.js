@@ -109,7 +109,7 @@ exports.createResources = () => [
                   config.region
                 }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:sam-app-myFunction-GTNczhNZIqkv/invocations`,
+                }:${config.accountId()}:function:sam-app-myFunction-eio4yWq2YSR2/invocations`,
               },
             },
             options: {
@@ -327,7 +327,7 @@ exports.createResources = () => [
             })}`,
           },
         },
-        FunctionName: "sam-app-myFunction-GTNczhNZIqkv",
+        FunctionName: "sam-app-myFunction-eio4yWq2YSR2",
         Handler: "app.lambda_handler",
         Runtime: "python3.7",
       },
@@ -345,7 +345,7 @@ exports.createResources = () => [
       Permissions: [
         {
           Action: "lambda:InvokeFunction",
-          FunctionName: "sam-app-myFunction-GTNczhNZIqkv",
+          FunctionName: "sam-app-myFunction-eio4yWq2YSR2",
           Principal: "apigateway.amazonaws.com",
           StatementId:
             "sam-app-myFunctionEmyFunctionPermissiondev-7AHT5CTHRFKS",
@@ -356,7 +356,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction: "sam-app-myFunction-GTNczhNZIqkv",
+      lambdaFunction: "sam-app-myFunction-eio4yWq2YSR2",
     }),
   },
 ];
