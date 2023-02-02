@@ -26,6 +26,10 @@ const { EC2Ipam } = require("./EC2Ipam");
 const { EC2IpamScope } = require("./EC2IpamScope");
 const { EC2IpamPool } = require("./EC2IpamPool");
 const { EC2IpamPoolCidr } = require("./EC2IpamPoolCidr");
+const { EC2IpamResourceDiscovery } = require("./EC2IpamResourceDiscovery");
+const {
+  EC2IpamResourceDiscoveryAssociation,
+} = require("./EC2IpamResourceDiscoveryAssociation");
 
 const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const { EC2RouteTable } = require("./EC2RouteTable");
@@ -108,6 +112,10 @@ module.exports = pipe([
     createAwsService(EC2IpamScope({ compare: compareEC2 })),
     createAwsService(EC2IpamPool({ compare: compareEC2 })),
     createAwsService(EC2IpamPoolCidr({ compare: compareEC2 })),
+    createAwsService(EC2IpamResourceDiscovery({ compare: compareEC2 })),
+    createAwsService(
+      EC2IpamResourceDiscoveryAssociation({ compare: compareEC2 })
+    ),
     createAwsService(EC2KeyPair({ compare: compareEC2 })),
     createAwsService(EC2NetworkInterface({ compare: compareEC2 })),
     createAwsService(EC2Volume({ compare: compareEC2 })),

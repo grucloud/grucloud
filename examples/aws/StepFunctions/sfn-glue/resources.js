@@ -59,7 +59,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "aws-events-invoke-StepFunction",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",

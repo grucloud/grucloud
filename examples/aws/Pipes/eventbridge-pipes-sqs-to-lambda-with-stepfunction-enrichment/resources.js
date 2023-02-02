@@ -36,7 +36,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "sam-app-EnrichmentStateMachineRole-VHHJR3QAFHSP",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -76,11 +76,9 @@ exports.createResources = () => [
                   "dynamodb:BatchGetItem",
                   "dynamodb:DescribeTable",
                 ],
-                Resource: `${getId({
-                  type: "Table",
-                  group: "DynamoDB",
-                  name: "sam-app-orders",
-                })}`,
+                Resource: `arn:aws:dynamodb:${
+                  config.region
+                }:${config.accountId()}:table/sam-app-orders`,
                 Effect: "Allow",
               },
             ],
@@ -96,7 +94,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "sam-app-PipeRole-HY6EHVTRSCJE",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -117,11 +115,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["states:StartExecution", "states:StartSyncExecution"],
-                Resource: `${getId({
-                  type: "StateMachine",
-                  group: "StepFunctions",
-                  name: "EnrichmentStateMachine-qfZFOX1lZ2S6",
-                })}`,
+                Resource: `arn:aws:states:${
+                  config.region
+                }:${config.accountId()}:stateMachine:EnrichmentStateMachine-qfZFOX1lZ2S6`,
                 Effect: "Allow",
               },
             ],
@@ -164,10 +160,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      queue: "sam-app-source-queue",
-      stateMachines: ["EnrichmentStateMachine-qfZFOX1lZ2S6"],
-    }),
   },
   {
     type: "Role",
@@ -193,12 +185,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
   },
   {
@@ -210,9 +196,6 @@ exports.createResources = () => [
         Handler: "index.handler",
         Runtime: "nodejs16.x",
         Timeout: 15,
-      },
-      Tags: {
-        "lambda:createdBy": "SAM",
       },
     }),
     dependencies: ({}) => ({
@@ -344,12 +327,6 @@ exports.createResources = () => [
       },
       name: "EnrichmentStateMachine-qfZFOX1lZ2S6",
       type: "EXPRESS",
-      tags: [
-        {
-          key: "stateMachine:createdBy",
-          value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       role: "sam-app-EnrichmentStateMachineRole-VHHJR3QAFHSP",
