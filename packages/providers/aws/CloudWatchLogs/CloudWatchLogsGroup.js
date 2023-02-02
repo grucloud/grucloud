@@ -136,7 +136,7 @@ exports.CloudWatchLogGroup = ({ compare }) => ({
   type: "LogGroup",
   package: "cloudwatch-logs",
   client: "CloudWatchLogs",
-  pickPropertiesCreate: ["retentionInDays"],
+  //pickPropertiesCreate: ["retentionInDays"],
   inferName: () => get("logGroupName"),
   compare: compare({
     filterAll: () => pipe([pick(["retentionInDays", "dataProtectionPolicy"])]),
