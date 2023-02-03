@@ -4,11 +4,11 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("FSx", async function () {
-  it.skip("Backup", () =>
+  it("Backup", () =>
     pipe([
       () => ({
         groupType: "FSx::Backup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ BackupId: "backup-12345678" }],
       }),
       awsResourceTest,
     ])());
