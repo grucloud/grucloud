@@ -113,7 +113,6 @@ exports.createResources = () => [
         SessionStickinessEnabled: "false",
         SessionStickiness_LB_CookieDurationSeconds: "86400",
       },
-      healthCheckPath: "/",
       httpsRedirectionEnabled: false,
       instancePort: 80,
       ipAddressType: "dualstack",

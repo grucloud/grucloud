@@ -44,9 +44,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      ssmParameters: ["ExampleParameterName"],
-    }),
   },
   {
     type: "Function",
