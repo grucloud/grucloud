@@ -69,8 +69,8 @@ exports.createResources = () => [
       StorageType: "SSD",
     }),
     dependencies: ({}) => ({
-      securityGroups: ["sg::vpc-default::default"],
       subnets: ["vpc-default::subnet-default-a"],
+      securityGroups: ["sg::vpc-default::default"],
     }),
   },
 ];

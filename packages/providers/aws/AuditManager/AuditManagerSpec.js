@@ -12,15 +12,23 @@ const {
 } = require("./AuditManagerAccountRegistration");
 const { AuditManagerAssessment } = require("./AuditManagerAssessment");
 const {
+  AuditManagerAssessmentDelegation,
+} = require("./AuditManagerAssessmentDelegation");
+
+const {
   AuditManagerAssessmentReport,
 } = require("./AuditManagerAssessmentReport");
 const { AuditManagerControl } = require("./AuditManagerControl");
 const {
   AuditManagerAssessmentFramework,
 } = require("./AuditManagerAssessmentFramework");
-//const { AuditManagerFrameworkShare } = require("./AuditManagerFrameworkShare");
-
+const {
+  AuditManagerAssessmentFrameworkShare,
+} = require("./AuditManagerAssessmentFrameworkShare");
 const { AuditManagerSettings } = require("./AuditManagerSettings");
+const {
+  AuditManagerOrganizationAdminAccount,
+} = require("./AuditManagerOrganizationAdminAccount");
 
 const GROUP = "AuditManager";
 const tagsKey = "tags";
@@ -31,12 +39,13 @@ module.exports = pipe([
   () => [
     AuditManagerAccountRegistration({}),
     AuditManagerAssessment({}),
+    AuditManagerAssessmentDelegation({}),
     AuditManagerAssessmentReport({}),
     AuditManagerControl({}),
     AuditManagerAssessmentFramework({}),
-    // AuditManagerFramework({})
-    // AuditManagerFrameworkShare({})
+    AuditManagerAssessmentFrameworkShare({}),
     AuditManagerSettings({}),
+    AuditManagerOrganizationAdminAccount({}),
   ],
   map(
     pipe([

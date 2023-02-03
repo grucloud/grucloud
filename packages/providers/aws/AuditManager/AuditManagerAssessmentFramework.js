@@ -6,7 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { replaceWithName } = require("@grucloud/core/Common");
 
-const { Tagger } = require("./AuditManagerCommon");
+const { Tagger, ignoreErrorCodes } = require("./AuditManagerCommon");
 
 const buildArn = () =>
   pipe([
@@ -113,7 +113,7 @@ exports.AuditManagerAssessmentFramework = () => ({
         ]),
       }),
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
+  ignoreErrorCodes,
   dependencies: {
     auditManagerAccount: {
       type: "AccountRegistration",
@@ -180,14 +180,14 @@ exports.AuditManagerAssessmentFramework = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: {},
     config,
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
-        tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
       }),
     ])(),
 });
