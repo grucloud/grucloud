@@ -30,7 +30,6 @@ const decorate = ({ endpoint, config }) =>
       assert(endpoint);
     }),
   ]);
-// ]);
 
 const findId = () =>
   pipe([

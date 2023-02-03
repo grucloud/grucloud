@@ -12,19 +12,19 @@ describe("FSx", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("DataRepositoryAssociation", () =>
+  it("DataRepositoryAssociation", () =>
     pipe([
       () => ({
         groupType: "FSx::DataRepositoryAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ AssociationId: "dra-1234567890" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("FileCache", () =>
+  it("FileCache", () =>
     pipe([
       () => ({
         groupType: "FSx::FileCache",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ FileCacheId: "fc-12345678" }],
       }),
       awsResourceTest,
     ])());

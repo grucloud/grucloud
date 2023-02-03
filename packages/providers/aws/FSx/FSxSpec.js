@@ -8,9 +8,11 @@ const { createAwsService } = require("../AwsService");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/FSx.html
 
 const { FSxBackup } = require("./FSxBackup");
-//const { FSxDataRepositoryAssociation} = require("./FSxDataRepositoryAssociation");
+const { FSxFileCache } = require("./FSxFileCache");
+const {
+  FSxDataRepositoryAssociation,
+} = require("./FSxDataRepositoryAssociation");
 //const { FSxOpenzfsSnapshot } = require("./FSxOpenzfsSnapshot");
-
 const { FSxFileSystem } = require("./FSxFileSystem");
 const { FSxStorageVirtualMachine } = require("./FSxStorageVirtualMachine");
 const { FSxVolume } = require("./FSxVolume");
@@ -21,8 +23,8 @@ const compare = compareAws({});
 module.exports = pipe([
   () => [
     FSxBackup({}),
-    // FSxDataRepositoryAssociation({})
-    // FSxFileCache({})
+    FSxDataRepositoryAssociation({}),
+    FSxFileCache({}),
     // FSxOpenzfsSnapshot({})
     FSxFileSystem({}),
     FSxStorageVirtualMachine({}),
