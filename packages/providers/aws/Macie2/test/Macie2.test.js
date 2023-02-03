@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Macie2", async function () {
-  it.skip("Account", () =>
+  it("Account", () =>
     pipe([
       () => ({
         groupType: "Macie2::Account",
@@ -20,11 +20,12 @@ describe("Macie2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ClassificationJob", () =>
+  it("ClassificationJob", () =>
     pipe([
       () => ({
         groupType: "Macie2::ClassificationJob",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ jobId: "job-123" }],
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());
@@ -32,7 +33,7 @@ describe("Macie2", async function () {
     pipe([
       () => ({
         groupType: "Macie2::CustomDataIdentifier",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ id: "123" }],
       }),
       awsResourceTest,
     ])());
@@ -52,19 +53,19 @@ describe("Macie2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Member", () =>
+  it("Member", () =>
     pipe([
       () => ({
         groupType: "Macie2::Member",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ accountId: "123456789012" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("OrganizationAdminAccount", () =>
+  it("OrganizationAdminAccount", () =>
     pipe([
       () => ({
         groupType: "Macie2::OrganizationAdminAccount",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ adminAccountId: "123456789012" }],
       }),
       awsResourceTest,
     ])());
