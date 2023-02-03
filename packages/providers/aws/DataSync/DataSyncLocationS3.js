@@ -122,7 +122,10 @@ exports.DataSyncLocationS3 = () => ({
   create: {
     method: "createLocationS3",
     pickCreated: ({ payload }) => pipe([identity]),
-    shouldRetryOnExceptionMessages: ["Unable to assume role"],
+    shouldRetryOnExceptionMessages: [
+      "Unable to assume role",
+      "DataSync location access test failed",
+    ],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DataSync.html#updateLocationS3-property
   update: {

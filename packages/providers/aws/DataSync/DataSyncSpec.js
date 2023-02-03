@@ -23,7 +23,7 @@ module.exports = pipe([
     DataSyncLocationEfs({}),
     DataSyncLocationFsxLustre({}),
     DataSyncLocationFsxOpenZfs({}),
-    DataSyncLocationFsxWindows({}),
+    DataSyncLocationFsxWindows({ compare }),
     DataSyncLocationS3({}),
     DataSyncTask({}),
   ],
