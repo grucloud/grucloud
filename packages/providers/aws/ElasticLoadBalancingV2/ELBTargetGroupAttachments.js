@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, map, assign, omit, eq } = require("rubico");
+const { pipe, tap, get, pick, map, assign, omit, eq, or } = require("rubico");
 const { defaultsDeep, when, pluck, isEmpty } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -8,6 +8,13 @@ const { replaceArnWithAccountAndRegion } = require("../AwsCommon");
 const isInstanceDown = pipe([get("Targets"), isEmpty]);
 
 const cannotBeDeleted = () => pipe([isInstanceDown]);
+
+const managedByOther = () =>
+  or([
+    isInstanceDown,
+    // TODO should be only for instances created by an autoscaling group
+    eq(get("TargetType"), "instance"),
+  ]);
 
 const pickId = pipe([
   tap(({ TargetGroupArn, Targets }) => {
@@ -33,6 +40,7 @@ const decorate = ({ endpoint, live }) =>
       Targets,
     }),
     assign({
+      TargetType: () => live.TargetType,
       Targets: pipe([
         get("Targets"),
         map(
@@ -48,7 +56,7 @@ exports.ElasticLoadBalancingV2TargetGroupAttachments = () => ({
   package: "elastic-load-balancing-v2",
   client: "ElasticLoadBalancingV2",
   propertiesDefault: {},
-  omitProperties: ["TargetGroupArn"],
+  omitProperties: ["TargetGroupArn", "TargetType"],
   inferName: ({ dependenciesSpec: { elbTargetGroup } }) =>
     pipe([
       () => elbTargetGroup,
@@ -77,7 +85,7 @@ exports.ElasticLoadBalancingV2TargetGroupAttachments = () => ({
       }),
     ]),
   cannotBeDeleted,
-  managedByOther: cannotBeDeleted,
+  managedByOther,
   ignoreErrorCodes: [
     "TargetGroupNotFoundException",
     "ResourceNotFoundException",
@@ -142,6 +150,10 @@ exports.ElasticLoadBalancingV2TargetGroupAttachments = () => ({
         client.getListWithParent({
           parent: { type: "TargetGroup", group: "ElasticLoadBalancingV2" },
           pickKey: pipe([
+            tap((params) => {
+              assert(true);
+            }),
+
             tap(({ TargetGroupArn }) => {
               assert(TargetGroupArn);
             }),

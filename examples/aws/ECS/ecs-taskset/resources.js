@@ -1093,6 +1093,7 @@ nohup ./startup.sh &
       Protocol: "HTTP",
       Port: 3000,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       HealthCheckIntervalSeconds: 10,
       HealthCheckPath: "/health",
       TargetType: "ip",
@@ -1109,6 +1110,7 @@ nohup ./startup.sh &
       Protocol: "HTTP",
       Port: 3000,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       HealthCheckIntervalSeconds: 10,
       HealthCheckPath: "/health",
       Matcher: {
