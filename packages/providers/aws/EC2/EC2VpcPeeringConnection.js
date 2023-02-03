@@ -10,6 +10,7 @@ const {
   not,
   filter,
   and,
+  assign,
 } = require("rubico");
 const { isEmpty, includes, when, isObject } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
