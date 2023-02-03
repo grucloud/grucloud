@@ -271,6 +271,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 30020,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       Tags: [
         {
           Key: "mykey",
@@ -290,6 +291,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 30010,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
     }),
     dependencies: ({}) => ({
       vpc: "vpc",

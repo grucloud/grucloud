@@ -113,7 +113,7 @@ List of resources for provider aws:
 * FMS: 
 [AdminAccount](./resources/FMS/AdminAccount.md), [Policy](./resources/FMS/Policy.md)
 * FSx: 
-[FileSystem](./resources/FSx/FileSystem.md), [StorageVirtualMachine](./resources/FSx/StorageVirtualMachine.md), [Volume](./resources/FSx/Volume.md)
+[Backup](./resources/FSx/Backup.md), [DataRepositoryAssociation](./resources/FSx/DataRepositoryAssociation.md), [FileCache](./resources/FSx/FileCache.md), [FileSystem](./resources/FSx/FileSystem.md), [Snapshot](./resources/FSx/Snapshot.md), [StorageVirtualMachine](./resources/FSx/StorageVirtualMachine.md), [Volume](./resources/FSx/Volume.md)
 * Glacier: 
 [Vault](./resources/Glacier/Vault.md)
 * GlobalAccelerator: 
