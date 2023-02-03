@@ -430,11 +430,26 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     });
 
   //TODO
-  const updateProperties = ({ Bucket, Policy, NotificationConfiguration }) =>
+  const updateProperties = ({
+    Bucket,
+    Policy,
+    NotificationConfiguration,
+    ServerSideEncryptionConfiguration,
+  }) =>
     pipe([
       tap((params) => {
         assert(Bucket);
       }),
+      tap.if(
+        get("ServerSideEncryptionConfiguration"),
+        pipe([
+          () => ({
+            Bucket,
+            ServerSideEncryptionConfiguration,
+          }),
+          s3().putBucketEncryption,
+        ])
+      ),
       tap.if(
         get("NotificationConfiguration"),
         pipe([
