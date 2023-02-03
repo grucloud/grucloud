@@ -29,11 +29,11 @@ describe("FSx", async function () {
       awsResourceTest,
     ])());
 
-  it.skip("OpenzfsSnapshot", () =>
+  it("Snapshot", () =>
     pipe([
       () => ({
-        groupType: "FSx::OpenzfsSnapshot",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "FSx::Snapshot",
+        livesNotFound: ({ config }) => [{ SnapshotId: "volsnap-12345678" }],
       }),
       awsResourceTest,
     ])());

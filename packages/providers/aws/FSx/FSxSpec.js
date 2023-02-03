@@ -12,8 +12,8 @@ const { FSxFileCache } = require("./FSxFileCache");
 const {
   FSxDataRepositoryAssociation,
 } = require("./FSxDataRepositoryAssociation");
-//const { FSxOpenzfsSnapshot } = require("./FSxOpenzfsSnapshot");
 const { FSxFileSystem } = require("./FSxFileSystem");
+const { FSxSnapshot } = require("./FSxSnapshot");
 const { FSxStorageVirtualMachine } = require("./FSxStorageVirtualMachine");
 const { FSxVolume } = require("./FSxVolume");
 
@@ -25,8 +25,8 @@ module.exports = pipe([
     FSxBackup({}),
     FSxDataRepositoryAssociation({}),
     FSxFileCache({}),
-    // FSxOpenzfsSnapshot({})
     FSxFileSystem({}),
+    FSxSnapshot({}),
     FSxStorageVirtualMachine({}),
     FSxVolume({}),
   ],
