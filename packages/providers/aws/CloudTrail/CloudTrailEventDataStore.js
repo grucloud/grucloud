@@ -29,7 +29,15 @@ exports.CloudTrailEventDataStore = ({}) => ({
   findName: () => get("Name"),
   findId: () => pipe([get("EventDataStoreArn")]),
   ignoreErrorCodes: ["EventDataStoreNotFoundException"],
-  omitProperties: [],
+  omitProperties: ["KmsKeyId"],
+  dependencies: {
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      excludeDefaultDependencies: true,
+      dependencyId: ({ lives, config }) => get("KmsKeyId"),
+    },
+  },
   getById: { method: "getEventDataStore", pickId },
   getList: {
     method: "listEventDataStores",
@@ -53,6 +61,7 @@ exports.CloudTrailEventDataStore = ({}) => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
+    dependencies: { kmsKey },
     config,
   }) =>
     pipe([
@@ -60,5 +69,11 @@ exports.CloudTrailEventDataStore = ({}) => ({
       defaultsDeep({
         TagsList: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
+      when(
+        () => kmsKey,
+        defaultsDeep({
+          KmsKeyId: getField(kmsKey, "Arn"),
+        })
+      ),
     ])(),
 });
