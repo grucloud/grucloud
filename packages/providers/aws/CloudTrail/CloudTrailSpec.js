@@ -8,6 +8,8 @@ const { compareAws, isOurMinion } = require("../AwsCommon");
 
 const { CloudTrail } = require("./CloudTrail");
 const { CloudTrailEventDataStore } = require("./CloudTrailEventDataStore");
+// TODO
+//const { CloudTrailOrganizationDelegatedAdmin } = require("./CloudTrailOrganizationDelegatedAdmin");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudTrail.html
 const GROUP = "CloudTrail";
@@ -19,6 +21,7 @@ module.exports = pipe([
     //
     CloudTrail({ compare }),
     CloudTrailEventDataStore({ compare }),
+    //CloudTrailOrganizationDelegatedAdmin({})
   ],
   map(
     pipe([

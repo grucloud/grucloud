@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project ivs-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ IVS
+++++ Channel (1)
+@endmindmap
