@@ -3,7 +3,6 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
 const { Tagger, ignoreErrorCodes } = require("./Macie2Common");
@@ -15,7 +14,6 @@ const buildArn = () =>
       assert(arn);
     }),
   ]);
-
 const pickId = pipe([
   tap(({ id }) => {
     assert(id);
@@ -31,12 +29,12 @@ const decorate = ({ endpoint, config }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html
-exports.Macie2CustomDataIdentifier = () => ({
-  type: "CustomDataIdentifier",
+exports.Macie2FindingsFilter = () => ({
+  type: "FindingsFilter",
   package: "macie2",
   client: "Macie2",
   propertiesDefault: {},
-  omitProperties: ["id", "arn", "createdAt"],
+  omitProperties: ["id", "arn", "createdAt", ""],
   inferName: () =>
     pipe([
       get("name"),
@@ -66,36 +64,34 @@ exports.Macie2CustomDataIdentifier = () => ({
       dependencyId: ({ lives, config }) => pipe([() => "default"]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#getCustomDataIdentifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#getFindingsFilter-property
   getById: {
-    method: "getCustomDataIdentifier",
+    method: "getFindingsFilter",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#listCustomDataIdentifiers-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#listFindingsFilters-property
   getList: {
-    method: "listCustomDataIdentifiers",
-    getParam: "items",
+    method: "listFindingsFilters",
+    getParam: "findingsFilterListItems",
     decorate: ({ getById }) => pipe([getById]),
   },
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#createCustomDataIdentifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#createFindingsFilter-property
   create: {
-    method: "createCustomDataIdentifier",
+    method: "createFindingsFilter",
     pickCreated: ({ payload }) => pipe([identity]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#updateCustomDataIdentifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#updateFindingsFilter-property
   update: {
-    method: "updateCustomDataIdentifier",
+    method: "updateFindingsFilter",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#deleteCustomDataIdentifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#deleteFindingsFilter-property
   destroy: {
-    method: "deleteCustomDataIdentifier",
+    method: "deleteFindingsFilter",
     pickId,
   },
-  cannotBeDeleted: () => () => true,
   getByName: getByNameCore,
   tagger: ({ config }) =>
     Tagger({

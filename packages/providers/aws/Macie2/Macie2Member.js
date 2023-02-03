@@ -121,6 +121,7 @@ exports.Macie2Member = () => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#deleteMember-property
   destroy: {
+    preDestroy: ({ endpoint }) => pipe([pickId, endpoint().disassociateMember]),
     method: "deleteMember",
     pickId,
     isInstanceDown: pipe([eq(get("relationshipStatus"), "Removed")]),

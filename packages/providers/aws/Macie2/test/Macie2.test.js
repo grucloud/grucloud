@@ -12,7 +12,7 @@ describe("Macie2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ClassificationExportConfiguration", () =>
+  it("ClassificationExportConfiguration", () =>
     pipe([
       () => ({
         groupType: "Macie2::ClassificationExportConfiguration",
@@ -29,27 +29,33 @@ describe("Macie2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("CustomDataIdentifier", () =>
+  it("CustomDataIdentifier", () =>
     pipe([
       () => ({
         groupType: "Macie2::CustomDataIdentifier",
-        livesNotFound: ({ config }) => [{ id: "123" }],
+        livesNotFound: ({ config }) => [
+          { id: "12345678-1234-1234-1234-123456789012" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("FindingsFilter", () =>
+  it("FindingsFilter", () =>
     pipe([
       () => ({
         groupType: "Macie2::FindingsFilter",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { id: "12345678-1234-1234-1234-123456789012" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("InvitationAccepter", () =>
+  it("InvitationAccepter", () =>
     pipe([
       () => ({
         groupType: "Macie2::InvitationAccepter",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { administratorAccountId: "123456789012" },
+        ],
       }),
       awsResourceTest,
     ])());

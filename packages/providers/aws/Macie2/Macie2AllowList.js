@@ -3,7 +3,6 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
 const { Tagger, ignoreErrorCodes } = require("./Macie2Common");
@@ -15,7 +14,6 @@ const buildArn = () =>
       assert(arn);
     }),
   ]);
-
 const pickId = pipe([
   tap(({ id }) => {
     assert(id);
@@ -31,12 +29,12 @@ const decorate = ({ endpoint, config }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html
-exports.Macie2CustomDataIdentifier = () => ({
-  type: "CustomDataIdentifier",
+exports.Macie2AllowList = () => ({
+  type: "AllowList",
   package: "macie2",
   client: "Macie2",
   propertiesDefault: {},
-  omitProperties: ["id", "arn", "createdAt"],
+  omitProperties: ["id", "arn", "createdAt", "updatedAt", "status"],
   inferName: () =>
     pipe([
       get("name"),
@@ -66,36 +64,34 @@ exports.Macie2CustomDataIdentifier = () => ({
       dependencyId: ({ lives, config }) => pipe([() => "default"]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#getCustomDataIdentifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#getAllowList-property
   getById: {
-    method: "getCustomDataIdentifier",
+    method: "getAllowList",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#listCustomDataIdentifiers-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#listAllowLists-property
   getList: {
-    method: "listCustomDataIdentifiers",
-    getParam: "items",
+    method: "listAllowLists",
+    getParam: "allowLists",
     decorate: ({ getById }) => pipe([getById]),
   },
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#createCustomDataIdentifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#createAllowList-property
   create: {
-    method: "createCustomDataIdentifier",
+    method: "createAllowList",
     pickCreated: ({ payload }) => pipe([identity]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#updateCustomDataIdentifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#updateAllowList-property
   update: {
-    method: "updateCustomDataIdentifier",
+    method: "updateAllowList",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#deleteCustomDataIdentifier-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Macie2.html#deleteAllowList-property
   destroy: {
-    method: "deleteCustomDataIdentifier",
+    method: "deleteAllowList",
     pickId,
   },
-  cannotBeDeleted: () => () => true,
   getByName: getByNameCore,
   tagger: ({ config }) =>
     Tagger({
