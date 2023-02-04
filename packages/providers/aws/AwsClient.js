@@ -573,7 +573,7 @@ const AwsClient =
             // );
           }),
           () => live,
-          preUpdate({ name, payload, diff, programOptions }),
+          preUpdate({ endpoint, name, payload, diff, programOptions }),
           () => filterParams({ pickId, extraParam, payload, diff, live }),
           tap((params) => {
             assert(true);
@@ -664,7 +664,7 @@ const AwsClient =
                 },
               ])()
           ),
-          postUpdate({ name, live, payload, diff, programOptions }),
+          postUpdate({ endpoint, name, live, payload, diff, programOptions }),
           tap(() => {
             logger.info(`updated ${type}, ${name}`);
           }),

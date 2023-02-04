@@ -8,6 +8,8 @@ exports.updateResourceObject =
       tap((params) => {
         assert(endpoint);
         assert(path);
+        assert(payload);
+        assert(live);
       }),
       () => diff,
       switchCase([

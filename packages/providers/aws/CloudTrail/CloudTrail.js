@@ -46,6 +46,30 @@ const filterEventSelector = pipe([
   ),
 ]);
 
+const tagsToPayload = ({ Tags, ...other }) => ({
+  ...other,
+  TagsList: Tags,
+});
+
+const decorate =
+  ({ endpoint }) =>
+  (live) =>
+    pipe([
+      () => ({ TrailName: live.Name }),
+      endpoint().getEventSelectors,
+      pick(SELECTORS),
+      defaultsDeep(live),
+      assign({
+        Tags: pipe([
+          () => ({ ResourceIdList: [live.TrailARN] }),
+          endpoint().listTags,
+          get("ResourceTagList"),
+          first,
+          get("TagsList"),
+        ]),
+      }),
+    ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudTrail.html
 exports.CloudTrail = ({ compare }) => ({
   type: "Trail",
@@ -112,24 +136,7 @@ exports.CloudTrail = ({ compare }) => ({
     pickId,
     method: "getTrail",
     getField: "Trail",
-    decorate:
-      ({ endpoint }) =>
-      (live) =>
-        pipe([
-          () => ({ TrailName: live.Name }),
-          endpoint().getEventSelectors,
-          pick(SELECTORS),
-          defaultsDeep(live),
-          assign({
-            TagsList: pipe([
-              () => ({ ResourceIdList: [live.TrailARN] }),
-              endpoint().listTags,
-              get("ResourceTagList"),
-              first,
-              get("TagsList"),
-            ]),
-          }),
-        ])(),
+    decorate,
   },
   getList: {
     method: "listTrails",
@@ -138,7 +145,7 @@ exports.CloudTrail = ({ compare }) => ({
   },
   create: {
     method: "createTrail",
-    filterPayload: pipe([omit(SELECTORS)]),
+    filterPayload: pipe([omit(SELECTORS), tagsToPayload]),
     pickCreated:
       ({ payload }) =>
       () =>
@@ -232,7 +239,7 @@ exports.CloudTrail = ({ compare }) => ({
       defaultsDeep({
         Name: name,
         S3BucketName: getField(bucket, "Name"),
-        TagsList: buildTags({ name, config, namespace, UserTags: Tags }),
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
       when(
         () => snsTopic,

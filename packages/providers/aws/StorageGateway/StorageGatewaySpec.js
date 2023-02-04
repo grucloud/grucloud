@@ -8,7 +8,7 @@ const { createAwsService } = require("../AwsService");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/StorageGateway.html
 
 //const { StorageGatewayCache } = require("./StorageGatewayCache");
-const { StorageGatewayGateway } = require("./StorageGatewayGateway");
+//const { StorageGatewayGateway } = require("./StorageGatewayGateway");
 //const { StorageGatewayTable } = require("./StorageGatewayTable");
 
 const GROUP = "StorageGateway";
