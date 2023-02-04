@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, map } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  eq,
+  assign,
+  map,
+  omit,
+  unless,
+} = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -40,16 +50,10 @@ const assignArn = ({ config }) =>
           }:${config.accountId()}:workspace/${workspaceName}`,
       ]),
     }),
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 
 const decorate = ({ endpoint, config }) =>
   pipe([
-    tap((params) => {
-      assert(endpoint);
-    }),
     ({
       name,
       description,
@@ -69,6 +73,26 @@ const decorate = ({ endpoint, config }) =>
     }),
     idToWorkspaceId,
     assignArn({ config }),
+    unless(eq(get("licenseType"), "ENTERPRISE"), omit(["licenseType"])),
+  ]);
+
+//https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html#associateLicense-property
+const associateLicense = ({ endpoint }) =>
+  pipe([
+    tap(({ workspaceId, licenseType }) => {
+      assert(workspaceId);
+      assert(licenseType);
+    }),
+    endpoint().associateLicense,
+  ]);
+
+const disassociateLicense = ({ endpoint }) =>
+  pipe([
+    tap(({ workspaceId, licenseType }) => {
+      assert(workspaceId);
+      assert(licenseType);
+    }),
+    endpoint().disassociateLicense,
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html
@@ -88,7 +112,6 @@ exports.GrafanaWorkspace = () => ({
     "freeTrialExpiration",
     "grafanaVersion",
     "licenseExpiration",
-    "licenseType",
     "workspaceOrganizationalUnits",
     "authentication.samlConfigurationStatus",
     "workspaceRoleArn",
@@ -162,21 +185,23 @@ exports.GrafanaWorkspace = () => ({
     pickCreated: ({ payload }) => pipe([get("workspace"), idToWorkspaceId]),
     isInstanceUp: pipe([eq(get("status"), "ACTIVE")]),
     isInstanceError: pipe([eq(get("Status"), "CREATION_FAILED")]),
+    postCreate:
+      ({ endpoint, payload, created }) =>
+      (live) =>
+        pipe([
+          () => payload,
+          tap.if(
+            eq(get("licenseType"), "ENTERPRISE"),
+            pipe([associateLicense({ endpoint })])
+          ),
+        ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html#updateWorkspace-property
   update: {
+    // TODO preUpdate disassociateLicense
     method: "updateWorkspace",
     filterParams: ({ payload, diff, live }) =>
-      pipe([
-        () => payload,
-        tap((params) => {
-          assert(live);
-        }),
-        defaultsDeep({ workspaceId: live.workspaceId }),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
+      pipe([() => payload, defaultsDeep({ workspaceId: live.workspaceId })])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html#deleteWorkspace-property
   destroy: {
