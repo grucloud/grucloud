@@ -149,6 +149,7 @@ exports.WAFV2WebACLAssociation = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#associateWebACL-property
   create: {
     method: "associateWebACL",
+    configIsUp: { retryCount: 20 * 12, retryDelay: 5e3 },
     shouldRetryOnExceptionMessages: [
       "AWS WAF couldn’t retrieve the resource that you requested",
     ],

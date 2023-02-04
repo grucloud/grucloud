@@ -79,7 +79,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "sam-app-LambdaFunctionRole-1FRJGZ3ABRF6R",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -99,11 +99,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["DynamoDB:UpdateTable", "DynamoDB:PutItem"],
-                Resource: `${getId({
-                  type: "Table",
-                  group: "DynamoDB",
-                  name: "sam-app-DynamoDBTable-1JJ3XXB72MCD7",
-                })}`,
+                Resource: `arn:aws:dynamodb:${
+                  config.region
+                }:${config.accountId()}:table/sam-app-DynamoDBTable-1JJ3XXB72MCD7`,
                 Effect: "Allow",
               },
             ],
@@ -116,12 +114,6 @@ exports.createResources = () => [
           PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-        },
-      ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
         },
       ],
     }),
@@ -138,9 +130,6 @@ exports.createResources = () => [
         Handler: "app.handler",
         Runtime: "python3.7",
         Timeout: 60,
-      },
-      Tags: {
-        "lambda:createdBy": "SAM",
       },
     }),
     dependencies: ({}) => ({
