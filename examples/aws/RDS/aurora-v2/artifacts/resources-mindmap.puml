@@ -19,6 +19,6 @@ skinparam monochrome true
 ++++ Role (1)
 +++ RDS
 ++++ DBCluster (1)
-++++ DBSubnetGroup (1)
 ++++ DBInstance (1)
+++++ DBSubnetGroup (1)
 @endmindmap

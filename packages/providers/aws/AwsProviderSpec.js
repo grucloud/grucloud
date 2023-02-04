@@ -142,6 +142,7 @@ const GROUPS = [
   ["SSOAdmin", "identity-center"],
   ["SQS", "sqs"],
   ["SSM", "ssm"],
+  ["StorageGateway", "storagegateway"],
   ["Synthetics", "synthetics"],
   ["TimestreamWrite", "timestream-write"],
   ["Transfer", "transfer"],
