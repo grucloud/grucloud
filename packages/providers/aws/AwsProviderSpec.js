@@ -30,6 +30,7 @@ const defaultExcludes = [
   "IVS",
   "Isvchat",
   "MediaConvert",
+  "Signer",
 ];
 
 const defaultIncludes = ["IAM", "CloudWatchLogs"];
@@ -39,6 +40,7 @@ const GROUPS = [
   ["AccessAnalyzer", "accessanalyzer"],
   ["ACM", "acm"],
   ["ACMPCA", "acm-pca"],
+  ["Amp", "amp"],
   ["Amplify", "amplify"],
   ["APIGateway", "apigateway"],
   ["ApiGatewayV2", "apigatewayv2"],

@@ -37,7 +37,7 @@ List of resources for provider aws:
 * Athena: 
 [DataCatalog](./resources/Athena/DataCatalog.md), [WorkGroup](./resources/Athena/WorkGroup.md)
 * AuditManager: 
-[AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Assessment](./resources/AuditManager/Assessment.md), [AssessmentReport](./resources/AuditManager/AssessmentReport.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [Settings](./resources/AuditManager/Settings.md)
+[AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Assessment](./resources/AuditManager/Assessment.md), [AssessmentDelegation](./resources/AuditManager/AssessmentDelegation.md), [AssessmentReport](./resources/AuditManager/AssessmentReport.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [AssessmentFrameworkShare](./resources/AuditManager/AssessmentFrameworkShare.md), [Settings](./resources/AuditManager/Settings.md), [OrganizationAdminAccount](./resources/AuditManager/OrganizationAdminAccount.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
 * Backup: 
@@ -53,7 +53,7 @@ List of resources for provider aws:
 * CloudHSMV2: 
 [Cluster](./resources/CloudHSMV2/Cluster.md), [Hsm](./resources/CloudHSMV2/Hsm.md)
 * CloudTrail: 
-[Trail](./resources/CloudTrail/Trail.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
+[Trail](./resources/CloudTrail/Trail.md), [Channel](./resources/CloudTrail/Channel.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
 * CloudWatch: 
 [Dashboard](./resources/CloudWatch/Dashboard.md), [MetricAlarm](./resources/CloudWatch/MetricAlarm.md)
 * CloudWatchEvents: 
@@ -216,6 +216,8 @@ List of resources for provider aws:
 [AccountAssignment](./resources/SSOAdmin/AccountAssignment.md), [Instance](./resources/SSOAdmin/Instance.md), [InstanceAccessControlAttribute](./resources/SSOAdmin/InstanceAccessControlAttribute.md), [PermissionSet](./resources/SSOAdmin/PermissionSet.md)
 * StepFunctions: 
 [StateMachine](./resources/StepFunctions/StateMachine.md)
+* Synthetics: 
+[Canary](./resources/Synthetics/Canary.md)
 * TimestreamWrite: 
 [Database](./resources/TimestreamWrite/Database.md), [Table](./resources/TimestreamWrite/Table.md)
 * Transfer: 
