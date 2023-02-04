@@ -23,7 +23,7 @@ describe("AuditManager", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("AssessmentDelegation", () =>
+  it("AssessmentDelegation", () =>
     pipe([
       () => ({
         groupType: "AuditManager::AssessmentDelegation",

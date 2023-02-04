@@ -93,6 +93,7 @@ exports.createResources = () => [
     type: "Cluster",
     group: "Redshift",
     properties: ({}) => ({
+      AvailabilityZoneRelocation: true,
       ClusterIdentifier: "redshift-cluster-1",
       NodeType: "ra3.xlplus",
       MasterUsername: "awsuser",
@@ -105,7 +106,6 @@ exports.createResources = () => [
       ClusterSubnetGroupName: "cluster-subnet-group-1",
       NumberOfNodes: 2,
       EnhancedVpcRouting: true,
-      AvailabilityZoneRelocation: true,
       MasterUserPassword: process.env.REDSHIFT_CLUSTER_1_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
