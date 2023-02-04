@@ -81,6 +81,7 @@ exports.AppConfigConfigurationProfile = () => ({
       parent: true,
       dependencyId: ({ lives, config }) => get("ApplicationId"),
     },
+    // TODO  Add Secrets manager
   },
   filterLive: () => pipe([omitIfEmpty(["ValidatorTypes"])]),
   managedByOther,
