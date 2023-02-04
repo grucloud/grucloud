@@ -44,6 +44,9 @@ const assignArn = ({ config }) =>
   pipe([
     assign({
       arn: pipe([
+        tap(({ workspaceName }) => {
+          assert(workspaceName);
+        }),
         ({ workspaceName }) =>
           `arn:aws:grafana:${
             config.region
@@ -52,6 +55,22 @@ const assignArn = ({ config }) =>
     }),
   ]);
 
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html#describeWorkspaceAuthentication-property
+const assignAuthentication = ({ endpoint }) =>
+  pipe([
+    assign({
+      authentication: pipe([
+        pickId,
+        endpoint().describeWorkspaceAuthentication,
+      ]),
+    }),
+  ]);
+
+const omitFreeTrialLicence = unless(
+  eq(get("licenseType"), "ENTERPRISE"),
+  omit(["licenseType"])
+);
+// Decorate
 const decorate = ({ endpoint, config }) =>
   pipe([
     ({
@@ -73,7 +92,8 @@ const decorate = ({ endpoint, config }) =>
     }),
     idToWorkspaceId,
     assignArn({ config }),
-    unless(eq(get("licenseType"), "ENTERPRISE"), omit(["licenseType"])),
+    assignAuthentication({ endpoint }),
+    omitFreeTrialLicence,
   ]);
 
 //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Grafana.html#associateLicense-property
@@ -116,6 +136,7 @@ exports.GrafanaWorkspace = () => ({
     "authentication.samlConfigurationStatus",
     "workspaceRoleArn",
     "vpcConfiguration",
+    "authentication",
   ],
   inferName: () =>
     pipe([
