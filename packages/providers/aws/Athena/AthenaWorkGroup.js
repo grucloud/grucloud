@@ -96,7 +96,6 @@ exports.AthenaWorkGroup = ({ compare }) => ({
   create: {
     filterPayload: ({ WorkGroup, ...other }) =>
       pipe([() => ({ Name: WorkGroup, ...other })])(),
-
     method: "createWorkGroup",
     pickCreated: ({ payload }) => pipe([() => payload]),
   },
