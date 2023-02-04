@@ -3,10 +3,13 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
+const config = () => ({ includeGroups: ["Signer"] });
+
 describe("Signer", async function () {
   it.skip("SigningJob", () =>
     pipe([
       () => ({
+        config,
         groupType: "Signer::SigningJob",
         livesNotFound: ({ config }) => [{}],
       }),
@@ -15,6 +18,7 @@ describe("Signer", async function () {
   it("SigningProfile", () =>
     pipe([
       () => ({
+        config,
         groupType: "Signer::SigningProfile",
         livesNotFound: ({ config }) => [
           { profileName: "pr123", profileVersion: "1", reason: "r" },
@@ -25,6 +29,7 @@ describe("Signer", async function () {
   it.skip("SigningProfilePermission", () =>
     pipe([
       () => ({
+        config,
         groupType: "Signer::SigningProfilePermission",
         livesNotFound: ({ config }) => [{}],
       }),

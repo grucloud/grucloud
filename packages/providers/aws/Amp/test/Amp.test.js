@@ -3,11 +3,21 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("Amp", async function () {
-  it.skip("Workspace", () =>
+describe("Aps", async function () {
+  it("RuleGroupsNamespace", () =>
     pipe([
       () => ({
-        groupType: "Amp::Workspace",
+        groupType: "Aps::RuleGroupsNamespace",
+        livesNotFound: ({ config }) => [
+          { name: "123", workspaceId: "idonotexist" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("Workspace", () =>
+    pipe([
+      () => ({
+        groupType: "Aps::Workspace",
         livesNotFound: ({ config }) => [{ workspaceId: "idonotexist" }],
       }),
       awsResourceTest,

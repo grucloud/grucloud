@@ -12,6 +12,8 @@ List of resources for provider aws:
 [Certificate](./resources/ACM/Certificate.md)
 * ACMPCA: 
 [CertificateAuthority](./resources/ACMPCA/CertificateAuthority.md), [Permission](./resources/ACMPCA/Permission.md), [Policy](./resources/ACMPCA/Policy.md)
+* Aps: 
+[RuleGroupsNamespace](./resources/Aps/RuleGroupsNamespace.md), [Workspace](./resources/Aps/Workspace.md)
 * Amplify: 
 [App](./resources/Amplify/App.md), [BackendEnvironment](./resources/Amplify/BackendEnvironment.md), [Branch](./resources/Amplify/Branch.md), [DomainAssociation](./resources/Amplify/DomainAssociation.md), [Webhook](./resources/Amplify/Webhook.md)
 * APIGateway: 
@@ -204,8 +206,6 @@ List of resources for provider aws:
 [ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [DedicatedIpPool](./resources/SESV2/DedicatedIpPool.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md)
 * Shield: 
 [Protection](./resources/Shield/Protection.md), [ProtectionGroup](./resources/Shield/ProtectionGroup.md)
-* Signer: 
-[SigningProfile](./resources/Signer/SigningProfile.md)
 * SNS: 
 [Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 

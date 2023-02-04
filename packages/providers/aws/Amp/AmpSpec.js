@@ -5,16 +5,18 @@ const { defaultsDeep } = require("rubico/x");
 const { createAwsService } = require("../AwsService");
 const { compareAws } = require("../AwsCommon");
 
-const GROUP = "Amp";
+const GROUP = "Aps";
 const tagsKey = "tags";
 const compare = compareAws({ tagsKey, key: "key" });
 
-//const { AmpWorkspace } = require("./AmpWorkspace");
+const { AmpRuleGroupsNamespace } = require("./AmpRuleGroupsNamespace");
+const { AmpWorkspace } = require("./AmpWorkspace");
 
 module.exports = pipe([
   () => [
     //
-    //AmpWorkspace({}),
+    AmpRuleGroupsNamespace({}),
+    AmpWorkspace({}),
   ],
   map(
     pipe([
