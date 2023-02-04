@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project s3-multiregion-accesspoint
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ S3
+++++ Bucket (1)
+-- aws-secondary
+--- S3
+---- Bucket (1)
+--- S3Control
+---- MultiRegionAccessPoint (1)
+@endmindmap
