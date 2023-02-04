@@ -9,7 +9,13 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const pickId = pipe([pick(["IpamPoolId", "Cidr"])]);
 
-const findId = () => pipe([get("Cidr")]);
+const findId = () =>
+  pipe([
+    get("Cidr"),
+    tap((Cidr) => {
+      assert(Cidr);
+    }),
+  ]);
 
 const isDeprovisioned = eq(get("State"), "deprovisioned");
 
@@ -20,7 +26,13 @@ exports.EC2IpamPoolCidr = ({ compare }) => ({
   client: "EC2",
   //TODO what is cidr does not exist
   ignoreErrorCodes: ["InvalidIpamPoolId.NotFound"],
-  omitProperties: ["IpamPoolId", "State", "FailureReason"],
+  omitProperties: [
+    "IpamPoolId",
+    "State",
+    "FailureReason",
+    "IpamPoolCidrId",
+    "NetmaskLength",
+  ],
   inferName: () => pipe([get("Cidr")]),
   findName: findNameInTagsOrId({ findId }),
   findId,
