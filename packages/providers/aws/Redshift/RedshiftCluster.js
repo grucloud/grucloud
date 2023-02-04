@@ -199,8 +199,10 @@ exports.RedshiftCluster = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#deleteCluster-property
   destroy: {
     method: "deleteCluster",
-    pickId,
-    extraParam: { SkipFinalClusterSnapshot: true },
+    pickId: pipe([pickId, defaultsDeep({ SkipFinalClusterSnapshot: true })]),
+    shouldRetryOnExceptionMessages: [
+      "There is an operation running on the Cluster",
+    ],
   },
   getByName: ({ getList, endpoint, getById }) =>
     pipe([
