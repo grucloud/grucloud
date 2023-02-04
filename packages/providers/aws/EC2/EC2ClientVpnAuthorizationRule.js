@@ -29,7 +29,10 @@ exports.EC2ClientVpnAuthorizationRule = ({ compare }) => ({
   type: "ClientVpnAuthorizationRule",
   package: "ec2",
   client: "EC2",
-  ignoreErrorCodes: ["InvalidClientVpnEndpointId.NotFound"],
+  ignoreErrorCodes: [
+    "InvalidClientVpnEndpointId.NotFound",
+    "InvalidClientVpnEndpointAuthorizationRuleNotFound",
+  ],
   findName:
     ({ lives, config }) =>
     (live) =>
