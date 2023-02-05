@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
@@ -30,7 +30,7 @@ const decorate = ({ endpoint, config }) =>
     }),
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html
 exports.SchemasDiscoverer = () => ({
   type: "Discoverer",
   package: "schemas",
@@ -59,7 +59,7 @@ exports.SchemasDiscoverer = () => ({
           group: "CloudWatchEvents",
           providerName: config.providerName,
         }),
-        get("name"),
+        get("name", SourceArn),
         tap((name) => {
           assert(name);
         }),
@@ -86,7 +86,7 @@ exports.SchemasDiscoverer = () => ({
         ]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html#describeDiscoverer-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#describeDiscoverer-property
   getById: {
     method: "describeDiscoverer",
     pickId,
@@ -98,17 +98,17 @@ exports.SchemasDiscoverer = () => ({
     getParam: "Discoverers",
     decorate: ({ getById }) => pipe([getById]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html#createDiscoverer-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#createDiscoverer-property
   create: {
     method: "createDiscoverer",
-    pickCreated: ({ payload }) => pipe([() => payload]),
+    pickCreated: ({ payload }) => pipe([identity]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html#updateSchema-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#updateDiscoverer-property
   update: {
     method: "updateDiscoverer",
     filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html#deleteDiscoverer-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#deleteDiscoverer-property
   destroy: {
     method: "deleteDiscoverer",
     pickId,

@@ -107,6 +107,7 @@
     "test-s3control": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/S3Control/**/iac.test.js' ",
     "test-ssoadmin": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/SSOAdmin/**/iac.test.js' ",
     "test-scheduler": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Scheduler/**/iac.test.js' ",
+    "test-schemas": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Schemas/**/iac.test.js' ",
     "test-secretsmamanger": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/SecretsManager/**/iac.test.js' ",
     "test-securityhub": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/SecurityHub/**/iac.test.js' ",
     "test-serverless": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/serverless-patterns/**/iac.test.js' ",

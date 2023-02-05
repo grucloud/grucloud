@@ -1,5 +1,16 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, or, and, eq, omit } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  assign,
+  or,
+  and,
+  eq,
+  omit,
+  any,
+} = require("rubico");
 const {
   defaultsDeep,
   first,
@@ -14,6 +25,20 @@ const {
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { ignoreErrorCodes } = require("./CloudWatchEventCommon");
+
+const ignoreArns = [
+  "arn:aws:auditmanager",
+  "arn:aws:autoscaling",
+  "arn:aws:inspector2",
+  "arn:aws:schemas",
+];
+
+const managedByOther = () =>
+  pipe([
+    get("Arn"),
+    (arn) =>
+      pipe([() => ignoreArns, any((ignoreArn) => arn.startsWith(ignoreArn))])(),
+  ]);
 
 //TODO
 // Batch job queue
@@ -191,16 +216,6 @@ const decorate = ({ endpoint, parent }) =>
   ]);
 
 const findName = () => pipe([({ Id, Rule }) => `target::${Rule}::${Id}`]);
-
-const managedByOther = () =>
-  pipe([
-    get("Arn"),
-    or([
-      callProp("startsWith", "arn:aws:autoscaling"),
-      callProp("startsWith", "arn:aws:inspector2"),
-      callProp("startsWith", "arn:aws:auditmanager"),
-    ]),
-  ]);
 
 const assignArnTarget = ({ dependencies, config }) =>
   pipe([
@@ -399,6 +414,9 @@ exports.CloudWatchEventTarget = () => ({
     config,
   }) =>
     pipe([
+      tap((params) => {
+        assert(rule);
+      }),
       () => properties,
       defaultsDeep({
         EventBusName: getField(rule, "EventBusName"),
@@ -410,6 +428,9 @@ exports.CloudWatchEventTarget = () => ({
           RoleArn: getField(role, "Arn"),
         })
       ),
-      assignArnTarget({ dependencies: otherDeps, config }),
+      unless(
+        () => isEmpty(otherDeps),
+        assignArnTarget({ dependencies: otherDeps, config })
+      ),
     ])(),
 });

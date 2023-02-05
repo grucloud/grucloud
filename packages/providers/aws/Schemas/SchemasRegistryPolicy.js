@@ -4,6 +4,7 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { ignoreErrorCodes } = require("./SchemasCommon");
 
@@ -33,16 +34,16 @@ exports.SchemasRegistryPolicy = () => ({
   package: "schemas",
   client: "Schemas",
   propertiesDefault: {},
-  omitProperties: ["RegistryName"],
+  omitProperties: ["RegistryName", "RevisionId"],
   inferName:
-    ({ registry }) =>
+    ({ dependenciesSpec: { registry } }) =>
     ({}) =>
       pipe([
         tap((name) => {
           assert(registry);
         }),
         () => `${registry}`,
-      ]),
+      ])(),
   findName:
     () =>
     ({ RegistryName }) =>
@@ -51,7 +52,7 @@ exports.SchemasRegistryPolicy = () => ({
           assert(RegistryName);
         }),
         () => `${RegistryName}`,
-      ]),
+      ])(),
   findId: () =>
     pipe([
       get("RegistryName"),
@@ -138,7 +139,7 @@ exports.SchemasRegistryPolicy = () => ({
       }),
       () => otherProps,
       defaultsDeep({
-        RegistryName: getField(registry, "Name"),
+        RegistryName: getField(registry, "RegistryName"),
       }),
     ])(),
 });

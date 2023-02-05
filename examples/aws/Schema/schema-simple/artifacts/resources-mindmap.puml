@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project schema-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ EventBus (1)
++++ EventSchemas
+++++ Discoverer (1)
+++++ Registry (1)
+++++ RegistryPolicy (1)
+++++ Schema (1)
+@endmindmap
