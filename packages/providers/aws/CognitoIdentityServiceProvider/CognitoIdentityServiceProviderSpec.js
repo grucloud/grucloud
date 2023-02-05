@@ -3,11 +3,15 @@ const { map, pipe, tap } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { createAwsService } = require("../AwsService");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
 
 const {
   CognitoIdentityServiceProviderUserPool,
 } = require("./CognitoIdentityServiceProviderUserPool");
+
+const {
+  CognitoIdentityServiceProviderResourceServer,
+} = require("./CognitoIdentityServiceProviderResourceServer");
 
 const {
   CognitoIdentityServiceProviderRiskConfiguration,
@@ -34,6 +38,7 @@ const compareCognitoIdentityServiceProvider = compareAws({
 module.exports = pipe([
   () => [
     CognitoIdentityServiceProviderIdentityProvider(),
+    CognitoIdentityServiceProviderResourceServer({}),
     CognitoIdentityServiceProviderRiskConfiguration({}),
     CognitoIdentityServiceProviderUserPool(),
     CognitoIdentityServiceProviderUserPoolClient(),
@@ -44,7 +49,6 @@ module.exports = pipe([
       createAwsService,
       defaultsDeep({
         group: GROUP,
-        isOurMinion,
         compare: compareCognitoIdentityServiceProvider({}),
       }),
     ])

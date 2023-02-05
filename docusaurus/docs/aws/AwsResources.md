@@ -12,8 +12,6 @@ List of resources for provider aws:
 [Certificate](./resources/ACM/Certificate.md)
 * ACMPCA: 
 [CertificateAuthority](./resources/ACMPCA/CertificateAuthority.md), [Permission](./resources/ACMPCA/Permission.md), [Policy](./resources/ACMPCA/Policy.md)
-* Aps: 
-[RuleGroupsNamespace](./resources/Aps/RuleGroupsNamespace.md), [Workspace](./resources/Aps/Workspace.md)
 * Amplify: 
 [App](./resources/Amplify/App.md), [BackendEnvironment](./resources/Amplify/BackendEnvironment.md), [Branch](./resources/Amplify/Branch.md), [DomainAssociation](./resources/Amplify/DomainAssociation.md), [Webhook](./resources/Amplify/Webhook.md)
 * APIGateway: 
@@ -36,6 +34,8 @@ List of resources for provider aws:
 [AppBlock](./resources/AppStream/AppBlock.md), [Application](./resources/AppStream/Application.md), [DirectoryConfig](./resources/AppStream/DirectoryConfig.md), [Entitlement](./resources/AppStream/Entitlement.md), [Fleet](./resources/AppStream/Fleet.md), [ImageBuilder](./resources/AppStream/ImageBuilder.md), [Stack](./resources/AppStream/Stack.md), [User](./resources/AppStream/User.md), [UsageReportSubscription](./resources/AppStream/UsageReportSubscription.md), [UserStackAssociation](./resources/AppStream/UserStackAssociation.md)
 * AppSync: 
 [DataSource](./resources/AppSync/DataSource.md), [Function](./resources/AppSync/Function.md), [GraphqlApi](./resources/AppSync/GraphqlApi.md), [Resolver](./resources/AppSync/Resolver.md)
+* Aps: 
+[RuleGroupsNamespace](./resources/Aps/RuleGroupsNamespace.md), [Workspace](./resources/Aps/Workspace.md)
 * Athena: 
 [DataCatalog](./resources/Athena/DataCatalog.md), [NamedQuery](./resources/Athena/NamedQuery.md), [PreparedStatement](./resources/Athena/PreparedStatement.md), [WorkGroup](./resources/Athena/WorkGroup.md)
 * AuditManager: 
@@ -73,7 +73,7 @@ List of resources for provider aws:
 * Cognito: 
 [IdentityPool](./resources/Cognito/IdentityPool.md), [IdentityPoolProviderPrincipalTag](./resources/Cognito/IdentityPoolProviderPrincipalTag.md), [IdentityPoolRolesAttachments](./resources/Cognito/IdentityPoolRolesAttachments.md)
 * CognitoIdentityServiceProvider: 
-[IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [RiskConfiguration](./resources/CognitoIdentityServiceProvider/RiskConfiguration.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
+[IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [ResourceServer](./resources/CognitoIdentityServiceProvider/ResourceServer.md), [RiskConfiguration](./resources/CognitoIdentityServiceProvider/RiskConfiguration.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
 * Comprehend: 
 [DocumentClassifier](./resources/Comprehend/DocumentClassifier.md), [EntityRecognizer](./resources/Comprehend/EntityRecognizer.md)
 * Config: 
