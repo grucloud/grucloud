@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
+const { pipe, tap, get, pick, assign, switchCase } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -124,8 +124,14 @@ exports.SchemasSchema = () => ({
               tap((params) => {
                 assert(parent.RegistryName);
               }),
-              defaultsDeep({ RegistryName: parent.RegistryName }),
-              getById({}),
+              switchCase([
+                cannotBeDeleted(),
+                () => undefined,
+                pipe([
+                  defaultsDeep({ RegistryName: parent.RegistryName }),
+                  getById({}),
+                ]),
+              ]),
             ]),
         }),
     ])(),
