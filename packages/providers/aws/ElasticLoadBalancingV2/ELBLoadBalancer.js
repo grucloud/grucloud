@@ -7,6 +7,7 @@ const {
   unless,
   pluck,
   callProp,
+  when,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -182,7 +183,6 @@ exports.ElasticLoadBalancingV2LoadBalancer = () => ({
     pipe([
       tap(() => {
         assert(Array.isArray(subnets));
-        assert(Array.isArray(securityGroups));
       }),
       () => otherProps,
       defaultsDeep({
@@ -190,10 +190,15 @@ exports.ElasticLoadBalancingV2LoadBalancer = () => ({
         Scheme: "internet-facing",
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         Subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
-        SecurityGroups: map((securityGroup) =>
-          getField(securityGroup, "GroupId")
-        )(securityGroups),
       }),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          SecurityGroups: map((securityGroup) =>
+            getField(securityGroup, "GroupId")
+          )(securityGroups),
+        })
+      ),
       tap((result) => {
         assert(result);
       }),

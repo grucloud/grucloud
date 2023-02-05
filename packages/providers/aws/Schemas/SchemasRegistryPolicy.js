@@ -28,7 +28,7 @@ const filterPayload = pipe([
   assign({ Policy: pipe([get("Policy"), JSON.stringify]) }),
 ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html
 exports.SchemasRegistryPolicy = () => ({
   type: "RegistryPolicy",
   package: "schemas",
@@ -84,13 +84,13 @@ exports.SchemasRegistryPolicy = () => ({
         ]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html#getSchema-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#getSchema-property
   getById: {
     method: "getResourcePolicy",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html#listSchemas-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#listSchemas-property
   getList: ({ client, endpoint, getById, config }) =>
     pipe([
       () =>
@@ -108,19 +108,19 @@ exports.SchemasRegistryPolicy = () => ({
             pipe([decorate({ endpoint, config, live: parent })]),
         }),
     ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html#putResourcePolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#putResourcePolicy-property
   create: {
     filterPayload,
     method: "putResourcePolicy",
     pickCreated: ({ payload }) => pipe([() => payload]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html#putResourcePolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#putResourcePolicy-property
   update: {
     method: "putResourcePolicy",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, filterPayload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schema.html#deleteResourcePolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#deleteResourcePolicy-property
   destroy: {
     method: "deleteResourcePolicy",
     pickId,
