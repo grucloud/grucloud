@@ -10,6 +10,7 @@ const {
   filter,
   not,
   switchCase,
+  tryCatch,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -184,19 +185,23 @@ exports.WAFV2WebACLAssociation = () => ({
                 tap((ResourceArn) => {
                   assert(ResourceArn);
                 }),
-                (ResourceArn) =>
-                  pipe([
-                    () => ({ ResourceArn }),
-                    endpoint().getWebACLForResource,
-                    get("WebACL.ARN"),
-                    tap((ARN) => {
-                      assert(true);
-                    }),
-                    unless(isEmpty, (WebACLArn) => ({
-                      WebACLArn,
-                      ResourceArn,
-                    })),
-                  ])(),
+                tryCatch(
+                  (ResourceArn) =>
+                    pipe([
+                      () => ({ ResourceArn }),
+                      endpoint().getWebACLForResource,
+                      get("WebACL.ARN"),
+                      tap((ARN) => {
+                        assert(true);
+                      }),
+                      unless(isEmpty, (WebACLArn) => ({
+                        WebACLArn,
+                        ResourceArn,
+                      })),
+                    ])(),
+                  // WAFInvalidParameterException
+                  () => undefined
+                ),
               ])
             ),
             filter(not(isEmpty)),
