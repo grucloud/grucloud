@@ -5,6 +5,7 @@ const { createAwsService } = require("../AwsService");
 
 const { compareAws } = require("../AwsCommon");
 const { EFSFileSystem } = require("./EFSFileSystem");
+const { EFSFileSystemPolicy } = require("./EFSFileSystemPolicy");
 const { EFSAccessPoint } = require("./EFSAccessPoint");
 const { EFSMountTarget } = require("./EFSMountTarget");
 
@@ -16,6 +17,7 @@ const compare = compareAws({});
 module.exports = pipe([
   () => [
     EFSFileSystem({ compare }),
+    EFSFileSystemPolicy({ compare }),
     EFSAccessPoint({ compare }),
     EFSMountTarget({ compare }),
   ],

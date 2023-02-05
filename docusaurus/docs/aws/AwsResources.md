@@ -97,7 +97,7 @@ List of resources for provider aws:
 * ECS: 
 [CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [Service](./resources/ECS/Service.md), [Task](./resources/ECS/Task.md), [TaskSet](./resources/ECS/TaskSet.md), [TaskDefinition](./resources/ECS/TaskDefinition.md)
 * EFS: 
-[FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
+[FileSystem](./resources/EFS/FileSystem.md), [FileSystemPolicy](./resources/EFS/FileSystemPolicy.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
 [Addon](./resources/EKS/Addon.md), [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
 * ElastiCache: 

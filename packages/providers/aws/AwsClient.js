@@ -371,7 +371,7 @@ const AwsClient =
                     (error) => {
                       //TODO
                       assert(true);
-                      throw error;
+                      //throw error;
                     }
                   ),
                   tap((params) => {
