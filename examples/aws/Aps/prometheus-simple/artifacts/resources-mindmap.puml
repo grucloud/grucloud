@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project prometheus-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Aps
+++++ Workspace (1)
+@endmindmap

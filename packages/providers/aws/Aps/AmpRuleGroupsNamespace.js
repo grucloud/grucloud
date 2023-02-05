@@ -24,6 +24,8 @@ const pickId = pipe([
   pick(["name", "workspaceId"]),
 ]);
 
+const toName = ({ alias, ...other }) => ({ name: alias, ...other });
+
 // decorate
 const decorate = ({ endpoint, live }) =>
   pipe([
@@ -31,6 +33,7 @@ const decorate = ({ endpoint, live }) =>
       assert(live.workspaceId);
     }),
     defaultsDeep({ workspaceId: live.workspaceId }),
+    toName,
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amp.html
@@ -104,7 +107,7 @@ exports.AmpRuleGroupsNamespace = () => ({
       () =>
         client.getListWithParent({
           parent: { type: "Workspace", group: "Aps" },
-          pickKey: pipe([pickId]),
+          pickKey: pipe([toName, pickId]),
           method: "listRuleGroupsNamespaces",
           getParam: "ruleGroupsNamespaces",
           config,
@@ -149,7 +152,7 @@ exports.AmpRuleGroupsNamespace = () => ({
       }),
       defaultsDeep({
         tags: buildTagsObject({ name, config, namespace, userTags: tags }),
-        workspaceId: getField(workspace, "arn"),
+        workspaceId: getField(workspace, "workspaceId"),
       }),
     ])(),
 });

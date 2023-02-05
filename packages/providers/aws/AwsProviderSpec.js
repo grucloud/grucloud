@@ -40,7 +40,7 @@ const GROUPS = [
   ["AccessAnalyzer", "accessanalyzer"],
   ["ACM", "acm"],
   ["ACMPCA", "acm-pca"],
-  ["Amp", "aps"],
+  ["Aps", "aps"],
   ["Amplify", "amplify"],
   ["APIGateway", "apigateway"],
   ["ApiGatewayV2", "apigatewayv2"],

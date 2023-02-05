@@ -136,6 +136,7 @@ const AwsClient =
                 ])
               ),
             ]),
+            // Error
             pipe([
               tap((params) => {
                 assert(true);

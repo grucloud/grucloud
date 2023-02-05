@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign } = require("rubico");
+const { pipe, tap, get, pick, eq, assign, tryCatch } = require("rubico");
 const { defaultsDeep, when, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -8,6 +8,7 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
 
 const { Tagger } = require("./AmpCommon");
+const { RtmpAdMarkers } = require("@aws-sdk/client-medialive");
 
 const buildArn = () =>
   pipe([
@@ -25,7 +26,6 @@ const pickId = pipe([
 ]);
 
 // AlertManagerDefinition
-
 const pickAlertManagerDefinition = pipe([
   tap(({ data, workspaceId }) => {
     assert(data);
@@ -34,20 +34,21 @@ const pickAlertManagerDefinition = pipe([
   pick(["data", "workspaceId"]),
 ]);
 
-const assignAlertManagerDefinition = ({ endpoint, config }) =>
-  pipe([
-    assign({
-      alertManagerDefinition: pipe([
-        pickId,
-        endpoint().describeAlertManagerDefinition,
-        get("loggingConfiguration.data"),
-        //TODO
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-    }),
-  ]);
+const assignAlertManagerDefinition =
+  ({ endpoint, config }) =>
+  (live) =>
+    pipe([
+      () => live,
+      tryCatch(
+        pipe([
+          pickId,
+          endpoint().describeAlertManagerDefinition,
+          get("loggingConfiguration.data"),
+          (alertManagerDefinition) => ({ ...live, alertManagerDefinition }),
+        ]),
+        () => live
+      ),
+    ])();
 
 const createAlertManagerDefinition = ({ endpoint, config }) =>
   pipe([pickAlertManagerDefinition, endpoint().createAlertManagerDefinition]);
@@ -67,16 +68,21 @@ const pickLoggingConfiguration = pipe([
   pick(["logGroupArn", "workspaceId"]),
 ]);
 
-const assignLogGroupArn = ({ endpoint, config }) =>
-  pipe([
-    assign({
-      logGroupArn: pipe([
-        pickId,
-        endpoint().describeLoggingConfiguration,
-        get("loggingConfiguration.logGroupArn"),
-      ]),
-    }),
-  ]);
+const assignLogGroupArn =
+  ({ endpoint, config }) =>
+  (live) =>
+    pipe([
+      () => live,
+      tryCatch(
+        pipe([
+          pickId,
+          endpoint().describeLoggingConfiguration,
+          get("loggingConfiguration.logGroupArn"),
+          (logGroupArn) => ({ ...live, logGroupArn }),
+        ]),
+        () => live
+      ),
+    ])();
 
 const createLoggingConfiguration = ({ endpoint, config }) =>
   pipe([pickLoggingConfiguration, endpoint().createLoggingConfiguration]);
@@ -90,8 +96,14 @@ const deleteLoggingConfiguration = ({ endpoint, config }) =>
 // decorate
 const decorate = ({ endpoint, config }) =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     assignLogGroupArn({ endpoint, config }),
     assignAlertManagerDefinition({ endpoint, config }),
+    tap((params) => {
+      assert(true);
+    }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amp.html
@@ -147,7 +159,13 @@ exports.AmpWorkspace = () => ({
   getList: {
     method: "listWorkspaces",
     getParam: "workspaces",
-    decorate: ({ getById }) => pipe([getById]),
+    decorate: ({ getById }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        getById,
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amp.html#createWorkspace-property
   create: {
