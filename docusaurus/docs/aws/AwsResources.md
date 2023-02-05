@@ -194,6 +194,8 @@ List of resources for provider aws:
 [AccessPoint](./resources/S3Control/AccessPoint.md), [MultiRegionAccessPoint](./resources/S3Control/MultiRegionAccessPoint.md)
 * Scheduler: 
 [Schedule](./resources/Scheduler/Schedule.md), [ScheduleGroup](./resources/Scheduler/ScheduleGroup.md)
+* EventSchemas: 
+[Discoverer](./resources/EventSchemas/Discoverer.md), [Registry](./resources/EventSchemas/Registry.md), [RegistryPolicy](./resources/EventSchemas/RegistryPolicy.md), [Schema](./resources/EventSchemas/Schema.md)
 * SecretsManager: 
 [Secret](./resources/SecretsManager/Secret.md), [SecretRotation](./resources/SecretsManager/SecretRotation.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SecurityHub: 

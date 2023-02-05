@@ -7,21 +7,21 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html
 
-//const { SchemasDiscoverer } = require("./SchemasDiscoverer");
-//const { SchemasRegistry } = require("./SchemasRegistry");
-//const { SchemasRegistryPolicy} = require("./SchemasRegistryPolicy");
-//const { SchemasSchema } = require("./SchemasSchema");
+const { SchemasDiscoverer } = require("./SchemasDiscoverer");
+const { SchemasRegistry } = require("./SchemasRegistry");
+const { SchemasRegistryPolicy } = require("./SchemasRegistryPolicy");
+const { SchemasSchema } = require("./SchemasSchema");
 
-const GROUP = "Schemas";
+const GROUP = "EventSchemas";
 
 const compare = compareAws({});
 
 module.exports = pipe([
   () => [
-    // SchemasDiscoverer({})
-    // SchemasRegistry({})
-    // SchemasRegistryPolicy({})
-    // SchemasSchema({})
+    SchemasDiscoverer({}),
+    SchemasRegistry({}),
+    SchemasRegistryPolicy({}),
+    SchemasSchema({}),
   ],
   map(createAwsService),
   map(
