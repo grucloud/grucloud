@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project terraform-lambda-sfn
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (3)
+++++ Policy (7)
++++ Lambda
+++++ Function (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap
