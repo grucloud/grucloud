@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project sqs-lambda
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ EventSourceMapping (1)
+++++ Function (1)
++++ SQS
+++++ Queue (1)
+@endmindmap
