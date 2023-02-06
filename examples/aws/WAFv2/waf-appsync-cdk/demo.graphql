@@ -1,0 +1,21 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Mutation {
+  addDemo(input: DemoInput!): demo
+}
+
+type Query {
+  getDemos: [demo!]
+}
+
+type demo {
+  id: String!
+  version: String!
+}
+
+input DemoInput {
+  version: String!
+}
