@@ -198,26 +198,21 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       PolicyName: "EBPutEvents",
       PolicyDocument: {
         Statement: [
           {
             Action: "events:PutEvents",
             Effect: "Allow",
-            Resource: `${getId({
-              type: "EventBus",
-              group: "CloudWatchEvents",
-              name: "MyIntegrationCustomBus",
-            })}`,
+            Resource: `arn:aws:events:${
+              config.region
+            }:${config.accountId()}:event-bus/MyIntegrationCustomBus`,
           },
         ],
         Version: "2012-10-17",
       },
       Path: "/",
-    }),
-    dependencies: ({}) => ({
-      eventBus: "MyIntegrationCustomBus",
     }),
   },
 ];

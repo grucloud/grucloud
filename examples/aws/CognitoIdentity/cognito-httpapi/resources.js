@@ -150,53 +150,43 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ config, getId }) => ({
+    properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-AppFunction-gKUxwsmxX2fK",
         Handler: "app.handler",
         Runtime: "nodejs14.x",
       },
-      Policy: {
-        Version: "2012-10-17",
-        Id: "default",
-        Statement: [
-          {
-            Sid: "4yymkbc",
-            Effect: "Allow",
-            Principal: {
-              Service: "apigateway.amazonaws.com",
-            },
-            Action: "lambda:InvokeFunction",
-            Resource: `arn:aws:lambda:${
-              config.region
-            }:${config.accountId()}:function:sam-app-AppFunction-gKUxwsmxX2fK`,
-            Condition: {
-              ArnLike: {
-                "AWS:SourceArn": `${getId({
-                  type: "Api",
-                  group: "ApiGatewayV2",
-                  name: "sam-app",
-                })}/*/*/sam-app-AppFunction-gKUxwsmxX2fK`,
-              },
-            },
-          },
-        ],
-      },
     }),
     dependencies: ({}) => ({
       role: "sam-app-AppFunctionRole-BXPIJ03LGY2Y",
-      apiGatewayV2s: ["sam-app"],
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ getId }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "sam-app-AppFunction-gKUxwsmxX2fK",
+          Principal: "apigateway.amazonaws.com",
+          StatementId: "4yymkbc",
+          SourceArn: `${getId({
+            type: "Api",
+            group: "ApiGatewayV2",
+            name: "sam-app",
+          })}/*/*/sam-app-AppFunction-gKUxwsmxX2fK`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "sam-app-AppFunction-gKUxwsmxX2fK",
+      apiGatewayV2Apis: ["sam-app"],
     }),
   },
 ];

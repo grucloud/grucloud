@@ -14,6 +14,15 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
     type: "FileSystem",
     group: "FSx",
     name: "my-ontap-fs",
@@ -34,6 +43,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       subnets: ["vpc-default::subnet-default-d"],
+      securityGroups: ["sg::vpc-default::default"],
     }),
   },
   {
@@ -53,10 +63,12 @@ exports.createResources = () => [
     properties: ({}) => ({
       Name: "vol1",
       OntapConfiguration: {
+        CopyTagsToBackups: false,
         FlexCacheEndpointType: "NONE",
         JunctionPath: "/vol1",
         OntapVolumeType: "RW",
         SizeInMegabytes: 1048576,
+        SnapshotPolicy: "default",
         StorageEfficiencyEnabled: false,
         StorageVirtualMachineRoot: false,
         TieringPolicy: {

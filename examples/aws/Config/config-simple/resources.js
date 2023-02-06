@@ -50,7 +50,7 @@ Resources:
   ApiGwAssociatedWithWaf:
     Type: "AWS::Config::ConfigRule"
     Properties:
-      ConfigRuleName: "api-gw-associated-with-waf-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng"
+      ConfigRuleName: "api-gw-associated-with-waf-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0-conformance-pack-eoopeonin"
       Scope:
         ComplianceResourceTypes:
         - "AWS::ApiGateway::Stage"
@@ -60,7 +60,7 @@ Resources:
   ApiGwCacheEnabledAndEncrypted:
     Type: "AWS::Config::ConfigRule"
     Properties:
-      ConfigRuleName: "api-gw-cache-enabled-and-encrypted-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng"
+      ConfigRuleName: "api-gw-cache-enabled-and-encrypted-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance--conformance-pack-eoopeonin"
       Scope:
         ComplianceResourceTypes:
         - "AWS::ApiGateway::Stage"
@@ -70,7 +70,7 @@ Resources:
   ApiGwEndpointTypeCheck:
     Type: "AWS::Config::ConfigRule"
     Properties:
-      ConfigRuleName: "api-gw-endpoint-type-check-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng"
+      ConfigRuleName: "api-gw-endpoint-type-check-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0-conformance-pack-eoopeonin"
       InputParameters:
         endpointConfigurationTypes:
           Fn::If:
@@ -86,7 +86,7 @@ Resources:
   ApiGwExecutionLoggingEnabled:
     Type: "AWS::Config::ConfigRule"
     Properties:
-      ConfigRuleName: "api-gw-execution-logging-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng"
+      ConfigRuleName: "api-gw-execution-logging-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pa-conformance-pack-eoopeonin"
       Scope:
         ComplianceResourceTypes:
         - "AWS::ApiGateway::Stage"
@@ -97,7 +97,7 @@ Resources:
   ApiGwSslEnabled:
     Type: "AWS::Config::ConfigRule"
     Properties:
-      ConfigRuleName: "api-gw-ssl-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng"
+      ConfigRuleName: "api-gw-ssl-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng-conformance-pack-eoopeonin"
       Scope:
         ComplianceResourceTypes:
         - "AWS::ApiGateway::Stage"
@@ -107,7 +107,7 @@ Resources:
   ApiGwXrayEnabled:
     Type: "AWS::Config::ConfigRule"
     Properties:
-      ConfigRuleName: "api-gw-xray-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng"
+      ConfigRuleName: "api-gw-xray-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng-conformance-pack-eoopeonin"
       Scope:
         ComplianceResourceTypes:
         - "AWS::ApiGateway::Stage"
@@ -117,14 +117,14 @@ Resources:
   CloudTrailCloudWatchLogsEnabled:
     Type: "AWS::Config::ConfigRule"
     Properties:
-      ConfigRuleName: "cloud-trail-cloud-watch-logs-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng"
+      ConfigRuleName: "cloud-trail-cloud-watch-logs-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformanc-conformance-pack-eoopeonin"
       Source:
         Owner: "AWS"
         SourceIdentifier: "CLOUD_TRAIL_CLOUD_WATCH_LOGS_ENABLED"
   CloudTrailEnabled:
     Type: "AWS::Config::ConfigRule"
     Properties:
-      ConfigRuleName: "cloudtrail-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng"
+      ConfigRuleName: "cloudtrail-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng-conformance-pack-eoopeonin"
       Source:
         Owner: "AWS"
         SourceIdentifier: "CLOUD_TRAIL_ENABLED"

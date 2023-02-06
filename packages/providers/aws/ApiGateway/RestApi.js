@@ -32,13 +32,18 @@ const {
   prepend,
   isObject,
   size,
+  isIn,
+  unless,
 } = require("rubico/x");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "RestApi",
 });
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
+const { assignPolicyAccountAndRegion } = require("../AwsCommon");
 
 const { flattenObject } = require("@grucloud/core/Common");
 const { replaceAccountAndRegion } = require("../AwsCommon");
@@ -46,10 +51,49 @@ const { replaceAccountAndRegion } = require("../AwsCommon");
 const { throwIfNotAwsError } = require("../AwsCommon");
 const { diffToPatch, ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
 
-const buildArn =
-  ({ config }) =>
-  ({ id }) =>
-    `arn:aws:apigateway:${config.region}::/restapis/${id}`;
+const buildArn = () =>
+  pipe([
+    get("arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+// https://kpqhd4gd6e.execute-api.us-east-1.amazonaws.com
+const assignUrl = ({ config }) =>
+  pipe([
+    assign({
+      url: pipe([
+        tap(({ id }) => {
+          assert(id);
+        }),
+        ({ id }) => `https://${id}.execute-api.${config.region}.amazonaws.com`,
+      ]),
+    }),
+  ]);
+const assignArn = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config.region);
+    }),
+    assign({
+      arn: pipe([
+        tap(({ id }) => {
+          assert(id);
+        }),
+        ({ id }) => `arn:aws:apigateway:${config.region}::/restapis/${id}`,
+      ]),
+    }),
+  ]);
+const assignArnV2 = ({ config }) =>
+  pipe([
+    assign({
+      arnv2: pipe([
+        ({ id }) =>
+          `arn:aws:execute-api:${config.region}:${config.accountId()}:${id}`,
+      ]),
+    }),
+  ]);
 
 const findId = () => get("id");
 const findName = () => get("name");
@@ -456,8 +500,28 @@ const fetchRestApiChilds =
       ]),
     })();
 
-const decorate = ({ endpoint }) =>
+const assignPolicy = () =>
   pipe([
+    when(
+      get("policy"),
+      pipe([
+        assign({
+          policy: pipe([
+            get("policy"),
+            callProp("replaceAll", "\\", ""),
+            JSON.parse,
+          ]),
+        }),
+      ])
+    ),
+  ]);
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    assignArn({ config }),
+    assignArnV2({ config }),
+    assignUrl({ config }),
+    assignPolicy(),
     assign({
       deployments: ({ id: restApiId }) =>
         pipe([
@@ -494,7 +558,50 @@ const putRestApi =
       endpoint().putRestApi,
     ])();
 
-const model = ({ config }) => ({});
+const createPolicy = ({ endpoint, live }) =>
+  pipe([
+    get("policy"),
+    unless(
+      isEmpty,
+      pipe([
+        JSON.stringify,
+        (value) => ({ op: "replace", path: "/policy", value }),
+        (patchOperation) => ({
+          restApiId: live.id,
+          patchOperations: [patchOperation],
+        }),
+        endpoint().updateRestApi,
+      ])
+    ),
+  ]);
+
+const createVpcEndpoints = ({ endpoint, live }) =>
+  pipe([
+    get("endpointConfiguration.vpcEndpointIds"),
+    unless(
+      isEmpty,
+      pipe([
+        map((value) => ({
+          op: "add",
+          path: "/endpointConfiguration/vpcEndpointIds",
+          value,
+        })),
+        (patchOperations) => ({
+          restApiId: live.id,
+          patchOperations,
+        }),
+        endpoint().updateRestApi,
+      ])
+    ),
+  ]);
+
+const createDeployment = ({ endpoint, live }) =>
+  pipe([
+    () => live,
+    ({ id }) => ({ restApiId: id }),
+    omit(["stageName"]),
+    endpoint().createDeployment,
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
 exports.RestApi = ({ compare }) => ({
@@ -505,7 +612,16 @@ exports.RestApi = ({ compare }) => ({
   findName,
   findId,
   getByName: getByNameCore,
-  omitProperties: ["id", "createdDate", "deployments", "version"],
+  omitProperties: [
+    "id",
+    "arn",
+    "arnv2",
+    "url",
+    "createdDate",
+    "deployments",
+    "version",
+    "endpointConfiguration.vpcEndpointIds",
+  ],
   propertiesDefault: { disableExecuteApiEndpoint: false },
   compare: compare({
     filterTarget: () => pipe([omit(["deployment"])]),
@@ -522,27 +638,40 @@ exports.RestApi = ({ compare }) => ({
     decorate,
   },
   create: {
-    filterPayload: pipe([omit(["schemaFile", "schema", "deployment"])]),
+    filterPayload: pipe([
+      omit(["schemaFile", "schema", "deployment"]),
+      when(
+        get("policy"),
+        assign({ policy: pipe([get("policy"), JSON.stringify]) })
+      ),
+    ]),
     method: "createRestApi",
-    postCreate: ({ endpoint, payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        tap(putRestApi({ endpoint, payload })),
-        ({ id }) => ({ restApiId: id }),
-        omit(["stageName"]),
-        endpoint().createDeployment,
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-  },
-  update: {
-    preUpdate:
-      ({ name, payload, diff, programOptions }) =>
+    postCreate:
+      ({ endpoint, payload }) =>
       (live) =>
         pipe([
+          tap((params) => {
+            assert(live.id);
+          }),
+          () => live,
+          putRestApi({ endpoint, payload }),
+          () => payload,
+          createPolicy({ endpoint, live }),
+          () => payload,
+          createVpcEndpoints({ endpoint, live }),
+          () => payload,
+          createDeployment({ endpoint, live }),
+        ])(),
+  },
+  update: {
+    postUpdate:
+      ({ endpoint, name, payload, diff, programOptions }) =>
+      (live) =>
+        pipe([
+          tap((params) => {
+            assert(endpoint);
+            assert(live.id);
+          }),
           () => diff,
           when(
             or([
@@ -561,14 +690,42 @@ exports.RestApi = ({ compare }) => ({
           ),
         ])(),
     method: "updateRestApi",
-    filterParams: ({ payload, live, diff }) =>
+    filterParams: ({ payload, live, diff, endpoint }) =>
       pipe([
-        () => ({ diff }),
-        diffToPatch,
-        filter(not(eq(get("path"), "/schema"))),
-        (patchOperations) => ({
+        () => ({ payload, live, diff, endpoint }),
+        fork({
+          policy: pipe([
+            updateResourceObject({
+              path: "policy",
+              onDeleted: () => () => ({
+                op: "replace",
+                path: "/policy",
+                value: "",
+              }),
+              onAdded:
+                () =>
+                ({ policy }) => ({
+                  op: "replace",
+                  path: "/policy",
+                  value: JSON.stringify(policy),
+                }),
+              onUpdated:
+                () =>
+                ({ policy }) => ({
+                  op: "replace",
+                  path: "/policy",
+                  value: JSON.stringify(policy),
+                }),
+            }),
+          ]),
+          other: pipe([
+            diffToPatch, //
+            filter(not(pipe([get("path"), isIn(["/schema", "/policy"])]))),
+          ]),
+        }),
+        ({ policy, other }) => ({
           restApiId: live.id,
-          patchOperations,
+          patchOperations: [policy, ...other],
         }),
       ])(),
   },
@@ -584,7 +741,22 @@ exports.RestApi = ({ compare }) => ({
           assert(providerConfig);
         }),
         () => live,
-        pick(["name", "apiKeySource", "endpointConfiguration", "schema"]),
+        pick([
+          "name",
+          "apiKeySource",
+          "endpointConfiguration",
+          "schema",
+          "policy",
+        ]),
+        when(
+          get("policy"),
+          assign({
+            policy: pipe([
+              get("policy"),
+              assignPolicyAccountAndRegion({ providerConfig, lives }),
+            ]),
+          })
+        ),
         assign({
           schema: pipe([
             get("schema"),
@@ -621,9 +793,15 @@ exports.RestApi = ({ compare }) => ({
                                 assign({
                                   uri: pipe([
                                     get("uri"),
+                                    tap((params) => {
+                                      assert(true);
+                                    }),
                                     replaceAccountAndRegion({
                                       providerConfig,
                                       lives,
+                                    }),
+                                    tap((params) => {
+                                      assert(true);
                                     }),
                                   ]),
                                 })
@@ -683,6 +861,13 @@ exports.RestApi = ({ compare }) => ({
           uniq,
         ]),
     },
+    vpcEndpoints: {
+      type: "VpcEndpoint",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("endpointConfiguration.vpcEndpointIds")]),
+    },
   },
   tagger: ({ config }) =>
     Tagger({
@@ -692,7 +877,7 @@ exports.RestApi = ({ compare }) => ({
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: {},
+    dependencies: { vpcEndpoints },
     config,
   }) =>
     pipe([
@@ -704,5 +889,16 @@ exports.RestApi = ({ compare }) => ({
       assign({
         description: pipe([get("schema.info.description")]),
       }),
+      when(
+        () => vpcEndpoints,
+        defaultsDeep({
+          endpointConfiguration: {
+            vpcEndpointIds: pipe([
+              () => vpcEndpoints,
+              map((vpcEndpoint) => getField(vpcEndpoint, "VpcEndpointId")),
+            ])(),
+          },
+        })
+      ),
     ])(),
 });

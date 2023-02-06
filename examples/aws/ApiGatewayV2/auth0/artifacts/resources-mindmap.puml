@@ -21,6 +21,7 @@ skinparam monochrome true
 ++++ Policy (1)
 +++ Lambda
 ++++ Function (1)
+++++ Permission (1)
 +++ Route53
 ++++ HostedZone (1)
 ++++ Record (2)

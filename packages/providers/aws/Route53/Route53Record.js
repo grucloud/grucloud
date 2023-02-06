@@ -16,6 +16,7 @@ const {
   and,
   flatMap,
   any,
+  or,
 } = require("rubico");
 const {
   find,
@@ -46,7 +47,12 @@ const omitFieldRecord = omit(["HostedZoneId", "namespace"]);
 const liveToResourceSet = pipe([omitFieldRecord, filterEmptyResourceRecords]);
 
 const managedByOther = () =>
-  pipe([get("Name"), callProp("endsWith", ".aoss.amazonaws.com.")]);
+  pipe([
+    or([
+      pipe([get("Type"), isIn(["SOA", "NS"])]),
+      pipe([get("Name"), callProp("endsWith", ".aoss.amazonaws.com.")]),
+    ]),
+  ]);
 
 const findId = () => pipe([buildRecordName]);
 
@@ -211,7 +217,7 @@ const Route53RecordDependencies = {
               group: "ElasticLoadBalancingV2",
               providerName: config.providerName,
             }),
-            find(({ live }) => pipe([() => DNSName, includes(live.DNSName)])()),
+            find(pipe([get("live.DNSName"), isIn(DNSName)])),
             pick(["id", "name"]),
           ])(),
       ]),
@@ -917,7 +923,12 @@ exports.compareRoute53Record = pipe([
   compareAws({ getTargetTags: () => [], getLiveTags: () => [] })({
     filterTarget: () => pipe([defaultsDeep({})]),
     //TODO remove
-    filterLive: () => pipe([omitFieldRecord]),
+    filterAll: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
   }),
   tap((diff) => {
     //logger.debug(`compareRoute53Record ${tos(diff)}`);

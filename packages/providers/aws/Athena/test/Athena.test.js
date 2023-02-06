@@ -12,6 +12,32 @@ describe("Athena", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("Database", () =>
+    pipe([
+      () => ({
+        groupType: "Athena::Database",
+        livesNotFound: ({ config }) => [{ Name: "d123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("NamedQuery", () =>
+    pipe([
+      () => ({
+        groupType: "Athena::NamedQuery",
+        livesNotFound: ({ config }) => [{ NamedQueryId: "n123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("PreparedStatement", () =>
+    pipe([
+      () => ({
+        groupType: "Athena::PreparedStatement",
+        livesNotFound: ({ config }) => [
+          { StatementName: "d123", WorkGroup: "w123" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("WorkGroup", () =>
     pipe([
       () => ({

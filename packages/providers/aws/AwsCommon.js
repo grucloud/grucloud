@@ -34,6 +34,7 @@ const {
   isDeepEqual,
   differenceWith,
   isObject,
+  values,
 } = require("rubico/x");
 const { v4: uuidv4 } = require("uuid");
 const util = require("util");
@@ -49,6 +50,174 @@ const {
   assignHasDiff,
   replaceWithName,
 } = require("@grucloud/core/Common");
+
+const dependenciesFromEnv = {
+  apiGatewayRestApis: {
+    pathLive: "live.url",
+    type: "RestApi",
+    group: "APIGateway",
+  },
+  apiGatewayV2Apis: {
+    pathLive: "id",
+    type: "Api",
+    group: "ApiGatewayV2",
+  },
+  appsyncGraphqlApis: {
+    pathLive: "live.uris.GRAPHQL",
+    type: "GraphqlApi",
+    group: "AppSync",
+  },
+  cognitoUserPools: {
+    pathLive: "id",
+    type: "UserPool",
+    group: "CognitoIdentityServiceProvider",
+  },
+  cognitoUserPoolClient: {
+    pathLive: "id",
+    type: "UserPoolClient",
+    group: "CognitoIdentityServiceProvider",
+  },
+  rdsDbClusters: {
+    pathLive: "live.DBClusterArn",
+    type: "DBCluster",
+    group: "RDS",
+  },
+  secretsManagerSecrets: {
+    pathLive: "live.ARN",
+    type: "Secret",
+    group: "SecretsManager",
+  },
+  snsTopics: {
+    pathLive: "id",
+    type: "Topic",
+    group: "SNS",
+  },
+};
+
+const dependenciesFromPolicies = {
+  apiGatewayRestApis: {
+    pathLive: "live.arnv2",
+    type: "RestApi",
+    group: "APIGateway",
+  },
+  apiGatewayV2Apis: {
+    pathLive: "id",
+    type: "Api",
+    group: "ApiGatewayV2",
+  },
+  appsyncGraphqlApis: {
+    pathLive: "live.uris.GRAPHQL",
+    type: "GraphqlApi",
+    group: "AppSync",
+  },
+  cognitoUserPools: {
+    pathLive: "id",
+    type: "UserPool",
+    group: "CognitoIdentityServiceProvider",
+  },
+  cognitoUserPoolClient: {
+    pathLive: "id",
+    type: "UserPoolClient",
+    group: "CognitoIdentityServiceProvider",
+  },
+  rdsDbClusters: {
+    pathLive: "live.DBClusterArn",
+    type: "DBCluster",
+    group: "RDS",
+  },
+  secretsManagerSecrets: {
+    pathLive: "live.ARN",
+    type: "Secret",
+    group: "SecretsManager",
+  },
+  snsTopics: {
+    pathLive: "id",
+    type: "Topic",
+    group: "SNS",
+  },
+};
+
+const replaceDependency =
+  (dependencies) =>
+  ({ lives, providerConfig }) =>
+  (idToMatch) =>
+    pipe([
+      () => dependencies,
+      find(({ type, group, pathLive }) =>
+        pipe([
+          () => lives,
+          tap((params) => {
+            assert(true);
+          }),
+          any(
+            and([
+              eq(get("type"), type),
+              eq(get("group"), group),
+              pipe([get(pathLive), (id) => idToMatch.startsWith(id)]),
+            ])
+          ),
+        ])()
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+      switchCase([
+        isEmpty,
+        pipe([() => idToMatch, replaceAccountAndRegion({ providerConfig })]),
+        ({ type, group, pathLive }) =>
+          pipe([
+            () => idToMatch,
+            replaceWithName({
+              groupType: `${group}::${type}`,
+              path: pathLive,
+              pathLive,
+              providerConfig,
+              lives,
+              withSuffix: true,
+            }),
+          ])(),
+      ]),
+    ])();
+
+exports.replaceEnv = replaceDependency(dependenciesFromEnv);
+exports.replacePolicy = replaceDependency(dependenciesFromPolicies);
+
+const buildDependencyFromEnv =
+  ({ pathEnvironment }) =>
+  ({ pathLive, type, group }) => ({
+    type,
+    group,
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([
+        get(pathEnvironment),
+        map((value) =>
+          pipe([
+            tap((params) => {
+              assert(value);
+              assert(pathLive);
+            }),
+            lives.getByType({
+              providerName: config.providerName,
+              type,
+              group,
+            }),
+            find(pipe([get(pathLive), (id) => value.startsWith(id)])),
+            get("id"),
+          ])()
+        ),
+        values,
+      ]),
+  });
+
+exports.buildDependenciesFromEnv = ({ pathEnvironment }) =>
+  pipe([
+    () => dependenciesFromEnv,
+    map(buildDependencyFromEnv({ pathEnvironment })),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const sortObject = pipe([
   Object.entries,
@@ -971,24 +1140,6 @@ exports.destroyNetworkInterfaces =
       ),
     ])();
 
-exports.lambdaAddPermission = ({ lambda, lambdaFunction, SourceArn }) =>
-  pipe([
-    tap.if(
-      () => lambdaFunction,
-      ({ IntegrationId }) =>
-        pipe([
-          () => ({
-            Action: "lambda:InvokeFunction",
-            FunctionName: lambdaFunction.resource.name,
-            Principal: "apigateway.amazonaws.com",
-            StatementId: IntegrationId,
-            SourceArn: SourceArn(),
-          }),
-          lambda().addPermission,
-        ])()
-    ),
-  ]);
-
 exports.ignoreResourceCdk = () =>
   pipe([get("name"), callProp("startsWith", "cdk-")]);
 
@@ -1031,16 +1182,20 @@ const replaceArnWithAccountAndRegion =
               () =>
                 !Id.endsWith("amazonaws.com") &&
                 Id != providerConfig.accountId() &&
+                !Id.startsWith("arn:aws:ecr") &&
                 !Id.startsWith("arn:aws:kinesis") &&
                 !Id.startsWith("arn:aws:lambda") &&
+                !Id.startsWith("arn:aws:dynamodb") &&
                 !Id.startsWith("arn:aws:es") &&
                 !Id.startsWith("arn:aws:firehose") &&
+                !Id.startsWith("arn:aws:events") &&
                 !Id.startsWith("arn:aws:rds") &&
                 !Id.startsWith("arn:aws:sqs") &&
                 !Id.startsWith("arn:aws:code") &&
                 !Id.startsWith("arn:aws:logs") &&
                 !Id.startsWith("arn:aws:glacier") &&
                 !Id.startsWith("arn:aws:states") &&
+                !Id.startsWith("arn:aws:ssm") &&
                 !Id.startsWith(`arn:aws:iam::${providerConfig.accountId()}`) &&
                 !Id.startsWith("arn:aws:sns") &&
                 !Id.startsWith("arn:aws:s3"),
@@ -1087,10 +1242,10 @@ exports.replaceArnWithAccountAndRegion = replaceArnWithAccountAndRegion;
 
 const replaceAccountAndRegion =
   ({ providerConfig }) =>
-  (prop) =>
+  (prop = "") =>
     pipe([
       tap((params) => {
-        assert(prop);
+        //assert(prop);
       }),
       () => prop,
       callProp(

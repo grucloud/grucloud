@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, eq, pick, omit } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
@@ -28,9 +28,10 @@ const decorate = ({ endpoint }) =>
       assert(name);
     }),
     ({ name, ...other }) => ({ loadBalancerName: name, ...other }),
+    // When healthCheckPath is set to "/", AWS now return the following error:
+    // The HealthCheckPath value is not valid. HealthCheckPath must begin with a '/' character and only contain printable ASCII characters, without spaces
+    when(eq(get("healthCheckPath"), "/"), omit(["healthCheckPath"])),
   ]);
-
-const model = ({ config }) => ({});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
 exports.LightsailLoadBalancer = () => ({

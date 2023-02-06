@@ -8,6 +8,7 @@ skinparam monochrome true
 ++++ Policy (1)
 +++ Lambda
 ++++ Function (1)
+++++ Permission (1)
 +++ SecretsManager
 ++++ Secret (1)
 ++++ SecretRotation (1)

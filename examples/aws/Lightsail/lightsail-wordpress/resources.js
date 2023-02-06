@@ -10,7 +10,7 @@ exports.createResources = () => [
       relationalDatabaseName: "Database-1",
       availabilityZone: `${config.region}a`,
       engine: "postgres",
-      engineVersion: "12.12",
+      engineVersion: "12.13",
       hardware: {
         cpuCount: 2,
         diskSizeInGb: 40,
@@ -113,7 +113,6 @@ exports.createResources = () => [
         SessionStickinessEnabled: "false",
         SessionStickiness_LB_CookieDurationSeconds: "86400",
       },
-      healthCheckPath: "/",
       httpsRedirectionEnabled: false,
       instancePort: 80,
       ipAddressType: "dualstack",

@@ -143,6 +143,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       subnets: ["vpc-default::subnet-default-f"],
+      securityGroups: ["sg::vpc-default::openzfs"],
     }),
   },
   {

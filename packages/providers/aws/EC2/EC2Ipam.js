@@ -41,6 +41,9 @@ exports.EC2Ipam = ({ compare }) => ({
     "ScopeCount",
     "OwnerId",
     "State",
+    "DefaultResourceDiscoveryAssociationId",
+    "DefaultResourceDiscoveryId",
+    "ResourceDiscoveryAssociationCount",
   ],
   filterLive: ({ providerConfig }) =>
     pipe([

@@ -54,39 +54,25 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ getId }) => ({
+    properties: ({}) => ({
       Configuration: {
         Environment: {
           Variables: {
-            DestinationBucketName: `${getId({
-              type: "Bucket",
-              group: "S3",
-              name: "gc-destination-example",
-            })}`,
+            DestinationBucketName: "gc-destination-example",
           },
         },
         FunctionName: "sam-app-PutObjectFunction-UHg0AjQBqco2",
         Handler: "app.lambda_handler",
         Runtime: "python3.8",
       },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
     }),
     dependencies: ({}) => ({
       role: "sam-app-PutObjectFunctionRole-TFR4FTCB12K2",
-      s3Buckets: ["gc-destination-example"],
     }),
   },
   {

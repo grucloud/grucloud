@@ -1,0 +1,49 @@
+@startmindmap
+title Resources for project ecs-taskset
+skinparam monochrome true
++ Infra
+++ aws
++++ AutoScaling
+++++ AutoScalingGroup (1)
+++++ AutoScalingAttachment (1)
++++ EC2
+++++ KeyPair (1)
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NatGateway (3)
+++++ Subnet (6)
+++++ RouteTable (4)
+++++ RouteTableAssociation (6)
+++++ Route (4)
+++++ SecurityGroup (5)
+++++ SecurityGroupRuleIngress (6)
+++++ ElasticIpAddress (3)
+++++ Instance (1)
+++++ LaunchTemplate (1)
+++++ VpcEndpoint (8)
++++ ECR
+++++ Repository (2)
++++ ECS
+++++ Cluster (1)
+++++ Service (2)
+++++ TaskSet (1)
+++++ TaskDefinition (1)
++++ ElasticLoadBalancingV2
+++++ Listener (2)
+++++ LoadBalancer (2)
+++++ TargetGroup (2)
++++ IAM
+++++ Role (5)
+++++ InstanceProfile (2)
++++ KMS
+++++ Key (1)
++++ Lambda
+++++ Function (1)
++++ Route53
+++++ HostedZone (1)
+++++ Record (1)
++++ ServiceDiscovery
+++++ PrivateDnsNamespace (1)
+++++ Service (1)
+@endmindmap

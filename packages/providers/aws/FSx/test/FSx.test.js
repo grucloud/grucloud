@@ -4,36 +4,36 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("FSx", async function () {
-  it.skip("Backup", () =>
+  it("Backup", () =>
     pipe([
       () => ({
         groupType: "FSx::Backup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ BackupId: "backup-12345678" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("DataRepositoryAssociation", () =>
+  it("DataRepositoryAssociation", () =>
     pipe([
       () => ({
         groupType: "FSx::DataRepositoryAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ AssociationId: "dra-1234567890" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("FileCache", () =>
+  it("FileCache", () =>
     pipe([
       () => ({
         groupType: "FSx::FileCache",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ FileCacheId: "fc-12345678" }],
       }),
       awsResourceTest,
     ])());
 
-  it.skip("OpenzfsSnapshot", () =>
+  it("Snapshot", () =>
     pipe([
       () => ({
-        groupType: "FSx::OpenzfsSnapshot",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "FSx::Snapshot",
+        livesNotFound: ({ config }) => [{ SnapshotId: "volsnap-12345678" }],
       }),
       awsResourceTest,
     ])());

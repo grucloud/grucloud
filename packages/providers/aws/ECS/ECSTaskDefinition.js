@@ -10,6 +10,8 @@ const {
   switchCase,
   or,
   not,
+  and,
+  omit,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -26,10 +28,12 @@ const {
   append,
 } = require("rubico/x");
 
-const { replaceRegion } = require("../AwsCommon");
-
 const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
-
+const {
+  replaceRegion,
+  replaceAccountAndRegion,
+  replaceEnv,
+} = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { Tagger, buildTagsEcs } = require("./ECSCommon");
 
@@ -59,6 +63,10 @@ const decorate = () =>
     }),
     ({ taskDefinition, tags }) => ({ ...taskDefinition, tags }),
     omitIfEmpty(["placementConstraints", "volumes"]),
+    unless(
+      pipe([get("requiresCompatibilities"), includes("EC2")]),
+      omit(["requiresAttributes"])
+    ),
     assign({
       containerDefinitions: pipe([
         get("containerDefinitions"),
@@ -210,7 +218,7 @@ exports.ECSTaskDefinition = ({ compare }) => ({
                 assign({
                   image: pipe([
                     get("image"),
-                    replaceRegion({ providerConfig }),
+                    replaceAccountAndRegion({ providerConfig }),
                   ]),
                 })
               ),
@@ -248,15 +256,7 @@ exports.ECSTaskDefinition = ({ compare }) => ({
                       assign({
                         value: pipe([
                           get("value"),
-                          switchCase([
-                            eq(identity, providerConfig.region),
-                            replaceRegion({ providerConfig }),
-                            replaceWithName({
-                              path: "id",
-                              providerConfig,
-                              lives,
-                            }),
-                          ]),
+                          replaceEnv({ lives, providerConfig }),
                         ]),
                       })
                     ),
@@ -380,7 +380,7 @@ exports.ECSTaskDefinition = ({ compare }) => ({
   getByName:
     ({ getList }) =>
     ({ name }) =>
-      pipe([() => ({ familyPrefix: name }), getList, first])(),
+      pipe([getList, find(and([eq(get("family"), name), get("latest")]))])(),
   tagger: ({ config }) =>
     Tagger({
       buildArn: buildArn({ config }),

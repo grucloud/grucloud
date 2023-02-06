@@ -6,7 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { replaceWithName } = require("@grucloud/core/Common");
 
-const { Tagger } = require("./AuditManagerCommon");
+const { Tagger, ignoreErrorCodes } = require("./AuditManagerCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const buildArn = () =>
@@ -94,7 +94,7 @@ exports.AuditManagerAssessment = () => ({
         ]),
       }),
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
+  ignoreErrorCodes,
   dependencies: {
     assesmentFramework: {
       type: "AssesmentFramework",

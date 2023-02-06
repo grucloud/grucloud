@@ -28,9 +28,6 @@ exports.createResources = () => [
     name: "myfs",
     properties: ({ config }) => ({
       AvailabilityZoneName: `${config.region}a`,
-      Encrypted: true,
-      PerformanceMode: "generalPurpose",
-      ThroughputMode: "bursting",
     }),
   },
   {

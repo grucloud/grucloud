@@ -57,8 +57,18 @@ exports.createResources = () => [
       Path: "/",
       Description: "Policy for sqs to lambda demo",
     }),
+  },
+  {
+    type: "EventSourceMapping",
+    group: "Lambda",
+    properties: ({}) => ({
+      ScalingConfig: {
+        MaximumConcurrency: 3,
+      },
+    }),
     dependencies: ({}) => ({
-      queue: "sqs-lambda-demo",
+      lambdaFunction: "sqs-lambda-demo",
+      sqsQueue: "sqs-lambda-demo",
     }),
   },
   {
@@ -78,21 +88,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sqs_lambda_demo_functionrole",
-    }),
-  },
-  {
-    type: "EventSourceMapping",
-    group: "Lambda",
-    properties: ({}) => ({
-      BatchSize: 10,
-      MaximumBatchingWindowInSeconds: 0,
-      ScalingConfig: {
-        MaximumConcurrency: 3,
-      },
-    }),
-    dependencies: ({}) => ({
-      lambdaFunction: "sqs-lambda-demo",
-      sqsQueue: "sqs-lambda-demo",
     }),
   },
   {

@@ -266,39 +266,7 @@ exports.CodeDeployDeploymentGroup = ({ compare }) => ({
         ]),
       }),
       when(
-        () => get("ecsServices"),
-        assign({
-          ecsServices: pipe([
-            get("ecsServices"),
-            map(
-              assign({
-                clusterName: pipe([
-                  get("clusterName"),
-                  replaceWithName({
-                    groupType: "ECS::Cluster",
-                    path: "name",
-                    pathLive: "name",
-                    providerConfig,
-                    lives,
-                  }),
-                ]),
-                serviceName: pipe([
-                  get("serviceName"),
-                  replaceWithName({
-                    groupType: "ECS::Service",
-                    path: "name",
-                    pathLive: "name",
-                    providerConfig,
-                    lives,
-                  }),
-                ]),
-              })
-            ),
-          ]),
-        })
-      ),
-      when(
-        () => get("triggerConfigurations"),
+        get("triggerConfigurations"),
         assign({
           triggerConfigurations: pipe([
             get("triggerConfigurations"),

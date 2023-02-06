@@ -9,6 +9,7 @@ const {
   fork,
   switchCase,
   tryCatch,
+  assign,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -101,9 +102,17 @@ const lambdaRemovePermission = ({ endpoint, config }) =>
         get("IntegrationId"),
       ]),
       pipe([
-        ({ IntegrationUri, IntegrationId }) => ({
-          FunctionName: IntegrationUri,
-          StatementId: IntegrationId,
+        assign({
+          FunctionName: pipe([
+            get("IntegrationUri"),
+            callProp(
+              "replace",
+              `arn:aws:apigateway:${config.region}:lambda:path/2015-03-31/functions/`,
+              ""
+            ),
+            callProp("replace", `/invocations`, ""),
+          ]),
+          StatementId: get("IntegrationId"),
         }),
         tryCatch(
           createEndpoint("lambda", "Lambda")(config)().removePermission,

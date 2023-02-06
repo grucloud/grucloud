@@ -12,7 +12,7 @@ const {
   fork,
   flatMap,
 } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
+const { defaultsDeep, find, last, callProp } = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -25,6 +25,8 @@ const {
   getResourceNameFromTag,
   findDefaultWithVpcDependency,
 } = require("./EC2Common");
+
+const extractRouteTableName = pipe([callProp("split", "::"), last]);
 
 const findId = () =>
   pipe([
@@ -107,6 +109,8 @@ exports.EC2RouteTableAssociation = ({ compare }) => ({
     subnet: {
       type: "Subnet",
       group: "EC2",
+      parent: true,
+
       dependencyId: ({ lives, config }) => get("SubnetId"),
     },
   },
@@ -206,6 +210,42 @@ exports.EC2RouteTableAssociation = ({ compare }) => ({
     method: "disassociateRouteTable",
     ignoreErrorCodes: ["InvalidAssociationID.NotFound"],
   },
+  getByName:
+    ({ endpoint }) =>
+    ({ name, isDefault, resolvedDependencies }) =>
+      pipe([
+        tap((params) => {
+          assert(resolvedDependencies);
+        }),
+        () => resolvedDependencies,
+        switchCase([
+          get("vpc"),
+          get("vpc.live.VpcId"),
+          get("routeTable"),
+          get("routeTable.live.VpcId"),
+          () => {
+            assert(false, "no vpc or route table dependencies");
+          },
+        ]),
+        tap((VpcId) => {
+          assert(VpcId);
+        }),
+        fork({
+          filterName: switchCase([
+            () => isDefault,
+            () => ({ Name: "association.main", Values: [true] }),
+            () => ({ Name: "tag:Name", Values: [extractRouteTableName(name)] }),
+          ]),
+          filterVpc: (VpcId) => ({
+            Name: "vpc-id",
+            Values: [VpcId],
+          }),
+        }),
+        ({ filterName, filterVpc }) => ({ Filters: [filterName, filterVpc] }),
+        endpoint().describeRouteTables,
+        get("RouteTables"),
+        first,
+      ])(),
   getByName: getByNameCore,
   configDefault: ({
     name,

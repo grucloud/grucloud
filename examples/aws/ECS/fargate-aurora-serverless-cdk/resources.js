@@ -316,12 +316,6 @@ exports.createResources = () => [
     group: "ECS",
     properties: ({}) => ({
       clusterName: "CdkStack-ClusterEB0386A7-1MSjvijRu7By",
-      settings: [
-        {
-          name: "containerInsights",
-          value: "disabled",
-        },
-      ],
     }),
   },
   {
@@ -385,11 +379,7 @@ exports.createResources = () => [
           environment: [
             {
               name: "dbClusterArn",
-              value: `${getId({
-                type: "DBCluster",
-                group: "RDS",
-                name: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
-              })}`,
+              value: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
             },
             {
               name: "secretArn",
@@ -397,6 +387,7 @@ exports.createResources = () => [
                 type: "Secret",
                 group: "SecretsManager",
                 name: "aurora-user-secret",
+                path: "live.ARN",
               })}`,
             },
             {
@@ -405,7 +396,11 @@ exports.createResources = () => [
             },
           ],
           essential: true,
-          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:ad758bca7c4674905c156fb09c1cdc499a660e8bd2f563b4a0987f2385ecaf90`,
+          image: `${config.accountId()}.dkr.ecr.${
+            config.region
+          }.amazonaws.com/cdk-hnb659fds-container-assets-${config.accountId()}-${
+            config.region
+          }:ad758bca7c4674905c156fb09c1cdc499a660e8bd2f563b4a0987f2385ecaf90`,
           logConfiguration: {
             logDriver: "awslogs",
             options: {
@@ -429,32 +424,6 @@ exports.createResources = () => [
       family: "CdkStackFargateServiceTaskDef2C533A52",
       memory: "2048",
       networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
-        },
-        {
-          name: "ecs.capability.execution-role-awslogs",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.ecr-auth",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.task-iam-role",
-        },
-        {
-          name: "ecs.capability.execution-role-ecr-pull",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
       requiresCompatibilities: ["FARGATE"],
     }),
     dependencies: ({}) => ({
@@ -504,6 +473,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({

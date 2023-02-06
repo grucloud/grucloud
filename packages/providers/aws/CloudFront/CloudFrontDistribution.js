@@ -13,6 +13,7 @@ const {
   set,
   flatMap,
   not,
+  and,
 } = require("rubico");
 const {
   unless,

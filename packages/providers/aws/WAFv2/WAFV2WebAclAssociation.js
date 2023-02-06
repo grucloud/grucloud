@@ -10,6 +10,7 @@ const {
   filter,
   not,
   switchCase,
+  tryCatch,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -149,6 +150,7 @@ exports.WAFV2WebACLAssociation = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#associateWebACL-property
   create: {
     method: "associateWebACL",
+    configIsUp: { retryCount: 20 * 12, retryDelay: 5e3 },
     shouldRetryOnExceptionMessages: [
       "AWS WAF couldn’t retrieve the resource that you requested",
     ],
@@ -183,19 +185,23 @@ exports.WAFV2WebACLAssociation = () => ({
                 tap((ResourceArn) => {
                   assert(ResourceArn);
                 }),
-                (ResourceArn) =>
-                  pipe([
-                    () => ({ ResourceArn }),
-                    endpoint().getWebACLForResource,
-                    get("WebACL.ARN"),
-                    tap((ARN) => {
-                      assert(true);
-                    }),
-                    unless(isEmpty, (WebACLArn) => ({
-                      WebACLArn,
-                      ResourceArn,
-                    })),
-                  ])(),
+                tryCatch(
+                  (ResourceArn) =>
+                    pipe([
+                      () => ({ ResourceArn }),
+                      endpoint().getWebACLForResource,
+                      get("WebACL.ARN"),
+                      tap((ARN) => {
+                        assert(true);
+                      }),
+                      unless(isEmpty, (WebACLArn) => ({
+                        WebACLArn,
+                        ResourceArn,
+                      })),
+                    ])(),
+                  // WAFInvalidParameterException
+                  () => undefined
+                ),
               ])
             ),
             filter(not(isEmpty)),

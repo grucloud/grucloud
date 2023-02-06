@@ -1,0 +1,21 @@
+@startmindmap
+title Resources for project amplify_cognito_apigateway_lambda_envvariables
+skinparam monochrome true
++ Infra
+++ aws
++++ Amplify
+++++ App (1)
+++++ Branch (1)
++++ APIGateway
+++++ Authorizer (1)
+++++ RestApi (1)
+++++ Stage (2)
++++ CognitoIdentityServiceProvider
+++++ UserPool (1)
+++++ UserPoolClient (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap

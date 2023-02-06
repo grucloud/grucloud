@@ -57,6 +57,20 @@ const Diff = require("diff");
 
 const { resourcesTpl } = require("./resourcesTpl");
 
+// TOdO this is AWS Specific
+const ignoredTags = [
+  "gc-",
+  "aws",
+  "alpha.eksctl.io",
+  "eksctl.cluster.k8s.io",
+  "eks",
+  "ecs:",
+  "AmazonECSManaged",
+  "directconnect",
+  "lambda:createdBy",
+  "stateMachine:createdBy",
+];
+
 exports.filterModel = ({ field }) =>
   pipe([
     tap((params) => {
@@ -184,16 +198,6 @@ const envVarName = ({ name, suffix }) =>
   ])();
 
 exports.envVarName = envVarName;
-
-const ignoredTags = [
-  "gc-",
-  "aws",
-  "alpha.eksctl.io",
-  "eksctl.cluster.k8s.io",
-  "eks",
-  "AmazonECSManaged",
-  "directconnect",
-];
 
 const isNotOurTagKey = not(
   or([

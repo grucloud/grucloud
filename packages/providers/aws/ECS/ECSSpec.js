@@ -25,30 +25,8 @@ module.exports = pipe([
     ECSCluster({ compare }),
     ECSService({ compare }),
     ECSTask({ compare }),
+    ECSTaskSet({ compare }),
     ECSTaskDefinition({ compare }),
-    // {
-    //   type: "TaskSet",
-    //   dependencies: {
-    //     cluster: {
-    //       type: "Cluster",
-    //       group: "ECS",
-    //       dependencyId: ({ lives, config }) => get("clusterArn"),
-    //     },
-    //     service: {
-    //       type: "Service",
-    //       group: "ECS",
-    //       parent: true,
-    //       dependencyId: ({ lives, config }) => get("serviceArn"),
-    //     },
-    //     taskDefinition: {
-    //       type: "TaskDefinition",
-    //       group: "ECS",
-    //       dependencyId: ({ lives, config }) => get("taskDefinitionArn"),
-    //     },
-    //     targetGroups: dependencyTargetGroups,
-    //   },
-    //   Client: ECSTaskSet,
-    // },
     // {
     //   type: "ContainerInstance",
     //   dependencies: {

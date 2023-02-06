@@ -116,7 +116,7 @@ const pickId = pipe([
   pick(["GroupId"]),
 ]);
 
-const assignTags = ({ config }) =>
+const assignArn = ({ config }) =>
   assign({
     Arn: pipe([
       get("GroupId"),
@@ -142,26 +142,26 @@ const decorate = ({ config }) =>
         ),
       ]),
     }),
-    assignTags({ config }),
+    assignArn({ config }),
   ]);
 
-const findNamespace = (param) =>
-  pipe([
-    () => [
-      findNamespaceInTagsOrEksCluster({
-        config,
-        key: "aws:eks:cluster-name",
-      })(param),
-      findNamespaceInTagsOrEksCluster({
-        config,
-        key: "elbv2.k8s.aws/cluster",
-      })(param),
-    ],
-    find(not(isEmpty)),
-    tap((namespace) => {
-      logger.debug(`findNamespace ${namespace}`);
-    }),
-  ])();
+// const findNamespace = (param) =>
+//   pipe([
+//     () => [
+//       findNamespaceInTagsOrEksCluster({
+//         config,
+//         key: "aws:eks:cluster-name",
+//       })(param),
+//       findNamespaceInTagsOrEksCluster({
+//         config,
+//         key: "elbv2.k8s.aws/cluster",
+//       })(param),
+//     ],
+//     find(not(isEmpty)),
+//     tap((namespace) => {
+//       logger.debug(`findNamespace ${namespace}`);
+//     }),
+//   ])();
 
 const extractGroupName = pipe([callProp("split", "::"), last]);
 
@@ -437,6 +437,7 @@ exports.EC2SecurityGroup = ({ compare }) => ({
     pickId: ({ GroupId }) => ({ GroupIds: [GroupId] }),
     method: "describeSecurityGroups",
     getField: "SecurityGroups",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#listSecurityGroups-property
   getList: {
@@ -489,9 +490,10 @@ exports.EC2SecurityGroup = ({ compare }) => ({
   },
   getByName:
     ({ endpoint, getList }) =>
-    ({ name, resolvedDependencies }) =>
+    ({ name, resolvedDependencies, config }) =>
       pipe([
         tap(() => {
+          assert(config);
           assert(getList);
           assert(resolvedDependencies);
         }),
@@ -528,10 +530,8 @@ exports.EC2SecurityGroup = ({ compare }) => ({
         }),
         endpoint().describeSecurityGroups,
         get("SecurityGroups"),
-        tap((params) => {
-          assert(true);
-        }),
         first,
+        unless(isEmpty, decorate({ config })),
         tap((securityGroup) => {
           logger.debug(`getByName ${name}: ${JSON.stringify(securityGroup)}`);
         }),

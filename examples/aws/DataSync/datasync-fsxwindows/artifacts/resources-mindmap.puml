@@ -1,0 +1,25 @@
+@startmindmap
+title Resources for project datasync-fsxwindows
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ DataSync
+++++ LocationFsxWindows (1)
+++++ LocationS3 (1)
+++++ Task (1)
++++ DirectoryService
+++++ Directory (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ SecurityGroup (1)
++++ FSx
+++++ FileSystem (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

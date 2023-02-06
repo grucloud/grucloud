@@ -26,7 +26,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -51,16 +51,12 @@ exports.createResources = () => [
                   "dynamodb:BatchWriteItem",
                 ],
                 Resource: [
-                  `${getId({
-                    type: "Table",
-                    group: "DynamoDB",
-                    name: "sam-app-DynamoTable-1TM3ILOZ1A36J",
-                  })}`,
-                  `${getId({
-                    type: "Table",
-                    group: "DynamoDB",
-                    name: "sam-app-DynamoTable-1TM3ILOZ1A36J",
-                  })}/index/*`,
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/sam-app-DynamoTable-1TM3ILOZ1A36J`,
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/sam-app-DynamoTable-1TM3ILOZ1A36J/index/*`,
                 ],
                 Effect: "Allow",
               },
@@ -74,12 +70,6 @@ exports.createResources = () => [
           PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-        },
-      ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
         },
       ],
     }),
@@ -101,13 +91,9 @@ exports.createResources = () => [
         Handler: "app.handler",
         Runtime: "nodejs12.x",
       },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
     }),
     dependencies: ({}) => ({
       role: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
-      dynamoDbTables: ["sam-app-DynamoTable-1TM3ILOZ1A36J"],
     }),
   },
 ];

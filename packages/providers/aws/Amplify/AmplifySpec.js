@@ -19,9 +19,9 @@ const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
-    AmplifyApp({}),
+    AmplifyApp({ compare }),
     AmplifyBackendEnvironment({}),
-    AmplifyBranch({}),
+    AmplifyBranch({ compare }),
     AmplifyDomainAssociation({}),
     AmplifyWebhook({}),
   ],

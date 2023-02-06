@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "sam-app-LambdaFunctionRole-1C9B4X0VUWW95",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -26,11 +26,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["ssm:GetParameter", "ssm:PutParameter"],
-                Resource: `${getId({
-                  type: "Parameter",
-                  group: "SSM",
-                  name: "ExampleParameterName",
-                })}`,
+                Resource: `arn:aws:ssm:${
+                  config.region
+                }:${config.accountId()}:parameter/ExampleParameterName`,
                 Effect: "Allow",
               },
             ],
@@ -45,15 +43,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      ssmParameters: ["ExampleParameterName"],
     }),
   },
   {
@@ -71,13 +60,9 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
         Timeout: 15,
       },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
     }),
     dependencies: ({}) => ({
       role: "sam-app-LambdaFunctionRole-1C9B4X0VUWW95",
-      ssmParameters: ["ExampleParameterName"],
     }),
   },
   {

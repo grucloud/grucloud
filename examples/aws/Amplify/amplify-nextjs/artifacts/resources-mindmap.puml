@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project amplify-nextjs
+skinparam monochrome true
++ Infra
+++ aws
++++ Amplify
+++++ App (1)
+++++ BackendEnvironment (1)
++++ IAM
+++++ Role (3)
++++ S3
+++++ Bucket (1)
+@endmindmap

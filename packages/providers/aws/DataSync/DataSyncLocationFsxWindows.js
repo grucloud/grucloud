@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, map, eq } = require("rubico");
+const { pipe, tap, get, pick, map, eq, omit } = require("rubico");
 const { defaultsDeep, find, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -32,7 +32,7 @@ const decorate = ({ endpoint, config }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DataSync.html
-exports.DataSyncLocationFsxWindows = () => ({
+exports.DataSyncLocationFsxWindows = ({ compare }) => ({
   type: "LocationFsxWindows",
   package: "datasync",
   client: "DataSync",
@@ -105,6 +105,8 @@ exports.DataSyncLocationFsxWindows = () => ({
         ]),
     },
   },
+  environmentVariables: [{ path: "Password", suffix: "PASSWORD" }],
+  compare: compare({ filterAll: () => pipe([omit(["Password"])]) }),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DataSync.html#describeLocationFsxWindows-property
   getById: {
     method: "describeLocationFsxWindows",

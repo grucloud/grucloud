@@ -122,7 +122,6 @@ exports.EC2RouteTable = ({ compare }) => ({
   findName,
   findId,
   ignoreErrorCodes: ["InvalidRouteTableID.NotFound"],
-  dependencies: {},
   isDefault,
   managedByOther: isDefault,
   cannotBeDeleted: isDefault,
@@ -202,6 +201,7 @@ exports.EC2RouteTable = ({ compare }) => ({
         tap((VpcId) => {
           assert(VpcId);
         }),
+        // TODO also check for cloud formation name
         fork({
           filterName: switchCase([
             () => isDefault,

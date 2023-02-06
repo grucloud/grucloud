@@ -19,10 +19,10 @@ skinparam monochrome true
 ++++ SecurityGroup (1)
 ++++ LaunchTemplate (1)
 +++ ElasticLoadBalancingV2
-++++ LoadBalancer (1)
-++++ TargetGroup (2)
 ++++ Listener (2)
+++++ LoadBalancer (1)
 ++++ Rule (3)
+++++ TargetGroup (2)
 +++ Route53
 ++++ HostedZone (1)
 ++++ Record (1)

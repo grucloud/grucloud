@@ -1,6 +1,13 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, or } = require("rubico");
-const { defaultsDeep, first, when, isEmpty, unless } = require("rubico/x");
+const { pipe, tap, get, pick, assign, or, eq } = require("rubico");
+const {
+  defaultsDeep,
+  first,
+  when,
+  isEmpty,
+  unless,
+  pluck,
+} = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -36,8 +43,8 @@ const assignTags = ({ endpoint }) =>
     isEmpty,
     assign({
       Tags: pipe([
-        ({ TargetGroupArn }) =>
-          endpoint().describeTags({ ResourceArns: [TargetGroupArn] }),
+        ({ TargetGroupArn }) => ({ ResourceArns: [TargetGroupArn] }),
+        endpoint().describeTags,
         get("TagDescriptions"),
         first,
         get("Tags"),
@@ -49,6 +56,19 @@ const decorate = ({ endpoint }) =>
   pipe([
     ({ TargetGroupName, ...other }) => ({ Name: TargetGroupName, ...other }),
     assignTags({ endpoint }),
+    tap((params) => {
+      assert(true);
+    }),
+    assign({
+      Targets: pipe([
+        pick(["TargetGroupArn"]),
+        endpoint().describeTargetHealth,
+        get("TargetHealthDescriptions"),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+    }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html
@@ -89,7 +109,6 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
   },
   propertiesDefault: {
     HealthCheckPath: "/",
-    HealthCheckPort: "traffic-port",
     HealthCheckEnabled: true,
     HealthCheckIntervalSeconds: 30,
     HealthCheckTimeoutSeconds: 5,
@@ -100,7 +119,13 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
     ProtocolVersion: "HTTP1",
     IpAddressType: "ipv4",
   },
-  omitProperties: ["TargetGroupArn", "LoadBalancerArns"],
+  omitProperties: [
+    "Targets",
+    "TargetGroupArn",
+    "LoadBalancerArns",
+    "UnhealthyThresholdCount",
+    "HealthyThresholdCount",
+  ],
   filterLive: () =>
     pick([
       "Name",
@@ -111,7 +136,6 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
       "HealthCheckEnabled",
       "HealthCheckIntervalSeconds",
       "HealthCheckTimeoutSeconds",
-      "HealthyThresholdCount",
       "HealthCheckPath",
       "Matcher",
       "TargetType",
@@ -133,7 +157,6 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
     getParam: "TargetGroups",
     decorate,
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#createTargetGroup-property
   create: {
     method: "createTargetGroup",
@@ -167,9 +190,13 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
       () => otherProps,
       defaultsDeep({
         //TODO move to propertiesDefault
-        Protocol: "HTTP",
+        //Protocol: "HTTP",
         Tags: buildTags({ name, namespace, config, UserTags: Tags }),
       }),
       when(() => vpc, assign({ VpcId: () => getField(vpc, "VpcId") })),
+      when(
+        eq(get("HealthCheckProtocol"), "HTTP"),
+        defaultsDeep({ HealthCheckPort: "traffic-port" })
+      ),
     ])(),
 });

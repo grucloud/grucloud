@@ -16,6 +16,18 @@ describe("EFS", async function () {
       }),
       awsResourceTest,
     ])());
+  it("FileSystemPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "EFS::FileSystemPolicy",
+        livesNotFound: ({ config }) => [
+          {
+            FileSystemId: `arn:aws:elasticfilesystem:us-east-1:${config.accountId()}:file-system/fs-0aaaf7b0715648e5a`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("AccessPoint", () =>
     pipe([
       () => ({

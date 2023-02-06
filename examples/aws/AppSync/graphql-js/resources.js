@@ -170,7 +170,7 @@ export function response(ctx) {
   {
     type: "Policy",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       PolicyName: "appsync-ds-ddb-xoaizl-MyModelTypeTable",
       PolicyDocument: {
         Version: "2012-10-17",
@@ -186,16 +186,12 @@ export function response(ctx) {
               "dynamodb:UpdateItem",
             ],
             Resource: [
-              `${getId({
-                type: "Table",
-                group: "DynamoDB",
-                name: "MyModelTypeTable",
-              })}`,
-              `${getId({
-                type: "Table",
-                group: "DynamoDB",
-                name: "MyModelTypeTable",
-              })}/*`,
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/MyModelTypeTable`,
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/MyModelTypeTable/*`,
             ],
           },
         ],

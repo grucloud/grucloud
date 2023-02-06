@@ -153,7 +153,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "sam-app-OnConnectLambdaFunctionRole-BWZIV6IR9OMV",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -185,16 +185,12 @@ exports.createResources = () => [
                   "dynamodb:ConditionCheckItem",
                 ],
                 Resource: [
-                  `${getId({
-                    type: "Table",
-                    group: "DynamoDB",
-                    name: "sam-app-websocket_connections",
-                  })}`,
-                  `${getId({
-                    type: "Table",
-                    group: "DynamoDB",
-                    name: "sam-app-websocket_connections",
-                  })}/index/*`,
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/sam-app-websocket_connections`,
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/sam-app-websocket_connections/index/*`,
                 ],
                 Effect: "Allow",
               },
@@ -210,12 +206,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       table: "sam-app-websocket_connections",
@@ -224,7 +214,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "sam-app-OnDisconnectLambdaFunctionRole-1K1VHGSO99JHS",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -256,16 +246,12 @@ exports.createResources = () => [
                   "dynamodb:ConditionCheckItem",
                 ],
                 Resource: [
-                  `${getId({
-                    type: "Table",
-                    group: "DynamoDB",
-                    name: "sam-app-websocket_connections",
-                  })}`,
-                  `${getId({
-                    type: "Table",
-                    group: "DynamoDB",
-                    name: "sam-app-websocket_connections",
-                  })}/index/*`,
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/sam-app-websocket_connections`,
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/sam-app-websocket_connections/index/*`,
                 ],
                 Effect: "Allow",
               },
@@ -281,12 +267,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       table: "sam-app-websocket_connections",
@@ -295,7 +275,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "sam-app-PostLambdaFunctionRole-1DAT8LSZH0D2Y",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -327,16 +307,12 @@ exports.createResources = () => [
                   "dynamodb:ConditionCheckItem",
                 ],
                 Resource: [
-                  `${getId({
-                    type: "Table",
-                    group: "DynamoDB",
-                    name: "sam-app-websocket_connections",
-                  })}`,
-                  `${getId({
-                    type: "Table",
-                    group: "DynamoDB",
-                    name: "sam-app-websocket_connections",
-                  })}/index/*`,
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/sam-app-websocket_connections`,
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/sam-app-websocket_connections/index/*`,
                 ],
                 Effect: "Allow",
               },
@@ -368,12 +344,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       table: "sam-app-websocket_connections",
@@ -395,13 +365,9 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
         Timeout: 15,
       },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
     }),
     dependencies: ({}) => ({
       role: "sam-app-OnConnectLambdaFunctionRole-BWZIV6IR9OMV",
-      dynamoDbTables: ["sam-app-websocket_connections"],
     }),
   },
   {
@@ -420,13 +386,9 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
         Timeout: 15,
       },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
     }),
     dependencies: ({}) => ({
       role: "sam-app-OnDisconnectLambdaFunctionRole-1K1VHGSO99JHS",
-      dynamoDbTables: ["sam-app-websocket_connections"],
     }),
   },
   {
@@ -445,13 +407,9 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
         Timeout: 15,
       },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
     }),
     dependencies: ({}) => ({
       role: "sam-app-PostLambdaFunctionRole-1DAT8LSZH0D2Y",
-      dynamoDbTables: ["sam-app-websocket_connections"],
     }),
   },
 ];

@@ -51,6 +51,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "EventSourceMapping",
+    group: "Lambda",
+    dependencies: ({}) => ({
+      lambdaFunction: "lambda-hello-world",
+      sqsQueue: "my-queue-lambda",
+    }),
+  },
+  {
     type: "Function",
     group: "Lambda",
     properties: ({}) => ({
@@ -62,18 +70,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "lambda-role",
-    }),
-  },
-  {
-    type: "EventSourceMapping",
-    group: "Lambda",
-    properties: ({}) => ({
-      BatchSize: 10,
-      MaximumBatchingWindowInSeconds: 0,
-    }),
-    dependencies: ({}) => ({
-      lambdaFunction: "lambda-hello-world",
-      sqsQueue: "my-queue-lambda",
     }),
   },
   {

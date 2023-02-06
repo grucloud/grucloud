@@ -49,7 +49,7 @@ const { Route53HealthCheck } = require("./Route53HealthCheck");
 
 const {
   Route53Record,
-  compareRecord,
+  compareRoute53Record,
   Route53RecordDependencies,
 } = require("./Route53Record");
 const { Route53TrafficPolicy } = require("./Route53TrafficPolicy");
@@ -246,7 +246,7 @@ module.exports = pipe([
       },
       Client: Route53Record,
       isOurMinion: () => true,
-      compare: compareRecord,
+      compare: compareRoute53Record,
       omitProperties: ["HostedZoneId"],
       inferName:
         ({ dependenciesSpec }) =>

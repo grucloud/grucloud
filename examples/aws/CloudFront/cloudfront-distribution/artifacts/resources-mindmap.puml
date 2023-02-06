@@ -7,7 +7,9 @@ skinparam monochrome true
 ++++ Certificate (1)
 +++ CloudFront
 ++++ Distribution (1)
+++++ KeyGroup (1)
 ++++ OriginAccessIdentity (1)
+++++ PublicKey (1)
 +++ Route53
 ++++ HostedZone (1)
 ++++ Record (1)

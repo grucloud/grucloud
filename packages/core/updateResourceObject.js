@@ -6,17 +6,19 @@ exports.updateResourceObject =
   async ({ endpoint, payload, live, diff }) =>
     pipe([
       tap((params) => {
-        assert(endpoint);
+        // assert(endpoint);
         assert(path);
+        assert(payload);
+        assert(live);
       }),
       () => diff,
       switchCase([
-        // Added
-        or([get(`liveDiff.added.${path}`)]),
-        pipe([() => payload, onAdded({ endpoint, live })]),
         // Updated
         or([get(`liveDiff.updated.${path}`)]),
         pipe([() => payload, onUpdated({ endpoint, live })]),
+        // Added
+        or([get(`liveDiff.added.${path}`)]),
+        pipe([() => payload, onAdded({ endpoint, live })]),
         // Deleted
         or([get(`targetDiff.added.${path}`)]),
         pipe([() => payload, onDeleted({ endpoint, live })]),

@@ -24,3 +24,5 @@ exports.dependencyIdFileSystem =
       find(eq(get("live.FileSystemId"), live.FileSystemId)),
       get("id"),
     ])();
+
+exports.ignoreErrorCodes = ["FileSystemNotFound"];

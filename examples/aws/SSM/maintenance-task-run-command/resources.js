@@ -159,9 +159,6 @@ exports.createResources = () => [
       },
       Path: "/",
     }),
-    dependencies: ({}) => ({
-      snsTopic: "maintenance-window-topic",
-    }),
   },
   {
     type: "Bucket",

@@ -4,14 +4,6 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Grafana", async function () {
-  it.skip("LicenseAssociation", () =>
-    pipe([
-      () => ({
-        groupType: "Grafana::LicenseAssociation",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
   it.skip("RoleAssociation", () =>
     pipe([
       () => ({

@@ -6,6 +6,9 @@ const { compareAws } = require("../AwsCommon");
 
 const { createAwsService } = require("../AwsService");
 
+const {
+  APIGatewayClientCertificate,
+} = require("./APIGatewayClientCertificate");
 const { RestApi } = require("./RestApi");
 const { Stage } = require("./Stage");
 const { Authorizer } = require("./Authorizer");
@@ -23,6 +26,7 @@ module.exports = pipe([
     Account({}),
     ApiKey({}),
     Authorizer({}),
+    APIGatewayClientCertificate({}),
     RestApi({ compare }),
     Stage({ compare }),
     UsagePlan({ compare }),
@@ -35,9 +39,6 @@ module.exports = pipe([
         group: GROUP,
         tagsKey,
         compare: compare({}),
-        // TODO remove
-        // isOurMinion: ({ live, config }) =>
-        //   isOurMinionObject({ tags: live.tags, config }),
       }),
     ])
   ),

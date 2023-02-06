@@ -35,7 +35,6 @@ const { tos } = require("@grucloud/core/tos");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GoogleClient" });
 const { createAxiosMakerGoogle } = require("./GoogleCommon");
-const { config } = require("dotenv");
 
 const onResponseListDefault = () => get("items", []);
 

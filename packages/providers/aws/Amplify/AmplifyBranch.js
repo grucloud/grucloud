@@ -1,10 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
-const { defaultsDeep, append } = require("rubico/x");
+const { pipe, tap, get, pick, assign, eq } = require("rubico");
+const { defaultsDeep, append, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
+const { Tagger } = require("./AmplifyCommon");
 
 const pickId = pipe([
   tap(({ appId, branchName }) => {
@@ -14,6 +15,14 @@ const pickId = pipe([
   pick(["appId", "branchName"]),
 ]);
 
+const buildArn = () =>
+  pipe([
+    get("branchArn"),
+    tap((branchArn) => {
+      assert(branchArn);
+    }),
+  ]);
+
 const decorate = ({ endpoint, live }) =>
   pipe([
     tap((params) => {
@@ -21,6 +30,7 @@ const decorate = ({ endpoint, live }) =>
       assert(live.appId);
     }),
     defaultsDeep({ appId: live.appId }),
+    when(eq(get("stage"), "NONE"), assign({ stage: () => "DEVELOPMENT" })),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html
@@ -28,7 +38,14 @@ exports.AmplifyBranch = () => ({
   type: "Branch",
   package: "amplify",
   client: "Amplify",
-  propertiesDefault: {},
+  propertiesDefault: {
+    enableAutoBuild: true,
+    enableBasicAuth: false,
+    enableNotification: false,
+    enablePerformanceMode: false,
+    enablePullRequestPreview: false,
+    ttl: "5",
+  },
   omitProperties: [
     "branchArn",
     "appId",
@@ -36,6 +53,8 @@ exports.AmplifyBranch = () => ({
     "updateTime",
     "activeJobId",
     "backendEnvironmentArn",
+    "thumbnailUrl",
+    "totalNumberOfJobs",
   ],
   inferName:
     ({ dependenciesSpec: { app } }) =>
@@ -108,13 +127,13 @@ exports.AmplifyBranch = () => ({
           getParam: "branches",
           config,
           decorate: ({ parent }) =>
-            pipe([defaultsDeep({ appId: parent.appId })]),
+            pipe([defaultsDeep({ appId: parent.appId }), getById({})]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#createBranch-property
   create: {
     method: "createBranch",
-    pickCreated: ({ payload }) => pipe([get("branch")]),
+    pickCreated: ({ payload }) => pipe([get("branch"), defaultsDeep(payload)]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#updateBranch-property
   update: {
@@ -128,6 +147,10 @@ exports.AmplifyBranch = () => ({
     pickId,
   },
   getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
   configDefault: ({
     name,
     namespace,

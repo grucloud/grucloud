@@ -36,7 +36,7 @@ exports.BackupBackupVaultNotification = ({}) => ({
         client.getListWithParent({
           parent: { type: "BackupVault", group: "Backup" },
           pickKey: pipe([pickId]),
-          method: "getBackupVaultNotification",
+          method: "getBackupVaultNotifications",
           config,
         }),
     ])(),

@@ -69,197 +69,27 @@ const removeVersion = pipe([
 ]);
 exports.removeVersion = removeVersion;
 
-exports.Function = ({ spec, config }) => {
-  const lambda = createLambda(config);
-  const client = AwsClient({ spec, config })(lambda);
-
-  const managedByOther =
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        lives.getByType({
-          type: "Stack",
-          group: "CloudFormation",
-          providerName: config.providerName,
-        }),
-        any(
-          pipe([
-            get("name"),
-            append("-AWS"),
-            (stackName) => live.Configuration.FunctionName.includes(stackName),
-          ])
-        ),
-      ])();
-
-  const findDependencyPolicyCommon = ({
-    type,
-    group,
-    live,
-    lives,
-    config,
-  }) => ({
-    type,
-    group,
-    ids: pipe([
-      () => live,
-      get("Policy.Statement", []),
-      flatMap(findInStatement({ type, group, lives, config })),
-    ])(),
-  });
-
-  const findDependenciesPolicyCommon = ({ live, lives, config }) =>
+const managedByOther =
+  ({ lives, config }) =>
+  (live) =>
     pipe([
-      () => dependenciesPoliciesKind,
-      map(({ type, group }) =>
-        findDependencyPolicyCommon({ type, group, live, lives, config })
+      lives.getByType({
+        type: "Stack",
+        group: "CloudFormation",
+        providerName: config.providerName,
+      }),
+      any(
+        pipe([
+          get("name"),
+          append("-AWS"),
+          (stackName) => live.Configuration.FunctionName.includes(stackName),
+        ])
       ),
     ])();
 
-  const findDependenciesInEnvironment = ({
-    pathLive,
-    type,
-    group,
-    live,
-    lives,
-  }) => ({
-    type,
-    group,
-    ids: pipe([
-      () => live,
-      get("Configuration.Environment.Variables"),
-      map((value) =>
-        pipe([
-          tap((params) => {
-            assert(value);
-            assert(pathLive);
-          }),
-          lives.getByType({
-            providerName: config.providerName,
-            type,
-            group,
-          }),
-          find(eq(get(pathLive), value)),
-          get("id"),
-        ])()
-      ),
-      values,
-    ])(),
-  });
-
-  const findDependencies = ({ live, lives }) => [
-    ...findDependenciesPolicyCommon({ live, lives, config }),
-    findDependenciesInEnvironment({
-      pathLive: "live.ARN",
-      type: "Secret",
-      group: "SecretsManager",
-      live,
-      lives,
-    }),
-    findDependenciesInEnvironment({
-      pathLive: "live.uris.GRAPHQL",
-      type: "GraphqlApi",
-      group: "AppSync",
-      live,
-      lives,
-    }),
-    findDependenciesInEnvironment({
-      pathLive: "live.DBClusterArn",
-      type: "DBCluster",
-      group: "RDS",
-      live,
-      lives,
-    }),
-    findDependenciesInEnvironment({
-      pathLive: "live.TableName",
-      type: "Table",
-      group: "DynamoDB",
-      live,
-      lives,
-    }),
-    findDependenciesInEnvironment({
-      pathLive: "id",
-      type: "Topic",
-      group: "SNS",
-      live,
-      lives,
-    }),
-    findDependenciesInEnvironment({
-      pathLive: "name",
-      type: "Bucket",
-      group: "S3",
-      live,
-      lives,
-    }),
-    findDependenciesInEnvironment({
-      pathLive: "name",
-      type: "Parameter",
-      group: "SSM",
-      live,
-      lives,
-    }),
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [live.Configuration.Role],
-    },
-    {
-      type: "Key",
-      group: "KMS",
-      ids: [live.Configuration.KMSKeyArn],
-    },
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: pipe([() => live, get("Configuration.VpcConfig.SubnetIds")])(),
-    },
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("Configuration.VpcConfig.SecurityGroupIds"),
-      ])(),
-    },
-    {
-      type: "Layer",
-      group: "Lambda",
-      ids: pipe([
-        () => live,
-        get("Configuration.Layers"),
-        pluck("Arn"),
-        (layersArn) =>
-          pipe([
-            lives.getByType({
-              providerName: config.providerName,
-              type: "Layer",
-              group: "Lambda",
-            }),
-            filter(
-              pipe([
-                get("live.LayerVersionArn"),
-                removeVersion,
-                (layerVersionArn) =>
-                  pipe([
-                    () => layersArn,
-                    map(removeVersion),
-                    includes(layerVersionArn),
-                  ])(),
-              ])
-            ),
-          ])(),
-        pluck("id"),
-      ])(),
-    },
-    {
-      type: "AccessPoint",
-      group: "EFS",
-      ids: pipe([
-        () => live,
-        get("Configuration.FileSystemConfigs"),
-        pluck("Arn"),
-      ])(),
-    },
-  ];
+exports.Function = ({ spec, config }) => {
+  const lambda = createLambda(config);
+  const client = AwsClient({ spec, config })(lambda);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
   const getById = client.getById({
@@ -397,6 +227,7 @@ exports.Function = ({ spec, config }) => {
       },
     }) =>
       pipe([
+        //TODO
         when(() => Policy, lambdaAddPermission({ Policy, FunctionName })),
         when(
           () => FunctionUrlConfig,
@@ -469,18 +300,19 @@ exports.Function = ({ spec, config }) => {
           lambda().updateFunctionUrlConfig,
         ])
       ),
-      when(
-        () =>
-          get("liveDiff.updated.Policy")(diff) ||
-          get("liveDiff.added.Policy")(diff),
-        pipe([
-          () => ({
-            FunctionName: payload.Configuration.FunctionName,
-            Policy: payload.Policy,
-          }),
-          lambdaAddPermission,
-        ])
-      ),
+      // TODO
+      // when(
+      //   () =>
+      //     get("liveDiff.updated.Policy")(diff) ||
+      //     get("liveDiff.added.Policy")(diff),
+      //   pipe([
+      //     () => ({
+      //       FunctionName: payload.Configuration.FunctionName,
+      //       Policy: payload.Policy,
+      //     }),
+      //     lambdaAddPermission,
+      //   ])
+      // ),
       tap(() => {
         logger.info(`updated function done ${name}`);
       }),
@@ -588,7 +420,6 @@ exports.Function = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    findDependencies,
     managedByOther,
     tagResource: tagResource({ lambda }),
     untagResource: untagResource({ lambda }),

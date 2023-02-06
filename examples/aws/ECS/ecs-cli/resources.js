@@ -214,12 +214,6 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     group: "ECS",
     properties: ({}) => ({
       clusterName: "my-cluster",
-      settings: [
-        {
-          name: "containerInsights",
-          value: "disabled",
-        },
-      ],
     }),
   },
   {

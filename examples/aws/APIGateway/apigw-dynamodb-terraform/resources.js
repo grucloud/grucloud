@@ -318,7 +318,7 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       PolicyName: "terraform-20220714213245320000000005",
       PolicyDocument: {
         Statement: [
@@ -326,12 +326,12 @@ exports.createResources = () => [
             Action: ["dynamodb:PutItem", "dynamodb:Query"],
             Effect: "Allow",
             Resource: [
-              `${getId({ type: "Table", group: "DynamoDB", name: "Pets" })}`,
-              `${getId({
-                type: "Table",
-                group: "DynamoDB",
-                name: "Pets",
-              })}/index/*`,
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/Pets`,
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/Pets/index/*`,
             ],
           },
         ],

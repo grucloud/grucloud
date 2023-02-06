@@ -23,6 +23,19 @@ describe("AuditManager", async function () {
       }),
       awsResourceTest,
     ])());
+  it("AssessmentDelegation", () =>
+    pipe([
+      () => ({
+        groupType: "AuditManager::AssessmentDelegation",
+        livesNotFound: ({ config }) => [
+          {
+            assessmentId: "5af4b834-7168-4ce3-8538-8fdb21300141",
+            delegationId: "5af4b834-7168-4ce3-8538-8fdb21300141",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("AssessmentFramework", () =>
     pipe([
       () => ({
@@ -33,12 +46,12 @@ describe("AuditManager", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("AssessmentFrameworkShare", () =>
+  it("AssessmentFrameworkShare", () =>
     pipe([
       () => ({
         groupType: "AuditManager::AssessmentFrameworkShare",
         livesNotFound: ({ config }) => [
-          { id: "5af4b834-7168-4ce3-8538-8fdb21300141" },
+          { requestId: "5af4b834-7168-4ce3-8538-8fdb21300141" },
         ],
       }),
       awsResourceTest,
@@ -74,6 +87,14 @@ describe("AuditManager", async function () {
         skipDelete: true,
         skipGetById: true,
         skipGetByName: true,
+      }),
+      awsResourceTest,
+    ])());
+  it("OrganizationAdminAccount", () =>
+    pipe([
+      () => ({
+        groupType: "AuditManager::OrganizationAdminAccount",
+        livesNotFound: ({ config }) => [{ adminAccountId: "123456789012" }],
       }),
       awsResourceTest,
     ])());

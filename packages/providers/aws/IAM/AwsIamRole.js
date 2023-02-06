@@ -67,15 +67,19 @@ const untagResource = untagResourceIam({
 
 const cannotBeDeleted = () =>
   pipe([
-    get("Path"),
     or([
-      //
-      includes("/aws-service-role"),
-      includes("/aws-reserved/"),
+      // Do not mess with CloudFormation/CDK roles.
+      pipe([get("RoleName"), or([includes("cdk-")])]),
+      //Path
+      pipe([
+        get("Path"),
+        or([
+          //
+          includes("/aws-service-role"),
+          includes("/aws-reserved/"),
+        ]),
+      ]),
     ]),
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 
 const managedByOther =
@@ -108,44 +112,41 @@ const managedByOther =
       ]),
     ])();
 
-const findDependencyRoleCommon = ({ type, group, live, lives, config }) => ({
-  type,
-  group,
-  ids: pipe([
-    () => live,
-    fork({
-      statementInPolicies: pipe([
-        get("Policies"),
-        pluck("PolicyDocument"),
-        pluck("Statement"),
-        flatten,
-      ]),
-      statementInAssumeRolePolicyDocument: pipe([
-        get("AssumeRolePolicyDocument"),
-        get("Statement"),
-      ]),
-    }),
-    ({
-      statementInPolicies = [],
-      statementInAssumeRolePolicyDocument = [],
-    }) => [...statementInPolicies, ...statementInAssumeRolePolicyDocument],
-    flatMap(findInStatement({ type, group, lives, config })),
-    filter(not(isEmpty)),
-    tap.if(not(isEmpty), (id) => {
-      assert(id);
-    }),
-  ])(),
-});
+const findDependencyRoleCommon =
+  ({ live, lives, config }) =>
+  ({ type, group }) => ({
+    type,
+    group,
+    ids: pipe([
+      () => live,
+      fork({
+        statementInPolicies: pipe([
+          get("Policies"),
+          pluck("PolicyDocument"),
+          pluck("Statement"),
+          flatten,
+        ]),
+        statementInAssumeRolePolicyDocument: pipe([
+          get("AssumeRolePolicyDocument"),
+          get("Statement"),
+        ]),
+      }),
+      ({
+        statementInPolicies = [],
+        statementInAssumeRolePolicyDocument = [],
+      }) => [...statementInPolicies, ...statementInAssumeRolePolicyDocument],
+      flatMap(findInStatement({ type, group, lives, config })),
+      filter(not(isEmpty)),
+      tap.if(not(isEmpty), (id) => {
+        assert(id);
+      }),
+    ])(),
+  });
 
 const findDependenciesRoleCommon = ({ live, lives, config }) =>
   pipe([
     () => dependenciesPoliciesKind,
-    tap((params) => {
-      assert(true);
-    }),
-    map(({ type, group }) =>
-      findDependencyRoleCommon({ type, group, live, lives, config })
-    ),
+    map(findDependencyRoleCommon({ live, lives, config })),
   ])();
 
 //TODO retry listAttachedRolePolicies NoSuchEntity

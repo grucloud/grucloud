@@ -5,6 +5,8 @@ const { defaultsDeep, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
+const { ignoreErrorCodes } = require("./AuditManagerCommon");
+
 const pickId = pipe([() => ({})]);
 
 const decorate = ({ endpoint, config }) =>
@@ -47,7 +49,7 @@ exports.AuditManagerAccountRegistration = () => ({
   inferName: findName,
   findName: findName,
   findId: findName,
-  ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
+  ignoreErrorCodes,
   dependencies: {
     accountDelegatedAdmin: {
       type: "Account",

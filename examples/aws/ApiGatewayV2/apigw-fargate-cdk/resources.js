@@ -380,12 +380,6 @@ exports.createResources = () => [
     group: "ECS",
     properties: ({}) => ({
       clusterName: "CdkStack-MyCluster4C1BA579-fZi4x9tf2fSV",
-      settings: [
-        {
-          name: "containerInsights",
-          value: "disabled",
-        },
-      ],
     }),
   },
   {
@@ -447,7 +441,11 @@ exports.createResources = () => [
         {
           cpu: 0,
           essential: true,
-          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:c92a96870c09f92be4993ff173af782a6532353f176ae3a033f1b0a1c6bab043`,
+          image: `${config.accountId()}.dkr.ecr.${
+            config.region
+          }.amazonaws.com/cdk-hnb659fds-container-assets-${config.accountId()}-${
+            config.region
+          }:c92a96870c09f92be4993ff173af782a6532353f176ae3a033f1b0a1c6bab043`,
           logConfiguration: {
             logDriver: "awslogs",
             options: {
@@ -471,32 +469,6 @@ exports.createResources = () => [
       family: "CdkStackMyFargateServiceTaskDef846A07DE",
       memory: "2048",
       networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
-        },
-        {
-          name: "ecs.capability.execution-role-awslogs",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.ecr-auth",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.task-iam-role",
-        },
-        {
-          name: "ecs.capability.execution-role-ecr-pull",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
       requiresCompatibilities: ["FARGATE"],
     }),
     dependencies: ({}) => ({
@@ -545,6 +517,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({

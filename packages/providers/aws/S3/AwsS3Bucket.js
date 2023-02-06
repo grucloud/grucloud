@@ -24,6 +24,7 @@ const {
   defaultsDeep,
   unionWith,
   when,
+  isIn,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "S3Bucket" });
@@ -430,11 +431,26 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     });
 
   //TODO
-  const updateProperties = ({ Bucket, Policy, NotificationConfiguration }) =>
+  const updateProperties = ({
+    Bucket,
+    Policy,
+    NotificationConfiguration,
+    ServerSideEncryptionConfiguration,
+  }) =>
     pipe([
       tap((params) => {
         assert(Bucket);
       }),
+      tap.if(
+        get("ServerSideEncryptionConfiguration"),
+        pipe([
+          () => ({
+            Bucket,
+            ServerSideEncryptionConfiguration,
+          }),
+          s3().putBucketEncryption,
+        ])
+      ),
       tap.if(
         get("NotificationConfiguration"),
         pipe([
@@ -775,10 +791,25 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           ])();
         } while (isTruncated);
       }, throwIfNotAwsError("NoSuchBucket")),
-      tryCatch(
-        () => s3().deleteBucket({ Bucket }),
-        throwIfNotAwsError("NoSuchBucket")
-      ),
+      () =>
+        retryCall({
+          name: `deleteBucket ${Bucket}`,
+          fn: pipe([() => ({ Bucket }), s3().deleteBucket]),
+          isExpectedException: isAwsError("NoSuchBucket"),
+          shouldRetryOnException: ({ error, name }) =>
+            pipe([
+              () => error,
+              get("message"),
+              (message) =>
+                pipe([
+                  () => [
+                    "Bucket has access points attached and cannot be deleted",
+                  ],
+                  any(isIn(message)),
+                ])(),
+            ])(),
+          config: { retryCount: 12, retryDelay: 5e3 },
+        }),
       tap(() => {
         logger.info(`destroyed s3 bucket ${tos({ Bucket })}`);
       }),

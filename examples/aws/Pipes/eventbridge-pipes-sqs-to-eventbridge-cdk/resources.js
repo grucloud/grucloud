@@ -13,7 +13,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       RoleName:
         "EventbridgePipesSqsToEventbridgeStack-roleC7B7E775-149BW0CC9YR1V",
       AssumeRolePolicyDocument: {
@@ -54,11 +54,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `${getId({
-                  type: "EventBus",
-                  group: "CloudWatchEvents",
-                  name: "EventbridgePipesSqsToEventbridgeStackeventbus5FFF751F",
-                })}`,
+                Resource: `arn:aws:events:${
+                  config.region
+                }:${config.accountId()}:event-bus/EventbridgePipesSqsToEventbridgeStackeventbus5FFF751F`,
                 Effect: "Allow",
               },
             ],
@@ -66,11 +64,6 @@ exports.createResources = () => [
           PolicyName: "targetPolicy",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      queue:
-        "EventbridgePipesSqsToEventbridgeStack-sqsqueueE70CFDBB-JHT9xJPmXwFr",
-      eventBus: "EventbridgePipesSqsToEventbridgeStackeventbus5FFF751F",
     }),
   },
   {

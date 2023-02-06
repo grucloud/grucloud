@@ -1,6 +1,14 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, assign, map, or } = require("rubico");
-const { defaultsDeep, first, isEmpty, unless, pluck } = require("rubico/x");
+const {
+  defaultsDeep,
+  first,
+  isEmpty,
+  unless,
+  pluck,
+  callProp,
+  when,
+} = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags, hasKeyInTags } = require("../AwsCommon");
@@ -39,6 +47,7 @@ const decorate = ({ endpoint }) =>
       ...other,
     }),
     assignTags({ endpoint }),
+    assign({ DNSName: pipe([get("DNSName", ""), callProp("toLowerCase")]) }),
   ]);
 
 const managedByOther = () =>
@@ -67,7 +76,6 @@ exports.ElasticLoadBalancingV2LoadBalancer = () => ({
   package: "elastic-load-balancing-v2",
   client: "ElasticLoadBalancingV2",
   propertiesDefault: {},
-  omitProperties: [],
   inferName: () =>
     pipe([
       get("Name"),
@@ -116,6 +124,7 @@ exports.ElasticLoadBalancingV2LoadBalancer = () => ({
     "VpcId",
     "State",
     "AvailabilityZones",
+    "SecurityGroups",
   ],
   filterLive: () => pick(["Name", "Scheme", "Type", "IpAddressType"]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#getLoadBalancer-property
@@ -175,7 +184,6 @@ exports.ElasticLoadBalancingV2LoadBalancer = () => ({
     pipe([
       tap(() => {
         assert(Array.isArray(subnets));
-        assert(Array.isArray(securityGroups));
       }),
       () => otherProps,
       defaultsDeep({
@@ -183,10 +191,15 @@ exports.ElasticLoadBalancingV2LoadBalancer = () => ({
         Scheme: "internet-facing",
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         Subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
-        SecurityGroups: map((securityGroup) =>
-          getField(securityGroup, "GroupId")
-        )(securityGroups),
       }),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          SecurityGroups: map((securityGroup) =>
+            getField(securityGroup, "GroupId")
+          )(securityGroups),
+        })
+      ),
       tap((result) => {
         assert(result);
       }),

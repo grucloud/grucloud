@@ -440,11 +440,9 @@ exports.createResources = () => [
               },
               {
                 Action: ["ssm:GetParameters"],
-                Resource: `${getId({
-                  type: "Parameter",
-                  group: "SSM",
-                  name: "hotel_name",
-                })}`,
+                Resource: `arn:aws:ssm:${
+                  config.region
+                }:${config.accountId()}:parameter/hotel_name`,
                 Effect: "Allow",
               },
             ],
@@ -515,21 +513,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "DBSubnetGroup",
-    group: "RDS",
-    properties: ({}) => ({
-      DBSubnetGroupName: "stack-apprunner-dbsubnetgroup-htvxd8nqbq22",
-      DBSubnetGroupDescription: "stack-apprunner",
-    }),
-    dependencies: ({}) => ({
-      subnets: [
-        "AppRunnerHotelAppVPC::AppRunnerHotelApp-PrivateSubnet-1",
-        "AppRunnerHotelAppVPC::AppRunnerHotelApp-PrivateSubnet-2",
-        "AppRunnerHotelAppVPC::AppRunnerHotelApp-PrivateSubnet-3",
-      ],
-    }),
-  },
-  {
     type: "DBInstance",
     group: "RDS",
     properties: ({}) => ({
@@ -549,6 +532,21 @@ exports.createResources = () => [
       securityGroups: ["sg::AppRunnerHotelAppVPC::AppRunnerHotelApp-RDS-SG"],
       secret: "AuroraDBSecret-sTV29wbW2hBn",
       dbCluster: "stack-apprunner-auroradbcluster-lhm564nziasj",
+    }),
+  },
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
+    properties: ({}) => ({
+      DBSubnetGroupName: "stack-apprunner-dbsubnetgroup-htvxd8nqbq22",
+      DBSubnetGroupDescription: "stack-apprunner",
+    }),
+    dependencies: ({}) => ({
+      subnets: [
+        "AppRunnerHotelAppVPC::AppRunnerHotelApp-PrivateSubnet-1",
+        "AppRunnerHotelAppVPC::AppRunnerHotelApp-PrivateSubnet-2",
+        "AppRunnerHotelAppVPC::AppRunnerHotelApp-PrivateSubnet-3",
+      ],
     }),
   },
   {

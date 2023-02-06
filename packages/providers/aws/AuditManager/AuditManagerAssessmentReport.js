@@ -6,6 +6,8 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
+const { ignoreErrorCodes } = require("./AuditManagerCommon");
+
 const pickId = pipe([
   pick(["assessmentId", "assessmentReportId"]),
   tap(({ assessmentId, assessmentReportId }) => {
@@ -72,7 +74,7 @@ exports.AuditManagerAssessmentReport = () => ({
         assert(true);
       }),
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
+  ignoreErrorCodes,
   dependencies: {
     assessment: {
       type: "Assessment",
@@ -115,7 +117,7 @@ exports.AuditManagerAssessmentReport = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { ...otherProps },
     dependencies: { assessment },
     config,
   }) =>

@@ -12,12 +12,16 @@ const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
 const { AthenaDataCatalog } = require("./AthenaDataCatalog");
+const { AthenaNamedQuery } = require("./AthenaNamedQuery");
+const { AthenaPreparedStatement } = require("./AthenaPreparedStatement");
 const { AthenaWorkGroup } = require("./AthenaWorkGroup");
 
 module.exports = pipe([
   () => [
     //
     AthenaDataCatalog({ compare }),
+    AthenaNamedQuery({ compare }),
+    AthenaPreparedStatement({ compare }),
     AthenaWorkGroup({ compare }),
   ],
   map(

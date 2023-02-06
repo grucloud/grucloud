@@ -5,7 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
-const { Tagger } = require("./AuditManagerCommon");
+const { Tagger, ignoreErrorCodes } = require("./AuditManagerCommon");
 
 const buildArn = () =>
   pipe([
@@ -61,12 +61,12 @@ exports.AuditManagerControl = () => ({
     ]),
   findId: () =>
     pipe([
-      get("id"),
+      get("name"),
       tap((id) => {
         assert(id);
       }),
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
+  ignoreErrorCodes,
   dependencies: {
     auditManagerAccount: {
       type: "AccountRegistration",

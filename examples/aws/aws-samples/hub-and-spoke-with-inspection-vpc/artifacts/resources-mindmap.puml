@@ -33,7 +33,7 @@ skinparam monochrome true
 ++++ Key (1)
 +++ NetworkFirewall
 ++++ Firewall (1)
+++++ LoggingConfiguration (1)
 ++++ Policy (1)
 ++++ RuleGroup (3)
-++++ LoggingConfiguration (1)
 @endmindmap

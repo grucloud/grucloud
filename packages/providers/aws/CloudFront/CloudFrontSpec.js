@@ -22,6 +22,7 @@ const { CloudFrontPublicKey } = require("./CloudFrontPublicKey");
 const {
   CloudFrontResponseHeadersPolicy,
 } = require("./CloudFrontResponseHeadersPolicy");
+const { defaultsDeep } = require("rubico/x");
 
 const GROUP = "CloudFront";
 const compare = compareAws({});
@@ -37,5 +38,11 @@ module.exports = pipe([
     CloudFrontPublicKey({ compare }),
     CloudFrontResponseHeadersPolicy({ compare }),
   ],
-  map(pipe([createAwsService, assign({ group: () => GROUP })])),
+  map(
+    pipe([
+      createAwsService,
+      defaultsDeep({ compare: compare({}) }),
+      assign({ group: () => GROUP }),
+    ])
+  ),
 ]);

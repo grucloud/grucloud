@@ -121,6 +121,7 @@ exports.createResources = () => [
         },
         Logging: {
           EnableLogging: false,
+          EnableLogContext: false,
           LogComponents: [
             {
               Id: "TRANSFORMATION",

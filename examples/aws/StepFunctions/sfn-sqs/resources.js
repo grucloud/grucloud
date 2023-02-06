@@ -38,9 +38,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      queue: "sam-app-MyQueue-AqSTiBlPUT32",
-    }),
   },
   {
     type: "Queue",
@@ -70,12 +67,6 @@ exports.createResources = () => [
         },
       },
       name: "StateMachinetoSQS-Fy79sSx0sTLU",
-      tags: [
-        {
-          key: "stateMachine:createdBy",
-          value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       role: "sam-app-MyStateMachineExecutionRole-QOU5CX1BS6DH",

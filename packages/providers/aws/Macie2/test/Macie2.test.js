@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Macie2", async function () {
-  it.skip("Account", () =>
+  it("Account", () =>
     pipe([
       () => ({
         groupType: "Macie2::Account",
@@ -12,7 +12,7 @@ describe("Macie2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ClassificationExportConfiguration", () =>
+  it("ClassificationExportConfiguration", () =>
     pipe([
       () => ({
         groupType: "Macie2::ClassificationExportConfiguration",
@@ -20,51 +20,58 @@ describe("Macie2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ClassificationJob", () =>
+  it("ClassificationJob", () =>
     pipe([
       () => ({
         groupType: "Macie2::ClassificationJob",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ jobId: "job-123" }],
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());
-  it.skip("CustomDataIdentifier", () =>
+  it("CustomDataIdentifier", () =>
     pipe([
       () => ({
         groupType: "Macie2::CustomDataIdentifier",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { id: "12345678-1234-1234-1234-123456789012" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("FindingsFilter", () =>
+  it("FindingsFilter", () =>
     pipe([
       () => ({
         groupType: "Macie2::FindingsFilter",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { id: "12345678-1234-1234-1234-123456789012" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("InvitationAccepter", () =>
+  it("InvitationAccepter", () =>
     pipe([
       () => ({
         groupType: "Macie2::InvitationAccepter",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { administratorAccountId: "123456789012" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Member", () =>
+  it("Member", () =>
     pipe([
       () => ({
         groupType: "Macie2::Member",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ accountId: "123456789012" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("OrganizationAdminAccount", () =>
+  it("OrganizationAdminAccount", () =>
     pipe([
       () => ({
         groupType: "Macie2::OrganizationAdminAccount",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ adminAccountId: "123456789012" }],
       }),
       awsResourceTest,
     ])());

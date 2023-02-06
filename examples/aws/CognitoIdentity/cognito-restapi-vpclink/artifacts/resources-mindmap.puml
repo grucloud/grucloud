@@ -1,0 +1,35 @@
+@startmindmap
+title Resources for project cognito-restapi-vpclink
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Authorizer (1)
+++++ RestApi (1)
+++++ Stage (1)
++++ CognitoIdentityServiceProvider
+++++ UserPool (1)
+++++ UserPoolClient (1)
+++++ UserPoolDomain (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+++++ SecurityGroup (4)
+++++ SecurityGroupRuleIngress (3)
+++++ SecurityGroupRuleEgress (1)
+++++ VpcEndpoint (1)
++++ ECS
+++++ Cluster (1)
+++++ Service (1)
+++++ TaskDefinition (1)
++++ ElasticLoadBalancingV2
+++++ Listener (1)
+++++ LoadBalancer (2)
+++++ TargetGroup (1)
++++ IAM
+++++ Role (4)
++++ Lambda
+++++ Function (2)
+@endmindmap

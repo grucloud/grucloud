@@ -202,12 +202,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       efsFileSystems: ["fs-0c95a09faadb73087"],
@@ -233,9 +227,6 @@ exports.createResources = () => [
         Handler: "app.lambda_handler",
         Runtime: "python3.8",
         Timeout: 15,
-      },
-      Tags: {
-        "lambda:createdBy": "SAM",
       },
     }),
     dependencies: ({}) => ({

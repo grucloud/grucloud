@@ -151,6 +151,30 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it("IpamResourceDiscovery", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::IpamResourceDiscovery",
+        livesNotFound: ({ config }) => [
+          { IpamResourceDiscoveryId: "ipam-res-disco-xxxxxxxxxxxxxxxxx" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("IpamResourceDiscoveryAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::IpamResourceDiscoveryAssociation",
+        livesNotFound: ({ config }) => [
+          {
+            IpamResourceDiscoveryAssociationId:
+              "ipam-res-disco-assoc-xxxxxxxxxxxxxxxxx",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  //
   it("KeyPair", () =>
     pipe([
       () => ({

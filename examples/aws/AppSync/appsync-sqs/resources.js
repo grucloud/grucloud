@@ -118,9 +118,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      queue: "CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6",
-    }),
   },
   {
     type: "Queue",

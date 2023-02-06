@@ -1,0 +1,19 @@
+{
+  "ExternalLoadBalancerDNS": "ExtLB-appmesh-workshop-831563738.us-east-1.elb.amazonaws.com",
+  "RubyAutoScalingGroupName": "Ruby-AutoScalingGroup-appmesh-workshop",
+  "PrivateSubnetTwo": "subnet-0bd3501ac6aae70ae",
+  "ContainerSecurityGroup": "sg-0a0b5cca2d0aa8d43",
+  "CrystalEcrRepo": "840541460064.dkr.ecr.us-east-1.amazonaws.com/appmesh-workshop-crystal-utmqshorw0li",
+  "InternalLoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:840541460064:loadbalancer/app/IntLB-appmesh-workshop/69b33301fceb8e64",
+  "EcsClusterName": "cluster-appmesh-workshop",
+  "PrivateSubnetThree": "subnet-0558e4d930d16b366",
+  "CrystalTaskDefinition": "arn:aws:ecs:us-east-1:840541460064:task-definition/crystal-task-appmesh-workshop:2",
+  "CrystalTargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:840541460064:targetgroup/appmes-Cryst-VYRMQ1FMRTM5/4bc89005322e62a5",
+  "NodeJSEcrRepo": "840541460064.dkr.ecr.us-east-1.amazonaws.com/appmesh-workshop-nodejs-orynv154ch1x",
+  "PrivateSubnetOne": "subnet-05da2a37945dd7b4a",
+  "RubyTargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:840541460064:targetgroup/appmes-RubyT-BJKWQYTZBC7W/526a33c2b29a7594",
+  "VpcId": "vpc-0ea8dedc0c257f629",
+  "Ec2ExternalRole": "appmesh-workshop-EC2ExternalInstanceRole-UCOEZ13O2NMD",
+  "InternalLoadBalancerDNS": "internal-IntLB-appmesh-workshop-452193632.us-east-1.elb.amazonaws.com",
+  "StackName": "appmesh-workshop"
+}

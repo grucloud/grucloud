@@ -4,35 +4,37 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Schemas", async function () {
-  it.skip("Discoverer", () =>
+  it("Discoverer", () =>
     pipe([
       () => ({
-        groupType: "Schemas::Discoverer",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "EventSchemas::Discoverer",
+        livesNotFound: ({ config }) => [{ DiscovererId: "d123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Registry", () =>
+  it("Registry", () =>
     pipe([
       () => ({
-        groupType: "Schemas::Registry",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "EventSchemas::Registry",
+        livesNotFound: ({ config }) => [{ RegistryName: "r123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("RegistryPolicy", () =>
+  it("RegistryPolicy", () =>
     pipe([
       () => ({
-        groupType: "Schemas::RegistryPolicy",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "EventSchemas::RegistryPolicy",
+        livesNotFound: ({ config }) => [{ RegistryName: "123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Schema", () =>
+  it("Schema", () =>
     pipe([
       () => ({
-        groupType: "Schemas::Schema",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "EventSchemas::Schema",
+        livesNotFound: ({ config }) => [
+          { SchemaName: "s123", RegistryName: "r13" },
+        ],
       }),
       awsResourceTest,
     ])());

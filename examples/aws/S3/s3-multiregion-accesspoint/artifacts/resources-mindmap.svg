@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="172px" preserveAspectRatio="none" style="width:1025px;height:172px;background:#FFFFFF;" version="1.1" viewBox="0 0 1025 172" width="1025px" zoomAndPan="magnify"><defs/><g><rect height="26.4883" style="stroke:#00000000;stroke-width:1.0;fill:none;" width="373" x="274.5" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="363" x="279.5" y="33.5352">Resources for project s3-multiregion-accesspoint</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="52" x="579" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="589" y="109.2676">Infra</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="107" x="681" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="87" x="691" y="109.2676">aws-primary</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="37" x="838" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="17" x="848" y="109.2676">S3</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="88" x="925" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68" x="935" y="109.2676">Bucket (1)</text><path d="M875,103.9766 L885,103.9766 C900,103.9766 900,103.9766 915,103.9766 L925,103.9766 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M788,103.9766 L798,103.9766 C813,103.9766 813,103.9766 828,103.9766 L838,103.9766 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M631,103.9766 L641,103.9766 C656,103.9766 656,103.9766 671,103.9766 L681,103.9766 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="124" x="405" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="104" x="415" y="109.2676">aws-secondary</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="37" x="318" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="17" x="328" y="81.0234">S3</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="88" x="180" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68" x="190" y="81.0234">Bucket (1)</text><path d="M318,75.7324 L308,75.7324 C293,75.7324 293,75.7324 278,75.7324 L268,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M405,103.9766 L395,103.9766 C380,103.9766 380,75.7324 365,75.7324 L355,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="89" x="266" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="69" x="276" y="137.5117">S3Control</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="206" x="10" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="186" x="20" y="137.5117">MultiRegionAccessPoint (1)</text><path d="M266,132.2207 L256,132.2207 C241,132.2207 241,132.2207 226,132.2207 L216,132.2207 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M405,103.9766 L395,103.9766 C380,103.9766 380,132.2207 365,132.2207 L355,132.2207 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M579,103.9766 L569,103.9766 C554,103.9766 554,103.9766 539,103.9766 L529,103.9766 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><!--MD5=[3ba6ce0483a6302b874df2df0c648d00]
+@startmindmap
+title Resources for project s3-multiregion-accesspoint
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ S3
+++++ Bucket (1)
+- - aws-secondary
+- - - S3
+- - - - Bucket (1)
+- - - S3Control
+- - - - MultiRegionAccessPoint (1)
+@endmindmap
+
+PlantUML version 1.2022.6(Tue Jun 21 12:34:49 COT 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

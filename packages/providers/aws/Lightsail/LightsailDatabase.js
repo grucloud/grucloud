@@ -60,6 +60,7 @@ exports.LightsailDatabase = ({ compare }) => ({
   ],
   compare: compare({
     filterTarget: () => pipe([omit(["commasterUserPasswordpare"])]),
+    filterAll: () => pipe([omit(["engineVersion"])]),
   }),
   filterLive: filterLiveDefault,
   findName: () =>
@@ -128,11 +129,17 @@ exports.LightsailDatabase = ({ compare }) => ({
   // TODO update
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#updateRelationalDatabase-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#updateRelationalDatabaseParameters-property
-
+  update: {
+    method: "updateRelationalDatabase",
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#deleteRelationalDatabase-property
   destroy: {
     //TODO skipFinalSnapshot:true and finalRelationalDatabaseSnapshotName
     method: "deleteRelationalDatabase",
     pickId,
+    shouldRetryOnExceptionMessages: [
+      "Sorry, you can't delete a relational database in backing-up state; please try again later",
+    ],
   },
 });

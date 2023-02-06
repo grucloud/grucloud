@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project appsync-lambda-sfn-sam
+skinparam monochrome true
++ Infra
+++ aws
++++ AppSync
+++++ DataSource (1)
+++++ GraphqlApi (1)
+++++ Resolver (1)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (5)
++++ Lambda
+++++ Function (1)
++++ StepFunctions
+++++ StateMachine (2)
+@endmindmap

@@ -227,6 +227,7 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
           value: "enabled",
         },
       ],
+      capacityProviders: ["cp"],
       tags: [
         {
           key: "mykey",

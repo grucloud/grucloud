@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { map, pipe, tap, get } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { map, pipe, tap, get, eq } = require("rubico");
+const { defaultsDeep, when, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -44,15 +44,31 @@ exports.Authorizer = ({}) => ({
       type: "UserPool",
       group: "CognitoIdentityServiceProvider",
       list: true,
-      dependencyId: ({ lives, config }) => get("providerARNs"),
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("providerARNs"),
+          map((Arn) =>
+            pipe([
+              lives.getByType({
+                type: "UserPool",
+                group: "CognitoIdentityServiceProvider",
+                providerName: config.providerName,
+              }),
+              find(eq(get("live.Arn"), Arn)),
+              get("id"),
+            ])()
+          ),
+        ]),
     },
   },
   getById: {
     method: "getAuthorizer",
     pickId,
+    decorate: ({ live }) => pipe([defaultsDeep({ restApiId: live.restApiId })]),
   },
   create: {
     method: "createAuthorizer",
+    pickCreated: ({ payload }) => pipe([defaultsDeep(payload)]),
   },
   update: {
     pickId,
@@ -77,7 +93,7 @@ exports.Authorizer = ({}) => ({
           getParam: "items",
           config,
           decorate: ({ lives, parent: { id: restApiId } }) =>
-            defaultsDeep({ restApiId }),
+            pipe([defaultsDeep({ restApiId })]),
         }),
     ])(),
   configDefault: ({

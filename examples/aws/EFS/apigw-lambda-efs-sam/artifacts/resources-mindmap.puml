@@ -1,0 +1,26 @@
+@startmindmap
+title Resources for project apigw-lambda-efs-sam
+skinparam monochrome true
++ Infra
+++ aws
++++ ApiGatewayV2
+++++ Api (1)
+++++ Deployment (1)
+++++ Integration (1)
+++++ Route (1)
+++++ Stage (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
+++++ SecurityGroupRuleEgress (1)
++++ EFS
+++++ FileSystem (1)
+++++ AccessPoint (1)
+++++ MountTarget (2)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+@endmindmap

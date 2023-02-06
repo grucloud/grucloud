@@ -15,6 +15,7 @@ exports.createResources = () => [
     group: "DataSync",
     properties: ({}) => ({
       User: "myuser",
+      Password: process.env.FSX_WINDOWS_PASSWORD,
     }),
     dependencies: ({}) => ({
       fsxFileSystem: "fsx-windows",
@@ -95,20 +96,6 @@ exports.createResources = () => [
       vpc: "vpc-default",
     }),
   },
-  // {
-  //   type: "SecurityGroup",
-  //   group: "EC2",
-  //   name: "sg::vpc-default::d-9067a739b3_controllers",
-  //   readOnly: true,
-  //   properties: ({}) => ({
-  //     GroupName: "d-9067a739b3_controllers",
-  //     Description:
-  //       "AWS created security group for d-9067a739b3 directory controllers",
-  //   }),
-  //   dependencies: ({}) => ({
-  //     vpc: "vpc-default",
-  //   }),
-  // },
   {
     type: "FileSystem",
     group: "FSx",
@@ -133,6 +120,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       directory: "corp.grucloud.org",
       subnets: ["vpc-default::subnet-default-d"],
+      securityGroups: ["sg::vpc-default::fxs-windows"],
     }),
   },
   {

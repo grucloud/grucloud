@@ -10,3 +10,8 @@ exports.Tagger = createTagger({
   TagsKey: "tags",
   UnTagsKey: "tagKeys",
 });
+
+exports.ignoreErrorCodes = [
+  "ResourceNotFoundException",
+  "AccessDeniedException",
+];

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="285px" preserveAspectRatio="none" style="width:529px;height:285px;background:#FFFFFF;" version="1.1" viewBox="0 0 529 285" width="529px" zoomAndPan="magnify"><defs/><g><rect height="26.4883" style="stroke:#00000000;stroke-width:1.0;fill:none;" width="277" x="99.5" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="267" x="104.5" y="33.5352">Resources for project amplify-nextjs</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="52" x="10" y="142.2207"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="20" y="165.7559">Infra</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="112" y="142.2207"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="122" y="165.7559">aws</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="72" x="208" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="52" x="218" y="109.2676">Amplify</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="71" x="330" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="51" x="340" y="81.0234">App (1)</text><path d="M280,103.9766 L290,103.9766 C305,103.9766 305,75.7324 320,75.7324 L330,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="187" x="330" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="167" x="340" y="137.5117">BackendEnvironment (1)</text><path d="M280,103.9766 L290,103.9766 C305,103.9766 305,132.2207 320,132.2207 L330,132.2207 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,160.4648 L168,160.4648 C183,160.4648 183,103.9766 198,103.9766 L208,103.9766 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="208" y="170.4648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="218" y="194">IAM</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="73" x="304" y="170.4648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="53" x="314" y="194">Role (3)</text><path d="M254,188.709 L264,188.709 C279,188.709 279,188.709 294,188.709 L304,188.709 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,160.4648 L168,160.4648 C183,160.4648 183,188.709 198,188.709 L208,188.709 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="37" x="208" y="226.9531"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="17" x="218" y="250.4883">S3</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="88" x="295" y="226.9531"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68" x="305" y="250.4883">Bucket (1)</text><path d="M245,245.1973 L255,245.1973 C270,245.1973 270,245.1973 285,245.1973 L295,245.1973 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,160.4648 L168,160.4648 C183,160.4648 183,245.1973 198,245.1973 L208,245.1973 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M62,160.4648 L72,160.4648 C87,160.4648 87,160.4648 102,160.4648 L112,160.4648 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><!--MD5=[67762fb64a51a3768ce1371a0b8f5594]
+@startmindmap
+title Resources for project amplify-nextjs
+skinparam monochrome true
++ Infra
+++ aws
++++ Amplify
+++++ App (1)
+++++ BackendEnvironment (1)
++++ IAM
+++++ Role (3)
++++ S3
+++++ Bucket (1)
+@endmindmap
+
+PlantUML version 1.2022.6(Tue Jun 21 12:34:49 COT 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

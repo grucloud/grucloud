@@ -78,6 +78,7 @@ exports.createResources = () => [
       serviceAccessPrincipals: [
         "account.amazonaws.com",
         "auditmanager.amazonaws.com",
+        "cloudtrail.amazonaws.com",
         "guardduty.amazonaws.com",
         "inspector2.amazonaws.com",
         "member.org.stacksets.cloudformation.amazonaws.com",

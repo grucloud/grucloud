@@ -111,7 +111,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName:
         "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-1LXDAK3DKUOQS",
       AssumeRolePolicyDocument: {
@@ -133,11 +133,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `${getId({
-                  type: "EventBus",
-                  group: "CloudWatchEvents",
-                  name: "MyEventBus",
-                })}`,
+                Resource: `arn:aws:events:${
+                  config.region
+                }:${config.accountId()}:event-bus/MyEventBus`,
                 Effect: "Allow",
               },
             ],
@@ -145,9 +143,6 @@ exports.createResources = () => [
           PolicyName: "EventBridgeIntegrationRoleDefaultPolicy16371A00",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      eventBus: "MyEventBus",
     }),
   },
 ];

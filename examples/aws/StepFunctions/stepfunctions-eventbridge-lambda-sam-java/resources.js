@@ -234,12 +234,6 @@ exports.createResources = () => [
           },
         },
       },
-      tags: [
-        {
-          key: "stateMachine:createdBy",
-          value: "SAM",
-        },
-      ],
     }),
     dependencies: () => ({
       role: "orders-stack-StateMachineRole-1RWAR7ZEDPVDJ",

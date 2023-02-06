@@ -4,13 +4,13 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Synthetics", async function () {
-  it.skip("Canary", () =>
+  it("Canary", () =>
     pipe([
       () => ({
         groupType: "Synthetics::Canary",
         livesNotFound: ({ config }) => [
           {
-            //stateMachineArn: `arn:aws:states:us-east-1:${config.accountId()}:stateMachine:test-test`,
+            Name: "c123",
           },
         ],
       }),

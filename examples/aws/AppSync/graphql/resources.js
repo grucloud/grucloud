@@ -160,7 +160,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName:
         "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
       AssumeRolePolicyDocument: {
@@ -183,11 +183,9 @@ exports.createResources = () => [
               {
                 Action: "dynamodb:*",
                 Resource: [
-                  `${getId({
-                    type: "Table",
-                    group: "DynamoDB",
-                    name: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
-                  })}`,
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R`,
                 ],
                 Effect: "Allow",
               },
@@ -227,9 +225,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
-      dynamoDbTables: [
-        "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
-      ],
     }),
   },
 ];

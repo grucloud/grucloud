@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project apigw-canary-deployment-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Account (1)
+++++ RestApi (1)
+++++ Stage (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap

@@ -12,10 +12,10 @@ skinparam monochrome true
 +++ IAM
 ++++ Role (2)
 +++ RDS
-++++ DBProxy (1)
 ++++ DBCluster (1)
-++++ DBSubnetGroup (1)
 ++++ DBInstance (1)
+++++ DBProxy (1)
+++++ DBSubnetGroup (1)
 +++ SecretsManager
 ++++ Secret (1)
 @endmindmap

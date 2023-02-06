@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
+const { pipe, tap, get, pick, assign, eq, switchCase } = require("rubico");
 const {
   defaultsDeep,
   identity,
@@ -7,6 +7,8 @@ const {
   unless,
   isEmpty,
   append,
+  when,
+  isIn,
 } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -37,10 +39,72 @@ const pickId = pipe([
   pick(["VersionNumber", "ApplicationId", "ConfigurationProfileId"]),
 ]);
 
-const buildArn =
-  ({ region, accountId }) =>
-  ({ VersionNumber, ApplicationId, ConfigurationProfileId }) =>
-    `arn:aws:appconfig:${region}:${accountId()}:application/${ApplicationId}/configurationprofile/${ConfigurationProfileId}/hostedconfigurationversion/${VersionNumber}`;
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const assignArn = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config.region);
+    }),
+    assign({
+      Arn: pipe([
+        pickId,
+        ({ VersionNumber, ApplicationId, ConfigurationProfileId }) =>
+          `arn:aws:appconfig:${
+            config.region
+          }:${config.accountId()}:application/${ApplicationId}/configurationprofile/${ConfigurationProfileId}/hostedconfigurationversion/${VersionNumber}`,
+      ]),
+    }),
+  ]);
+
+const replacer = (key, value) =>
+  pipe([
+    () => key,
+    switchCase([
+      isIn(["_updatedAt", "_createdAt"]),
+      () => undefined,
+      () => value,
+    ]),
+  ])();
+
+const parseJsonContent = pipe([
+  when(
+    eq(get("ContentType"), "application/json"),
+    assign({
+      Content: pipe([
+        get("Content"),
+        JSON.parse,
+        (x) => JSON.stringify(x, replacer, 4),
+        JSON.parse,
+      ]),
+    })
+  ),
+]);
+
+const stringifyJsonContent = pipe([
+  when(
+    eq(get("ContentType"), "application/json"),
+    assign({ Content: pipe([get("Content"), JSON.stringify]) })
+  ),
+]);
+
+const decorate = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    assign({
+      Content: ({ Content }) => pipe([() => Buffer.from(Content).toString()])(),
+    }),
+    parseJsonContent,
+    assignArn({ config }),
+  ]);
 
 exports.AppConfigHostedConfigurationVersion = () => ({
   type: "HostedConfigurationVersion",
@@ -73,13 +137,13 @@ exports.AppConfigHostedConfigurationVersion = () => ({
         `${ApplicationId}::${ConfigurationProfileId}`,
     ]),
   omitProperties: [
+    "Arn",
     "Id",
     "ConfigurationProfileId",
     "ApplicationId",
     "VersionNumber",
     "Latest",
   ],
-
   dependencies: {
     configurationProfile: {
       type: "ConfigurationProfile",
@@ -93,16 +157,11 @@ exports.AppConfigHostedConfigurationVersion = () => ({
   getById: {
     method: "getHostedConfigurationVersion",
     pickId,
-    decorate: () =>
-      pipe([
-        assign({
-          Content: ({ Content }) =>
-            pipe([() => Buffer.from(Content).toString()])(),
-        }),
-      ]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#createHostedConfigurationVersion-property
   create: {
+    filterPayload: stringifyJsonContent,
     method: "createHostedConfigurationVersion",
     pickCreated: ({ payload }) => pipe([identity]),
   },
@@ -128,6 +187,10 @@ exports.AppConfigHostedConfigurationVersion = () => ({
           config,
           transformListPost: () =>
             pipe([
+              tap((params) => {
+                assert(true);
+              }),
+
               callProp("sort", (a, b) => b.VersionNumber - a.VersionNumber),
               unless(isEmpty, ([latest, ...others]) => [
                 { ...latest, Latest: true },
@@ -144,9 +207,11 @@ exports.AppConfigHostedConfigurationVersion = () => ({
       pipe([
         tap((params) => {
           assert(endpoint);
+          assert(payload.ApplicationId);
+          assert(payload.ConfigurationProfileId);
+          assert(payload.ContentType);
         }),
         () => payload,
-        defaultsDeep({ ApplicationId: live.Id }),
         endpoint().createHostedConfigurationVersion,
       ])(),
   tagger: ({ config }) =>

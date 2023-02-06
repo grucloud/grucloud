@@ -95,12 +95,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
   },
   {
@@ -161,9 +155,6 @@ exports.createResources = () => [
         Handler: "app.handler",
         Runtime: "nodejs12.x",
       },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
     }),
     dependencies: ({}) => ({
       role: "sam-app-ExampleLambdaFunctionRole-10XK3921W9OPT",
@@ -216,12 +207,6 @@ exports.createResources = () => [
         level: "ALL",
       },
       name: "StateMachinetoAPIGW-uB4wAPaxm1sp",
-      tags: [
-        {
-          key: "stateMachine:createdBy",
-          value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       role: "sam-app-StatesExecutionRole-VZMKU2P2QBYH",

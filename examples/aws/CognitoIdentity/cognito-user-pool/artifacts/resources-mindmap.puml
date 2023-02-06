@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project cognito-user-pool
+skinparam monochrome true
++ Infra
+++ aws
++++ CognitoIdentityServiceProvider
+++++ ResourceServer (1)
+++++ UserPool (1)
+++++ UserPoolClient (1)
+++++ UserPoolDomain (1)
+@endmindmap

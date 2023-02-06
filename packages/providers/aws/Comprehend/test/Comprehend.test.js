@@ -6,13 +6,17 @@ const { awsResourceTest } = require("../../AwsResourceTester");
 const config = () => ({ includeGroups: ["Comprehend"] });
 
 describe("Comprehend", async function () {
-  it.skip("DocumentClassifier", () =>
+  it("DocumentClassifier", () =>
     pipe([
       () => ({
         config,
         groupType: "Comprehend::DocumentClassifier",
         livesNotFound: ({ config }) => [
-          { EndpointArn: "DocumentClassifierArn" },
+          {
+            DocumentClassifierArn: `arn:aws:comprehend:${
+              config.region
+            }:${config.accountId()}:document-classifier/m1`,
+          },
         ],
       }),
       awsResourceTest,
@@ -26,12 +30,18 @@ describe("Comprehend", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("EntityRecognizer", () =>
+  it("EntityRecognizer", () =>
     pipe([
       () => ({
         config,
         groupType: "Comprehend::EntityRecognizer",
-        livesNotFound: ({ config }) => [{ EntityRecognizerArn: "b123" }],
+        livesNotFound: ({ config }) => [
+          {
+            EntityRecognizerArn: `arn:aws:comprehend:${
+              config.region
+            }:${config.accountId()}:entity-recognizer/m1`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

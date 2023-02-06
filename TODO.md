@@ -4,28 +4,21 @@
 
 ## Aws
 
+- AwsConfig
 - throwIfNotAwsError accepts an array of errors
 - EC2::ElasticIpAddressAssociation 0/1 The pending-instance-running instance to which 'eni-008dfdd692868df23' is attached is not in a valid state for this operation
 - AWS::Events::Endpoint
 - CodeStarConnections Host
   Lambda EventSourceMapping:
-- Amazon DynamoDB Streams
-- ECSTaskSet
   aws_networkmanager_attachment_accepter
 - EC2 instance, sort groups
-- API Gateway v1 Authorizer
-
-- doc:
-  DeliveryStream,
 
 - cloudwan vpc attachment
 - route to core network
 - fix gc l -t
-- Network Manager docs
 - Example with non default DB Proxy Target Group,
 - AutoScalingGroup: example with serviceLinkedRole
 - VpcEndpoint: example with serviceLinkedRole
-- ECS taskRole vs executionRole
 - Firewall deps
 - ECSTask dependency check
 - CodeDeployDeploymentGroup configDefault with other dependencies
@@ -45,9 +38,6 @@
 - document create key pair
 - s3 analytics configuration
 - s3 object gencode is missing ACL:public-read
-
-- CloudTrail EventDataStore EventDataStore doc
-
 - route to NetworkInterfaceId
 
 ## Refactoring

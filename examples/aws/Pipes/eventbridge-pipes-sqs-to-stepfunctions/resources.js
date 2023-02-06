@@ -14,7 +14,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "sam-app-EventBridgePipesRole-E5SRBPCBWT7D",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -52,11 +52,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["states:StartExecution"],
-                Resource: `${getId({
-                  type: "StateMachine",
-                  group: "StepFunctions",
-                  name: "TargetStateMachine-3Z5SSzC8L1RN",
-                })}`,
+                Resource: `arn:aws:states:${
+                  config.region
+                }:${config.accountId()}:stateMachine:TargetStateMachine-3Z5SSzC8L1RN`,
                 Effect: "Allow",
               },
             ],
@@ -83,10 +81,6 @@ exports.createResources = () => [
           PolicyName: "ReadSQS",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      queue: "sam-app-SourceQueue-7tNa5vbmnIiP",
-      stateMachines: ["TargetStateMachine-3Z5SSzC8L1RN"],
     }),
   },
   {
@@ -214,12 +208,6 @@ exports.createResources = () => [
       },
       name: "TargetStateMachine-3Z5SSzC8L1RN",
       type: "EXPRESS",
-      tags: [
-        {
-          key: "stateMachine:createdBy",
-          value: "SAM",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       role: "sam-app-TargetStateMachineRole-RGUSC4UJPHNM",

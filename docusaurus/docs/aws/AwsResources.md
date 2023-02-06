@@ -15,7 +15,7 @@ List of resources for provider aws:
 * Amplify: 
 [App](./resources/Amplify/App.md), [BackendEnvironment](./resources/Amplify/BackendEnvironment.md), [Branch](./resources/Amplify/Branch.md), [DomainAssociation](./resources/Amplify/DomainAssociation.md), [Webhook](./resources/Amplify/Webhook.md)
 * APIGateway: 
-[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Authorizer](./resources/APIGateway/Authorizer.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
+[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Authorizer](./resources/APIGateway/Authorizer.md), [ClientCertificate](./resources/APIGateway/ClientCertificate.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
 * ApiGatewayV2: 
 [Api](./resources/ApiGatewayV2/Api.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [DomainName](./resources/ApiGatewayV2/DomainName.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Stage](./resources/ApiGatewayV2/Stage.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
 * AppConfig: 
@@ -34,10 +34,12 @@ List of resources for provider aws:
 [AppBlock](./resources/AppStream/AppBlock.md), [Application](./resources/AppStream/Application.md), [DirectoryConfig](./resources/AppStream/DirectoryConfig.md), [Entitlement](./resources/AppStream/Entitlement.md), [Fleet](./resources/AppStream/Fleet.md), [ImageBuilder](./resources/AppStream/ImageBuilder.md), [Stack](./resources/AppStream/Stack.md), [User](./resources/AppStream/User.md), [UsageReportSubscription](./resources/AppStream/UsageReportSubscription.md), [UserStackAssociation](./resources/AppStream/UserStackAssociation.md)
 * AppSync: 
 [DataSource](./resources/AppSync/DataSource.md), [Function](./resources/AppSync/Function.md), [GraphqlApi](./resources/AppSync/GraphqlApi.md), [Resolver](./resources/AppSync/Resolver.md)
+* Aps: 
+[RuleGroupsNamespace](./resources/Aps/RuleGroupsNamespace.md), [Workspace](./resources/Aps/Workspace.md)
 * Athena: 
-[DataCatalog](./resources/Athena/DataCatalog.md), [WorkGroup](./resources/Athena/WorkGroup.md)
+[DataCatalog](./resources/Athena/DataCatalog.md), [NamedQuery](./resources/Athena/NamedQuery.md), [PreparedStatement](./resources/Athena/PreparedStatement.md), [WorkGroup](./resources/Athena/WorkGroup.md)
 * AuditManager: 
-[AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Assessment](./resources/AuditManager/Assessment.md), [AssessmentReport](./resources/AuditManager/AssessmentReport.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [Settings](./resources/AuditManager/Settings.md)
+[AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Assessment](./resources/AuditManager/Assessment.md), [AssessmentDelegation](./resources/AuditManager/AssessmentDelegation.md), [AssessmentReport](./resources/AuditManager/AssessmentReport.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [AssessmentFrameworkShare](./resources/AuditManager/AssessmentFrameworkShare.md), [Settings](./resources/AuditManager/Settings.md), [OrganizationAdminAccount](./resources/AuditManager/OrganizationAdminAccount.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
 * Backup: 
@@ -53,7 +55,7 @@ List of resources for provider aws:
 * CloudHSMV2: 
 [Cluster](./resources/CloudHSMV2/Cluster.md), [Hsm](./resources/CloudHSMV2/Hsm.md)
 * CloudTrail: 
-[Trail](./resources/CloudTrail/Trail.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
+[Trail](./resources/CloudTrail/Trail.md), [Channel](./resources/CloudTrail/Channel.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
 * CloudWatch: 
 [Dashboard](./resources/CloudWatch/Dashboard.md), [MetricAlarm](./resources/CloudWatch/MetricAlarm.md)
 * CloudWatchEvents: 
@@ -71,7 +73,9 @@ List of resources for provider aws:
 * Cognito: 
 [IdentityPool](./resources/Cognito/IdentityPool.md), [IdentityPoolProviderPrincipalTag](./resources/Cognito/IdentityPoolProviderPrincipalTag.md), [IdentityPoolRolesAttachments](./resources/Cognito/IdentityPoolRolesAttachments.md)
 * CognitoIdentityServiceProvider: 
-[IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [RiskConfiguration](./resources/CognitoIdentityServiceProvider/RiskConfiguration.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
+[IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [ResourceServer](./resources/CognitoIdentityServiceProvider/ResourceServer.md), [RiskConfiguration](./resources/CognitoIdentityServiceProvider/RiskConfiguration.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
+* Comprehend: 
+[DocumentClassifier](./resources/Comprehend/DocumentClassifier.md), [EntityRecognizer](./resources/Comprehend/EntityRecognizer.md)
 * Config: 
 [ConfigRule](./resources/Config/ConfigRule.md), [ConfigurationRecorder](./resources/Config/ConfigurationRecorder.md), [ConfigurationRecorderStatus](./resources/Config/ConfigurationRecorderStatus.md), [ConformancePack](./resources/Config/ConformancePack.md), [DeliveryChannel](./resources/Config/DeliveryChannel.md)
 * ControlTower: 
@@ -87,13 +91,13 @@ List of resources for provider aws:
 * DynamoDB: 
 [Table](./resources/DynamoDB/Table.md), [TableItem](./resources/DynamoDB/TableItem.md), [KinesisStreamingDestination](./resources/DynamoDB/KinesisStreamingDestination.md)
 * EC2: 
-[CustomerGateway](./resources/EC2/CustomerGateway.md), [ClientVpnAuthorizationRule](./resources/EC2/ClientVpnAuthorizationRule.md), [ClientVpnEndpoint](./resources/EC2/ClientVpnEndpoint.md), [ClientVpnTargetNetwork](./resources/EC2/ClientVpnTargetNetwork.md), [DhcpOptions](./resources/EC2/DhcpOptions.md), [DhcpOptionsAssociation](./resources/EC2/DhcpOptionsAssociation.md), [FlowLogs](./resources/EC2/FlowLogs.md), [Ipam](./resources/EC2/Ipam.md), [IpamScope](./resources/EC2/IpamScope.md), [IpamPool](./resources/EC2/IpamPool.md), [IpamPoolCidr](./resources/EC2/IpamPoolCidr.md), [KeyPair](./resources/EC2/KeyPair.md), [NetworkInterface](./resources/EC2/NetworkInterface.md), [Volume](./resources/EC2/Volume.md), [VolumeAttachment](./resources/EC2/VolumeAttachment.md), [Vpc](./resources/EC2/Vpc.md), [InternetGateway](./resources/EC2/InternetGateway.md), [InternetGatewayAttachment](./resources/EC2/InternetGatewayAttachment.md), [EgressOnlyInternetGateway](./resources/EC2/EgressOnlyInternetGateway.md), [NatGateway](./resources/EC2/NatGateway.md), [Subnet](./resources/EC2/Subnet.md), [RouteTable](./resources/EC2/RouteTable.md), [RouteTableAssociation](./resources/EC2/RouteTableAssociation.md), [Route](./resources/EC2/Route.md), [SecurityGroup](./resources/EC2/SecurityGroup.md), [SecurityGroupRuleIngress](./resources/EC2/SecurityGroupRuleIngress.md), [SecurityGroupRuleEgress](./resources/EC2/SecurityGroupRuleEgress.md), [ElasticIpAddress](./resources/EC2/ElasticIpAddress.md), [ElasticIpAddressAssociation](./resources/EC2/ElasticIpAddressAssociation.md), [Instance](./resources/EC2/Instance.md), [LaunchTemplate](./resources/EC2/LaunchTemplate.md), [NetworkAcl](./resources/EC2/NetworkAcl.md), [ManagedPrefixList](./resources/EC2/ManagedPrefixList.md), [PlacementGroup](./resources/EC2/PlacementGroup.md), [VpcEndpoint](./resources/EC2/VpcEndpoint.md), [VpcIpv4CidrBlockAssociation](./resources/EC2/VpcIpv4CidrBlockAssociation.md), [VpcPeeringConnection](./resources/EC2/VpcPeeringConnection.md), [VpcPeeringConnectionAccepter](./resources/EC2/VpcPeeringConnectionAccepter.md), [TransitGateway](./resources/EC2/TransitGateway.md), [TransitGatewayRoute](./resources/EC2/TransitGatewayRoute.md), [TransitGatewayRouteTable](./resources/EC2/TransitGatewayRouteTable.md), [TransitGatewayPeeringAttachment](./resources/EC2/TransitGatewayPeeringAttachment.md), [TransitGatewayAttachment](./resources/EC2/TransitGatewayAttachment.md), [TransitGatewayVpcAttachment](./resources/EC2/TransitGatewayVpcAttachment.md), [TransitGatewayRouteTableAssociation](./resources/EC2/TransitGatewayRouteTableAssociation.md), [TransitGatewayRouteTablePropagation](./resources/EC2/TransitGatewayRouteTablePropagation.md), [VpnGateway](./resources/EC2/VpnGateway.md), [VpnGatewayAttachment](./resources/EC2/VpnGatewayAttachment.md), [VpnGatewayRoutePropagation](./resources/EC2/VpnGatewayRoutePropagation.md), [VpnConnection](./resources/EC2/VpnConnection.md), [VpnConnectionRoute](./resources/EC2/VpnConnectionRoute.md)
+[CustomerGateway](./resources/EC2/CustomerGateway.md), [ClientVpnAuthorizationRule](./resources/EC2/ClientVpnAuthorizationRule.md), [ClientVpnEndpoint](./resources/EC2/ClientVpnEndpoint.md), [ClientVpnTargetNetwork](./resources/EC2/ClientVpnTargetNetwork.md), [DhcpOptions](./resources/EC2/DhcpOptions.md), [DhcpOptionsAssociation](./resources/EC2/DhcpOptionsAssociation.md), [FlowLogs](./resources/EC2/FlowLogs.md), [Ipam](./resources/EC2/Ipam.md), [IpamScope](./resources/EC2/IpamScope.md), [IpamPool](./resources/EC2/IpamPool.md), [IpamPoolCidr](./resources/EC2/IpamPoolCidr.md), [IpamResourceDiscovery](./resources/EC2/IpamResourceDiscovery.md), [IpamResourceDiscoveryAssociation](./resources/EC2/IpamResourceDiscoveryAssociation.md), [KeyPair](./resources/EC2/KeyPair.md), [NetworkInterface](./resources/EC2/NetworkInterface.md), [Volume](./resources/EC2/Volume.md), [VolumeAttachment](./resources/EC2/VolumeAttachment.md), [Vpc](./resources/EC2/Vpc.md), [InternetGateway](./resources/EC2/InternetGateway.md), [InternetGatewayAttachment](./resources/EC2/InternetGatewayAttachment.md), [EgressOnlyInternetGateway](./resources/EC2/EgressOnlyInternetGateway.md), [NatGateway](./resources/EC2/NatGateway.md), [Subnet](./resources/EC2/Subnet.md), [RouteTable](./resources/EC2/RouteTable.md), [RouteTableAssociation](./resources/EC2/RouteTableAssociation.md), [Route](./resources/EC2/Route.md), [SecurityGroup](./resources/EC2/SecurityGroup.md), [SecurityGroupRuleIngress](./resources/EC2/SecurityGroupRuleIngress.md), [SecurityGroupRuleEgress](./resources/EC2/SecurityGroupRuleEgress.md), [ElasticIpAddress](./resources/EC2/ElasticIpAddress.md), [ElasticIpAddressAssociation](./resources/EC2/ElasticIpAddressAssociation.md), [Instance](./resources/EC2/Instance.md), [LaunchTemplate](./resources/EC2/LaunchTemplate.md), [NetworkAcl](./resources/EC2/NetworkAcl.md), [ManagedPrefixList](./resources/EC2/ManagedPrefixList.md), [PlacementGroup](./resources/EC2/PlacementGroup.md), [VpcEndpoint](./resources/EC2/VpcEndpoint.md), [VpcIpv4CidrBlockAssociation](./resources/EC2/VpcIpv4CidrBlockAssociation.md), [VpcPeeringConnection](./resources/EC2/VpcPeeringConnection.md), [VpcPeeringConnectionAccepter](./resources/EC2/VpcPeeringConnectionAccepter.md), [TransitGateway](./resources/EC2/TransitGateway.md), [TransitGatewayRoute](./resources/EC2/TransitGatewayRoute.md), [TransitGatewayRouteTable](./resources/EC2/TransitGatewayRouteTable.md), [TransitGatewayPeeringAttachment](./resources/EC2/TransitGatewayPeeringAttachment.md), [TransitGatewayAttachment](./resources/EC2/TransitGatewayAttachment.md), [TransitGatewayVpcAttachment](./resources/EC2/TransitGatewayVpcAttachment.md), [TransitGatewayRouteTableAssociation](./resources/EC2/TransitGatewayRouteTableAssociation.md), [TransitGatewayRouteTablePropagation](./resources/EC2/TransitGatewayRouteTablePropagation.md), [VpnGateway](./resources/EC2/VpnGateway.md), [VpnGatewayAttachment](./resources/EC2/VpnGatewayAttachment.md), [VpnGatewayRoutePropagation](./resources/EC2/VpnGatewayRoutePropagation.md), [VpnConnection](./resources/EC2/VpnConnection.md), [VpnConnectionRoute](./resources/EC2/VpnConnectionRoute.md)
 * ECR: 
 [Repository](./resources/ECR/Repository.md), [Registry](./resources/ECR/Registry.md)
 * ECS: 
-[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [Service](./resources/ECS/Service.md), [Task](./resources/ECS/Task.md), [TaskDefinition](./resources/ECS/TaskDefinition.md)
+[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [Service](./resources/ECS/Service.md), [Task](./resources/ECS/Task.md), [TaskSet](./resources/ECS/TaskSet.md), [TaskDefinition](./resources/ECS/TaskDefinition.md)
 * EFS: 
-[FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
+[FileSystem](./resources/EFS/FileSystem.md), [FileSystemPolicy](./resources/EFS/FileSystemPolicy.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
 [Addon](./resources/EKS/Addon.md), [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
 * ElastiCache: 
@@ -101,7 +105,7 @@ List of resources for provider aws:
 * ElasticBeanstalk: 
 [Application](./resources/ElasticBeanstalk/Application.md), [ApplicationVersion](./resources/ElasticBeanstalk/ApplicationVersion.md), [Environment](./resources/ElasticBeanstalk/Environment.md)
 * ElasticLoadBalancingV2: 
-[Listener](./resources/ElasticLoadBalancingV2/Listener.md), [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md)
+[Listener](./resources/ElasticLoadBalancingV2/Listener.md), [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [TargetGroupAttachments](./resources/ElasticLoadBalancingV2/TargetGroupAttachments.md)
 * EMRServerless: 
 [Application](./resources/EMRServerless/Application.md)
 * Evidently: 
@@ -111,7 +115,7 @@ List of resources for provider aws:
 * FMS: 
 [AdminAccount](./resources/FMS/AdminAccount.md), [Policy](./resources/FMS/Policy.md)
 * FSx: 
-[FileSystem](./resources/FSx/FileSystem.md), [StorageVirtualMachine](./resources/FSx/StorageVirtualMachine.md), [Volume](./resources/FSx/Volume.md)
+[Backup](./resources/FSx/Backup.md), [DataRepositoryAssociation](./resources/FSx/DataRepositoryAssociation.md), [FileCache](./resources/FSx/FileCache.md), [FileSystem](./resources/FSx/FileSystem.md), [Snapshot](./resources/FSx/Snapshot.md), [StorageVirtualMachine](./resources/FSx/StorageVirtualMachine.md), [Volume](./resources/FSx/Volume.md)
 * Glacier: 
 [Vault](./resources/Glacier/Vault.md)
 * GlobalAccelerator: 
@@ -139,9 +143,11 @@ List of resources for provider aws:
 * LakeFormation: 
 [DataLakeSettings](./resources/LakeFormation/DataLakeSettings.md), [LFTag](./resources/LakeFormation/LFTag.md), [Resource](./resources/LakeFormation/Resource.md)
 * Lambda: 
-[Layer](./resources/Lambda/Layer.md), [Function](./resources/Lambda/Function.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md)
+[Layer](./resources/Lambda/Layer.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md), [Function](./resources/Lambda/Function.md), [Permission](./resources/Lambda/Permission.md)
 * Lightsail: 
 [Bucket](./resources/Lightsail/Bucket.md), [Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
+* Macie2: 
+[Account](./resources/Macie2/Account.md), [AllowList](./resources/Macie2/AllowList.md), [ClassificationExportConfiguration](./resources/Macie2/ClassificationExportConfiguration.md), [ClassificationJob](./resources/Macie2/ClassificationJob.md), [CustomDataIdentifier](./resources/Macie2/CustomDataIdentifier.md), [FindingsFilter](./resources/Macie2/FindingsFilter.md), [InvitationAccepter](./resources/Macie2/InvitationAccepter.md), [Member](./resources/Macie2/Member.md), [OrganizationAdminAccount](./resources/Macie2/OrganizationAdminAccount.md)
 * MediaConnect: 
 [Flow](./resources/MediaConnect/Flow.md)
 * MediaLive: 
@@ -188,10 +194,14 @@ List of resources for provider aws:
 [AccessPoint](./resources/S3Control/AccessPoint.md), [MultiRegionAccessPoint](./resources/S3Control/MultiRegionAccessPoint.md)
 * Scheduler: 
 [Schedule](./resources/Scheduler/Schedule.md), [ScheduleGroup](./resources/Scheduler/ScheduleGroup.md)
+* EventSchemas: 
+[Discoverer](./resources/EventSchemas/Discoverer.md), [Registry](./resources/EventSchemas/Registry.md), [RegistryPolicy](./resources/EventSchemas/RegistryPolicy.md), [Schema](./resources/EventSchemas/Schema.md)
 * SecretsManager: 
 [Secret](./resources/SecretsManager/Secret.md), [SecretRotation](./resources/SecretsManager/SecretRotation.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SecurityHub: 
 [Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [ProductSubscription](./resources/SecurityHub/ProductSubscription.md), [StandardsControl](./resources/SecurityHub/StandardsControl.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
+* ServiceDiscovery: 
+[HttpNamespace](./resources/ServiceDiscovery/HttpNamespace.md), [PrivateDnsNamespace](./resources/ServiceDiscovery/PrivateDnsNamespace.md), [PublicDnsNamespace](./resources/ServiceDiscovery/PublicDnsNamespace.md), [Service](./resources/ServiceDiscovery/Service.md)
 * ServiceQuotas: 
 [ServiceQuota](./resources/ServiceQuotas/ServiceQuota.md)
 * SESV2: 
@@ -208,6 +218,8 @@ List of resources for provider aws:
 [AccountAssignment](./resources/SSOAdmin/AccountAssignment.md), [Instance](./resources/SSOAdmin/Instance.md), [InstanceAccessControlAttribute](./resources/SSOAdmin/InstanceAccessControlAttribute.md), [PermissionSet](./resources/SSOAdmin/PermissionSet.md)
 * StepFunctions: 
 [StateMachine](./resources/StepFunctions/StateMachine.md)
+* Synthetics: 
+[Canary](./resources/Synthetics/Canary.md)
 * TimestreamWrite: 
 [Database](./resources/TimestreamWrite/Database.md), [Table](./resources/TimestreamWrite/Table.md)
 * Transfer: 

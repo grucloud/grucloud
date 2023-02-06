@@ -338,7 +338,7 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.events`,
       PolicyDocument: {
@@ -351,11 +351,9 @@ exports.createResources = () => [
               },
             },
             Action: "events:PutEvents",
-            Resource: `${getId({
-              type: "EventBus",
-              group: "CloudWatchEvents",
-              name: "DemoEventBus",
-            })}`,
+            Resource: `arn:aws:events:${
+              config.region
+            }:${config.accountId()}:event-bus/DemoEventBus`,
             Effect: "Allow",
             Principal: {
               AWS: "*",
@@ -379,12 +377,6 @@ exports.createResources = () => [
     group: "ECS",
     properties: ({}) => ({
       clusterName: "CdkStack-ClusterEB0386A7-gyqzhZkvCS5B",
-      settings: [
-        {
-          name: "containerInsights",
-          value: "disabled",
-        },
-      ],
     }),
   },
   {
@@ -456,7 +448,11 @@ exports.createResources = () => [
             },
           ],
           essential: true,
-          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:a2ee93c23f547d6744410d73d5a2b81dc046717e7569d4e3f278f4d31e2f15bc`,
+          image: `${config.accountId()}.dkr.ecr.${
+            config.region
+          }.amazonaws.com/cdk-hnb659fds-container-assets-${config.accountId()}-${
+            config.region
+          }:a2ee93c23f547d6744410d73d5a2b81dc046717e7569d4e3f278f4d31e2f15bc`,
           logConfiguration: {
             logDriver: "awslogs",
             options: {
@@ -480,32 +476,6 @@ exports.createResources = () => [
       family: "CdkStackFargateServiceTaskDef2C533A52",
       memory: "2048",
       networkMode: "awsvpc",
-      requiresAttributes: [
-        {
-          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
-        },
-        {
-          name: "ecs.capability.execution-role-awslogs",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.ecr-auth",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.task-iam-role",
-        },
-        {
-          name: "ecs.capability.execution-role-ecr-pull",
-        },
-        {
-          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
-        },
-        {
-          name: "ecs.capability.task-eni",
-        },
-      ],
       requiresCompatibilities: ["FARGATE"],
     }),
     dependencies: ({}) => ({
@@ -553,6 +523,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({
@@ -617,7 +588,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -638,11 +609,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `${getId({
-                  type: "EventBus",
-                  group: "CloudWatchEvents",
-                  name: "DemoEventBus",
-                })}`,
+                Resource: `arn:aws:events:${
+                  config.region
+                }:${config.accountId()}:event-bus/DemoEventBus`,
                 Effect: "Allow",
               },
             ],
@@ -650,9 +619,6 @@ exports.createResources = () => [
           PolicyName: "FargateServiceTaskDefTaskRoleDefaultPolicy63F83D6F",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      eventBus: "DemoEventBus",
     }),
   },
 ];

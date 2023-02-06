@@ -51,7 +51,6 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 30010,
       HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
       HealthCheckEnabled: true,
       HealthCheckIntervalSeconds: 30,
       HealthCheckTimeoutSeconds: 5,
