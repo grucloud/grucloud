@@ -4,26 +4,26 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Account",
+    type: "ClientCertificate",
     group: "APIGateway",
-    dependencies: ({}) => ({
-      cloudwatchRole:
-        "MyServerlessApplicationSt-RestApiCloudWatchRoleE3E-1H65MB1E6PVYZ",
+    properties: ({}) => ({
+      description: "apigw-client-certificate",
     }),
   },
   {
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "RestApi",
+      name: "apigw-client-certificate",
       apiKeySource: "HEADER",
       endpointConfiguration: {
-        types: ["REGIONAL"],
+        types: ["EDGE"],
       },
       schema: {
         openapi: "3.0.1",
         info: {
-          title: "RestApi",
+          description: "Client Certificate REST API demo",
+          title: "apigw-client-certificate",
           version: "1",
         },
         paths: {
@@ -38,7 +38,7 @@ exports.createResources = () => [
                   config.region
                 }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq:Prod/invocations`,
+                }:${config.accountId()}:function:sam-app-AppFunction-ATIRrjj178tb/invocations`,
               },
             },
           },
@@ -62,7 +62,7 @@ exports.createResources = () => [
         },
       },
       deployment: {
-        stageName: "prod",
+        stageName: "Prod",
       },
     }),
   },
@@ -70,19 +70,18 @@ exports.createResources = () => [
     type: "Stage",
     group: "APIGateway",
     properties: ({}) => ({
-      stageName: "prod",
+      stageName: "Prod",
     }),
     dependencies: ({}) => ({
-      restApi: "RestApi",
-      account: "default",
+      restApi: "apigw-client-certificate",
+      clientCertificate: "apigw-client-certificate",
     }),
   },
   {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName:
-        "MyServerlessApplicationSt-MyFunctionServiceRole3C3-1UQEITBUUG0C2",
+      RoleName: "sam-app-AppFunctionRole-1R897IN6DS3LE",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -105,45 +104,17 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName:
-        "MyServerlessApplicationSt-RestApiCloudWatchRoleE3E-1H65MB1E6PVYZ",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "apigateway.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      AttachedPolicies: [
-        {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
-          PolicyArn:
-            "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
-        },
-      ],
-    }),
-  },
-  {
     type: "Function",
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName:
-          "MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq",
-        Handler: "index.handler",
-        Runtime: "python3.9",
+        FunctionName: "sam-app-AppFunction-ATIRrjj178tb",
+        Handler: "app.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
-      role: "MyServerlessApplicationSt-MyFunctionServiceRole3C3-1UQEITBUUG0C2",
+      role: "sam-app-AppFunctionRole-1R897IN6DS3LE",
     }),
   },
   {
@@ -153,24 +124,21 @@ exports.createResources = () => [
       Permissions: [
         {
           Action: "lambda:InvokeFunction",
-          FunctionName:
-            "MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq",
+          FunctionName: "sam-app-AppFunction-ATIRrjj178tb",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "MyServerlessApplicationStack-MyFunctionlambdaPermission88C73777-PV7LQXN28ZYS",
+          StatementId: "sam-app-AppFunctionPermission-LZQYVV783R5N",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
-            name: "RestApi",
+            name: "apigw-client-certificate",
             path: "live.arnv2",
           })}/*/GET/`,
         },
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction:
-        "MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq",
-      apiGatewayRestApis: ["RestApi"],
+      lambdaFunction: "sam-app-AppFunction-ATIRrjj178tb",
+      apiGatewayRestApis: ["apigw-client-certificate"],
     }),
   },
 ];

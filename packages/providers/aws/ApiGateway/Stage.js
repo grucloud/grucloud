@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { map, pipe, tap, get, pick, omit, assign } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  get,
+  pick,
+  omit,
+  assign,
+  fork,
+  switchCase,
+} = require("rubico");
 const {
   defaultsDeep,
   values,
@@ -7,6 +17,7 @@ const {
   when,
   isEmpty,
   append,
+  filterOut,
 } = require("rubico/x");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -152,6 +163,11 @@ exports.Stage = ({ compare }) => ({
         () =>
           "default",
     },
+    clientCertificate: {
+      type: "ClientCertificate",
+      group: "APIGateway",
+      dependencyId: ({ lives, config }) => pipe([get("clientCertificateId")]),
+    },
   },
 
   getByName: getByNameCore,
@@ -186,7 +202,24 @@ exports.Stage = ({ compare }) => ({
       ({ restApiId, stageName }) =>
         pipe([
           () => payload,
-          createPatchOperations,
+          fork({
+            methodSettings: createPatchOperations,
+            clientCertificate: pipe([
+              switchCase([
+                get("clientCertificateId"),
+                ({ clientCertificateId }) => ({
+                  op: "replace",
+                  path: "/clientCertificateId",
+                  value: clientCertificateId,
+                }),
+              ]),
+            ]),
+          }),
+          ({ methodSettings, clientCertificate }) => [
+            ...methodSettings,
+            clientCertificate,
+          ],
+          filterOut(isEmpty),
           (patchOperations) => ({
             restApiId,
             stageName,
@@ -219,7 +252,7 @@ exports.Stage = ({ compare }) => ({
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { restApi },
+    dependencies: { restApi, clientCertificate },
     config,
   }) =>
     pipe([
@@ -232,5 +265,14 @@ exports.Stage = ({ compare }) => ({
         deploymentId: getField(restApi, "deployments[0].id"),
         tags: buildTagsObject({ config, namespace, userTags: tags }),
       }),
+      when(
+        () => clientCertificate,
+        defaultsDeep({
+          clientCertificateId: getField(
+            clientCertificate,
+            "clientCertificateId"
+          ),
+        })
+      ),
     ])(),
 });

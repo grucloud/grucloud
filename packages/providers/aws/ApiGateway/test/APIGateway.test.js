@@ -29,6 +29,18 @@ describe("APIGateway", async function () {
       }),
       awsResourceTest,
     ])());
+  it("APIGatewayClientCertificate", () =>
+    pipe([
+      () => ({
+        groupType: "APIGateway::ClientCertificate",
+        livesNotFound: ({ config }) => [
+          {
+            clientCertificateId: `12345abcd`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("RestApi", () =>
     pipe([
       () => ({

@@ -39,10 +39,6 @@ exports.diffToPatch = ({ diff }) =>
       add: pipe([
         get("liveDiff.added", {}),
         Object.entries,
-        tap((params) => {
-          assert(true);
-        }),
-
         map(([key, value]) => ({
           op: "replace",
           path: `/${key}`,

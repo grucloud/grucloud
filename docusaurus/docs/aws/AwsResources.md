@@ -15,7 +15,7 @@ List of resources for provider aws:
 * Amplify: 
 [App](./resources/Amplify/App.md), [BackendEnvironment](./resources/Amplify/BackendEnvironment.md), [Branch](./resources/Amplify/Branch.md), [DomainAssociation](./resources/Amplify/DomainAssociation.md), [Webhook](./resources/Amplify/Webhook.md)
 * APIGateway: 
-[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Authorizer](./resources/APIGateway/Authorizer.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
+[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Authorizer](./resources/APIGateway/Authorizer.md), [ClientCertificate](./resources/APIGateway/ClientCertificate.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
 * ApiGatewayV2: 
 [Api](./resources/ApiGatewayV2/Api.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [DomainName](./resources/ApiGatewayV2/DomainName.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Stage](./resources/ApiGatewayV2/Stage.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
 * AppConfig: 
