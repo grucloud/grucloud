@@ -124,6 +124,7 @@ exports.ElasticLoadBalancingV2LoadBalancer = () => ({
     "VpcId",
     "State",
     "AvailabilityZones",
+    "SecurityGroups",
   ],
   filterLive: () => pick(["Name", "Scheme", "Type", "IpAddressType"]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#getLoadBalancer-property

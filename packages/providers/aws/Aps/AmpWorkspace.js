@@ -8,7 +8,6 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
 
 const { Tagger } = require("./AmpCommon");
-const { RtmpAdMarkers } = require("@aws-sdk/client-medialive");
 
 const buildArn = () =>
   pipe([

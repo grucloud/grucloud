@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, omit, tap, assign, fork, map, get } = require("rubico");
-const { callProp, values, flatten } = require("rubico/x");
+const { callProp, values, flatten, isObject } = require("rubico/x");
 
 const { createTagger } = require("../AwsTagger");
 
@@ -31,11 +31,23 @@ exports.buildPayloadDescriptionTags = pipe([
 exports.diffToPatch = ({ diff }) =>
   pipe([
     () => diff,
+    tap((params) => {
+      assert(true);
+    }),
+
     fork({
       add: pipe([
         get("liveDiff.added", {}),
         Object.entries,
-        map(([key, value]) => ({ op: "replace", path: `/${key}`, value })),
+        tap((params) => {
+          assert(true);
+        }),
+
+        map(([key, value]) => ({
+          op: "replace",
+          path: `/${key}`,
+          value: diff.target[key],
+        })),
       ]),
       replace: pipe([
         get("liveDiff.updated", {}),
@@ -43,7 +55,7 @@ exports.diffToPatch = ({ diff }) =>
         map(([key, value]) => ({
           op: "replace",
           path: `/${key}`,
-          value: `${value?.toString()}`,
+          value: diff.target[key],
         })),
       ]),
     }),
