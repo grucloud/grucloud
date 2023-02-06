@@ -1,6 +1,6 @@
 {
   "name": "hub-and-spoke-with-inspection-vpc",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^11.0.0",
-    "@grucloud/provider-aws": "^11.0.0",
+    "@grucloud/core": "^11.0.1",
+    "@grucloud/provider-aws": "^11.0.1",
     "rubico": "^1.8.11"
   },
   "devDependencies": {
