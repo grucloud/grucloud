@@ -1,6 +1,6 @@
 {
   "name": "vpn-aws-gcp",
-  "version": "10.7.1",
+  "version": "11.0.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,9 +21,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^10.7.1",
-    "@grucloud/provider-aws": "^10.7.1",
-    "@grucloud/provider-google": "^10.7.1",
+    "@grucloud/core": "^11.0.0",
+    "@grucloud/provider-aws": "^11.0.0",
+    "@grucloud/provider-google": "^11.0.0",
     "rubico": "^1.8.11"
   },
   "devDependencies": {
