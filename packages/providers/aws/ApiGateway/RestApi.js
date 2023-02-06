@@ -71,7 +71,6 @@ const assignUrl = ({ config }) =>
       ]),
     }),
   ]);
-
 const assignArn = ({ config }) =>
   pipe([
     tap((params) => {
@@ -83,6 +82,15 @@ const assignArn = ({ config }) =>
           assert(id);
         }),
         ({ id }) => `arn:aws:apigateway:${config.region}::/restapis/${id}`,
+      ]),
+    }),
+  ]);
+const assignArnV2 = ({ config }) =>
+  pipe([
+    assign({
+      arnv2: pipe([
+        ({ id }) =>
+          `arn:aws:execute-api:${config.region}:${config.accountId()}:${id}`,
       ]),
     }),
   ]);
@@ -511,6 +519,7 @@ const assignPolicy = () =>
 const decorate = ({ endpoint, config }) =>
   pipe([
     assignArn({ config }),
+    assignArnV2({ config }),
     assignUrl({ config }),
     assignPolicy(),
     assign({
@@ -606,6 +615,7 @@ exports.RestApi = ({ compare }) => ({
   omitProperties: [
     "id",
     "arn",
+    "arnv2",
     "url",
     "createdDate",
     "deployments",
@@ -783,9 +793,15 @@ exports.RestApi = ({ compare }) => ({
                                 assign({
                                   uri: pipe([
                                     get("uri"),
+                                    tap((params) => {
+                                      assert(true);
+                                    }),
                                     replaceAccountAndRegion({
                                       providerConfig,
                                       lives,
+                                    }),
+                                    tap((params) => {
+                                      assert(true);
                                     }),
                                   ]),
                                 })

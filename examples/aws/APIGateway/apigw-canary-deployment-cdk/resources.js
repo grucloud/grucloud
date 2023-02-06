@@ -4,41 +4,44 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "ApiKey",
+    type: "Account",
     group: "APIGateway",
-    properties: ({}) => ({
-      name: "sam-ap-ApiKe-kc7iRALKZlqd",
+    dependencies: ({}) => ({
+      cloudwatchRole:
+        "MyServerlessApplicationSt-RestApiCloudWatchRoleE3E-1H65MB1E6PVYZ",
     }),
   },
   {
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "apigw-api-key",
+      name: "RestApi",
       apiKeySource: "HEADER",
       endpointConfiguration: {
-        types: ["EDGE"],
+        types: ["REGIONAL"],
       },
       schema: {
         openapi: "3.0.1",
         info: {
-          description: "API key REST API demo",
-          title: "apigw-api-key",
+          title: "RestApi",
           version: "1",
         },
         paths: {
           "/": {
             get: {
+              parameters: [],
               responses: {},
               "x-amazon-apigateway-integration": {
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_MATCH",
+                requestParameters: {},
+                requestTemplates: {},
                 type: "AWS_PROXY",
                 uri: `arn:aws:apigateway:${
                   config.region
                 }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:sam-app-AppFunction-zawrcFMGZvlZ/invocations`,
+                }:${config.accountId()}:function:MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq:Prod/invocations`,
               },
             },
           },
@@ -46,10 +49,12 @@ exports.createResources = () => [
         components: {
           schemas: {
             Empty: {
+              $schema: "http://json-schema.org/draft-04/schema#",
               title: "Empty Schema",
               type: "object",
             },
             Error: {
+              $schema: "http://json-schema.org/draft-04/schema#",
               title: "Error Schema",
               type: "object",
               properties: {
@@ -62,7 +67,7 @@ exports.createResources = () => [
         },
       },
       deployment: {
-        stageName: "Prod",
+        stageName: "prod",
       },
     }),
   },
@@ -70,48 +75,19 @@ exports.createResources = () => [
     type: "Stage",
     group: "APIGateway",
     properties: ({}) => ({
-      stageName: "Prod",
+      stageName: "prod",
     }),
     dependencies: ({}) => ({
-      restApi: "apigw-api-key",
-    }),
-  },
-  {
-    type: "UsagePlan",
-    group: "APIGateway",
-    properties: ({ getId }) => ({
-      apiStages: [
-        {
-          apiId: `${getId({
-            type: "RestApi",
-            group: "APIGateway",
-            name: "apigw-api-key",
-          })}`,
-          stage: "Prod",
-        },
-      ],
-      name: "sam-ap-Usage-3jS44lYqFsit",
-    }),
-    dependencies: ({}) => ({
-      stages: ["apigw-api-key::Prod"],
-    }),
-  },
-  {
-    type: "UsagePlanKey",
-    group: "APIGateway",
-    properties: ({}) => ({
-      name: "sam-ap-ApiKe-kc7iRALKZlqd",
-    }),
-    dependencies: ({}) => ({
-      usagePlan: "sam-ap-Usage-3jS44lYqFsit",
-      apiKey: "sam-ap-ApiKe-kc7iRALKZlqd",
+      restApi: "RestApi",
+      account: "default",
     }),
   },
   {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-AppFunctionRole-E6MNAT8N8A3G",
+      RoleName:
+        "MyServerlessApplicationSt-MyFunctionServiceRole3C3-1UQEITBUUG0C2",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -134,17 +110,45 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName:
+        "MyServerlessApplicationSt-RestApiCloudWatchRoleE3E-1H65MB1E6PVYZ",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "apigateway.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+        },
+      ],
+    }),
+  },
+  {
     type: "Function",
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-AppFunction-zawrcFMGZvlZ",
-        Handler: "app.handler",
-        Runtime: "nodejs14.x",
+        FunctionName:
+          "MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq",
+        Handler: "index.handler",
+        Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-AppFunctionRole-E6MNAT8N8A3G",
+      role: "MyServerlessApplicationSt-MyFunctionServiceRole3C3-1UQEITBUUG0C2",
     }),
   },
   {
@@ -154,21 +158,24 @@ exports.createResources = () => [
       Permissions: [
         {
           Action: "lambda:InvokeFunction",
-          FunctionName: "sam-app-AppFunction-zawrcFMGZvlZ",
+          FunctionName:
+            "MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-AppFunctionPermission-1V6SLULIFQ42I",
+          StatementId:
+            "MyServerlessApplicationStack-MyFunctionlambdaPermission88C73777-PV7LQXN28ZYS",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
-            name: "apigw-api-key",
+            name: "RestApi",
             path: "live.arnv2",
           })}/*/GET/`,
         },
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction: "sam-app-AppFunction-zawrcFMGZvlZ",
-      apiGatewayRestApis: ["apigw-api-key"],
+      lambdaFunction:
+        "MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq",
+      apiGatewayRestApis: ["RestApi"],
     }),
   },
 ];

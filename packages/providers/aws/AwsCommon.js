@@ -77,21 +77,11 @@ const dependenciesFromEnv = {
     type: "UserPoolClient",
     group: "CognitoIdentityServiceProvider",
   },
-  // dynamoDbTables: {
-  //   pathLive: "live.TableName",
-  //   type: "Table",
-  //   group: "DynamoDB",
-  // },
   rdsDbClusters: {
     pathLive: "live.DBClusterArn",
     type: "DBCluster",
     group: "RDS",
   },
-  // s3Buckets: {
-  //   pathLive: "name",
-  //   type: "Bucket",
-  //   group: "S3",
-  // },
   secretsManagerSecrets: {
     pathLive: "live.ARN",
     type: "Secret",
@@ -102,25 +92,63 @@ const dependenciesFromEnv = {
     type: "Topic",
     group: "SNS",
   },
-  // ssmParameters: {
-  //   pathLive: "name",
-  //   type: "Parameter",
-  //   group: "SSM",
-  // },
 };
 
-exports.replaceEnv =
+const dependenciesFromPolicies = {
+  apiGatewayRestApis: {
+    pathLive: "live.arnv2",
+    type: "RestApi",
+    group: "APIGateway",
+  },
+  apiGatewayV2Apis: {
+    pathLive: "id",
+    type: "Api",
+    group: "ApiGatewayV2",
+  },
+  appsyncGraphqlApis: {
+    pathLive: "live.uris.GRAPHQL",
+    type: "GraphqlApi",
+    group: "AppSync",
+  },
+  cognitoUserPools: {
+    pathLive: "id",
+    type: "UserPool",
+    group: "CognitoIdentityServiceProvider",
+  },
+  cognitoUserPoolClient: {
+    pathLive: "id",
+    type: "UserPoolClient",
+    group: "CognitoIdentityServiceProvider",
+  },
+  rdsDbClusters: {
+    pathLive: "live.DBClusterArn",
+    type: "DBCluster",
+    group: "RDS",
+  },
+  secretsManagerSecrets: {
+    pathLive: "live.ARN",
+    type: "Secret",
+    group: "SecretsManager",
+  },
+  snsTopics: {
+    pathLive: "id",
+    type: "Topic",
+    group: "SNS",
+  },
+};
+
+const replaceDependency =
+  (dependencies) =>
   ({ lives, providerConfig }) =>
   (idToMatch) =>
     pipe([
-      () => dependenciesFromEnv,
+      () => dependencies,
       find(({ type, group, pathLive }) =>
         pipe([
           () => lives,
           tap((params) => {
             assert(true);
           }),
-
           any(
             and([
               eq(get("type"), type),
@@ -150,6 +178,9 @@ exports.replaceEnv =
           ])(),
       ]),
     ])();
+
+exports.replaceEnv = replaceDependency(dependenciesFromEnv);
+exports.replacePolicy = replaceDependency(dependenciesFromPolicies);
 
 const buildDependencyFromEnv =
   ({ pathEnvironment }) =>

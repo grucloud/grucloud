@@ -14,7 +14,7 @@ const {
 const { defaultsDeep, when, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { replaceArnWithAccountAndRegion } = require("../AwsCommon");
+const { replacePolicy } = require("../AwsCommon");
 
 const pickId = pipe([
   tap(({ FunctionName }) => {
@@ -25,7 +25,7 @@ const pickId = pipe([
 
 const dependenciesPermissions = {
   apiGatewayRestApis: {
-    pathLive: "live.id",
+    pathLive: "live.arnv2",
     type: "RestApi",
     group: "APIGateway",
   },
@@ -186,10 +186,7 @@ exports.LambdaPermission = () => ({
               assign({
                 SourceArn: pipe([
                   get("SourceArn"),
-                  replaceArnWithAccountAndRegion({
-                    providerConfig,
-                    lives,
-                  }),
+                  replacePolicy({ lives, providerConfig }),
                 ]),
               })
             )
