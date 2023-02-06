@@ -68,9 +68,8 @@ const untagResource = untagResourceIam({
 const cannotBeDeleted = () =>
   pipe([
     or([
-      // Name
       // Do not mess with CloudFormation/CDK roles.
-      pipe([get("Name"), or([includes("cdk-")])]),
+      pipe([get("RoleName"), or([includes("cdk-")])]),
       //Path
       pipe([
         get("Path"),

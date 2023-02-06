@@ -379,11 +379,7 @@ exports.createResources = () => [
           environment: [
             {
               name: "dbClusterArn",
-              value: `${getId({
-                type: "DBCluster",
-                group: "RDS",
-                name: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
-              })}`,
+              value: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
             },
             {
               name: "secretArn",
@@ -391,6 +387,7 @@ exports.createResources = () => [
                 type: "Secret",
                 group: "SecretsManager",
                 name: "aurora-user-secret",
+                path: "live.ARN",
               })}`,
             },
             {
@@ -399,7 +396,11 @@ exports.createResources = () => [
             },
           ],
           essential: true,
-          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:ad758bca7c4674905c156fb09c1cdc499a660e8bd2f563b4a0987f2385ecaf90`,
+          image: `${config.accountId()}.dkr.ecr.${
+            config.region
+          }.amazonaws.com/cdk-hnb659fds-container-assets-${config.accountId()}-${
+            config.region
+          }:ad758bca7c4674905c156fb09c1cdc499a660e8bd2f563b4a0987f2385ecaf90`,
           logConfiguration: {
             logDriver: "awslogs",
             options: {

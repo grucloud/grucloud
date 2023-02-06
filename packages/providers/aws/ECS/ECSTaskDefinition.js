@@ -28,10 +28,12 @@ const {
   append,
 } = require("rubico/x");
 
-const { replaceRegion } = require("../AwsCommon");
-
 const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
-
+const {
+  replaceRegion,
+  replaceAccountAndRegion,
+  replaceEnv,
+} = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { Tagger, buildTagsEcs } = require("./ECSCommon");
 
@@ -216,7 +218,7 @@ exports.ECSTaskDefinition = ({ compare }) => ({
                 assign({
                   image: pipe([
                     get("image"),
-                    replaceRegion({ providerConfig }),
+                    replaceAccountAndRegion({ providerConfig }),
                   ]),
                 })
               ),
@@ -254,15 +256,7 @@ exports.ECSTaskDefinition = ({ compare }) => ({
                       assign({
                         value: pipe([
                           get("value"),
-                          switchCase([
-                            eq(identity, providerConfig.region),
-                            replaceRegion({ providerConfig }),
-                            replaceWithName({
-                              path: "id",
-                              providerConfig,
-                              lives,
-                            }),
-                          ]),
+                          replaceEnv({ lives, providerConfig }),
                         ]),
                       })
                     ),

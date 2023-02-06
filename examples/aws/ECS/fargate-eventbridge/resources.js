@@ -448,7 +448,11 @@ exports.createResources = () => [
             },
           ],
           essential: true,
-          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:a2ee93c23f547d6744410d73d5a2b81dc046717e7569d4e3f278f4d31e2f15bc`,
+          image: `${config.accountId()}.dkr.ecr.${
+            config.region
+          }.amazonaws.com/cdk-hnb659fds-container-assets-${config.accountId()}-${
+            config.region
+          }:a2ee93c23f547d6744410d73d5a2b81dc046717e7569d4e3f278f4d31e2f15bc`,
           logConfiguration: {
             logDriver: "awslogs",
             options: {

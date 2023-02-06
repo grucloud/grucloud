@@ -1,0 +1,33 @@
+@startmindmap
+title Resources for project sqs_fargate_cdk_python
+skinparam monochrome true
++ Infra
+++ aws
++++ ApplicationAutoScaling
+++++ Policy (2)
+++++ Target (1)
++++ CloudWatch
+++++ MetricAlarm (2)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ Subnet (6)
+++++ RouteTable (6)
+++++ RouteTableAssociation (6)
+++++ Route (6)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (1)
+++++ Instance (1)
++++ ECS
+++++ Cluster (1)
+++++ Service (1)
+++++ TaskDefinition (1)
++++ IAM
+++++ Role (3)
+++++ InstanceProfile (1)
++++ SQS
+++++ Queue (1)
+@endmindmap

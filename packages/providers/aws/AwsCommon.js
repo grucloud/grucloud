@@ -1151,6 +1151,7 @@ const replaceArnWithAccountAndRegion =
               () =>
                 !Id.endsWith("amazonaws.com") &&
                 Id != providerConfig.accountId() &&
+                !Id.startsWith("arn:aws:ecr") &&
                 !Id.startsWith("arn:aws:kinesis") &&
                 !Id.startsWith("arn:aws:lambda") &&
                 !Id.startsWith("arn:aws:dynamodb") &&

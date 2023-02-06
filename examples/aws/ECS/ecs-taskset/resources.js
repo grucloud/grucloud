@@ -999,7 +999,9 @@ nohup ./startup.sh &
             startPeriod: 10,
             timeout: 2,
           },
-          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/appmesh-workshop-crystal-wbwhxedgaxgq:epoch`,
+          image: `${config.accountId()}.dkr.ecr.${
+            config.region
+          }.amazonaws.com/appmesh-workshop-crystal-wbwhxedgaxgq:epoch`,
           name: "crystal-service",
           portMappings: [
             {
