@@ -44,7 +44,6 @@ exports.createResources = () => [
     type: "Route",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      RequestParameters: {},
       RouteKey: "$default",
     }),
     dependencies: ({}) => ({

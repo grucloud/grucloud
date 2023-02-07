@@ -2,18 +2,25 @@ const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, callProp, when } = require("rubico/x");
 
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { dependencyIdApi, ignoreErrorCodes } = require("./ApiGatewayV2Common");
 
 const pickId = pick(["ApiId", "RouteId"]);
 
-const decorate = ({ endpoint, config }) =>
+const decorate = ({ endpoint, config, live }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
+      assert(live.ApiId);
+      //assert(live.ApiName);
     }),
+    defaultsDeep({
+      ApiId: live.ApiId,
+      ApiName: live.Name,
+    }),
+    omitIfEmpty(["RequestParameters", "RequestModels", "AuthorizationScopes"]),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
@@ -32,7 +39,13 @@ exports.ApiGatewayV2Route = () => ({
         () => `route::${api}::${RouteKey}`,
       ])(),
   findName: () =>
-    pipe([({ ApiName, RouteKey }) => `route::${ApiName}::${RouteKey}`]),
+    pipe([
+      tap(({ ApiName, RouteKey }) => {
+        assert(ApiName);
+        assert(RouteKey);
+      }),
+      ({ ApiName, RouteKey }) => `route::${ApiName}::${RouteKey}`,
+    ]),
   findId: () =>
     pipe([
       get("RouteId"),
@@ -43,9 +56,7 @@ exports.ApiGatewayV2Route = () => ({
   ignoreErrorCodes,
   propertiesDefault: {
     ApiKeyRequired: false,
-    AuthorizationScopes: [],
     AuthorizationType: "NONE",
-    RequestModels: {},
   },
   omitProperties: [
     "RouteId",
@@ -85,12 +96,7 @@ exports.ApiGatewayV2Route = () => ({
   getById: {
     pickId,
     method: "getRoute",
-    decorate: ({ live: { ApiId } }) =>
-      pipe([
-        defaultsDeep({
-          ApiId,
-        }),
-      ]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listRoutes-property
   getList: ({ client, endpoint, getById, config }) =>
@@ -102,14 +108,8 @@ exports.ApiGatewayV2Route = () => ({
           method: "getRoutes",
           getParam: "Items",
           config,
-          decorate: ({ parent: { ApiId, Name: ApiName } }) =>
-            pipe([
-              tap((params) => {
-                assert(ApiId);
-                assert(ApiName);
-              }),
-              defaultsDeep({ ApiId, ApiName }),
-            ]),
+          decorate: ({ parent }) =>
+            pipe([decorate({ endpoint, config, live: parent })]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createRoute-property

@@ -10,6 +10,7 @@ const {
   switchCase,
   tryCatch,
   assign,
+  map,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -24,7 +25,7 @@ const {
 const logger = require("@grucloud/core/logger")({
   prefix: "IntegrationV2",
 });
-const { throwIfNotAwsError } = require("../AwsCommon");
+const { throwIfNotAwsError, replaceAccountAndRegion } = require("../AwsCommon");
 const { tos } = require("@grucloud/core/tos");
 
 const { createEndpoint } = require("../AwsCommon");
@@ -242,6 +243,18 @@ exports.ApiGatewayV2Integration = ({}) => ({
       dependencyId: ({ lives, config }) => get("CredentialsArn"),
     },
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      when(
+        get("RequestParameters"),
+        assign({
+          RequestParameters: pipe([
+            get("RequestParameters"),
+            map(replaceAccountAndRegion({ lives, providerConfig })),
+          ]),
+        })
+      ),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getIntegration-property
   getById: {
     method: "getIntegration",
