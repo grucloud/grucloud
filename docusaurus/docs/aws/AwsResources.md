@@ -143,7 +143,7 @@ List of resources for provider aws:
 * LakeFormation: 
 [DataLakeSettings](./resources/LakeFormation/DataLakeSettings.md), [LFTag](./resources/LakeFormation/LFTag.md), [Resource](./resources/LakeFormation/Resource.md)
 * Lambda: 
-[Layer](./resources/Lambda/Layer.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md), [Function](./resources/Lambda/Function.md), [Permission](./resources/Lambda/Permission.md)
+[Alias](./resources/Lambda/Alias.md), [Layer](./resources/Lambda/Layer.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md), [Function](./resources/Lambda/Function.md), [Permission](./resources/Lambda/Permission.md)
 * Lightsail: 
 [Bucket](./resources/Lightsail/Bucket.md), [Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
 * Macie2: 

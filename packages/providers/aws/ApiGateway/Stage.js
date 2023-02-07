@@ -122,6 +122,7 @@ exports.Stage = ({ compare }) => ({
     "accessLogSettings",
     "restApiId",
     "restApiName",
+    "canarySettings.deploymentId",
   ],
   propertiesDefault: { cacheClusterEnabled: false, tracingEnabled: false },
   compare: compare({
@@ -129,16 +130,6 @@ exports.Stage = ({ compare }) => ({
   }),
   filterLive: () =>
     pipe([
-      pick([
-        "stageName",
-        "description",
-        "StageVariables",
-        "methodSettings",
-        "accessLogSettings",
-        "cacheClusterEnabled",
-        "cacheClusterSize",
-        "tracingEnabled",
-      ]),
       omitIfEmpty(["methodSettings"]),
       omit(["accessLogSettings.destinationArn"]),
     ]),
@@ -272,6 +263,14 @@ exports.Stage = ({ compare }) => ({
             clientCertificate,
             "clientCertificateId"
           ),
+        })
+      ),
+      when(
+        get("canarySettings"),
+        defaultsDeep({
+          canarySettings: {
+            deploymentId: getField(restApi, "deployments[0].id"),
+          },
         })
       ),
     ])(),

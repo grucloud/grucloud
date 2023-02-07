@@ -3,7 +3,8 @@ const { pipe, tap, eq, get, tryCatch, not } = require("rubico");
 const { callProp, last } = require("rubico/x");
 const Axios = require("axios");
 const fs = require("fs").promises;
-const zipDir = require("zip-dir");
+const AdmZip = require("adm-zip");
+
 const crypto = require("crypto");
 const { createEndpoint } = require("../AwsCommon");
 const { createTagger } = require("../AwsTagger");
@@ -38,23 +39,11 @@ exports.createZipBuffer = ({ localPath }) =>
     }),
     () => localPath,
     tap(fileExist),
-    () =>
-      zipDir(localPath, {
-        filter: pipe([not(callProp("endsWith", ".DS_Store"))]),
-      }),
-    // tap(
-    //   pipe([
-    //     (data) =>
-    //       fs.writeFile(
-    //         `${pipe([
-    //           () => localPath,
-    //           callProp("split", "/"),
-    //           last,
-    //         ])()}.target.zip`,
-    //         data
-    //       ),
-    //   ])
-    // ),
+    () => {
+      const zip = new AdmZip();
+      zip.addLocalFolder(localPath);
+      return zip.toBuffer();
+    },
   ])();
 
 exports.computeHash256 = (ZipFile) =>
@@ -62,9 +51,7 @@ exports.computeHash256 = (ZipFile) =>
     tap(() => {
       assert(ZipFile);
     }),
-    () => crypto.createHash("sha256"),
-    (hash256) =>
-      pipe([() => hash256.update(ZipFile), () => hash256.digest("base64")])(),
+    () => crypto.createHash("sha256").update(ZipFile).digest("base64"),
   ])();
 
 exports.Tagger = createTagger({

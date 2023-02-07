@@ -1,7 +1,7 @@
 from http import HTTPStatus
 import json
 import os
-//bla
+// Blabla 2
 def handler(event, context):
     try:
         body={

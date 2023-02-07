@@ -276,8 +276,7 @@
     "prettier": "2.8.3",
     "rubico": "1.9.3",
     "shelljs": "0.8.5",
-    "uuid": "9.0.0",
-    "zip-dir": "2.0.0"
+    "uuid": "9.0.0"
   },
   "devDependencies": {
     "dotenv": "16.0.3",

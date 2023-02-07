@@ -5,24 +5,19 @@ const {
   tap,
   get,
   assign,
-  filter,
   tryCatch,
   pick,
   eq,
   omit,
   any,
-  flatMap,
 } = require("rubico");
 const {
-  pluck,
-  values,
   defaultsDeep,
-  includes,
   callProp,
   when,
-  find,
   first,
   append,
+  isIn,
 } = require("rubico/x");
 const path = require("path");
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
@@ -33,7 +28,7 @@ const logger = require("@grucloud/core/logger")({
 });
 
 const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
-const { throwIfNotAwsError, compareAws } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createLambda, tagResource, untagResource } = require("./LambdaCommon");
@@ -121,16 +116,6 @@ exports.Function = ({ spec, config }) => {
               throw error;
             }
           ),
-          Policy: tryCatch(
-            pipe([
-              get("Configuration"),
-              pick(["FunctionName"]),
-              lambda().getPolicy,
-              get("Policy"),
-              tryCatch(JSON.parse, () => undefined),
-            ]),
-            throwIfNotAwsError("ResourceNotFoundException")
-          ),
           Code: pipe([
             get("Code"),
             assign({
@@ -163,37 +148,6 @@ exports.Function = ({ spec, config }) => {
     getById({}),
   ]);
 
-  const lambdaAddPermission = ({ Policy, FunctionName }) =>
-    pipe([
-      () => Policy,
-      get("Statement"),
-      map(({ Principal, Sid, Condition }) =>
-        pipe([
-          () => ({
-            Action: "lambda:InvokeFunction",
-            FunctionName,
-            Principal: Principal.Service,
-            StatementId: Sid,
-          }),
-          when(
-            () => get(["ArnLike", "AWS:SourceArn"])(Condition),
-            defaultsDeep({
-              SourceArn: get(["ArnLike", "AWS:SourceArn"])(Condition),
-            })
-          ),
-          when(
-            () => get(["StringEquals", "AWS:SourceAccount"])(Condition),
-            defaultsDeep({
-              SourceAccount: get(["StringEquals", "AWS:SourceAccount"])(
-                Condition
-              ),
-            })
-          ),
-          lambda().addPermission,
-        ])()
-      ),
-    ]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property
   const create = client.create({
     method: "createFunction",
@@ -211,6 +165,9 @@ exports.Function = ({ spec, config }) => {
         }),
         ({ FunctionArn }) => ({ Configuration: { FunctionArn } }),
       ]),
+    isInstanceUp: pipe([get("Configuration.State"), isIn(["Active"])]),
+    isInstanceError: pipe([get("Configuration.State"), isIn(["Failed"])]),
+    getErrorMessage: get("Configuration.StateReason", "failed"),
     shouldRetryOnExceptionMessages: [
       "Lambda was unable to configure access to your environment variables because the KMS key is invalid for CreateGrant.",
       "The role defined for the function cannot be assumed by Lambda",
@@ -220,24 +177,23 @@ exports.Function = ({ spec, config }) => {
     getById,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunctionUrlConfig-property
     postCreate: ({
+      endpoint,
       payload: {
         Configuration: { FunctionName },
         FunctionUrlConfig,
-        Policy,
       },
     }) =>
       pipe([
-        //TODO
-        when(() => Policy, lambdaAddPermission({ Policy, FunctionName })),
+        tap((params) => {
+          assert(endpoint);
+          assert(FunctionName);
+        }),
         when(
           () => FunctionUrlConfig,
           pipe([
-            tap(() => {
-              assert(FunctionName);
-            }),
             () => FunctionUrlConfig,
             defaultsDeep({ FunctionName }),
-            lambda().createFunctionUrlConfig,
+            endpoint().createFunctionUrlConfig,
           ])
         ),
       ]),
@@ -254,6 +210,7 @@ exports.Function = ({ spec, config }) => {
       () => ({
         FunctionName: payload.Configuration.FunctionName,
         ZipFile: payload.Configuration.Code.ZipFile,
+        Publish: true,
       }),
       // updateFunctionConfiguration
       lambda().updateFunctionCode,
@@ -271,6 +228,9 @@ exports.Function = ({ spec, config }) => {
               assert(true);
             }),
             lambda().getFunction,
+            tap((params) => {
+              assert(true);
+            }),
             eq(get("Configuration.LastUpdateStatus"), "Successful"),
           ]),
         }),
@@ -300,19 +260,6 @@ exports.Function = ({ spec, config }) => {
           lambda().updateFunctionUrlConfig,
         ])
       ),
-      // TODO
-      // when(
-      //   () =>
-      //     get("liveDiff.updated.Policy")(diff) ||
-      //     get("liveDiff.added.Policy")(diff),
-      //   pipe([
-      //     () => ({
-      //       FunctionName: payload.Configuration.FunctionName,
-      //       Policy: payload.Policy,
-      //     }),
-      //     lambdaAddPermission,
-      //   ])
-      // ),
       tap(() => {
         logger.info(`updated function done ${name}`);
       }),
@@ -463,6 +410,6 @@ exports.compareFunction = pipe([
       ]),
   }),
   tap((diff) => {
-    //logger.debug(`compareFunction ${tos(diff)}`);
+    assert(true);
   }),
 ]);

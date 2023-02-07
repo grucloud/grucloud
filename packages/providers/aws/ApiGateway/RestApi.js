@@ -827,7 +827,10 @@ exports.RestApi = ({ compare }) => ({
                 find(
                   and([
                     eq(get("groupType"), "APIGateway::Stage"),
-                    eq(get("live.deploymentId"), deploymentId),
+                    or([
+                      eq(get("live.deploymentId"), deploymentId),
+                      eq(get("live.canarySettings.deploymentId"), deploymentId),
+                    ]),
                   ])
                 ),
                 get("live.stageName"),

@@ -30,6 +30,9 @@ const {
   filterFunctionUrlConfig,
   removeVersion,
 } = require("./Function");
+
+const { LambdaAlias } = require("./LambdaAlias");
+
 const { Layer, compareLayer } = require("./Layer");
 const { LambdaPermission } = require("./LambdaPermission");
 
@@ -44,6 +47,7 @@ const createTempDir = () => os.tmpdir();
 
 module.exports = pipe([
   () => [
+    createAwsService(LambdaAlias({})),
     {
       type: "Layer",
       Client: Layer,
@@ -112,7 +116,6 @@ module.exports = pipe([
         ]),
       omitProperties: [
         "Code",
-        "Configuration.CodeSha256",
         "Configuration.Code",
         "Configuration.CodeSize",
         "Configuration.FunctionArn",
@@ -136,6 +139,7 @@ module.exports = pipe([
         "Policy",
       ],
       propertiesDefault: {
+        Publish: true,
         Configuration: {
           Architectures: ["x86_64"],
           Description: "",
@@ -163,6 +167,7 @@ module.exports = pipe([
               FunctionUrlConfig: filterFunctionUrlConfig,
               Configuration: pipe([
                 get("Configuration"),
+                omit(["CodeSha256"]),
                 when(
                   get("FileSystemConfigs"),
                   assign({

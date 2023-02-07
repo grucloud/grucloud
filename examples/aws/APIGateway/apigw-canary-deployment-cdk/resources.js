@@ -8,7 +8,7 @@ exports.createResources = () => [
     group: "APIGateway",
     dependencies: ({}) => ({
       cloudwatchRole:
-        "MyServerlessApplicationSt-RestApiCloudWatchRoleE3E-1H65MB1E6PVYZ",
+        "MyServerlessApplicationSt-RestApiCloudWatchRoleE3E-GC7YEQUWF6JE",
     }),
   },
   {
@@ -38,7 +38,7 @@ exports.createResources = () => [
                   config.region
                 }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq:Prod/invocations`,
+                }:${config.accountId()}:function:MyServerlessApplicationStack-MyFunction3BAA72D1-EXv7XTdWy2mX:Prod/invocations`,
               },
             },
           },
@@ -70,7 +70,17 @@ exports.createResources = () => [
     type: "Stage",
     group: "APIGateway",
     properties: ({}) => ({
+      canarySettings: {
+        percentTraffic: 0,
+        stageVariableOverrides: {
+          lambdaAlias: "Test",
+        },
+        useStageCache: false,
+      },
       stageName: "prod",
+      variables: {
+        lambdaAlias: "Prod",
+      },
     }),
     dependencies: ({}) => ({
       restApi: "RestApi",
@@ -82,7 +92,7 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({}) => ({
       RoleName:
-        "MyServerlessApplicationSt-MyFunctionServiceRole3C3-1UQEITBUUG0C2",
+        "MyServerlessApplicationSt-MyFunctionServiceRole3C3-1HCKXNRK6G7IA",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -109,7 +119,7 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({}) => ({
       RoleName:
-        "MyServerlessApplicationSt-RestApiCloudWatchRoleE3E-1H65MB1E6PVYZ",
+        "MyServerlessApplicationSt-RestApiCloudWatchRoleE3E-GC7YEQUWF6JE",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -137,13 +147,13 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName:
-          "MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq",
+          "MyServerlessApplicationStack-MyFunction3BAA72D1-EXv7XTdWy2mX",
         Handler: "index.handler",
         Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({
-      role: "MyServerlessApplicationSt-MyFunctionServiceRole3C3-1UQEITBUUG0C2",
+      role: "MyServerlessApplicationSt-MyFunctionServiceRole3C3-1HCKXNRK6G7IA",
     }),
   },
   {
@@ -154,10 +164,10 @@ exports.createResources = () => [
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
-            "MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq",
+            "MyServerlessApplicationStack-MyFunction3BAA72D1-EXv7XTdWy2mX",
           Principal: "apigateway.amazonaws.com",
           StatementId:
-            "MyServerlessApplicationStack-MyFunctionlambdaPermission88C73777-PV7LQXN28ZYS",
+            "MyServerlessApplicationStack-MyFunctionlambdaPermission88C73777-VIU4K2K8PDSV",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
@@ -169,7 +179,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       lambdaFunction:
-        "MyServerlessApplicationStack-MyFunction3BAA72D1-eL7mBDbO6hIq",
+        "MyServerlessApplicationStack-MyFunction3BAA72D1-EXv7XTdWy2mX",
       apiGatewayRestApis: ["RestApi"],
     }),
   },
