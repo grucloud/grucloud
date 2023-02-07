@@ -90,6 +90,7 @@ exports.ApiGatewayV2Stage = () => ({
     "AccessLogSettings.DestinationArn",
     "LastDeploymentStatusMessage",
     "ApiId",
+    "ApiGatewayManaged",
   ],
   filterLive: () => pipe([omitIfEmpty(["StageVariables"])]),
   dependencies: {

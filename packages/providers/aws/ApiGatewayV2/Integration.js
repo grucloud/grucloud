@@ -167,6 +167,7 @@ exports.ApiGatewayV2Integration = ({}) => ({
   ignoreErrorCodes,
   propertiesDefault: { TimeoutInMillis: 30e3, Description: "" },
   omitProperties: [
+    "ApiGatewayManaged",
     "RouteId",
     "ConnectionId",
     "IntegrationId",

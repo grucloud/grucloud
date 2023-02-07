@@ -47,7 +47,14 @@ exports.ApiGatewayV2Route = () => ({
     AuthorizationType: "NONE",
     RequestModels: {},
   },
-  omitProperties: ["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"],
+  omitProperties: [
+    "RouteId",
+    "ApiName",
+    "ApiId",
+    "Target",
+    "AuthorizerId",
+    "ApiGatewayManaged",
+  ],
   dependencies: {
     api: {
       type: "Api",
