@@ -68,7 +68,7 @@ const eventBusUriToName = pipe([callProp("split", "/"), last]);
 const findName = ({ lives, config }) =>
   pipe([
     fork({
-      apiName: pipe([({ ApiName }) => `integration::${ApiName}::`]),
+      apiName: pipe([({ ApiName }) => `integration::${ApiName}`]),
       integration: switchCase([
         get("IntegrationUri"),
         pipe([
@@ -78,12 +78,16 @@ const findName = ({ lives, config }) =>
             pipe([get("IntegrationUri"), lambdaUriToName]),
           ]),
         ]),
-        get("RequestParameters.EventBusName"),
-        pipe([get("RequestParameters.EventBusName"), eventBusUriToName]),
+        // Eventbridge
+        eq(get("IntegrationSubtype"), "EventBridge-PutEvents"),
+        pipe([
+          get("RequestParameters.EventBusName", "eventBusDefault"),
+          eventBusUriToName,
+        ]),
         () => "NO-INTEGRATION",
       ]),
     }),
-    ({ apiName, integration }) => `${apiName}${integration}`,
+    ({ apiName, integration }) => `${apiName}::${integration}`,
   ]);
 
 const decorate = ({ endpoint, config }) =>
@@ -135,28 +139,27 @@ exports.ApiGatewayV2Integration = ({}) => ({
   type: "Integration",
   package: "apigatewayv2",
   client: "ApiGatewayV2",
-  inferName: ({
-    dependenciesSpec: { api, lambdaFunction, listener, eventBus },
-  }) =>
-    pipe([
-      //TODO other target
-      tap(() => {
-        assert(api);
-      }),
-      () =>
-        pipe([
-          () => `integration::${api}`,
-          switchCase([
-            () => lambdaFunction,
-            append(`::${lambdaFunction}`),
-            () => eventBus,
-            append(`::${eventBus}`),
-            () => listener,
-            append(`::${listener}`),
-            append(`::NO-INTEGRATION`),
-          ]),
-        ])(),
-    ]),
+  inferName:
+    ({ dependenciesSpec: { api, lambdaFunction, listener, eventBus } }) =>
+    ({ IntegrationSubtype }) =>
+      pipe([
+        //TODO other target
+        tap(() => {
+          assert(api);
+        }),
+        () => `integration::${api}`,
+        switchCase([
+          () => lambdaFunction,
+          append(`::${lambdaFunction}`),
+          () => eventBus,
+          append(`::${eventBus}`),
+          eq(IntegrationSubtype, "EventBridge-PutEvents"),
+          append(`::eventBusDefault`),
+          () => listener,
+          append(`::${listener}`),
+          append(`::NO-INTEGRATION`),
+        ]),
+      ])(),
   findName,
   findId: () =>
     pipe([

@@ -1,0 +1,21 @@
+@startmindmap
+title Resources for project apigw-http-eventbridge-terraform
+skinparam monochrome true
++ Infra
+++ aws
++++ ApiGatewayV2
+++++ Api (1)
+++++ Deployment (1)
+++++ Integration (1)
+++++ Route (1)
+++++ Stage (1)
++++ CloudWatchEvents
+++++ Rule (1)
+++++ Target (1)
++++ IAM
+++++ Role (2)
+++++ Policy (2)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap
