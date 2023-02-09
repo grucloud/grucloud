@@ -7,7 +7,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
 
-const { assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
 const pickId = pipe([
   tap(({ vaultName, accountId }) => {
@@ -58,6 +58,8 @@ const assignAccessPolicy =
           endpoint().getVaultAccessPolicy,
           get("policy.Policy"),
           JSON.parse,
+          // TODO normalize policy
+
           (Policy) => ({ ...live, policy: { Policy } }),
         ]),
         (error) => live

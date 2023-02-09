@@ -51,40 +51,41 @@ const findNames = [findNameInTags, get("Alias"), get("KeyId")];
 const findName = () => (live) =>
   pipe([() => findNames, map((fn) => fn(live)), find(not(isEmpty))])();
 
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      Policy: pipe([
+        pickId,
+        defaultsDeep({ PolicyName: "default" }),
+        endpoint().getKeyPolicy,
+        get("Policy"),
+        JSON.parse,
+        //TODO normalize
+      ]),
+    }),
+    tryCatch(
+      assign({
+        Tags: pipe([pickId, endpoint().listResourceTags, get("Tags")]),
+      }),
+      (error, item) => item
+    ),
+    tryCatch(
+      assign({
+        Alias: pipe([
+          pickId,
+          endpoint().listAliases,
+          get("Aliases"),
+          first,
+          get("AliasName"),
+        ]),
+      }),
+      (error, item) => item
+    ),
+  ]);
+
 exports.KmsKey = ({ spec, config }) => {
   const kms = createKMS(config);
   const client = AwsClient({ spec, config })(kms);
-
-  const decorate = () =>
-    pipe([
-      assign({
-        Policy: pipe([
-          pickId,
-          defaultsDeep({ PolicyName: "default" }),
-          kms().getKeyPolicy,
-          get("Policy"),
-          JSON.parse,
-        ]),
-      }),
-      tryCatch(
-        assign({
-          Tags: pipe([pickId, kms().listResourceTags, get("Tags")]),
-        }),
-        (error, item) => item
-      ),
-      tryCatch(
-        assign({
-          Alias: pipe([
-            pickId,
-            kms().listAliases,
-            get("Aliases"),
-            first,
-            get("AliasName"),
-          ]),
-        }),
-        (error, item) => item
-      ),
-    ]);
 
   const getById = client.getById({
     pickId,

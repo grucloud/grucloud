@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, assign, omit } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { defaultsDeep, when, find } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -58,6 +58,7 @@ exports.DynamoDBTable = () => ({
     "SSEDescription",
     "LatestStreamArn",
     "LatestStreamLabel",
+    "SSEDescription.KMSMasterKeyId",
   ],
   inferName: findName,
   findName,
@@ -87,7 +88,18 @@ exports.DynamoDBTable = () => ({
     kmsKey: {
       type: "Key",
       group: "KMS",
-      dependencyId: ({ lives, config }) => get("SSEDescription.KMSMasterKeyId"),
+      dependencyId:
+        ({ lives, config }) =>
+        ({ SSEDescription }) =>
+          pipe([
+            lives.getByType({
+              type: "Key",
+              group: "KMS",
+              providerName: config.providerName,
+            }),
+            find(eq(get("live.KeyId"), SSEDescription.KmsMasterKeyId)),
+            get("id"),
+          ])(),
     },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#getTable-property
@@ -142,7 +154,7 @@ exports.DynamoDBTable = () => ({
       when(
         () => kmsKey,
         defaultsDeep({
-          SSEDescription: { KMSMasterKeyId: getField(kmsKey, "Arn") },
+          SSEDescription: { KMSMasterKeyId: getField(kmsKey, "KeyId") },
         })
       ),
     ])(),

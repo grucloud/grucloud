@@ -205,15 +205,6 @@ module.exports = pipe([
                 ),
               ]),
             }),
-            // when(
-            //   get("Policy"),
-            //   assign({
-            //     Policy: pipe([
-            //       get("Policy"),
-            //       assignPolicyAccountAndRegion({ providerConfig, lives }),
-            //     ]),
-            //   })
-            // ),
             omitIfEmpty(["FunctionUrlConfig"]),
             tap(
               pipe([

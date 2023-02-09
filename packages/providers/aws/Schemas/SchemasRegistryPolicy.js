@@ -3,7 +3,7 @@ const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { ignoreErrorCodes } = require("./SchemasCommon");
@@ -21,6 +21,7 @@ const decorate = ({ endpoint, live }) =>
       assert(live.RegistryName);
     }),
     defaultsDeep({ RegistryName: live.RegistryName }),
+    //TODO normalize
     assign({ Policy: pipe([get("Policy"), JSON.parse]) }),
   ]);
 

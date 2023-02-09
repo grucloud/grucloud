@@ -74,6 +74,7 @@ const decorate = ({ endpoint, live }) =>
         when(
           get("Policy"),
           assign({
+            //TODO normalize
             Policy: pipe([get("Policy"), JSON.parse]),
           })
         ),

@@ -1,8 +1,8 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, omit, and, eq } = require("rubico");
-const { defaultsDeep, callProp, last, when, size } = require("rubico/x");
+const { defaultsDeep, callProp, last, when, size, find } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
 const { buildTags } = require("../AwsCommon");
 const { Tagger } = require("./SNSCommon");
@@ -35,6 +35,7 @@ const decorate = ({ endpoint }) =>
       Attributes: pipe([
         get("Attributes"),
         assign({
+          //TODO normalize
           Policy: pipe([get("Policy"), JSON.parse]),
           DeliveryPolicy: pipe([get("EffectiveDeliveryPolicy"), JSON.parse]),
         }),
@@ -81,11 +82,23 @@ exports.SNSTopic = ({ compare }) => ({
     kmsKey: {
       type: "Key",
       group: "KMS",
-      dependencyId: ({ lives, config }) => get("Attributes.KmsMasterKeyId"),
+      dependencyId:
+        ({ lives, config }) =>
+        ({ Attributes }) =>
+          pipe([
+            lives.getByType({
+              type: "Key",
+              group: "KMS",
+              providerName: config.providerName,
+            }),
+            find(eq(get("live.KeyId"), Attributes.KmsMasterKeyId)),
+            get("id"),
+          ])(),
     },
   },
   omitProperties: [
     "Name",
+    "Attributes.KmsMasterKeyId",
     "Attributes.TopicArn",
     "Attributes.Owner",
     "Attributes.SubscriptionsPending",
@@ -129,7 +142,6 @@ exports.SNSTopic = ({ compare }) => ({
       tap((params) => {
         assert(true);
       }),
-
       assign({
         Attributes: pipe([
           get("Attributes"),
@@ -198,7 +210,7 @@ exports.SNSTopic = ({ compare }) => ({
       when(
         () => kmsKey,
         defaultsDeep({
-          Attributes: { KmsMasterKeyId: getField(kmsKey, "Arn") },
+          Attributes: { KmsMasterKeyId: getField(kmsKey, "KeyId") },
         })
       ),
     ])(),

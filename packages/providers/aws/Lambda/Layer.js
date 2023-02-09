@@ -51,6 +51,7 @@ exports.Layer = ({ spec, config }) => {
         }),
         (params) => lambda().getLayerVersionPolicy(params),
         get("Policy"),
+        //TODO normalize policy
       ]),
       throwIfNotAwsError("ResourceNotFoundException")
     ),

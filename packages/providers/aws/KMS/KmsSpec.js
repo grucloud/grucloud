@@ -2,7 +2,9 @@ const assert = require("assert");
 const { pipe, map, assign, tap, not, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { compareAws, assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+
 const { isOurMinionFactory } = require("../AwsCommon");
 const { KmsKey } = require("./KmsKey");
 

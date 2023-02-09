@@ -4,7 +4,7 @@ const { defaultsDeep, when, unless, isEmpty } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
 const toAccountId = ({ BucketAccountId, ...other }) => ({
   AccountId: BucketAccountId,
@@ -32,6 +32,7 @@ const decorate = ({ endpoint, config }) =>
           endpoint().getAccessPointPolicy,
           get("Policy"),
           JSON.parse,
+          //TODO normalize policy
           (Policy) => ({ ...live, Policy }),
         ]),
         () => live
