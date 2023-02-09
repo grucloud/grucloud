@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project apigw-lambda-request-validator
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ RestApi (1)
+++++ RequestValidator (1)
+++++ Stage (1)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap

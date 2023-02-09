@@ -53,6 +53,19 @@ describe("APIGateway", async function () {
       }),
       awsResourceTest,
     ])());
+  it("RequestValidator", () =>
+    pipe([
+      () => ({
+        groupType: "APIGateway::RequestValidator",
+        livesNotFound: ({ config }) => [
+          {
+            restApiId: "12345",
+            requestValidatorId: "i123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Stage", () =>
     pipe([
       () => ({
