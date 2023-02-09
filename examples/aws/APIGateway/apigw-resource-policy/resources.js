@@ -8,6 +8,7 @@ exports.createResources = () => [
     group: "APIGateway",
     properties: ({ config }) => ({
       apiKeySource: "HEADER",
+      description: "Resource Policy REST API demo",
       endpointConfiguration: {
         types: ["EDGE"],
       },
@@ -15,6 +16,7 @@ exports.createResources = () => [
       schema: {
         openapi: "3.0.1",
         info: {
+          description: "Resource Policy REST API demo",
           title: "sam-app",
           version: "1",
         },
@@ -29,7 +31,7 @@ exports.createResources = () => [
                   config.region
                 }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:sam-app-HelloWorldFunction-mNxHkrOxjPyE/invocations`,
+                }:${config.accountId()}:function:sam-app-AppFunction-x2DoUhn0V0QZ/invocations`,
               },
             },
           },
@@ -59,13 +61,21 @@ exports.createResources = () => [
               group: "APIGateway",
               name: "sam-app",
               path: "live.arnv2",
-            })}/Prod/*/*`,
+            })}/Prod/GET/`,
+          },
+          {
+            Effect: "Deny",
+            Principal: "*",
+            Action: "execute-api:Invoke",
+            Resource: `${getId({
+              type: "RestApi",
+              group: "APIGateway",
+              name: "sam-app",
+              path: "live.arnv2",
+            })}/Prod/GET/`,
             Condition: {
-              DateGreaterThan: {
-                "aws:CurrentTime": "2022-09-01T00:00:00Z",
-              },
-              DateLessThan: {
-                "aws:CurrentTime": "2022-09-30T23:59:59Z",
+              IpAddress: {
+                "aws:SourceIp": ["10.20.30.40", "1.0.0.0/16"],
               },
             },
           },
@@ -100,7 +110,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-HelloWorldFunctionRole-1K79IUAXP1MXQ",
+      RoleName: "sam-app-AppFunctionRole-E6391TA1JUHZ",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -127,14 +137,13 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        Architectures: ["arm64"],
-        FunctionName: "sam-app-HelloWorldFunction-mNxHkrOxjPyE",
-        Handler: "app.lambda_handler",
-        Runtime: "python3.9",
+        FunctionName: "sam-app-AppFunction-x2DoUhn0V0QZ",
+        Handler: "app.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-HelloWorldFunctionRole-1K79IUAXP1MXQ",
+      role: "sam-app-AppFunctionRole-E6391TA1JUHZ",
     }),
   },
   {
@@ -144,10 +153,10 @@ exports.createResources = () => [
       Permissions: [
         {
           Action: "lambda:InvokeFunction",
-          FunctionName: "sam-app-HelloWorldFunction-mNxHkrOxjPyE",
+          FunctionName: "sam-app-AppFunction-x2DoUhn0V0QZ",
           Principal: "apigateway.amazonaws.com",
           StatementId:
-            "sam-app-HelloWorldFunctionHelloWorldPermissionProd-1XSCWVNXANXH8",
+            "sam-app-AppFunctionApiEventPermissionProd-12TQQGF5JXRK2",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
@@ -158,7 +167,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction: "sam-app-HelloWorldFunction-mNxHkrOxjPyE",
+      lambdaFunction: "sam-app-AppFunction-x2DoUhn0V0QZ",
       apiGatewayRestApis: ["sam-app"],
     }),
   },
