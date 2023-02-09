@@ -1,11 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { pipe, tap, get, pick, assign, switchCase } = require("rubico");
+const { defaultsDeep, identity, first, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
 const { Tagger, ignoreErrorCodes } = require("./ApiGatewayV2Common");
+const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const buildArn = () =>
   pipe([
@@ -31,8 +32,11 @@ const assignArnV2 = ({ config }) =>
   pipe([
     assign({
       ArnV2: pipe([
-        ({ id }) =>
-          `arn:aws:execute-api:${config.region}:${config.accountId()}:${id}`,
+        tap(({ ApiId }) => {
+          assert(ApiId);
+        }),
+        ({ ApiId }) =>
+          `arn:aws:execute-api:${config.region}:${config.accountId()}:${ApiId}`,
       ]),
     }),
   ]);
@@ -51,6 +55,25 @@ const decorate = ({ endpoint, config }) =>
     }),
     assignArn({ config }),
     assignArnV2({ config }),
+    (live) =>
+      pipe([
+        () => live,
+        pickId,
+        endpoint().getIntegrations,
+        get("Items"),
+        first,
+        switchCase([
+          get("ApiGatewayManaged"),
+          pipe([
+            get("IntegrationUri"),
+            tap((IntegrationUri) => {
+              assert(IntegrationUri);
+            }),
+            (Target) => ({ ...live, Target }),
+          ]),
+          () => live,
+        ]),
+      ])(),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
@@ -86,6 +109,18 @@ exports.ApiGatewayV2Api = () => ({
     RouteSelectionExpression: "$request.method $request.path",
     DisableExecuteApiEndpoint: false,
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      when(
+        get("Target"),
+        assign({
+          Target: pipe([
+            get("Target"),
+            replaceAccountAndRegion({ lives, providerConfig }),
+          ]),
+        })
+      ),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApi-property
   getById: {
     method: "getApi",
@@ -129,7 +164,6 @@ exports.ApiGatewayV2Api = () => ({
     pipe([
       () => otherProps,
       defaultsDeep({
-        Name: name,
         ProtocolType: "HTTP",
         Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
       }),

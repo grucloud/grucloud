@@ -33,7 +33,11 @@ const { createEndpoint } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { dependencyIdApi, ignoreErrorCodes } = require("./ApiGatewayV2Common");
+const {
+  dependencyIdApi,
+  ignoreErrorCodes,
+  managedByOther,
+} = require("./ApiGatewayV2Common");
 
 const pickId = pick(["ApiId", "IntegrationId"]);
 
@@ -181,6 +185,8 @@ exports.ApiGatewayV2Integration = ({}) => ({
     "CredentialsArn",
     "ApiId",
   ],
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   dependencies: {
     api: {
       type: "Api",
@@ -297,6 +303,7 @@ exports.ApiGatewayV2Integration = ({}) => ({
     preDestroy: lambdaRemovePermission,
     method: "deleteIntegration",
     pickId,
+    ignoreErrorMessages: ["Cannot delete Integration"],
   },
   getByName: getByNameCore,
   configDefault: ({

@@ -15,7 +15,6 @@ const {
   switchCase,
   fork,
   reduce,
-  pick,
   and,
 } = require("rubico");
 const {
@@ -48,8 +47,6 @@ const {
   buildTagsObject,
   omitIfEmpty,
 } = require("@grucloud/core/Common");
-const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
 const { flattenObject } = require("@grucloud/core/Common");
 const { replaceAccountAndRegion } = require("../AwsCommon");
@@ -605,28 +602,11 @@ const fetchRestApiChilds =
       }),
     ])();
 
-const assignPolicy = () =>
-  pipe([
-    when(
-      get("policy"),
-      pipe([
-        assign({
-          policy: pipe([
-            get("policy"),
-            callProp("replaceAll", "\\", ""),
-            JSON.parse,
-          ]),
-        }),
-      ])
-    ),
-  ]);
-
 const decorate = ({ endpoint, config }) =>
   pipe([
     assignArn({ config }),
     assignArnV2({ config }),
     assignUrl({ config }),
-    assignPolicy(),
     assign({
       deployments: ({ id: restApiId }) =>
         pipe([
@@ -665,23 +645,6 @@ const putRestApi =
       (body) => ({ body, restApiId: id, mode: "overwrite" }),
       endpoint().putRestApi,
     ])();
-
-const createPolicy = ({ endpoint, live }) =>
-  pipe([
-    get("policy"),
-    unless(
-      isEmpty,
-      pipe([
-        JSON.stringify,
-        (value) => ({ op: "replace", path: "/policy", value }),
-        (patchOperation) => ({
-          restApiId: live.id,
-          patchOperations: [patchOperation],
-        }),
-        endpoint().updateRestApi,
-      ])
-    ),
-  ]);
 
 const createVpcEndpoints = ({ endpoint, live }) =>
   pipe([
@@ -729,6 +692,7 @@ exports.RestApi = ({ compare }) => ({
     "deployments",
     "version",
     "endpointConfiguration.vpcEndpointIds",
+    "policy",
   ],
   propertiesDefault: { disableExecuteApiEndpoint: false },
   compare: compare({
@@ -746,13 +710,7 @@ exports.RestApi = ({ compare }) => ({
     decorate,
   },
   create: {
-    filterPayload: pipe([
-      omit(["schemaFile", "schema", "deployment"]),
-      when(
-        get("policy"),
-        assign({ policy: pipe([get("policy"), JSON.stringify]) })
-      ),
-    ]),
+    filterPayload: pipe([omit(["schemaFile", "schema", "deployment"])]),
     method: "createRestApi",
     postCreate:
       ({ endpoint, payload }) =>
@@ -763,8 +721,6 @@ exports.RestApi = ({ compare }) => ({
           }),
           () => live,
           putRestApi({ endpoint, payload }),
-          () => payload,
-          createPolicy({ endpoint, live }),
           () => payload,
           createVpcEndpoints({ endpoint, live }),
           () => payload,
@@ -802,38 +758,14 @@ exports.RestApi = ({ compare }) => ({
       pipe([
         () => ({ payload, live, diff, endpoint }),
         fork({
-          policy: pipe([
-            updateResourceObject({
-              path: "policy",
-              onDeleted: () => () => ({
-                op: "replace",
-                path: "/policy",
-                value: "",
-              }),
-              onAdded:
-                () =>
-                ({ policy }) => ({
-                  op: "replace",
-                  path: "/policy",
-                  value: JSON.stringify(policy),
-                }),
-              onUpdated:
-                () =>
-                ({ policy }) => ({
-                  op: "replace",
-                  path: "/policy",
-                  value: JSON.stringify(policy),
-                }),
-            }),
-          ]),
           other: pipe([
             diffToPatch, //
-            filter(not(pipe([get("path"), isIn(["/schema", "/policy"])]))),
+            filter(not(pipe([get("path"), isIn(["/schema"])]))),
           ]),
         }),
-        ({ policy, other }) => ({
+        ({ other }) => ({
           restApiId: live.id,
-          patchOperations: [policy, ...other],
+          patchOperations: [...other],
         }),
       ])(),
   },
@@ -849,15 +781,6 @@ exports.RestApi = ({ compare }) => ({
           assert(providerConfig);
         }),
         () => live,
-        when(
-          get("policy"),
-          assign({
-            policy: pipe([
-              get("policy"),
-              assignPolicyAccountAndRegion({ providerConfig, lives }),
-            ]),
-          })
-        ),
         assign({
           schema: pipe([
             get("schema"),

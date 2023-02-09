@@ -10,6 +10,7 @@ const {
   Tagger,
   ignoreErrorCodes,
   dependencyIdApi,
+  managedByOther,
 } = require("./ApiGatewayV2Common");
 
 const buildArn = ({ config }) =>
@@ -76,6 +77,8 @@ exports.ApiGatewayV2Stage = () => ({
   findName,
   findId: buildArn,
   ignoreErrorCodes,
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   propertiesDefault: {
     RouteSettings: {},
     DefaultRouteSettings: {

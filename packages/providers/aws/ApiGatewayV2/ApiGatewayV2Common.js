@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, omit, tap, assign } = require("rubico");
+const { pipe, omit, tap, assign, get } = require("rubico");
 const { callProp } = require("rubico/x");
 
 const { createEndpoint } = require("../AwsCommon");
@@ -15,6 +15,14 @@ exports.Tagger = createTagger({
   TagsKey: "Tags",
   UnTagsKey: "TagKeys",
 });
+
+exports.managedByOther = () =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("ApiGatewayManaged"),
+  ]);
 
 exports.dependencyIdApi =
   ({ lives, config }) =>

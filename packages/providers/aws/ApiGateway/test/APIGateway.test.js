@@ -53,6 +53,18 @@ describe("APIGateway", async function () {
       }),
       awsResourceTest,
     ])());
+  it("RestApiPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "APIGateway::RestApiPolicy",
+        livesNotFound: ({ config }) => [
+          {
+            id: "12345",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("RequestValidator", () =>
     pipe([
       () => ({

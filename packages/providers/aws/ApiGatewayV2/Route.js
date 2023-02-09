@@ -5,7 +5,11 @@ const { defaultsDeep, callProp, when } = require("rubico/x");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { dependencyIdApi, ignoreErrorCodes } = require("./ApiGatewayV2Common");
+const {
+  dependencyIdApi,
+  ignoreErrorCodes,
+  managedByOther,
+} = require("./ApiGatewayV2Common");
 
 const pickId = pick(["ApiId", "RouteId"]);
 
@@ -53,6 +57,8 @@ exports.ApiGatewayV2Route = () => ({
         assert(id);
       }),
     ]),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   ignoreErrorCodes,
   propertiesDefault: {
     ApiKeyRequired: false,

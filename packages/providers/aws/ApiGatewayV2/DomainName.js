@@ -1,10 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, omit } = require("rubico");
+const { pipe, tap, get, pick, eq, omit, assign, map } = require("rubico");
 const { defaultsDeep, pluck, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { Tagger, ignoreErrorCodes } = require("./ApiGatewayV2Common");
 
@@ -40,18 +41,43 @@ exports.ApiGatewayV2DomainName = () => ({
   propertiesDefault: {
     ApiMappingSelectionExpression: "$request.basepath",
   },
-  omitProperties: ["DomainNameConfigurations"],
-  filterLive: () =>
+  omitProperties: [
+    "DomainNameConfigurations[].ApiGatewayDomainName",
+    "DomainNameConfigurations[].DomainNameStatus",
+    "DomainNameConfigurations[].EndpointType",
+    "DomainNameConfigurations[].HostedZoneId",
+    "DomainNameConfigurations[].SecurityPolicy",
+  ],
+  filterLive: ({ providerConfig, lives }) =>
     pipe([
       when(
         eq(get("ApiMappingSelectionExpression"), "$request.basepath"),
         omit(["ApiMappingSelectionExpression"])
       ),
+      assign({
+        DomainNameConfigurations: pipe([
+          get("DomainNameConfigurations"),
+          map(
+            assign({
+              CertificateArn: pipe([
+                get("CertificateArn"),
+                replaceWithName({
+                  groupType: "ACM::Certificate",
+                  path: "id",
+                  providerConfig,
+                  lives,
+                }),
+              ]),
+            })
+          ),
+        ]),
+      }),
     ]),
   dependencies: {
-    certificate: {
+    certificates: {
       type: "Certificate",
       group: "ACM",
+      list: true,
       dependencyIds: ({ lives, config }) =>
         pipe([get("DomainNameConfigurations"), pluck("CertificateArn")]),
     },
@@ -96,21 +122,12 @@ exports.ApiGatewayV2DomainName = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { certificate },
+    dependencies: {},
     config,
   }) =>
     pipe([
-      tap(() => {
-        assert(certificate, "missing 'certificate' dependency");
-      }),
       () => otherProps,
       defaultsDeep({
-        DomainName: name,
-        DomainNameConfigurations: [
-          {
-            CertificateArn: getField(certificate, "CertificateArn"),
-          },
-        ],
         Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
       }),
     ])(),

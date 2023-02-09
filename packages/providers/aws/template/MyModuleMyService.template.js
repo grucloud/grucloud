@@ -581,28 +581,28 @@ exports.MyModuleMyResource = () => ({
   //     unless(isEmpty, decorate({ endpoint })),
   //   ]),
 
-  // filterLive: ({ lives, providerConfig }) =>
-  //   pipe([
-  //     assign({
-  //       apiStages: pipe([
-  //         get("apiStages"),
-  //         map(
-  //           assign({
-  //             apiId: pipe([
-  //               get("apiId"),
-  //               replaceWithName({
-  //                 groupType: "APIGateway::RestApi",
-  //                 path: "id",
-  //                 pathLive: "live.id",
-  //                 providerConfig,
-  //                 lives,
-  //               }),
-  //             ]),
-  //           })
-  //         ),
-  //       ]),
-  //     }),
-  //   ]),
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        apiStages: pipe([
+          get("apiStages"),
+          map(
+            assign({
+              apiId: pipe([
+                get("apiId"),
+                replaceWithName({
+                  groupType: "APIGateway::RestApi",
+                  path: "id",
+                  pathLive: "live.id",
+                  providerConfig,
+                  lives,
+                }),
+              ]),
+            })
+          ),
+        ]),
+      }),
+    ]),
   tagger: ({ config }) =>
     Tagger({
       buildArn: buildArn({ config }),

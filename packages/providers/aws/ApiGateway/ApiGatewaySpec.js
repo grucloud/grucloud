@@ -12,6 +12,7 @@ const {
   APIGatewayClientCertificate,
 } = require("./APIGatewayClientCertificate");
 const { RestApi } = require("./RestApi");
+const { APIGatewayRestApiPolicy } = require("./APIGatewayRestApiPolicy");
 const { Stage } = require("./Stage");
 const { APIGatewayRequestValidator } = require("./APIGatewayRequestValidator");
 const { UsagePlan } = require("./UsagePlan");
@@ -27,6 +28,7 @@ module.exports = pipe([
     ApiKey({}),
     APIGatewayClientCertificate({}),
     RestApi({ compare }),
+    APIGatewayRestApiPolicy({}),
     APIGatewayRequestValidator({ compare }),
     Stage({ compare }),
     UsagePlan({ compare }),
