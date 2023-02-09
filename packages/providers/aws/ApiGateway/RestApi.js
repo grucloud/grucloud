@@ -203,6 +203,7 @@ const assignMethodIntegration = ({ method }) =>
         ["x-amazon-apigateway-integration"]: pipe([
           () => method,
           get("methodIntegration", {}),
+          omitIfEmpty(["requestParameters", "requestTemplates"]),
           omit([
             "timeoutInMillis",
             "cacheNamespace",
@@ -357,6 +358,13 @@ const buildOpenApiRequestBody = ({ requestModels }) =>
       })
     ),
   ]);
+const buildHttpMethod = pipe([
+  switchCase([
+    eq(get("httpMethod"), "ANY"),
+    () => "x-amazon-apigateway-any-method",
+    pipe([get("httpMethod"), callProp("toLowerCase")]),
+  ]),
+]);
 
 const buildOpenApiPath = ({ resources, authorizers }) =>
   pipe([
@@ -369,40 +377,45 @@ const buildOpenApiPath = ({ resources, authorizers }) =>
             () => resource.methods,
             reduce(
               (acc, method) =>
-                set(
-                  method.httpMethod.toLowerCase(),
-                  pipe([
-                    () => ({}),
-                    when(
-                      () => method.operationName,
-                      assign({ operationId: () => method.operationName })
-                    ),
-                    buildOpenApiRequestBody(method),
-                    when(
-                      () => method.requestParameters,
+                pipe([
+                  () => acc,
+                  set(
+                    buildHttpMethod(method),
+                    pipe([
+                      () => ({}),
+                      when(
+                        () => method.operationName,
+                        assign({ operationId: () => method.operationName })
+                      ),
+                      buildOpenApiRequestBody(method),
+                      when(
+                        () => method.requestParameters,
+                        assign({
+                          parameters: () => buildRequestParameters(method),
+                        })
+                      ),
+                      when(
+                        () =>
+                          get("methodIntegration.requestParameters")(method),
+                        assign({
+                          parameters: () =>
+                            buildIntegrationRequestParameters({
+                              integrationRequestParameters:
+                                method.methodIntegration.requestParameters,
+                            }),
+                        })
+                      ),
                       assign({
-                        parameters: () => buildRequestParameters(method),
-                      })
-                    ),
-                    when(
-                      () => get("methodIntegration.requestParameters")(method),
-                      assign({
-                        parameters: () =>
-                          buildIntegrationRequestParameters({
-                            integrationRequestParameters:
-                              method.methodIntegration.requestParameters,
-                          }),
-                      })
-                    ),
-                    assign({
-                      responses: () => buildOpenApiMethodResponses({ method }),
-                    }),
-                    omitIfEmpty(["parameters", "responses"]),
-                    assignAuth({ method }),
-                    assignSecurity({ method, authorizers }),
-                    assignMethodIntegration({ method }),
-                  ])()
-                )(acc),
+                        responses: () =>
+                          buildOpenApiMethodResponses({ method }),
+                      }),
+                      omitIfEmpty(["parameters", "responses"]),
+                      assignAuth({ method }),
+                      assignSecurity({ method, authorizers }),
+                      assignMethodIntegration({ method }),
+                    ])()
+                  ),
+                ])(),
               {}
             ),
           ])()
@@ -553,7 +566,15 @@ const fetchRestApiChilds =
             assign({
               methods: ({ id: resourceId }) =>
                 pipe([
-                  () => ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+                  () => [
+                    "ANY",
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE",
+                    "OPTIONS",
+                  ],
                   map((httpMethod) =>
                     tryCatch(
                       pipe([
@@ -563,9 +584,6 @@ const fetchRestApiChilds =
                           httpMethod,
                         }),
                         endpoint().getMethod,
-                        tap((params) => {
-                          assert(true);
-                        }),
                       ]),
                       throwIfNotAwsError("NotFoundException")
                     )()
@@ -625,6 +643,9 @@ const decorate = ({ endpoint, config }) =>
           fetchRestApiChilds({ endpoint }),
           generateOpenApi2Schema({ name, description }),
         ])(),
+    }),
+    tap((params) => {
+      assert(true);
     }),
   ]);
 
@@ -921,10 +942,6 @@ exports.RestApi = ({ compare }) => ({
                           assign({
                             "x-amazon-apigateway-integration": pipe([
                               get("x-amazon-apigateway-integration"),
-                              omitIfEmpty([
-                                "requestParameters",
-                                "requestTemplates",
-                              ]),
                               //TODO requestTemplates
                               when(
                                 get("credentials"),
