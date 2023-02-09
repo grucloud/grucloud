@@ -23,7 +23,6 @@ exports.createResources = () => [
         paths: {
           "/": {
             get: {
-              responses: {},
               "x-amazon-apigateway-auth": {
                 type: "AWS_IAM",
               },

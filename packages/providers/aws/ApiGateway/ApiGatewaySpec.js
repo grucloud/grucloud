@@ -11,7 +11,7 @@ const {
 } = require("./APIGatewayClientCertificate");
 const { RestApi } = require("./RestApi");
 const { Stage } = require("./Stage");
-const { Authorizer } = require("./Authorizer");
+//const { Authorizer } = require("./Authorizer");
 const { ApiKey } = require("./ApiKey");
 const { Account } = require("./Account");
 const { UsagePlan } = require("./UsagePlan");
@@ -25,7 +25,7 @@ module.exports = pipe([
   () => [
     Account({}),
     ApiKey({}),
-    Authorizer({}),
+    //Authorizer({}),
     APIGatewayClientCertificate({}),
     RestApi({ compare }),
     Stage({ compare }),

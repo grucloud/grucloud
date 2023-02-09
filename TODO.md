@@ -4,6 +4,7 @@
 
 ## Aws
 
+- API Gateway: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
 - AwsConfig
 - throwIfNotAwsError accepts an array of errors
 - EC2::ElasticIpAddressAssociation 0/1 The pending-instance-running instance to which 'eni-008dfdd692868df23' is attached is not in a valid state for this operation

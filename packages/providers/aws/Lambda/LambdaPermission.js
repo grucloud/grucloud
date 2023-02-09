@@ -11,7 +11,7 @@ const {
   eq,
   filter,
 } = require("rubico");
-const { defaultsDeep, when, find } = require("rubico/x");
+const { defaultsDeep, when, find, callProp } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { replacePolicy } = require("../IAM/AwsIamCommon");
@@ -91,6 +91,7 @@ const decorate = ({ endpoint, config, live }) =>
       Permissions: pipe([
         JSON.parse,
         get("Statement"),
+        callProp("sort", (a, b) => a.Sid.localeCompare(b.Sid)),
         map(({ Principal, Sid, Condition }) =>
           pipe([
             () => ({

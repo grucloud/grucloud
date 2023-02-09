@@ -19,6 +19,7 @@ const {
   and,
 } = require("rubico");
 const {
+  flatten,
   uniq,
   find,
   defaultsDeep,
@@ -36,12 +37,17 @@ const {
   unless,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "RestApi",
 });
 
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const {
+  getByNameCore,
+  buildTagsObject,
+  omitIfEmpty,
+} = require("@grucloud/core/Common");
 const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
 const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
@@ -71,6 +77,7 @@ const assignUrl = ({ config }) =>
       ]),
     }),
   ]);
+
 const assignArn = ({ config }) =>
   pipe([
     tap((params) => {
@@ -85,6 +92,7 @@ const assignArn = ({ config }) =>
       ]),
     }),
   ]);
+
 const assignArnV2 = ({ config }) =>
   pipe([
     assign({
@@ -167,6 +175,24 @@ const updateObject = (update) =>
       ]),
       identity,
     ]),
+  ]);
+
+const assignSecurity = ({ method, authorizers }) =>
+  pipe([
+    when(
+      () => method.authorizerId,
+      assign({
+        security: pipe([
+          () => authorizers,
+          find(eq(get("id"), method.authorizerId)),
+          get("name"),
+          tap((name) => {
+            assert(name);
+          }),
+          (name) => [{ [name]: [] }],
+        ]),
+      })
+    ),
   ]);
 
 const assignMethodIntegration = ({ method }) =>
@@ -332,7 +358,7 @@ const buildOpenApiRequestBody = ({ requestModels }) =>
     ),
   ]);
 
-const buildOpenApiPath = ({ resources }) =>
+const buildOpenApiPath = ({ resources, authorizers }) =>
   pipe([
     () => resources,
     reduce(
@@ -371,7 +397,9 @@ const buildOpenApiPath = ({ resources }) =>
                     assign({
                       responses: () => buildOpenApiMethodResponses({ method }),
                     }),
+                    omitIfEmpty(["parameters", "responses"]),
                     assignAuth({ method }),
+                    assignSecurity({ method, authorizers }),
                     assignMethodIntegration({ method }),
                   ])()
                 )(acc),
@@ -416,6 +444,44 @@ const buildModelSchema = ({ models, refPrefix }) =>
     ),
   ])();
 
+// openapi v3
+const buildSecuritySchemes = ({ authorizers }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    () => authorizers,
+    reduce(
+      (acc, { name, token, authType, id, ...other }) =>
+        pipe([
+          () => other,
+          omitIfEmpty([
+            "authorizerCredentials",
+            "authorizerUri",
+            "providerARNs",
+          ]),
+          (props) => ({
+            ...acc,
+            [name]: {
+              type: "apiKey", // Required and the value must be "apiKey" for an API Gateway API.
+              name: "Authorization", // The name of the header containing the authorization token.
+              in: "header", // Required and the value must be "header" for an API Gateway API.
+              "x-amazon-apigateway-authtype": authType, // Specifies the authorization mechanism for the client.
+              "x-amazon-apigateway-authorizer": {
+                // An API Gateway Lambda authorizer definition
+                type: "token", // Required property and the value must "token"
+                ...props,
+              },
+            },
+          }),
+        ])(),
+      {}
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
 // const generateSwagger2Schema =
 //   ({ name, description }) =>
 //   ({ resources, models }) =>
@@ -442,7 +508,7 @@ const buildModelSchema = ({ models, refPrefix }) =>
 
 const generateOpenApi2Schema =
   ({ name, description }) =>
-  ({ resources, models }) =>
+  ({ resources, models, authorizers }) =>
     pipe([
       tap(() => {
         assert(resources);
@@ -456,14 +522,18 @@ const generateOpenApi2Schema =
           title: name,
           version: "1",
         },
-        paths: buildOpenApiPath({ resources }),
+        paths: buildOpenApiPath({ resources, authorizers }),
         components: {
+          securitySchemes: buildSecuritySchemes({
+            authorizers,
+          }),
           schemas: buildModelSchema({
             models,
             refPrefix: "components/schemas",
           }),
         },
       }),
+      omitIfEmpty(["components.securitySchemes"]),
       tap((params) => {
         assert(true);
       }),
@@ -513,6 +583,7 @@ const fetchRestApiChilds =
           get("items"),
           callProp("sort", (a, b) => a.name.localeCompare(b.name)),
         ]),
+        authorizers: pipe([endpoint().getAuthorizers, get("items")]),
       }),
     ])();
 
@@ -769,6 +840,75 @@ exports.RestApi = ({ compare }) => ({
         assign({
           schema: pipe([
             get("schema"),
+            when(
+              get("components"),
+              assign({
+                components: pipe([
+                  get("components"),
+                  when(
+                    get("securitySchemes"),
+                    assign({
+                      securitySchemes: pipe([
+                        get("securitySchemes"),
+                        map(
+                          assign({
+                            ["x-amazon-apigateway-authorizer"]: pipe([
+                              get("x-amazon-apigateway-authorizer"),
+                              tap((params) => {
+                                assert(true);
+                              }),
+
+                              when(
+                                get("authorizerCredentials"),
+                                assign({
+                                  authorizerCredentials: pipe([
+                                    get("authorizerCredentials"),
+                                    replaceAccountAndRegion({
+                                      providerConfig,
+                                      lives,
+                                    }),
+                                  ]),
+                                })
+                              ),
+                              when(
+                                get("authorizerUri"),
+                                assign({
+                                  authorizerUri: pipe([
+                                    get("authorizerUri"),
+                                    replaceAccountAndRegion({
+                                      providerConfig,
+                                      lives,
+                                    }),
+                                  ]),
+                                })
+                              ),
+                              when(
+                                get("providerARNs"),
+                                assign({
+                                  providerARNs: pipe([
+                                    get("providerARNs"),
+                                    map(
+                                      replaceWithName({
+                                        groupType:
+                                          "CognitoIdentityServiceProvider::UserPool",
+                                        path: "live.Arn",
+                                        pathLive: "live.Arn",
+                                        providerConfig,
+                                        lives,
+                                      })
+                                    ),
+                                  ]),
+                                })
+                              ),
+                            ]),
+                          })
+                        ),
+                      ]),
+                    })
+                  ),
+                ]),
+              })
+            ),
             assign({
               paths: pipe([
                 get("paths"),
@@ -781,9 +921,10 @@ exports.RestApi = ({ compare }) => ({
                           assign({
                             "x-amazon-apigateway-integration": pipe([
                               get("x-amazon-apigateway-integration"),
-                              tap((params) => {
-                                assert(true);
-                              }),
+                              omitIfEmpty([
+                                "requestParameters",
+                                "requestTemplates",
+                              ]),
                               //TODO requestTemplates
                               when(
                                 get("credentials"),
@@ -802,15 +943,9 @@ exports.RestApi = ({ compare }) => ({
                                 assign({
                                   uri: pipe([
                                     get("uri"),
-                                    tap((params) => {
-                                      assert(true);
-                                    }),
                                     replaceAccountAndRegion({
                                       providerConfig,
                                       lives,
-                                    }),
-                                    tap((params) => {
-                                      assert(true);
                                     }),
                                   ]),
                                 })
@@ -879,6 +1014,29 @@ exports.RestApi = ({ compare }) => ({
       list: true,
       dependencyIds: ({ lives, config }) =>
         pipe([get("endpointConfiguration.vpcEndpointIds")]),
+    },
+    userPools: {
+      type: "UserPool",
+      group: "CognitoIdentityServiceProvider",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("schema.components.securitySchemes"),
+          map(pipe([get("x-amazon-apigateway-authorizer.providerARNs")])),
+          values,
+          flatten,
+          map((Arn) =>
+            pipe([
+              lives.getByType({
+                type: "UserPool",
+                group: "CognitoIdentityServiceProvider",
+                providerName: config.providerName,
+              }),
+              find(eq(get("live.Arn"), Arn)),
+              get("id"),
+            ])()
+          ),
+        ]),
     },
   },
   tagger: ({ config }) =>

@@ -1,10 +1,11 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq } = require("rubico");
+const { map, pipe, tap, get, eq, assign } = require("rubico");
 const { defaultsDeep, when, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { ignoreErrorCodes } = require("./ApiGatewayCommon");
+const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const findId = () => get("id");
 const findName = () => get("name");
@@ -23,6 +24,7 @@ exports.Authorizer = ({}) => ({
   type: "Authorizer",
   package: "api-gateway",
   client: "APIGateway",
+  inferName: findName,
   findName,
   findId,
   getByName: getByNameCore,
@@ -61,6 +63,18 @@ exports.Authorizer = ({}) => ({
         ]),
     },
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      when(
+        get("authorizerUri"),
+        assign({
+          authorizerUri: pipe([
+            get("authorizerUri"),
+            replaceAccountAndRegion({ lives, providerConfig }),
+          ]),
+        })
+      ),
+    ]),
   getById: {
     method: "getAuthorizer",
     pickId,
@@ -77,6 +91,7 @@ exports.Authorizer = ({}) => ({
   destroy: {
     pickId,
     method: "deleteAuthorizer",
+    ignoreErrorMessages: ["not found"],
   },
   getList: ({ client, endpoint, getById, config }) =>
     pipe([

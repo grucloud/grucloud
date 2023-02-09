@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Authorizer",
     group: "APIGateway",
-    name: "CognitoAuthorizer",
     properties: ({}) => ({
       authType: "cognito_user_pools",
       identitySource: "method.request.header.Authorization",

@@ -42,7 +42,6 @@ exports.createResources = () => [
         paths: {
           "/": {
             get: {
-              responses: {},
               "x-amazon-apigateway-integration": {
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_MATCH",
