@@ -44,56 +44,70 @@ const untagResource = untagResourceIam({
   method: "untagInstanceProfile",
 });
 
+const findId = () => get("Arn");
+const pickId = pick(["InstanceProfileName"]);
+
+const findNameEks =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(lives);
+        assert(live.InstanceProfileName);
+      }),
+      lives.getByType({
+        type: "LaunchTemplate",
+        group: "EC2",
+        providerName: config.providerName,
+      }),
+      find(eq(get("live.LaunchTemplateName"), live.InstanceProfileName)),
+      get("name"),
+      unless(isEmpty, prepend("instance-profile-")),
+    ])();
+
+const findName = (params) => (live) => {
+  const fns = [findNameEks(params), get("InstanceProfileName")];
+  for (fn of fns) {
+    const name = fn(live);
+    if (!isEmpty(name)) {
+      return name;
+    }
+  }
+};
+
+const managedByOther =
+  ({ lives }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(live.InstanceProfileName);
+      }),
+      () => live,
+      get("InstanceProfileName"),
+      or([callProp("startsWith", "eks-")]),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+    assign({
+      Tags: pipe([
+        pick(["InstanceProfileName"]),
+        endpoint().listInstanceProfileTags,
+        get("Tags"),
+      ]),
+    }),
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
-
-  const findId = () => get("Arn");
-  const pickId = pick(["InstanceProfileName"]);
-
-  const findNameEks =
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        tap(() => {
-          assert(lives);
-          assert(live.InstanceProfileName);
-        }),
-        lives.getByType({
-          type: "LaunchTemplate",
-          group: "EC2",
-          providerName: config.providerName,
-        }),
-        find(eq(get("live.LaunchTemplateName"), live.InstanceProfileName)),
-        get("name"),
-        unless(isEmpty, prepend("instance-profile-")),
-      ])();
-
-  const findName = (params) => (live) => {
-    const fns = [findNameEks(params), get("InstanceProfileName")];
-    for (fn of fns) {
-      const name = fn(live);
-      if (!isEmpty(name)) {
-        return name;
-      }
-    }
-  };
-
-  const managedByOther =
-    ({ lives }) =>
-    (live) =>
-      pipe([
-        tap(() => {
-          assert(live.InstanceProfileName);
-        }),
-        () => live,
-        get("InstanceProfileName"),
-        or([callProp("startsWith", "eks-")]),
-        tap((params) => {
-          assert(true);
-        }),
-      ])();
 
   const findDependencies = ({ live }) => [
     {
@@ -107,16 +121,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const getList = client.getList({
     method: "listInstanceProfiles",
     getParam: "InstanceProfiles",
-    decorate: () =>
-      pipe([
-        assign({
-          Tags: pipe([
-            pick(["InstanceProfileName"]),
-            iam().listInstanceProfileTags,
-            get("Tags"),
-          ]),
-        }),
-      ]),
+    decorate,
   });
 
   //TODO getById should be getByName
@@ -242,7 +247,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
-    tagResource: tagResource({ iam }),
-    untagResource: untagResource({ iam }),
+    tagResource: tagResource({ endpoint: iam }),
+    untagResource: untagResource({ endpoint: iam }),
   };
 };

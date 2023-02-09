@@ -4,17 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "User",
-    group: "IAM",
-    properties: ({}) => ({
-      UserName: "Alice",
-    }),
-    dependencies: ({}) => ({
-      iamGroups: ["Admin"],
-      policies: ["myPolicy-to-user"],
-    }),
-  },
-  {
     type: "Group",
     group: "IAM",
     properties: ({}) => ({
@@ -116,6 +105,13 @@ exports.createResources = () => [
     name: "my-profile",
     dependencies: ({}) => ({
       roles: ["role-allow-assume-role"],
+    }),
+  },
+  {
+    type: "User",
+    group: "IAM",
+    properties: ({}) => ({
+      UserName: "Alice",
     }),
   },
 ];

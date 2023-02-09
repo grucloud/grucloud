@@ -43,7 +43,7 @@ const logger = require("@grucloud/core/logger")({
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
-const { assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
 const { flattenObject } = require("@grucloud/core/Common");
 const { replaceAccountAndRegion } = require("../AwsCommon");
@@ -170,29 +170,43 @@ const updateObject = (update) =>
   ]);
 
 const assignMethodIntegration = ({ method }) =>
-  when(
-    () => method.methodIntegration,
-    assign({
-      ["x-amazon-apigateway-integration"]: pipe([
-        () => method,
-        get("methodIntegration", {}),
-        omit([
-          "timeoutInMillis",
-          "cacheNamespace",
-          "cacheKeyParameters",
-          "connectionType",
-        ]),
-        ({ integrationResponses, ...otherProps }) => ({
-          ...otherProps,
-          ...(integrationResponses && {
-            responses: {
-              default: pipe([() => integrationResponses, values, first])(),
-            },
+  pipe([
+    when(
+      () => method.methodIntegration,
+      assign({
+        ["x-amazon-apigateway-integration"]: pipe([
+          () => method,
+          get("methodIntegration", {}),
+          omit([
+            "timeoutInMillis",
+            "cacheNamespace",
+            "cacheKeyParameters",
+            "connectionType",
+          ]),
+          ({ integrationResponses, ...otherProps }) => ({
+            ...otherProps,
+            ...(integrationResponses && {
+              responses: {
+                default: pipe([() => integrationResponses, values, first])(),
+              },
+            }),
           }),
+        ]),
+      })
+    ),
+  ]);
+
+const assignAuth = ({ method }) =>
+  pipe([
+    unless(
+      () => method.authorizationType == "NONE",
+      assign({
+        ["x-amazon-apigateway-auth"]: () => ({
+          type: method.authorizationType,
         }),
-      ]),
-    })
-  );
+      })
+    ),
+  ]);
 
 const buildOpenApiMethodResponses = ({ method }) =>
   pipe([
@@ -357,6 +371,7 @@ const buildOpenApiPath = ({ resources }) =>
                     assign({
                       responses: () => buildOpenApiMethodResponses({ method }),
                     }),
+                    assignAuth({ method }),
                     assignMethodIntegration({ method }),
                   ])()
                 )(acc),
@@ -457,48 +472,49 @@ const generateOpenApi2Schema =
 const fetchRestApiChilds =
   ({ endpoint }) =>
   ({ restApiId }) =>
-    fork({
-      resources: pipe([
-        () => ({ restApiId }),
-        endpoint().getResources,
-        get("items"),
-        callProp("sort", (a, b) => a.path.localeCompare(b.path)),
-        map(
-          assign({
-            methods: ({ id: resourceId }) =>
-              pipe([
-                () => ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-                map((httpMethod) =>
-                  tryCatch(
-                    pipe([
-                      () => ({
-                        restApiId,
-                        resourceId,
-                        httpMethod,
-                      }),
-                      endpoint().getMethod,
-                      tap((params) => {
-                        assert(true);
-                      }),
-                    ]),
-                    throwIfNotAwsError("NotFoundException")
-                  )()
-                ),
-                filter(not(isEmpty)),
-                callProp("sort", (a, b) =>
-                  a.httpMethod.localeCompare(b.httpMethod)
-                ),
-              ])(),
-          })
-        ),
-      ]),
-      models: pipe([
-        () => ({ restApiId }),
-        endpoint().getModels,
-        get("items"),
-        callProp("sort", (a, b) => a.name.localeCompare(b.name)),
-      ]),
-    })();
+    pipe([
+      () => ({ restApiId }),
+      fork({
+        resources: pipe([
+          endpoint().getResources,
+          get("items"),
+          callProp("sort", (a, b) => a.path.localeCompare(b.path)),
+          map(
+            assign({
+              methods: ({ id: resourceId }) =>
+                pipe([
+                  () => ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+                  map((httpMethod) =>
+                    tryCatch(
+                      pipe([
+                        () => ({
+                          restApiId,
+                          resourceId,
+                          httpMethod,
+                        }),
+                        endpoint().getMethod,
+                        tap((params) => {
+                          assert(true);
+                        }),
+                      ]),
+                      throwIfNotAwsError("NotFoundException")
+                    )()
+                  ),
+                  filter(not(isEmpty)),
+                  callProp("sort", (a, b) =>
+                    a.httpMethod.localeCompare(b.httpMethod)
+                  ),
+                ])(),
+            })
+          ),
+        ]),
+        models: pipe([
+          endpoint().getModels,
+          get("items"),
+          callProp("sort", (a, b) => a.name.localeCompare(b.name)),
+        ]),
+      }),
+    ])();
 
 const assignPolicy = () =>
   pipe([
@@ -741,13 +757,6 @@ exports.RestApi = ({ compare }) => ({
           assert(providerConfig);
         }),
         () => live,
-        pick([
-          "name",
-          "apiKeySource",
-          "endpointConfiguration",
-          "schema",
-          "policy",
-        ]),
         when(
           get("policy"),
           assign({

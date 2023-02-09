@@ -7,11 +7,12 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "rest-api-eb-fOaf",
       apiKeySource: "HEADER",
+      description: "serverlessland eb integration",
       endpointConfiguration: {
         types: ["EDGE"],
       },
+      name: "rest-api-eb-fOaf",
       schema: {
         openapi: "3.0.1",
         info: {
@@ -145,7 +146,6 @@ exports.createResources = () => [
         account: [`${config.accountId()}`],
       },
       Name: "catch_all",
-      State: "ENABLED",
     }),
     dependencies: ({}) => ({
       eventBus: "MyIntegrationCustomBus",

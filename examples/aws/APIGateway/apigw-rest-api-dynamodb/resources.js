@@ -15,11 +15,11 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "ApiDynamoRestApi",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
       },
+      name: "ApiDynamoRestApi",
       schema: {
         openapi: "3.0.1",
         info: {

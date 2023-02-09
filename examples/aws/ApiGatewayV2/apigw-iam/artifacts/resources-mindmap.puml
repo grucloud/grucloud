@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project apigw-iam
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ RestApi (1)
+++++ Stage (2)
++++ IAM
+++++ Role (1)
+++++ User (2)
+++++ UserPolicy (2)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap

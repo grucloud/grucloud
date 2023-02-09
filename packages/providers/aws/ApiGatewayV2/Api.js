@@ -27,6 +27,16 @@ const assignArn = ({ config }) =>
     }),
   ]);
 
+const assignArnV2 = ({ config }) =>
+  pipe([
+    assign({
+      ArnV2: pipe([
+        ({ id }) =>
+          `arn:aws:execute-api:${config.region}:${config.accountId()}:${id}`,
+      ]),
+    }),
+  ]);
+
 const pickId = pipe([
   tap(({ ApiId }) => {
     assert(ApiId);
@@ -40,6 +50,7 @@ const decorate = ({ endpoint, config }) =>
       assert(endpoint);
     }),
     assignArn({ config }),
+    assignArnV2({ config }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
@@ -62,6 +73,7 @@ exports.ApiGatewayV2Api = () => ({
   ignoreErrorCodes,
   omitProperties: [
     "Arn",
+    "ArnV2",
     "ApiEndpoint",
     "ApiId",
     "CreatedDate",

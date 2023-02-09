@@ -14,7 +14,7 @@ const {
 const { defaultsDeep, when, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { replacePolicy } = require("../AwsCommon");
+const { replacePolicy } = require("../IAM/AwsIamCommon");
 
 const pickId = pipe([
   tap(({ FunctionName }) => {
@@ -23,6 +23,7 @@ const pickId = pipe([
   pick(["FunctionName"]),
 ]);
 
+// TODO use common
 const dependenciesPermissions = {
   apiGatewayRestApis: {
     pathLive: "live.arnv2",

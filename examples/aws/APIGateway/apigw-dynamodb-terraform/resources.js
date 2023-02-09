@@ -22,11 +22,11 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "APIGW DynamoDB Serverless Pattern Demo",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
       },
+      name: "APIGW DynamoDB Serverless Pattern Demo",
       schema: {
         openapi: "3.0.1",
         info: {
@@ -133,7 +133,6 @@ exports.createResources = () => [
     type: "Stage",
     group: "APIGateway",
     properties: ({}) => ({
-      stageName: "v1",
       methodSettings: {
         "*/*": {
           cacheDataEncrypted: false,
@@ -149,6 +148,7 @@ exports.createResources = () => [
             "SUCCEED_WITH_RESPONSE_HEADER",
         },
       },
+      stageName: "v1",
     }),
     dependencies: ({}) => ({
       restApi: "APIGW DynamoDB Serverless Pattern Demo",

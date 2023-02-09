@@ -498,7 +498,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
-    tagResource: tagResource({ iam }),
-    untagResource: untagResource({ iam }),
+    tagResource: tagResource({ endpoint: iam }),
+    untagResource: untagResource({ endpoint: iam }),
   };
 };

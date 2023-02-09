@@ -8,6 +8,10 @@ const {
   assign,
   filter,
   not,
+  any,
+  eq,
+  flatMap,
+  switchCase,
 } = require("rubico");
 const {
   isEmpty,
@@ -24,30 +28,71 @@ const {
 } = require("rubico/x");
 const querystring = require("querystring");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint } = require("../AwsCommon");
+const {
+  createEndpoint,
+  replaceDependency,
+  replaceArnWithAccountAndRegion,
+  sortObject,
+} = require("../AwsCommon");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamCommon" });
 
 exports.ignoreErrorCodes = ["NoSuchEntity", "NoSuchEntityException"];
 
+const dependenciesFromPolicies = {
+  apiGatewayRestApis: {
+    pathLive: "live.arnv2",
+    type: "RestApi",
+    group: "APIGateway",
+  },
+  apiGatewayV2Apis: {
+    pathLive: "live.ArnV2",
+    type: "Api",
+    group: "ApiGatewayV2",
+  },
+  appsyncGraphqlApis: {
+    pathLive: "live.uris.GRAPHQL",
+    type: "GraphqlApi",
+    group: "AppSync",
+  },
+  cognitoUserPools: {
+    pathLive: "id",
+    type: "UserPool",
+    group: "CognitoIdentityServiceProvider",
+  },
+  cognitoUserPoolClient: {
+    pathLive: "id",
+    type: "UserPoolClient",
+    group: "CognitoIdentityServiceProvider",
+  },
+  rdsDbClusters: {
+    pathLive: "live.DBClusterArn",
+    type: "DBCluster",
+    group: "RDS",
+  },
+  secretsManagerSecrets: {
+    pathLive: "live.ARN",
+    type: "Secret",
+    group: "SecretsManager",
+  },
+  snsTopics: {
+    pathLive: "id",
+    type: "Topic",
+    group: "SNS",
+  },
+};
+
 exports.dependenciesPoliciesKind = [
   { type: "IdentityPool", group: "Cognito" },
   { type: "Table", group: "DynamoDB" },
-  //{ type: "Topic", group: "SNS" },
-  // { type: "Queue", group: "SQS" },
   { type: "FileSystem", group: "EFS" },
   { type: "AccessPoint", group: "EFS" },
-  //{ type: "EventBus", group: "CloudWatchEvents" },
-  //{ type: "StateMachine", group: "StepFunctions" },
-  //{ type: "LogGroup", group: "CloudWatchLogs" },
   { type: "Secret", group: "SecretsManager" },
-  //{ type: "Parameter", group: "SSM" },
   { type: "Organisation", group: "Organisations" },
-
-  //{ type: "Function", group: "Lambda" },
-  //{ type: "DBCluster", group: "RDS" },
 ];
 
+//TODO
 exports.dependenciesPolicy = {
   openIdConnectProvider: {
     type: "OpenIDConnectProvider",
@@ -55,10 +100,7 @@ exports.dependenciesPolicy = {
     parent: true,
   },
   cognitoIdentityPool: { type: "IdentityPool", group: "Cognito", parent: true },
-  // TODO
   table: { type: "Table", group: "DynamoDB", parent: true },
-  //queue: { type: "Queue", group: "SQS", parent: true },
-  //snsTopic: { type: "Topic", group: "SNS", parent: true },
   efsFileSystems: {
     type: "FileSystem",
     group: "EFS",
@@ -69,19 +111,6 @@ exports.dependenciesPolicy = {
     group: "EFS",
     list: true,
   },
-  //eventBus: { type: "EventBus", group: "CloudWatchEvents" },
-  // lambdaFunctions: {
-  //   type: "Function",
-  //   group: "Lambda",
-  //   list: true,
-  //   ignoreOnDestroy: true,
-  // },
-  // stateMachines: {
-  //   type: "StateMachine",
-  //   group: "StepFunctions",
-  //   list: true,
-  //   ignoreOnDestroy: true,
-  // },
   logGroups: {
     type: "LogGroup",
     group: "CloudWatchLogs",
@@ -106,11 +135,244 @@ exports.dependenciesPolicy = {
   //dbClusters: { type: "DBCluster", group: "RDS", list: true },
 };
 
+const replacePolicy = replaceDependency(dependenciesFromPolicies);
+exports.replacePolicy = replacePolicy;
+
+const assignPolicyResource = ({ providerConfig, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(lives);
+      assert(providerConfig);
+    }),
+    when(
+      get("Resource"),
+      assign({
+        Resource: pipe([
+          get("Resource"),
+          switchCase([
+            Array.isArray,
+            map(replacePolicy({ providerConfig, lives })),
+            replacePolicy({ providerConfig, lives }),
+          ]),
+        ]),
+      })
+    ),
+  ]);
+
+exports.assignPolicyResource = assignPolicyResource;
+
+const replacePrincipal = ({ providerConfig, lives, principalKind }) =>
+  pipe([
+    when(
+      get(principalKind),
+      assign({
+        [principalKind]: pipe([
+          get(principalKind),
+          switchCase([
+            Array.isArray,
+            map(replaceArnWithAccountAndRegion({ providerConfig, lives })),
+            replaceArnWithAccountAndRegion({ providerConfig, lives }),
+          ]),
+        ]),
+      })
+    ),
+  ]);
+
+const replaceCondition = ({ conditionCriteria, providerConfig, lives }) =>
+  when(
+    get(conditionCriteria),
+    assign({
+      [conditionCriteria]: pipe([
+        get(conditionCriteria),
+        map(
+          pipe([
+            switchCase([
+              Array.isArray,
+              map(
+                replaceArnWithAccountAndRegion({
+                  providerConfig,
+                  lives,
+                })
+              ),
+              replaceArnWithAccountAndRegion({
+                providerConfig,
+                lives,
+              }),
+            ]),
+          ])
+        ),
+      ]),
+    })
+  );
+
+const replaceStatement = ({ providerConfig, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(lives);
+    }),
+    when(
+      get("Principal"),
+      assign({
+        Principal: pipe([
+          get("Principal"),
+          replacePrincipal({ providerConfig, lives, principalKind: "Service" }),
+          replacePrincipal({ providerConfig, lives, principalKind: "AWS" }),
+          replacePrincipal({
+            providerConfig,
+            lives,
+            principalKind: "Federated",
+          }),
+          when(
+            get("AWS"),
+            assign({
+              AWS: pipe([
+                get("AWS"),
+                when(
+                  includes("CloudFront Origin Access Identity"),
+                  pipe([
+                    replaceWithName({
+                      groupType: "CloudFront::OriginAccessIdentity",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ])
+                ),
+              ]),
+            })
+          ),
+        ]),
+      })
+    ),
+    when(
+      get("Condition"),
+      assign({
+        Condition: pipe([
+          get("Condition"),
+          replaceCondition({
+            conditionCriteria: "ArnLike",
+            providerConfig,
+            lives,
+          }),
+          replaceCondition({
+            conditionCriteria: "StringLike",
+            providerConfig,
+            lives,
+          }),
+          when(
+            get("StringEquals"),
+            assign({
+              StringEquals: pipe([
+                get("StringEquals"),
+                map(
+                  switchCase([
+                    Array.isArray,
+                    map(
+                      replaceArnWithAccountAndRegion({
+                        providerConfig,
+                        lives,
+                      })
+                    ),
+                    replaceArnWithAccountAndRegion({
+                      providerConfig,
+                      lives,
+                    }),
+                  ])
+                ),
+                when(
+                  get("elasticfilesystem:AccessPointArn"),
+                  assign({
+                    "elasticfilesystem:AccessPointArn": pipe([
+                      get("elasticfilesystem:AccessPointArn"),
+                      replaceWithName({
+                        groupType: "EFS::AccessPoint",
+                        path: "id",
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+                sortObject,
+              ]),
+            })
+          ),
+          when(
+            get("ArnEquals"),
+            assign({
+              ArnEquals: pipe([
+                get("ArnEquals"),
+                when(
+                  get("aws:PrincipalArn"),
+                  assign({
+                    "aws:PrincipalArn": pipe([
+                      get("aws:PrincipalArn"),
+                      replaceArnWithAccountAndRegion({
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+                when(
+                  get("aws:SourceArn"),
+                  assign({
+                    "aws:SourceArn": pipe([
+                      get("aws:SourceArn"),
+                      replaceArnWithAccountAndRegion({
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
+        ]),
+      })
+    ),
+    assignPolicyResource({ providerConfig, lives }),
+  ]);
+
+const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    assign({
+      Statement: pipe([
+        get("Statement"),
+        tap((params) => {
+          assert(true);
+        }),
+        switchCase([
+          Array.isArray,
+          map(replaceStatement({ providerConfig, lives })),
+          replaceStatement({ providerConfig, lives }),
+        ]),
+      ]),
+    }),
+  ]);
+
+exports.assignPolicyAccountAndRegion = assignPolicyAccountAndRegion;
+
+exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig, lives }) =>
+  assign({
+    PolicyDocument: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      get("PolicyDocument"),
+      assignPolicyAccountAndRegion({ providerConfig, lives }),
+    ]),
+  });
+
 exports.createIAM = createEndpoint("iam", "IAM");
 
 exports.tagResourceIam =
   ({ propertyName, field, method }) =>
-  ({ iam }) =>
+  ({ endpoint }) =>
   ({ live }) =>
     pipe([
       tap((params) => {
@@ -120,21 +382,21 @@ exports.tagResourceIam =
         [propertyName || field]: live[field],
         Tags,
       }),
-      iam()[method],
+      endpoint()[method],
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagUser-property
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagPolicy-property
 exports.untagResourceIam =
   ({ propertyName, field, method }) =>
-  ({ iam }) =>
+  ({ endpoint }) =>
   ({ live }) =>
     pipe([
       (TagKeys) => ({
         [propertyName || field]: live[field],
         TagKeys,
       }),
-      iam()[method],
+      endpoint()[method],
     ]);
 
 exports.createFetchPolicyDocument =
@@ -178,6 +440,7 @@ exports.assignAttachedPolicies = ({ policies = [] }) =>
       ),
     ]),
   });
+
 const findArnInCondition = ({ Condition }) =>
   pipe([
     () => [
@@ -191,7 +454,7 @@ const findArnInCondition = ({ Condition }) =>
     map((prop) => get(prop)(Condition)),
   ])();
 
-exports.findInStatement =
+const findInStatement =
   ({ type, group, lives, config }) =>
   ({ Condition, Resource }) =>
     pipe([
@@ -218,12 +481,46 @@ exports.findInStatement =
           ),
         ])()
       ),
-      tap((params) => {
-        assert(true);
-      }),
       filter(not(isEmpty)),
     ])();
+
+exports.findInStatement = findInStatement;
 
 exports.sortPolicies = callProp("sort", (a, b) =>
   a.PolicyArn.localeCompare(b.PolicyArn)
 );
+
+exports.filterAttachedPolicies = ({ lives }) =>
+  pipe([
+    assign({
+      AttachedPolicies: pipe([
+        get("AttachedPolicies"),
+        filter(
+          not(({ PolicyArn }) =>
+            pipe([() => lives, any(eq(get("id"), PolicyArn))])()
+          )
+        ),
+      ]),
+    }),
+    omitIfEmpty(["AttachedPolicies"]),
+  ]);
+
+const buildDependencyPolicy = ({ type, group }) => ({
+  type,
+  group,
+  list: true,
+  dependencyIds: ({ lives, config }) =>
+    pipe([
+      get("PolicyDocument.Statement"),
+      unless(isEmpty, flatMap(findInStatement({ type, group, lives, config }))),
+    ]),
+});
+
+exports.buildDependenciesPolicy = () =>
+  pipe([
+    () => dependenciesFromPolicies,
+    map(buildDependencyPolicy),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();

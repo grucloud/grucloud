@@ -28,6 +28,19 @@ describe("IAM", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("GroupPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "IAM::GroupPolicy",
+        livesNotFound: ({ config }) => [
+          {
+            GroupName: "username",
+            PolicyName: "p123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("OpenIDConnectProvider", () =>
     pipe([
       () => ({
@@ -71,6 +84,19 @@ describe("IAM", async function () {
         livesNotFound: ({ config }) => [
           {
             UserName: "username",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("UserPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "IAM::User",
+        livesNotFound: ({ config }) => [
+          {
+            UserName: "username",
+            PolicyName: "p123",
           },
         ],
       }),

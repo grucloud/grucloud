@@ -8,34 +8,15 @@ exports.createResources = () => [
     group: "APIGateway",
     properties: ({ config }) => ({
       apiKeySource: "HEADER",
+      description: "IAM authorizer REST API demo",
       endpointConfiguration: {
         types: ["EDGE"],
       },
       name: "sam-app",
-      policy: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: "*",
-            Action: "execute-api:Invoke",
-            Resource: `arn:aws:execute-api:${
-              config.region
-            }:${config.accountId()}:r4eavsgkmb/Prod/*/*`,
-            Condition: {
-              DateGreaterThan: {
-                "aws:CurrentTime": "2022-09-01T00:00:00Z",
-              },
-              DateLessThan: {
-                "aws:CurrentTime": "2022-09-30T23:59:59Z",
-              },
-            },
-          },
-        ],
-      },
       schema: {
         openapi: "3.0.1",
         info: {
+          description: "IAM authorizer REST API demo",
           title: "sam-app",
           version: "1",
         },
@@ -43,7 +24,11 @@ exports.createResources = () => [
           "/": {
             get: {
               responses: {},
+              "x-amazon-apigateway-auth": {
+                type: "AWS_IAM",
+              },
               "x-amazon-apigateway-integration": {
+                credentials: "arn:aws:iam::*:user/*",
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_MATCH",
                 type: "AWS_PROXY",
@@ -51,7 +36,7 @@ exports.createResources = () => [
                   config.region
                 }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:sam-app-HelloWorldFunction-lw4XCITD06t5/invocations`,
+                }:${config.accountId()}:function:sam-app-AppFunction-pbGEvm3zPzpv/invocations`,
               },
             },
           },
@@ -89,7 +74,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-HelloWorldFunctionRole-1UXSAQ9500WJX",
+      RoleName: "sam-app-AppFunctionRole-IQFXCN0UT3UB",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -112,18 +97,86 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "User",
+    group: "IAM",
+    properties: ({}) => ({
+      UserName: "sam-app-AuthorizedUser-ZJS5JEEB6MXE",
+    }),
+  },
+  {
+    type: "User",
+    group: "IAM",
+    properties: ({}) => ({
+      UserName: "sam-app-UnauthorizedUser-1N19UG1LXDUIB",
+    }),
+  },
+  {
+    type: "UserPolicy",
+    group: "IAM",
+    properties: ({ config, getId }) => ({
+      PolicyName: "root",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: "execute-api:Invoke",
+            Resource: `${getId({
+              type: "RestApi",
+              group: "APIGateway",
+              name: "sam-app",
+              path: "live.arnv2",
+            })}/Prod/*`,
+            Effect: "Allow",
+          },
+          {
+            Action: "lambda:InvokeFunction",
+            Resource: `arn:aws:lambda:${
+              config.region
+            }:${config.accountId()}:function:sam-app-AppFunction-pbGEvm3zPzpv`,
+            Effect: "Allow",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      user: "sam-app-AuthorizedUser-ZJS5JEEB6MXE",
+      apiGatewayRestApis: ["sam-app"],
+    }),
+  },
+  {
+    type: "UserPolicy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "root",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: "execute-api:Invoke",
+            Resource: `arn:aws:execute-api:${
+              config.region
+            }:${config.accountId()}:*/*/*`,
+            Effect: "Allow",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      user: "sam-app-UnauthorizedUser-1N19UG1LXDUIB",
+    }),
+  },
+  {
     type: "Function",
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        Architectures: ["arm64"],
-        FunctionName: "sam-app-HelloWorldFunction-lw4XCITD06t5",
-        Handler: "app.lambda_handler",
-        Runtime: "python3.9",
+        FunctionName: "sam-app-AppFunction-pbGEvm3zPzpv",
+        Handler: "app.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-HelloWorldFunctionRole-1UXSAQ9500WJX",
+      role: "sam-app-AppFunctionRole-IQFXCN0UT3UB",
     }),
   },
   {
@@ -133,10 +186,10 @@ exports.createResources = () => [
       Permissions: [
         {
           Action: "lambda:InvokeFunction",
-          FunctionName: "sam-app-HelloWorldFunction-lw4XCITD06t5",
+          FunctionName: "sam-app-AppFunction-pbGEvm3zPzpv",
           Principal: "apigateway.amazonaws.com",
           StatementId:
-            "sam-app-HelloWorldFunctionHelloWorldPermissionProd-1GPIFHZBBXBH1",
+            "sam-app-AppFunctionApiEventPermissionProd-1H4JI1TXGYNFF",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
@@ -147,7 +200,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction: "sam-app-HelloWorldFunction-lw4XCITD06t5",
+      lambdaFunction: "sam-app-AppFunction-pbGEvm3zPzpv",
       apiGatewayRestApis: ["sam-app"],
     }),
   },

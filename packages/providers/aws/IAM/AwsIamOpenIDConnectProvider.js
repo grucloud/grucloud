@@ -225,7 +225,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    tagResource: tagResource({ iam }),
-    untagResource: untagResource({ iam }),
+    tagResource: tagResource({ endpoint: iam }),
+    untagResource: untagResource({ endpoint: iam }),
   };
 };

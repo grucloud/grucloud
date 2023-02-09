@@ -397,8 +397,8 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     configDefault,
     managedByOther: cannotBeDeleted,
     cannotBeDeleted: cannotBeDeleted,
-    tagResource: tagResource({ iam }),
-    untagResource: untagResource({ iam }),
+    tagResource: tagResource({ endpoint: iam }),
+    untagResource: untagResource({ endpoint: iam }),
   };
 };
 

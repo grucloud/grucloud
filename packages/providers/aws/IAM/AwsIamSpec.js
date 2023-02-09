@@ -30,44 +30,36 @@ const {
   hasDependency,
   findLiveById,
 } = require("@grucloud/core/generatorUtils");
-const { AwsIamUser } = require("./AwsIamUser");
-const { AwsIamGroup, isOurMinionIamGroup } = require("./AwsIamGroup");
+
+const { createAwsService } = require("../AwsService");
+
+const { IAMGroup } = require("./AwsIamGroup");
 const { AwsIamRole } = require("./AwsIamRole");
 const { AwsIamInstanceProfile } = require("./AwsIamInstanceProfile");
 const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
+const { IAMUser } = require("./AwsIamUser");
+const { IAMUserPolicy } = require("./IAMUserPolicy");
 
 const {
   AwsIamOpenIDConnectProvider,
 } = require("./AwsIamOpenIDConnectProvider");
 
-const { dependenciesPolicy } = require("./AwsIamCommon");
+const {
+  dependenciesPolicy,
+  assignPolicyDocumentAccountAndRegion,
+  assignPolicyAccountAndRegion,
+} = require("./AwsIamCommon");
+
 const {
   compareAws,
   isOurMinion,
   ignoreResourceCdk,
-  assignPolicyDocumentAccountAndRegion,
-  assignPolicyAccountAndRegion,
   replaceRegion,
 } = require("../AwsCommon");
 
 const GROUP = "IAM";
 
-const compareIAM = compareAws({});
-
-const filterAttachedPolicies = ({ lives }) =>
-  pipe([
-    assign({
-      AttachedPolicies: pipe([
-        get("AttachedPolicies"),
-        filter(
-          not(({ PolicyArn }) =>
-            pipe([() => lives, any(eq(get("id"), PolicyArn))])()
-          )
-        ),
-      ]),
-    }),
-    omitIfEmpty(["AttachedPolicies"]),
-  ]);
+const compare = compareAws({});
 
 module.exports = pipe([
   () => [
@@ -88,7 +80,7 @@ module.exports = pipe([
               ]),
             ]),
           ])(),
-      compare: compareIAM({
+      compare: compare({
         filterLive: () =>
           pipe([
             assign({ Url: pipe([get("Url"), prepend("https://")]) }),
@@ -144,77 +136,13 @@ module.exports = pipe([
           or([hasDependency({ type: "Cluster", group: "EKS" })]),
         ])(),
     },
-    {
-      type: "User",
-      Client: AwsIamUser,
-      inferName: () => get("UserName"),
-      propertiesDefault: { Path: "/" },
-      compare: compareIAM({
-        filterLive: () =>
-          pipe([
-            omit([
-              "UserId",
-              "Arn",
-              "CreateDate",
-              "LoginProfile",
-              "Policies",
-              "AccessKeys",
-              "PasswordLastUsed",
-            ]),
-          ]),
-      }),
-      filterLive: ({ lives }) =>
-        pipe([
-          pick(["UserName", "Path", "AttachedPolicies"]),
-          filterAttachedPolicies({ lives }),
-        ]),
-      dependencies: {
-        iamGroups: {
-          type: "Group",
-          group: "IAM",
-          list: true,
-          dependencyIds: ({ lives, config }) => get("Groups"),
-        },
-        policies: {
-          type: "Policy",
-          group: "IAM",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([get("AttachedPolicies"), pluck("PolicyArn")]),
-        },
-      },
-    },
-    {
-      type: "Group",
-      Client: AwsIamGroup,
-      inferName: () => get("GroupName"),
-      propertiesDefault: { Path: "/" },
-      isOurMinion: isOurMinionIamGroup,
-      compare: compareIAM({
-        filterLive: () =>
-          pipe([omit(["GroupId", "Arn", "CreateDate", "Policies"])]),
-      }),
-      filterLive: ({ lives }) =>
-        pipe([
-          pick(["GroupName", "Path", "AttachedPolicies"]),
-          filterAttachedPolicies({ lives }),
-        ]),
-      dependencies: {
-        policies: {
-          type: "Policy",
-          group: "IAM",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([get("AttachedPolicies"), pluck("PolicyArn")]),
-        },
-      },
-    },
+    createAwsService(IAMGroup({ compare })),
     {
       type: "Role",
       Client: AwsIamRole,
       inferName: () => get("RoleName"),
       propertiesDefault: { Path: "/" },
-      compare: compareIAM({
+      compare: compare({
         filterAll: () => pipe([pick(["AssumeRolePolicyDocument", "Policies"])]),
       }),
       ignoreResource: ignoreResourceCdk,
@@ -354,7 +282,7 @@ module.exports = pipe([
           }),
         ]),
       isOurMinion: isOurMinionIamPolicy,
-      compare: compareIAM({
+      compare: compare({
         filterAll: () =>
           pipe([
             //TODO description
@@ -381,7 +309,7 @@ module.exports = pipe([
     {
       type: "InstanceProfile",
       Client: AwsIamInstanceProfile,
-      compare: compareIAM({
+      compare: compare({
         //TODO remove
         filterAll: () => pipe([omit(["Tags"])]),
         filterLive: () =>
@@ -391,9 +319,16 @@ module.exports = pipe([
       }),
       filterLive: () => pick([]),
       dependencies: {
-        roles: { type: "Role", group: "IAM", list: true },
+        roles: {
+          type: "Role",
+          group: "IAM",
+          list: true,
+          dependencyIds: () => pipe([get("Roles"), pluck("Arn")]),
+        },
       },
     },
+    createAwsService(IAMUser({ compare })),
+    createAwsService(IAMUserPolicy({ compare })),
   ],
-  map(defaultsDeep({ group: GROUP, isOurMinion })),
+  map(defaultsDeep({ group: GROUP, isOurMinion, compare: compare({}) })),
 ]);

@@ -14,11 +14,12 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "apigw-client-certificate",
       apiKeySource: "HEADER",
+      description: "Client Certificate REST API demo",
       endpointConfiguration: {
         types: ["EDGE"],
       },
+      name: "apigw-client-certificate",
       schema: {
         openapi: "3.0.1",
         info: {
