@@ -29,9 +29,9 @@ const {
   compareAws,
   isOurMinion,
   replaceArnWithAccountAndRegion,
-  assignPolicyAccountAndRegion,
   replaceAccountAndRegion,
 } = require("../AwsCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
 const GROUP = "S3";
 

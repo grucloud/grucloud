@@ -90,7 +90,7 @@ exports.DynamoDBTable = () => ({
       group: "KMS",
       dependencyId:
         ({ lives, config }) =>
-        ({ SSEDescription }) =>
+        ({ SSEDescription: {} }) =>
           pipe([
             lives.getByType({
               type: "Key",

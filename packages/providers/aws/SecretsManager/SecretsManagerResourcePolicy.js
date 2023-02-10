@@ -3,7 +3,8 @@ const { pipe, tap, get, assign, eq, tryCatch, omit } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { compareAws, assignPolicyAccountAndRegion } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
 const compare = compareAws({});
 

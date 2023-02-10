@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project apigw-rest-stepfunction
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ RestApi (1)
+++++ Stage (1)
++++ IAM
+++++ Role (2)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

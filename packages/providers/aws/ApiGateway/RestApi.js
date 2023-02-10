@@ -865,7 +865,20 @@ exports.RestApi = ({ compare }) => ({
                           assign({
                             "x-amazon-apigateway-integration": pipe([
                               get("x-amazon-apigateway-integration"),
-                              //TODO requestTemplates
+                              when(
+                                get("requestTemplates"),
+                                assign({
+                                  requestTemplates: pipe([
+                                    get("requestTemplates"),
+                                    map(
+                                      replaceAccountAndRegion({
+                                        providerConfig,
+                                        lives,
+                                      })
+                                    ),
+                                  ]),
+                                })
+                              ),
                               when(
                                 get("credentials"),
                                 assign({
