@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project apigw-rest-api-http-integration
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ RestApi (1)
+++++ Stage (1)
+@endmindmap
