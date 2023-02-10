@@ -115,7 +115,7 @@ exports.SNSSubscription = () => ({
           () => lambdaFunction,
           pipe([append(`lambda::${lambdaFunction}`)]),
           () => sqsQueue,
-          pipe([append(`queue::${sqsQueue}`)]),
+          pipe([append(`sqs::${sqsQueue}`)]),
           pipe([
             append(properties.Protocol),
             append("::"),

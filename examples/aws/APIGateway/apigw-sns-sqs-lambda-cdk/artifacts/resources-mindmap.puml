@@ -1,0 +1,20 @@
+@startmindmap
+title Resources for project apigw-sns-sqs-lambda-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Account (1)
+++++ RestApi (1)
+++++ Stage (1)
++++ IAM
+++++ Role (4)
++++ Lambda
+++++ EventSourceMapping (2)
+++++ Function (2)
++++ SNS
+++++ Topic (1)
+++++ Subscription (2)
++++ SQS
+++++ Queue (2)
+@endmindmap

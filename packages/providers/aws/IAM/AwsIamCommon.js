@@ -76,11 +76,6 @@ const dependenciesFromPolicies = {
     type: "Secret",
     group: "SecretsManager",
   },
-  snsTopics: {
-    pathLive: "id",
-    type: "Topic",
-    group: "SNS",
-  },
 };
 
 exports.dependenciesPoliciesKind = [
