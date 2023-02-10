@@ -50,6 +50,22 @@ describe("ApiGatewayV2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("Integration", () =>
+    pipe([
+      () => ({
+        groupType: "ApiGatewayV2::Integration",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("IntegrationResponse", () =>
+    pipe([
+      () => ({
+        groupType: "ApiGatewayV2::Integration",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("Route", () =>
     pipe([
       () => ({

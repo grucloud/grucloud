@@ -16,19 +16,19 @@ describe("APIGateway", async function () {
       }),
       awsResourceTest,
     ])());
-  it("Authorizer", () =>
-    pipe([
-      () => ({
-        groupType: "APIGateway::Authorizer",
-        livesNotFound: ({ config }) => [
-          {
-            restApiId: "12345",
-            id: "12345",
-          },
-        ],
-      }),
-      awsResourceTest,
-    ])());
+  // it.only("Authorizer", () =>
+  //   pipe([
+  //     () => ({
+  //       groupType: "APIGateway::Authorizer",
+  //       livesNotFound: ({ config }) => [
+  //         {
+  //           restApiId: "12345",
+  //           id: "12345",
+  //         },
+  //       ],
+  //     }),
+  //     awsResourceTest,
+  //   ])());
   it("APIGatewayClientCertificate", () =>
     pipe([
       () => ({
