@@ -101,6 +101,7 @@ exports.ApiGatewayV2Api = () => ({
     "ApiId",
     "CreatedDate",
     "AccessLogSettings.DestinationArn",
+    "Version",
   ],
   propertiesDefault: {
     Version: "1.0",
