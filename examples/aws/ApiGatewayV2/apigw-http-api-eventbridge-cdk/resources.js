@@ -36,7 +36,6 @@ exports.createResources = () => [
         Source: "WebApp",
         Detail: "$request.body",
       },
-      RequestTemplates: {},
       TimeoutInMillis: 10000,
     }),
     dependencies: ({}) => ({

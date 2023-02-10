@@ -11,6 +11,7 @@ const {
   tryCatch,
   assign,
   map,
+  omit,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -27,9 +28,8 @@ const logger = require("@grucloud/core/logger")({
 });
 const { throwIfNotAwsError, replaceAccountAndRegion } = require("../AwsCommon");
 const { tos } = require("@grucloud/core/tos");
-
 const { createEndpoint } = require("../AwsCommon");
-
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -41,7 +41,7 @@ const {
 
 const pickId = pick(["ApiId", "IntegrationId"]);
 
-const lambdaUriToName = pipe([
+const integrationUriToName = pipe([
   callProp("split", ":"),
   last,
   callProp("replace", "/invocations", ""),
@@ -69,36 +69,12 @@ const listenerUriToName =
 
 const eventBusUriToName = pipe([callProp("split", "/"), last]);
 
-const findName = ({ lives, config }) =>
-  pipe([
-    fork({
-      apiName: pipe([({ ApiName }) => `integration::${ApiName}`]),
-      integration: switchCase([
-        get("IntegrationUri"),
-        pipe([
-          switchCase([
-            eq(get("ConnectionType"), "VPC_LINK"),
-            pipe([listenerUriToName({ lives, config })]),
-            pipe([get("IntegrationUri"), lambdaUriToName]),
-          ]),
-        ]),
-        // Eventbridge
-        eq(get("IntegrationSubtype"), "EventBridge-PutEvents"),
-        pipe([
-          get("RequestParameters.EventBusName", "eventBusDefault"),
-          eventBusUriToName,
-        ]),
-        () => "NO-INTEGRATION",
-      ]),
-    }),
-    ({ apiName, integration }) => `${apiName}::${integration}`,
-  ]);
-
 const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
+    omitIfEmpty(["RequestTemplates"]),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#removePermission-property
@@ -145,7 +121,7 @@ exports.ApiGatewayV2Integration = ({}) => ({
   client: "ApiGatewayV2",
   inferName:
     ({ dependenciesSpec: { api, lambdaFunction, listener, eventBus } }) =>
-    ({ IntegrationSubtype }) =>
+    ({ IntegrationSubtype, IntegrationType, IntegrationUri = "" }) =>
       pipe([
         //TODO other target
         tap(() => {
@@ -161,10 +137,48 @@ exports.ApiGatewayV2Integration = ({}) => ({
           append(`::eventBusDefault`),
           () => listener,
           append(`::${listener}`),
+          eq(IntegrationType, "AWS"),
+          pipe([append(`::${IntegrationUri}`)]),
           append(`::NO-INTEGRATION`),
         ]),
+        tap((name) => {
+          assert(name);
+        }),
       ])(),
-  findName,
+  findName: ({ lives, config }) =>
+    pipe([
+      tap((params) => {
+        assert(params);
+      }),
+      fork({
+        apiName: pipe([({ ApiName }) => `integration::${ApiName}`]),
+        integration: switchCase([
+          // Eventbridge
+          eq(get("IntegrationSubtype"), "EventBridge-PutEvents"),
+          pipe([
+            get("RequestParameters.EventBusName", "eventBusDefault"),
+            eventBusUriToName,
+          ]),
+          get("IntegrationUri"),
+          pipe([
+            switchCase([
+              eq(get("ConnectionType"), "VPC_LINK"),
+              pipe([listenerUriToName({ lives, config })]),
+              // AWS Services: dynamodb etc ...
+              eq(get("IntegrationType"), "AWS"),
+              pipe([get("IntegrationUri")]),
+              //Default
+              pipe([get("IntegrationUri"), integrationUriToName]),
+            ]),
+          ]),
+          () => "NO-INTEGRATION",
+        ]),
+      }),
+      ({ apiName, integration }) => `${apiName}::${integration}`,
+      tap((params) => {
+        assert(params);
+      }),
+    ]),
   findId: () =>
     pipe([
       get("IntegrationId"),
@@ -179,7 +193,7 @@ exports.ApiGatewayV2Integration = ({}) => ({
     "RouteId",
     "ConnectionId",
     "IntegrationId",
-    "IntegrationUri",
+    //"IntegrationUri",
     "ApiName",
     "RequestParameters.EventBusName",
     "CredentialsArn",
@@ -193,6 +207,43 @@ exports.ApiGatewayV2Integration = ({}) => ({
       group: "ApiGatewayV2",
       parent: true,
       dependencyId: dependencyIdApi,
+    },
+    role: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => get("CredentialsArn"),
+    },
+    eventBus: {
+      type: "EventBus",
+      group: "CloudWatchEvents",
+      dependencyId: ({ lives, config }) =>
+        get("RequestParameters.EventBusName"),
+    },
+    dynamoDbTable: {
+      type: "Table",
+      group: "DynamoDB",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          tap((id) => {
+            assert(id);
+          }),
+          get("RequestParameters.EventBusName"),
+        ]),
+    },
+    lambdaFunction: {
+      type: "Function",
+      group: "Lambda",
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              type: "Function",
+              group: "Lambda",
+              providerName: config.providerName,
+            }),
+            find(pipe([get("id"), (id) => includes(id)(live.IntegrationUri)])),
+          ])(),
     },
     listener: {
       type: "Listener",
@@ -210,6 +261,7 @@ exports.ApiGatewayV2Integration = ({}) => ({
             find(eq(get("id"), live.IntegrationUri)),
           ])(),
     }, //Integration name depends on listener name
+
     vpcLink: {
       type: "VpcLink",
       group: "ApiGatewayV2",
@@ -225,35 +277,19 @@ exports.ApiGatewayV2Integration = ({}) => ({
             find(eq(get("id"), live.ConnectionId)),
           ])(),
     },
-    lambdaFunction: {
-      type: "Function",
-      group: "Lambda",
-      dependencyId:
-        ({ lives, config }) =>
-        (live) =>
-          pipe([
-            lives.getByType({
-              type: "Function",
-              group: "Lambda",
-              providerName: config.providerName,
-            }),
-            find(pipe([get("id"), (id) => includes(id)(live.IntegrationUri)])),
-          ])(),
-    },
-    eventBus: {
-      type: "EventBus",
-      group: "CloudWatchEvents",
-      dependencyId: ({ lives, config }) =>
-        get("RequestParameters.EventBusName"),
-    },
-    role: {
-      type: "Role",
-      group: "IAM",
-      dependencyId: ({ lives, config }) => get("CredentialsArn"),
-    },
   },
   filterLive: ({ lives, providerConfig }) =>
     pipe([
+      switchCase([
+        eq(get("IntegrationType"), "AWS"),
+        assign({
+          IntegrationUri: pipe([
+            get("IntegrationUri"),
+            replaceAccountAndRegion({ lives, providerConfig }),
+          ]),
+        }),
+        omit(["IntegrationUri"]),
+      ]),
       when(
         get("RequestParameters"),
         assign({
@@ -283,7 +319,11 @@ exports.ApiGatewayV2Integration = ({}) => ({
           decorate:
             ({ parent: { ApiId, Name, Tags } }) =>
             (live) =>
-              pipe([() => live, defaultsDeep({ ApiId, ApiName: Name })])(),
+              pipe([
+                () => live,
+                defaultsDeep({ ApiId, ApiName: Name }),
+                decorate({ endpoint }),
+              ])(),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createIntegration-property
@@ -311,6 +351,7 @@ exports.ApiGatewayV2Integration = ({}) => ({
     namespace,
     properties: { ...otherProps },
     dependencies: { api, lambdaFunction, eventBus, role, listener, vpcLink },
+    config,
   }) =>
     pipe([
       tap(() => {
@@ -335,7 +376,12 @@ exports.ApiGatewayV2Integration = ({}) => ({
       when(
         () => lambdaFunction,
         defaultsDeep({
-          IntegrationUri: getField(lambdaFunction, "Configuration.FunctionArn"),
+          IntegrationUri: `arn:aws:apigateway:${
+            config.region
+          }:lambda:path/2015-03-31/functions/${getField(
+            lambdaFunction,
+            "Configuration.FunctionArn"
+          )}/invocations`,
         })
       ),
       when(

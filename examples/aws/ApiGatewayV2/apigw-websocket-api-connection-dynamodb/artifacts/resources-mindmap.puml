@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project apigw-websocket-api-connection-dynamodb
+skinparam monochrome true
++ Infra
+++ aws
++++ ApiGatewayV2
+++++ Api (1)
+++++ Deployment (1)
+++++ Integration (3)
+++++ Route (3)
+++++ Stage (1)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap

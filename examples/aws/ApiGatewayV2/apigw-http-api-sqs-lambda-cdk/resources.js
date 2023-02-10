@@ -44,7 +44,6 @@ exports.createResources = () => [
         }.amazonaws.com/${config.accountId()}/ApigwHttpApiSqsLambdaStack-ApigwV2SqsLambdaQueue60DA20A7-u0KdXdwrt4es`,
         MessageBody: "$request.body.MessageBody",
       },
-      RequestTemplates: {},
     }),
     dependencies: ({}) => ({
       api: "HttpToSqs",

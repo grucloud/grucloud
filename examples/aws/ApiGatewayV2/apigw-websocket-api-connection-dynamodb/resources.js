@@ -23,12 +23,13 @@ exports.createResources = () => [
   {
     type: "Integration",
     group: "ApiGatewayV2",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       ConnectionType: "INTERNET",
       IntegrationMethod: "POST",
       IntegrationResponseSelectionExpression:
         "${integration.response.statuscode}",
       IntegrationType: "AWS",
+      IntegrationUri: `arn:aws:apigateway:${config.region}:dynamodb:action/DeleteItem`,
       PassthroughBehavior: "WHEN_NO_MATCH",
       PayloadFormatVersion: "1.0",
       RequestTemplates: {
@@ -53,12 +54,13 @@ exports.createResources = () => [
   {
     type: "Integration",
     group: "ApiGatewayV2",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       ConnectionType: "INTERNET",
       IntegrationMethod: "POST",
       IntegrationResponseSelectionExpression:
         "${integration.response.statuscode}",
       IntegrationType: "AWS",
+      IntegrationUri: `arn:aws:apigateway:${config.region}:dynamodb:action/PutItem`,
       PassthroughBehavior: "WHEN_NO_MATCH",
       PayloadFormatVersion: "1.0",
       RequestTemplates: {
@@ -98,7 +100,6 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PassthroughBehavior: "WHEN_NO_MATCH",
       PayloadFormatVersion: "1.0",
-      RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
     dependencies: ({}) => ({
@@ -113,9 +114,9 @@ exports.createResources = () => [
       OperationName: "ConnectRoute",
       RouteKey: "$connect",
     }),
-    dependencies: ({}) => ({
+    dependencies: ({ config }) => ({
       api: "sam-app-WebSocketApi",
-      integration: "integration::sam-app-WebSocketApi::action/PutItem",
+      integration: `integration::sam-app-WebSocketApi::arn:aws:apigateway:${config.region}:dynamodb:action/PutItem`,
     }),
   },
   {
@@ -138,9 +139,9 @@ exports.createResources = () => [
       OperationName: "DisconnectRoute",
       RouteKey: "$disconnect",
     }),
-    dependencies: ({}) => ({
+    dependencies: ({ config }) => ({
       api: "sam-app-WebSocketApi",
-      integration: "integration::sam-app-WebSocketApi::action/DeleteItem",
+      integration: `integration::sam-app-WebSocketApi::arn:aws:apigateway:${config.region}:dynamodb:action/DeleteItem`,
     }),
   },
   {

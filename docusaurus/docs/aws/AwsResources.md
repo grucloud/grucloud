@@ -15,7 +15,7 @@ List of resources for provider aws:
 * Amplify: 
 [App](./resources/Amplify/App.md), [BackendEnvironment](./resources/Amplify/BackendEnvironment.md), [Branch](./resources/Amplify/Branch.md), [DomainAssociation](./resources/Amplify/DomainAssociation.md), [Webhook](./resources/Amplify/Webhook.md)
 * APIGateway: 
-[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Authorizer](./resources/APIGateway/Authorizer.md), [ClientCertificate](./resources/APIGateway/ClientCertificate.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
+[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [ClientCertificate](./resources/APIGateway/ClientCertificate.md), [RestApi](./resources/APIGateway/RestApi.md), [RestApiPolicy](./resources/APIGateway/RestApiPolicy.md), [RequestValidator](./resources/APIGateway/RequestValidator.md), [Stage](./resources/APIGateway/Stage.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
 * ApiGatewayV2: 
 [Api](./resources/ApiGatewayV2/Api.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [DomainName](./resources/ApiGatewayV2/DomainName.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Stage](./resources/ApiGatewayV2/Stage.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
 * AppConfig: 
@@ -127,7 +127,7 @@ List of resources for provider aws:
 * GuardDuty: 
 [Detector](./resources/GuardDuty/Detector.md), [Filter](./resources/GuardDuty/Filter.md), [IPSet](./resources/GuardDuty/IPSet.md), [Member](./resources/GuardDuty/Member.md), [OrganizationAdminAccount](./resources/GuardDuty/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/GuardDuty/OrganizationConfiguration.md), [PublishingDestination](./resources/GuardDuty/PublishingDestination.md), [ThreatIntelSet](./resources/GuardDuty/ThreatIntelSet.md)
 * IAM: 
-[OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
+[OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md), [User](./resources/IAM/User.md), [UserPolicy](./resources/IAM/UserPolicy.md)
 * IdentityStore: 
 [GroupMembership](./resources/IdentityStore/GroupMembership.md), [User](./resources/IdentityStore/User.md), [Group](./resources/IdentityStore/Group.md)
 * Imagebuilder: 

@@ -31,7 +31,6 @@ exports.createResources = () => [
       IntegrationMethod: "ANY",
       IntegrationType: "HTTP_PROXY",
       PayloadFormatVersion: "1.0",
-      RequestTemplates: {},
     }),
     dependencies: ({}) => ({
       api: "serverlessland-pvt-endpoint",

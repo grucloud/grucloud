@@ -32,7 +32,6 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PassthroughBehavior: "WHEN_NO_MATCH",
       PayloadFormatVersion: "1.0",
-      RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
     dependencies: ({}) => ({
@@ -50,7 +49,6 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PassthroughBehavior: "WHEN_NO_MATCH",
       PayloadFormatVersion: "1.0",
-      RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
     dependencies: ({}) => ({
@@ -68,7 +66,6 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PassthroughBehavior: "WHEN_NO_MATCH",
       PayloadFormatVersion: "1.0",
-      RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
     dependencies: ({}) => ({
