@@ -261,7 +261,6 @@ exports.ApiGatewayV2Integration = ({}) => ({
             find(eq(get("id"), live.IntegrationUri)),
           ])(),
     }, //Integration name depends on listener name
-
     vpcLink: {
       type: "VpcLink",
       group: "ApiGatewayV2",
@@ -290,6 +289,16 @@ exports.ApiGatewayV2Integration = ({}) => ({
         }),
         omit(["IntegrationUri"]),
       ]),
+      //RequestTemplates
+      when(
+        get("RequestTemplates"),
+        assign({
+          RequestTemplates: pipe([
+            get("RequestTemplates"),
+            map(replaceAccountAndRegion({ lives, providerConfig })),
+          ]),
+        })
+      ),
       when(
         get("RequestParameters"),
         assign({
