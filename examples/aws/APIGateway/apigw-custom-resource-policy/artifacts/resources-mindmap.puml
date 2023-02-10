@@ -5,6 +5,7 @@ skinparam monochrome true
 ++ aws
 +++ APIGateway
 ++++ RestApi (1)
+++++ RestApiPolicy (1)
 ++++ Stage (2)
 +++ IAM
 ++++ Role (1)

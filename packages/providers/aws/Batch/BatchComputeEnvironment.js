@@ -60,11 +60,19 @@ exports.BatchComputeEnvironment = ({}) => ({
       dependencyId: ({ lives, config }) =>
         pipe([get("computeResources.ec2KeyPair")]),
     },
-    instanceRole: {
-      type: "Role",
+    instanceProfile: {
+      type: "InstanceProfile",
       group: "IAM",
       dependencyId: ({ lives, config }) =>
-        pipe([get("computeResources.instanceRole")]),
+        pipe([
+          get("computeResources.instanceRole"),
+          lives.getByName({
+            type: "InstanceProfile",
+            group: "IAM",
+            providerName: config.providerName,
+          }),
+          get("id"),
+        ]),
     },
     launchTemplate: {
       type: "LaunchTemplate",
@@ -186,7 +194,7 @@ exports.BatchComputeEnvironment = ({}) => ({
     properties: { tags, ...otherProps },
     dependencies: {
       eksCluster,
-      instanceRole,
+      instanceProfile,
       keyPair,
       launchTemplate,
       placementGroup,
@@ -219,10 +227,10 @@ exports.BatchComputeEnvironment = ({}) => ({
         })
       ),
       when(
-        () => instanceRole,
+        () => instanceProfile,
         defaultsDeep({
           computeResources: {
-            instanceRole: getField(instanceRole, "Arn"),
+            instanceRole: getField(instanceProfile, "InstanceProfileName"),
           },
         })
       ),

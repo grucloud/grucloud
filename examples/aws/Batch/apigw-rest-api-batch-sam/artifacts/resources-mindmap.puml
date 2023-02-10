@@ -1,0 +1,24 @@
+@startmindmap
+title Resources for project apigw-rest-api-batch-sam
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ RestApi (1)
+++++ Stage (1)
++++ Batch
+++++ ComputeEnvironment (1)
+++++ JobQueue (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ Subnet (1)
+++++ RouteTable (1)
+++++ RouteTableAssociation (1)
+++++ Route (1)
+++++ SecurityGroup (1)
++++ IAM
+++++ Role (3)
+++++ InstanceProfile (1)
+@endmindmap
