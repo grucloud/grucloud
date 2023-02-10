@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project apigw-sns-sms
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ RestApi (1)
+++++ Stage (1)
++++ IAM
+++++ Role (1)
+@endmindmap
