@@ -33,11 +33,11 @@ exports.createResources = () => [
       PassthroughBehavior: "WHEN_NO_MATCH",
       PayloadFormatVersion: "1.0",
       RequestTemplates: {
-        $default: `#set($sfn_input=$util.escapeJavaScript($input.body).replaceAll("\'","'")) { 
+        $default: `#set($sfn_input=$util.escapeJavaScript($input.body).replaceAll("'","'")) { 
   "input": "$sfn_input",
   "stateMachineArn": "arn:aws:states:${
     config.region
-  }:${config.accountId()}:stateMachine:SyncSFn-XlyVIunWzoVO"
+  }:${config.accountId()}:stateMachine:SyncSFn-pN3JqWwqQJ60"
 }
 `,
       },
@@ -46,7 +46,17 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "sam-app-WebSocketApi",
-      role: "sam-app-StepFunctionsSyncExecutionRole-ZX33IQBOJ97A",
+      role: "sam-app-StepFunctionsSyncExecutionRole-196375L2OVLO7",
+    }),
+  },
+  {
+    type: "IntegrationResponse",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      IntegrationResponseKey: "$default",
+    }),
+    dependencies: ({ config }) => ({
+      integration: `integration::sam-app-WebSocketApi::arn:aws:apigateway:${config.region}:states:action/StartSyncExecution`,
     }),
   },
   {
@@ -59,6 +69,16 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       api: "sam-app-WebSocketApi",
       integration: `integration::sam-app-WebSocketApi::arn:aws:apigateway:${config.region}:states:action/StartSyncExecution`,
+    }),
+  },
+  {
+    type: "RouteResponse",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      RouteResponseKey: "$default",
+    }),
+    dependencies: ({}) => ({
+      route: "route::sam-app-WebSocketApi::$default",
     }),
   },
   {
@@ -79,7 +99,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
-      RoleName: "sam-app-StepFunctionsSyncExecutionRole-ZX33IQBOJ97A",
+      RoleName: "sam-app-StepFunctionsSyncExecutionRole-196375L2OVLO7",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -101,7 +121,7 @@ exports.createResources = () => [
                 Action: ["states:StartSyncExecution"],
                 Resource: `arn:aws:states:${
                   config.region
-                }:${config.accountId()}:stateMachine:SyncSFn-XlyVIunWzoVO`,
+                }:${config.accountId()}:stateMachine:SyncSFn-pN3JqWwqQJ60`,
                 Effect: "Allow",
               },
             ],
@@ -115,7 +135,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-SyncSFnRole-JQXXDR4PTU8K",
+      RoleName: "sam-app-SyncSFnRole-1QD6CF0EHAZNE",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -146,14 +166,14 @@ exports.createResources = () => [
           },
         },
       },
-      name: "SyncSFn-XlyVIunWzoVO",
+      name: "SyncSFn-pN3JqWwqQJ60",
       tracingConfiguration: {
         enabled: true,
       },
       type: "EXPRESS",
     }),
     dependencies: ({}) => ({
-      role: "sam-app-SyncSFnRole-JQXXDR4PTU8K",
+      role: "sam-app-SyncSFnRole-1QD6CF0EHAZNE",
     }),
   },
 ];

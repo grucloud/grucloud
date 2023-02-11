@@ -31,6 +31,8 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");
 
+const { sortStatements } = require("../IAM/AwsIamCommon");
+
 const { AwsClient } = require("../AwsClient");
 const { createKMS, tagResource, untagResource } = require("./KMSCommon");
 
@@ -60,7 +62,7 @@ const decorate = ({ endpoint }) =>
         endpoint().getKeyPolicy,
         get("Policy"),
         JSON.parse,
-        //TODO normalize
+        sortStatements,
       ]),
     }),
     tryCatch(
@@ -261,6 +263,7 @@ exports.KmsKey = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
+    config,
   }) =>
     pipe([
       () => otherProps,

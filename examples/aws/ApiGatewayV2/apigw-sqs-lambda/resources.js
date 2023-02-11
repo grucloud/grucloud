@@ -50,6 +50,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       api: "Queue Based Leveling Example",
       role: "sam-app-MyHttpApiRole-IAG13XOOCKHW",
+      sqsQueue: "MySqsQueue",
     }),
   },
   {
@@ -60,7 +61,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "Queue Based Leveling Example",
-      integration: "integration::Queue Based Leveling Example::NO-INTEGRATION",
+      integration: "integration::Queue Based Leveling Example::MySqsQueue",
     }),
   },
   {

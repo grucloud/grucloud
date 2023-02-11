@@ -193,6 +193,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     namespace,
     properties: { Tags, Url, ...otherProps },
     dependencies: { cluster },
+    config,
   }) =>
     pipe([
       tap(() => {

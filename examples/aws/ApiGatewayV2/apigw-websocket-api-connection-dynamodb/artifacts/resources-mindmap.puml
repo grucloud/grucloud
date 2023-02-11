@@ -7,7 +7,9 @@ skinparam monochrome true
 ++++ Api (1)
 ++++ Deployment (1)
 ++++ Integration (3)
+++++ IntegrationResponse (3)
 ++++ Route (3)
+++++ RouteResponse (3)
 ++++ Stage (1)
 +++ DynamoDB
 ++++ Table (1)

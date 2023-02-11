@@ -199,8 +199,5 @@ export function response(ctx) {
       Path: "/service-role/",
       Description: "Allows the AWS AppSync service to access your data source.",
     }),
-    dependencies: ({}) => ({
-      table: "MyModelTypeTable",
-    }),
   },
 ];

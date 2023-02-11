@@ -4,6 +4,26 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Authorizer",
+    group: "APIGateway",
+    name: "LambdaAuthorizerToken",
+    readOnly: true,
+    properties: ({ config }) => ({
+      authType: "custom",
+      authorizerUri: `arn:aws:apigateway:${
+        config.region
+      }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
+        config.region
+      }:${config.accountId()}:function:sam-app-TokenAuthorizerFunction-gI6jKEKAM1f5/invocations`,
+      identitySource: "method.request.header.Authorization",
+      name: "LambdaAuthorizerToken",
+      type: "TOKEN",
+    }),
+    dependencies: ({}) => ({
+      restApi: "apigw-lambda-authorizer",
+    }),
+  },
+  {
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
@@ -39,7 +59,7 @@ exports.createResources = () => [
                   config.region
                 }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:sam-app-AppFunction-F1PMokcPLzZR/invocations`,
+                }:${config.accountId()}:function:sam-app-AppFunction-GCg7wu2MTQor/invocations`,
               },
             },
           },
@@ -50,18 +70,15 @@ exports.createResources = () => [
               type: "apiKey",
               name: "Authorization",
               in: "header",
-              "x-amazon-apigateway-authtype": "CUSTOM",
+              "x-amazon-apigateway-authtype": "custom",
               "x-amazon-apigateway-authorizer": {
                 type: "TOKEN",
-                authorizerCredentials: `arn:aws:iam::${config.accountId()}:role`,
-                authorizerResultTtlInSeconds: 60,
                 authorizerUri: `arn:aws:apigateway:${
                   config.region
                 }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:sam-app-TokenAuthorizerFunction-71q20AEpEfaF/invocations`,
+                }:${config.accountId()}:function:sam-app-TokenAuthorizerFunction-gI6jKEKAM1f5/invocations`,
                 identitySource: "method.request.header.Authorization",
-                identityValidationExpression: "^x-[a-z]+",
               },
             },
           },
@@ -101,7 +118,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-AppFunctionRole-G9DD9O7V1NTW",
+      RoleName: "sam-app-AppFunctionRole-1X1Q8LI42XT4E",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -127,7 +144,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-TokenAuthorizerFunctionRole-1GEHHTJ8J02BX",
+      RoleName: "sam-app-TokenAuthorizerFunctionRole-1C4MB81Y5P9AI",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -154,13 +171,13 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-AppFunction-F1PMokcPLzZR",
+        FunctionName: "sam-app-AppFunction-GCg7wu2MTQor",
         Handler: "app.handler",
         Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-AppFunctionRole-G9DD9O7V1NTW",
+      role: "sam-app-AppFunctionRole-1X1Q8LI42XT4E",
     }),
   },
   {
@@ -168,13 +185,13 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-TokenAuthorizerFunction-71q20AEpEfaF",
+        FunctionName: "sam-app-TokenAuthorizerFunction-gI6jKEKAM1f5",
         Handler: "tokenauthorizer.handler",
         Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-TokenAuthorizerFunctionRole-1GEHHTJ8J02BX",
+      role: "sam-app-TokenAuthorizerFunctionRole-1C4MB81Y5P9AI",
     }),
   },
   {
@@ -184,9 +201,9 @@ exports.createResources = () => [
       Permissions: [
         {
           Action: "lambda:InvokeFunction",
-          FunctionName: "sam-app-AppFunction-F1PMokcPLzZR",
+          FunctionName: "sam-app-AppFunction-GCg7wu2MTQor",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-AppFunctionPermission-EOR7C480UM36",
+          StatementId: "sam-app-AppFunctionPermission-1T1OTJVCQINVH",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
@@ -197,7 +214,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction: "sam-app-AppFunction-F1PMokcPLzZR",
+      lambdaFunction: "sam-app-AppFunction-GCg7wu2MTQor",
       apiGatewayRestApis: ["apigw-lambda-authorizer"],
     }),
   },
@@ -208,20 +225,22 @@ exports.createResources = () => [
       Permissions: [
         {
           Action: "lambda:InvokeFunction",
-          FunctionName: "sam-app-TokenAuthorizerFunction-71q20AEpEfaF",
+          FunctionName: "sam-app-TokenAuthorizerFunction-gI6jKEKAM1f5",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-TokenAuthorizerFunctionPermission-CZN8KBN6N1HJ",
+          StatementId:
+            "sam-app-TokenAuthorizerFunctionPermission-1ST3GRY9FYCGC",
           SourceArn: `${getId({
-            type: "RestApi",
+            type: "Authorizer",
             group: "APIGateway",
-            name: "apigw-lambda-authorizer",
-            path: "live.arnv2",
-          })}/authorizers/v91js6`,
+            name: "LambdaAuthorizerToken",
+            path: "live.arn",
+          })}`,
         },
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction: "sam-app-TokenAuthorizerFunction-71q20AEpEfaF",
+      lambdaFunction: "sam-app-TokenAuthorizerFunction-gI6jKEKAM1f5",
+      apiGatewayAuthorizers: ["LambdaAuthorizerToken"],
       apiGatewayRestApis: ["apigw-lambda-authorizer"],
     }),
   },

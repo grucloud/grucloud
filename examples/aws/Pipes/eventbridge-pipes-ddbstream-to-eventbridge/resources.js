@@ -96,7 +96,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      table: "Users",
+      dynamoDbTables: ["Users"],
     }),
   },
   {

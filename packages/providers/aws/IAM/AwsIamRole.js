@@ -46,15 +46,35 @@ const {
   createIAM,
   tagResourceIam,
   untagResourceIam,
-  dependenciesPoliciesKind,
   findInStatement,
   sortPolicies,
   ignoreErrorCodes,
+  sortStatements,
+  dependenciesFromPolicies,
 } = require("./AwsIamCommon");
 
-const findName = () => get("RoleName");
-const findId = () => get("Arn");
-const pickId = pick(["RoleName"]);
+const findName = () =>
+  pipe([
+    get("RoleName"),
+    tap((RoleName) => {
+      assert(RoleName);
+    }),
+  ]);
+
+const findId = () =>
+  pipe([
+    get("Arn"),
+    tap((Arn) => {
+      assert(Arn);
+    }),
+  ]);
+
+const pickId = pipe([
+  pick(["RoleName"]),
+  tap(({ RoleName }) => {
+    assert(RoleName);
+  }),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagRole-property
 const tagResource = tagResourceIam({ field: "RoleName", method: "tagRole" });
@@ -86,16 +106,10 @@ const managedByOther =
   ({ lives, config }) =>
   (live) =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       () => live,
       or([
         cannotBeDeleted({ lives, config }),
         pipe([
-          tap((params) => {
-            assert(config);
-          }),
           lives.getByType({
             type: "Stack",
             group: "CloudFormation",
@@ -112,55 +126,53 @@ const managedByOther =
       ]),
     ])();
 
-const findDependencyRoleCommon =
-  ({ live, lives, config }) =>
-  ({ type, group }) => ({
+const findDependencyRole =
+  () =>
+  ({ type, group, pathLive }) => ({
     type,
     group,
-    ids: pipe([
-      () => live,
-      fork({
-        statementInPolicies: pipe([
-          get("Policies"),
-          pluck("PolicyDocument"),
-          pluck("Statement"),
-          flatten,
-        ]),
-        statementInAssumeRolePolicyDocument: pipe([
-          get("AssumeRolePolicyDocument"),
-          get("Statement"),
-        ]),
-      }),
-      ({
-        statementInPolicies = [],
-        statementInAssumeRolePolicyDocument = [],
-      }) => [...statementInPolicies, ...statementInAssumeRolePolicyDocument],
-      flatMap(findInStatement({ type, group, lives, config })),
-      filter(not(isEmpty)),
-      tap.if(not(isEmpty), (id) => {
-        assert(id);
-      }),
-    ])(),
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([
+        fork({
+          statementInPolicies: pipe([
+            get("Policies"),
+            pluck("PolicyDocument"),
+            pluck("Statement"),
+            flatten,
+          ]),
+          statementInAssumeRolePolicyDocument: pipe([
+            get("AssumeRolePolicyDocument"),
+            get("Statement"),
+          ]),
+        }),
+        ({
+          statementInPolicies = [],
+          statementInAssumeRolePolicyDocument = [],
+        }) => [...statementInPolicies, ...statementInAssumeRolePolicyDocument],
+        flatMap(findInStatement({ type, group, lives, config, pathLive })),
+        filter(not(isEmpty)),
+        tap.if(not(isEmpty), (id) => {
+          assert(id);
+        }),
+      ]),
   });
 
-const findDependenciesRoleCommon = ({ live, lives, config }) =>
-  pipe([
-    () => dependenciesPoliciesKind,
-    map(findDependencyRoleCommon({ live, lives, config })),
-  ])();
+exports.findDependenciesRole = () =>
+  pipe([() => dependenciesFromPolicies, map(findDependencyRole())])();
 
 //TODO retry listAttachedRolePolicies NoSuchEntity
 const listAttachedRolePolicies = ({ endpoint }) =>
   pipe([
-    ({ RoleName }) =>
-      endpoint().listAttachedRolePolicies({
-        RoleName,
-        MaxItems: 1e3,
-      }),
+    ({ RoleName }) => ({
+      RoleName,
+      MaxItems: 1e3,
+    }),
+    endpoint().listAttachedRolePolicies,
     get("AttachedPolicies"),
     sortPolicies,
     tap((policies) => {
-      logger.debug(`getList listAttachedRolePolicies: ${tos(policies)}`);
+      //logger.debug(`getList listAttachedRolePolicies: ${tos(policies)}`);
     }),
   ]);
 
@@ -189,32 +201,6 @@ const listInlinePolicies =
         ])
       ),
     ])();
-
-const sortStatement = pipe([
-  assign({
-    Principal: pipe([
-      get("Principal"),
-      assign({
-        Service: pipe([
-          get("Service"),
-          when(
-            Array.isArray,
-            pipe([callProp("sort", (a, b) => a.localeCompare(b))])
-          ),
-        ]),
-      }),
-    ]),
-  }),
-]);
-
-const sortStatements = pipe([
-  assign({
-    Statement: pipe([
-      get("Statement"),
-      switchCase([Array.isArray, map(sortStatement), sortStatement]),
-    ]),
-  }),
-]);
 
 const openIdConnectProviderProperties = ({ openIdConnectProvider }) =>
   pipe([
@@ -292,38 +278,6 @@ const attachRoleAttachedPolicies = ({ endpoint, name }) =>
 exports.AwsIamRole = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
-  const { providerName } = config;
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Policy",
-      group: "IAM",
-      ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
-    },
-    {
-      type: "OpenIDConnectProvider",
-      group: "IAM",
-      ids: pipe([
-        () => live,
-        get("AssumeRolePolicyDocument.Statement"),
-        pluck("Principal.Federated"),
-        filter(not(isEmpty)),
-        (oidps) =>
-          pipe([
-            lives.getByType({
-              type: "OpenIDConnectProvider",
-              group: "IAM",
-              providerName,
-            }),
-            filter((connectProvider) =>
-              pipe([() => oidps, includes(connectProvider.id)])()
-            ),
-            pluck("id"),
-          ])(),
-      ])(),
-    },
-    ...findDependenciesRoleCommon({ live, lives, config }),
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listRoles-property
   const getList = client.getList({
@@ -384,7 +338,7 @@ exports.AwsIamRole = ({ spec, config }) => {
                 PolicyDocument: pipe([get("PolicyDocument"), JSON.stringify]),
               }),
               defaultsDeep({ RoleName: name }),
-              iam().putRolePolicy,
+              endpoint().putRolePolicy,
             ])
           ),
         ]),
@@ -486,7 +440,6 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   return {
     spec,
-    findDependencies,
     findNamespace: findNamespaceInTags,
     findId,
     getByName,

@@ -162,7 +162,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      table: "SampleTable",
+      dynamoDbTables: ["SampleTable"],
     }),
   },
   {

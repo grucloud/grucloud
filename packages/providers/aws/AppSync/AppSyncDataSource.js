@@ -63,6 +63,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     namespace,
     properties,
     dependencies: { graphqlApi, serviceRole, lambdaFunction },
+    config,
   }) =>
     pipe([
       tap(() => {

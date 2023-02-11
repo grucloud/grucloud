@@ -7,7 +7,9 @@ skinparam monochrome true
 ++++ Api (1)
 ++++ Deployment (1)
 ++++ Integration (1)
+++++ IntegrationResponse (1)
 ++++ Route (1)
+++++ RouteResponse (1)
 ++++ Stage (1)
 +++ IAM
 ++++ Role (2)

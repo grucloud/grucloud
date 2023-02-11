@@ -48,6 +48,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       api: "HttpToSqs",
       role: "ApigwHttpApiSqsLambdaStac-ApiGwV2ToSqsRole230A72FB-DSMDY5EKTBRF",
+      sqsQueue:
+        "ApigwHttpApiSqsLambdaStack-ApigwV2SqsLambdaQueue60DA20A7-u0KdXdwrt4es",
     }),
   },
   {
@@ -58,7 +60,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "HttpToSqs",
-      integration: "integration::HttpToSqs::NO-INTEGRATION",
+      integration:
+        "integration::HttpToSqs::ApigwHttpApiSqsLambdaStack-ApigwV2SqsLambdaQueue60DA20A7-u0KdXdwrt4es",
     }),
   },
   {

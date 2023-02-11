@@ -84,7 +84,7 @@ exports.IAMUserPolicy = () => ({
           get("id"),
         ]),
     },
-    ...buildDependenciesPolicy(),
+    ...buildDependenciesPolicy({ policyKey: "PolicyDocument" }),
   },
   filterLive: ({ providerConfig, lives }) =>
     pipe([

@@ -126,6 +126,7 @@ exports.createResources = () => [
             type: "Api",
             group: "ApiGatewayV2",
             name: "apigw-http-api-lambda",
+            path: "live.ArnV2",
           })}/*`,
         },
       ],

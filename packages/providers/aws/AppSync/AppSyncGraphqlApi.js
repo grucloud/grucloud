@@ -208,6 +208,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     properties: { tags, schemaFile, ...otherProps },
     dependencies: { cloudWatchLogsRole },
     programOptions,
+    config,
   }) =>
     pipe([
       () => ({}),

@@ -1,11 +1,12 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, map, filter } = require("rubico");
-const { defaultsDeep, when, callProp, isEmpty, unless } = require("rubico/x");
+const { defaultsDeep, when, callProp } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
   assignPolicyAccountAndRegion,
   buildDependenciesPolicy,
+  sortStatements,
 } = require("../IAM/AwsIamCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -21,6 +22,7 @@ const assignPolicy = () =>
             get("policy"),
             callProp("replaceAll", "\\", ""),
             JSON.parse,
+            sortStatements,
           ]),
         }),
       ])
@@ -109,7 +111,7 @@ exports.APIGatewayRestApiPolicy = () => ({
           }),
         ]),
     },
-    ...buildDependenciesPolicy(),
+    ...buildDependenciesPolicy({ policyKey: "policy" }),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getRestApi-property
   getById: {

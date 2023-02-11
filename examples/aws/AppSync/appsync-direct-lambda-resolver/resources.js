@@ -13,9 +13,9 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       graphqlApi: "AppsyncWithLambdaResolverApi",
       serviceRole:
-        "AppSyncWithDirectLambdaRe-ApidirectLambdaServiceRo-1UR6V9ZYP1FIB",
+        "AppSyncWithDirectLambdaRe-ApidirectLambdaServiceRo-13H1HJXMNXAXG",
       lambdaFunction:
-        "AppSyncWithDirectLambdaResolverSt-resolver24166D79-DWfEQ5ofpHgH",
+        "AppSyncWithDirectLambdaResolverSt-resolver24166D79-mxxbxixLZunp",
     }),
   },
   {
@@ -34,7 +34,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       cloudWatchLogsRole:
-        "AppSyncWithDirectLambdaReso-ApiApiLogsRole90293F72-J17MNOFIMP7Q",
+        "AppSyncWithDirectLambdaReso-ApiApiLogsRole90293F72-13LN1P8SIBATK",
     }),
   },
   {
@@ -107,7 +107,7 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({ config }) => ({
       RoleName:
-        "AppSyncWithDirectLambdaRe-ApidirectLambdaServiceRo-1UR6V9ZYP1FIB",
+        "AppSyncWithDirectLambdaRe-ApidirectLambdaServiceRo-13H1HJXMNXAXG",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -130,10 +130,10 @@ exports.createResources = () => [
                 Resource: [
                   `arn:aws:lambda:${
                     config.region
-                  }:${config.accountId()}:function:AppSyncWithDirectLambdaResolverSt-resolver24166D79-DWfEQ5ofpHgH`,
+                  }:${config.accountId()}:function:AppSyncWithDirectLambdaResolverSt-resolver24166D79-mxxbxixLZunp`,
                   `arn:aws:lambda:${
                     config.region
-                  }:${config.accountId()}:function:AppSyncWithDirectLambdaResolverSt-resolver24166D79-DWfEQ5ofpHgH:*`,
+                  }:${config.accountId()}:function:AppSyncWithDirectLambdaResolverSt-resolver24166D79-mxxbxixLZunp:*`,
                 ],
                 Effect: "Allow",
               },
@@ -149,7 +149,7 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({}) => ({
       RoleName:
-        "AppSyncWithDirectLambdaRe-resolverServiceRole60717-1MX8WZM7NMUW2",
+        "AppSyncWithDirectLambdaRe-resolverServiceRole60717-YOGHXC1COMGL",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -176,7 +176,7 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({}) => ({
       RoleName:
-        "AppSyncWithDirectLambdaReso-ApiApiLogsRole90293F72-J17MNOFIMP7Q",
+        "AppSyncWithDirectLambdaReso-ApiApiLogsRole90293F72-13LN1P8SIBATK",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -209,13 +209,13 @@ exports.createResources = () => [
           },
         },
         FunctionName:
-          "AppSyncWithDirectLambdaResolverSt-resolver24166D79-DWfEQ5ofpHgH",
+          "AppSyncWithDirectLambdaResolverSt-resolver24166D79-mxxbxixLZunp",
         Handler: "index.handler",
         Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
-      role: "AppSyncWithDirectLambdaRe-resolverServiceRole60717-1MX8WZM7NMUW2",
+      role: "AppSyncWithDirectLambdaRe-resolverServiceRole60717-YOGHXC1COMGL",
     }),
   },
 ];

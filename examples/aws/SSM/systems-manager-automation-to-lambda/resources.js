@@ -117,9 +117,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "sam-app-DynamoDBTable-1JJ3XXB72MCD7",
-    }),
   },
   {
     type: "Function",

@@ -24,10 +24,13 @@ exports.managedByOther = () =>
     get("ApiGatewayManaged"),
   ]);
 
-exports.dependencyIdApi =
-  ({ lives, config }) =>
-  (live) =>
-    `arn:aws:execute-api:${config.region}:${config.accountId()}:${live.ApiId}`;
+exports.dependencyIdApi = ({ lives, config }) =>
+  pipe([
+    get("ApiId"),
+    tap((ApiId) => {
+      assert(ApiId);
+    }),
+  ]);
 
 exports.ignoreErrorCodes = ["NotFoundException"];
 

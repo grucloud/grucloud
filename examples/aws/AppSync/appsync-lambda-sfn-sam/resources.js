@@ -221,9 +221,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "sam-app-SamStepFunctionsTable-1O67WMRRPTIDD",
-    }),
   },
   {
     type: "Role",
@@ -318,9 +315,6 @@ exports.createResources = () => [
           PolicyName: "SamStepFunctionStateMachineRolePolicy1",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      table: "sam-app-SamStepFunctionsTable-1O67WMRRPTIDD",
     }),
   },
   {

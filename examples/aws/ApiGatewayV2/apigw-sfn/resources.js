@@ -50,6 +50,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       api: "processFormExample",
       role: "sam-app-HttpApiRole-JUJJQ0MR8S77",
+      stepFunctionsStateMachine: "StateMachineExpressSync-2CoJnh1wm0fA",
     }),
   },
   {
@@ -60,7 +61,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "processFormExample",
-      integration: "integration::processFormExample::NO-INTEGRATION",
+      integration:
+        "integration::processFormExample::StateMachineExpressSync-2CoJnh1wm0fA",
     }),
   },
   {

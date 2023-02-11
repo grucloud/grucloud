@@ -141,6 +141,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
       subnets = [],
       serviceLinkedRole,
     },
+    config,
   }) =>
     pipe([
       () => otherProps,

@@ -7,8 +7,21 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { ignoreErrorCodes } = require("./ApiGatewayCommon");
 const { replaceAccountAndRegion } = require("../AwsCommon");
 
-const findId = () => get("id");
-const findName = () => get("name");
+const findId = () =>
+  pipe([
+    get("id"),
+    tap((id) => {
+      assert(id);
+    }),
+  ]);
+
+const findName = () =>
+  pipe([
+    get("name"),
+    tap((name) => {
+      assert(name);
+    }),
+  ]);
 
 const pickId = pipe([
   tap(({ restApiId, id }) => {
@@ -18,18 +31,50 @@ const pickId = pipe([
   ({ restApiId, id }) => ({ restApiId, authorizerId: id }),
 ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
+const assignArn = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    assign({
+      arn: pipe([
+        tap(({ id, restApiId }) => {
+          assert(id);
+          assert(restApiId);
+        }),
+        ({ restApiId, id }) =>
+          `arn:aws:execute-api:${
+            config.region
+          }:${config.accountId()}:${restApiId}/authorizers/${id}`,
+      ]),
+    }),
+  ]);
 
-exports.Authorizer = ({}) => ({
+const decorate = ({ live, config }) =>
+  pipe([
+    tap((params) => {
+      assert(live.restApiId);
+      assert(config);
+    }),
+    defaultsDeep({ restApiId: live.restApiId }),
+    assignArn({ config }),
+  ]);
+
+const managedByOther = () => () => true;
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
+exports.APIGatewayAuthorizer = ({}) => ({
   type: "Authorizer",
   package: "api-gateway",
   client: "APIGateway",
   inferName: findName,
   findName,
   findId,
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   getByName: getByNameCore,
   ignoreErrorCodes,
-  omitProperties: ["id", "restApiId", "providerARNs"],
+  omitProperties: ["id", "arn", "restApiId", "providerARNs"],
   dependencies: {
     restApi: {
       type: "RestApi",
@@ -78,7 +123,7 @@ exports.Authorizer = ({}) => ({
   getById: {
     method: "getAuthorizer",
     pickId,
-    decorate: ({ live }) => pipe([defaultsDeep({ restApiId: live.restApiId })]),
+    decorate,
   },
   create: {
     method: "createAuthorizer",
@@ -107,8 +152,8 @@ exports.Authorizer = ({}) => ({
           method: "getAuthorizers",
           getParam: "items",
           config,
-          decorate: ({ lives, parent: { id: restApiId } }) =>
-            pipe([defaultsDeep({ restApiId })]),
+          decorate: ({ config, parent: { id: restApiId } }) =>
+            pipe([decorate({ config, live: { restApiId } })]),
         }),
     ])(),
   configDefault: ({

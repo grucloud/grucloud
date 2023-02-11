@@ -35,8 +35,6 @@ const {
   tagResourceIam,
   untagResourceIam,
   createFetchPolicyDocument,
-  dependenciesPoliciesKind,
-  findInStatement,
   ignoreErrorCodes,
 } = require("./AwsIamCommon");
 
@@ -55,41 +53,13 @@ const untagResource = untagResourceIam({
 });
 
 const pickId = pipe([({ Arn }) => ({ PolicyArn: Arn })]);
+const findId = () => get("Arn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamPolicy = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
   const fetchPolicyDocument = createFetchPolicyDocument({ iam });
-  const findId = () => get("Arn");
-
-  const findDependencyPolicyCommon = ({
-    type,
-    group,
-    live,
-    lives,
-    config,
-  }) => ({
-    type,
-    group,
-    ids: pipe([
-      () => live,
-      get("PolicyDocument.Statement"),
-      flatMap(findInStatement({ type, group, lives, config })),
-    ])(),
-  });
-
-  const findDependenciesPolicyCommon = ({ live, lives, config }) =>
-    pipe([
-      () => dependenciesPoliciesKind,
-      map(({ type, group }) =>
-        findDependencyPolicyCommon({ type, group, live, lives, config })
-      ),
-    ])();
-
-  const findDependencies = ({ live, lives }) => [
-    ...findDependenciesPolicyCommon({ live, lives, config }),
-  ];
 
   const findName = () => (live) =>
     pipe([
@@ -360,6 +330,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: {},
+    config,
   }) =>
     pipe([
       () => otherProps,
@@ -393,7 +364,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     update,
     destroy,
     getList,
-    findDependencies,
+    //findDependencies,
     configDefault,
     managedByOther: cannotBeDeleted,
     cannotBeDeleted: cannotBeDeleted,

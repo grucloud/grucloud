@@ -50,19 +50,27 @@ describe("ApiGatewayV2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Integration", () =>
+  it("Integration", () =>
     pipe([
       () => ({
         groupType: "ApiGatewayV2::Integration",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ApiId: "12345", IntegrationId: "i123445" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("IntegrationResponse", () =>
+  it("IntegrationResponse", () =>
     pipe([
       () => ({
-        groupType: "ApiGatewayV2::Integration",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "ApiGatewayV2::IntegrationResponse",
+        livesNotFound: ({ config }) => [
+          {
+            ApiId: "12345",
+            IntegrationId: "i123445",
+            IntegrationResponseId: "ir123445",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -71,6 +79,16 @@ describe("ApiGatewayV2", async function () {
       () => ({
         groupType: "ApiGatewayV2::Route",
         livesNotFound: ({ config }) => [{ ApiId: "12345", RouteId: "12345" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("RouteResponse", () =>
+    pipe([
+      () => ({
+        groupType: "ApiGatewayV2::RouteResponse",
+        livesNotFound: ({ config }) => [
+          { ApiId: "12345", RouteId: "12345", RouteResponseId: "rs123" },
+        ],
       }),
       awsResourceTest,
     ])());

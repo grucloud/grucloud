@@ -53,7 +53,14 @@ module.exports = pipe([
       Client: Layer,
       inferName: () => get("LayerName"),
       compare: compareLayer,
-      displayResource: () => pipe([omit(["Content.Data", "Content.ZipFile"])]),
+      displayResource: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          //TODO check
+          omit(["Content.Data", "Content.ZipFile"]),
+        ]),
       filterLive:
         ({ resource, programOptions }) =>
         (live) =>
@@ -99,13 +106,12 @@ module.exports = pipe([
           ])(),
     },
     createAwsService(LambdaEventSourceMapping({ compare })),
-
     {
       type: "Function",
       Client: Function,
       compare: compareFunction,
       inferName: () => get("Configuration.FunctionName"),
-      displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
+      displayResource: () => pipe([omit(["Configuration.Code.ZipFile"])]),
       ignoreResource: () =>
         pipe([
           tap((params) => {

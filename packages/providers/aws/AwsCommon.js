@@ -53,12 +53,12 @@ const {
 
 const dependenciesFromEnv = {
   apiGatewayRestApis: {
-    pathLive: "live.url",
+    pathLive: "live.endpoint",
     type: "RestApi",
     group: "APIGateway",
   },
   apiGatewayV2Apis: {
-    pathLive: "id",
+    pathLive: "live.Endpoint",
     type: "Api",
     group: "ApiGatewayV2",
   },
@@ -100,11 +100,12 @@ const replaceDependency =
   (idToMatch) =>
     pipe([
       () => dependencies,
-      find(({ type, group, pathLive }) =>
+      find(({ type, group, pathLive = "id" }) =>
         pipe([
           () => lives,
           tap((params) => {
-            assert(true);
+            assert(type);
+            assert(pathLive);
           }),
           any(
             and([
@@ -1140,7 +1141,7 @@ const replaceArnWithAccountAndRegion =
               ({ id }) => Id.startsWith(id),
               //TODO
               () =>
-                !Id.endsWith("amazonaws.com") &&
+                //!Id.endsWith("amazonaws.com") &&
                 Id != providerConfig.accountId() &&
                 !Id.startsWith("arn:aws:ecr") &&
                 !Id.startsWith("arn:aws:kinesis") &&

@@ -89,9 +89,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "CLIENT",
-    }),
   },
   {
     type: "EventSourceMapping",

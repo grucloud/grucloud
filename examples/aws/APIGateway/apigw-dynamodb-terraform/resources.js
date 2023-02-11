@@ -339,8 +339,5 @@ exports.createResources = () => [
       },
       Path: "/",
     }),
-    dependencies: ({}) => ({
-      table: "Pets",
-    }),
   },
 ];

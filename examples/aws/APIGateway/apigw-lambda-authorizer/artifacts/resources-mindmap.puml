@@ -4,6 +4,7 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ APIGateway
+++++ Authorizer (1)
 ++++ RestApi (1)
 ++++ Stage (1)
 +++ IAM

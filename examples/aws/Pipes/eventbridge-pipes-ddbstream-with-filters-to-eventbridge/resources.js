@@ -96,7 +96,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      table: "sam-app-orders",
+      dynamoDbTables: ["sam-app-orders"],
     }),
   },
   {

@@ -75,6 +75,18 @@ const assignUrl = ({ config }) =>
     }),
   ]);
 
+const assignEndpoint = ({ config }) =>
+  pipe([
+    assign({
+      endpoint: pipe([
+        tap(({ id }) => {
+          assert(id);
+        }),
+        ({ id }) => `${id}.execute-api.${config.region}.amazonaws.com`,
+      ]),
+    }),
+  ]);
+
 const assignArn = ({ config }) =>
   pipe([
     tap((params) => {
@@ -607,6 +619,7 @@ const decorate = ({ endpoint, config }) =>
     assignArn({ config }),
     assignArnV2({ config }),
     assignUrl({ config }),
+    assignEndpoint({ config }),
     assign({
       deployments: ({ id: restApiId }) =>
         pipe([
@@ -687,6 +700,7 @@ exports.RestApi = ({ compare }) => ({
     "id",
     "arn",
     "arnv2",
+    "endpoint",
     "url",
     "createdDate",
     "deployments",

@@ -10,7 +10,6 @@ exports.createResources = () => [
       Description: "Trigger Lambda function every 2 minutes",
       Name: "SqsLambdaEbCdkStack-Rule4C995B7F-27P7UGLVJOBT",
       ScheduleExpression: "rate(2 minutes)",
-      State: "ENABLED",
     }),
   },
   {

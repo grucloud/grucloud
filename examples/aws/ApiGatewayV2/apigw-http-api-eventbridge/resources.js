@@ -54,7 +54,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       api: "API Gateway HTTP API to EventBridge",
       integration:
-        "integration::API Gateway HTTP API to EventBridge::NO-INTEGRATION",
+        "integration::API Gateway HTTP API to EventBridge::eventBusDefault",
     }),
   },
   {
@@ -79,7 +79,6 @@ exports.createResources = () => [
         source: ["WebApp"],
       },
       Name: "sam-app-MyTriggeredLambdaEventBridgeTrigger-1CZB0M0XR00UH",
-      State: "ENABLED",
     }),
   },
   {

@@ -34,7 +34,7 @@ const {
 const { createAwsService } = require("../AwsService");
 
 const { IAMGroup } = require("./AwsIamGroup");
-const { AwsIamRole } = require("./AwsIamRole");
+const { AwsIamRole, findDependenciesRole } = require("./AwsIamRole");
 const { AwsIamInstanceProfile } = require("./AwsIamInstanceProfile");
 const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
 const { IAMUser } = require("./AwsIamUser");
@@ -45,7 +45,7 @@ const {
 } = require("./AwsIamOpenIDConnectProvider");
 
 const {
-  dependenciesPolicy,
+  buildDependenciesPolicy,
   assignPolicyDocumentAccountAndRegion,
   assignPolicyAccountAndRegion,
 } = require("./AwsIamCommon");
@@ -244,6 +244,8 @@ module.exports = pipe([
           type: "Policy",
           group: "IAM",
           list: true,
+          dependencyIds: () =>
+            pipe([get("AttachedPolicies"), pluck("PolicyArn")]),
           findDependencyNames: ({ resource, lives }) =>
             pipe([
               () => resource.dependencies,
@@ -268,7 +270,30 @@ module.exports = pipe([
               }),
             ])(),
         },
-        ...dependenciesPolicy,
+        openIdConnectProvider: {
+          type: "OpenIDConnectProvider",
+          group: "IAM",
+          parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("AssumeRolePolicyDocument.Statement"),
+              pluck("Principal.Federated"),
+              filter(not(isEmpty)),
+              (oidps) =>
+                pipe([
+                  lives.getByType({
+                    type: "OpenIDConnectProvider",
+                    group: "IAM",
+                    providerName: config.providerName,
+                  }),
+                  filter((connectProvider) =>
+                    pipe([() => oidps, includes(connectProvider.id)])()
+                  ),
+                  pluck("id"),
+                ])(),
+            ]),
+        },
+        ...findDependenciesRole(),
       },
     },
     {
@@ -304,7 +329,7 @@ module.exports = pipe([
             assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
           ]),
       ]),
-      dependencies: dependenciesPolicy,
+      dependencies: buildDependenciesPolicy({ policyKey: "PolicyDocument" }),
     },
     {
       type: "InstanceProfile",

@@ -42,42 +42,42 @@
 <path fill="none" stroke="#707070" d="M500.28,-222.34C512.29,-225.65 524.42,-228.94 536,-232 544.04,-234.12 552.32,-236.27 560.68,-238.41"/>
 <polygon fill="#707070" stroke="#707070" points="559.96,-241.84 570.52,-240.92 561.69,-235.06 559.96,-241.84"/>
 </g>
-<!-- Role::AppSyncWithDirectLambdaRe&#45;ApidirectLambdaServiceRo&#45;1UR6V9ZYP1FIB -->
+<!-- Role::AppSyncWithDirectLambdaRe&#45;ApidirectLambdaServiceRo&#45;13H1HJXMNXAXG -->
 <g id="node8" class="node">
-<title>Role::AppSyncWithDirectLambdaRe&#45;ApidirectLambdaServiceRo&#45;1UR6V9ZYP1FIB</title>
+<title>Role::AppSyncWithDirectLambdaRe&#45;ApidirectLambdaServiceRo&#45;13H1HJXMNXAXG</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="841.5,-147 540.5,-147 540.5,-89 841.5,-89 841.5,-147"/>
 <text text-anchor="start" x="553" y="-127.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="553" y="-102.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">AppSyncWithDirectLambdaRe&#45;Apidir...</text>
 </g>
-<!-- DataSource::directLambda&#45;&gt;Role::AppSyncWithDirectLambdaRe&#45;ApidirectLambdaServiceRo&#45;1UR6V9ZYP1FIB -->
+<!-- DataSource::directLambda&#45;&gt;Role::AppSyncWithDirectLambdaRe&#45;ApidirectLambdaServiceRo&#45;13H1HJXMNXAXG -->
 <g id="edge2" class="edge">
-<title>DataSource::directLambda&#45;&gt;Role::AppSyncWithDirectLambdaRe&#45;ApidirectLambdaServiceRo&#45;1UR6V9ZYP1FIB</title>
+<title>DataSource::directLambda&#45;&gt;Role::AppSyncWithDirectLambdaRe&#45;ApidirectLambdaServiceRo&#45;13H1HJXMNXAXG</title>
 <path fill="none" stroke="#707070" d="M500.23,-166.05C512.25,-162.58 524.39,-159.15 536,-156 543.93,-153.85 552.1,-151.68 560.35,-149.53"/>
 <polygon fill="#707070" stroke="#707070" points="561.25,-152.91 570.06,-147.02 559.5,-146.14 561.25,-152.91"/>
 </g>
-<!-- Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;DWfEQ5ofpHgH -->
+<!-- Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;mxxbxixLZunp -->
 <g id="node11" class="node">
-<title>Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;DWfEQ5ofpHgH</title>
+<title>Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;mxxbxixLZunp</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="846,-223 536,-223 536,-165 846,-165 846,-223"/>
 <text text-anchor="start" x="548" y="-203.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Function</text>
 <text text-anchor="start" x="548" y="-178.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">AppSyncWithDirectLambdaResolverS...</text>
 </g>
-<!-- DataSource::directLambda&#45;&gt;Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;DWfEQ5ofpHgH -->
+<!-- DataSource::directLambda&#45;&gt;Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;mxxbxixLZunp -->
 <g id="edge3" class="edge">
-<title>DataSource::directLambda&#45;&gt;Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;DWfEQ5ofpHgH</title>
+<title>DataSource::directLambda&#45;&gt;Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;mxxbxixLZunp</title>
 <path fill="none" stroke="#707070" d="M500.36,-194.66C508.63,-194.64 517.13,-194.61 525.74,-194.58"/>
 <polygon fill="#707070" stroke="#707070" points="525.9,-198.07 535.89,-194.54 525.88,-191.07 525.9,-198.07"/>
 </g>
-<!-- Role::AppSyncWithDirectLambdaReso&#45;ApiApiLogsRole90293F72&#45;J17MNOFIMP7Q -->
+<!-- Role::AppSyncWithDirectLambdaReso&#45;ApiApiLogsRole90293F72&#45;13LN1P8SIBATK -->
 <g id="node10" class="node">
-<title>Role::AppSyncWithDirectLambdaReso&#45;ApiApiLogsRole90293F72&#45;J17MNOFIMP7Q</title>
+<title>Role::AppSyncWithDirectLambdaReso&#45;ApiApiLogsRole90293F72&#45;13LN1P8SIBATK</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1194,-299 882,-299 882,-241 1194,-241 1194,-299"/>
 <text text-anchor="start" x="894" y="-279.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="894" y="-254.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">AppSyncWithDirectLambdaReso&#45;ApiA...</text>
 </g>
-<!-- GraphqlApi::AppsyncWithLambdaResolverApi&#45;&gt;Role::AppSyncWithDirectLambdaReso&#45;ApiApiLogsRole90293F72&#45;J17MNOFIMP7Q -->
+<!-- GraphqlApi::AppsyncWithLambdaResolverApi&#45;&gt;Role::AppSyncWithDirectLambdaReso&#45;ApiApiLogsRole90293F72&#45;13LN1P8SIBATK -->
 <g id="edge4" class="edge">
-<title>GraphqlApi::AppsyncWithLambdaResolverApi&#45;&gt;Role::AppSyncWithDirectLambdaReso&#45;ApiApiLogsRole90293F72&#45;J17MNOFIMP7Q</title>
+<title>GraphqlApi::AppsyncWithLambdaResolverApi&#45;&gt;Role::AppSyncWithDirectLambdaReso&#45;ApiApiLogsRole90293F72&#45;13LN1P8SIBATK</title>
 <path fill="none" stroke="#707070" d="M823.91,-270C839.43,-270 855.42,-270 871.34,-270"/>
 <polygon fill="#707070" stroke="#707070" points="871.78,-273.5 881.78,-270 871.78,-266.5 871.78,-273.5"/>
 </g>
@@ -176,16 +176,16 @@
 <path fill="none" stroke="#707070" d="M247.68,-205.03C255.64,-207.89 263.49,-210.89 271,-214 287.71,-220.93 289.67,-227.81 307,-233 312.96,-234.78 441.63,-247.02 548.21,-256.94"/>
 <polygon fill="#707070" stroke="#707070" points="548.17,-260.45 558.45,-257.89 548.82,-253.48 548.17,-260.45"/>
 </g>
-<!-- Role::AppSyncWithDirectLambdaRe&#45;resolverServiceRole60717&#45;1MX8WZM7NMUW2 -->
+<!-- Role::AppSyncWithDirectLambdaRe&#45;resolverServiceRole60717&#45;YOGHXC1COMGL -->
 <g id="node9" class="node">
-<title>Role::AppSyncWithDirectLambdaRe&#45;resolverServiceRole60717&#45;1MX8WZM7NMUW2</title>
+<title>Role::AppSyncWithDirectLambdaRe&#45;resolverServiceRole60717&#45;YOGHXC1COMGL</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1189.5,-223 886.5,-223 886.5,-165 1189.5,-165 1189.5,-223"/>
 <text text-anchor="start" x="899" y="-203.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="899" y="-178.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">AppSyncWithDirectLambdaRe&#45;resolv...</text>
 </g>
-<!-- Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;DWfEQ5ofpHgH&#45;&gt;Role::AppSyncWithDirectLambdaRe&#45;resolverServiceRole60717&#45;1MX8WZM7NMUW2 -->
+<!-- Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;mxxbxixLZunp&#45;&gt;Role::AppSyncWithDirectLambdaRe&#45;resolverServiceRole60717&#45;YOGHXC1COMGL -->
 <g id="edge15" class="edge">
-<title>Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;DWfEQ5ofpHgH&#45;&gt;Role::AppSyncWithDirectLambdaRe&#45;resolverServiceRole60717&#45;1MX8WZM7NMUW2</title>
+<title>Function::AppSyncWithDirectLambdaResolverSt&#45;resolver24166D79&#45;mxxbxixLZunp&#45;&gt;Role::AppSyncWithDirectLambdaRe&#45;resolverServiceRole60717&#45;YOGHXC1COMGL</title>
 <path fill="none" stroke="#707070" d="M846.09,-194C856.12,-194 866.23,-194 876.3,-194"/>
 <polygon fill="#707070" stroke="#707070" points="876.34,-197.5 886.34,-194 876.34,-190.5 876.34,-197.5"/>
 </g>

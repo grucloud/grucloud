@@ -48,7 +48,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "sam-app-WebSocketApi",
-      role: "sam-app-SessionsTableAccessRole-1BLC9U48S8X8T",
+      role: "sam-app-SessionsTableAccessRole-RKP6XCC4WDQN",
     }),
   },
   {
@@ -88,7 +88,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "sam-app-WebSocketApi",
-      role: "sam-app-SessionsTableAccessRole-1BLC9U48S8X8T",
+      role: "sam-app-SessionsTableAccessRole-RKP6XCC4WDQN",
     }),
   },
   {
@@ -104,7 +104,40 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "sam-app-WebSocketApi",
-      lambdaFunction: "sam-app-DefaultRouteFunction-poOMmz4VF9oI",
+      lambdaFunction: "sam-app-DefaultRouteFunction-7n6DEEQGucp4",
+    }),
+  },
+  {
+    type: "IntegrationResponse",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      IntegrationResponseKey: "/200/",
+      TemplateSelectionExpression: "\\$default",
+    }),
+    dependencies: ({ config }) => ({
+      integration: `integration::sam-app-WebSocketApi::arn:aws:apigateway:${config.region}:dynamodb:action/DeleteItem`,
+    }),
+  },
+  {
+    type: "IntegrationResponse",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      IntegrationResponseKey: "/200/",
+      TemplateSelectionExpression: "\\$default",
+    }),
+    dependencies: ({ config }) => ({
+      integration: `integration::sam-app-WebSocketApi::arn:aws:apigateway:${config.region}:dynamodb:action/PutItem`,
+    }),
+  },
+  {
+    type: "IntegrationResponse",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      IntegrationResponseKey: "$default",
+    }),
+    dependencies: ({}) => ({
+      integration:
+        "integration::sam-app-WebSocketApi::sam-app-DefaultRouteFunction-7n6DEEQGucp4",
     }),
   },
   {
@@ -129,7 +162,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       api: "sam-app-WebSocketApi",
       integration:
-        "integration::sam-app-WebSocketApi::sam-app-DefaultRouteFunction-poOMmz4VF9oI",
+        "integration::sam-app-WebSocketApi::sam-app-DefaultRouteFunction-7n6DEEQGucp4",
     }),
   },
   {
@@ -142,6 +175,36 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       api: "sam-app-WebSocketApi",
       integration: `integration::sam-app-WebSocketApi::arn:aws:apigateway:${config.region}:dynamodb:action/DeleteItem`,
+    }),
+  },
+  {
+    type: "RouteResponse",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      RouteResponseKey: "$default",
+    }),
+    dependencies: ({}) => ({
+      route: "route::sam-app-WebSocketApi::$connect",
+    }),
+  },
+  {
+    type: "RouteResponse",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      RouteResponseKey: "$default",
+    }),
+    dependencies: ({}) => ({
+      route: "route::sam-app-WebSocketApi::$default",
+    }),
+  },
+  {
+    type: "RouteResponse",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      RouteResponseKey: "$default",
+    }),
+    dependencies: ({}) => ({
+      route: "route::sam-app-WebSocketApi::$disconnect",
     }),
   },
   {
@@ -182,7 +245,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-DefaultRouteFunctionRole-9KMFSBZ0FT8L",
+      RoleName: "sam-app-DefaultRouteFunctionRole-1RNBIXEOE8DGH",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -208,7 +271,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
-      RoleName: "sam-app-SessionsTableAccessRole-1BLC9U48S8X8T",
+      RoleName: "sam-app-SessionsTableAccessRole-RKP6XCC4WDQN",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -241,22 +304,19 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "sam-app-Sessions",
-    }),
   },
   {
     type: "Function",
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-DefaultRouteFunction-poOMmz4VF9oI",
+        FunctionName: "sam-app-DefaultRouteFunction-7n6DEEQGucp4",
         Handler: "index.handler",
         Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-DefaultRouteFunctionRole-9KMFSBZ0FT8L",
+      role: "sam-app-DefaultRouteFunctionRole-1RNBIXEOE8DGH",
     }),
   },
   {
@@ -266,14 +326,14 @@ exports.createResources = () => [
       Permissions: [
         {
           Action: "lambda:InvokeFunction",
-          FunctionName: "sam-app-DefaultRouteFunction-poOMmz4VF9oI",
+          FunctionName: "sam-app-DefaultRouteFunction-7n6DEEQGucp4",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-DefaultRouteFunctionPermission-IJ46FE4O8FGD",
+          StatementId: "sam-app-DefaultRouteFunctionPermission-1OG3BQQ43QDFF",
         },
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction: "sam-app-DefaultRouteFunction-poOMmz4VF9oI",
+      lambdaFunction: "sam-app-DefaultRouteFunction-7n6DEEQGucp4",
     }),
   },
 ];

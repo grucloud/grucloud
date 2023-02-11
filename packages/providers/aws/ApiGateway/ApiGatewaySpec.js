@@ -8,6 +8,8 @@ const { createAwsService } = require("../AwsService");
 
 const { Account } = require("./Account");
 const { ApiKey } = require("./ApiKey");
+const { APIGatewayAuthorizer } = require("./APIGatewayAuthorizer");
+
 const {
   APIGatewayClientCertificate,
 } = require("./APIGatewayClientCertificate");
@@ -26,6 +28,7 @@ module.exports = pipe([
   () => [
     Account({}),
     ApiKey({}),
+    APIGatewayAuthorizer({}),
     APIGatewayClientCertificate({}),
     RestApi({ compare }),
     APIGatewayRestApiPolicy({}),

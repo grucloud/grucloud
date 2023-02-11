@@ -815,7 +815,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = ({ name, properties }) =>
+  const configDefault = ({ name, properties, config }) =>
     defaultsDeep({ Bucket: name })(properties);
 
   return {

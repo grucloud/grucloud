@@ -7,11 +7,11 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "sam-app",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
       },
+      name: "sam-app",
       schema: {
         openapi: "3.0.1",
         info: {
@@ -29,7 +29,7 @@ exports.createResources = () => [
                   config.region
                 }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT/invocations`,
+                }:${config.accountId()}:function:sam-app-ExampleLambdaFunction-EE7UB1WbNVKM/invocations`,
               },
             },
           },
@@ -74,7 +74,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-ExampleLambdaFunctionRole-10XK3921W9OPT",
+      RoleName: "sam-app-ExampleLambdaFunctionRole-122WEVTCC5AAT",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -100,7 +100,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
-      RoleName: "sam-app-StatesExecutionRole-VZMKU2P2QBYH",
+      RoleName: "sam-app-StatesExecutionRole-WC0816L89GLE",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -122,7 +122,7 @@ exports.createResources = () => [
                 Action: ["lambda:InvokeFunction"],
                 Resource: `arn:aws:lambda:${
                   config.region
-                }:${config.accountId()}:function:sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT`,
+                }:${config.accountId()}:function:sam-app-ExampleLambdaFunction-EE7UB1WbNVKM`,
                 Effect: "Allow",
               },
             ],
@@ -150,19 +150,44 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT",
+        FunctionName: "sam-app-ExampleLambdaFunction-EE7UB1WbNVKM",
         Handler: "app.handler",
         Runtime: "nodejs12.x",
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-ExampleLambdaFunctionRole-10XK3921W9OPT",
+      role: "sam-app-ExampleLambdaFunctionRole-122WEVTCC5AAT",
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ getId }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "sam-app-ExampleLambdaFunction-EE7UB1WbNVKM",
+          Principal: "apigateway.amazonaws.com",
+          StatementId:
+            "sam-app-ExampleLambdaFunctionApiPermissionProd-FK2P8ZFX60IQ",
+          SourceArn: `${getId({
+            type: "RestApi",
+            group: "APIGateway",
+            name: "sam-app",
+            path: "live.arnv2",
+          })}/*/GET/`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "sam-app-ExampleLambdaFunction-EE7UB1WbNVKM",
+      apiGatewayRestApis: ["sam-app"],
     }),
   },
   {
     type: "StateMachine",
     group: "StepFunctions",
-    properties: ({ config, getId }) => ({
+    properties: ({ getId }) => ({
       definition: {
         Comment:
           "A Retry example of the Amazon States Language using an AWS API GW Endpoint",
@@ -172,7 +197,12 @@ exports.createResources = () => [
             Type: "Task",
             Resource: "arn:aws:states:::apigateway:invoke",
             Parameters: {
-              ApiEndpoint: `60lo2hkcu3.execute-api.${config.region}.amazonaws.com`,
+              ApiEndpoint: `${getId({
+                type: "RestApi",
+                group: "APIGateway",
+                name: "sam-app",
+                path: "live.endpoint",
+              })}`,
               Method: "GET",
               Stage: "Prod",
               Path: "/",
@@ -205,10 +235,11 @@ exports.createResources = () => [
         ],
         level: "ALL",
       },
-      name: "StateMachinetoAPIGW-uB4wAPaxm1sp",
+      name: "StateMachinetoAPIGW-lEKu3kcbm19R",
     }),
     dependencies: ({}) => ({
-      role: "sam-app-StatesExecutionRole-VZMKU2P2QBYH",
+      role: "sam-app-StatesExecutionRole-WC0816L89GLE",
+      apiGatewayRestApis: ["sam-app"],
       logGroups: ["stepfunctions/StateMachinetoAPIGW"],
     }),
   },

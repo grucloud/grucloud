@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project apigw-websocket-api-sqs-lambda
+skinparam monochrome true
++ Infra
+++ aws
++++ ApiGatewayV2
+++++ Api (1)
+++++ Deployment (1)
+++++ Integration (1)
+++++ Route (1)
+++++ Stage (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ EventSourceMapping (1)
+++++ Function (1)
++++ SQS
+++++ Queue (1)
+@endmindmap

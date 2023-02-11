@@ -318,6 +318,7 @@ exports.createResources = () => [
             type: "Api",
             group: "ApiGatewayV2",
             name: "sam-app",
+            path: "live.ArnV2",
           })}/*/*`,
         },
       ],

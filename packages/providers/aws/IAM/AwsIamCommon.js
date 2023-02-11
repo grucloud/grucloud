@@ -41,6 +41,11 @@ const logger = require("@grucloud/core/logger")({ prefix: "IamCommon" });
 exports.ignoreErrorCodes = ["NoSuchEntity", "NoSuchEntityException"];
 
 const dependenciesFromPolicies = {
+  apiGatewayAuthorizers: {
+    pathLive: "live.arn",
+    type: "Authorizer",
+    group: "APIGateway",
+  },
   apiGatewayRestApis: {
     pathLive: "live.arnv2",
     type: "RestApi",
@@ -56,6 +61,11 @@ const dependenciesFromPolicies = {
     type: "GraphqlApi",
     group: "AppSync",
   },
+  cognitoIdentityPools: {
+    pathLive: "id",
+    type: "IdentityPool",
+    group: "Cognito",
+  },
   cognitoUserPools: {
     pathLive: "id",
     type: "UserPool",
@@ -65,6 +75,26 @@ const dependenciesFromPolicies = {
     pathLive: "id",
     type: "UserPoolClient",
     group: "CognitoIdentityServiceProvider",
+  },
+  dynamoDbTables: {
+    type: "Table",
+    group: "DynamoDB",
+    pathLive: "live.LatestStreamArn",
+  },
+  efsAccessPoints: {
+    pathLive: "id",
+    type: "AccessPoint",
+    group: "FileSystem",
+  },
+  efsFileSystems: {
+    pathLive: "id",
+    type: "AccessPoint",
+    group: "EFS",
+  },
+  organisations: {
+    pathLive: "id",
+    type: "Organisation",
+    group: "Organisations",
   },
   rdsDbClusters: {
     pathLive: "live.DBClusterArn",
@@ -77,58 +107,7 @@ const dependenciesFromPolicies = {
     group: "SecretsManager",
   },
 };
-
-exports.dependenciesPoliciesKind = [
-  { type: "IdentityPool", group: "Cognito" },
-  { type: "Table", group: "DynamoDB" },
-  { type: "FileSystem", group: "EFS" },
-  { type: "AccessPoint", group: "EFS" },
-  { type: "Secret", group: "SecretsManager" },
-  { type: "Organisation", group: "Organisations" },
-];
-
-//TODO
-exports.dependenciesPolicy = {
-  openIdConnectProvider: {
-    type: "OpenIDConnectProvider",
-    group: "IAM",
-    parent: true,
-  },
-  cognitoIdentityPool: { type: "IdentityPool", group: "Cognito", parent: true },
-  table: { type: "Table", group: "DynamoDB", parent: true },
-  efsFileSystems: {
-    type: "FileSystem",
-    group: "EFS",
-    list: true,
-  },
-  efsAccessPoints: {
-    type: "AccessPoint",
-    group: "EFS",
-    list: true,
-  },
-  logGroups: {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    list: true,
-    ignoreOnDestroy: true,
-  },
-  secrets: {
-    type: "Secret",
-    group: "SecretsManager",
-    list: true,
-  },
-  ssmParameters: {
-    type: "Parameter",
-    group: "SSM",
-    list: true,
-  },
-  organisations: {
-    type: "Organisation",
-    group: "Organisations",
-    list: true,
-  },
-  //dbClusters: { type: "DBCluster", group: "RDS", list: true },
-};
+exports.dependenciesFromPolicies = dependenciesFromPolicies;
 
 const replacePolicy = replaceDependency(dependenciesFromPolicies);
 exports.replacePolicy = replacePolicy;
@@ -363,6 +342,43 @@ exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig, lives }) =>
     ]),
   });
 
+const sortStatement = pipe([
+  tap((param) => {
+    assert(param);
+  }),
+  assign({
+    Principal: pipe([
+      get("Principal"),
+      when(
+        get("Service"),
+        assign({
+          Service: pipe([
+            get("Service"),
+            when(
+              Array.isArray,
+              pipe([callProp("sort", (a, b) => a.localeCompare(b))])
+            ),
+          ]),
+        })
+      ),
+    ]),
+  }),
+]);
+
+const sortStatements = pipe([
+  tap(({ Statement }) => {
+    assert(Statement);
+  }),
+  assign({
+    Statement: pipe([
+      get("Statement"),
+      switchCase([Array.isArray, map(sortStatement), sortStatement]),
+    ]),
+  }),
+]);
+
+exports.sortStatements = sortStatements;
+
 exports.createIAM = createEndpoint("iam", "IAM");
 
 exports.tagResourceIam =
@@ -450,11 +466,12 @@ const findArnInCondition = ({ Condition }) =>
   ])();
 
 const findInStatement =
-  ({ type, group, lives, config }) =>
+  ({ type, group, lives, config, pathLive = "id" }) =>
   ({ Condition, Resource }) =>
     pipe([
       tap(() => {
-        assert(true);
+        assert(pathLive);
+        //assert(Resource);
       }),
       () => Resource,
       unless(Array.isArray, (resource) => [resource]),
@@ -467,16 +484,26 @@ const findInStatement =
             type,
             group,
           }),
-          find(({ id }) =>
+          find(
             pipe([
-              () => arn,
-              when(isObject, pipe([values, first])),
-              includes(id),
-            ])()
+              get(pathLive),
+              (id) =>
+                pipe([
+                  tap(() => {
+                    //assert(id, `no value at ${pathLive}, type: ${type}`);
+                  }),
+                  () => arn,
+                  when(isObject, pipe([values, first])),
+                  includes(id),
+                ])(),
+            ])
           ),
         ])()
       ),
       filter(not(isEmpty)),
+      tap((param) => {
+        assert(true);
+      }),
     ])();
 
 exports.findInStatement = findInStatement;
@@ -500,21 +527,37 @@ exports.filterAttachedPolicies = ({ lives }) =>
     omitIfEmpty(["AttachedPolicies"]),
   ]);
 
-const buildDependencyPolicy = ({ type, group }) => ({
-  type,
-  group,
-  list: true,
-  dependencyIds: ({ lives, config }) =>
-    pipe([
-      get("PolicyDocument.Statement"),
-      unless(isEmpty, flatMap(findInStatement({ type, group, lives, config }))),
-    ]),
-});
+const buildDependencyPolicy =
+  ({ policyKey }) =>
+  ({ type, group, pathLive }) => ({
+    type,
+    group,
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([
+        tap((params) => {
+          assert(policyKey);
+          assert(pathLive);
+        }),
+        get(policyKey),
+        tap((policy) => {
+          assert(policy);
+        }),
+        get("Statement", []),
+        tap((Statement) => {
+          assert(Statement);
+        }),
+        flatMap(findInStatement({ type, group, lives, config, pathLive })),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+  });
 
-exports.buildDependenciesPolicy = () =>
+exports.buildDependenciesPolicy = ({ policyKey }) =>
   pipe([
     () => dependenciesFromPolicies,
-    map(buildDependencyPolicy),
+    map(buildDependencyPolicy({ policyKey })),
     tap((params) => {
       assert(true);
     }),

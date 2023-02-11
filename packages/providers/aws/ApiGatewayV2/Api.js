@@ -41,6 +41,18 @@ const assignArnV2 = ({ config }) =>
     }),
   ]);
 
+const assignEndpoint = ({ config }) =>
+  pipe([
+    assign({
+      Endpoint: pipe([
+        tap(({ ApiId }) => {
+          assert(ApiId);
+        }),
+        ({ ApiId }) => `${ApiId}.execute-api.${config.region}.amazonaws.com`,
+      ]),
+    }),
+  ]);
+
 const pickId = pipe([
   tap(({ ApiId }) => {
     assert(ApiId);
@@ -55,6 +67,7 @@ const decorate = ({ endpoint, config }) =>
     }),
     assignArn({ config }),
     assignArnV2({ config }),
+    assignEndpoint({ config }),
     (live) =>
       pipe([
         () => live,
@@ -89,14 +102,18 @@ exports.ApiGatewayV2Api = () => ({
         assert(name);
       }),
     ]),
-  findId:
-    ({ config }) =>
-    ({ ApiId }) =>
-      `arn:aws:execute-api:${config.region}:${config.accountId()}:${ApiId}`,
+  findId: ({ config }) =>
+    pipe([
+      get("ApiId"),
+      tap((ApiId) => {
+        assert(ApiId);
+      }),
+    ]),
   ignoreErrorCodes,
   omitProperties: [
     "Arn",
     "ArnV2",
+    "Endpoint",
     "ApiEndpoint",
     "ApiId",
     "CreatedDate",

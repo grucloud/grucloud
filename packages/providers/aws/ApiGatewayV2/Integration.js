@@ -47,6 +47,8 @@ const integrationUriToName = pipe([
   callProp("replace", "/invocations", ""),
 ]);
 
+const uriToName = pipe([callProp("split", "/"), last]);
+
 const listenerUriToName =
   ({ lives, config }) =>
   (live) =>
@@ -66,8 +68,6 @@ const listenerUriToName =
         assert(name);
       }),
     ])();
-
-const eventBusUriToName = pipe([callProp("split", "/"), last]);
 
 const decorate = ({ endpoint, config }) =>
   pipe([
@@ -120,7 +120,16 @@ exports.ApiGatewayV2Integration = ({}) => ({
   package: "apigatewayv2",
   client: "ApiGatewayV2",
   inferName:
-    ({ dependenciesSpec: { api, lambdaFunction, listener, eventBus } }) =>
+    ({
+      dependenciesSpec: {
+        api,
+        lambdaFunction,
+        listener,
+        eventBus,
+        sqsQueue,
+        stepFunctionsStateMachine,
+      },
+    }) =>
     ({ IntegrationSubtype, IntegrationType, IntegrationUri = "" }) =>
       pipe([
         //TODO other target
@@ -129,14 +138,22 @@ exports.ApiGatewayV2Integration = ({}) => ({
         }),
         () => `integration::${api}`,
         switchCase([
-          () => lambdaFunction,
-          append(`::${lambdaFunction}`),
+          // Event Bus
           () => eventBus,
           append(`::${eventBus}`),
-          eq(IntegrationSubtype, "EventBridge-PutEvents"),
-          append(`::eventBusDefault`),
+          () => lambdaFunction,
+          append(`::${lambdaFunction}`),
+          () => sqsQueue,
+          append(`::${sqsQueue}`),
+          // StateMachine
+          () => stepFunctionsStateMachine,
+          append(`::${stepFunctionsStateMachine}`),
+          // ELB
           () => listener,
           append(`::${listener}`),
+          // eventBusDefault
+          eq(IntegrationSubtype, "EventBridge-PutEvents"),
+          append(`::eventBusDefault`),
           eq(IntegrationType, "AWS"),
           pipe([append(`::${IntegrationUri}`)]),
           append(`::NO-INTEGRATION`),
@@ -153,11 +170,21 @@ exports.ApiGatewayV2Integration = ({}) => ({
       fork({
         apiName: pipe([({ ApiName }) => `integration::${ApiName}`]),
         integration: switchCase([
+          // SQS Queue
+          eq(get("IntegrationSubtype"), "SQS-SendMessage"),
+          pipe([get("RequestParameters.QueueUrl", "queue"), uriToName]),
+          // StateMachine
+          eq(get("IntegrationSubtype"), "StepFunctions-StartSyncExecution"),
+          pipe([
+            get("RequestParameters.StateMachineArn", "sfn"),
+            callProp("split", ":"),
+            last,
+          ]),
           // Eventbridge
           eq(get("IntegrationSubtype"), "EventBridge-PutEvents"),
           pipe([
             get("RequestParameters.EventBusName", "eventBusDefault"),
-            eventBusUriToName,
+            uriToName,
           ]),
           get("IntegrationUri"),
           pipe([
@@ -193,7 +220,6 @@ exports.ApiGatewayV2Integration = ({}) => ({
     "RouteId",
     "ConnectionId",
     "IntegrationId",
-    //"IntegrationUri",
     "ApiName",
     "RequestParameters.EventBusName",
     "CredentialsArn",
@@ -261,6 +287,50 @@ exports.ApiGatewayV2Integration = ({}) => ({
             find(eq(get("id"), live.IntegrationUri)),
           ])(),
     }, //Integration name depends on listener name
+    sqsQueue: {
+      type: "Queue",
+      group: "SQS",
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              type: "Queue",
+              group: "SQS",
+              providerName: config.providerName,
+            }),
+            find(
+              pipe([
+                eq(
+                  get("live.QueueUrl"),
+                  get("RequestParameters.QueueUrl")(live)
+                ),
+              ])
+            ),
+          ])(),
+    },
+    stepFunctionsStateMachine: {
+      type: "StateMachine",
+      group: "StepFunctions",
+      dependencyId:
+        ({ lives, config }) =>
+        (live) =>
+          pipe([
+            lives.getByType({
+              type: "StateMachine",
+              group: "StepFunctions",
+              providerName: config.providerName,
+            }),
+            find(
+              pipe([
+                eq(
+                  get("live.stateMachineArn"),
+                  get("RequestParameters.StateMachineArn")(live)
+                ),
+              ])
+            ),
+          ])(),
+    },
     vpcLink: {
       type: "VpcLink",
       group: "ApiGatewayV2",
@@ -393,12 +463,12 @@ exports.ApiGatewayV2Integration = ({}) => ({
           )}/invocations`,
         })
       ),
-      when(
-        () => eventBus,
-        defaultsDeep({
-          RequestParameters: { EventBusName: getField(eventBus, "Arn") },
-        })
-      ),
+      // when(
+      //   () => eventBus,
+      //   defaultsDeep({
+      //     RequestParameters: { EventBusName: getField(eventBus, "Arn") },
+      //   })
+      // ),
       when(
         () => role,
         defaultsDeep({

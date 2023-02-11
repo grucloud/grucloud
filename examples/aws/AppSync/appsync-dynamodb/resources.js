@@ -199,8 +199,5 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "sam-app-DynamoDBNotesTable-8JRUXR2K56WX",
-    }),
   },
 ];

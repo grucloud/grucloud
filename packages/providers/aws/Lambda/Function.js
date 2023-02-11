@@ -33,20 +33,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createLambda, tagResource, untagResource } = require("./LambdaCommon");
 
-const { findInStatement } = require("../IAM/AwsIamCommon");
-//TODO
-const dependenciesPoliciesKind = [
-  // { type: "Table", group: "DynamoDB" },
-  // { type: "Topic", group: "SNS" },
-  // { type: "Queue", group: "SQS" },
-  // { type: "FileSystem", group: "EFS" },
-  // { type: "AccessPoint", group: "EFS" },
-  // { type: "EventBus", group: "CloudWatchEvents" },
-  // { type: "StateMachine", group: "StepFunctions" },
-  // { type: "LogGroup", group: "CloudWatchLogs" },
-  { type: "Api", group: "ApiGatewayV2" },
-];
-
 const compareLambda = compareAws({});
 const findId = () => get("Configuration.FunctionArn");
 const findName = () => get("Configuration.FunctionName");
@@ -292,6 +278,7 @@ exports.Function = ({ spec, config }) => {
     properties: { Tags, ...otherProps },
     dependencies: { role, layers = [], kmsKey, subnets, securityGroups },
     programOptions,
+    config,
   }) =>
     pipe([
       tap(() => {

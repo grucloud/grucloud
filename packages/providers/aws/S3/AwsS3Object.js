@@ -337,6 +337,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: { bucket },
+    config,
   }) =>
     pipe([
       tap(() => {

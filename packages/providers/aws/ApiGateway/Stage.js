@@ -188,6 +188,9 @@ exports.Stage = ({ compare }) => ({
       () =>
         payload,
     filterPayload: omit(["methodSettings", "accessLogSettings"]),
+    shouldRetryOnExceptionMessages: [
+      "Unable to complete operation due to concurrent modification. Please try again later",
+    ],
     postCreate:
       ({ endpoint, payload, name }) =>
       ({ restApiId, stageName }) =>

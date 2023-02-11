@@ -38,7 +38,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "sam-app",
-      lambdaFunction: "sam-app-SampleFunction-zvOhzGon6SQ6",
+      lambdaFunction: "sam-app-SampleFunction-7LguHNIijNN9",
     }),
   },
   {
@@ -49,7 +49,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "sam-app",
-      integration: "integration::sam-app::sam-app-SampleFunction-zvOhzGon6SQ6",
+      integration: "integration::sam-app::sam-app-SampleFunction-7LguHNIijNN9",
     }),
   },
   {
@@ -90,7 +90,7 @@ exports.createResources = () => [
                   "AWS/Lambda",
                   "Invocations",
                   "FunctionName",
-                  "sam-app-SampleFunction-zvOhzGon6SQ6",
+                  "sam-app-SampleFunction-7LguHNIijNN9",
                 ],
                 [".", "Errors", ".", "."],
                 [".", "Throttles", ".", "."],
@@ -133,7 +133,7 @@ exports.createResources = () => [
                   "AWS/ApiGateway",
                   "4xx",
                   "ApiId",
-                  "eo471gyha7",
+                  "75i8gi7flc",
                   {
                     yAxis: "right",
                   },
@@ -205,9 +205,9 @@ exports.createResources = () => [
                   "sam-app",
                   "ProcessedRequests",
                   "ServiceName",
-                  "sam-app-SampleFunction-zvOhzGon6SQ6",
+                  "sam-app-SampleFunction-7LguHNIijNN9",
                   "LogGroup",
-                  "sam-app-SampleFunction-zvOhzGon6SQ6",
+                  "sam-app-SampleFunction-7LguHNIijNN9",
                   "ServiceType",
                   "AWS::Lambda::Function",
                   "Service",
@@ -234,8 +234,8 @@ exports.createResources = () => [
             properties: {
               title: "Application Alarms",
               alarms: [
-                "arn:aws:cloudwatch:us-east-1:840541460064:alarm:sam-app-SampleFunctionErrorsAlarm-1IWYC5DS5EHDY",
-                "arn:aws:cloudwatch:us-east-1:840541460064:alarm:sam-app-HttpApiErrorsAlarm-YFXHAIT1GJ98",
+                "arn:aws:cloudwatch:us-east-1:840541460064:alarm:sam-app-SampleFunctionErrorsAlarm-152VK254LOXW2",
+                "arn:aws:cloudwatch:us-east-1:840541460064:alarm:sam-app-HttpApiErrorsAlarm-1FCVNCGFY7X81",
               ],
             },
           },
@@ -246,7 +246,7 @@ exports.createResources = () => [
             width: 12,
             height: 6,
             properties: {
-              query: `SOURCE '/aws/lambda/sam-app-SampleFunction-zvOhzGon6SQ6' | fields @message, ispresent(errorMessage) as errorPresent
+              query: `SOURCE '/aws/lambda/sam-app-SampleFunction-7LguHNIijNN9' | fields @message, ispresent(errorMessage) as errorPresent
 | filter errorPresent != 0
 | sort @timestamp desc
 | display @message
@@ -267,18 +267,18 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config }) => ({
-      AlarmName: "sam-app-HttpApiErrorsAlarm-YFXHAIT1GJ98",
+      AlarmName: "sam-app-HttpApiErrorsAlarm-1FCVNCGFY7X81",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
-        }:${config.accountId()}:sam-app-AlarmsTopic-BG5VlU7ks9ff`,
+        }:${config.accountId()}:sam-app-AlarmsTopic-dHb6mAE6WUbZ`,
       ],
       MetricName: "5XXError",
       Namespace: "AWS/ApiGateway",
       Statistic: "Sum",
       Dimensions: [
         {
-          Value: "eo471gyha7",
+          Value: "75i8gi7flc",
           Name: "ApiName",
         },
       ],
@@ -288,25 +288,25 @@ exports.createResources = () => [
       ComparisonOperator: "GreaterThanOrEqualToThreshold",
     }),
     dependencies: ({}) => ({
-      snsTopic: "sam-app-AlarmsTopic-BG5VlU7ks9ff",
+      snsTopic: "sam-app-AlarmsTopic-dHb6mAE6WUbZ",
     }),
   },
   {
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config }) => ({
-      AlarmName: "sam-app-SampleFunctionErrorsAlarm-1IWYC5DS5EHDY",
+      AlarmName: "sam-app-SampleFunctionErrorsAlarm-152VK254LOXW2",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
-        }:${config.accountId()}:sam-app-AlarmsTopic-BG5VlU7ks9ff`,
+        }:${config.accountId()}:sam-app-AlarmsTopic-dHb6mAE6WUbZ`,
       ],
       MetricName: "Errors",
       Namespace: "AWS/Lambda",
       Statistic: "Sum",
       Dimensions: [
         {
-          Value: "sam-app-SampleFunction-zvOhzGon6SQ6",
+          Value: "sam-app-SampleFunction-7LguHNIijNN9",
           Name: "FunctionName",
         },
       ],
@@ -316,7 +316,7 @@ exports.createResources = () => [
       ComparisonOperator: "GreaterThanOrEqualToThreshold",
     }),
     dependencies: ({}) => ({
-      snsTopic: "sam-app-AlarmsTopic-BG5VlU7ks9ff",
+      snsTopic: "sam-app-AlarmsTopic-dHb6mAE6WUbZ",
     }),
   },
   {
@@ -331,7 +331,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "sam-app-SampleFunctionRole-1AFT7V33CT2RE",
+      RoleName: "sam-app-SampleFunctionRole-113ACVPJUKMC7",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -366,7 +366,7 @@ exports.createResources = () => [
   {
     type: "Key",
     group: "KMS",
-    name: "7899f1a7-aa59-4a18-a8c0-c4005e572722",
+    name: "e6df1f6d-9049-4597-92d2-45991e66d43b",
     properties: ({ config }) => ({
       Description: "CMK for SNS alarms topic",
       Policy: {
@@ -409,7 +409,7 @@ exports.createResources = () => [
             AWS_EMF_NAMESPACE: "sam-app",
           },
         },
-        FunctionName: "sam-app-SampleFunction-zvOhzGon6SQ6",
+        FunctionName: "sam-app-SampleFunction-7LguHNIijNN9",
         Handler: "src/app.handler",
         Runtime: "nodejs14.x",
         Timeout: 100,
@@ -422,34 +422,37 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-SampleFunctionRole-1AFT7V33CT2RE",
+      role: "sam-app-SampleFunctionRole-113ACVPJUKMC7",
     }),
   },
   {
     type: "Permission",
     group: "Lambda",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       Permissions: [
         {
           Action: "lambda:InvokeFunction",
-          FunctionName: "sam-app-SampleFunction-zvOhzGon6SQ6",
+          FunctionName: "sam-app-SampleFunction-7LguHNIijNN9",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-SampleFunctionAllEventsPermission-5Y1YTVTO1G20",
-          SourceArn: `arn:aws:execute-api:${
-            config.region
-          }:${config.accountId()}:eo471gyha7/*/GET/`,
+          StatementId: "sam-app-SampleFunctionAllEventsPermission-9396IP9YG4A4",
+          SourceArn: `${getId({
+            type: "Api",
+            group: "ApiGatewayV2",
+            name: "sam-app",
+            path: "live.ArnV2",
+          })}/*/GET/`,
         },
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction: "sam-app-SampleFunction-zvOhzGon6SQ6",
+      lambdaFunction: "sam-app-SampleFunction-7LguHNIijNN9",
       apiGatewayV2Apis: ["sam-app"],
     }),
   },
   {
     type: "Topic",
     group: "SNS",
-    name: "sam-app-AlarmsTopic-BG5VlU7ks9ff",
+    name: "sam-app-AlarmsTopic-dHb6mAE6WUbZ",
     properties: ({}) => ({
       Tags: [
         {
@@ -459,7 +462,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      kmsKey: "7899f1a7-aa59-4a18-a8c0-c4005e572722",
+      kmsKey: "e6df1f6d-9049-4597-92d2-45991e66d43b",
     }),
   },
 ];

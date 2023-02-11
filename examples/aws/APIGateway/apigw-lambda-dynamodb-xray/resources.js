@@ -173,9 +173,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "ApigwLambdaDynamodbCdkTsStack-TableCD117FA1-26TB2N6F0U9N",
-    }),
   },
   {
     type: "Role",

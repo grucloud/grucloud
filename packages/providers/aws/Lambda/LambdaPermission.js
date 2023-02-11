@@ -14,7 +14,10 @@ const {
 const { defaultsDeep, when, find, callProp } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { replacePolicy } = require("../IAM/AwsIamCommon");
+const {
+  replacePolicy,
+  dependenciesFromPolicies,
+} = require("../IAM/AwsIamCommon");
 
 const pickId = pipe([
   tap(({ FunctionName }) => {
@@ -22,30 +25,6 @@ const pickId = pipe([
   }),
   pick(["FunctionName"]),
 ]);
-
-// TODO use common
-const dependenciesPermissions = {
-  apiGatewayRestApis: {
-    pathLive: "live.arnv2",
-    type: "RestApi",
-    group: "APIGateway",
-  },
-  apiGatewayV2Apis: {
-    pathLive: "id",
-    type: "Api",
-    group: "ApiGatewayV2",
-  },
-  appsyncGraphqlApis: {
-    pathLive: "live.uris.GRAPHQL",
-    type: "GraphqlApi",
-    group: "AppSync",
-  },
-  secretsManagerSecrets: {
-    pathLive: "live.ARN",
-    type: "Secret",
-    group: "SecretsManager",
-  },
-};
 
 const buildDependency = ({ pathLive, type, group }) => ({
   type,
@@ -74,7 +53,7 @@ const buildDependency = ({ pathLive, type, group }) => ({
 });
 
 const buildDependencies = pipe([
-  () => dependenciesPermissions,
+  () => dependenciesFromPolicies,
   map(buildDependency),
 ]);
 

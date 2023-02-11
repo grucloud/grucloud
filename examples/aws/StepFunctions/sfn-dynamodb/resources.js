@@ -58,9 +58,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "my-table",
-    }),
   },
   {
     type: "StateMachine",

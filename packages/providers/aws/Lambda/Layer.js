@@ -125,6 +125,7 @@ exports.Layer = ({ spec, config }) => {
     properties: { Tags, ...otherProps },
     namespace,
     programOptions,
+    config,
   }) =>
     pipe([
       () => ({

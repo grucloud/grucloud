@@ -336,9 +336,6 @@ exports.createResources = () => [
       },
       Path: "/service-role/",
     }),
-    dependencies: ({}) => ({
-      table: "MyModelTypeTable",
-    }),
   },
   { type: "Topic", group: "SNS", name: "Default_CloudWatch_Alarms_Topic" },
 ];

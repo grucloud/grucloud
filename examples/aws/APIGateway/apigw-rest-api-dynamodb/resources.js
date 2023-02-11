@@ -236,8 +236,5 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN",
-    }),
   },
 ];
