@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project eventbridge-sns
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ Rule (1)
+++++ Target (1)
++++ SNS
+++++ Topic (1)
+@endmindmap

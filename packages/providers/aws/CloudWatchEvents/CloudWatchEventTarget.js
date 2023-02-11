@@ -119,7 +119,7 @@ const EventTargetDependencies = {
   snsTopic: {
     type: "Topic",
     group: "SNS",
-    buildArn: () => get("TopicArn"),
+    buildArn: () => get("Attributes.TopicArn"),
     dependencyId: findTargetDependency({
       type: "Topic",
       group: "SNS",
