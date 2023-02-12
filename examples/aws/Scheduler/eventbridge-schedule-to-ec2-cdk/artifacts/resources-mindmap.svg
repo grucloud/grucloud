@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="285px" preserveAspectRatio="none" style="width:506px;height:285px;background:#FFFFFF;" version="1.1" viewBox="0 0 506 285" width="506px" zoomAndPan="magnify"><defs/><g><rect height="26.4883" style="stroke:#00000000;stroke-width:1.0;fill:none;" width="417" x="18" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="407" x="23" y="33.5352">Resources for project eventbridge-schedule-to-ec2-cdk</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="52" x="10" y="142.2207"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="20" y="165.7559">Infra</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="112" y="142.2207"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="122" y="165.7559">aws</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="208" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="218" y="81.0234">IAM</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="73" x="304" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="53" x="314" y="81.0234">Role (1)</text><path d="M254,75.7324 L264,75.7324 C279,75.7324 279,75.7324 294,75.7324 L304,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,160.4648 L168,160.4648 C183,160.4648 183,75.7324 198,75.7324 L208,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="88" x="208" y="142.2207"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68" x="218" y="165.7559">Scheduler</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="105" x="346" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="85" x="356" y="137.5117">Schedule (2)</text><path d="M296,160.4648 L306,160.4648 C321,160.4648 321,132.2207 336,132.2207 L346,132.2207 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="148" x="346" y="170.4648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="128" x="356" y="194">ScheduleGroup (1)</text><path d="M296,160.4648 L306,160.4648 C321,160.4648 321,188.709 336,188.709 L346,188.709 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,160.4648 L168,160.4648 C183,160.4648 183,160.4648 198,160.4648 L208,160.4648 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="47" x="208" y="226.9531"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="27" x="218" y="250.4883">SQS</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="88" x="305" y="226.9531"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68" x="315" y="250.4883">Queue (1)</text><path d="M255,245.1973 L265,245.1973 C280,245.1973 280,245.1973 295,245.1973 L305,245.1973 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M158,160.4648 L168,160.4648 C183,160.4648 183,245.1973 198,245.1973 L208,245.1973 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M62,160.4648 L72,160.4648 C87,160.4648 87,160.4648 102,160.4648 L112,160.4648 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><!--MD5=[4b2f54836449876f51c458457d2834aa]
+@startmindmap
+title Resources for project eventbridge-schedule-to-ec2-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ Scheduler
+++++ Schedule (2)
+++++ ScheduleGroup (1)
++++ SQS
+++++ Queue (1)
+@endmindmap
+
+PlantUML version 1.2022.6(Tue Jun 21 12:34:49 COT 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>
