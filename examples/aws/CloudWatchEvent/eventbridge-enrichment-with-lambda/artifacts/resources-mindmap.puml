@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project eventbridge-enrichment-with-lambda
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ EventBus (1)
+++++ Rule (2)
+++++ Target (2)
++++ IAM
+++++ Role (3)
++++ Lambda
+++++ Function (3)
+++++ Permission (2)
+@endmindmap
