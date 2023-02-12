@@ -1,6 +1,7 @@
 {
-  "name": "eventbridge-schedule-remove-one-time-schedules",
+  "name": "eventbridge-schedule-remove-one-time-schedules-processschedule",
   "version": "1.0.0",
+  "private": true,
   "description": "Stack that will create a schedule to remove one time schedules",
   "main": "app.js",
   "author": "David Boyne",
