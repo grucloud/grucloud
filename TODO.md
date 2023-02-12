@@ -8,7 +8,6 @@
 - AwsConfig
 - throwIfNotAwsError accepts an array of errors
 - EC2::ElasticIpAddressAssociation 0/1 The pending-instance-running instance to which 'eni-008dfdd692868df23' is attached is not in a valid state for this operation
-- AWS::Events::Endpoint
 - CodeStarConnections Host
   Lambda EventSourceMapping:
   aws_networkmanager_attachment_accepter

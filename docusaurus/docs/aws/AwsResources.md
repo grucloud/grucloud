@@ -15,7 +15,7 @@ List of resources for provider aws:
 * Amplify: 
 [App](./resources/Amplify/App.md), [BackendEnvironment](./resources/Amplify/BackendEnvironment.md), [Branch](./resources/Amplify/Branch.md), [DomainAssociation](./resources/Amplify/DomainAssociation.md), [Webhook](./resources/Amplify/Webhook.md)
 * APIGateway: 
-[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [ClientCertificate](./resources/APIGateway/ClientCertificate.md), [RestApi](./resources/APIGateway/RestApi.md), [RestApiPolicy](./resources/APIGateway/RestApiPolicy.md), [RequestValidator](./resources/APIGateway/RequestValidator.md), [Stage](./resources/APIGateway/Stage.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
+[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Authorizer](./resources/APIGateway/Authorizer.md), [ClientCertificate](./resources/APIGateway/ClientCertificate.md), [RestApi](./resources/APIGateway/RestApi.md), [RestApiPolicy](./resources/APIGateway/RestApiPolicy.md), [RequestValidator](./resources/APIGateway/RequestValidator.md), [Stage](./resources/APIGateway/Stage.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
 * ApiGatewayV2: 
 [Api](./resources/ApiGatewayV2/Api.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [DomainName](./resources/ApiGatewayV2/DomainName.md), [Integration](./resources/ApiGatewayV2/Integration.md), [IntegrationResponse](./resources/ApiGatewayV2/IntegrationResponse.md), [Route](./resources/ApiGatewayV2/Route.md), [RouteResponse](./resources/ApiGatewayV2/RouteResponse.md), [Stage](./resources/ApiGatewayV2/Stage.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
 * AppConfig: 
@@ -108,6 +108,8 @@ List of resources for provider aws:
 [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [TargetGroupAttachments](./resources/ElasticLoadBalancingV2/TargetGroupAttachments.md)
 * EMRServerless: 
 [Application](./resources/EMRServerless/Application.md)
+* EventBridge: 
+[Endpoint](./resources/EventBridge/Endpoint.md)
 * Evidently: 
 [Experiment](./resources/Evidently/Experiment.md), [Feature](./resources/Evidently/Feature.md), [Launch](./resources/Evidently/Launch.md), [Project](./resources/Evidently/Project.md), [Segment](./resources/Evidently/Segment.md)
 * Firehose: 
