@@ -90,6 +90,7 @@ const GROUPS = [
   ["EMRServerless", "emr-serverless"],
   ["ElasticLoadBalancingV2", "elb"],
   ["Evidently", "evidently"],
+  ["EventBridge", "eventbridge"],
   ["Firehose", "firehose"],
   ["FMS", "fms"],
   ["FSx", "fsx"],
