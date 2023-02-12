@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project eventbridge-codebuild-sns
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ Rule (2)
+++++ Target (2)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ CodeBuild
+++++ Project (1)
++++ IAM
+++++ Role (2)
++++ S3
+++++ Bucket (1)
++++ SNS
+++++ Topic (1)
+@endmindmap
