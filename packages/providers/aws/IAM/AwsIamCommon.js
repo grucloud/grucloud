@@ -179,6 +179,22 @@ const replaceCondition = ({ conditionCriteria, providerConfig, lives }) =>
     })
   );
 
+const replaceArnByKey = ({ key, providerConfig, lives }) =>
+  pipe([
+    when(
+      get(key),
+      assign({
+        [key]: pipe([
+          get(key),
+          replaceArnWithAccountAndRegion({
+            providerConfig,
+            lives,
+          }),
+        ]),
+      })
+    ),
+  ]);
+
 const replaceStatement = ({ providerConfig, lives }) =>
   pipe([
     tap((params) => {
@@ -276,30 +292,21 @@ const replaceStatement = ({ providerConfig, lives }) =>
             assign({
               ArnEquals: pipe([
                 get("ArnEquals"),
-                when(
-                  get("aws:PrincipalArn"),
-                  assign({
-                    "aws:PrincipalArn": pipe([
-                      get("aws:PrincipalArn"),
-                      replaceArnWithAccountAndRegion({
-                        providerConfig,
-                        lives,
-                      }),
-                    ]),
-                  })
-                ),
-                when(
-                  get("aws:SourceArn"),
-                  assign({
-                    "aws:SourceArn": pipe([
-                      get("aws:SourceArn"),
-                      replaceArnWithAccountAndRegion({
-                        providerConfig,
-                        lives,
-                      }),
-                    ]),
-                  })
-                ),
+                replaceArnByKey({
+                  key: "aws:PrincipalArn",
+                  providerConfig,
+                  lives,
+                }),
+                replaceArnByKey({
+                  key: "aws:SourceArn",
+                  providerConfig,
+                  lives,
+                }),
+                replaceArnByKey({
+                  key: "AWS:SourceArn",
+                  providerConfig,
+                  lives,
+                }),
               ]),
             })
           ),

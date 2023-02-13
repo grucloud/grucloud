@@ -61,7 +61,7 @@ List of resources for provider aws:
 * CloudWatchEvents: 
 [ApiDestination](./resources/CloudWatchEvents/ApiDestination.md), [Connection](./resources/CloudWatchEvents/Connection.md), [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
-[LogGroup](./resources/CloudWatchLogs/LogGroup.md), [LogStream](./resources/CloudWatchLogs/LogStream.md), [SubscriptionFilter](./resources/CloudWatchLogs/SubscriptionFilter.md)
+[LogGroup](./resources/CloudWatchLogs/LogGroup.md), [LogStream](./resources/CloudWatchLogs/LogStream.md), [ResourcePolicy](./resources/CloudWatchLogs/ResourcePolicy.md), [SubscriptionFilter](./resources/CloudWatchLogs/SubscriptionFilter.md)
 * CodeBuild: 
 [Project](./resources/CodeBuild/Project.md)
 * CodeDeploy: 
@@ -155,7 +155,7 @@ List of resources for provider aws:
 * MediaLive: 
 [Channel](./resources/MediaLive/Channel.md), [Input](./resources/MediaLive/Input.md), [InputSecurityGroup](./resources/MediaLive/InputSecurityGroup.md), [Multiplex](./resources/MediaLive/Multiplex.md), [MultiplexProgram](./resources/MediaLive/MultiplexProgram.md)
 * MediaPackage: 
-[Channel](./resources/MediaPackage/Channel.md)
+[Channel](./resources/MediaPackage/Channel.md), [OriginEndpoint](./resources/MediaPackage/OriginEndpoint.md)
 * MemoryDB: 
 [ACL](./resources/MemoryDB/ACL.md), [Cluster](./resources/MemoryDB/Cluster.md), [ParameterGroup](./resources/MemoryDB/ParameterGroup.md), [SubnetGroup](./resources/MemoryDB/SubnetGroup.md), [User](./resources/MemoryDB/User.md)
 * MQ: 

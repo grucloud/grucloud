@@ -9,6 +9,9 @@ const { createAwsService } = require("../AwsService");
 const { CloudWatchLogGroup } = require("./CloudWatchLogsGroup");
 const { CloudWatchLogStream } = require("./CloudWatchLogStream");
 const {
+  CloudWatchLogsResourcePolicy,
+} = require("./CloudWatchLogsResourcePolicy");
+const {
   CloudWatchSubscriptionFilter,
 } = require("./CloudWatchSubscriptionFilter");
 
@@ -25,6 +28,7 @@ module.exports = pipe([
   () => [
     CloudWatchLogGroup({ compare }),
     CloudWatchLogStream({ compare }),
+    CloudWatchLogsResourcePolicy({ compare }),
     CloudWatchSubscriptionFilter({ compare }),
   ],
   map(

@@ -16,6 +16,7 @@ const {
   and,
 } = require("rubico");
 const {
+  filterOut,
   unless,
   size,
   defaultsDeep,
@@ -202,6 +203,27 @@ exports.CloudFrontDistribution = ({ compare }) => ({
       dependencyIds: ({ lives, config }) =>
         get("DefaultCacheBehavior.TrustedKeyGroups.Items"),
     },
+    mediaPackageOriginEndpoints: {
+      type: "OriginEndpoint",
+      group: "MediaPackage",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("Origins.Items"),
+          pluck("DomainName"),
+          map((DomainName) =>
+            pipe([
+              lives.getByType({
+                type: "OriginEndpoint",
+                group: "MediaPackage",
+                providerName: config.providerName,
+              }),
+              find(pipe([get("live.DomainName"), includes(DomainName)])),
+              get("id"),
+            ])()
+          ),
+        ]),
+    },
     originAccessIdentities: {
       type: "OriginAccessIdentity",
       group: "CloudFront",
@@ -211,6 +233,7 @@ exports.CloudFrontDistribution = ({ compare }) => ({
           get("Origins.Items", []),
           pluck("S3OriginConfig"),
           pluck("OriginAccessIdentity"),
+          filterOut(isEmpty),
           map(
             pipe([
               callProp("split", "/"),
@@ -455,7 +478,15 @@ exports.CloudFrontDistribution = ({ compare }) => ({
                     ]),
                     DomainName: pipe([
                       get("DomainName"),
-                      replaceRegion({ providerConfig }),
+                      //replaceRegion({ providerConfig }),
+                      replaceWithName({
+                        groupType: "MediaPackage::OriginEndpoint",
+                        path: "live.DomainName",
+                        pathLive: "live.DomainName",
+                        providerConfig,
+                        lives,
+                        withSuffix: true,
+                      }),
                     ]),
                     S3OriginConfig: pipe([
                       get("S3OriginConfig"),

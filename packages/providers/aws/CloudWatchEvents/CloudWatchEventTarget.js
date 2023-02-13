@@ -104,11 +104,17 @@ const EventTargetDependencies = {
   logGroup: {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    buildArn: () => get("arn"),
-    dependencyId: findTargetDependency({
-      type: "LogGroup",
-      group: "CloudWatchLogs",
-    }),
+    buildArn: () => pipe([get("arn", ""), callProp("replace", ":*", "")]),
+    dependencyId: ({ config, lives }) =>
+      pipe([
+        get("Arn"),
+        callProp("replace", ":*", ""),
+        lives.getById({
+          type: "LogGroup",
+          group: "CloudWatchLogs",
+          providerName: config.providerName,
+        }),
+      ]),
   },
   sqsQueue: {
     type: "Queue",

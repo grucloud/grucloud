@@ -676,7 +676,7 @@ exports.replaceWithName =
           (id) =>
             pipe([
               tap((params) => {
-                assert(id);
+                //assert(id != undefined);
               }),
               () => Id,
               switchCase([

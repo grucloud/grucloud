@@ -53,13 +53,13 @@ exports.MediaPackageChannel = () => ({
     ]),
   findId: () =>
     pipe([
-      get("Arn"),
+      get("Id"),
       tap((id) => {
         assert(id);
       }),
     ]),
   ignoreErrorCodes: ["NotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaPackage.html#getChannel-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaPackage.html#describeChannel-property
   getById: {
     method: "describeChannel",
     pickId,

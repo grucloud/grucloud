@@ -28,6 +28,7 @@ exports.assignTags = ({ endpoint, buildArn }) =>
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 
 exports.LogGroupNameManagedByOther = [
+  "/aws/codebuild/",
   "/aws/APIGW",
   "API-Gateway-Execution-Logs",
   "/aws/batch/job",

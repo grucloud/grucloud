@@ -3,5 +3,11 @@ title Resources for project eventbridge-cloudwatch
 skinparam monochrome true
 + Infra
 ++ aws
-
++++ CloudWatchEvents
+++++ EventBus (1)
+++++ Rule (1)
+++++ Target (1)
++++ CloudWatchLogs
+++++ LogGroup (1)
+++++ ResourcePolicy (1)
 @endmindmap

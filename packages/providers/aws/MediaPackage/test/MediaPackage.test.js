@@ -15,7 +15,7 @@ describe("MediaPackage", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("OriginEndpoint", () =>
+  it("OriginEndpoint", () =>
     pipe([
       () => ({
         config,

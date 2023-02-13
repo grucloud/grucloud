@@ -18,7 +18,21 @@ describe("CloudWatchLogs", async function () {
         groupType: "CloudWatchLogs::LogStream",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:logs:us-east-1:${config.accountId()}:log-group:testlambdatest-:*:sss`,
+            arn: `arn:aws:logs:${
+              config.region
+            }:${config.accountId()}:log-group:testlambdatest-:*:sss`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("ResourcePolicy", () =>
+    pipe([
+      () => ({
+        groupType: "CloudWatchLogs::ResourcePolicy",
+        livesNotFound: ({ config }) => [
+          {
+            policyName: "p123",
           },
         ],
       }),
