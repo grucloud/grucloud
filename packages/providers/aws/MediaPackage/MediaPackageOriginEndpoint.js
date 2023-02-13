@@ -144,8 +144,6 @@ exports.MediaPackageOriginEndpoint = () => ({
       () => otherProps,
       tap(() => {
         assert(channel);
-        //assert(iamRoleSecret);
-        //assert(secretsManagerSecret);
       }),
       defaultsDeep({
         ChannelId: getField(channel, "Id"),

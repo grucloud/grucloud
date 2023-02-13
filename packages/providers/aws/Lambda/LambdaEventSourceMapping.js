@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, switchCase, fork, omit } = require("rubico");
-const { defaultsDeep, prepend, when } = require("rubico/x");
+const { pipe, tap, get, pick, switchCase, fork, omit, eq } = require("rubico");
+const { defaultsDeep, prepend, when, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -58,21 +58,33 @@ const findName =
           }),
           get("name"),
         ]),
-        sqsQueueName: getNameFromSource({
-          lives,
-          config,
-          type: "Queue",
-          group: "SQS",
-        }),
+        dynamoDbTable: ({ EventSourceArn }) =>
+          pipe([
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Table",
+              group: "DynamoDB",
+            }),
+            find(eq(get("live.LatestStreamArn"), EventSourceArn)),
+            get("name"),
+          ])(),
         kinesisStreamName: getNameFromSource({
           lives,
           config,
           type: "Stream",
           group: "Kinesis",
         }),
+        sqsQueueName: getNameFromSource({
+          lives,
+          config,
+          type: "Queue",
+          group: "SQS",
+        }),
       }),
-      ({ functionName, sqsQueueName, kinesisStreamName }) =>
-        `mapping::${functionName}::${sqsQueueName || kinesisStreamName}`,
+      ({ functionName, dynamoDbTable, sqsQueueName, kinesisStreamName }) =>
+        `mapping::${functionName}::${
+          dynamoDbTable || sqsQueueName || kinesisStreamName
+        }`,
     ])();
 
 const pickId = pipe([
@@ -109,18 +121,27 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
     //FunctionResponseTypes: [],
   },
   inferName:
-    ({ dependenciesSpec: { lambdaFunction, sqsQueue, kinesisStream } }) =>
+    ({
+      dependenciesSpec: {
+        lambdaFunction,
+        dynamoDbTable,
+        sqsQueue,
+        kinesisStream,
+      },
+    }) =>
     () =>
       pipe([
         tap((params) => {
           assert(lambdaFunction);
-          assert(sqsQueue || kinesisStream);
+          assert(dynamoDbTable || sqsQueue || kinesisStream);
         }),
         switchCase([
-          () => sqsQueue,
-          () => sqsQueue,
+          () => dynamoDbTable,
+          () => dynamoDbTable,
           () => kinesisStream,
           () => kinesisStream,
+          () => sqsQueue,
+          () => sqsQueue,
           () => {
             assert(false, `missing EventSourceMapping dependency`);
           },
@@ -154,13 +175,21 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
       parent: true,
       dependencyId: ({ lives, config }) => pipe([get("FunctionArn")]),
     },
-    sqsQueue: {
-      type: "Queue",
-      group: "SQS",
-      dependencyId: dependencyIdEventSource({
-        type: "Queue",
-        group: "SQS",
-      }),
+    dynamoDbTable: {
+      type: "Table",
+      group: "DynamoDB",
+      dependencyId:
+        ({ lives, config }) =>
+        ({ EventSourceArn }) =>
+          pipe([
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Table",
+              group: "DynamoDB",
+            }),
+            find(eq(get("live.LatestStreamArn"), EventSourceArn)),
+            get("id"),
+          ])(),
     },
     kinesisStream: {
       type: "Stream",
@@ -170,6 +199,15 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         group: "Kinesis",
       }),
     },
+    sqsQueue: {
+      type: "Queue",
+      group: "SQS",
+      dependencyId: dependencyIdEventSource({
+        type: "Queue",
+        group: "SQS",
+      }),
+    },
+
     //TODO other event source
     /*
   Amazon DynamoDB Streams
@@ -191,7 +229,6 @@ Apache Kafka
     getParam: "EventSourceMappings",
     decorate,
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#createEventSourceMapping-property
   create: {
     method: "createEventSourceMapping",
@@ -216,7 +253,7 @@ Apache Kafka
     name,
     namespace,
     properties,
-    dependencies: { lambdaFunction, sqsQueue, kinesisStream },
+    dependencies: { lambdaFunction, dynamoDbTable, kinesisStream, sqsQueue },
   }) =>
     pipe([
       tap(() => {
@@ -228,6 +265,10 @@ Apache Kafka
         FunctionName: getField(lambdaFunction, "Configuration.FunctionName"),
       }),
       switchCase([
+        () => dynamoDbTable,
+        defaultsDeep({
+          EventSourceArn: getField(dynamoDbTable, "LatestStreamArn"),
+        }),
         () => sqsQueue,
         defaultsDeep({
           EventSourceArn: getField(sqsQueue, "Attributes.QueueArn"),
