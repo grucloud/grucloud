@@ -127,6 +127,111 @@ const findName = () =>
     }),
   ]);
 
+const filterLiveCacheBehavior = ({ providerConfig, lives }) =>
+  pipe([
+    when(
+      get("TrustedKeyGroups"),
+      assign({
+        TrustedKeyGroups: pipe([
+          get("TrustedKeyGroups"),
+          omit(["Quantity"]),
+          when(
+            get("Items"),
+            assign({
+              Items: pipe([
+                get("Items"),
+                map(
+                  replaceWithName({
+                    groupType: "CloudFront::KeyGroup",
+                    path: "id",
+                    providerConfig,
+                    lives,
+                  })
+                ),
+              ]),
+            })
+          ),
+        ]),
+      })
+    ),
+    when(
+      get("CachePolicyId"),
+      assign({
+        CachePolicyId: pipe([
+          get("CachePolicyId"),
+          replaceWithName({
+            groupType: "CloudFront::CachePolicy",
+            path: "id",
+            providerConfig,
+            lives,
+          }),
+        ]),
+      })
+    ),
+    when(
+      get("OriginRequestPolicyId"),
+      assign({
+        OriginRequestPolicyId: pipe([
+          get("OriginRequestPolicyId"),
+          replaceWithName({
+            groupType: "CloudFront::OriginRequestPolicy",
+            path: "id",
+            providerConfig,
+            lives,
+          }),
+        ]),
+      })
+    ),
+    when(
+      get("ResponseHeadersPolicyId"),
+      assign({
+        ResponseHeadersPolicyId: pipe([
+          get("ResponseHeadersPolicyId"),
+          replaceWithName({
+            groupType: "CloudFront::ResponseHeadersPolicy",
+            path: "id",
+            providerConfig,
+            lives,
+          }),
+        ]),
+      })
+    ),
+    when(
+      get("FunctionAssociations"),
+      assign({
+        FunctionAssociations: pipe([
+          get("FunctionAssociations"),
+          assign({
+            Items: pipe([
+              get("Items"),
+              map(
+                pipe([
+                  assign({
+                    FunctionARN: pipe([
+                      get("FunctionARN"),
+                      replaceWithName({
+                        groupType: "CloudFront::Function",
+                        path: "id",
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  }),
+                ])
+              ),
+            ]),
+          }),
+        ]),
+      })
+    ),
+    assign({
+      TargetOriginId: pipe([
+        get("TargetOriginId"),
+        replaceRegion({ providerConfig }),
+      ]),
+    }),
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.CloudFrontDistribution = ({ compare }) => ({
   type: "Distribution",
@@ -306,6 +411,8 @@ exports.CloudFrontDistribution = ({ compare }) => ({
     "ViewerCertificate.Certificate",
     "DefaultCacheBehavior.TrustedKeyGroups.Quantity",
     "DefaultCacheBehavior.TrustedSigners.Quantity",
+    "CacheBehaviors.Items[].TrustedKeyGroups.Quantity",
+    "CacheBehaviors.Items[].TrustedSigners.Quantity",
     "ActiveTrustedKeyGroups",
     "ActiveTrustedSigners",
     "AliasICPRecordals",
@@ -319,6 +426,7 @@ exports.CloudFrontDistribution = ({ compare }) => ({
         "PriceClass",
         "Aliases",
         "DefaultRootObject",
+        "CacheBehaviors",
         "DefaultCacheBehavior",
         "Origins",
         "Restrictions",
@@ -326,140 +434,53 @@ exports.CloudFrontDistribution = ({ compare }) => ({
         "Logging",
         "ViewerCertificate",
       ]),
+      switchCase([
+        //
+        pipe([get("Aliases.Items"), isEmpty]),
+        omit(["Aliases"]),
+        assign({
+          Aliases: pipe([
+            get("Aliases"),
+            assign({
+              Items: pipe([
+                get("Items", []),
+                map((certificateName) =>
+                  pipe([
+                    () => lives,
+                    filter(eq(get("groupType"), "ACM::Certificate")),
+                    find(eq(get("name"), certificateName)),
+                    switchCase([
+                      isEmpty,
+                      () => certificateName,
+                      (resource) =>
+                        pipe([
+                          () => resource,
+                          buildGetId({ path: "name", providerConfig }),
+                          (getId) => () => getId,
+                        ])(),
+                    ]),
+                  ])()
+                ),
+              ]),
+            }),
+          ]),
+        }),
+      ]),
       assign({
-        Aliases: pipe([
-          get("Aliases"),
-          assign({
-            Items: pipe([
-              get("Items"),
-              map((certificateName) =>
-                pipe([
-                  () => lives,
-                  filter(eq(get("groupType"), "ACM::Certificate")),
-                  find(eq(get("name"), certificateName)),
-                  switchCase([
-                    isEmpty,
-                    () => certificateName,
-                    (resource) =>
-                      pipe([
-                        () => resource,
-                        buildGetId({ path: "name", providerConfig }),
-                        (getId) => () => getId,
-                      ])(),
-                  ]),
-                ])()
-              ),
-            ]),
-          }),
-        ]),
         Comment: pipe([
           get("Comment"),
           replaceWithBucketName({ providerConfig, lives }),
         ]),
         DefaultCacheBehavior: pipe([
           get("DefaultCacheBehavior"),
-          when(
-            get("TrustedKeyGroups"),
-            assign({
-              TrustedKeyGroups: pipe([
-                get("TrustedKeyGroups"),
-                omit(["Quantity"]),
-                when(
-                  get("Items"),
-                  assign({
-                    Items: pipe([
-                      get("Items"),
-                      map(
-                        replaceWithName({
-                          groupType: "CloudFront::KeyGroup",
-                          path: "id",
-                          providerConfig,
-                          lives,
-                        })
-                      ),
-                    ]),
-                  })
-                ),
-              ]),
-            })
-          ),
-          when(
-            get("CachePolicyId"),
-            assign({
-              CachePolicyId: pipe([
-                get("CachePolicyId"),
-                replaceWithName({
-                  groupType: "CloudFront::CachePolicy",
-                  path: "id",
-                  providerConfig,
-                  lives,
-                }),
-              ]),
-            })
-          ),
-          when(
-            get("OriginRequestPolicyId"),
-            assign({
-              OriginRequestPolicyId: pipe([
-                get("OriginRequestPolicyId"),
-                replaceWithName({
-                  groupType: "CloudFront::OriginRequestPolicy",
-                  path: "id",
-                  providerConfig,
-                  lives,
-                }),
-              ]),
-            })
-          ),
-          when(
-            get("ResponseHeadersPolicyId"),
-            assign({
-              ResponseHeadersPolicyId: pipe([
-                get("ResponseHeadersPolicyId"),
-                replaceWithName({
-                  groupType: "CloudFront::ResponseHeadersPolicy",
-                  path: "id",
-                  providerConfig,
-                  lives,
-                }),
-              ]),
-            })
-          ),
-          when(
-            get("FunctionAssociations"),
-            assign({
-              FunctionAssociations: pipe([
-                get("FunctionAssociations"),
-                assign({
-                  Items: pipe([
-                    get("Items"),
-                    map(
-                      pipe([
-                        assign({
-                          FunctionARN: pipe([
-                            get("FunctionARN"),
-                            replaceWithName({
-                              groupType: "CloudFront::Function",
-                              path: "id",
-                              providerConfig,
-                              lives,
-                            }),
-                          ]),
-                        }),
-                      ])
-                    ),
-                  ]),
-                }),
-              ]),
-            })
-          ),
+          filterLiveCacheBehavior({ providerConfig, lives }),
+        ]),
+        CacheBehaviors: pipe([
+          get("CacheBehaviors"),
           assign({
-            TargetOriginId: pipe([
-              get("TargetOriginId"),
-              tap((params) => {
-                assert(true);
-              }),
-              replaceRegion({ providerConfig }),
+            Items: pipe([
+              get("Items"),
+              map(filterLiveCacheBehavior({ providerConfig, lives })),
             ]),
           }),
         ]),
@@ -636,6 +657,32 @@ exports.CloudFrontDistribution = ({ compare }) => ({
             CertificateSource: "acm",
             CloudFrontDefaultCertificate: false,
           },
+        })
+      ),
+      set("Aliases.Quantity", pipe([get("Aliases.Items"), size])),
+      when(
+        get("CacheBehaviors"),
+        assign({
+          CacheBehaviors: pipe([
+            get("CacheBehaviors"),
+            assign({
+              Items: pipe([
+                get("Items"),
+                map(
+                  pipe([
+                    set(
+                      "TrustedKeyGroups.Quantity",
+                      pipe([get("TrustedKeyGroups.Items"), size])
+                    ),
+                    set(
+                      "TrustedSigners.Quantity",
+                      pipe([get("TrustedSigners.Items"), size])
+                    ),
+                  ])
+                ),
+              ]),
+            }),
+          ]),
         })
       ),
       set(

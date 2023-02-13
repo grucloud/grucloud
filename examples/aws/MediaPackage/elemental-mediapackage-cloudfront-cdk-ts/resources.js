@@ -8,11 +8,128 @@ exports.createResources = () => [
     group: "CloudFront",
     properties: ({ getId }) => ({
       PriceClass: "PriceClass_All",
-      Aliases: {
-        Quantity: 0,
-        Items: undefined,
-      },
       DefaultRootObject: "",
+      CacheBehaviors: {
+        Quantity: 3,
+        Items: [
+          {
+            PathPattern: "*.m3u8",
+            TargetOriginId:
+              "StreamingStackMyCloudFrontDistributionOrigin198011964",
+            TrustedSigners: {
+              Enabled: false,
+            },
+            TrustedKeyGroups: {
+              Enabled: false,
+            },
+            ViewerProtocolPolicy: "redirect-to-https",
+            AllowedMethods: {
+              Quantity: 7,
+              Items: [
+                "HEAD",
+                "DELETE",
+                "POST",
+                "GET",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+              ],
+              CachedMethods: {
+                Quantity: 2,
+                Items: ["HEAD", "GET"],
+              },
+            },
+            SmoothStreaming: false,
+            Compress: true,
+            LambdaFunctionAssociations: {
+              Quantity: 0,
+            },
+            FunctionAssociations: {
+              Quantity: 0,
+              Items: undefined,
+            },
+            FieldLevelEncryptionId: "",
+            CachePolicyId: "08627262-05a9-4f76-9ded-b50ca2e3a84f",
+            OriginRequestPolicyId: `${getId({
+              type: "OriginRequestPolicy",
+              group: "CloudFront",
+              name: "StreamingStackViewer-Country-City",
+            })}`,
+          },
+          {
+            PathPattern: "*.ts",
+            TargetOriginId:
+              "StreamingStackMyCloudFrontDistributionOrigin198011964",
+            TrustedSigners: {
+              Enabled: false,
+            },
+            TrustedKeyGroups: {
+              Enabled: false,
+            },
+            ViewerProtocolPolicy: "redirect-to-https",
+            AllowedMethods: {
+              Quantity: 2,
+              Items: ["HEAD", "GET"],
+              CachedMethods: {
+                Quantity: 2,
+                Items: ["HEAD", "GET"],
+              },
+            },
+            SmoothStreaming: false,
+            Compress: true,
+            LambdaFunctionAssociations: {
+              Quantity: 0,
+            },
+            FunctionAssociations: {
+              Quantity: 0,
+              Items: undefined,
+            },
+            FieldLevelEncryptionId: "",
+            CachePolicyId: "08627262-05a9-4f76-9ded-b50ca2e3a84f",
+            OriginRequestPolicyId: `${getId({
+              type: "OriginRequestPolicy",
+              group: "CloudFront",
+              name: "StreamingStackViewer-Country-City",
+            })}`,
+          },
+          {
+            PathPattern: "*.mpd",
+            TargetOriginId:
+              "StreamingStackMyCloudFrontDistributionOrigin198011964",
+            TrustedSigners: {
+              Enabled: false,
+            },
+            TrustedKeyGroups: {
+              Enabled: false,
+            },
+            ViewerProtocolPolicy: "redirect-to-https",
+            AllowedMethods: {
+              Quantity: 2,
+              Items: ["HEAD", "GET"],
+              CachedMethods: {
+                Quantity: 2,
+                Items: ["HEAD", "GET"],
+              },
+            },
+            SmoothStreaming: false,
+            Compress: true,
+            LambdaFunctionAssociations: {
+              Quantity: 0,
+            },
+            FunctionAssociations: {
+              Quantity: 0,
+              Items: undefined,
+            },
+            FieldLevelEncryptionId: "",
+            CachePolicyId: "08627262-05a9-4f76-9ded-b50ca2e3a84f",
+            OriginRequestPolicyId: `${getId({
+              type: "OriginRequestPolicy",
+              group: "CloudFront",
+              name: "StreamingStackViewer-Country-City",
+            })}`,
+          },
+        ],
+      },
       DefaultCacheBehavior: {
         TargetOriginId: "StreamingStackMyCloudFrontDistributionOrigin198011964",
         TrustedSigners: {
@@ -57,7 +174,7 @@ exports.createResources = () => [
               Items: [
                 {
                   HeaderName: "X-MediaPackage-CDNIdentifier",
-                  HeaderValue: "KyUc_cRK1xYtRy13lc9KuTnoyw>e)`0e",
+                  HeaderValue: "4pq4\\%o@'u@|,<SpNq@AsEY5e(x.wd+-",
                 },
               ],
             },
@@ -141,7 +258,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ getId }) => ({
-      RoleName: "StreamingStack-MyMediaPackageRole2A6DBB2D-18DB6450FVHN3",
+      RoleName: "StreamingStack-MyMediaPackageRole2A6DBB2D-11N4MY00K42A0",
       Description: "A role to be assumed by MediaPackage",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -225,11 +342,10 @@ exports.createResources = () => [
         },
       },
       Id: "StreamingStack-cmaf-",
-      Url: "",
     }),
     dependencies: ({}) => ({
       channel: "StreamingStack_MediaPackageChannel",
-      iamRoleSecret: "StreamingStack-MyMediaPackageRole2A6DBB2D-18DB6450FVHN3",
+      iamRoleSecret: "StreamingStack-MyMediaPackageRole2A6DBB2D-11N4MY00K42A0",
       secretsManagerSecret: "MediaPackage/StreamingStack",
     }),
   },
@@ -270,7 +386,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       channel: "StreamingStack_MediaPackageChannel",
-      iamRoleSecret: "StreamingStack-MyMediaPackageRole2A6DBB2D-18DB6450FVHN3",
+      iamRoleSecret: "StreamingStack-MyMediaPackageRole2A6DBB2D-11N4MY00K42A0",
       secretsManagerSecret: "MediaPackage/StreamingStack",
     }),
   },
@@ -308,29 +424,38 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       channel: "StreamingStack_MediaPackageChannel",
-      iamRoleSecret: "StreamingStack-MyMediaPackageRole2A6DBB2D-18DB6450FVHN3",
+      iamRoleSecret: "StreamingStack-MyMediaPackageRole2A6DBB2D-11N4MY00K42A0",
       secretsManagerSecret: "MediaPackage/StreamingStack",
     }),
   },
-  // {
-  //   type: "OriginEndpoint",
-  //   group: "MediaPackage",
-  //   properties: ({}) => ({
-  //     Id: "StreamingStack-mss-",
-  //   }),
-  //   dependencies: ({}) => ({
-  //     channel: "StreamingStack_MediaPackageChannel",
-  //     iamRoleSecret: "StreamingStack-MyMediaPackageRole2A6DBB2D-18DB6450FVHN3",
-  //     secretsManagerSecret: "MediaPackage/StreamingStack",
-  //   }),
-  // },
+  {
+    type: "OriginEndpoint",
+    group: "MediaPackage",
+    properties: ({}) => ({
+      Id: "StreamingStack-mss-",
+      MssPackage: {
+        ManifestWindowSeconds: 60,
+        SegmentDurationSeconds: 5,
+        StreamSelection: {
+          MaxVideoBitsPerSecond: 2147483647,
+          MinVideoBitsPerSecond: 0,
+          StreamOrder: "ORIGINAL",
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      channel: "StreamingStack_MediaPackageChannel",
+      iamRoleSecret: "StreamingStack-MyMediaPackageRole2A6DBB2D-11N4MY00K42A0",
+      secretsManagerSecret: "MediaPackage/StreamingStack",
+    }),
+  },
   {
     type: "Secret",
     group: "SecretsManager",
     properties: ({}) => ({
       Name: "MediaPackage/StreamingStack",
       SecretString: {
-        MediaPackageCDNIdentifier: "KyUc_cRK1xYtRy13lc9KuTnoyw>e)`0e",
+        MediaPackageCDNIdentifier: "4pq4\\%o@'u@|,<SpNq@AsEY5e(x.wd+-",
       },
       Description: "Secret for Secure Resilient Live Streaming Delivery",
     }),

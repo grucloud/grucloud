@@ -16,10 +16,6 @@ exports.createResources = () => [
     group: "CloudFront",
     properties: ({ getId }) => ({
       PriceClass: "PriceClass_100",
-      Aliases: {
-        Quantity: 0,
-        Items: undefined,
-      },
       DefaultRootObject: "",
       DefaultCacheBehavior: {
         TargetOriginId: "website.grucloud.org.s3.eu-west-2.amazonaws.com",

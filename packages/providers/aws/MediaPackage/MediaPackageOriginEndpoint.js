@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, tryCatch } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { defaultsDeep, identity, when } = require("rubico/x");
 
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -144,16 +144,28 @@ exports.MediaPackageOriginEndpoint = () => ({
       () => otherProps,
       tap(() => {
         assert(channel);
-        assert(iamRoleSecret);
-        assert(secretsManagerSecret);
+        //assert(iamRoleSecret);
+        //assert(secretsManagerSecret);
       }),
       defaultsDeep({
         ChannelId: getField(channel, "Id"),
         Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
-        Authorization: {
-          SecretsRoleArn: getField(iamRoleSecret, "Arn"),
-          CdnIdentifierSecret: getField(secretsManagerSecret, "ARN"),
-        },
       }),
+      when(
+        () => iamRoleSecret,
+        defaultsDeep({
+          Authorization: {
+            SecretsRoleArn: getField(iamRoleSecret, "Arn"),
+          },
+        })
+      ),
+      when(
+        () => secretsManagerSecret,
+        defaultsDeep({
+          Authorization: {
+            CdnIdentifierSecret: getField(secretsManagerSecret, "ARN"),
+          },
+        })
+      ),
     ])(),
 });

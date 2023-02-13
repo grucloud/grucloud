@@ -10,6 +10,7 @@ skinparam monochrome true
 ++++ Role (1)
 +++ MediaPackage
 ++++ Channel (1)
+++++ OriginEndpoint (4)
 +++ SecretsManager
 ++++ Secret (1)
 @endmindmap

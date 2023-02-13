@@ -153,6 +153,7 @@ exports.MediaLiveChannel = () => ({
   create: {
     method: "createChannel",
     pickCreated: ({ payload }) => pipe([get("Channel"), toChannelId]),
+    shouldRetryOnExceptionMessages: ["Make sure the role"],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaLive.html#updateChannel-property
   update: {

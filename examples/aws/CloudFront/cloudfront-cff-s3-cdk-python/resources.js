@@ -8,10 +8,6 @@ exports.createResources = () => [
     group: "CloudFront",
     properties: ({ getId }) => ({
       PriceClass: "PriceClass_All",
-      Aliases: {
-        Quantity: 0,
-        Items: undefined,
-      },
       DefaultRootObject: "",
       DefaultCacheBehavior: {
         TargetOriginId:
