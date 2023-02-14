@@ -519,7 +519,7 @@ exports.CloudFrontDistribution = ({ compare }) => ({
   },
   propertiesDefault: {
     Enabled: true,
-    //WebACLId: "",
+    WebACLId: "",
     OriginGroups: { Quantity: 0, Items: [] },
     CacheBehaviors: { Quantity: 0, Items: [] },
     CustomErrorResponses: { Quantity: 0, Items: [] },

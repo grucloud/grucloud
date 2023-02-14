@@ -99,6 +99,7 @@ exports.Function = ({ spec, config }) => {
                 DomainName: pipe([
                   get("FunctionUrl"),
                   callProp("replace", "https://", ""),
+                  callProp("replace", "/", ""),
                 ]),
               }),
             ]),
