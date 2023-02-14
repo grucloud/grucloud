@@ -85,11 +85,6 @@ exports.createResources = () => [
           },
         ],
       },
-      Restrictions: {
-        GeoRestriction: {
-          RestrictionType: "none",
-        },
-      },
       Comment: "cloudfront.aws.test.grucloud.org.s3.amazonaws.com",
       Logging: {
         Enabled: false,

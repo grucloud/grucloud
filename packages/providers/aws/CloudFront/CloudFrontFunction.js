@@ -1,8 +1,17 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, eq, or } = require("rubico");
-const { defaultsDeep, callProp, first } = require("rubico/x");
+const { pipe, tap, get, pick, assign, eq, or, switchCase } = require("rubico");
+const {
+  defaultsDeep,
+  callProp,
+  first,
+  when,
+  append,
+  prepend,
+} = require("rubico/x");
+const { getByNameCore } = require("@grucloud/core/Common");
 
-const cannotBeDeleted = () => pipe([eq(get("FunctionMetadata.Stage"), "LIVE")]);
+const managedByOther = () =>
+  pipe([eq(get("FunctionMetadata.Stage"), "DEVELOPMENT")]);
 
 const decorate = ({ endpoint, live }) =>
   pipe([
@@ -37,46 +46,63 @@ const filterPayload = pipe([
   }),
 ]);
 
+const findName = () =>
+  pipe([
+    ({ Name, FunctionMetadata }) =>
+      pipe([
+        tap((params) => {
+          assert(Name);
+        }),
+        () => FunctionMetadata,
+        get("Stage", "LIVE"),
+        switchCase([
+          (Stage) => Stage === "DEVELOPMENT",
+          () => "::DEVELOPMENT",
+          () => "",
+        ]),
+        prepend(Name),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.CloudFrontFunction = ({ compare }) => ({
   type: "Function",
   package: "cloudfront",
   client: "CloudFront",
   ignoreErrorCodes: ["NoSuchFunctionExists"],
-  inferName:
-    () =>
-    ({ Name, FunctionMetadata }) =>
-      pipe([
-        () => FunctionMetadata,
-        get("Stage", "DEVELOPMENT"),
-        (Stage) => `${Name}::${Stage}`,
-      ])(),
-  findName: () =>
-    pipe([
-      tap(({ Name, FunctionMetadata: { Stage } }) => {
-        assert(Name);
-        assert(Stage);
-      }),
-      ({ Name, FunctionMetadata: { Stage } }) => `${Name}::${Stage}`,
-    ]),
+  inferName: findName,
+  findName,
   findId: () =>
     pipe([
       tap((params) => {
         assert(true);
       }),
+      tap(({ FunctionMetadata }) => {
+        assert(FunctionMetadata);
+      }),
       get("FunctionMetadata"),
-      ({ FunctionARN, Stage }) => `${FunctionARN}::${Stage}`,
+      ({ FunctionARN, Stage }) =>
+        pipe([
+          () => FunctionARN,
+          when(() => Stage === "DEVELOPMENT", append("::DEVELOPMENT")),
+        ])(),
       tap((FunctionARN) => {
         assert(FunctionARN);
       }),
     ]),
   omitProperties: ["ContentType", "ETag", "FunctionMetadata"],
   //compare: compare,
-  cannotBeDeleted,
-  managedByOther: cannotBeDeleted,
+  //cannotBeDeleted,
+  managedByOther,
   getById: {
     method: "getFunction",
     pickId: pipe([
+      tap((params) => {
+        assert(true);
+      }),
       ({ Name, FunctionMetadata: { Stage } }) => ({ Name, Stage }),
       tap(({ Name, Stage }) => {
         assert(Name);
@@ -143,11 +169,13 @@ exports.CloudFrontFunction = ({ compare }) => ({
           ])
         ),
       ])(),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#deleteFunction-property
   destroy: {
     method: "deleteFunction",
     pickId: pipe([
-      tap((params) => {
-        assert(true);
+      tap(({ Name, ETag }) => {
+        assert(Name);
+        assert(ETag);
       }),
       ({ Name, ETag }) => ({ Name, IfMatch: ETag }),
       tap(({ Name, IfMatch }) => {
@@ -156,19 +184,7 @@ exports.CloudFrontFunction = ({ compare }) => ({
       }),
     ]),
   },
-  getByName: ({ getById }) =>
-    pipe([
-      get("name"),
-      tap((params) => {
-        assert(true);
-      }),
-      callProp("split", "::"),
-      ([Name, Stage]) => ({ Name, FunctionMetadata: { Stage } }),
-      tap(({ Stage }) => {
-        //assert(Stage);
-      }),
-      getById({}),
-    ]),
+  getByName: getByNameCore,
   configDefault: ({
     name,
     namespace,

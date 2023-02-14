@@ -93,13 +93,19 @@ exports.Function = ({ spec, config }) => {
             pipe([
               get("Configuration"),
               pick(["FunctionName"]),
-              lambda().listFunctionUrlConfigs,
-              get("FunctionUrlConfigs"),
-              first,
+              lambda().getFunctionUrlConfig,
+              // For Cloudfront Distribution
+              assign({
+                DomainName: pipe([
+                  get("FunctionUrl"),
+                  callProp("replace", "https://", ""),
+                ]),
+              }),
             ]),
             (error, params) => {
-              assert(params);
-              throw error;
+              //assert(params);
+              //throw error;
+              return;
             }
           ),
           Code: pipe([
@@ -270,6 +276,10 @@ exports.Function = ({ spec, config }) => {
     method: "deleteFunction",
     getById,
     ignoreErrorCodes: ["ResourceNotFoundException"],
+    shouldRetryOnExceptionMessages: [
+      "Please see our documentation for Deleting Lambda@Edge Functions and Replicas",
+    ],
+    configIsDown: { retryCount: 40 * 12, retryDelay: 5e3 },
   });
 
   const configDefault = ({
@@ -362,7 +372,13 @@ exports.Function = ({ spec, config }) => {
 
 const filterFunctionUrlConfig = pipe([
   get("FunctionUrlConfig"),
-  omit(["CreationTime", "LastModifiedTime", "FunctionArn", "FunctionUrl"]),
+  omit([
+    "CreationTime",
+    "LastModifiedTime",
+    "FunctionArn",
+    "FunctionUrl",
+    "DomainName",
+  ]),
 ]);
 
 exports.filterFunctionUrlConfig = filterFunctionUrlConfig;
@@ -388,13 +404,6 @@ exports.compareFunction = pipe([
           },
         }),
       ])(),
-    filterLive: () =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        assign({ FunctionUrlConfig: filterFunctionUrlConfig }),
-      ]),
   }),
   tap((diff) => {
     assert(true);

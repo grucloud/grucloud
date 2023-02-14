@@ -29,6 +29,8 @@ const { Tagger, assignTags } = require("./FirehoseCommon");
 
 const pickId = pipe([pick(["DeliveryStreamName"])]);
 
+const bucketArnToId = pipe([callProp("replace", "arn:aws:s3:::", "")]);
+
 const buildArn = () =>
   pipe([
     get("DeliveryStreamName"),
@@ -223,16 +225,19 @@ exports.FirehoseDeliveryStream = ({}) => ({
     s3BucketDestination: {
       type: "Bucket",
       group: "S3",
-      //list: true,
       dependencyId: ({ lives, config }) =>
-        pipe([get("S3DestinationDescription.BucketARN")]),
+        pipe([get("S3DestinationDescription.BucketARN", ""), bucketArnToId]),
     },
     s3BucketBackup: {
       type: "Bucket",
       group: "S3",
       dependencyId: ({ lives, config }) =>
         pipe([
-          get("ExtendedS3DestinationDescription.S3BackupDescription.BucketARN"),
+          get(
+            "ExtendedS3DestinationDescription.S3BackupDescription.BucketARN",
+            ""
+          ),
+          bucketArnToId,
         ]),
     },
     kmsKey: {

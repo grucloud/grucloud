@@ -90,13 +90,6 @@ exports.createResources = () => [
           },
         ],
       },
-      Restrictions: {
-        GeoRestriction: {
-          RestrictionType: "none",
-          Quantity: 0,
-          Items: [],
-        },
-      },
       Comment: "",
       Logging: {
         Enabled: false,

@@ -195,14 +195,8 @@ exports.createResources = () => [
               Enabled: false,
             },
             OriginAccessControlId: "",
-            S3OriginConfig: undefined,
           },
         ],
-      },
-      Restrictions: {
-        GeoRestriction: {
-          RestrictionType: "none",
-        },
       },
       Comment: "StreamingStack - CDK deployment Secure Media Delivery",
       Logging: {

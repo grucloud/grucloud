@@ -143,6 +143,11 @@ module.exports = pipe([
         "Configuration.SigningJobArn",
         "Configuration.RuntimeVersionConfig",
         "Policy",
+        "FunctionUrlConfig.CreationTime",
+        "FunctionUrlConfig.LastModifiedTime",
+        "FunctionUrlConfig.FunctionArn",
+        "FunctionUrlConfig.FunctionUrl",
+        "FunctionUrlConfig.DomainName",
       ],
       propertiesDefault: {
         Publish: true,

@@ -1,5 +1,5 @@
 const pkg = require("./package.json");
 module.exports = () => ({
   projectName: pkg.name,
-  includeGroups: ["CloudWatchLogs", "CloudFront", "IAM", "Lambda", "S3"],
+  includeGroups: ["CloudWatchLogs", "Firehose", "IAM", "Lambda", "S3"],
 });

@@ -704,6 +704,7 @@ const AwsClient =
             ])(),
         ]),
         isExpectedResult,
+        configIsDown,
       }) =>
       ({ name, live, lives }) =>
         pipe([
@@ -774,11 +775,11 @@ const AwsClient =
                             }),
                             or([isEmpty, isInstanceDown]),
                           ]),
-                          config,
+                          config: configIsDown,
                         })
                     ),
                   ]),
-                  config,
+                  config: configIsDown,
                   isExpectedResult,
                   shouldRetryOnException: or([
                     shouldRetryOnException,

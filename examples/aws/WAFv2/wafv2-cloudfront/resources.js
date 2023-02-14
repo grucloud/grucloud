@@ -65,11 +65,6 @@ exports.createResources = () => [
           },
         ],
       },
-      Restrictions: {
-        GeoRestriction: {
-          RestrictionType: "none",
-        },
-      },
       Comment: "",
       Logging: {
         Enabled: false,

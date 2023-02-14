@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project cloudfront-cff-s3-cdk-python
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudFront
+++++ Distribution (1)
+++++ Function (1)
+++++ OriginAccessIdentity (1)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Layer (1)
+++++ Function (1)
++++ S3
+++++ Bucket (2)
+@endmindmap

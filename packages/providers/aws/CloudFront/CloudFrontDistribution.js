@@ -16,6 +16,7 @@ const {
   and,
 } = require("rubico");
 const {
+  isString,
   filterOut,
   unless,
   size,
@@ -28,6 +29,7 @@ const {
   pluck,
   callProp,
   includes,
+  isIn,
 } = require("rubico/x");
 const {
   getByNameCore,
@@ -43,6 +45,7 @@ const {
   getNewCallerReference,
   buildTags,
   createEndpoint,
+  replaceAccountAndRegion,
 } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({
@@ -209,12 +212,30 @@ const filterLiveCacheBehavior = ({ providerConfig, lives }) =>
                   assign({
                     FunctionARN: pipe([
                       get("FunctionARN"),
-                      replaceWithName({
-                        groupType: "CloudFront::Function",
-                        path: "id",
-                        providerConfig,
-                        lives,
-                      }),
+                      replaceAccountAndRegion({ providerConfig, lives }),
+                    ]),
+                  }),
+                ])
+              ),
+            ]),
+          }),
+        ]),
+      })
+    ),
+    when(
+      get("LambdaFunctionAssociations"),
+      assign({
+        LambdaFunctionAssociations: pipe([
+          get("LambdaFunctionAssociations"),
+          assign({
+            Items: pipe([
+              get("Items"),
+              map(
+                pipe([
+                  assign({
+                    LambdaFunctionARN: pipe([
+                      get("LambdaFunctionARN"),
+                      replaceAccountAndRegion({ providerConfig, lives }),
                     ]),
                   }),
                 ])
@@ -230,6 +251,60 @@ const filterLiveCacheBehavior = ({ providerConfig, lives }) =>
         replaceRegion({ providerConfig }),
       ]),
     }),
+  ]);
+
+const setQuantity = (key) =>
+  set(`${key}.Quantity`, pipe([get(`${key}.Items`, []), size]));
+
+const assignCacheBehaviourQuantity = pipe([
+  setQuantity("TrustedKeyGroups"),
+  setQuantity("TrustedSigners"),
+  setQuantity("FunctionAssociations"),
+  setQuantity("LambdaFunctionAssociations"),
+]);
+
+const replaceDomainName = ({ lives, providerConfig }) =>
+  pipe([
+    get("DomainName"),
+    replaceWithName({
+      groupType: "MediaPackage::OriginEndpoint",
+      path: "live.DomainName",
+      pathLive: "live.DomainName",
+      providerConfig,
+      lives,
+      withSuffix: true,
+    }),
+    when(
+      isString,
+      replaceWithName({
+        groupType: "APIGateway::RestApi",
+        path: "live.endpoint",
+        pathLive: "live.endpoint",
+        providerConfig,
+        lives,
+      })
+    ),
+    when(
+      isString,
+      replaceWithName({
+        groupType: "ApiGatewayV2::Api",
+        path: "live.Endpoint",
+        pathLive: "live.Endpoint",
+        providerConfig,
+        lives,
+      })
+    ),
+    when(
+      isString,
+      replaceWithName({
+        groupType: "Lambda::Function",
+        path: "live.FunctionUrlConfig.DomainName",
+        pathLive: "live.FunctionUrlConfig.DomainName",
+        providerConfig,
+        lives,
+      })
+    ),
+    when(isString, replaceAccountAndRegion({ providerConfig, lives })),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
@@ -258,6 +333,48 @@ exports.CloudFrontDistribution = ({ compare }) => ({
     "NoSuchDistribution",
   ],
   dependencies: {
+    apiGatewayRestApi: {
+      type: "RestApi",
+      group: "APIGateway",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("Origins.Items"),
+          pluck("DomainName"),
+          map((DomainName) =>
+            pipe([
+              lives.getByType({
+                type: "RestApi",
+                group: "APIGateway",
+                providerName: config.providerName,
+              }),
+              find(pipe([get("live.endpoint"), includes(DomainName)])),
+              get("id"),
+            ])()
+          ),
+        ]),
+    },
+    apiGatewayV2Apis: {
+      type: "Api",
+      group: "ApiGatewayV2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("Origins.Items"),
+          pluck("DomainName"),
+          map((DomainName) =>
+            pipe([
+              lives.getByType({
+                type: "Api",
+                group: "ApiGatewayV2",
+                providerName: config.providerName,
+              }),
+              find(pipe([get("live.Endpoint"), includes(DomainName)])),
+              get("id"),
+            ])()
+          ),
+        ]),
+    },
     buckets: {
       type: "Bucket",
       group: "S3",
@@ -299,6 +416,35 @@ exports.CloudFrontDistribution = ({ compare }) => ({
         pipe([
           get("DefaultCacheBehavior.FunctionAssociations.Items", []),
           pluck("FunctionARN"),
+        ]),
+    },
+    lambdaFunctions: {
+      type: "Function",
+      group: "Lambda",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("DefaultCacheBehavior.LambdaFunctionAssociations.Items", []),
+          pluck("LambdaFunctionARN"),
+          map((LambdaFunctionARN) =>
+            pipe([
+              lives.getByType({
+                type: "Function",
+                group: "Lambda",
+                providerName: config.providerName,
+              }),
+              tap((params) => {
+                assert(LambdaFunctionARN);
+              }),
+              find(
+                pipe([
+                  get("live.Configuration.FunctionArn"),
+                  isIn(LambdaFunctionARN),
+                ])
+              ),
+              get("id"),
+            ])()
+          ),
         ]),
     },
     keyGroups: {
@@ -372,6 +518,8 @@ exports.CloudFrontDistribution = ({ compare }) => ({
     },
   },
   propertiesDefault: {
+    Enabled: true,
+    //WebACLId: "",
     OriginGroups: { Quantity: 0, Items: [] },
     CacheBehaviors: { Quantity: 0, Items: [] },
     CustomErrorResponses: { Quantity: 0, Items: [] },
@@ -382,7 +530,15 @@ exports.CloudFrontDistribution = ({ compare }) => ({
       TrustedKeyGroups: { Quantity: 0, Items: [] },
       TrustedSigners: { Quantity: 0, Items: [] },
     },
-    Restrictions: { GeoRestriction: { Quantity: 0, Items: [] } },
+    Logging: {
+      Enabled: false,
+      IncludeCookies: false,
+      Bucket: "",
+      Prefix: "",
+    },
+    Restrictions: {
+      GeoRestriction: { Quantity: 0, Items: [], RestrictionType: "none" },
+    },
     HttpVersion: "http2",
     IsIPV6Enabled: true,
     Staging: false,
@@ -395,7 +551,7 @@ exports.CloudFrontDistribution = ({ compare }) => ({
         }),
         omit(["CallerReference"]),
       ]),
-    filterLive: () => pipe([omitIfEmpty(["WebACLId"])]),
+    filterAll: () => pipe([omitIfEmpty(["WebACLId"])]),
   }),
   omitProperties: [
     "Id",
@@ -407,12 +563,17 @@ exports.CloudFrontDistribution = ({ compare }) => ({
     "DomainName",
     "CallerReference",
     "AliasICPRecordals",
+    "Origins.Quantity",
     "ViewerCertificate.ACMCertificateArn",
     "ViewerCertificate.Certificate",
     "DefaultCacheBehavior.TrustedKeyGroups.Quantity",
     "DefaultCacheBehavior.TrustedSigners.Quantity",
+    "DefaultCacheBehavior.FunctionAssociations.Quantity",
+    "DefaultCacheBehavior.LambdaFunctionAssociations.Quantity",
     "CacheBehaviors.Items[].TrustedKeyGroups.Quantity",
     "CacheBehaviors.Items[].TrustedSigners.Quantity",
+    "CacheBehaviors.Items[].FunctionAssociations.Quantity",
+    "CacheBehaviors.Items[].LambdaFunctionAssociations.Quantity",
     "ActiveTrustedKeyGroups",
     "ActiveTrustedSigners",
     "AliasICPRecordals",
@@ -422,18 +583,6 @@ exports.CloudFrontDistribution = ({ compare }) => ({
       tap((params) => {
         assert(providerConfig);
       }),
-      pick([
-        "PriceClass",
-        "Aliases",
-        "DefaultRootObject",
-        "CacheBehaviors",
-        "DefaultCacheBehavior",
-        "Origins",
-        "Restrictions",
-        "Comment",
-        "Logging",
-        "ViewerCertificate",
-      ]),
       switchCase([
         //
         pipe([get("Aliases.Items"), isEmpty]),
@@ -497,37 +646,31 @@ exports.CloudFrontDistribution = ({ compare }) => ({
                       get("CustomHeaders"),
                       omitIfEmpty(["Items"]),
                     ]),
-                    DomainName: pipe([
-                      get("DomainName"),
-                      //replaceRegion({ providerConfig }),
-                      replaceWithName({
-                        groupType: "MediaPackage::OriginEndpoint",
-                        path: "live.DomainName",
-                        pathLive: "live.DomainName",
-                        providerConfig,
-                        lives,
-                        withSuffix: true,
-                      }),
-                    ]),
-                    S3OriginConfig: pipe([
-                      get("S3OriginConfig"),
-                      when(
-                        get("OriginAccessIdentity"),
-                        assign({
-                          OriginAccessIdentity: pipe([
-                            get("OriginAccessIdentity"),
-                            replaceWithName({
-                              groupType: "CloudFront::OriginAccessIdentity",
-                              path: "id",
-                              providerConfig,
-                              lives,
-                              withSuffix: true,
-                            }),
-                          ]),
-                        })
-                      ),
-                    ]),
+                    DomainName: replaceDomainName({ lives, providerConfig }),
                   }),
+                  when(
+                    get("S3OriginConfig"),
+                    assign({
+                      S3OriginConfig: pipe([
+                        get("S3OriginConfig"),
+                        when(
+                          get("OriginAccessIdentity"),
+                          assign({
+                            OriginAccessIdentity: pipe([
+                              get("OriginAccessIdentity"),
+                              replaceWithName({
+                                groupType: "CloudFront::OriginAccessIdentity",
+                                path: "id",
+                                providerConfig,
+                                lives,
+                                withSuffix: true,
+                              }),
+                            ]),
+                          })
+                        ),
+                      ]),
+                    })
+                  ),
                 ])
               ),
             ]),
@@ -562,6 +705,9 @@ exports.CloudFrontDistribution = ({ compare }) => ({
     }),
     isInstanceUp,
     shouldRetryOnExceptionCodes: ["InvalidViewerCertificate"],
+    shouldRetryOnExceptionMessages: [
+      "The function execution role must be assumable with edgelambda.amazonaws.com as well as lambda.amazonaws.com principals",
+    ],
     pickCreated: () =>
       pipe([
         get("Distribution"),
@@ -603,6 +749,12 @@ exports.CloudFrontDistribution = ({ compare }) => ({
             eq(get("Enabled"), false),
             pipe([
               omit(["Origin"]),
+              // Lambda was unable to delete arn:aws:lambda:us-east-1:0000000000:function:CloudfrontLeApigwCdkStack-LambdaEdge6A7A1843-sWx5QByO0zMJ:1 because it is a replicated function. Please see our documentation for Deleting Lambda@Edge Functions and Replicas.
+              set(
+                "DefaultCacheBehavior.LambdaFunctionAssociations.Quantity",
+                0
+              ),
+              omit(["DefaultCacheBehavior.LambdaFunctionAssociations.Items"]),
               (DistributionConfig) => ({
                 DistributionConfig: {
                   ...DistributionConfig,
@@ -659,44 +811,26 @@ exports.CloudFrontDistribution = ({ compare }) => ({
           },
         })
       ),
-      set("Aliases.Quantity", pipe([get("Aliases.Items"), size])),
+      setQuantity("Aliases"),
+      setQuantity("Origins"),
       when(
         get("CacheBehaviors"),
         assign({
           CacheBehaviors: pipe([
             get("CacheBehaviors"),
             assign({
-              Items: pipe([
-                get("Items"),
-                map(
-                  pipe([
-                    set(
-                      "TrustedKeyGroups.Quantity",
-                      pipe([get("TrustedKeyGroups.Items"), size])
-                    ),
-                    set(
-                      "TrustedSigners.Quantity",
-                      pipe([get("TrustedSigners.Items"), size])
-                    ),
-                  ])
-                ),
-              ]),
+              Items: pipe([get("Items"), map(assignCacheBehaviourQuantity)]),
             }),
           ]),
         })
       ),
-      set(
-        "DefaultCacheBehavior.TrustedKeyGroups.Quantity",
-        pipe([get("DefaultCacheBehavior.TrustedKeyGroups.Items"), size])
-      ),
-      set(
-        "DefaultCacheBehavior.TrustedSigners.Quantity",
-        pipe([get("DefaultCacheBehavior.TrustedSigners.Items"), size])
-      ),
-      set(
-        "Restrictions.GeoRestriction.Quantity",
-        pipe([get("Restrictions.GeoRestriction.Items"), size])
-      ),
+      assign({
+        DefaultCacheBehavior: pipe([
+          get("DefaultCacheBehavior"),
+          assignCacheBehaviourQuantity,
+        ]),
+      }),
+      setQuantity("Restrictions.GeoRestriction"),
       when(() => webAcl, defaultsDeep({ WebACLId: getField(webAcl, "ARN") })),
     ])()),
   onDeployed: ({ resultCreate, lives, config }) =>
