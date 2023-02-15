@@ -627,6 +627,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             await s3().putBucketLogging({ Bucket, BucketLoggingStatus });
           }
           //  https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketNotificationConfiguration-property
+          // TODO Retry on error : "Unable to validate the following destination configurations"
           if (NotificationConfiguration) {
             await s3().putBucketNotificationConfiguration({
               Bucket,
