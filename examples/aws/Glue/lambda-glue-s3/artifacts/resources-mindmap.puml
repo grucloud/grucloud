@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project lambda-glue-s3
+skinparam monochrome true
++ Infra
+++ aws
++++ Glue
+++++ Job (1)
++++ IAM
+++++ Role (4)
++++ Lambda
+++++ Function (3)
++++ S3
+++++ Bucket (1)
+@endmindmap

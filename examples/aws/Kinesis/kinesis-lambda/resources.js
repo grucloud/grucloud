@@ -42,9 +42,6 @@ exports.createResources = () => [
     type: "Stream",
     group: "Kinesis",
     properties: ({}) => ({
-      StreamModeDetails: {
-        StreamMode: "PROVISIONED",
-      },
       StreamName: "sam-app-KinesisStream-YpZDFXzi0Z4z",
       ShardCount: 1,
     }),

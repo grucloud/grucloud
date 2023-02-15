@@ -1,0 +1,33 @@
+@startmindmap
+title Resources for project lambda-efs-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ ApiGatewayV2
+++++ Api (1)
+++++ Deployment (1)
+++++ Integration (1)
+++++ Route (1)
+++++ Stage (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NatGateway (2)
+++++ Subnet (4)
+++++ RouteTable (4)
+++++ RouteTableAssociation (4)
+++++ Route (4)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (1)
+++++ ElasticIpAddress (2)
++++ EFS
+++++ FileSystem (1)
+++++ AccessPoint (1)
+++++ MountTarget (2)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap
