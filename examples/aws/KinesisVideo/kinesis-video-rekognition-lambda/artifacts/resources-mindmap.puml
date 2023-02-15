@@ -1,0 +1,20 @@
+@startmindmap
+title Resources for project kinesis-video-rekognition-lambda
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (2)
++++ KinesisVideo
+++++ Stream (1)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
++++ Rekognition
+++++ StreamProcessor (1)
++++ S3
+++++ Bucket (1)
++++ SNS
+++++ Topic (1)
+++++ Subscription (1)
+@endmindmap

@@ -79,6 +79,7 @@
     "test-ivs": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/IVS/**/iac.test.js' ",
     "test-ivschat": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Ivschat/**/iac.test.js' ",
     "test-kinesis": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Kinesis/**/iac.test.js' ",
+    "test-kinesisvideo": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/KinesisVideo/**/iac.test.js' ",
     "test-kms": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/KMS/**/iac.test.js' ",
     "test-lakeformation": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/LakeFormation/**/iac.test.js' ",
     "test-lambda": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Lambda/**/iac.test.js' ",
