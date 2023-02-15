@@ -245,21 +245,23 @@ exports.FirehoseDeliveryStream = ({}) => ({
       group: "KMS",
       dependencyIds: () => get("DeliveryStreamEncryptionConfiguration.KeyARN"),
     },
-    lambdaFunction: {
+    lambdaFunctions: {
       type: "Function",
       group: "Lambda",
-      lits: true,
+      list: true,
       dependencyIds: ({ lives, config }) =>
         pipe([
-          get("ExtendedS3DestinationDescription"),
-          pluck("ProcessingConfiguration"),
-          pluck("Processors"),
-          flatten,
+          get("ExtendedS3DestinationConfiguration"),
+          get("ProcessingConfiguration"),
+          get("Processors"),
           pluck("Parameters"),
           flatten,
           filter(eq(get("ParameterName"), "LambdaArn")),
           pluck("ParameterValue"),
           map(callProp("replace", ":$LATEST", "")),
+          tap((params) => {
+            assert(params);
+          }),
         ]),
     },
     cloudWatchLogStreams: {

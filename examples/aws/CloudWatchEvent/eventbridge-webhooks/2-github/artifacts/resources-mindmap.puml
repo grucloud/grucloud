@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project 2-github
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatch
+++++ MetricAlarm (1)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
++++ SecretsManager
+++++ Secret (1)
+@endmindmap

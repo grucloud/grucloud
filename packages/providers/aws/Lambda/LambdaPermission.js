@@ -57,6 +57,15 @@ const buildDependencies = pipe([
   map(buildDependency),
 ]);
 
+/**
+ * 
+ * TODO
+{
+ "StringEquals": {
+  "lambda:FunctionUrlAuthType": "NONE"
+ }
+}
+ */
 const decorate = ({ endpoint, config, live }) =>
   pipe([
     tap((Policy) => {
@@ -71,12 +80,15 @@ const decorate = ({ endpoint, config, live }) =>
         JSON.parse,
         get("Statement"),
         callProp("sort", (a, b) => a.Sid.localeCompare(b.Sid)),
+        tap((params) => {
+          assert(true);
+        }),
         map(({ Principal, Sid, Condition }) =>
           pipe([
             () => ({
               Action: "lambda:InvokeFunction",
               FunctionName: live.FunctionName,
-              Principal: Principal.Service,
+              Principal: get("Service", "*")(Principal),
               StatementId: Sid,
             }),
             when(
