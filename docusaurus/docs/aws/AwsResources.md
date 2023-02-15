@@ -139,7 +139,7 @@ List of resources for provider aws:
 * Ivschat: 
 [Room](./resources/Ivschat/Room.md), [LoggingConfiguration](./resources/Ivschat/LoggingConfiguration.md)
 * Kinesis: 
-[Stream](./resources/Kinesis/Stream.md)
+[Stream](./resources/Kinesis/Stream.md), [StreamConsumer](./resources/Kinesis/StreamConsumer.md)
 * KMS: 
 [Key](./resources/KMS/Key.md)
 * LakeFormation: 

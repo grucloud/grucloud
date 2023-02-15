@@ -5,6 +5,7 @@ const { createAwsService } = require("../AwsService");
 
 const { isOurMinion, compareAws } = require("../AwsCommon");
 const { KinesisStream } = require("./KinesisStream");
+const { KinesisStreamConsumer } = require("./KinesisStreamConsumer");
 
 const GROUP = "Kinesis";
 
@@ -16,6 +17,7 @@ module.exports = pipe([
   () => [
     //
     KinesisStream({ compare }),
+    KinesisStreamConsumer({ compare }),
   ],
   map(
     pipe([

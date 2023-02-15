@@ -30,6 +30,7 @@ const getNameFromSource = ({ lives, config, type, group }) =>
     get("EventSourceArn"),
     tap((id) => {
       assert(id);
+      assert(lives);
     }),
     lives.getById({
       providerName: config.providerName,
@@ -74,6 +75,12 @@ const findName =
           type: "Stream",
           group: "Kinesis",
         }),
+        kinesisStreamConsumerName: getNameFromSource({
+          lives,
+          config,
+          type: "StreamConsumer",
+          group: "Kinesis",
+        }),
         sqsQueueName: getNameFromSource({
           lives,
           config,
@@ -81,9 +88,33 @@ const findName =
           group: "SQS",
         }),
       }),
-      ({ functionName, dynamoDbTable, sqsQueueName, kinesisStreamName }) =>
+      tap(
+        ({
+          dynamoDbTable,
+          sqsQueueName,
+          kinesisStreamName,
+          kinesisStreamConsumerName,
+        }) => {
+          assert(
+            dynamoDbTable ||
+              sqsQueueName ||
+              kinesisStreamName ||
+              kinesisStreamConsumerName
+          );
+        }
+      ),
+      ({
+        functionName,
+        dynamoDbTable,
+        sqsQueueName,
+        kinesisStreamName,
+        kinesisStreamConsumerName,
+      }) =>
         `mapping::${functionName}::${
-          dynamoDbTable || sqsQueueName || kinesisStreamName
+          dynamoDbTable ||
+          sqsQueueName ||
+          kinesisStreamName ||
+          kinesisStreamConsumerName
         }`,
     ])();
 
@@ -127,19 +158,24 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         dynamoDbTable,
         sqsQueue,
         kinesisStream,
+        kinesisStreamConsumer,
       },
     }) =>
     () =>
       pipe([
         tap((params) => {
           assert(lambdaFunction);
-          assert(dynamoDbTable || sqsQueue || kinesisStream);
+          assert(
+            dynamoDbTable || sqsQueue || kinesisStream || kinesisStreamConsumer
+          );
         }),
         switchCase([
           () => dynamoDbTable,
           () => dynamoDbTable,
           () => kinesisStream,
           () => kinesisStream,
+          () => kinesisStreamConsumer,
+          () => kinesisStreamConsumer,
           () => sqsQueue,
           () => sqsQueue,
           () => {
@@ -199,6 +235,15 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         group: "Kinesis",
       }),
     },
+    kinesisStreamConsumer: {
+      type: "StreamConsumer",
+      group: "Kinesis",
+      parent: true,
+      dependencyId: dependencyIdEventSource({
+        type: "StreamConsumer",
+        group: "Kinesis",
+      }),
+    },
     sqsQueue: {
       type: "Queue",
       group: "SQS",
@@ -253,7 +298,13 @@ Apache Kafka
     name,
     namespace,
     properties,
-    dependencies: { lambdaFunction, dynamoDbTable, kinesisStream, sqsQueue },
+    dependencies: {
+      lambdaFunction,
+      dynamoDbTable,
+      kinesisStream,
+      kinesisStreamConsumer,
+      sqsQueue,
+    },
   }) =>
     pipe([
       tap(() => {
@@ -276,6 +327,10 @@ Apache Kafka
         () => kinesisStream,
         defaultsDeep({
           EventSourceArn: getField(kinesisStream, "StreamARN"),
+        }),
+        () => kinesisStreamConsumer,
+        defaultsDeep({
+          EventSourceArn: getField(kinesisStreamConsumer, "ConsumerARN"),
         }),
         () => {
           assert(false, "missing EventSourceMapping dependency");

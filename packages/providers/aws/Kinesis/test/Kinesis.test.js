@@ -16,4 +16,21 @@ describe("Kinesis", async function () {
       }),
       awsResourceTest,
     ])());
+  it("StreamConsumer", () =>
+    pipe([
+      () => ({
+        groupType: "Kinesis::StreamConsumer",
+        livesNotFound: ({ config }) => [
+          {
+            StreamARN: `arn:aws:kinesis:${
+              config.region
+            }:${config.accountId()}:stream/32no4tl70Fmr`,
+            ConsumerARN: `arn:aws:kinesis:${
+              config.region
+            }:${config.accountId()}:stream/32no4tl70Fmr/consumer/123456789:1`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });
