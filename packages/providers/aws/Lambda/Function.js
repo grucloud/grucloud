@@ -10,6 +10,7 @@ const {
   eq,
   omit,
   any,
+  reduce,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -50,6 +51,38 @@ const removeVersion = pipe([
 ]);
 exports.removeVersion = removeVersion;
 
+const eventInvokeConfigDependencies = [
+  { type: "Function", group: "Lambda", prefix: "lambdaFunction" },
+  { type: "Topic", group: "SNS", prefix: "snsTopic" },
+  { type: "EventBus", group: "CloudWatchEvents", prefix: "cloudWatchEventBus" },
+  { type: "Queue", group: "SQS", prefix: "sqsQueue" },
+];
+
+const buildInvokeConfigDependency =
+  ({ type, group, prefix }) =>
+  (method) => ({
+    [`${prefix}${method}`]: {
+      type,
+      group,
+      dependencyId: () =>
+        get(`EventInvokeConfig.DestinationConfig.${method}.Destination`),
+    },
+  });
+
+const buildEventInvokeConfigDependencies = pipe([
+  () => eventInvokeConfigDependencies,
+  reduce(
+    (acc, dep) => ({
+      ...acc,
+      ...buildInvokeConfigDependency(dep)("OnSuccess"),
+      ...buildInvokeConfigDependency(dep)("OnFailure"),
+    }),
+    {}
+  ),
+]);
+
+exports.buildEventInvokeConfigDependencies = buildEventInvokeConfigDependencies;
+
 const managedByOther =
   ({ lives, config }) =>
   (live) =>
@@ -83,17 +116,32 @@ exports.Function = ({ spec, config }) => {
   const getList = client.getList({
     method: "listFunctions",
     getParam: "Functions",
-    decorate: () =>
+    decorate: ({ endpoint }) =>
       pipe([
         pick(["FunctionName"]),
-        lambda().getFunction,
+        endpoint().getFunction,
         pick(["Configuration", "Code", "Tags"]),
         assign({
+          EventInvokeConfig: tryCatch(
+            pipe([
+              get("Configuration"),
+              pick(["FunctionName"]),
+              endpoint().getFunctionEventInvokeConfig,
+              pick([
+                "DestinationConfig",
+                "MaximumRetryAttempts",
+                "MaximumEventAgeInSeconds",
+              ]),
+            ]),
+            (error, params) => {
+              return;
+            }
+          ),
           FunctionUrlConfig: tryCatch(
             pipe([
               get("Configuration"),
               pick(["FunctionName"]),
-              lambda().getFunctionUrlConfig,
+              endpoint().getFunctionUrlConfig,
               // For Cloudfront Distribution
               assign({
                 DomainName: pipe([
@@ -104,8 +152,6 @@ exports.Function = ({ spec, config }) => {
               }),
             ]),
             (error, params) => {
-              //assert(params);
-              //throw error;
               return;
             }
           ),
@@ -174,6 +220,7 @@ exports.Function = ({ spec, config }) => {
       payload: {
         Configuration: { FunctionName },
         FunctionUrlConfig,
+        EventInvokeConfig,
       },
     }) =>
       pipe([
@@ -187,6 +234,14 @@ exports.Function = ({ spec, config }) => {
             () => FunctionUrlConfig,
             defaultsDeep({ FunctionName }),
             endpoint().createFunctionUrlConfig,
+          ])
+        ),
+        when(
+          () => EventInvokeConfig,
+          pipe([
+            () => EventInvokeConfig,
+            defaultsDeep({ FunctionName }),
+            endpoint().putFunctionEventInvokeConfig,
           ])
         ),
       ]),
@@ -239,6 +294,20 @@ exports.Function = ({ spec, config }) => {
           }),
         ])
       ),
+      // putFunctionEventInvokeConfig
+      when(
+        () => get("liveDiff.updated.FunctionUrlConfig")(diff),
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => ({
+            FunctionName: payload.Configuration.FunctionName,
+            ...payload.EventInvokeConfig,
+          }),
+          lambda().putFunctionEventInvokeConfig,
+        ])
+      ),
       // updateFunctionUrlConfig
       when(
         () => get("liveDiff.updated.FunctionUrlConfig")(diff),
@@ -260,7 +329,7 @@ exports.Function = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
   const destroy = client.destroy({
-    preDestroy: () =>
+    preDestroy: ({ endpoint }) =>
       tap(
         pipe([
           when(
@@ -268,7 +337,7 @@ exports.Function = ({ spec, config }) => {
             pipe([
               get("Configuration"),
               pick(["FunctionName"]),
-              lambda().deleteFunctionUrlConfig,
+              endpoint().deleteFunctionUrlConfig,
             ])
           ),
         ])

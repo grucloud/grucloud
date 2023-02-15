@@ -22,12 +22,13 @@ const {
   compareAws,
   replaceEnv,
   buildDependenciesFromEnv,
+  replaceAccountAndRegion,
 } = require("../AwsCommon");
 
 const {
   Function,
   compareFunction,
-  filterFunctionUrlConfig,
+  buildEventInvokeConfigDependencies,
   removeVersion,
 } = require("./Function");
 
@@ -174,8 +175,54 @@ module.exports = pipe([
               assert(live.Code.Data);
             }),
             () => live,
+            when(
+              get("EventInvokeConfig"),
+              assign({
+                EventInvokeConfig: pipe([
+                  get("EventInvokeConfig"),
+                  assign({
+                    DestinationConfig: pipe([
+                      get("DestinationConfig"),
+                      when(
+                        get("OnSuccess"),
+                        assign({
+                          OnSuccess: pipe([
+                            get("OnSuccess"),
+                            assign({
+                              Destination: pipe([
+                                get("Destination"),
+                                replaceAccountAndRegion({
+                                  lives,
+                                  providerConfig,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        })
+                      ),
+                      when(
+                        get("OnFailure"),
+                        assign({
+                          OnFailure: pipe([
+                            get("OnFailure"),
+                            assign({
+                              Destination: pipe([
+                                get("Destination"),
+                                replaceAccountAndRegion({
+                                  lives,
+                                  providerConfig,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        })
+                      ),
+                    ]),
+                  }),
+                ]),
+              })
+            ),
             assign({
-              FunctionUrlConfig: filterFunctionUrlConfig,
               Configuration: pipe([
                 get("Configuration"),
                 omit(["CodeSha256"]),
@@ -233,6 +280,7 @@ module.exports = pipe([
           ])(),
       // TODO SigningJobArn
       dependencies: {
+        ...buildEventInvokeConfigDependencies(),
         layers: {
           type: "Layer",
           group: "Lambda",

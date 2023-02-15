@@ -262,19 +262,19 @@ Apache Kafka
 */
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#getEventSourceMapping-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getEventSourceMapping-property
   getById: {
     pickId,
     method: "getEventSourceMapping",
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#listEventSourceMappings-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listEventSourceMappings-property
   getList: {
     method: "listEventSourceMappings",
     getParam: "EventSourceMappings",
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#createEventSourceMapping-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createEventSourceMapping-property
   create: {
     method: "createEventSourceMapping",
     shouldRetryOnExceptionMessages: [
@@ -282,13 +282,13 @@ Apache Kafka
       "Please add Lambda as a Trusted Entity",
     ],
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#updateEventSourceMapping-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateEventSourceMapping-property
   update: {
     method: "updateEventSourceMapping",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#deleteEventSourceMapping-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteEventSourceMapping-property
   destroy: {
     method: "deleteEventSourceMapping",
     pickId,
