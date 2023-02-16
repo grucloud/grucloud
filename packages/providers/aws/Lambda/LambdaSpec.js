@@ -130,7 +130,6 @@ module.exports = pipe([
         "Configuration.LastUpdateStatus",
         "Configuration.LastUpdateStatusReason",
         "Configuration.LastUpdateStatusReasonCode",
-        "Configuration.Layers",
         "Configuration.MasterArn",
         "Configuration.RevisionId",
         "Configuration.Role",

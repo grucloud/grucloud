@@ -16,7 +16,7 @@ const {
   defaultsDeep,
   callProp,
   when,
-  first,
+  pluck,
   append,
   isIn,
 } = require("rubico/x");
@@ -121,7 +121,17 @@ exports.Function = ({ spec, config }) => {
         pick(["FunctionName"]),
         endpoint().getFunction,
         pick(["Configuration", "Code", "Tags"]),
+
         assign({
+          Configuration: pipe([
+            get("Configuration"),
+            when(
+              get("Layers"),
+              assign({
+                Layers: pipe([get("Layers"), pluck("Arn")]),
+              })
+            ),
+          ]),
           EventInvokeConfig: tryCatch(
             pipe([
               get("Configuration"),
@@ -161,6 +171,7 @@ exports.Function = ({ spec, config }) => {
               Data: pipe([fetchZip()]),
             }),
           ]),
+
           //TODO
           // CodeSigningConfigArn: pipe([
           //   get("Configuration"),
@@ -356,7 +367,7 @@ exports.Function = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { role, layers = [], kmsKey, subnets, securityGroups },
+    dependencies: { role, kmsKey, subnets, securityGroups },
     programOptions,
     config,
   }) =>
@@ -364,7 +375,6 @@ exports.Function = ({ spec, config }) => {
       tap(() => {
         assert(programOptions);
         assert(role, "missing role dependencies");
-        assert(Array.isArray(layers), "layers must be an array");
       }),
       () => ({
         localPath: path.resolve(programOptions.workingDirectory, name),
@@ -383,10 +393,6 @@ exports.Function = ({ spec, config }) => {
             Configuration: {
               FunctionName: name,
               Role: getField(role, "Arn"),
-              // Layers: pipe([
-              //   () => layers,
-              //   map((layer) => getField(layer, "LayerVersionArn")),
-              // ])(),
               Code: { ZipFile },
             },
           }),
