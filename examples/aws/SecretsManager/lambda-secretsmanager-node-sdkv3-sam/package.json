@@ -1,5 +1,5 @@
 {
-  "name": "lambda-ssm-parameter",
+  "name": "lambda-secretsmanager-node-sdkv3-sam",
   "version": "11.0.1",
   "private": true,
   "description": "",

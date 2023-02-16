@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: "sam-app-LambdaFunctionRole-QMWSR32TPZLQ",
+    properties: ({ getId }) => ({
+      RoleName: "sam-app-HelloWorldFunctionRole-1QJYRUOH88IU7",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -25,15 +25,18 @@ exports.createResources = () => [
           PolicyDocument: {
             Statement: [
               {
-                Action: ["ssm:GetParameter", "ssm:PutParameter"],
-                Resource: `arn:aws:ssm:${
-                  config.region
-                }:${config.accountId()}:parameter/ExampleParameterName`,
+                Action: ["secretsmanager:GetSecretValue"],
+                Resource: `${getId({
+                  type: "Secret",
+                  group: "SecretsManager",
+                  name: "MySecret",
+                  path: "live.ARN",
+                })}`,
                 Effect: "Allow",
               },
             ],
           },
-          PolicyName: "LambdaFunctionRolePolicy0",
+          PolicyName: "HelloWorldFunctionRolePolicy0",
         },
       ],
       AttachedPolicies: [
@@ -44,6 +47,9 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: ({}) => ({
+      secretsManagerSecrets: ["MySecret"],
+    }),
   },
   {
     type: "Function",
@@ -52,27 +58,28 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            SSMParameterName: "ExampleParameterName",
+            SECRET_NAME: "MySecret",
+            PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: "2773",
           },
         },
-        FunctionName: "sam-app-LambdaFunction-X4hNZs6zzhip",
-        Handler: "app.handler",
-        Runtime: "nodejs14.x",
-        Timeout: 15,
+        FunctionName: "sam-app-HelloWorldFunction-xplIxoZGZhdc",
+        Handler: "app.lambda_handler",
+        Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-LambdaFunctionRole-QMWSR32TPZLQ",
+      role: "sam-app-HelloWorldFunctionRole-1QJYRUOH88IU7",
     }),
   },
   {
-    type: "Parameter",
-    group: "SSM",
-    properties: ({}) => ({
-      Name: "ExampleParameterName",
-      Type: "String",
-      Value: '{"key1":"value1"}',
-      DataType: "text",
+    type: "Secret",
+    group: "SecretsManager",
+    properties: ({ generatePassword }) => ({
+      Name: "MySecret",
+      SecretString: {
+        SecretString: generatePassword({ length: 30 }),
+      },
+      Description: "Secret with dynamically generated secret password.",
     }),
   },
 ];

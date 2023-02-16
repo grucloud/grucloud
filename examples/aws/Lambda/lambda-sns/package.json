@@ -1,5 +1,5 @@
 {
-  "name": "lambda-ssm-parameter",
+  "name": "lambda-sns",
   "version": "11.0.1",
   "private": true,
   "description": "",

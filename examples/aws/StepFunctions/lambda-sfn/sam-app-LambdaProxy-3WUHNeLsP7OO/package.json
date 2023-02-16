@@ -1,7 +1,6 @@
 {
   "name": "startsfn",
-  "version": "11.0.0",
-  "private": true,
+  "version": "1.0.0",
   "description": "start sfn",
   "main": "app.js",
   "scripts": {

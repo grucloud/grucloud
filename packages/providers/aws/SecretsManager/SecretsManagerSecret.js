@@ -72,6 +72,18 @@ const decorate =
       }),
     ])();
 
+const assignGeneratePassword = (path) =>
+  pipe([
+    when(
+      get(path),
+      assign({
+        [path]: pipe([
+          get(path),
+          (password) => () => `generatePassword({length:${size(password)}})`,
+        ]),
+      })
+    ),
+  ]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecretsManager.html
 exports.SecretsManagerSecret = ({ compare }) => ({
   type: "Secret",
@@ -172,16 +184,8 @@ exports.SecretsManagerSecret = ({ compare }) => ({
       assign({
         SecretString: pipe([
           get("SecretString"),
-          when(
-            get("password"),
-            assign({
-              password: pipe([
-                get("password"),
-                (password) => () =>
-                  `generatePassword({length:${size(password)}})`,
-              ]),
-            })
-          ),
+          assignGeneratePassword("SecretString"),
+          assignGeneratePassword("password"),
         ]),
       }),
     ]),

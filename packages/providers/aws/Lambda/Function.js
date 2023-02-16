@@ -383,10 +383,10 @@ exports.Function = ({ spec, config }) => {
             Configuration: {
               FunctionName: name,
               Role: getField(role, "Arn"),
-              Layers: pipe([
-                () => layers,
-                map((layer) => getField(layer, "LayerVersionArn")),
-              ])(),
+              // Layers: pipe([
+              //   () => layers,
+              //   map((layer) => getField(layer, "LayerVersionArn")),
+              // ])(),
               Code: { ZipFile },
             },
           }),

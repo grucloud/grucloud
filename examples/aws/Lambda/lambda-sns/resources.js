@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
-      RoleName: "sam-app-LambdaFunctionRole-QMWSR32TPZLQ",
+      RoleName: "sam-app-TopicPublisherFunctionRole-12ZGFF8O8M7GH",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -25,15 +25,15 @@ exports.createResources = () => [
           PolicyDocument: {
             Statement: [
               {
-                Action: ["ssm:GetParameter", "ssm:PutParameter"],
-                Resource: `arn:aws:ssm:${
+                Action: ["sns:Publish"],
+                Resource: `arn:aws:sns:${
                   config.region
-                }:${config.accountId()}:parameter/ExampleParameterName`,
+                }:${config.accountId()}:sam-app-MySnsTopic-7dvkJx2kzjiv`,
                 Effect: "Allow",
               },
             ],
           },
-          PolicyName: "LambdaFunctionRolePolicy0",
+          PolicyName: "TopicPublisherFunctionRolePolicy0",
         },
       ],
       AttachedPolicies: [
@@ -48,31 +48,26 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         Environment: {
           Variables: {
-            SSMParameterName: "ExampleParameterName",
+            SNStopic: `${getId({
+              type: "Topic",
+              group: "SNS",
+              name: "sam-app-MySnsTopic-7dvkJx2kzjiv",
+            })}`,
           },
         },
-        FunctionName: "sam-app-LambdaFunction-X4hNZs6zzhip",
+        FunctionName: "sam-app-TopicPublisherFunction-3UFzSVBp2h7r",
         Handler: "app.handler",
-        Runtime: "nodejs14.x",
-        Timeout: 15,
+        Runtime: "nodejs12.x",
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-LambdaFunctionRole-QMWSR32TPZLQ",
+      role: "sam-app-TopicPublisherFunctionRole-12ZGFF8O8M7GH",
+      snsTopics: ["sam-app-MySnsTopic-7dvkJx2kzjiv"],
     }),
   },
-  {
-    type: "Parameter",
-    group: "SSM",
-    properties: ({}) => ({
-      Name: "ExampleParameterName",
-      Type: "String",
-      Value: '{"key1":"value1"}',
-      DataType: "text",
-    }),
-  },
+  { type: "Topic", group: "SNS", name: "sam-app-MySnsTopic-7dvkJx2kzjiv" },
 ];

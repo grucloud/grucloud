@@ -227,6 +227,15 @@ module.exports = pipe([
                 get("Configuration"),
                 omit(["CodeSha256"]),
                 when(
+                  get("Layers"),
+                  assign({
+                    Layers: pipe([
+                      get("Layers"),
+                      map(replaceAccountAndRegion({ lives, providerConfig })),
+                    ]),
+                  })
+                ),
+                when(
                   get("FileSystemConfigs"),
                   assign({
                     FileSystemConfigs: pipe([
