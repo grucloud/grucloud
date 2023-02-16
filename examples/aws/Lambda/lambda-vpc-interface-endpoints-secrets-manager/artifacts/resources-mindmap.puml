@@ -1,0 +1,20 @@
+@startmindmap
+title Resources for project lambda-vpc-interface-endpoints-secrets-manager
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (2)
+++++ VpcEndpoint (1)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
++++ SecretsManager
+++++ Secret (1)
+@endmindmap
