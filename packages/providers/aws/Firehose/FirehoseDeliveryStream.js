@@ -372,6 +372,13 @@ exports.FirehoseDeliveryStream = ({}) => ({
       defaultsDeep({
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
-      when(() => kmsKey, defaultsDeep({})),
+      when(
+        () => kmsKey,
+        defaultsDeep({
+          DeliveryStreamEncryptionConfiguration: {
+            KeyARN: getField(kmsKey, "Arn"),
+          },
+        })
+      ),
     ])(),
 });
