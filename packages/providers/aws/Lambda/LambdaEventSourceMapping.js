@@ -81,6 +81,12 @@ const findName =
           type: "StreamConsumer",
           group: "Kinesis",
         }),
+        mskClusterName: getNameFromSource({
+          lives,
+          config,
+          type: "ClusterV2",
+          group: "MSK",
+        }),
         sqsQueueName: getNameFromSource({
           lives,
           config,
@@ -94,12 +100,14 @@ const findName =
           sqsQueueName,
           kinesisStreamName,
           kinesisStreamConsumerName,
+          mskClusterName,
         }) => {
           assert(
             dynamoDbTable ||
               sqsQueueName ||
               kinesisStreamName ||
-              kinesisStreamConsumerName
+              kinesisStreamConsumerName ||
+              mskClusterName
           );
         }
       ),
@@ -109,12 +117,14 @@ const findName =
         sqsQueueName,
         kinesisStreamName,
         kinesisStreamConsumerName,
+        mskClusterName,
       }) =>
         `mapping::${functionName}::${
           dynamoDbTable ||
           sqsQueueName ||
           kinesisStreamName ||
-          kinesisStreamConsumerName
+          kinesisStreamConsumerName ||
+          mskClusterName
         }`,
     ])();
 
@@ -159,6 +169,7 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         sqsQueue,
         kinesisStream,
         kinesisStreamConsumer,
+        mskCluster,
       },
     }) =>
     () =>
@@ -166,7 +177,11 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         tap((params) => {
           assert(lambdaFunction);
           assert(
-            dynamoDbTable || sqsQueue || kinesisStream || kinesisStreamConsumer
+            dynamoDbTable ||
+              sqsQueue ||
+              kinesisStream ||
+              kinesisStreamConsumer ||
+              mskCluster
           );
         }),
         switchCase([
@@ -178,6 +193,8 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
           () => kinesisStreamConsumer,
           () => sqsQueue,
           () => sqsQueue,
+          () => mskCluster,
+          () => mskCluster,
           () => {
             assert(false, `missing EventSourceMapping dependency`);
           },
@@ -244,6 +261,14 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         group: "Kinesis",
       }),
     },
+    mskCluster: {
+      type: "ClusterV2",
+      group: "MSK",
+      dependencyId: dependencyIdEventSource({
+        type: "ClusterV2",
+        group: "MSK",
+      }),
+    },
     sqsQueue: {
       type: "Queue",
       group: "SQS",
@@ -255,10 +280,7 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
 
     //TODO other event source
     /*
-  Amazon DynamoDB Streams
 Amazon MQ::Broker
-Amazon MSK::ClusterV2
-Apache Kafka
 */
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],
@@ -303,6 +325,7 @@ Apache Kafka
       dynamoDbTable,
       kinesisStream,
       kinesisStreamConsumer,
+      mskCluster,
       sqsQueue,
     },
   }) =>
@@ -312,7 +335,6 @@ Apache Kafka
       }),
       () => properties,
       defaultsDeep({
-        // TODO  FunctionArn ?
         FunctionName: getField(lambdaFunction, "Configuration.FunctionName"),
       }),
       switchCase([
@@ -323,6 +345,10 @@ Apache Kafka
         () => sqsQueue,
         defaultsDeep({
           EventSourceArn: getField(sqsQueue, "Attributes.QueueArn"),
+        }),
+        () => mskCluster,
+        defaultsDeep({
+          EventSourceArn: getField(mskCluster, "ClusterArn"),
         }),
         () => kinesisStream,
         defaultsDeep({
