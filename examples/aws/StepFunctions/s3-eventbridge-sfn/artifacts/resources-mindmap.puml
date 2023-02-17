@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project s3-eventbridge-sfn
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ Rule (1)
+++++ Target (1)
++++ IAM
+++++ Role (2)
++++ S3
+++++ Bucket (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap
