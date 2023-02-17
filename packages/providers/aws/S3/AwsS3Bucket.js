@@ -181,11 +181,12 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getNotificationConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketNotificationConfiguration(params),
-        when(
-          (data) => all(isEmpty)(Object.values(data)),
-          () => undefined
-        ),
+        () => params,
+        s3().getBucketNotificationConfiguration,
+        tap((params) => {
+          assert(name);
+        }),
+        when(isEmpty, () => undefined),
       ]),
       (error) => {
         throw error;
@@ -454,11 +455,11 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       tap.if(
         get("NotificationConfiguration"),
         pipe([
-          () =>
-            s3().putBucketNotificationConfiguration({
-              Bucket,
-              NotificationConfiguration,
-            }),
+          () => ({
+            Bucket,
+            NotificationConfiguration,
+          }),
+          s3().putBucketNotificationConfiguration,
         ])
       ),
       tap.if(
