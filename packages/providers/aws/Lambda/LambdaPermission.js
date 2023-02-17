@@ -246,6 +246,7 @@ exports.LambdaPermission = () => ({
       ])(),
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updatePermission-property
+  // TODO update
   update: {
     method: "updatePermission",
     filterParams: ({ payload, diff, live }) =>

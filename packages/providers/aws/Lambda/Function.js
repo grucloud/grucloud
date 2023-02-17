@@ -16,6 +16,8 @@ const {
   defaultsDeep,
   callProp,
   when,
+  unless,
+  isEmpty,
   pluck,
   append,
   isIn,
@@ -125,8 +127,8 @@ exports.Function = ({ spec, config }) => {
         assign({
           Configuration: pipe([
             get("Configuration"),
-            when(
-              get("Layers"),
+            unless(
+              pipe([get("Layers"), isEmpty]),
               assign({
                 Layers: pipe([get("Layers"), pluck("Arn")]),
               })
@@ -186,7 +188,7 @@ exports.Function = ({ spec, config }) => {
           //   get("ReservedConcurrentExecutions"),
           // ]),
         }),
-        omitIfEmpty(["Policy"]),
+        omitIfEmpty(["Policy", "Layers"]),
         tap((params) => {
           assert(true);
         }),

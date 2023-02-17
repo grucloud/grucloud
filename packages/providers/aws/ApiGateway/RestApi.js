@@ -18,6 +18,7 @@ const {
   and,
 } = require("rubico");
 const {
+  includes,
   flatten,
   uniq,
   find,
@@ -52,7 +53,12 @@ const { flattenObject } = require("@grucloud/core/Common");
 const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const { throwIfNotAwsError } = require("../AwsCommon");
-const { diffToPatch, ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
+const {
+  diffToPatch,
+  ignoreErrorCodes,
+  Tagger,
+  filterPayloadRestApiPolicy,
+} = require("./ApiGatewayCommon");
 
 const buildArn = () =>
   pipe([
@@ -614,6 +620,55 @@ const fetchRestApiChilds =
       }),
     ])();
 
+const isPrivateApi = pipe([
+  get("endpointConfiguration.types"),
+  find(includes("PRIVATE")),
+]);
+
+const setPrivatePolicyDefault = ({ endpoint, config, live }) =>
+  pipe([
+    tap(({ endpointConfiguration }) => {
+      assert(endpoint);
+      assert(config);
+      assert(live.id);
+      assert(endpointConfiguration);
+    }),
+    when(
+      isPrivateApi,
+      pipe([
+        () => ({
+          id: live.id,
+          policy: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Effect: "Allow",
+                Principal: {
+                  AWS: "*",
+                },
+                Action: "execute-api:Invoke",
+                Resource: `arn:aws:execute-api:${
+                  config.region
+                }:${config.accountId()}:${live.id}/*/*/*`,
+              },
+            ],
+          },
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+        filterPayloadRestApiPolicy,
+        tap((params) => {
+          assert(true);
+        }),
+        endpoint().updateRestApi,
+        tap((params) => {
+          assert(true);
+        }),
+      ])
+    ),
+  ]);
+
 const decorate = ({ endpoint, config }) =>
   pipe([
     assignArn({ config }),
@@ -683,11 +738,10 @@ const createDeployment = ({ endpoint, live }) =>
   pipe([
     () => live,
     ({ id }) => ({ restApiId: id }),
-    omit(["stageName"]),
     endpoint().createDeployment,
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
 exports.RestApi = ({ compare }) => ({
   type: "RestApi",
   package: "api-gateway",
@@ -727,7 +781,7 @@ exports.RestApi = ({ compare }) => ({
     filterPayload: pipe([omit(["schemaFile", "schema", "deployment"])]),
     method: "createRestApi",
     postCreate:
-      ({ endpoint, payload }) =>
+      ({ endpoint, config, payload }) =>
       (live) =>
         pipe([
           tap((params) => {
@@ -735,6 +789,8 @@ exports.RestApi = ({ compare }) => ({
           }),
           () => live,
           putRestApi({ endpoint, payload }),
+          () => payload,
+          setPrivatePolicyDefault({ endpoint, config, live }),
           () => payload,
           createVpcEndpoints({ endpoint, live }),
           () => payload,

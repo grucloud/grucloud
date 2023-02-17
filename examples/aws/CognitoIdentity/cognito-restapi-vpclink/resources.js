@@ -4,30 +4,15 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Authorizer",
-    group: "APIGateway",
-    properties: ({}) => ({
-      authType: "cognito_user_pools",
-      identitySource: "method.request.header.Authorization",
-      name: "CognitoAuthorizer",
-      type: "COGNITO_USER_POOLS",
-    }),
-    dependencies: ({}) => ({
-      restApi: "Serverless Pattern private REST API",
-      userPools: [
-        "sam-app-AuthStack-13YXJ9N8JXLZE-Serverless Pattern User Pool",
-      ],
-    }),
-  },
-  {
     type: "RestApi",
     group: "APIGateway",
-    properties: ({ config, getId }) => ({
-      name: "Serverless Pattern private REST API",
+    properties: ({ getId }) => ({
       apiKeySource: "HEADER",
+      description: "API for authorization purposes",
       endpointConfiguration: {
         types: ["PRIVATE"],
       },
+      name: "Serverless Pattern private REST API",
       schema: {
         openapi: "3.0.1",
         info: {
@@ -104,6 +89,26 @@ exports.createResources = () => [
           },
         },
         components: {
+          securitySchemes: {
+            CognitoAuthorizer: {
+              type: "apiKey",
+              name: "Authorization",
+              in: "header",
+              "x-amazon-apigateway-authtype": "cognito_user_pools",
+              "x-amazon-apigateway-authorizer": {
+                type: "COGNITO_USER_POOLS",
+                identitySource: "method.request.header.Authorization",
+                providerARNs: [
+                  `${getId({
+                    type: "UserPool",
+                    group: "CognitoIdentityServiceProvider",
+                    name: "sam-app-AuthStack-13YXJ9N8JXLZE-Serverless Pattern User Pool",
+                    path: "live.Arn",
+                  })}`,
+                ],
+              },
+            },
+          },
           schemas: {
             Empty: {
               title: "Empty Schema",
@@ -121,6 +126,21 @@ exports.createResources = () => [
           },
         },
       },
+      deployment: {
+        stageName: "api",
+      },
+    }),
+    dependencies: ({ config }) => ({
+      vpcEndpoints: [`vpc::com.amazonaws.${config.region}.execute-api`],
+      userPools: [
+        "sam-app-AuthStack-13YXJ9N8JXLZE-Serverless Pattern User Pool",
+      ],
+    }),
+  },
+  {
+    type: "RestApiPolicy",
+    group: "APIGateway",
+    properties: ({ config, getId }) => ({
       policy: {
         Version: "2012-10-17",
         Statement: [
@@ -143,12 +163,9 @@ exports.createResources = () => [
           },
         ],
       },
-      deployment: {
-        stageName: "api",
-      },
     }),
-    dependencies: ({ config }) => ({
-      vpcEndpoints: [`vpc::com.amazonaws.${config.region}.execute-api`],
+    dependencies: ({}) => ({
+      restApi: "Serverless Pattern private REST API",
     }),
   },
   {

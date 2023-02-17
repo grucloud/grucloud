@@ -1,16 +1,18 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, map, filter } = require("rubico");
-const { defaultsDeep, when, callProp } = require("rubico/x");
+const { pipe, tap, get, pick, assign, not, and } = require("rubico");
+const { defaultsDeep, when, callProp, first, includes } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
   assignPolicyAccountAndRegion,
-  buildDependenciesPolicy,
   sortStatements,
 } = require("../IAM/AwsIamCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { ignoreErrorCodes } = require("./APIGatewayCommon");
+const {
+  ignoreErrorCodes,
+  filterPayloadRestApiPolicy,
+} = require("./APIGatewayCommon");
 
 const assignPolicy = () =>
   pipe([
@@ -28,21 +30,6 @@ const assignPolicy = () =>
       ])
     ),
   ]);
-
-const filterPayload = ({ policy, id }) =>
-  pipe([
-    tap((name) => {
-      assert(id);
-      assert(policy);
-    }),
-    () => policy,
-    JSON.stringify,
-    (value) => ({ op: "replace", path: "/policy", value }),
-    (patchOperation) => ({
-      restApiId: id,
-      patchOperations: [patchOperation],
-    }),
-  ])();
 
 const decorate = ({ endpoint, live }) =>
   pipe([
@@ -111,7 +98,7 @@ exports.APIGatewayRestApiPolicy = () => ({
           }),
         ]),
     },
-    ...buildDependenciesPolicy({ policyKey: "policy" }),
+    //...buildDependenciesPolicy({ policyKey: "policy" }),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getRestApi-property
   getById: {
@@ -133,7 +120,7 @@ exports.APIGatewayRestApiPolicy = () => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateRestApi-property
   create: {
-    filterPayload,
+    filterPayload: filterPayloadRestApiPolicy,
     method: "updateRestApi",
     pickCreated: ({ payload }) => pipe([() => payload]),
     isInstanceUp: () => true,
@@ -142,7 +129,7 @@ exports.APIGatewayRestApiPolicy = () => ({
   update: {
     method: "updateRestApi",
     filterParams: ({ payload, diff, live }) =>
-      pipe([() => payload, filterPayload])(),
+      pipe([() => payload, filterPayloadRestApiPolicy])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateRestApi-property
   destroy: {

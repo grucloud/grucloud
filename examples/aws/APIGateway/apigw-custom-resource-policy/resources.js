@@ -74,7 +74,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       restApi: "sam-app",
-      apiGatewayRestApis: ["sam-app"],
     }),
   },
   {

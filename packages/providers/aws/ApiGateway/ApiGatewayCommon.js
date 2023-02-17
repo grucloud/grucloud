@@ -58,3 +58,18 @@ exports.diffToPatch = ({ diff }) =>
     values,
     flatten,
   ])();
+
+exports.filterPayloadRestApiPolicy = ({ policy, id }) =>
+  pipe([
+    tap((name) => {
+      assert(id);
+      assert(policy);
+    }),
+    () => policy,
+    JSON.stringify,
+    (value) => ({ op: "replace", path: "/policy", value }),
+    (patchOperation) => ({
+      restApiId: id,
+      patchOperations: [patchOperation],
+    }),
+  ])();

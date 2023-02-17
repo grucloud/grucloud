@@ -10,7 +10,14 @@ const {
   fork,
   filter,
 } = require("rubico");
-const { defaultsDeep, when, includes, pluck } = require("rubico/x");
+const {
+  defaultsDeep,
+  when,
+  includes,
+  pluck,
+  isEmpty,
+  unless,
+} = require("rubico/x");
 const { createAwsService } = require("../AwsService");
 
 const AdmZip = require("adm-zip");
@@ -225,8 +232,8 @@ module.exports = pipe([
               Configuration: pipe([
                 get("Configuration"),
                 omit(["CodeSha256"]),
-                when(
-                  get("Layers"),
+                unless(
+                  pipe([get("Layers"), isEmpty]),
                   assign({
                     Layers: pipe([
                       get("Layers"),
