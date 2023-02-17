@@ -1,6 +1,26 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, switchCase, fork, omit, eq } = require("rubico");
-const { defaultsDeep, prepend, when, find } = require("rubico/x");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  switchCase,
+  fork,
+  omit,
+  eq,
+  filter,
+  assign,
+  map,
+} = require("rubico");
+const {
+  defaultsDeep,
+  prepend,
+  when,
+  find,
+  callProp,
+  pluck,
+} = require("rubico/x");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -81,6 +101,12 @@ const findName =
           type: "StreamConsumer",
           group: "Kinesis",
         }),
+        mqBrokerName: getNameFromSource({
+          lives,
+          config,
+          type: "Broker",
+          group: "MQ",
+        }),
         mskClusterName: getNameFromSource({
           lives,
           config,
@@ -100,6 +126,7 @@ const findName =
           sqsQueueName,
           kinesisStreamName,
           kinesisStreamConsumerName,
+          mqBrokerName,
           mskClusterName,
         }) => {
           assert(
@@ -107,6 +134,7 @@ const findName =
               sqsQueueName ||
               kinesisStreamName ||
               kinesisStreamConsumerName ||
+              mqBrokerName ||
               mskClusterName
           );
         }
@@ -117,6 +145,7 @@ const findName =
         sqsQueueName,
         kinesisStreamName,
         kinesisStreamConsumerName,
+        mqBrokerName,
         mskClusterName,
       }) =>
         `mapping::${functionName}::${
@@ -124,6 +153,7 @@ const findName =
           sqsQueueName ||
           kinesisStreamName ||
           kinesisStreamConsumerName ||
+          mqBrokerName ||
           mskClusterName
         }`,
     ])();
@@ -159,7 +189,6 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
   propertiesDefault: {
     BatchSize: 10,
     MaximumBatchingWindowInSeconds: 0,
-    //FunctionResponseTypes: [],
   },
   inferName:
     ({
@@ -169,6 +198,7 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         sqsQueue,
         kinesisStream,
         kinesisStreamConsumer,
+        mqBroker,
         mskCluster,
       },
     }) =>
@@ -181,6 +211,7 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
               sqsQueue ||
               kinesisStream ||
               kinesisStreamConsumer ||
+              mqBroker ||
               mskCluster
           );
         }),
@@ -191,10 +222,12 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
           () => kinesisStream,
           () => kinesisStreamConsumer,
           () => kinesisStreamConsumer,
-          () => sqsQueue,
-          () => sqsQueue,
+          () => mqBroker,
+          () => mqBroker,
           () => mskCluster,
           () => mskCluster,
+          () => sqsQueue,
+          () => sqsQueue,
           () => {
             assert(false, `missing EventSourceMapping dependency`);
           },
@@ -261,6 +294,14 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         group: "Kinesis",
       }),
     },
+    mqBroker: {
+      type: "Broker",
+      group: "MQ",
+      dependencyId: dependencyIdEventSource({
+        type: "Broker",
+        group: "MQ",
+      }),
+    },
     mskCluster: {
       type: "ClusterV2",
       group: "MSK",
@@ -268,6 +309,22 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         type: "ClusterV2",
         group: "MSK",
       }),
+    },
+    secretsManagerSecrets: {
+      type: "Secret",
+      group: "SecretsManager",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("SourceAccessConfigurations"),
+          filter(
+            pipe([
+              get("URI", ""),
+              callProp("startsWith", "arn:aws:secretsmanager:"),
+            ])
+          ),
+          pluck("URI"),
+        ]),
     },
     sqsQueue: {
       type: "Queue",
@@ -277,12 +334,32 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         group: "SQS",
       }),
     },
-
-    //TODO other event source
-    /*
-Amazon MQ::Broker
-*/
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      when(
+        get("SourceAccessConfigurations"),
+        assign({
+          SourceAccessConfigurations: pipe([
+            get("SourceAccessConfigurations"),
+            map(
+              assign({
+                URI: pipe([
+                  get("URI"),
+                  replaceWithName({
+                    groupType: "SecretsManager::Secret",
+                    pathLive: "id",
+                    path: "id",
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        })
+      ),
+    ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getEventSourceMapping-property
   getById: {
@@ -325,6 +402,7 @@ Amazon MQ::Broker
       dynamoDbTable,
       kinesisStream,
       kinesisStreamConsumer,
+      mqBroker,
       mskCluster,
       sqsQueue,
     },
@@ -349,6 +427,10 @@ Amazon MQ::Broker
         () => mskCluster,
         defaultsDeep({
           EventSourceArn: getField(mskCluster, "ClusterArn"),
+        }),
+        () => mqBroker,
+        defaultsDeep({
+          EventSourceArn: getField(mqBroker, "BrokerArn"),
         }),
         () => kinesisStream,
         defaultsDeep({

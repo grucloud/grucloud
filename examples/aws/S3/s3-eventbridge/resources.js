@@ -48,7 +48,6 @@ exports.createResources = () => [
         },
       },
       Name: "sam-app-S3NewImageEvent-WQBVMJ27U1IW",
-      State: "ENABLED",
     }),
   },
   {

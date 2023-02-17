@@ -91,6 +91,11 @@ const dependenciesFromPolicies = {
     type: "AccessPoint",
     group: "EFS",
   },
+  mqBrokers: {
+    pathLive: "id",
+    type: "Broker",
+    group: "MQ",
+  },
   organisations: {
     pathLive: "id",
     type: "Organisation",
