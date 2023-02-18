@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, assign } = require("rubico");
-const { find, defaultsDeep } = require("rubico/x");
+const { find, defaultsDeep, isIn } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
@@ -11,6 +11,9 @@ const pickId = pipe([
   }),
   pick(["policyName"]),
 ]);
+
+const managedByOther = () =>
+  pipe([get("policyName"), isIn(["AWSLogDeliveryWrite20150319"])]);
 
 const decorate = ({ endpoint, config }) =>
   pipe([
@@ -54,6 +57,7 @@ exports.CloudWatchLogsResourcePolicy = () => ({
         assert(id);
       }),
     ]),
+  managedByOther,
   ignoreErrorCodes: ["ResourceNotFoundException"],
   filterLive: ({ lives, providerConfig }) =>
     pipe([

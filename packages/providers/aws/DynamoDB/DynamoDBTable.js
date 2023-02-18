@@ -6,6 +6,7 @@ const { buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { Tagger, assignTags } = require("./DynamoDBCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const isInstanceUp = eq(get("TableStatus"), "ACTIVE");
 
@@ -37,6 +38,7 @@ const decorate = ({ endpoint, config }) =>
         omit(["ProvisionedThroughput", "BillingModeSummary"]),
       ])
     ),
+    omitIfEmpty(["Replicas"]),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html
@@ -55,10 +57,25 @@ exports.DynamoDBTable = () => ({
     "ProvisionedThroughput.LastDecreaseDateTime",
     "CreationDateTime",
     "TableStatus",
-    "SSEDescription",
     "LatestStreamArn",
     "LatestStreamLabel",
+    "SSEDescription", //TODO
+    "SSEDescription.Status",
     "SSEDescription.KMSMasterKeyId",
+    "LocalSecondaryIndexes[].IndexSizeBytes",
+    "LocalSecondaryIndexes[].ItemCount",
+    "GlobalSecondaryIndexes[].Backfilling",
+    "GlobalSecondaryIndexes[].IndexSizeBytes",
+    "GlobalSecondaryIndexes[].IndexStatus",
+    "GlobalSecondaryIndexes[].ItemCount",
+    "Replicas[].ReplicaStatus",
+    "Replicas[].ReplicaStatusDescription",
+    "Replicas[].ReplicaStatusPercentProgress",
+    "Replicas[].KMSMasterKeyId",
+    "Replicas[].ReplicaInaccessibleDateTime",
+    "Replicas[].ReplicaTableClassSummary.LastUpdateDateTime",
+    "ArchivalSummary",
+    "TableClassSummary.LastUpdateDateTime",
   ],
   inferName: findName,
   findName,
@@ -102,7 +119,7 @@ exports.DynamoDBTable = () => ({
           ])(),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#getTable-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#describeTable-property
   getById: {
     method: "describeTable",
     getField: "Table",

@@ -11,39 +11,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ResourcePolicy",
-    group: "CloudWatchLogs",
-    properties: ({ config }) => ({
-      policyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "AWSLogDeliveryWrite",
-            Effect: "Allow",
-            Principal: {
-              Service: "delivery.logs.amazonaws.com",
-            },
-            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-            Resource: `arn:aws:logs:${
-              config.region
-            }:${config.accountId()}:log-group:stepfunctions/StateMachine:log-stream:*`,
-            Condition: {
-              StringEquals: {
-                "aws:SourceAccount": `${config.accountId()}`,
-              },
-              ArnLike: {
-                "aws:SourceArn": `arn:aws:logs:${
-                  config.region
-                }:${config.accountId()}:*`,
-              },
-            },
-          },
-        ],
-      },
-      policyName: "AWSLogDeliveryWrite20150319",
-    }),
-  },
-  {
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
