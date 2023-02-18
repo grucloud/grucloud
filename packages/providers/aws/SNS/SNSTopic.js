@@ -187,6 +187,20 @@ exports.SNSTopic = ({ compare }) => ({
     ]),
     pickCreated: () => pipe([({ TopicArn }) => ({ Attributes: { TopicArn } })]),
   },
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        () => diff,
+        tap((params) => {
+          assert(true);
+          throw Error("TODO update topic");
+        }),
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#setTopicAttributes-property
+        /**
+         * AttributeName TopicArn AttributeValue
+         */
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#deleteTopic-property
   destroy: { method: "deleteTopic", pickId },
   getByName: getByNameCore,
