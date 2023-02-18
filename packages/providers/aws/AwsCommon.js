@@ -15,6 +15,7 @@ const {
   fork,
   map,
   filter,
+  pick,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -491,6 +492,14 @@ const createEndpointOption = (config) =>
       () => config.credentials,
       defaultsDeep({ credentials: fromIni(config.credentials) })
     ),
+    when(
+      () => process.env.LOCALSTACK,
+      defaultsDeep({
+        endpoint: "http://localhost:4566",
+        forcePathStyle: true,
+      })
+    ),
+    defaultsDeep(pick(["endpoint", "forcePathStyle"])(config)),
     tap((params) => {
       assert(true);
     }),
