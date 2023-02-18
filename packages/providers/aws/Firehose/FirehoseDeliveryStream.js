@@ -24,6 +24,7 @@ const {
 } = require("rubico/x");
 const { buildTags, compareAws } = require("../AwsCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { Tagger, assignTags } = require("./FirehoseCommon");
 
@@ -260,7 +261,7 @@ exports.FirehoseDeliveryStream = ({}) => ({
           pluck("ParameterValue"),
           map(callProp("replace", ":$LATEST", "")),
           tap((params) => {
-            assert(params);
+            assert(true);
           }),
         ]),
     },

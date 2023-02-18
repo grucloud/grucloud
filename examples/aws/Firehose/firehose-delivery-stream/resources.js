@@ -49,6 +49,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({ config }) => ({
+      s3BucketDestination: "gc-firehose-destination",
       roles: [
         `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
       ],
