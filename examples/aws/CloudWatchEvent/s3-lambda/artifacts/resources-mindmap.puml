@@ -1,0 +1,7 @@
+@startmindmap
+title Resources for project s3-lambda
+skinparam monochrome true
++ Infra
+++ aws
+
+@endmindmap
