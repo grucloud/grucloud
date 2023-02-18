@@ -303,7 +303,6 @@ module.exports = pipe([
           dependencyIds: ({ lives, config }) =>
             pipe([
               get("Configuration.Layers"),
-              pluck("Arn"),
               (layersArn) =>
                 pipe([
                   lives.getByType({
