@@ -37,7 +37,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "sam-app",
-      lambdaFunction: "sam-app-SAMConfigFunction-QTjGGM76Kd6u",
+      lambdaFunction: "sam-app-SAMConfigFunction-LV97iqvm1Uz9",
     }),
   },
   {
@@ -49,7 +49,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       api: "sam-app",
       integration:
-        "integration::sam-app::sam-app-SAMConfigFunction-QTjGGM76Kd6u",
+        "integration::sam-app::sam-app-SAMConfigFunction-LV97iqvm1Uz9",
     }),
   },
   {
@@ -163,7 +163,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
-      RoleName: "sam-app-SAMConfigFunctionRole-1NSH6HM6R15FV",
+      RoleName: "sam-app-SAMConfigFunctionRole-L7BI4A251CFG",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -188,7 +188,7 @@ exports.createResources = () => [
                 ],
                 Resource: `arn:aws:appconfig:${
                   config.region
-                }:${config.accountId()}:application/gq3hg0m/environment/7zfgjp7/configuration/agh57cq`,
+                }:${config.accountId()}:application/*`,
                 Effect: "Allow",
               },
             ],
@@ -203,18 +203,12 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       Configuration: {
         Environment: {
           Variables: {
@@ -222,43 +216,41 @@ exports.createResources = () => [
               "/applications/appconfig-feature-flag-sam/environments/dev/configurations/TestConfig",
           },
         },
-        FunctionName: "sam-app-SAMConfigFunction-QTjGGM76Kd6u",
+        FunctionName: "sam-app-SAMConfigFunction-LV97iqvm1Uz9",
         Handler: "app.lambdaHandler",
-        Runtime: "nodejs16.x",
-      },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
-      Policy: {
-        Version: "2012-10-17",
-        Id: "default",
-        Statement: [
-          {
-            Sid: "sam-app-SAMConfigFunctionApiEventPermission-1TZKPUAZRC876",
-            Effect: "Allow",
-            Principal: {
-              Service: "apigateway.amazonaws.com",
-            },
-            Action: "lambda:InvokeFunction",
-            Resource: `arn:aws:lambda:${
-              config.region
-            }:${config.accountId()}:function:sam-app-SAMConfigFunction-QTjGGM76Kd6u`,
-            Condition: {
-              ArnLike: {
-                "AWS:SourceArn": `${getId({
-                  type: "Api",
-                  group: "ApiGatewayV2",
-                  name: "sam-app",
-                  path: "live.ArnV2",
-                })}/*/GET/config`,
-              },
-            },
-          },
+        Layers: [
+          `arn:aws:lambda:${config.region}:027255383542:layer:AWS-AppConfig-Extension:82`,
         ],
+        Runtime: "nodejs16.x",
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-SAMConfigFunctionRole-1NSH6HM6R15FV",
+      role: "sam-app-SAMConfigFunctionRole-L7BI4A251CFG",
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ getId }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "sam-app-SAMConfigFunction-LV97iqvm1Uz9",
+          Principal: "apigateway.amazonaws.com",
+          StatementId:
+            "sam-app-SAMConfigFunctionApiEventPermission-1P5FAXZHS71VD",
+          SourceArn: `${getId({
+            type: "Api",
+            group: "ApiGatewayV2",
+            name: "sam-app",
+            path: "live.ArnV2",
+          })}/*/GET/config`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "sam-app-SAMConfigFunction-LV97iqvm1Uz9",
+      apiGatewayV2Apis: ["sam-app"],
     }),
   },
 ];

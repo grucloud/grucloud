@@ -56,6 +56,11 @@ const dependenciesFromPolicies = {
     type: "Api",
     group: "ApiGatewayV2",
   },
+  appConfigConfigurationProfile: {
+    pathLive: "live.Arn",
+    type: "ConfigurationProfile",
+    group: "AppConfig",
+  },
   appsyncGraphqlApis: {
     pathLive: "live.uris.GRAPHQL",
     type: "GraphqlApi",

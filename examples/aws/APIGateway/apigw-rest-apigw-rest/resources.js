@@ -276,7 +276,7 @@ exports.createResources = () => [
           apiId: `${getId({
             type: "RestApi",
             group: "APIGateway",
-            name: "Reporting API",
+            name: "User Management API",
           })}`,
           stage: "Prod",
         },
@@ -284,7 +284,7 @@ exports.createResources = () => [
           apiId: `${getId({
             type: "RestApi",
             group: "APIGateway",
-            name: "User Management API",
+            name: "Reporting API",
           })}`,
           stage: "Prod",
         },

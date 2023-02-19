@@ -11,6 +11,8 @@ const {
   omit,
   any,
   reduce,
+  switchCase,
+  and,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -217,7 +219,16 @@ exports.Function = ({ spec, config }) => {
         }),
         ({ FunctionArn }) => ({ Configuration: { FunctionArn } }),
       ]),
-    isInstanceUp: pipe([get("Configuration.State"), isIn(["Active"])]),
+    isInstanceUp: pipe([
+      and([
+        pipe([get("Configuration.State"), isIn(["Active"])]),
+        switchCase([
+          get("FunctionUrlConfig"),
+          get("FunctionUrlConfig.DomainName"),
+          () => true,
+        ]),
+      ]),
+    ]),
     isInstanceError: pipe([get("Configuration.State"), isIn(["Failed"])]),
     getErrorMessage: get("Configuration.StateReason", "failed"),
     shouldRetryOnExceptionMessages: [

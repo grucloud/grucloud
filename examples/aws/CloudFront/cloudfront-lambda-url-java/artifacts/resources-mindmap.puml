@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project cloudfront-lambda-url-java
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudFront
+++++ Distribution (1)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap

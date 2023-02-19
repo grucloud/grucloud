@@ -447,6 +447,27 @@ exports.CloudFrontDistribution = ({ compare }) => ({
           ),
         ]),
     },
+    lambdaFunctionsOrigin: {
+      type: "Function",
+      group: "Lambda",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("Origins.Items", []),
+          pluck("DomainName"),
+          map((domainName) =>
+            pipe([
+              lives.getByType({
+                type: "Function",
+                group: "Lambda",
+                providerName: config.providerName,
+              }),
+              find(eq(get("live.FunctionUrlConfig.DomainName"), domainName)),
+              get("id"),
+            ])()
+          ),
+        ]),
+    },
     keyGroups: {
       type: "KeyGroup",
       group: "CloudFront",

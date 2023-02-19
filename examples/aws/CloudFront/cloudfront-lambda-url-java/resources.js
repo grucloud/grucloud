@@ -73,6 +73,9 @@ exports.createResources = () => [
         CertificateSource: "cloudfront",
       },
     }),
+    dependencies: ({}) => ({
+      lambdaFunctionsOrigin: ["sam-app-LambdaFunction-c3Q7Xjfvon1M"],
+    }),
   },
   {
     type: "Role",
@@ -132,6 +135,7 @@ exports.createResources = () => [
         {
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-LambdaFunction-c3Q7Xjfvon1M",
+          Principal: "*",
           StatementId:
             "sam-app-LambdaFunctionUrlPublicPermissions-148IUT8EECL37",
         },
