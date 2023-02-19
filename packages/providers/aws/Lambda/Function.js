@@ -353,7 +353,15 @@ exports.LambdaFunction = () => ({
               assign({
                 Layers: pipe([
                   get("Layers"),
-                  map(replaceAccountAndRegion({ lives, providerConfig })),
+                  map(
+                    replaceWithName({
+                      groupType: "Lambda::Layer",
+                      path: "live.LayerVersionArn",
+                      pathLive: "live.LayerVersionArn",
+                      providerConfig,
+                      lives,
+                    })
+                  ),
                 ]),
               })
             ),

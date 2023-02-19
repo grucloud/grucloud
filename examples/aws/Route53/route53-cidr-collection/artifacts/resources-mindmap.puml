@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project route53-cidr-collection
+skinparam monochrome true
++ Infra
+++ aws
++++ Route53
+++++ CidrCollection (1)
+@endmindmap
