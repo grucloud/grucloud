@@ -10,7 +10,6 @@ exports.createResources = () => [
       Description: "Sample Event for Glue terraform example",
       Name: "stf_trigger_rule",
       ScheduleExpression: "rate(10 minutes)",
-      State: "ENABLED",
     }),
   },
   {

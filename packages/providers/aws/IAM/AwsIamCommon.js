@@ -61,6 +61,11 @@ const dependenciesFromPolicies = {
     type: "GraphqlApi",
     group: "AppSync",
   },
+  eventsApiDestinations: {
+    type: "ApiDestination",
+    group: "CloudWatchEvents",
+    pathLive: "live.ApiDestinationArn",
+  },
   cognitoIdentityPools: {
     pathLive: "id",
     type: "IdentityPool",

@@ -88,11 +88,6 @@ const dependenciesFromEnv = {
     type: "Secret",
     group: "SecretsManager",
   },
-  snsTopics: {
-    pathLive: "id",
-    type: "Topic",
-    group: "SNS",
-  },
 };
 
 const replaceDependency =

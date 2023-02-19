@@ -9,7 +9,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       Name: "stf_trigger_rule",
       ScheduleExpression: "rate(10 minutes)",
-      State: "ENABLED",
     }),
   },
   {

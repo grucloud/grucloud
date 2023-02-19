@@ -23,7 +23,6 @@ exports.createResources = () => [
         ],
       },
       Name: "sam-app-EventBusLogRule-O6HEQDLDXZKV",
-      State: "ENABLED",
     }),
     dependencies: ({}) => ({
       eventBus: "sam-app-EventBus",

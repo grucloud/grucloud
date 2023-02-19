@@ -86,6 +86,7 @@ exports.createResources = () => [
                   type: "ApiDestination",
                   group: "CloudWatchEvents",
                   name: "MyWebhookTest",
+                  path: "live.ApiDestinationArn",
                 })}`,
                 Effect: "Allow",
               },
@@ -113,6 +114,9 @@ exports.createResources = () => [
           PolicyName: "ReadSQS",
         },
       ],
+    }),
+    dependencies: ({}) => ({
+      eventsApiDestinations: ["MyWebhookTest"],
     }),
   },
   {
