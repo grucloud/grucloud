@@ -201,7 +201,7 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       TableName: "Pets",
       AttributeDefinitions: [
         {
@@ -225,12 +225,10 @@ exports.createResources = () => [
       },
       GlobalSecondaryIndexes: [
         {
-          IndexArn:
-            "arn:aws:dynamodb:us-east-1:840541460064:table/Pets/index/PetType-index",
+          IndexArn: `arn:aws:dynamodb:${
+            config.region
+          }:${config.accountId()}:table/Pets/index/PetType-index`,
           IndexName: "PetType-index",
-          IndexSizeBytes: 0,
-          IndexStatus: "ACTIVE",
-          ItemCount: 0,
           KeySchema: [
             {
               AttributeName: "PetType",

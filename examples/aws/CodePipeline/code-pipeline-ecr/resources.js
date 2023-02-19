@@ -20,7 +20,6 @@ exports.createResources = () => [
         "detail-type": ["ECR Image Action"],
       },
       Name: "codepipeline-starha-latest-615512-rule",
-      State: "ENABLED",
     }),
   },
   {

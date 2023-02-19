@@ -1,8 +1,8 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, omit } = require("rubico");
+const { pipe, tap, get, pick, eq, assign, omit, map } = require("rubico");
 const { defaultsDeep, when, find } = require("rubico/x");
 
-const { buildTags } = require("../AwsCommon");
+const { buildTags, replaceAccountAndRegion } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { Tagger, assignTags } = require("./DynamoDBCommon");
@@ -87,7 +87,7 @@ exports.DynamoDBTable = () => ({
       }),
     ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  filterLive: () =>
+  filterLive: ({ lives, providerConfig }) =>
     pipe([
       //TODO remove pick
       pick([
@@ -100,6 +100,22 @@ exports.DynamoDBTable = () => ({
         "LocalSecondaryIndexes",
         "StreamSpecification",
       ]),
+      when(
+        get("GlobalSecondaryIndexes"),
+        assign({
+          GlobalSecondaryIndexes: pipe([
+            get("GlobalSecondaryIndexes"),
+            map(
+              assign({
+                IndexArn: pipe([
+                  get("IndexArn"),
+                  replaceAccountAndRegion({ lives, providerConfig }),
+                ]),
+              })
+            ),
+          ]),
+        })
+      ),
     ]),
   dependencies: {
     kmsKey: {

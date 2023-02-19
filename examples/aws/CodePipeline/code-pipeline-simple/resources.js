@@ -4,13 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logGroupName: "/aws/codebuild/starhackit",
-    }),
-  },
-  {
     type: "Project",
     group: "CodeBuild",
     properties: ({}) => ({
