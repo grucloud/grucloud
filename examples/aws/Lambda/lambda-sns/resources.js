@@ -48,15 +48,13 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       Configuration: {
         Environment: {
           Variables: {
-            SNStopic: `${getId({
-              type: "Topic",
-              group: "SNS",
-              name: "sam-app-MySnsTopic-7dvkJx2kzjiv",
-            })}`,
+            SNStopic: `arn:aws:sns:${
+              config.region
+            }:${config.accountId()}:sam-app-MySnsTopic-7dvkJx2kzjiv`,
           },
         },
         FunctionName: "sam-app-TopicPublisherFunction-3UFzSVBp2h7r",
@@ -66,7 +64,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-TopicPublisherFunctionRole-12ZGFF8O8M7GH",
-      snsTopics: ["sam-app-MySnsTopic-7dvkJx2kzjiv"],
     }),
   },
   { type: "Topic", group: "SNS", name: "sam-app-MySnsTopic-7dvkJx2kzjiv" },

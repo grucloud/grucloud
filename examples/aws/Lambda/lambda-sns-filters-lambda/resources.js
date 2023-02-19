@@ -134,15 +134,13 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       Configuration: {
         Environment: {
           Variables: {
-            TOPIC_ARN: `${getId({
-              type: "Topic",
-              group: "SNS",
-              name: "LambdaSNSFiltersLambdaStack-SNSTopicBCCC5DD8-UaEWb1UkFPpL",
-            })}`,
+            TOPIC_ARN: `arn:aws:sns:${
+              config.region
+            }:${config.accountId()}:LambdaSNSFiltersLambdaStack-SNSTopicBCCC5DD8-UaEWb1UkFPpL`,
           },
         },
         FunctionName:
@@ -153,7 +151,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "LambdaSNSFiltersLambdaSta-SenderFunctionServiceRol-4MUE5FV98RX",
-      snsTopics: ["LambdaSNSFiltersLambdaStack-SNSTopicBCCC5DD8-UaEWb1UkFPpL"],
     }),
   },
   {

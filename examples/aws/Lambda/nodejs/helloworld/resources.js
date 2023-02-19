@@ -57,10 +57,18 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         FunctionName: "lambda-hello-world",
         Handler: "helloworld.handler",
+        Layers: [
+          `${getId({
+            type: "Layer",
+            group: "Lambda",
+            name: "lambda-layer",
+            path: "live.LayerVersionArn",
+          })}`,
+        ],
         Runtime: "nodejs14.x",
       },
       Tags: {

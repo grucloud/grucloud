@@ -56,7 +56,7 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         Architectures: ["arm64"],
         Environment: {
@@ -66,6 +66,14 @@ exports.createResources = () => [
         },
         FunctionName: "config-example-function",
         Handler: "app.handler",
+        Layers: [
+          `${getId({
+            type: "Layer",
+            group: "Lambda",
+            name: "config-example-layer",
+            path: "live.LayerVersionArn",
+          })}`,
+        ],
         Runtime: "nodejs14.x",
       },
       FunctionUrlConfig: {

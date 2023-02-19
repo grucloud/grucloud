@@ -183,7 +183,7 @@ List of resources for provider aws:
 * Rekognition: 
 [StreamProcessor](./resources/Rekognition/StreamProcessor.md)
 * Route53: 
-[DelegationSet](./resources/Route53/DelegationSet.md), [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
+[CidrCollection](./resources/Route53/CidrCollection.md), [DelegationSet](./resources/Route53/DelegationSet.md), [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
 * Route53Domains: 
 [Domain](./resources/Route53Domains/Domain.md)
 * Route53RecoveryControlConfig: 
