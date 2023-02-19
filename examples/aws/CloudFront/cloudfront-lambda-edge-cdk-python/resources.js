@@ -12,7 +12,7 @@ exports.createResources = () => [
         Items: [
           {
             Id: "CloudfrontLambdaEdgeCdkPythonStackMyDistributionOrigin14A5ED72A",
-            DomainName: `cloudfrontlambdaedgecdkpy-myhostingbucket134f0bf0-f9qfxi97mq48.s3.${config.region}.amazonaws.com`,
+            DomainName: `cloudfrontlambdaedgecdkpy-myhostingbucket134f0bf0-x148i0ljl82b.s3.${config.region}.amazonaws.com`,
             OriginPath: "",
             CustomHeaders: {
               Quantity: 0,
@@ -58,7 +58,7 @@ exports.createResources = () => [
             {
               LambdaFunctionARN: `arn:aws:lambda:${
                 config.region
-              }:${config.accountId()}:function:CloudfrontLambdaEdgeCdkPythonSt-LambdaEdge6A7A1843-UTv98AE1k9Kq:1`,
+              }:${config.accountId()}:function:CloudfrontLambdaEdgeCdkPythonSt-LambdaEdge6A7A1843-wys4Xq7Szfxn:1`,
               EventType: "origin-request",
               IncludeBody: false,
             },
@@ -78,10 +78,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       buckets: [
-        "cloudfrontlambdaedgecdkpy-myhostingbucket134f0bf0-f9qfxi97mq48",
+        "cloudfrontlambdaedgecdkpy-myhostingbucket134f0bf0-x148i0ljl82b",
       ],
       lambdaFunctions: [
-        "CloudfrontLambdaEdgeCdkPythonSt-LambdaEdge6A7A1843-UTv98AE1k9Kq",
+        "CloudfrontLambdaEdgeCdkPythonSt-LambdaEdge6A7A1843-wys4Xq7Szfxn",
       ],
       originAccessIdentities: [
         "Identity for CloudfrontLambdaEdgeCdkPythonStackMyDistributionOrigin14A5ED72A",
@@ -98,7 +98,7 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({}) => ({
       RoleName:
-        "CloudfrontLambdaEdgeCdkPy-LambdaEdgeServiceRole9A3-1NBZYE1DVT3YN",
+        "CloudfrontLambdaEdgeCdkPy-LambdaEdgeServiceRole9A3-1VBUFKDCI4PGS",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -133,20 +133,20 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName:
-          "CloudfrontLambdaEdgeCdkPythonSt-LambdaEdge6A7A1843-UTv98AE1k9Kq",
+          "CloudfrontLambdaEdgeCdkPythonSt-LambdaEdge6A7A1843-wys4Xq7Szfxn",
         Handler: "index.handler",
         Runtime: "python3.7",
       },
     }),
     dependencies: ({}) => ({
-      role: "CloudfrontLambdaEdgeCdkPy-LambdaEdgeServiceRole9A3-1NBZYE1DVT3YN",
+      role: "CloudfrontLambdaEdgeCdkPy-LambdaEdgeServiceRole9A3-1VBUFKDCI4PGS",
     }),
   },
   {
     type: "Bucket",
     group: "S3",
     properties: ({ getId }) => ({
-      Name: "cloudfrontlambdaedgecdkpy-myhostingbucket134f0bf0-f9qfxi97mq48",
+      Name: "cloudfrontlambdaedgecdkpy-myhostingbucket134f0bf0-x148i0ljl82b",
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -163,7 +163,7 @@ exports.createResources = () => [
             },
             Action: "s3:GetObject",
             Resource:
-              "arn:aws:s3:::cloudfrontlambdaedgecdkpy-myhostingbucket134f0bf0-f9qfxi97mq48/*",
+              "arn:aws:s3:::cloudfrontlambdaedgecdkpy-myhostingbucket134f0bf0-x148i0ljl82b/*",
           },
         ],
       },

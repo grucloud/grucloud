@@ -13,6 +13,7 @@ const {
   reduce,
   switchCase,
   and,
+  filter,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -23,8 +24,12 @@ const {
   pluck,
   append,
   isIn,
+  includes,
 } = require("rubico/x");
 const path = require("path");
+
+const AdmZip = require("adm-zip");
+
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 const { retryCall } = require("@grucloud/core/Retry");
 
@@ -32,17 +37,34 @@ const logger = require("@grucloud/core/logger")({
   prefix: "Function",
 });
 
+const { replaceWithName } = require("@grucloud/core/Common");
+
 const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
-const { compareAws } = require("../AwsCommon");
+const {
+  compareAws,
+  replaceEnv,
+  buildDependenciesFromEnv,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createLambda, tagResource, untagResource } = require("./LambdaCommon");
+const { Tagger } = require("./LambdaCommon");
 
 const compareLambda = compareAws({});
 const findId = () => get("Configuration.FunctionArn");
 const findName = () => get("Configuration.FunctionName");
 
+const buildArn = () =>
+  pipe([
+    get("Configuration.FunctionArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
 const pickId = pipe([
+  tap((params) => {
+    assert(params);
+  }),
   ({ Configuration: { FunctionArn } }) => ({
     FunctionName: FunctionArn,
   }),
@@ -105,105 +127,378 @@ const managedByOther =
       ),
     ])();
 
-exports.Function = ({ spec, config }) => {
-  const lambda = createLambda(config);
-  const client = AwsClient({ spec, config })(lambda);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
-  const getById = client.getById({
-    pickId,
-    method: "getFunction",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
-  const getList = client.getList({
-    method: "listFunctions",
-    getParam: "Functions",
-    decorate: ({ endpoint }) =>
-      pipe([
-        pick(["FunctionName"]),
-        endpoint().getFunction,
-        pick(["Configuration", "Code", "Tags"]),
-
-        assign({
-          Configuration: pipe([
-            get("Configuration"),
-            unless(
-              pipe([get("Layers"), isEmpty]),
-              assign({
-                Layers: pipe([get("Layers"), pluck("Arn")]),
-              })
-            ),
+const decorate = ({ endpoint }) =>
+  pipe([
+    pick(["Configuration", "Code", "Tags"]),
+    assign({
+      Configuration: pipe([
+        get("Configuration"),
+        unless(
+          pipe([get("Layers"), isEmpty]),
+          assign({
+            Layers: pipe([get("Layers"), pluck("Arn")]),
+          })
+        ),
+      ]),
+      EventInvokeConfig: tryCatch(
+        pipe([
+          get("Configuration"),
+          pick(["FunctionName"]),
+          endpoint().getFunctionEventInvokeConfig,
+          pick([
+            "DestinationConfig",
+            "MaximumRetryAttempts",
+            "MaximumEventAgeInSeconds",
           ]),
-          EventInvokeConfig: tryCatch(
-            pipe([
-              get("Configuration"),
-              pick(["FunctionName"]),
-              endpoint().getFunctionEventInvokeConfig,
-              pick([
-                "DestinationConfig",
-                "MaximumRetryAttempts",
-                "MaximumEventAgeInSeconds",
-              ]),
+        ]),
+        (error, params) => {
+          return;
+        }
+      ),
+      FunctionUrlConfig: tryCatch(
+        pipe([
+          get("Configuration"),
+          pick(["FunctionName"]),
+          endpoint().getFunctionUrlConfig,
+          // For Cloudfront Distribution
+          assign({
+            DomainName: pipe([
+              get("FunctionUrl"),
+              callProp("replace", "https://", ""),
+              callProp("replace", "/", ""),
             ]),
-            (error, params) => {
-              return;
-            }
-          ),
-          FunctionUrlConfig: tryCatch(
-            pipe([
-              get("Configuration"),
-              pick(["FunctionName"]),
-              endpoint().getFunctionUrlConfig,
-              // For Cloudfront Distribution
+          }),
+        ]),
+        (error, params) => {
+          return;
+        }
+      ),
+      Code: pipe([
+        get("Code"),
+        assign({
+          Data: pipe([fetchZip()]),
+        }),
+      ]),
+      //TODO
+      // CodeSigningConfigArn: pipe([
+      //   get("Configuration"),
+      //   pick(["FunctionName"]),
+      //   lambda().getFunctionCodeSigningConfig,
+      //   get("CodeSigningConfigArn"),
+      // ]),
+      // ReservedConcurrentExecutions: pipe([
+      //   get("Configuration"),
+      //   pick(["FunctionName"]),
+      //   lambda().getFunctionConcurrency,
+      //   get("ReservedConcurrentExecutions"),
+      // ]),
+    }),
+    omitIfEmpty(["Policy", "Layers"]),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+const compareFunction = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  compareLambda({
+    filterTarget: () => (target) =>
+      pipe([
+        () => target,
+        tap((params) => {
+          assert(target);
+        }),
+        defaultsDeep({
+          Configuration: {
+            CodeSha256: pipe([
+              () => target,
+              get("Configuration.Code.ZipFile"),
+              computeHash256,
+            ])(),
+          },
+        }),
+      ])(),
+  }),
+  tap((diff) => {
+    assert(true);
+  }),
+]);
+
+exports.LambdaFunction = () => ({
+  type: "Function",
+  package: "lambda",
+  client: "Lambda",
+  inferName: () => get("Configuration.FunctionName"),
+  findName,
+  findId,
+  displayResource: () => pipe([omit(["Configuration.Code.ZipFile"])]),
+  ignoreResource: () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      get("name"),
+      includes("AWSCDK"),
+    ]),
+  compare: compareFunction,
+  managedByOther,
+  omitProperties: [
+    "Code",
+    "Configuration.Code",
+    "Configuration.CodeSize",
+    "Configuration.FunctionArn",
+    "Configuration.LastModified",
+    "Configuration.LastUpdateStatus",
+    "Configuration.LastUpdateStatusReason",
+    "Configuration.LastUpdateStatusReasonCode",
+    "Configuration.MasterArn",
+    "Configuration.RevisionId",
+    "Configuration.Role",
+    "Configuration.SigningJobArn",
+    "Configuration.State",
+    "Configuration.StateReason",
+    "Configuration.StateReasonCode",
+    "Configuration.Version",
+    "Configuration.VpcConfig",
+    "Configuration.SigningProfileVersionArn",
+    "Configuration.SigningJobArn",
+    "Configuration.RuntimeVersionConfig",
+    "Policy",
+    "FunctionUrlConfig.CreationTime",
+    "FunctionUrlConfig.LastModifiedTime",
+    "FunctionUrlConfig.FunctionArn",
+    "FunctionUrlConfig.FunctionUrl",
+    "FunctionUrlConfig.DomainName",
+  ],
+  propertiesDefault: {
+    Publish: true,
+    Configuration: {
+      Architectures: ["x86_64"],
+      Description: "",
+      MemorySize: 128,
+      Timeout: 3,
+      PackageType: "Zip",
+      TracingConfig: { Mode: "PassThrough" },
+      EphemeralStorage: { Size: 512 },
+      SnapStart: {
+        ApplyOn: "None",
+        OptimizationStatus: "Off",
+      },
+    },
+  },
+  filterLive:
+    ({ resource, programOptions, lives, providerConfig }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(resource.name);
+          assert(live.Code.Data);
+        }),
+        () => live,
+        when(
+          get("EventInvokeConfig"),
+          assign({
+            EventInvokeConfig: pipe([
+              get("EventInvokeConfig"),
               assign({
-                DomainName: pipe([
-                  get("FunctionUrl"),
-                  callProp("replace", "https://", ""),
-                  callProp("replace", "/", ""),
+                DestinationConfig: pipe([
+                  get("DestinationConfig"),
+                  when(
+                    get("OnSuccess"),
+                    assign({
+                      OnSuccess: pipe([
+                        get("OnSuccess"),
+                        assign({
+                          Destination: pipe([
+                            get("Destination"),
+                            replaceAccountAndRegion({
+                              lives,
+                              providerConfig,
+                            }),
+                          ]),
+                        }),
+                      ]),
+                    })
+                  ),
+                  when(
+                    get("OnFailure"),
+                    assign({
+                      OnFailure: pipe([
+                        get("OnFailure"),
+                        assign({
+                          Destination: pipe([
+                            get("Destination"),
+                            replaceAccountAndRegion({
+                              lives,
+                              providerConfig,
+                            }),
+                          ]),
+                        }),
+                      ]),
+                    })
+                  ),
                 ]),
               }),
             ]),
-            (error, params) => {
-              return;
-            }
-          ),
-          Code: pipe([
-            get("Code"),
-            assign({
-              Data: pipe([fetchZip()]),
-            }),
+          })
+        ),
+        assign({
+          Configuration: pipe([
+            get("Configuration"),
+            omit(["CodeSha256"]),
+            unless(
+              pipe([get("Layers"), isEmpty]),
+              assign({
+                Layers: pipe([
+                  get("Layers"),
+                  map(replaceAccountAndRegion({ lives, providerConfig })),
+                ]),
+              })
+            ),
+            when(
+              get("FileSystemConfigs"),
+              assign({
+                FileSystemConfigs: pipe([
+                  get("FileSystemConfigs"),
+                  map(
+                    assign({
+                      Arn: pipe([
+                        get("Arn"),
+                        replaceWithName({
+                          groupType: "EFS::AccessPoint",
+                          path: "id",
+                          providerConfig,
+                          lives,
+                        }),
+                      ]),
+                    })
+                  ),
+                ]),
+              })
+            ),
+            when(
+              get("Environment"),
+              assign({
+                Environment: pipe([
+                  get("Environment"),
+                  assign({
+                    Variables: pipe([
+                      get("Variables"),
+                      map(replaceEnv({ lives, providerConfig })),
+                    ]),
+                  }),
+                ]),
+              })
+            ),
           ]),
-
-          //TODO
-          // CodeSigningConfigArn: pipe([
-          //   get("Configuration"),
-          //   pick(["FunctionName"]),
-          //   lambda().getFunctionCodeSigningConfig,
-          //   get("CodeSigningConfigArn"),
-          // ]),
-          // ReservedConcurrentExecutions: pipe([
-          //   get("Configuration"),
-          //   pick(["FunctionName"]),
-          //   lambda().getFunctionConcurrency,
-          //   get("ReservedConcurrentExecutions"),
-          // ]),
         }),
-        omitIfEmpty(["Policy", "Layers"]),
-        tap((params) => {
-          assert(true);
-        }),
+        omitIfEmpty(["FunctionUrlConfig"]),
+        tap(
+          pipe([
+            () => new AdmZip(Buffer.from(live.Code.Data, "base64")),
+            (zip) =>
+              zip.extractAllTo(
+                path.resolve(programOptions.workingDirectory, resource.name),
+                true
+              ),
+          ])
+        ),
+      ])(),
+  // TODO SigningJobArn
+  dependencies: {
+    ...buildEventInvokeConfigDependencies(),
+    layers: {
+      type: "Layer",
+      group: "Lambda",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("Configuration.Layers"),
+          (layersArn) =>
+            pipe([
+              lives.getByType({
+                providerName: config.providerName,
+                type: "Layer",
+                group: "Lambda",
+              }),
+              filter(
+                pipe([
+                  get("live.LayerVersionArn"),
+                  removeVersion,
+                  (layerVersionArn) =>
+                    pipe([
+                      () => layersArn,
+                      map(removeVersion),
+                      includes(layerVersionArn),
+                    ])(),
+                ])
+              ),
+            ])(),
+          pluck("id"),
+        ]),
+    },
+    role: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: () => get("Configuration.Role"),
+    },
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      dependencyId: () => get("Configuration.KMSKeyArn"),
+    },
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: () => get("Configuration.VpcConfig.SubnetIds"),
+    },
+    securityGroups: {
+      type: "SecurityGroup",
+      group: "EC2",
+      list: true,
+      dependencyIds: () => get("Configuration.VpcConfig.SecurityGroupIds"),
+    },
+    s3Buckets: {
+      type: "Bucket",
+      group: "S3",
+      parent: true,
+      list: true,
+      ignoreOnDestroy: true,
+    },
+    efsAccessPoints: {
+      type: "AccessPoint",
+      group: "EFS",
+      list: true,
+      dependencyIds: () =>
+        pipe([get("Configuration.FileSystemConfigs"), pluck("Arn")]),
+    },
+    ...buildDependenciesFromEnv({
+      pathEnvironment: "Configuration.Environment.Variables",
+    }),
+  },
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
+  getById: {
+    method: "getFunction",
+    //getField: "MyResource",
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
+  getList: {
+    method: "listFunctions",
+    getParam: "Functions",
+    decorate: ({ getById }) =>
+      pipe([
+        ({ FunctionArn }) => ({ Configuration: { FunctionArn } }),
+        getById,
       ]),
-  });
-
-  const getByName = pipe([
-    ({ name }) => ({ Configuration: { FunctionArn: name } }),
-    getById({}),
-  ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property
-  const create = client.create({
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createMyResource-property
+  create: {
     method: "createFunction",
     filterPayload: ({ Configuration, Tags }) =>
       pipe([
@@ -237,7 +532,6 @@ exports.Function = ({ spec, config }) => {
       "EFS file system",
       "The provided execution role does not have permissions to call CreateNetworkInterface on EC2",
     ],
-    getById,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunctionUrlConfig-property
     postCreate: ({
       endpoint,
@@ -269,90 +563,89 @@ exports.Function = ({ spec, config }) => {
           ])
         ),
       ]),
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateFunctionConfiguration-property
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateFunctionCode-property
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update function: ${name}`);
-        assert(diff);
-      }),
-      () => ({
-        FunctionName: payload.Configuration.FunctionName,
-        ZipFile: payload.Configuration.Code.ZipFile,
-        Publish: true,
-      }),
-      // updateFunctionConfiguration
-      lambda().updateFunctionCode,
-      () =>
-        retryCall({
-          name: `update function code ${name}`,
-          fn: pipe([
-            () => payload,
-            tap((params) => {
-              assert(true);
-            }),
-            get("Configuration"),
-            pick(["FunctionName"]),
-            tap((params) => {
-              assert(true);
-            }),
-            lambda().getFunction,
-            tap((params) => {
-              assert(true);
-            }),
-            eq(get("Configuration.LastUpdateStatus"), "Successful"),
-          ]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateMyResource-property
+  update:
+    ({ endpoint }) =>
+    ({ name, payload, diff, live }) =>
+      pipe([
+        tap(() => {
+          logger.info(`update function: ${name}`);
+          assert(diff);
         }),
-      // updateFunctionConfiguration
-      when(
-        () => get("liveDiff.updated.Configuration")(diff),
-        pipe([
-          () => payload,
-          get("Configuration"),
-          lambda().updateFunctionConfiguration,
-          tap(() => {
-            logger.info(`updated function done ${name}`);
+        () => ({
+          FunctionName: payload.Configuration.FunctionName,
+          ZipFile: payload.Configuration.Code.ZipFile,
+          Publish: true,
+        }),
+        // updateFunctionConfiguration
+        endpoint().updateFunctionCode,
+        () =>
+          retryCall({
+            name: `update function code ${name}`,
+            fn: pipe([
+              () => payload,
+              tap((params) => {
+                assert(true);
+              }),
+              get("Configuration"),
+              pick(["FunctionName"]),
+              tap((params) => {
+                assert(true);
+              }),
+              endpoint().getFunction,
+              tap((params) => {
+                assert(true);
+              }),
+              eq(get("Configuration.LastUpdateStatus"), "Successful"),
+            ]),
           }),
-        ])
-      ),
-      // putFunctionEventInvokeConfig
-      when(
-        () => get("liveDiff.updated.FunctionUrlConfig")(diff),
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => ({
-            FunctionName: payload.Configuration.FunctionName,
-            ...payload.EventInvokeConfig,
-          }),
-          lambda().putFunctionEventInvokeConfig,
-        ])
-      ),
-      // updateFunctionUrlConfig
-      when(
-        () => get("liveDiff.updated.FunctionUrlConfig")(diff),
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => ({
-            FunctionName: payload.Configuration.FunctionName,
-            ...payload.FunctionUrlConfig,
-          }),
-          lambda().updateFunctionUrlConfig,
-        ])
-      ),
-      tap(() => {
-        logger.info(`updated function done ${name}`);
-      }),
-    ])();
-
+        // updateFunctionConfiguration
+        when(
+          () => get("liveDiff.updated.Configuration")(diff),
+          pipe([
+            () => payload,
+            get("Configuration"),
+            endpoint().updateFunctionConfiguration,
+            tap(() => {
+              logger.info(`updated function done ${name}`);
+            }),
+          ])
+        ),
+        // putFunctionEventInvokeConfig
+        when(
+          () => get("liveDiff.updated.FunctionUrlConfig")(diff),
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => ({
+              FunctionName: payload.Configuration.FunctionName,
+              ...payload.EventInvokeConfig,
+            }),
+            endpoint().putFunctionEventInvokeConfig,
+          ])
+        ),
+        // updateFunctionUrlConfig
+        when(
+          () => get("liveDiff.updated.FunctionUrlConfig")(diff),
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => ({
+              FunctionName: payload.Configuration.FunctionName,
+              ...payload.FunctionUrlConfig,
+            }),
+            endpoint().updateFunctionUrlConfig,
+          ])
+        ),
+        tap(() => {
+          logger.info(`updated function done ${name}`);
+        }),
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
-  const destroy = client.destroy({
+  destroy: {
     preDestroy: ({ endpoint }) =>
       tap(
         pipe([
@@ -368,15 +661,21 @@ exports.Function = ({ spec, config }) => {
       ),
     pickId,
     method: "deleteFunction",
-    getById,
-    ignoreErrorCodes: ["ResourceNotFoundException"],
     shouldRetryOnExceptionMessages: [
       "Please see our documentation for Deleting Lambda@Edge Functions and Replicas",
     ],
     configIsDown: { retryCount: 40 * 12, retryDelay: 5e3 },
-  });
-
-  const configDefault = ({
+  },
+  getByName: ({ getById }) =>
+    pipe([
+      ({ name }) => ({ Configuration: { FunctionArn: name } }),
+      getById({}),
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
@@ -440,24 +739,8 @@ exports.Function = ({ spec, config }) => {
             })
           ),
         ])(),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    update,
-    destroy,
-    getByName,
-    getById,
-    getList,
-    configDefault,
-    managedByOther,
-    tagResource: tagResource({ lambda }),
-    untagResource: untagResource({ lambda }),
-  };
-};
+    ])(),
+});
 
 const filterFunctionUrlConfig = pipe([
   get("FunctionUrlConfig"),
@@ -471,30 +754,3 @@ const filterFunctionUrlConfig = pipe([
 ]);
 
 exports.filterFunctionUrlConfig = filterFunctionUrlConfig;
-
-exports.compareFunction = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  compareLambda({
-    filterTarget: () => (target) =>
-      pipe([
-        () => target,
-        tap((params) => {
-          assert(target);
-        }),
-        defaultsDeep({
-          Configuration: {
-            CodeSha256: pipe([
-              () => target,
-              get("Configuration.Code.ZipFile"),
-              computeHash256,
-            ])(),
-          },
-        }),
-      ])(),
-  }),
-  tap((diff) => {
-    assert(true);
-  }),
-]);
