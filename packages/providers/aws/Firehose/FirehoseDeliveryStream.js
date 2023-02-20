@@ -64,6 +64,24 @@ const decorate =
         ...other,
         ExtendedS3DestinationConfiguration: ExtendedS3DestinationDescription,
       }),
+      when(
+        eq(
+          get(
+            "ExtendedS3DestinationConfiguration.CloudWatchLoggingOptions.Enabled"
+          ),
+          false
+        ),
+        omit(["ExtendedS3DestinationConfiguration.CloudWatchLoggingOptions"])
+      ),
+      when(
+        eq(
+          get(
+            "ExtendedS3DestinationConfiguration.ProcessingConfiguration.Enabled"
+          ),
+          false
+        ),
+        omit(["ExtendedS3DestinationConfiguration.ProcessingConfiguration"])
+      ),
       (Destination) => ({ ...other, ...Destination }),
       assignTags({ endpoint }),
     ])();

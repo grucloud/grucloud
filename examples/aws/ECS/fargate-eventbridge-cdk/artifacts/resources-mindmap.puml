@@ -1,0 +1,7 @@
+@startmindmap
+title Resources for project fargate-eventbridge-cdk
+skinparam monochrome true
++ Infra
+++ aws
+
+@endmindmap

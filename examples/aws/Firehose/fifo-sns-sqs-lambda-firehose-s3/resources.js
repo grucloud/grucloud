@@ -27,10 +27,6 @@ exports.createResources = () => [
           NoEncryptionConfig: "NoEncryption",
         },
         Prefix: "",
-        ProcessingConfiguration: {
-          Enabled: false,
-          Processors: [],
-        },
         RoleARN: `${getId({
           type: "Role",
           group: "IAM",

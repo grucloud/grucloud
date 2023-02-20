@@ -51,13 +51,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logGroupName: "/aws/codebuild/longrunningscriptbuildproje-m28pRYaYpwc7",
-    }),
-  },
-  {
     type: "Project",
     group: "CodeBuild",
     properties: ({}) => ({

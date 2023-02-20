@@ -215,10 +215,6 @@ exports.createResources = () => [
         },
         ErrorOutputPrefix: "",
         Prefix: "",
-        ProcessingConfiguration: {
-          Enabled: false,
-          Processors: [],
-        },
         RoleARN: `${getId({
           type: "Role",
           group: "IAM",

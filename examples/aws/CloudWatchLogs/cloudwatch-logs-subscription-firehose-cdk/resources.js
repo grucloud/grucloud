@@ -43,9 +43,6 @@ exports.createResources = () => [
           IntervalInSeconds: 60,
           SizeInMBs: 1,
         },
-        CloudWatchLoggingOptions: {
-          Enabled: false,
-        },
         CompressionFormat: "UNCOMPRESSED",
         EncryptionConfiguration: {
           NoEncryptionConfig: "NoEncryption",
@@ -56,9 +53,6 @@ exports.createResources = () => [
           name: "CloudwatchLogsSubscription-DestinationRole715116B2-BPSLVTF4PWUW",
         })}`,
         S3BackupMode: "Disabled",
-        ProcessingConfiguration: {
-          Processors: undefined,
-        },
       },
     }),
     dependencies: ({}) => ({

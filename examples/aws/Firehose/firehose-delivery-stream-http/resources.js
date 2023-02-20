@@ -37,10 +37,6 @@ exports.createResources = () => [
           Name: "HTTP endpoint",
           Url: "https://mydomain.com",
         },
-        ProcessingConfiguration: {
-          Enabled: false,
-          Processors: [],
-        },
         RequestConfiguration: {
           CommonAttributes: [],
           ContentEncoding: "NONE",
