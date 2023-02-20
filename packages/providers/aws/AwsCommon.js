@@ -405,7 +405,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
           tap((params) => {
             assert(true);
           }),
-          omit(["$metadata", "Status"]),
+          omit(["$metadata"]),
         ]),
         isExpectedResult: () => true,
         config: { retryDelay: 30e3 },

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="172px" preserveAspectRatio="none" style="width:405px;height:172px;background:#FFFFFF;" version="1.1" viewBox="0 0 405 172" width="405px" zoomAndPan="magnify"><defs/><g><rect height="26.4883" style="stroke:#00000000;stroke-width:1.0;fill:none;" width="332" x="15" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="322" x="20" y="33.5352">Resources for project s3-s3-replication-cdk</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="52" x="20" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="30" y="109.2676">Infra</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="122" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="132" y="109.2676">aws</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="46" x="218" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="228" y="81.0234">IAM</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="73" x="314" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="53" x="324" y="81.0234">Role (1)</text><path d="M264,75.7324 L274,75.7324 C289,75.7324 289,75.7324 304,75.7324 L314,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M168,103.9766 L178,103.9766 C193,103.9766 193,75.7324 208,75.7324 L218,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="37" x="218" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="17" x="228" y="137.5117">S3</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="88" x="305" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68" x="315" y="137.5117">Bucket (3)</text><path d="M255,132.2207 L265,132.2207 C280,132.2207 280,132.2207 295,132.2207 L305,132.2207 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M168,103.9766 L178,103.9766 C193,103.9766 193,132.2207 208,132.2207 L218,132.2207 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M72,103.9766 L82,103.9766 C97,103.9766 97,103.9766 112,103.9766 L122,103.9766 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><!--MD5=[348bca44819f21ad7fc5b4b7645ffec7]
+@startmindmap
+title Resources for project s3-s3-replication-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ S3
+++++ Bucket (3)
+@endmindmap
+
+PlantUML version 1.2022.6(Tue Jun 21 12:34:49 COT 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

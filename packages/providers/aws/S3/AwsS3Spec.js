@@ -254,6 +254,24 @@ module.exports = pipe([
               ]),
             })
           ),
+          // ReplicationConfiguration
+          when(
+            get("ReplicationConfiguration"),
+            assign({
+              ReplicationConfiguration: pipe([
+                get("ReplicationConfiguration"),
+                assign({
+                  Role: pipe([
+                    get("Role"),
+                    replaceArnWithAccountAndRegion({
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          ),
           omitIfEmpty(["LocationConstraint"]),
           omit(["WebsiteConfiguration.RoutingRules"]),
           when(
