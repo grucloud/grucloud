@@ -16,10 +16,11 @@ const {
   flatMap,
   any,
   or,
+  eq,
 } = require("rubico");
 const {
   callProp,
-  when,
+  identity,
   flatten,
   defaultsDeep,
   isEmpty,
@@ -33,7 +34,6 @@ const {
 const moment = require("moment");
 const querystring = require("querystring");
 const logger = require("@grucloud/core/logger")({ prefix: "IamRole" });
-const { tos } = require("@grucloud/core/tos");
 const {
   buildTags,
   findNamespaceInTags,
@@ -89,7 +89,15 @@ const cannotBeDeleted = () =>
   pipe([
     or([
       // Do not mess with CloudFormation/CDK roles.
-      pipe([get("RoleName"), or([includes("cdk-")])]),
+      pipe([
+        get("RoleName"),
+        or([
+          includes("cdk-"),
+          callProp("startsWith", "AWS-"),
+          callProp("startsWith", "stacksets-exec-"),
+          eq(identity, "OrganizationAccountAccessRole"),
+        ]),
+      ]),
       //Path
       pipe([
         get("Path"),
