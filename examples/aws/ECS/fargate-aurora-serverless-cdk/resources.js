@@ -577,6 +577,7 @@ exports.createResources = () => [
                   type: "Secret",
                   group: "SecretsManager",
                   name: "aurora-user-secret",
+                  path: "live.ARN",
                 })}`,
                 Effect: "Allow",
               },
@@ -587,7 +588,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      secrets: ["aurora-user-secret"],
+      secretsManagerSecrets: ["aurora-user-secret"],
     }),
   },
   {
