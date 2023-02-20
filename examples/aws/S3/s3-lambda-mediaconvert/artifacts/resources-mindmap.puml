@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project s3-lambda-mediaconvert
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
++++ S3
+++++ Bucket (2)
+@endmindmap

@@ -55,6 +55,47 @@ const managedByOther =
       any((prefix) => Name.startsWith(prefix)),
     ])();
 
+const putBucketEncryption = ({
+  endpoint,
+  Bucket,
+  ServerSideEncryptionConfiguration,
+}) =>
+  tap.if(
+    get("ServerSideEncryptionConfiguration"),
+    pipe([
+      () => ({
+        Bucket,
+        ServerSideEncryptionConfiguration,
+      }),
+      endpoint().putBucketEncryption,
+    ])
+  );
+
+const putBucketNotificationConfiguration = ({
+  endpoint,
+  Bucket,
+  NotificationConfiguration,
+}) =>
+  tap.if(
+    get("NotificationConfiguration"),
+    pipe([
+      () => ({
+        Bucket,
+        NotificationConfiguration,
+      }),
+      endpoint().putBucketNotificationConfiguration,
+    ])
+  );
+
+const putBucketPolicy = ({ endpoint, Bucket, Policy }) =>
+  tap.if(
+    get("Policy"),
+    pipe([
+      fork({ Policy: pipe([() => Policy, JSON.stringify]) }),
+      defaultsDeep({ Bucket }),
+      endpoint().putBucketPolicy,
+    ])
+  );
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
   const s3 = createS3(config);
@@ -442,34 +483,21 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       tap((params) => {
         assert(Bucket);
       }),
-      tap.if(
-        get("ServerSideEncryptionConfiguration"),
-        pipe([
-          () => ({
-            Bucket,
-            ServerSideEncryptionConfiguration,
-          }),
-          s3().putBucketEncryption,
-        ])
-      ),
-      tap.if(
-        get("NotificationConfiguration"),
-        pipe([
-          () => ({
-            Bucket,
-            NotificationConfiguration,
-          }),
-          s3().putBucketNotificationConfiguration,
-        ])
-      ),
-      tap.if(
-        get("Policy"),
-        pipe([
-          fork({ Policy: pipe([() => Policy, JSON.stringify]) }),
-          defaultsDeep({ Bucket }),
-          s3().putBucketPolicy,
-        ])
-      ),
+      putBucketEncryption({
+        endpoint: s3,
+        Bucket,
+        ServerSideEncryptionConfiguration,
+      }),
+      putBucketNotificationConfiguration({
+        endpoint: s3,
+        Bucket,
+        NotificationConfiguration,
+      }),
+      putBucketPolicy({
+        endpoint: s3,
+        Bucket,
+        Policy,
+      }),
     ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
@@ -628,11 +656,24 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             await s3().putBucketLogging({ Bucket, BucketLoggingStatus });
           }
           //  https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketNotificationConfiguration-property
-          // TODO Retry on error : "Unable to validate the following destination configurations"
           if (NotificationConfiguration) {
-            await s3().putBucketNotificationConfiguration({
-              Bucket,
-              NotificationConfiguration,
+            await retryCall({
+              name: `putBucketNotificationConfiguration ${Bucket}`,
+              fn: pipe([
+                () => ({
+                  Bucket,
+                  NotificationConfiguration,
+                }),
+                s3().putBucketNotificationConfiguration,
+              ]),
+              shouldRetryOnException: ({ error, name }) =>
+                pipe([
+                  () => [
+                    "Unable to validate the following destination configurations",
+                  ],
+                  any(isIn(error.message)),
+                ])(),
+              config: { retryCount: 12, retryDelay: 5e3 },
             });
           }
 
