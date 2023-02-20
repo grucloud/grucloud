@@ -94,11 +94,11 @@ const dependenciesFromPolicies = {
   efsAccessPoints: {
     pathLive: "id",
     type: "AccessPoint",
-    group: "FileSystem",
+    group: "EFS",
   },
   efsFileSystems: {
     pathLive: "id",
-    type: "AccessPoint",
+    type: "FileSystem",
     group: "EFS",
   },
   mqBrokers: {
