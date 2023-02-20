@@ -24,11 +24,13 @@ describe("S3Control", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ObjectLambdaAccessPoint", () =>
+  it("ObjectLambdaAccessPoint", () =>
     pipe([
       () => ({
         groupType: "S3Control::ObjectLambdaAccessPoint",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { Name: "aaaaaaa", AccountId: config.accountId() },
+        ],
       }),
       awsResourceTest,
     ])());
