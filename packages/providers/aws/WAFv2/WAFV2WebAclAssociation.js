@@ -47,6 +47,13 @@ const WebAclDependencies = {
       ({ restApiId, stageName }) =>
         `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`,
   },
+  cognitoUserPool: {
+    type: "UserPool",
+    group: "CognitoIdentityServiceProvider",
+    parent: true,
+    dependencyId: ({ lives, config }) => get("ResourceArn"),
+    buildArn: () => get("Arn"),
+  },
   // apiGatewayV2Stage: {
   //   type: "Stage",
   //   group: "ApiGatewayV2",
