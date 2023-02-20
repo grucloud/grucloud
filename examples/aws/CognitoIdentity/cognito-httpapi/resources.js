@@ -64,7 +64,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       AuthorizationScopes: ["email"],
       AuthorizationType: "JWT",
-      RequestParameters: {},
       RouteKey: "GET /",
     }),
     dependencies: ({}) => ({
