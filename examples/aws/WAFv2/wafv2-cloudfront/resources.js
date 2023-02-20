@@ -15,32 +15,8 @@ exports.createResources = () => [
     type: "Distribution",
     group: "CloudFront",
     properties: ({ getId }) => ({
-      PriceClass: "PriceClass_100",
       DefaultRootObject: "",
-      DefaultCacheBehavior: {
-        TargetOriginId: "website.grucloud.org.s3.eu-west-2.amazonaws.com",
-        TrustedSigners: {
-          Enabled: false,
-        },
-        TrustedKeyGroups: {
-          Enabled: false,
-        },
-        ViewerProtocolPolicy: "redirect-to-https",
-        AllowedMethods: {
-          Quantity: 2,
-          Items: ["HEAD", "GET"],
-          CachedMethods: {
-            Quantity: 2,
-            Items: ["HEAD", "GET"],
-          },
-        },
-        SmoothStreaming: false,
-        Compress: true,
-        FieldLevelEncryptionId: "",
-        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
-      },
       Origins: {
-        Quantity: 1,
         Items: [
           {
             Id: "website.grucloud.org.s3.eu-west-2.amazonaws.com",
@@ -65,13 +41,30 @@ exports.createResources = () => [
           },
         ],
       },
-      Comment: "",
-      Logging: {
-        Enabled: false,
-        IncludeCookies: false,
-        Bucket: "",
-        Prefix: "",
+      DefaultCacheBehavior: {
+        TargetOriginId: "website.grucloud.org.s3.eu-west-2.amazonaws.com",
+        TrustedSigners: {
+          Enabled: false,
+        },
+        TrustedKeyGroups: {
+          Enabled: false,
+        },
+        ViewerProtocolPolicy: "redirect-to-https",
+        AllowedMethods: {
+          Quantity: 2,
+          Items: ["HEAD", "GET"],
+          CachedMethods: {
+            Quantity: 2,
+            Items: ["HEAD", "GET"],
+          },
+        },
+        SmoothStreaming: false,
+        Compress: true,
+        FieldLevelEncryptionId: "",
+        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
       },
+      Comment: "",
+      PriceClass: "PriceClass_100",
       ViewerCertificate: {
         CloudFrontDefaultCertificate: false,
         SSLSupportMethod: "sni-only",

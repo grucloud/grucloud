@@ -4399,6 +4399,7 @@
             "iot-data",
             "iotdevicemanagement",
             "kinesis",
+            "kinesisanalytics",
             "kms",
             "lambda",
             "logs",
