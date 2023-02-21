@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project s3-to-eventbridge-claim-check-pattern
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ EventBus (1)
+++++ Rule (3)
+++++ Target (3)
++++ IAM
+++++ Role (4)
++++ Lambda
+++++ Function (4)
+++++ Permission (3)
++++ S3
+++++ Bucket (1)
+@endmindmap
