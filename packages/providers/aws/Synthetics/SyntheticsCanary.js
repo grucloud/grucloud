@@ -1,18 +1,36 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, map } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, pick, eq, assign, map, tryCatch } = require("rubico");
+const { defaultsDeep, when, find, isIn, prepend } = require("rubico/x");
+const path = require("path");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
+const { createZipBuffer } = require("../Lambda/LambdaCommon");
 
 const { Tagger } = require("./SyntheticsCommon");
+const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const buildArn = () =>
   pipe([
     get("Arn"),
     tap((arn) => {
       assert(arn);
+    }),
+  ]);
+
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        tap(({ Name }) => {
+          assert({ Name });
+        }),
+        ({ Name }) =>
+          `arn:aws:synthetics:${
+            config.region
+          }:${config.accountId()}:canary:${Name}`,
+      ]),
     }),
   ]);
 
@@ -23,27 +41,15 @@ const pickId = pipe([
   pick(["Name"]),
 ]);
 
-const assignArn = ({ config }) =>
-  pipe([
-    tap((params) => {
-      assert(config.region);
-    }),
-    assign({
-      arn: pipe([
-        tap(({ Name }) => {
-          assert(Name);
-        }),
-        ({ Name }) => `arn:aws:apigateway:${config.region}::/canary/${Name}`,
-      ]),
-    }),
-  ]);
-
 const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
     assignArn({ config }),
+    assign({
+      ArtifactS3Location: pipe([get("ArtifactS3Location"), prepend("s3://")]),
+    }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Synthetics.html
@@ -59,9 +65,8 @@ exports.SyntheticsCanary = () => ({
     "Status",
     "Timeline",
     "EngineArn",
-    "VpcConfig",
-    "VisualReference",
     "Code.SourceLocationArn",
+    "Code.ZipFile",
   ],
   inferName: () =>
     pipe([
@@ -79,7 +84,7 @@ exports.SyntheticsCanary = () => ({
     ]),
   findId: () =>
     pipe([
-      get("Name"),
+      get("Arn"),
       tap((id) => {
         assert(id);
       }),
@@ -107,7 +112,23 @@ exports.SyntheticsCanary = () => ({
     lambdaFunction: {
       type: "Function",
       group: "Lambda",
-      dependencyId: ({ lives, config }) => get("EngineArn"),
+      dependencyId:
+        ({ lives, config }) =>
+        ({ EngineArn }) =>
+          pipe([
+            tap((params) => {
+              assert(EngineArn);
+            }),
+            lives.getByType({
+              type: "Function",
+              group: "Lambda",
+              providerName: config.providerName,
+            }),
+            find(
+              pipe([get("live.Configuration.FunctionArn"), isIn(EngineArn)])
+            ),
+            get("id"),
+          ])(),
     },
     lambdaLayer: {
       type: "Layer",
@@ -138,6 +159,15 @@ exports.SyntheticsCanary = () => ({
         ]),
     },
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        ArtifactS3Location: pipe([
+          get("ArtifactS3Location"),
+          replaceAccountAndRegion({ lives, providerConfig }),
+        ]),
+      }),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Synthetics.html#getCanary-property
   getById: {
     method: "getCanary",
@@ -149,10 +179,8 @@ exports.SyntheticsCanary = () => ({
   getList: {
     method: "describeCanaries",
     getParam: "Canaries",
-    // decorate: ({ getById }) => pipe([getById]),
     decorate,
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Synthetics.html#createCanary-property
   create: {
     method: "createCanary",
@@ -169,8 +197,13 @@ exports.SyntheticsCanary = () => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Synthetics.html#deleteCanary-property
   destroy: {
+    preDestroy: ({ endpoint }) =>
+      tap(pipe([pickId, tryCatch(endpoint().stopCanary, () => undefined)])),
     method: "deleteCanary",
     pickId,
+    shouldRetryOnExceptionMessages: [
+      "Canary is in a state that can't be deleted",
+    ],
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>
@@ -190,66 +223,67 @@ exports.SyntheticsCanary = () => ({
       subnets,
     },
     config,
+    programOptions,
   }) =>
     pipe([
-      () => otherProps,
-      defaultsDeep({
-        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      tap((params) => {
+        assert(lambdaFunction);
       }),
-      when(
-        () => iamRole,
-        defaultsDeep({
-          ExecutionRoleArn: getField(iamRole, "Arn"),
-        })
-      ),
-      when(
-        () => kmsKey,
-        defaultsDeep({
-          configuration: {
-            ArtifactConfig: {
-              S3Encryption: { KmsKeyArn: getField(kmsKey, "Arn") },
-            },
-          },
-        })
-      ),
-      when(
-        () => lambdaFunction,
-        defaultsDeep({
-          Code: {
-            ZipFile: Buffer.from(getField(lambdaFunction, "Code.Data")),
-          },
-        })
-      ),
-      //   when(
-      //     () => lambdaLayer,
-      //     defaultsDeep({
-      //       Code: {
-      //         SourceLocationArn: getField(lambdaLayer, "LayerVersionArn"),
-      //       },
-      //     })
-      //   ),
-      //Code SourceLocationArn
-      when(
-        () => securityGroups,
-        defaultsDeep({
-          VpcConfig: {
-            SecurityGroupIds: pipe([
-              () => securityGroups,
-              map((sg) => getField(sg, "GroupId")),
-            ])(),
-          },
-        })
-      ),
-      when(
-        () => subnets,
-        defaultsDeep({
-          VpcConfig: {
-            SubnetIds: pipe([
-              () => subnets,
-              map((subnet) => getField(subnet, "SubnetId")),
-            ])(),
-          },
-        })
-      ),
+      () => ({
+        localPath: path.resolve(
+          programOptions.workingDirectory,
+          lambdaFunction.config.Configuration.FunctionName
+        ),
+      }),
+      createZipBuffer,
+      (ZipFile) =>
+        pipe([
+          () => otherProps,
+          defaultsDeep({
+            Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+            Code: { ZipFile },
+          }),
+          when(
+            () => iamRole,
+            defaultsDeep({
+              ExecutionRoleArn: getField(iamRole, "Arn"),
+            })
+          ),
+          when(
+            () => kmsKey,
+            defaultsDeep({
+              configuration: {
+                ArtifactConfig: {
+                  S3Encryption: { KmsKeyArn: getField(kmsKey, "Arn") },
+                },
+              },
+            })
+          ),
+          when(
+            () => securityGroups,
+            defaultsDeep({
+              VpcConfig: {
+                SecurityGroupIds: pipe([
+                  () => securityGroups,
+                  map((sg) => getField(sg, "GroupId")),
+                ])(),
+              },
+            })
+          ),
+          when(
+            () => subnets,
+            defaultsDeep({
+              VpcConfig: {
+                SubnetIds: pipe([
+                  () => subnets,
+                  map((subnet) => getField(subnet, "SubnetId")),
+                ])(),
+              },
+            })
+          ),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
     ])(),
 });

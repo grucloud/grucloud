@@ -225,7 +225,7 @@ List of resources for provider aws:
 * StepFunctions: 
 [StateMachine](./resources/StepFunctions/StateMachine.md)
 * Synthetics: 
-[Canary](./resources/Synthetics/Canary.md)
+[Canary](./resources/Synthetics/Canary.md), [Group](./resources/Synthetics/Group.md)
 * TimestreamWrite: 
 [Database](./resources/TimestreamWrite/Database.md), [Table](./resources/TimestreamWrite/Table.md)
 * Transfer: 

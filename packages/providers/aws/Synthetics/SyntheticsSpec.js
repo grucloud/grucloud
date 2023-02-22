@@ -8,7 +8,7 @@ const { createAwsService } = require("../AwsService");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Synthetics.html
 
 const { SyntheticsCanary } = require("./SyntheticsCanary");
-//const { SyntheticsTable } = require("./SyntheticsTable");
+const { SyntheticsGroup } = require("./SyntheticsGroup");
 
 const GROUP = "Synthetics";
 
@@ -18,13 +18,15 @@ module.exports = pipe([
   () => [
     //
     SyntheticsCanary({ compare }),
-    //SyntheticsTable({ compare }),
+    SyntheticsGroup({ compare }),
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);
