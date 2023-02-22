@@ -46,15 +46,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Layer",
-    group: "Lambda",
-    properties: ({}) => ({
-      LayerName: "lambda-layer",
-      Description: "My Layer",
-      CompatibleRuntimes: ["nodejs"],
-    }),
-  },
-  {
     type: "Function",
     group: "Lambda",
     properties: ({ getId }) => ({
@@ -78,6 +69,15 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       layers: ["lambda-layer"],
       role: "lambda-role",
+    }),
+  },
+  {
+    type: "Layer",
+    group: "Lambda",
+    properties: ({}) => ({
+      LayerName: "lambda-layer",
+      Description: "My Layer",
+      CompatibleRuntimes: ["nodejs"],
     }),
   },
 ];

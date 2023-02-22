@@ -33,7 +33,7 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       Configuration: {
         Environment: {
           Variables: {
@@ -45,7 +45,7 @@ exports.createResources = () => [
           "LambdaAdapterCdkStack-lambdaAdapterFunction6BCDA39-EKYUs9AiFOqv",
         Handler: "run.sh",
         Layers: [
-          `arn:aws:lambda:${config.region}:753240598075:layer:LambdaAdapterLayerX86:3`,
+          "arn:aws:lambda:us-east-1:753240598075:layer:LambdaAdapterLayerX86:3",
         ],
         MemorySize: 1024,
         Runtime: "nodejs16.x",

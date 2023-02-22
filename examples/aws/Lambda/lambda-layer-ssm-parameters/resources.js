@@ -46,14 +46,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Layer",
-    group: "Lambda",
-    properties: ({}) => ({
-      LayerName: "config-example-layer",
-      CompatibleRuntimes: ["nodejs14.x"],
-    }),
-  },
-  {
     type: "Function",
     group: "Lambda",
     properties: ({ getId }) => ({
@@ -83,6 +75,14 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       layers: ["config-example-layer"],
       role: "sam-app-Function-1HSHFH3X2M7AK-FunctionRole-FASUSIX3EN4",
+    }),
+  },
+  {
+    type: "Layer",
+    group: "Lambda",
+    properties: ({}) => ({
+      LayerName: "config-example-layer",
+      CompatibleRuntimes: ["nodejs14.x"],
     }),
   },
   {
