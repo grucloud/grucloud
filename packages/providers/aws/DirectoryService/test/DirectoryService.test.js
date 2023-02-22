@@ -4,11 +4,13 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("DirectoryService", async function () {
-  it.skip("ConditionalForwarder", () =>
+  it("ConditionalForwarder", () =>
     pipe([
       () => ({
         groupType: "DirectoryService::ConditionalForwarder",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { DirectoryId: "d-1234567890", RemoteDomainName: "corp.pippo.com" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -20,11 +22,11 @@ describe("DirectoryService", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Region", () =>
+  it("Region", () =>
     pipe([
       () => ({
         groupType: "DirectoryService::Region",
-        livesNotFound: ({ config }) => [{ DirectoryId: "d123" }],
+        livesNotFound: ({ config }) => [{ DirectoryId: "d-1234567890" }],
       }),
       awsResourceTest,
     ])());
