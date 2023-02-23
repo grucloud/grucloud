@@ -78,6 +78,8 @@ const decorate =
           endpoint().listAccessKeys,
           get("AccessKeyMetadata"),
         ]),
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listSigningCertificates-property
+        // listSigningCertificates
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listSSHPublicKeys-property
         SSHPublicKeys: pipe([
           pickId,
@@ -204,6 +206,11 @@ const deleteSSHPublicKey =
         ])()
       ),
     ])();
+
+// TODO DeleteSigningCertificate
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteSigningCertificate-property
+// TODO deleteServiceSpecificCredential
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteServiceSpecificCredential-property
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteLoginProfile-property
 const deleteLoginProfile =
@@ -385,6 +392,7 @@ exports.IAMUser = ({}) => ({
               tap(detachUserPolicy({ endpoint })),
               deleteUserPolicy({ endpoint }),
             ]),
+
             sshPublicKeys: deleteSSHPublicKey({ endpoint }),
             loginProfile: deleteLoginProfile({ endpoint }),
             accessKey: destroyAccessKey({ endpoint }),

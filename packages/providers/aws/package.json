@@ -162,6 +162,7 @@
     "@aws-sdk/client-cloudwatch-events": "3.262.0",
     "@aws-sdk/client-cloudwatch-logs": "3.262.0",
     "@aws-sdk/client-codebuild": "3.262.0",
+    "@aws-sdk/client-codecommit": "3.262.0",
     "@aws-sdk/client-codedeploy": "3.262.0",
     "@aws-sdk/client-codepipeline": "3.262.0",
     "@aws-sdk/client-codestar-connections": "3.262.0",

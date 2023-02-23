@@ -64,6 +64,8 @@ List of resources for provider aws:
 [LogGroup](./resources/CloudWatchLogs/LogGroup.md), [LogStream](./resources/CloudWatchLogs/LogStream.md), [ResourcePolicy](./resources/CloudWatchLogs/ResourcePolicy.md), [SubscriptionFilter](./resources/CloudWatchLogs/SubscriptionFilter.md)
 * CodeBuild: 
 [Project](./resources/CodeBuild/Project.md)
+* CodeCommit: 
+[Repository](./resources/CodeCommit/Repository.md)
 * CodeDeploy: 
 [Application](./resources/CodeDeploy/Application.md), [DeploymentGroup](./resources/CodeDeploy/DeploymentGroup.md)
 * CodePipeline: 
