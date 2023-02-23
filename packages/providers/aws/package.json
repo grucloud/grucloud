@@ -153,6 +153,7 @@
     "@aws-sdk/client-backup": "3.262.0",
     "@aws-sdk/client-batch": "3.262.0",
     "@aws-sdk/client-budgets": "3.262.0",
+    "@aws-sdk/client-cloud9": "3.262.0",
     "@aws-sdk/client-cloudformation": "3.262.0",
     "@aws-sdk/client-cloudfront": "3.262.0",
     "@aws-sdk/client-cloudhsm-v2": "3.262.0",

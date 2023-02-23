@@ -9,8 +9,9 @@ const {
   switchCase,
   omit,
   or,
+  assign,
 } = require("rubico");
-const { defaultsDeep, when, pluck } = require("rubico/x");
+const { defaultsDeep, when, pluck, first } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, createEndpoint } = require("../AwsCommon");
@@ -81,6 +82,14 @@ const omitStorageThroughput = when(
   omit(["StorageThroughput"])
 );
 
+const assignDBParameterGroupName = assign({
+  DBClusterParameterGroup: pipe([
+    get("DBParameterGroups"),
+    first,
+    get("DBParameterGroupName"),
+  ]),
+});
+
 const decorate = ({ endpoint }) =>
   pipe([
     //
@@ -88,6 +97,7 @@ const decorate = ({ endpoint }) =>
     omitStorageThroughput,
     omitAllocatedStorage,
     assignManageMasterUserPassword,
+    assignDBParameterGroupName,
   ]);
 
 exports.RDSDBInstance = ({ compare }) => ({
@@ -100,6 +110,21 @@ exports.RDSDBInstance = ({ compare }) => ({
   managedByOther,
   cannotBeDeleted: managedByOther,
   dependencies: {
+    dbClusterParameterGroup: {
+      type: "DBClusterParameterGroup",
+      group: "RDS",
+      excludeDefaultDependencies: true,
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("DBClusterParameterGroup"),
+          lives.getByName({
+            providerName: config.providerName,
+            type: "DBClusterParameterGroup",
+            group: "RDS",
+          }),
+          get("id"),
+        ]),
+    },
     dbSubnetGroup: {
       type: "DBSubnetGroup",
       group: "RDS",
@@ -328,6 +353,7 @@ exports.RDSDBInstance = ({ compare }) => ({
     properties: { Tags, ...otherProps },
     dependencies: {
       dbCluster,
+      dbClusterParameterGroup,
       dbSubnetGroup,
       kmsKey,
       monitoringRole,
@@ -342,6 +368,13 @@ exports.RDSDBInstance = ({ compare }) => ({
         DBInstanceIdentifier: name,
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(
+        () => dbClusterParameterGroup,
+        assign({
+          DBClusterParameterGroup: () =>
+            dbClusterParameterGroup.config.DBClusterParameterGroupName,
+        })
+      ),
       when(
         () => dbSubnetGroup,
         defaultsDeep({

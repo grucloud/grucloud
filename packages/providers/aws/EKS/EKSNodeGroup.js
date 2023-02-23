@@ -5,7 +5,7 @@ const { defaultsDeep, pluck, when, find } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "EKSNodeGroup" });
 const { tos } = require("@grucloud/core/tos");
 
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
@@ -37,6 +37,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    omitIfEmpty(["labels"]),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
@@ -91,7 +92,13 @@ exports.EKSNodeGroup = ({ compare }) => ({
     role: {
       type: "Role",
       group: "IAM",
-      dependencyId: ({ lives, config }) => get("nodeRole"),
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("nodeRole"),
+          tap((nodeRole) => {
+            assert(nodeRole);
+          }),
+        ]),
     },
     launchTemplate: {
       type: "LaunchTemplate",

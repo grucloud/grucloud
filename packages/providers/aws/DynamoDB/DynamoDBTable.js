@@ -64,10 +64,12 @@ exports.DynamoDBTable = () => ({
     "SSEDescription.KMSMasterKeyId",
     "LocalSecondaryIndexes[].IndexSizeBytes",
     "LocalSecondaryIndexes[].ItemCount",
+    "GlobalSecondaryIndexes[].IndexArn",
     "GlobalSecondaryIndexes[].Backfilling",
     "GlobalSecondaryIndexes[].IndexSizeBytes",
     "GlobalSecondaryIndexes[].IndexStatus",
     "GlobalSecondaryIndexes[].ItemCount",
+    "GlobalSecondaryIndexes[].ProvisionedThroughput.NumberOfDecreasesToday",
     "Replicas[].ReplicaStatus",
     "Replicas[].ReplicaStatusDescription",
     "Replicas[].ReplicaStatusPercentProgress",
@@ -100,22 +102,6 @@ exports.DynamoDBTable = () => ({
         "LocalSecondaryIndexes",
         "StreamSpecification",
       ]),
-      when(
-        get("GlobalSecondaryIndexes"),
-        assign({
-          GlobalSecondaryIndexes: pipe([
-            get("GlobalSecondaryIndexes"),
-            map(
-              assign({
-                IndexArn: pipe([
-                  get("IndexArn"),
-                  replaceAccountAndRegion({ lives, providerConfig }),
-                ]),
-              })
-            ),
-          ]),
-        })
-      ),
     ]),
   dependencies: {
     kmsKey: {

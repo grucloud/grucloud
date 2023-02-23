@@ -31,11 +31,7 @@ const assignPolicy = () =>
     ),
   ]);
 
-const decorate = ({ endpoint, live }) =>
-  pipe([
-    // TODO normalize policy
-    assignPolicy(),
-  ]);
+const decorate = ({ endpoint, live }) => pipe([assignPolicy()]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
 exports.APIGatewayRestApiPolicy = () => ({

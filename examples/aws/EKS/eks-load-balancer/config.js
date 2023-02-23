@@ -11,6 +11,8 @@ module.exports = ({}) => {
       "EC2",
       "EKS",
       "ElasticLoadBalancingV2",
+      "IAM",
+      "KMS",
       "Route53",
       "Route53Domains",
     ],

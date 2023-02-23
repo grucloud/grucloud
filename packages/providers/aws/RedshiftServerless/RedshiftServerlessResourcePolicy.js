@@ -5,7 +5,10 @@ const { defaultsDeep, prepend, first } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+const {
+  assignPolicyAccountAndRegion,
+  sortStatements,
+} = require("../IAM/AwsIamCommon");
 
 const pickId = pipe([
   tap(({ resourceArn }) => {
@@ -23,7 +26,7 @@ const decorate = ({ endpoint, config }) =>
       policy: pipe([
         get("policy"),
         JSON.parse,
-        // TODO normalize policy
+        sortStatements,
         assign({
           Statement: pipe([
             get("Statement"),

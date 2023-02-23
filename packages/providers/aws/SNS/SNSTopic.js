@@ -2,7 +2,10 @@ const assert = require("assert");
 const { pipe, tap, get, pick, assign, omit, and, eq } = require("rubico");
 const { defaultsDeep, callProp, last, when, size, find } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+const {
+  assignPolicyAccountAndRegion,
+  sortStatements,
+} = require("../IAM/AwsIamCommon");
 
 const { buildTags } = require("../AwsCommon");
 const { Tagger } = require("./SNSCommon");
@@ -35,9 +38,12 @@ const decorate = ({ endpoint }) =>
       Attributes: pipe([
         get("Attributes"),
         assign({
-          //TODO normalize
-          Policy: pipe([get("Policy"), JSON.parse]),
-          DeliveryPolicy: pipe([get("EffectiveDeliveryPolicy"), JSON.parse]),
+          Policy: pipe([get("Policy"), JSON.parse, sortStatements]),
+          DeliveryPolicy: pipe([
+            get("EffectiveDeliveryPolicy"),
+            JSON.parse,
+            sortStatements,
+          ]),
         }),
         omit(["EffectiveDeliveryPolicy"]),
       ]),

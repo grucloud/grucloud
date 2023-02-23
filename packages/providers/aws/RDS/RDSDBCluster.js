@@ -55,6 +55,21 @@ exports.RDSDBCluster = ({ compare }) => ({
   findName: () => get("DBClusterIdentifier"),
   findId: () => get("DBClusterIdentifier"),
   dependencies: {
+    dbClusterParameterGroup: {
+      type: "DBClusterParameterGroup",
+      group: "RDS",
+      excludeDefaultDependencies: true,
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("DBClusterParameterGroup"),
+          lives.getByName({
+            providerName: config.providerName,
+            type: "DBClusterParameterGroup",
+            group: "RDS",
+          }),
+          get("id"),
+        ]),
+    },
     dbSubnetGroup: {
       type: "DBSubnetGroup",
       group: "RDS",
@@ -250,6 +265,7 @@ exports.RDSDBCluster = ({ compare }) => ({
     properties: { Tags, ...otherProps },
     dependencies: {
       dbSubnetGroup,
+      dbClusterParameterGroup,
       globalCluster,
       kmsKey,
       securityGroups,
@@ -264,6 +280,13 @@ exports.RDSDBCluster = ({ compare }) => ({
         DBClusterIdentifier: name,
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(
+        () => dbClusterParameterGroup,
+        assign({
+          DBClusterParameterGroup: () =>
+            dbClusterParameterGroup.config.DBClusterParameterGroupName,
+        })
+      ),
       when(
         () => dbSubnetGroup,
         assign({

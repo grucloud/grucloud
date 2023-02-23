@@ -106,7 +106,7 @@ exports.EKSCluster = ({ compare }) => ({
       group: "KMS",
       list: true,
       dependencyIds: ({ lives, config }) =>
-        pipe([get("encryptionConfig"), pluck("provider.keyArn")]),
+        pipe([get("encryptionConfig"), map(get("provider.keyArn"))]),
     },
   },
   propertiesDefault: {

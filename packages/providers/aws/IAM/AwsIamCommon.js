@@ -15,6 +15,7 @@ const {
 } = require("rubico");
 const {
   isEmpty,
+  isFunction,
   isObject,
   unless,
   when,
@@ -173,8 +174,23 @@ const replaceCondition = ({ conditionCriteria, providerConfig, lives }) =>
     assign({
       [conditionCriteria]: pipe([
         get(conditionCriteria),
-        map(
+        map.entries(([key, value]) => [
+          // key
           pipe([
+            () => key,
+            replaceWithName({
+              groupType: "IAM::OpenIDConnectProvider",
+              path: "live.Url",
+              pathLive: "live.Url",
+              providerConfig,
+              lives,
+              withSuffix: true,
+            }),
+            (params) => (isFunction(params) ? params() : params),
+          ])(),
+          // value
+          pipe([
+            () => value,
             switchCase([
               Array.isArray,
               map(
@@ -188,8 +204,8 @@ const replaceCondition = ({ conditionCriteria, providerConfig, lives }) =>
                 lives,
               }),
             ]),
-          ])
-        ),
+          ])(),
+        ]),
       ]),
     })
   );
@@ -222,11 +238,27 @@ const replaceStatement = ({ providerConfig, lives }) =>
           get("Principal"),
           replacePrincipal({ providerConfig, lives, principalKind: "Service" }),
           replacePrincipal({ providerConfig, lives, principalKind: "AWS" }),
-          replacePrincipal({
-            providerConfig,
-            lives,
-            principalKind: "Federated",
-          }),
+          switchCase([
+            pipe([get("Federated"), includes("oidc-provider")]),
+            pipe([
+              assign({
+                Federated: pipe([
+                  get("Federated"),
+                  replaceWithName({
+                    groupType: "IAM::OpenIDConnectProvider",
+                    path: "id",
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+              }),
+            ]),
+            replacePrincipal({
+              providerConfig,
+              lives,
+              principalKind: "Federated",
+            }),
+          ]),
           when(
             get("AWS"),
             assign({
@@ -385,6 +417,10 @@ const sortStatement = pipe([
       ),
     ]),
   }),
+  when(
+    get("Condition"),
+    assign({ Condition: pipe([get("Condition"), map(sortObject)]) })
+  ),
 ]);
 
 const sortStatements = pipe([

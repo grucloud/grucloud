@@ -22,7 +22,7 @@ const logger = require("@grucloud/core/logger")({
 });
 
 const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
-
+const { sortStatements } = require("../IAM/AwsIamCommon");
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 
 const createTempDir = () => os.tmpdir();
@@ -55,7 +55,7 @@ const decorate = ({ endpoint }) =>
         }),
         endpoint().getLayerVersionPolicy,
         get("Policy"),
-        //TODO normalize policy
+        sortStatements,
       ]),
       throwIfNotAwsError("ResourceNotFoundException")
     ),

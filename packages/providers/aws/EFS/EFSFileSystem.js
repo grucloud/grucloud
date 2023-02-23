@@ -69,6 +69,7 @@ exports.EFSFileSystem = ({ compare }) => ({
       ),
     ]),
   getById: { method: "describeFileSystems", getField: "FileSystems", pickId },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EFS.html#describeFileSystems-property
   getList: {
     method: "describeFileSystems",
     getParam: "FileSystems",
@@ -102,7 +103,7 @@ exports.EFSFileSystem = ({ compare }) => ({
       when(
         () => kmsKey,
         defaultsDeep({
-          kmsArn: getField(kmsKey, "Arn"),
+          KmsKeyId: getField(kmsKey, "Arn"),
         })
       ),
     ])(),

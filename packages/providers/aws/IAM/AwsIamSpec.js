@@ -24,6 +24,8 @@ const {
   isEmpty,
   find,
   defaultsDeep,
+  includes,
+  unless,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
@@ -279,18 +281,19 @@ module.exports = pipe([
               get("AssumeRolePolicyDocument.Statement"),
               pluck("Principal.Federated"),
               filter(not(isEmpty)),
-              (oidps) =>
+              unless(isEmpty, (oidps) =>
                 pipe([
                   lives.getByType({
                     type: "OpenIDConnectProvider",
                     group: "IAM",
                     providerName: config.providerName,
                   }),
-                  filter((connectProvider) =>
+                  find((connectProvider) =>
                     pipe([() => oidps, includes(connectProvider.id)])()
                   ),
-                  pluck("id"),
-                ])(),
+                  get("id"),
+                ])()
+              ),
             ]),
         },
         ...findDependenciesRole(),

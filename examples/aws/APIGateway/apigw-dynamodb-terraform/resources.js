@@ -225,9 +225,6 @@ exports.createResources = () => [
       },
       GlobalSecondaryIndexes: [
         {
-          IndexArn: `arn:aws:dynamodb:${
-            config.region
-          }:${config.accountId()}:table/Pets/index/PetType-index`,
           IndexName: "PetType-index",
           KeySchema: [
             {
@@ -240,7 +237,6 @@ exports.createResources = () => [
             ProjectionType: "INCLUDE",
           },
           ProvisionedThroughput: {
-            NumberOfDecreasesToday: 0,
             ReadCapacityUnits: 5,
             WriteCapacityUnits: 5,
           },

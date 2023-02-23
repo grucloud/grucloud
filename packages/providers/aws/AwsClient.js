@@ -215,6 +215,7 @@ const AwsClient =
               }),
               async (params) => {
                 let NextToken;
+                let Marker;
                 let data = [];
                 do {
                   const results = await endpoint(
@@ -222,8 +223,10 @@ const AwsClient =
                   )[method]({
                     ...params,
                     NextToken,
+                    Marker,
                   });
                   NextToken = results.NextToken;
+                  Marker = results.Marker;
                   const newData = getParam ? get(getParam)(results) : results;
                   if (newData) {
                     if (Array.isArray(newData)) {
@@ -232,7 +235,7 @@ const AwsClient =
                       data = [...data, newData];
                     }
                   }
-                } while (NextToken);
+                } while (NextToken || Marker);
                 return data;
               },
               tap((params) => {

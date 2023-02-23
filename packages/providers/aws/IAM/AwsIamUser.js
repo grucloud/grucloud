@@ -32,6 +32,13 @@ const untagResource = untagResourceIam({
   method: "untagUser",
 });
 
+const pickId = pipe([
+  pick(["UserName"]),
+  tap(({ UserName }) => {
+    assert(UserName);
+  }),
+]);
+
 const decorate =
   ({ endpoint }) =>
   ({ UserName, Arn }) =>
@@ -40,7 +47,7 @@ const decorate =
       assign({
         Arn: () => Arn,
         AttachedPolicies: pipe([
-          pick(["UserName"]),
+          pickId,
           defaultsDeep({ MaxItems: 1e3 }),
           endpoint().listAttachedUserPolicies,
           get("AttachedPolicies"),
@@ -61,21 +68,31 @@ const decorate =
         //   ),
         // ]),
         Groups: pipe([
-          pick(["UserName"]),
+          pickId,
           endpoint().listGroupsForUser,
           get("Groups"),
           pluck("GroupName"),
         ]),
         AccessKeys: pipe([
-          pick(["UserName"]),
+          pickId,
           endpoint().listAccessKeys,
           get("AccessKeyMetadata"),
         ]),
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listSSHPublicKeys-property
+        SSHPublicKeys: pipe([
+          pickId,
+          endpoint().listSSHPublicKeys,
+          tap((params) => {
+            assert(params);
+          }),
+          get("SSHPublicKeys"),
+        ]),
         LoginProfile: fetchLoginProfile({ endpoint }),
-        Tags: pipe([pick(["UserName"]), endpoint().listUserTags, get("Tags")]),
+        Tags: pipe([pickId, endpoint().listUserTags, get("Tags")]),
       }),
       omitIfEmpty([
         //
+        "SSHPublicKeys",
         "Groups",
         "AttachedPolicies",
         "AccessKeys",
@@ -119,17 +136,6 @@ const findId = () =>
     }),
   ]);
 
-const pickId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-
-  pick(["UserName"]),
-  tap(({ UserName }) => {
-    assert(UserName);
-  }),
-]);
-
 const findName = () =>
   pipe([
     get("UserName"),
@@ -163,6 +169,7 @@ const updateAttachedPolicies = ({ endpoint, name, diff }) =>
     attachUserPolicy({ endpoint, name }),
   ]);
 
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteAccessKey-property
 const destroyAccessKey =
   ({ endpoint }) =>
   ({ UserName }) =>
@@ -178,6 +185,27 @@ const destroyAccessKey =
       }),
     ])();
 
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteSSHPublicKey-property
+const deleteSSHPublicKey =
+  ({ endpoint }) =>
+  ({ UserName, SSHPublicKeys = [] }) =>
+    pipe([
+      tap(() => {
+        assert(UserName);
+      }),
+      () => SSHPublicKeys,
+      map(({ SSHPublicKeyId }) =>
+        pipe([
+          tap(() => {
+            assert(SSHPublicKeyId);
+          }),
+          () => ({ UserName, SSHPublicKeyId }),
+          endpoint().deleteSSHPublicKey,
+        ])()
+      ),
+    ])();
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteLoginProfile-property
 const deleteLoginProfile =
   ({ endpoint }) =>
   ({ UserName }) =>
@@ -266,6 +294,7 @@ exports.IAMUser = ({}) => ({
     "Policies",
     "AccessKeys",
     "PasswordLastUsed",
+    "SSHPublicKeys",
   ],
   inferName: findName,
   findName,
@@ -350,13 +379,13 @@ exports.IAMUser = ({}) => ({
             assert(endpoint);
             assert(UserName);
           }),
-          pick(["UserName"]),
           fork({
             userFromGroup: removeUserFromGroup({ endpoint }),
             deletePolicy: pipe([
               tap(detachUserPolicy({ endpoint })),
               deleteUserPolicy({ endpoint }),
             ]),
+            sshPublicKeys: deleteSSHPublicKey({ endpoint }),
             loginProfile: deleteLoginProfile({ endpoint }),
             accessKey: destroyAccessKey({ endpoint }),
           }),

@@ -99,7 +99,7 @@ List of resources for provider aws:
 * EFS: 
 [FileSystem](./resources/EFS/FileSystem.md), [FileSystemPolicy](./resources/EFS/FileSystemPolicy.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
-[Addon](./resources/EKS/Addon.md), [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
+[Addon](./resources/EKS/Addon.md), [Cluster](./resources/EKS/Cluster.md), [FargateProfile](./resources/EKS/FargateProfile.md), [NodeGroup](./resources/EKS/NodeGroup.md)
 * ElastiCache: 
 [CacheCluster](./resources/ElastiCache/CacheCluster.md), [CacheParameterGroup](./resources/ElastiCache/CacheParameterGroup.md), [CacheSubnetGroup](./resources/ElastiCache/CacheSubnetGroup.md), [ReplicationGroup](./resources/ElastiCache/ReplicationGroup.md), [User](./resources/ElastiCache/User.md), [UserGroup](./resources/ElastiCache/UserGroup.md)
 * ElasticBeanstalk: 
@@ -224,6 +224,8 @@ List of resources for provider aws:
 [AccountAssignment](./resources/SSOAdmin/AccountAssignment.md), [Instance](./resources/SSOAdmin/Instance.md), [InstanceAccessControlAttribute](./resources/SSOAdmin/InstanceAccessControlAttribute.md), [PermissionSet](./resources/SSOAdmin/PermissionSet.md)
 * StepFunctions: 
 [StateMachine](./resources/StepFunctions/StateMachine.md)
+* StorageGateway: 
+[Gateway](./resources/StorageGateway/Gateway.md)
 * Synthetics: 
 [Canary](./resources/Synthetics/Canary.md), [Group](./resources/Synthetics/Group.md)
 * TimestreamWrite: 

@@ -60,6 +60,7 @@ const decorate =
           omitIfEmpty([
             "GlobalReplicationGroupInfo.GlobalReplicationGroupId",
             "GlobalReplicationGroupInfo.GlobalReplicationGroupMemberRole",
+            "LogDeliveryConfigurations",
           ]),
           omitIfEmpty(["GlobalReplicationGroupInfo", "NotificationTopicArn"]),
           ({ Description, ...other }) => ({

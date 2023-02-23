@@ -22,7 +22,7 @@
   "dependencies": {
     "@grucloud/core": "^11.0.1",
     "@grucloud/provider-azure": "^11.0.1",
-    "rubico": "1.8.10"
+    "rubico": "1.9.5"
   },
   "devDependencies": {
     "mocha": "^9.2.2",

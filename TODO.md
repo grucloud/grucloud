@@ -4,15 +4,14 @@
 
 ## Aws
 
+= CodeCommit
+
+- MQ user for RabbitMQ
 - API Gateway: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
 - AwsConfig
-- throwIfNotAwsError accepts an array of errors
-- EC2::ElasticIpAddressAssociation 0/1 The pending-instance-running instance to which 'eni-008dfdd692868df23' is attached is not in a valid state for this operation
 - CodeStarConnections Host
-  Lambda EventSourceMapping:
   aws_networkmanager_attachment_accepter
 - EC2 instance, sort groups
-
 - cloudwan vpc attachment
 - route to core network
 - fix gc l -t
@@ -22,14 +21,12 @@
 - Firewall deps
 - ECSTask dependency check
 - CodeDeployDeploymentGroup configDefault with other dependencies
-- WebAclDependencies dependencies refactor
 - RAMPrincipalAssociation findName
 - SNSSubscription deps sqs queue
 - PrincipalAssociation replace associatedEntity from config
 - ipamPoolIpv6
 - HostedZone name with vpc
 - omit AWSLogs S3 Objects
-- elb target group getByName
 - apprunner example npm test
 
 - RDS DBCluster AvailabilityZones
@@ -39,10 +36,6 @@
 - s3 analytics configuration
 - s3 object gencode is missing ACL:public-read
 - route to NetworkInterfaceId
-
-## Refactoring
-
-https://rushjs.io/
 
 ## Common:
 

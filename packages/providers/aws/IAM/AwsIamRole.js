@@ -210,37 +210,6 @@ const listInlinePolicies =
       ),
     ])();
 
-const openIdConnectProviderProperties = ({ openIdConnectProvider }) =>
-  pipe([
-    () => openIdConnectProvider,
-    switchCase([
-      isEmpty,
-      () => ({}),
-      pipe([
-        () => ({
-          AssumeRolePolicyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Effect: "Allow",
-                Principal: {
-                  Federated: getField(openIdConnectProvider, "Arn"),
-                },
-                Action: "sts:AssumeRoleWithWebIdentity",
-                Condition: {
-                  StringEquals: {
-                    [`${getField(openIdConnectProvider, "Url")}:aud`]:
-                      "sts.amazonaws.com",
-                  },
-                },
-              },
-            ],
-          },
-        }),
-      ]),
-    ]),
-  ])();
-
 const decorate = ({ endpoint }) =>
   pipe([
     assign({
@@ -425,7 +394,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     name,
     properties: { Tags, ...otherProps },
     namespace,
-    dependencies: { openIdConnectProvider },
+    dependencies: {},
     config,
   }) =>
     pipe([
@@ -433,10 +402,7 @@ exports.AwsIamRole = ({ spec, config }) => {
         assert(name);
       }),
       () => otherProps,
-      defaultsDeep(openIdConnectProviderProperties({ openIdConnectProvider })),
       defaultsDeep({
-        //TODO remove
-        RoleName: name,
         Tags: buildTags({
           name,
           config,

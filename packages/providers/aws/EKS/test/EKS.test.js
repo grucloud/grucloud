@@ -29,7 +29,7 @@ describe("EKS", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("FargateProfile", () =>
+  it("FargateProfile", () =>
     pipe([
       () => ({
         groupType: "EKS::FargateProfile",
