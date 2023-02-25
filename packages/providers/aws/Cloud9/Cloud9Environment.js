@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
-const { defaultsDeep, when, identity } = require("rubico/x");
+const { pipe, tap, get, pick, eq, assign, and } = require("rubico");
+const { defaultsDeep, when, identity, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -33,6 +33,26 @@ const decorate = ({ endpoint, config }) =>
     toEnvironmentId,
   ]);
 
+const findEC2Instance =
+  ({ lives }) =>
+  ({ environmentId }) =>
+    pipe([
+      tap(() => {
+        assert(environmentId);
+        assert(lives);
+      }),
+      () => lives,
+      find(
+        and([
+          eq(get("groupType"), "EC2::Instance"),
+          pipe([
+            get("live.Tags"),
+            find(eq(get("Key"), "aws:cloud9:environment")),
+            eq(get("Value"), environmentId),
+          ]),
+        ])
+      ),
+    ])();
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Cloud9.html
 exports.Cloud9Environment = () => ({
   type: "Environment",
@@ -40,6 +60,7 @@ exports.Cloud9Environment = () => ({
   client: "Cloud9",
   propertiesDefault: {},
   omitProperties: [
+    "subnetId",
     "ownerArn",
     "arn",
     "environmentId",
@@ -80,7 +101,33 @@ exports.Cloud9Environment = () => ({
           }),
         ]),
     },
+    subnet: {
+      type: "Subnet",
+      group: "EC2",
+      excludeDefaultDependencies: true,
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("subnetId"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
+    },
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      tap(({ environmentId }) => {
+        assert(lives);
+        assert(environmentId);
+      }),
+      assign({
+        instanceType: pipe([
+          findEC2Instance({ lives }),
+          get("live.InstanceType", "t2.micro"),
+        ]),
+        subnetId: pipe([findEC2Instance({ lives }), get("live.SubnetId")]),
+      }),
+    ]),
   ignoreErrorCodes: [404],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Cloud9.html#describeEnvironments-property
   getById: {

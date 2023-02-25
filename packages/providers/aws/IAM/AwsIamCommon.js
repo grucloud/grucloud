@@ -296,26 +296,16 @@ const replaceStatement = ({ providerConfig, lives }) =>
             providerConfig,
             lives,
           }),
+          replaceCondition({
+            conditionCriteria: "StringEquals",
+            providerConfig,
+            lives,
+          }),
           when(
             get("StringEquals"),
             assign({
               StringEquals: pipe([
                 get("StringEquals"),
-                map(
-                  switchCase([
-                    Array.isArray,
-                    map(
-                      replaceArnWithAccountAndRegion({
-                        providerConfig,
-                        lives,
-                      })
-                    ),
-                    replaceArnWithAccountAndRegion({
-                      providerConfig,
-                      lives,
-                    }),
-                  ])
-                ),
                 when(
                   get("elasticfilesystem:AccessPointArn"),
                   assign({
