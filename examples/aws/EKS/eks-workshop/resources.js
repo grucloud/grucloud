@@ -11,6 +11,16 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Environment",
+    group: "Cloud9",
+    properties: ({}) => ({
+      connectionType: "CONNECT_SSH",
+      description: "",
+      name: "eks-workshop",
+      instanceType: "t3.medium",
+    }),
+  },
+  {
     type: "Rule",
     group: "CloudWatchEvents",
     properties: ({}) => ({
@@ -58,44 +68,44 @@ exports.createResources = () => [
     type: "Target",
     group: "CloudWatchEvents",
     properties: ({}) => ({
-      Id: "terraform-20230223033558552400000035",
+      Id: "terraform-20230225035219204600000035",
     }),
     dependencies: ({}) => ({
       rule: "NTHInstanceStateChangeRule-eks-workshop",
-      sqsQueue: "aws_node_termination_handler2023022303353058720000002a",
+      sqsQueue: "aws_node_termination_handler2023022503515098070000002b",
     }),
   },
   {
     type: "Target",
     group: "CloudWatchEvents",
     properties: ({}) => ({
-      Id: "terraform-20230223033558446400000034",
+      Id: "terraform-20230225035218011600000032",
     }),
     dependencies: ({}) => ({
       rule: "NTHRebalanceRule-eks-workshop",
-      sqsQueue: "aws_node_termination_handler2023022303353058720000002a",
+      sqsQueue: "aws_node_termination_handler2023022503515098070000002b",
     }),
   },
   {
     type: "Target",
     group: "CloudWatchEvents",
     properties: ({}) => ({
-      Id: "terraform-20230223033557826500000033",
+      Id: "terraform-20230225035218658700000033",
     }),
     dependencies: ({}) => ({
       rule: "NTHScheduledChangeRule-eks-workshop",
-      sqsQueue: "aws_node_termination_handler2023022303353058720000002a",
+      sqsQueue: "aws_node_termination_handler2023022503515098070000002b",
     }),
   },
   {
     type: "Target",
     group: "CloudWatchEvents",
     properties: ({}) => ({
-      Id: "terraform-20230223033557594100000032",
+      Id: "terraform-20230225035218897800000034",
     }),
     dependencies: ({}) => ({
       rule: "NTHSpotTermRule-eks-workshop",
-      sqsQueue: "aws_node_termination_handler2023022303353058720000002a",
+      sqsQueue: "aws_node_termination_handler2023022503515098070000002b",
     }),
   },
   {
@@ -109,11 +119,11 @@ exports.createResources = () => [
     type: "LogGroup",
     group: "CloudWatchLogs",
     properties: ({}) => ({
-      logGroupName: "/eks-workshop/worker-fluentbit-logs-yhSG5U",
+      logGroupName: "/eks-workshop/worker-fluentbit-logs-4jWKlf",
       retentionInDays: 90,
     }),
     dependencies: ({}) => ({
-      kmsKey: "alias/eks-workshop-cw-fluent-bit",
+      kmsKey: "14587e27-94b3-454e-9a33-71c854d7a087",
     }),
   },
   {
@@ -185,7 +195,7 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `eks-workshop-${config.region}a`,
     properties: ({}) => ({
-      PrivateIpAddressIndex: 164,
+      PrivateIpAddressIndex: 192,
     }),
     dependencies: ({ config }) => ({
       subnet: `eks-workshop::eks-workshop-public-${config.region}a`,
@@ -539,11 +549,13 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
+    name: "sg::eks-workshop::aws-cloud9-eks-workshop-3366c0da99f74f078c0500a5243a5c10-InstanceSecurityGroup-1BN9AXHL4TAHH",
+    readOnly: true,
     properties: ({}) => ({
       GroupName:
-        "aws-cloud9-eks-workshop-11a71e1817ae4e708fa56cd9fc60cc92-InstanceSecurityGroup-1T8E8KYBUOKP5",
+        "aws-cloud9-eks-workshop-3366c0da99f74f078c0500a5243a5c10-InstanceSecurityGroup-1BN9AXHL4TAHH",
       Description:
-        "Security group for AWS Cloud9 environment aws-cloud9-eks-workshop-11a71e1817ae4e708fa56cd9fc60cc92",
+        "Security group for AWS Cloud9 environment aws-cloud9-eks-workshop-3366c0da99f74f078c0500a5243a5c10",
     }),
     dependencies: ({}) => ({
       vpc: "eks-workshop",
@@ -589,7 +601,7 @@ exports.createResources = () => [
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
-      GroupName: "eks-workshop-catalog-rds-20230223032251715800000003",
+      GroupName: "eks-workshop-catalog-rds-20230225033707815000000004",
       Description: "Catalog RDS security group",
     }),
     dependencies: ({}) => ({
@@ -600,7 +612,7 @@ exports.createResources = () => [
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
-      GroupName: "eks-workshop-cluster-20230223032251716200000005",
+      GroupName: "eks-workshop-cluster-20230225033707815900000006",
       Description: "EKS cluster security group",
     }),
     dependencies: ({}) => ({
@@ -622,7 +634,7 @@ exports.createResources = () => [
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
-      GroupName: "eks-workshop-node-20230223032251716200000004",
+      GroupName: "eks-workshop-node-20230225033707815800000005",
       Description: "EKS node shared security group",
       Tags: [
         {
@@ -632,56 +644,6 @@ exports.createResources = () => [
         {
           Key: "kubernetes.io/cluster/eks-workshop",
           Value: "owned",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "eks-workshop",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::eks-workshop::k8s-grafana-grafana-cedc1a2801",
-    readOnly: true,
-    properties: ({}) => ({
-      GroupName: "k8s-grafana-grafana-cedc1a2801",
-      Description: "[k8s] Managed SecurityGroup for LoadBalancer",
-      Tags: [
-        {
-          Key: "elbv2.k8s.aws/cluster",
-          Value: "eks-workshop",
-        },
-        {
-          Key: "ingress.k8s.aws/resource",
-          Value: "ManagedLBSecurityGroup",
-        },
-        {
-          Key: "ingress.k8s.aws/stack",
-          Value: "grafana/grafana",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "eks-workshop",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::eks-workshop::k8s-traffic-eksworkshop-21bcd18384",
-    readOnly: true,
-    properties: ({}) => ({
-      GroupName: "k8s-traffic-eksworkshop-21bcd18384",
-      Description: "[k8s] Shared Backend SecurityGroup for LoadBalancer",
-      Tags: [
-        {
-          Key: "elbv2.k8s.aws/cluster",
-          Value: "eks-workshop",
-        },
-        {
-          Key: "elbv2.k8s.aws/resource",
-          Value: "backend-sg",
         },
       ],
     }),
@@ -707,22 +669,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::aws-cloud9-eks-workshop-11a71e1817ae4e708fa56cd9fc60cc92-InstanceSecurityGroup-1T8E8KYBUOKP5",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 3000,
-      IpProtocol: "tcp",
-      ToPort: 3000,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::eks-workshop::eks-cluster-sg-eks-workshop-332659399",
-      securityGroupFrom: [
-        "sg::eks-workshop::k8s-traffic-eksworkshop-21bcd18384",
-      ],
+        "sg::eks-workshop::aws-cloud9-eks-workshop-3366c0da99f74f078c0500a5243a5c10-InstanceSecurityGroup-1BN9AXHL4TAHH",
     }),
   },
   {
@@ -769,7 +716,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-catalog-rds-20230223032251715800000003",
+        "sg::eks-workshop::eks-workshop-catalog-rds-20230225033707815000000004",
       securityGroupFrom: ["sg::eks-workshop::eks-workshop-catalog"],
     }),
   },
@@ -805,7 +752,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
     }),
   },
   {
@@ -818,9 +765,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       ],
     }),
   },
@@ -850,9 +797,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       ],
     }),
   },
@@ -866,9 +813,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
       ],
     }),
   },
@@ -882,9 +829,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
       ],
     }),
   },
@@ -898,9 +845,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
       ],
     }),
   },
@@ -914,9 +861,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       ],
     }),
   },
@@ -930,9 +877,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
       ],
     }),
   },
@@ -946,9 +893,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
       ],
     }),
   },
@@ -962,28 +909,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       ],
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 80,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-          Description: "",
-        },
-      ],
-      ToPort: 80,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::eks-workshop::k8s-grafana-grafana-cedc1a2801",
     }),
   },
   {
@@ -996,9 +925,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       ],
     }),
   },
@@ -1012,9 +941,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       ],
     }),
   },
@@ -1034,7 +963,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
     }),
   },
   {
@@ -1053,9 +982,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
       ],
     }),
   },
@@ -1069,9 +998,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       ],
     }),
   },
@@ -1091,7 +1020,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
     }),
   },
   {
@@ -1104,9 +1033,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       securityGroupFrom: [
-        "sg::eks-workshop::eks-workshop-node-20230223032251716200000004",
+        "sg::eks-workshop::eks-workshop-node-20230225033707815800000005",
       ],
     }),
   },
@@ -1114,245 +1043,6 @@ exports.createResources = () => [
     type: "ElasticIpAddress",
     group: "EC2",
     name: ({ config }) => `eks-workshop-${config.region}a`,
-  },
-  {
-    type: "Instance",
-    group: "EC2",
-    name: "aws-cloud9-eks-workshop-11a71e1817ae4e708fa56cd9fc60cc92",
-    properties: ({ config, getId, multiline }) => ({
-      InstanceType: "t3.medium",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::eks-workshop::aws-cloud9-eks-workshop-11a71e1817ae4e708fa56cd9fc60cc92-InstanceSecurityGroup-1T8E8KYBUOKP5",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: `eks-workshop::eks-workshop-public-${config.region}a`,
-          })}`,
-        },
-      ],
-      Image: {
-        Description: "Cloud9 Cloud9AmazonLinux2 AMI",
-      },
-      UserData: multiline(() => {
-        /*
-#!/bin/bash
-
-UNIX_USER="ec2-user"
-UNIX_USER_HOME="/home/ec2-user"
-ENVIRONMENT_PATH="/home/ec2-user/environment"
-UNIX_GROUP=$(id -g -n "$UNIX_USER")
-
-# Apply security patches
-OPERATING_SYSTEM=$(awk -F= '$1=="ID" { print $2 ;}' /etc/os-release | sed -e 's/^"//' -e 's/"$//')
-if [ "$OPERATING_SYSTEM" == "amzn" ]; then
-    yum -q -y update --security > /tmp/init-yum-update-security 2>&1 &
-elif [ "$OPERATING_SYSTEM" == "ubuntu" ]; then
-    unattended-upgrade &
-fi
-
-# add SSH key
-install -g "$UNIX_GROUP" -o "$UNIX_USER" -m 755 -d "$UNIX_USER_HOME"/.ssh
-cat <<'EOF' >> "$UNIX_USER_HOME"/.ssh/authorized_keys
-# Important
-# ---------
-# The following public key is required by Cloud9 IDE
-# Removing this key will make this EC2 instance inaccessible by the IDE
-#
-cert-authority ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDAA90xttdF927IqGm171gcGTecqkVXu7MI1I8qjOxzgIVojXhIIpjUXZ3mUzfrF1m7X1Z7pLJReDkrsqZSLuWhJnfsmfMWTolJMqSUHSuQzC4H6zC7HB5+nVxLFh26646hiayE5X2wUFZ3iTuB8vbwOuTZVe4dTCgCSvjhHdYC9gYVKO2Edf6QJCg8AZGAQ3FzOG+nYMotmkD8aR1VZuNMmHe4b8EHiQpQXYeccWqedlSIXwXR/m+H+PTk9F29bADX4w267+UtE6OZfdJ8qs5WOKNIkh3meX2JVZ5RD+b8J/7tMCJs39xkqmpG8D32VtvtMbXCURGBl8kSV1ftnl2mx2z2pimZiZVBLceU/2FzwA9F/RSaimykZfpC3jPHTybEMJwZz21uDxd9XZ+foXdLWyXPz8IEpC6RebmWsmeHyOOJLKUyXMDZ2pxect23nZRaRr9UoJP9nB20ATXQt7arjrlD7z57CWTPGHCeeUiY1jaSDzqRdj4qpafzt4CSZA95S6qONf7SY8eaBE9cN2FFpNRHlsuiK6iccTE3CjFycoUMF6hS3KjcY+YnC2YuV7SREyhPLNwBnWgylpUOTWHnmXvIUxJ2038h3w7pxEng5EKHnHSyjdWPo28bEzrtqq7aVKQMH54k07q7qi8JV27/aUih/CG/EtFkgJP3SG05rw== 11a71e1817ae4e708fa56cd9fc60cc92@cloud9.amazon.com
-
-
-#
-# Add any additional keys below this line
-#
-
-EOF
-
-# allow automatic shutdown
-echo "$UNIX_USER    ALL=(ALL) NOPASSWD: /sbin/poweroff, /sbin/reboot, /sbin/shutdown" >> /etc/sudoers
-
-ln -s /opt/c9 "$UNIX_USER_HOME"/.c9
-chown -R "$UNIX_USER":"$UNIX_GROUP" "$UNIX_USER_HOME"/.c9 /opt/c9
-install -g "$UNIX_GROUP" -o "$UNIX_USER" -m 755 -d "$ENVIRONMENT_PATH"
-
-if [ "$ENVIRONMENT_PATH" == "/home/ec2-user/environment" ] && grep "alias python=python27" "$UNIX_USER_HOME"/.bashrc; then
-
-    cat <<'EOF' > "$UNIX_USER_HOME"/.bashrc
-# .bashrc
-
-export PATH=$PATH:$HOME/.local/bin:$HOME/bin
-
-# load nvm
-export NVM_DIR="$HOME/.nvm"
-[ "$BASH_VERSION" ] && npm() {
-    # hack: avoid slow npm sanity check in nvm
-    if [ "$*" == "config get prefix" ]; then which node | sed "s/bin\/node//";
-    else $(which npm) "$@"; fi
-}
-# [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-rvm_silence_path_mismatch_check_flag=1 # prevent rvm complaints that nvm is first in PATH
-unset npm # end hack
-
-
-# User specific aliases and functions
-alias python=python27
-
-# modifications needed only in interactive mode
-if [ "$PS1" != "" ]; then
-    # Set default editor for git
-    git config --global core.editor nano
-
-    # Turn on checkwinsize
-    shopt -s checkwinsize
-
-    # keep more history
-    shopt -s histappend
-    export HISTSIZE=100000
-    export HISTFILESIZE=100000
-    export PROMPT_COMMAND="history -a;"
-
-    # Source for Git PS1 function
-    if ! type -t __git_ps1 && [ -e "/usr/share/git-core/contrib/completion/git-prompt.sh" ]; then
-        . /usr/share/git-core/contrib/completion/git-prompt.sh
-    fi
-
-    # Cloud9 default prompt
-    _cloud9_prompt_user() {
-        if [ "$C9_USER" = root ]; then
-            echo "$USER"
-        else
-            echo "$C9_USER"
-        fi
-    }
-
-    PS1='\[\033[01;32m\]$(_cloud9_prompt_user)\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 " (%s)" 2>/dev/null) $ '
-fi
-
-EOF
-
-    chown "$UNIX_USER":"$UNIX_GROUP" "$UNIX_USER_HOME"/.bashrc
-fi
-
-if [ "$ENVIRONMENT_PATH" == "/home/ec2-user/environment" ] && [ ! -f "$ENVIRONMENT_PATH"/README.md ]; then
-    cat <<'EOF' >> "$ENVIRONMENT_PATH"/README.md
-         ___        ______     ____ _                 _  ___
-        / \ \      / / ___|   / ___| | ___  _   _  __| |/ _ \
-       / _ \ \ /\ / /\___ \  | |   | |/ _ \| | | |/ _` | (_) |
-      / ___ \ V  V /  ___) | | |___| | (_) | |_| | (_| |\__, |
-     /_/   \_\_/\_/  |____/   \____|_|\___/ \__,_|\__,_|  /_/
- -----------------------------------------------------------------
-
-
-Hi there! Welcome to AWS Cloud9!
-
-To get started, create some files, play with the terminal,
-or visit https://docs.aws.amazon.com/console/cloud9/ for our documentation.
-
-Happy coding!
-
-EOF
-
-    chown "$UNIX_USER":"$UNIX_GROUP" "$UNIX_USER_HOME"/environment/README.md
-fi
-
-# Fix for permission error when trying to call `gem install`
-chown "$UNIX_USER" -R /usr/local/rvm/gems
-
-#This script is appended to another bash script, so it does not need a bash script file header.
-
-UNIX_USER_HOME="/home/ec2-user"
-
-C9_DIR=$UNIX_USER_HOME/.c9
-CONFIG_FILE_PATH="$C9_DIR"/autoshutdown-configuration
-VFS_CHECK_FILE_PATH="$C9_DIR"/stop-if-inactive.sh
-CONFIG_METRIC_FILE_PATH="$C9_DIR"/autoshutdown-timestamp
-
-echo "SHUTDOWN_TIMEOUT=90" > "$CONFIG_FILE_PATH"
-chmod a+w "$CONFIG_FILE_PATH"
-
-touch "$CONFIG_METRIC_FILE_PATH"
-chmod a+wr "$CONFIG_METRIC_FILE_PATH"
-
-echo -e '#!/bin/bash
-set -euo pipefail
-CONFIG=$(cat '$CONFIG_FILE_PATH')
-SHUTDOWN_TIMEOUT=${CONFIG#*=}
-if ! [[ $SHUTDOWN_TIMEOUT =~ ^[0-9]*$ ]]; then
-    echo "shutdown timeout is invalid"
-    exit 1
-fi
-is_shutting_down() {
-    is_shutting_down_ubuntu &> /dev/null || is_shutting_down_al1 &> /dev/null || is_shutting_down_al2 &> /dev/null
-}
-is_shutting_down_ubuntu() {
-    local TIMEOUT
-    TIMEOUT=$(busctl get-property org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager ScheduledShutdown)
-    if [ "$?" -ne "0" ]; then
-        return 1
-    fi
-    if [ "$(echo $TIMEOUT | awk "{print \$3}")" == "0" ]; then
-        return 1
-    else
-        return 0
-    fi
-}
-is_shutting_down_al1() {
-    pgrep shutdown
-}
-is_shutting_down_al2() {
-    local FILE
-    FILE=/run/systemd/shutdown/scheduled
-    if [[ -f "$FILE" ]]; then
-        return 0
-    else
-        return 1
-    fi
-}
-is_vfs_connected() {
-    pgrep -f vfs-worker >/dev/null
-}
-
-if is_shutting_down; then
-    if [[ ! $SHUTDOWN_TIMEOUT =~ ^[0-9]+$ ]] || is_vfs_connected; then
-        sudo shutdown -c
-        echo > "'$CONFIG_METRIC_FILE_PATH'"
-    else
-        TIMESTAMP=$(date +%s)
-        echo "$TIMESTAMP" > "'$CONFIG_METRIC_FILE_PATH'"
-    fi
-else
-    if [[ $SHUTDOWN_TIMEOUT =~ ^[0-9]+$ ]] && ! is_vfs_connected; then
-        sudo shutdown -h $SHUTDOWN_TIMEOUT
-    fi
-fi' > "$VFS_CHECK_FILE_PATH"
-
-chmod +x "$VFS_CHECK_FILE_PATH"
-
-echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
-
-*/
-      }),
-      CreditSpecification: {
-        CpuCredits: "unlimited",
-      },
-    }),
-    dependencies: ({ config }) => ({
-      subnets: [`eks-workshop::eks-workshop-public-${config.region}a`],
-      iamInstanceProfile: "eks-workshop-cloud9",
-      securityGroups: [
-        "sg::eks-workshop::aws-cloud9-eks-workshop-11a71e1817ae4e708fa56cd9fc60cc92-InstanceSecurityGroup-1T8E8KYBUOKP5",
-      ],
-    }),
   },
   {
     type: "VpcIpv4CidrBlockAssociation",
@@ -1369,7 +1059,7 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
     group: "EFS",
     name: "eks-workshop-efs-assets",
     dependencies: ({}) => ({
-      kmsKey: "alias/eks-workshop-cmk",
+      kmsKey: "57c22e89-0d6f-452e-9cdf-385c11ae6872",
     }),
   },
   {
@@ -1415,8 +1105,8 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
       addonName: "adot",
       addonVersion: "v0.66.0-eksbuild.1",
       tags: {
-        ClusterRoleVersion: "1231",
-        RoleVersion: "1230",
+        ClusterRoleVersion: "1397",
+        RoleVersion: "1396",
       },
     }),
     dependencies: ({}) => ({
@@ -1428,7 +1118,7 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
     group: "EKS",
     properties: ({}) => ({
       addonName: "vpc-cni",
-      addonVersion: "v1.12.2-eksbuild.1",
+      addonVersion: "v1.12.5-eksbuild.1",
       configurationValues:
         '{"env":{"ENABLE_PREFIX_DELEGATION":"true", "ENABLE_POD_ENI":"true"}}',
     }),
@@ -1447,7 +1137,7 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
             keyArn: `${getId({
               type: "Key",
               group: "KMS",
-              name: "alias/eks-workshop",
+              name: "2d94f1a9-f8bb-4a3e-92a6-11f5a4a1f18a",
             })}`,
           },
           resources: ["secrets"],
@@ -1461,10 +1151,10 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
         `eks-workshop::eks-workshop-private-${config.region}c`,
       ],
       securityGroups: [
-        "sg::eks-workshop::eks-workshop-cluster-20230223032251716200000005",
+        "sg::eks-workshop::eks-workshop-cluster-20230225033707815900000006",
       ],
       role: "eks-workshop-cluster-role",
-      kmsKeys: ["alias/eks-workshop"],
+      kmsKeys: ["2d94f1a9-f8bb-4a3e-92a6-11f5a4a1f18a"],
     }),
   },
   {
@@ -1499,7 +1189,7 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
     type: "NodeGroup",
     group: "EKS",
     properties: ({}) => ({
-      nodegroupName: "managed-ondemand-20230223033522457200000020",
+      nodegroupName: "managed-ondemand-20230225035143174400000024",
       capacityType: "ON_DEMAND",
       scalingConfig: {
         desiredSize: 2,
@@ -1534,7 +1224,7 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
     type: "NodeGroup",
     group: "EKS",
     properties: ({}) => ({
-      nodegroupName: "managed-ondemand-tainted-20230223033522537800000024",
+      nodegroupName: "managed-ondemand-tainted-20230225035143458100000028",
       capacityType: "ON_DEMAND",
       scalingConfig: {
         desiredSize: 0,
@@ -1570,7 +1260,7 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
     type: "NodeGroup",
     group: "EKS",
     properties: ({}) => ({
-      nodegroupName: "managed-system-20230223033522457400000022",
+      nodegroupName: "managed-system-20230225035143111900000022",
       capacityType: "ON_DEMAND",
       scalingConfig: {
         desiredSize: 1,
@@ -1723,8 +1413,12 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
             Action: "sts:AssumeRoleWithWebIdentity",
             Condition: {
               StringEquals: {
-                "oidc.eks.us-east-1.amazonaws.com/id/18135A8B1B664F6AD45C01EC4189619B:sub":
-                  "system:serviceaccount:other:adot-collector",
+                [`${getId({
+                  type: "OpenIDConnectProvider",
+                  group: "IAM",
+                  name: "oidp::eks-cluster::eks-workshop",
+                  path: "live.Url",
+                })}:sub`]: "system:serviceaccount:other:adot-collector",
               },
             },
           },
@@ -1763,8 +1457,12 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
             Action: "sts:AssumeRoleWithWebIdentity",
             Condition: {
               StringEquals: {
-                "oidc.eks.us-east-1.amazonaws.com/id/18135A8B1B664F6AD45C01EC4189619B:sub":
-                  "system:serviceaccount:other:adot-collector-ci",
+                [`${getId({
+                  type: "OpenIDConnectProvider",
+                  group: "IAM",
+                  name: "oidp::eks-cluster::eks-workshop",
+                  path: "live.Url",
+                })}:sub`]: "system:serviceaccount:other:adot-collector-ci",
               },
             },
           },
@@ -1992,8 +1690,12 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
             Action: "sts:AssumeRoleWithWebIdentity",
             Condition: {
               StringEquals: {
-                "oidc.eks.us-east-1.amazonaws.com/id/18135A8B1B664F6AD45C01EC4189619B:sub":
-                  "system:serviceaccount:carts:carts",
+                [`${getId({
+                  type: "OpenIDConnectProvider",
+                  group: "IAM",
+                  name: "oidp::eks-cluster::eks-workshop",
+                  path: "live.Url",
+                })}:sub`]: "system:serviceaccount:carts:carts",
               },
             },
           },
@@ -2304,50 +2006,6 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
     }),
     dependencies: ({}) => ({
       policies: ["eks-workshop-efs-csi-policy"],
-      openIdConnectProvider: "oidp::eks-cluster::eks-workshop",
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({ getId }) => ({
-      RoleName: "eks-workshop-grafana-irsa",
-      Description: "AWS IAM Role for the Kubernetes service account grafana.",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Federated: `${getId({
-                type: "OpenIDConnectProvider",
-                group: "IAM",
-                name: "oidp::eks-cluster::eks-workshop",
-              })}`,
-            },
-            Action: "sts:AssumeRoleWithWebIdentity",
-            Condition: {
-              StringLike: {
-                [`${getId({
-                  type: "OpenIDConnectProvider",
-                  group: "IAM",
-                  name: "oidp::eks-cluster::eks-workshop",
-                  path: "live.Url",
-                })}:aud`]: "sts.amazonaws.com",
-                [`${getId({
-                  type: "OpenIDConnectProvider",
-                  group: "IAM",
-                  name: "oidp::eks-cluster::eks-workshop",
-                  path: "live.Url",
-                })}:sub`]: "system:serviceaccount:grafana:grafana",
-              },
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["eks-workshop-grafana", "eks-workshop-grafana-other"],
       openIdConnectProvider: "oidp::eks-cluster::eks-workshop",
     }),
   },
@@ -3029,64 +2687,6 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
   {
     type: "Policy",
     group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "eks-workshop-grafana",
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              "cloudwatch:ListMetrics",
-              "cloudwatch:GetMetricData",
-              "cloudwatch:GetInsightRuleReport",
-              "cloudwatch:DescribeAlarmsForMetric",
-              "cloudwatch:DescribeAlarms",
-              "cloudwatch:DescribeAlarmHistory",
-            ],
-            Effect: "Allow",
-            Resource: "*",
-            Sid: "AllowReadingMetricsFromCloudWatch",
-          },
-          {
-            Action: [
-              "logs:StopQuery",
-              "logs:StartQuery",
-              "logs:GetQueryResults",
-              "logs:GetLogGroupFields",
-              "logs:GetLogEvents",
-              "logs:DescribeLogGroups",
-            ],
-            Effect: "Allow",
-            Resource: `arn:aws:logs:${
-              config.region
-            }:${config.accountId()}:log-group:*:log-stream:*`,
-            Sid: "AllowReadingLogsFromCloudWatch",
-          },
-          {
-            Action: [
-              "ec2:DescribeTags",
-              "ec2:DescribeRegions",
-              "ec2:DescribeInstances",
-            ],
-            Effect: "Allow",
-            Resource: "*",
-            Sid: "AllowReadingTagsInstancesRegionsFromEC2",
-          },
-          {
-            Action: "tag:GetResources",
-            Effect: "Allow",
-            Resource: "*",
-            Sid: "AllowReadingResourcesForTags",
-          },
-        ],
-        Version: "2012-10-17",
-      },
-      Path: "/",
-      Description: "IAM policy for Grafana Pod",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
     properties: ({}) => ({
       PolicyName: "eks-workshop-grafana-other",
       PolicyDocument: {
@@ -3742,15 +3342,6 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
     }),
   },
   {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "eks-workshop-cloud9",
-    readOnly: true,
-    dependencies: ({}) => ({
-      roles: ["eks-workshop-cloud9"],
-    }),
-  },
-  {
     type: "User",
     group: "IAM",
     properties: ({}) => ({
@@ -3763,7 +3354,50 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
   {
     type: "Key",
     group: "KMS",
-    name: "alias/eks-workshop",
+    name: "14587e27-94b3-454e-9a33-71c854d7a087",
+    properties: ({ config }) => ({
+      Description: "EKS Workers FluentBit CloudWatch Log group KMS Key",
+      Policy: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "Enable IAM User Permissions",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:root`,
+            },
+            Action: "kms:*",
+            Resource: "*",
+          },
+          {
+            Sid: "Enable Encryption for LogGroup",
+            Effect: "Allow",
+            Principal: {
+              Service: `logs.${config.region}.amazonaws.com`,
+            },
+            Action: [
+              "kms:ReEncrypt*",
+              "kms:GenerateDataKey*",
+              "kms:Encrypt*",
+              "kms:Describe*",
+              "kms:Decrypt*",
+            ],
+            Resource: "*",
+            Condition: {
+              ArnEquals: {
+                "kms:EncryptionContext:aws:logs:arn":
+                  "arn:aws:logs:us-east-1:840541460064:log-group:/eks-workshop/worker-fluentbit-logs-4jWKlf",
+              },
+            },
+          },
+        ],
+      },
+    }),
+  },
+  {
+    type: "Key",
+    group: "KMS",
+    name: "2d94f1a9-f8bb-4a3e-92a6-11f5a4a1f18a",
     properties: ({ config }) => ({
       Description: "eks-workshop EKS cluster secret encryption key",
       Policy: {
@@ -3850,7 +3484,7 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
   {
     type: "Key",
     group: "KMS",
-    name: "alias/eks-workshop-cmk",
+    name: "57c22e89-0d6f-452e-9cdf-385c11ae6872",
     properties: ({ config }) => ({
       Description: "KMS CMK for various resources like EFS, DynamoDB",
       Policy: {
@@ -3921,49 +3555,6 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
     }),
   },
   {
-    type: "Key",
-    group: "KMS",
-    name: "alias/eks-workshop-cw-fluent-bit",
-    properties: ({ config }) => ({
-      Description: "EKS Workers FluentBit CloudWatch Log group KMS Key",
-      Policy: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "Enable IAM User Permissions",
-            Effect: "Allow",
-            Principal: {
-              AWS: `arn:aws:iam::${config.accountId()}:root`,
-            },
-            Action: "kms:*",
-            Resource: "*",
-          },
-          {
-            Sid: "Enable Encryption for LogGroup",
-            Effect: "Allow",
-            Principal: {
-              Service: `logs.${config.region}.amazonaws.com`,
-            },
-            Action: [
-              "kms:ReEncrypt*",
-              "kms:GenerateDataKey*",
-              "kms:Encrypt*",
-              "kms:Describe*",
-              "kms:Decrypt*",
-            ],
-            Resource: "*",
-            Condition: {
-              ArnEquals: {
-                "kms:EncryptionContext:aws:logs:arn":
-                  "arn:aws:logs:us-east-1:840541460064:log-group:/eks-workshop/worker-fluentbit-logs-yhSG5U",
-              },
-            },
-          },
-        ],
-      },
-    }),
-  },
-  {
     type: "Function",
     group: "Lambda",
     properties: ({}) => ({
@@ -3999,9 +3590,9 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
       MasterUserPassword: process.env.EKS_WORKSHOP_CATALOG_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
-      dbSubnetGroup: "eks-workshop-catalog-20230223032306486300000006",
+      dbSubnetGroup: "eks-workshop-catalog-20230225033722157900000007",
       securityGroups: [
-        "sg::eks-workshop::eks-workshop-catalog-rds-20230223032251715800000003",
+        "sg::eks-workshop::eks-workshop-catalog-rds-20230225033707815000000004",
       ],
     }),
   },
@@ -4009,7 +3600,7 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
     type: "DBSubnetGroup",
     group: "RDS",
     properties: ({}) => ({
-      DBSubnetGroupName: "eks-workshop-catalog-20230223032306486300000006",
+      DBSubnetGroupName: "eks-workshop-catalog-20230225033722157900000007",
       DBSubnetGroupDescription: "eks-workshop-catalog subnet group",
     }),
     dependencies: ({ config }) => ({
@@ -4038,12 +3629,12 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
               Action: "sqs:SendMessage",
               Resource: `arn:aws:sqs:${
                 config.region
-              }:${config.accountId()}:aws_node_termination_handler2023022303353058720000002a`,
+              }:${config.accountId()}:aws_node_termination_handler2023022503515098070000002b`,
             },
           ],
         },
       },
-      QueueName: "aws_node_termination_handler2023022303353058720000002a",
+      QueueName: "aws_node_termination_handler2023022503515098070000002b",
     }),
   },
   {
@@ -4061,13 +3652,13 @@ echo "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown
               runCommand: [
                 `set -e
 
-export CLOUD9_ENVIRONMENT_ID="11a71e1817ae4e708fa56cd9fc60cc92"
+export CLOUD9_ENVIRONMENT_ID="3366c0da99f74f078c0500a5243a5c10"
 
 echo "Running base bootstrap..."
 echo "IyEvYmluL2Jhc2gKCnNldCAtZQoKU1RSPSQoY2F0IC9ldGMvb3MtcmVsZWFzZSkKU1VCPSJWRVJTSU9OX0lEPVwiMlwiIgoKbWFya2VyX2ZpbGU9Ii9yb290L3Jlc2l6ZWQubWFyayIKCmlmIFtbICEgLWYgIiRtYXJrZXJfZmlsZSIgXV07IHRoZW4KICBpZiBbICQocmVhZGxpbmsgLWYgL2Rldi94dmRhKSA9ICIvZGV2L3h2ZGEiIF0KICB0aGVuCiAgICBzdWRvIGdyb3dwYXJ0IC9kZXYveHZkYSAxCiAgICBpZiBbWyAiJFNUUiIgPT0gKiIkU1VCIiogXV0KICAgIHRoZW4KICAgICAgc3VkbyB4ZnNfZ3Jvd2ZzIC1kIC8KICAgIGVsc2UKICAgICAgc3VkbyByZXNpemUyZnMgL2Rldi94dmRhMQogICAgZmkKICBlbHNlCiAgICBzdWRvIGdyb3dwYXJ0IC9kZXYvbnZtZTBuMSAxCiAgICBpZiBbWyAiJFNUUiIgPT0gKiIkU1VCIiogXV0KICAgIHRoZW4KICAgICAgc3VkbyB4ZnNfZ3Jvd2ZzIC1kIC8KICAgIGVsc2UKICAgICAgc3VkbyByZXNpemUyZnMgL2Rldi9udm1lMG4xcDEKICAgIGZpCiAgZmkKZmkKCnRvdWNoICRtYXJrZXJfZmlsZQoKc3VkbyB5dW0gaW5zdGFsbCAteSBnaXQK" | base64 -d | bash
 
 echo "Running extension bootstrap..."
-echo "c2V0IC1lCgpybSAtcmYgL3RtcC93b3Jrc2hvcC1yZXBvc2l0b3J5CmdpdCBjbG9uZSBodHRwczovL2dpdGh1Yi5jb20vYXdzLXNhbXBsZXMvZWtzLXdvcmtzaG9wLXYyIC90bXAvd29ya3Nob3AtcmVwb3NpdG9yeQooY2QgL3RtcC93b3Jrc2hvcC1yZXBvc2l0b3J5ICYmIGdpdCBjaGVja291dCBtYWluKQoKKGNkIC90bXAvd29ya3Nob3AtcmVwb3NpdG9yeS9lbnZpcm9ubWVudCAmJiBiYXNoIC4vaW5zdGFsbGVyLnNoKQoKYmFzaCAtYyAiYXdzIGNsb3VkOSB1cGRhdGUtZW52aXJvbm1lbnQgLS1lbnZpcm9ubWVudC1pZCAkQ0xPVUQ5X0VOVklST05NRU5UX0lEIC0tbWFuYWdlZC1jcmVkZW50aWFscy1hY3Rpb24gRElTQUJMRSB8fCB0cnVlIgoKbWtkaXIgLXAgL3dvcmtzcGFjZQpjcCAtUiAvdG1wL3dvcmtzaG9wLXJlcG9zaXRvcnkvZW52aXJvbm1lbnQvd29ya3NwYWNlLyogL3dvcmtzcGFjZQpjcCAtUiAvd29ya3NwYWNlIC93b3Jrc3BhY2UtYmFja3VwCmNob3duIGVjMi11c2VyIC1SIC93b3Jrc3BhY2UKY2htb2QgK3ggL3RtcC93b3Jrc2hvcC1yZXBvc2l0b3J5L2Vudmlyb25tZW50L2Jpbi8qCmNwIC90bXAvd29ya3Nob3AtcmVwb3NpdG9yeS9lbnZpcm9ubWVudC9iaW4vKiAvdXNyL2xvY2FsL2JpbgoKcm0gLXJmIC90bXAvd29ya3Nob3AtcmVwb3NpdG9yeQoKc3VkbyAtSCAtdSBlYzItdXNlciBiYXNoIC1jICJsbiAtc2YgL3dvcmtzcGFjZSB+L2Vudmlyb25tZW50L3dvcmtzcGFjZSIKCmlmIFtbICEgLWQgIi9ob21lL2VjMi11c2VyLy5iYXNocmMuZCIgXV07IHRoZW4KICBzdWRvIC1IIC11IGVjMi11c2VyIGJhc2ggLWMgIm1rZGlyIC1wIH4vLmJhc2hyYy5kIgogIHN1ZG8gLUggLXUgZWMyLXVzZXIgYmFzaCAtYyAidG91Y2ggfi8uYmFzaHJjLmQvZHVtbXkuYmFzaCIKCiAgc3VkbyAtSCAtdSBlYzItdXNlciBiYXNoIC1jICJlY2hvICdmb3IgZmlsZSBpbiB+Ly5iYXNocmMuZC8qLmJhc2g7IGRvIHNvdXJjZSBcIlwkZmlsZVwiOyBkb25lJyA+PiB+Ly5iYXNocmMiCmZpCgpzdWRvIC1IIC11IGVjMi11c2VyIGJhc2ggLWMgImVjaG8gJ2F3cyBjbG91ZDkgdXBkYXRlLWVudmlyb25tZW50IC0tZW52aXJvbm1lbnQtaWQgJENMT1VEOV9FTlZJUk9OTUVOVF9JRCAtLW1hbmFnZWQtY3JlZGVudGlhbHMtYWN0aW9uIERJU0FCTEUgJj4gL2Rldi9udWxsIHx8IHRydWUnID4gfi8uYmFzaHJjLmQvYzkuYmFzaCIKCnN1ZG8gLUggLXUgZWMyLXVzZXIgYmFzaCAtYyAiZWNobyAnZXhwb3J0IEFXU19QQUdFUj1cIlwiJyA+IH4vLmJhc2hyYy5kL2F3cy5iYXNoIgoKc3VkbyAtSCAtdSBlYzItdXNlciBiYXNoIC1jICJlY2hvICdhd3MgZWtzIHVwZGF0ZS1rdWJlY29uZmlnIC0tbmFtZSBla3Mtd29ya3Nob3AgPiAvZGV2L251bGwnID4gfi8uYmFzaHJjLmQva3ViZWNvbmZpZy5iYXNoIgoKY2F0IDw8IEVPVCA+IC9ob21lL2VjMi11c2VyLy5iYXNocmMuZC9lbnYuYmFzaApzZXQgLWEKQVdTX0FDQ09VTlRfSUQ9ODQwNTQxNDYwMDY0CkFXU19ERUZBVUxUX1JFR0lPTj11cy1lYXN0LTEKRUtTX0NMVVNURVJfTkFNRT1la3Mtd29ya3Nob3AKRUtTX0RFRkFVTFRfTU5HX05BTUU9bWFuYWdlZC1vbmRlbWFuZC0yMDIzMDIyMzAzMzUyMjQ1NzIwMDAwMDAyMApFS1NfREVGQVVMVF9NTkdfTUlOPTIKRUtTX0RFRkFVTFRfTU5HX01BWD02CkVLU19ERUZBVUxUX01OR19ERVNJUkVEPTIKQ0FSVFNfRFlOQU1PREJfVEFCTEVOQU1FPWVrcy13b3Jrc2hvcC1jYXJ0cwpDQVJUU19JQU1fUk9MRT1hcm46YXdzOmlhbTo6ODQwNTQxNDYwMDY0OnJvbGUvZWtzLXdvcmtzaG9wLWNhcnRzLWR5bmFtbwpDQVRBTE9HX1JEU19FTkRQT0lOVD1la3Mtd29ya3Nob3AtY2F0YWxvZy5jOG10eGF1eTVuZ3AudXMtZWFzdC0xLnJkcy5hbWF6b25hd3MuY29tOjMzMDYKQ0FUQUxPR19SRFNfVVNFUk5BTUU9Y2F0YWxvZ191c2VyCkNBVEFMT0dfUkRTX1BBU1NXT1JEPWVIQjVTMlpRT1cxSGFBPT0KQ0FUQUxPR19SRFNfREFUQUJBU0VfTkFNRT1jYXRhbG9nCkNBVEFMT0dfUkRTX1NHX0lEPXNnLTAyOTE0MzI2MzIxMjg1ZDU0CkNBVEFMT0dfU0dfSUQ9c2ctMGUwNDY5YjkwOWQxMzVlYTYKRUZTX0lEPWZzLTBmYmRmODBmNWI1OGVjM2UwCkVLU19UQUlOVEVEX01OR19OQU1FPW1hbmFnZWQtb25kZW1hbmQtdGFpbnRlZC0yMDIzMDIyMzAzMzUyMjUzNzgwMDAwMDAyNApBTVBfRU5EUE9JTlQ9aHR0cHM6Ly9hcHMtd29ya3NwYWNlcy51cy1lYXN0LTEuYW1hem9uYXdzLmNvbS93b3Jrc3BhY2VzL3dzLWVkNDYwZDFjLTJlODktNGZmMC1hODhiLTQ4NWNjZTMyYTY3ZS8KQURPVF9JQU1fUk9MRT1hcm46YXdzOmlhbTo6ODQwNTQxNDYwMDY0OnJvbGUvZWtzLXdvcmtzaG9wLWFkb3QtY29sbGVjdG9yClZQQ19JRD12cGMtMDhiOWNjZTI3N2I0MjQxYzUKRUtTX0NMVVNURVJfU0VDVVJJVFlfR1JPVVBfSUQ9c2ctMGIwNjk3Y2Y0YjNjNDNkMDMKUFJJTUFSWV9TVUJORVRfMT1zdWJuZXQtMGNiYmIwN2VlYzYyN2JhMGIKUFJJTUFSWV9TVUJORVRfMj1zdWJuZXQtMDczNjg1MGUwMTFkMGI3MjEKUFJJTUFSWV9TVUJORVRfMz1zdWJuZXQtMDNiZWE5YTUwOWMxNTI4ZTAKU0VDT05EQVJZX1NVQk5FVF8xPXN1Ym5ldC0wNzMzYzYxMTc1YTQyMjNiYgpTRUNPTkRBUllfU1VCTkVUXzI9c3VibmV0LTA0ZDg3MGZkNzlmMTEwOTUzClNFQ09OREFSWV9TVUJORVRfMz1zdWJuZXQtMDM5MzhhNzU0MDE2YTk3NDEKTUFOQUdFRF9OT0RFX0dST1VQX0lBTV9ST0xFX0FSTj1hcm46YXdzOmlhbTo6ODQwNTQxNDYwMDY0OnJvbGUvZWtzLXdvcmtzaG9wLW1hbmFnZWQtb25kZW1hbmQKQVoxPXVzLWVhc3QtMWEKQVoyPXVzLWVhc3QtMWIKQVozPXVzLWVhc3QtMWMKQURPVF9JQU1fUk9MRV9DST1hcm46YXdzOmlhbTo6ODQwNTQxNDYwMDY0OnJvbGUvZWtzLXdvcmtzaG9wLWFkb3QtY29sbGVjdG9yLWNpCk9JRENfUFJPVklERVI9b2lkYy5la3MudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vaWQvMTgxMzVBOEIxQjY2NEY2QUQ0NUMwMUVDNDE4OTYxOUIKVlBDX0lEPXZwYy0wOGI5Y2NlMjc3YjQyNDFjNQpWUENfQ0lEUj0xMC40Mi4wLjAvMTYKVlBDX1BSSVZBVEVfU1VCTkVUX0lEXzA9c3VibmV0LTBjYmJiMDdlZWM2MjdiYTBiClZQQ19QUklWQVRFX1NVQk5FVF9JRF8xPXN1Ym5ldC0wNzM2ODUwZTAxMWQwYjcyMQpWUENfUFJJVkFURV9TVUJORVRfSURfMj1zdWJuZXQtMDNiZWE5YTUwOWMxNTI4ZTAKR0lUT1BTX0lBTV9TU0hfS0VZX0lEPUFQS0E0SE5CTTJaUUtXT1EzN1UzCkdJVE9QU19JQU1fU1NIX1VTRVI9QUlEQTRITkJNMlpRTFJNRVc3TDNKCkdJVE9QU19TU0hfU1NNX05BTUU9ZWtzLXdvcmtzaG9wLWdpdG9wcy1zc2gKCnNldCArYQpFT1QKCmNob3duIGVjMi11c2VyIC9ob21lL2VjMi11c2VyLy5iYXNocmMuZC9lbnYuYmFzaAoKc3VkbyBybSAtZiAvaG9tZS9lYzItdXNlci8uc3NoL2dpdG9wc19zc2gucGVtCgpzdWRvIC1IIC11IGVjMi11c2VyIGJhc2ggLWMgImF3cyBzc20gZ2V0LXBhcmFtZXRlciAtLW5hbWUgZWtzLXdvcmtzaG9wLWdpdG9wcy1zc2ggLS13aXRoLWRlY3J5cHRpb24gLS1xdWVyeSAnUGFyYW1ldGVyLlZhbHVlJyAtLXJlZ2lvbiB1cy1lYXN0LTEgLS1vdXRwdXQgdGV4dCA+IH4vLnNzaC9naXRvcHNfc3NoLnBlbSIKY2htb2QgNDAwIC9ob21lL2VjMi11c2VyLy5zc2gvZ2l0b3BzX3NzaC5wZW0KCmNhdCA8PCBFT1QgPiAvaG9tZS9lYzItdXNlci8uc3NoL2NvbmZpZwpIb3N0IGdpdC1jb2RlY29tbWl0LiouYW1hem9uYXdzLmNvbQogIFVzZXIgQUlEQTRITkJNMlpRTFJNRVc3TDNKCiAgSWRlbnRpdHlGaWxlIH4vLnNzaC9naXRvcHNfc3NoLnBlbQpFT1QKY2hvd24gZWMyLXVzZXIgL2hvbWUvZWMyLXVzZXIvLnNzaC9jb25maWcKY2htb2QgNjAwIC9ob21lL2VjMi11c2VyLy5zc2gvY29uZmlnCgpzdWRvIC1IIC11IGVjMi11c2VyIGJhc2ggLWMgInNzaC1rZXlzY2FuIC1IIGdpdC1jb2RlY29tbWl0LnVzLWVhc3QtMS5hbWF6b25hd3MuY29tID4+IH4vLnNzaC9rbm93bl9ob3N0cyIKCnN1ZG8gLUggLXUgZWMyLXVzZXIgYmFzaCAtYyAnZ2l0IGNvbmZpZyAtLWdsb2JhbCB1c2VyLmVtYWlsICJ5b3VAZWtzd29ya3Nob3AuY29tIicKc3VkbyAtSCAtdSBlYzItdXNlciBiYXNoIC1jICdnaXQgY29uZmlnIC0tZ2xvYmFsIHVzZXIubmFtZSAiRUtTIFdvcmtzaG9wIExlYXJuZXIiJwo=" | base64 -d | bash
+echo "c2V0IC1lCgpybSAtcmYgL3RtcC93b3Jrc2hvcC1yZXBvc2l0b3J5CmdpdCBjbG9uZSBodHRwczovL2dpdGh1Yi5jb20vYXdzLXNhbXBsZXMvZWtzLXdvcmtzaG9wLXYyIC90bXAvd29ya3Nob3AtcmVwb3NpdG9yeQooY2QgL3RtcC93b3Jrc2hvcC1yZXBvc2l0b3J5ICYmIGdpdCBjaGVja291dCBtYWluKQoKKGNkIC90bXAvd29ya3Nob3AtcmVwb3NpdG9yeS9lbnZpcm9ubWVudCAmJiBiYXNoIC4vaW5zdGFsbGVyLnNoKQoKYmFzaCAtYyAiYXdzIGNsb3VkOSB1cGRhdGUtZW52aXJvbm1lbnQgLS1lbnZpcm9ubWVudC1pZCAkQ0xPVUQ5X0VOVklST05NRU5UX0lEIC0tbWFuYWdlZC1jcmVkZW50aWFscy1hY3Rpb24gRElTQUJMRSB8fCB0cnVlIgoKbWtkaXIgLXAgL3dvcmtzcGFjZQpjcCAtUiAvdG1wL3dvcmtzaG9wLXJlcG9zaXRvcnkvZW52aXJvbm1lbnQvd29ya3NwYWNlLyogL3dvcmtzcGFjZQpjcCAtUiAvd29ya3NwYWNlIC93b3Jrc3BhY2UtYmFja3VwCmNob3duIGVjMi11c2VyIC1SIC93b3Jrc3BhY2UKY2htb2QgK3ggL3RtcC93b3Jrc2hvcC1yZXBvc2l0b3J5L2Vudmlyb25tZW50L2Jpbi8qCmNwIC90bXAvd29ya3Nob3AtcmVwb3NpdG9yeS9lbnZpcm9ubWVudC9iaW4vKiAvdXNyL2xvY2FsL2JpbgoKcm0gLXJmIC90bXAvd29ya3Nob3AtcmVwb3NpdG9yeQoKc3VkbyAtSCAtdSBlYzItdXNlciBiYXNoIC1jICJsbiAtc2YgL3dvcmtzcGFjZSB+L2Vudmlyb25tZW50L3dvcmtzcGFjZSIKCmlmIFtbICEgLWQgIi9ob21lL2VjMi11c2VyLy5iYXNocmMuZCIgXV07IHRoZW4KICBzdWRvIC1IIC11IGVjMi11c2VyIGJhc2ggLWMgIm1rZGlyIC1wIH4vLmJhc2hyYy5kIgogIHN1ZG8gLUggLXUgZWMyLXVzZXIgYmFzaCAtYyAidG91Y2ggfi8uYmFzaHJjLmQvZHVtbXkuYmFzaCIKCiAgc3VkbyAtSCAtdSBlYzItdXNlciBiYXNoIC1jICJlY2hvICdmb3IgZmlsZSBpbiB+Ly5iYXNocmMuZC8qLmJhc2g7IGRvIHNvdXJjZSBcIlwkZmlsZVwiOyBkb25lJyA+PiB+Ly5iYXNocmMiCmZpCgpzdWRvIC1IIC11IGVjMi11c2VyIGJhc2ggLWMgImVjaG8gJ2F3cyBjbG91ZDkgdXBkYXRlLWVudmlyb25tZW50IC0tZW52aXJvbm1lbnQtaWQgJENMT1VEOV9FTlZJUk9OTUVOVF9JRCAtLW1hbmFnZWQtY3JlZGVudGlhbHMtYWN0aW9uIERJU0FCTEUgJj4gL2Rldi9udWxsIHx8IHRydWUnID4gfi8uYmFzaHJjLmQvYzkuYmFzaCIKCnN1ZG8gLUggLXUgZWMyLXVzZXIgYmFzaCAtYyAiZWNobyAnZXhwb3J0IEFXU19QQUdFUj1cIlwiJyA+IH4vLmJhc2hyYy5kL2F3cy5iYXNoIgoKc3VkbyAtSCAtdSBlYzItdXNlciBiYXNoIC1jICJlY2hvICdhd3MgZWtzIHVwZGF0ZS1rdWJlY29uZmlnIC0tbmFtZSBla3Mtd29ya3Nob3AgPiAvZGV2L251bGwnID4gfi8uYmFzaHJjLmQva3ViZWNvbmZpZy5iYXNoIgoKY2F0IDw8IEVPVCA+IC9ob21lL2VjMi11c2VyLy5iYXNocmMuZC9lbnYuYmFzaApzZXQgLWEKQVdTX0FDQ09VTlRfSUQ9ODQwNTQxNDYwMDY0CkFXU19ERUZBVUxUX1JFR0lPTj11cy1lYXN0LTEKRUtTX0NMVVNURVJfTkFNRT1la3Mtd29ya3Nob3AKRUtTX0RFRkFVTFRfTU5HX05BTUU9bWFuYWdlZC1vbmRlbWFuZC0yMDIzMDIyNTAzNTE0MzE3NDQwMDAwMDAyNApFS1NfREVGQVVMVF9NTkdfTUlOPTIKRUtTX0RFRkFVTFRfTU5HX01BWD02CkVLU19ERUZBVUxUX01OR19ERVNJUkVEPTIKQ0FSVFNfRFlOQU1PREJfVEFCTEVOQU1FPWVrcy13b3Jrc2hvcC1jYXJ0cwpDQVJUU19JQU1fUk9MRT1hcm46YXdzOmlhbTo6ODQwNTQxNDYwMDY0OnJvbGUvZWtzLXdvcmtzaG9wLWNhcnRzLWR5bmFtbwpDQVRBTE9HX1JEU19FTkRQT0lOVD1la3Mtd29ya3Nob3AtY2F0YWxvZy5jOG10eGF1eTVuZ3AudXMtZWFzdC0xLnJkcy5hbWF6b25hd3MuY29tOjMzMDYKQ0FUQUxPR19SRFNfVVNFUk5BTUU9Y2F0YWxvZ191c2VyCkNBVEFMT0dfUkRTX1BBU1NXT1JEPWFXNXRaRTg0YVc5R2F3PT0KQ0FUQUxPR19SRFNfREFUQUJBU0VfTkFNRT1jYXRhbG9nCkNBVEFMT0dfUkRTX1NHX0lEPXNnLTBlYzkzNWY4Zjc3ZWU4YTUzCkNBVEFMT0dfU0dfSUQ9c2ctMDJhZDEwYTQzZmQ0NGM0NzQKRUZTX0lEPWZzLTBiNDE2MDI2MDcwODU4NzhkCkVLU19UQUlOVEVEX01OR19OQU1FPW1hbmFnZWQtb25kZW1hbmQtdGFpbnRlZC0yMDIzMDIyNTAzNTE0MzQ1ODEwMDAwMDAyOApBTVBfRU5EUE9JTlQ9aHR0cHM6Ly9hcHMtd29ya3NwYWNlcy51cy1lYXN0LTEuYW1hem9uYXdzLmNvbS93b3Jrc3BhY2VzL3dzLTk3MTkwNzk2LThmOGQtNGIyZC1iNGU2LTI5ODY4YjYyYTRmYS8KQURPVF9JQU1fUk9MRT1hcm46YXdzOmlhbTo6ODQwNTQxNDYwMDY0OnJvbGUvZWtzLXdvcmtzaG9wLWFkb3QtY29sbGVjdG9yClZQQ19JRD12cGMtMDVjMzY2OTQzMTY4YTBiNzYKRUtTX0NMVVNURVJfU0VDVVJJVFlfR1JPVVBfSUQ9c2ctMGIzZGU5YWE2NDkyZGFmNTgKUFJJTUFSWV9TVUJORVRfMT1zdWJuZXQtMDZlNTY0NjA1Y2UxYTY3NjEKUFJJTUFSWV9TVUJORVRfMj1zdWJuZXQtMDFlNDdhZDE4Nzg3NmI4YWIKUFJJTUFSWV9TVUJORVRfMz1zdWJuZXQtMDk3YWEwMWY3YzlhOWYyYjUKU0VDT05EQVJZX1NVQk5FVF8xPXN1Ym5ldC0wZmRhYjlhOGFlMjEwYzE0ZApTRUNPTkRBUllfU1VCTkVUXzI9c3VibmV0LTAyYWE2YmUzZTFlY2Y4NWY3ClNFQ09OREFSWV9TVUJORVRfMz1zdWJuZXQtMGRhOTVhNzI5MTlhODVhZWQKTUFOQUdFRF9OT0RFX0dST1VQX0lBTV9ST0xFX0FSTj1hcm46YXdzOmlhbTo6ODQwNTQxNDYwMDY0OnJvbGUvZWtzLXdvcmtzaG9wLW1hbmFnZWQtb25kZW1hbmQKQVoxPXVzLWVhc3QtMWEKQVoyPXVzLWVhc3QtMWIKQVozPXVzLWVhc3QtMWMKQURPVF9JQU1fUk9MRV9DST1hcm46YXdzOmlhbTo6ODQwNTQxNDYwMDY0OnJvbGUvZWtzLXdvcmtzaG9wLWFkb3QtY29sbGVjdG9yLWNpCk9JRENfUFJPVklERVI9b2lkYy5la3MudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vaWQvM0RGNDMyRjA5N0EyQUU2Nzc3NDgxQzQwMkVCQTZBODQKVlBDX0lEPXZwYy0wNWMzNjY5NDMxNjhhMGI3NgpWUENfQ0lEUj0xMC40Mi4wLjAvMTYKVlBDX1BSSVZBVEVfU1VCTkVUX0lEXzA9c3VibmV0LTA2ZTU2NDYwNWNlMWE2NzYxClZQQ19QUklWQVRFX1NVQk5FVF9JRF8xPXN1Ym5ldC0wMWU0N2FkMTg3ODc2YjhhYgpWUENfUFJJVkFURV9TVUJORVRfSURfMj1zdWJuZXQtMDk3YWEwMWY3YzlhOWYyYjUKR0lUT1BTX0lBTV9TU0hfS0VZX0lEPUFQS0E0SE5CTTJaUUxRQlJJQ1BXCkdJVE9QU19JQU1fU1NIX1VTRVI9QUlEQTRITkJNMlpRTkhFNU4yVkY1CkdJVE9QU19TU0hfU1NNX05BTUU9ZWtzLXdvcmtzaG9wLWdpdG9wcy1zc2gKCnNldCArYQpFT1QKCmNob3duIGVjMi11c2VyIC9ob21lL2VjMi11c2VyLy5iYXNocmMuZC9lbnYuYmFzaAoKc3VkbyBybSAtZiAvaG9tZS9lYzItdXNlci8uc3NoL2dpdG9wc19zc2gucGVtCgpzdWRvIC1IIC11IGVjMi11c2VyIGJhc2ggLWMgImF3cyBzc20gZ2V0LXBhcmFtZXRlciAtLW5hbWUgZWtzLXdvcmtzaG9wLWdpdG9wcy1zc2ggLS13aXRoLWRlY3J5cHRpb24gLS1xdWVyeSAnUGFyYW1ldGVyLlZhbHVlJyAtLXJlZ2lvbiB1cy1lYXN0LTEgLS1vdXRwdXQgdGV4dCA+IH4vLnNzaC9naXRvcHNfc3NoLnBlbSIKY2htb2QgNDAwIC9ob21lL2VjMi11c2VyLy5zc2gvZ2l0b3BzX3NzaC5wZW0KCmNhdCA8PCBFT1QgPiAvaG9tZS9lYzItdXNlci8uc3NoL2NvbmZpZwpIb3N0IGdpdC1jb2RlY29tbWl0LiouYW1hem9uYXdzLmNvbQogIFVzZXIgQUlEQTRITkJNMlpRTkhFNU4yVkY1CiAgSWRlbnRpdHlGaWxlIH4vLnNzaC9naXRvcHNfc3NoLnBlbQpFT1QKY2hvd24gZWMyLXVzZXIgL2hvbWUvZWMyLXVzZXIvLnNzaC9jb25maWcKY2htb2QgNjAwIC9ob21lL2VjMi11c2VyLy5zc2gvY29uZmlnCgpzdWRvIC1IIC11IGVjMi11c2VyIGJhc2ggLWMgInNzaC1rZXlzY2FuIC1IIGdpdC1jb2RlY29tbWl0LnVzLWVhc3QtMS5hbWF6b25hd3MuY29tID4+IH4vLnNzaC9rbm93bl9ob3N0cyIKCnN1ZG8gLUggLXUgZWMyLXVzZXIgYmFzaCAtYyAnZ2l0IGNvbmZpZyAtLWdsb2JhbCB1c2VyLmVtYWlsICJ5b3VAZWtzd29ya3Nob3AuY29tIicKc3VkbyAtSCAtdSBlYzItdXNlciBiYXNoIC1jICdnaXQgY29uZmlnIC0tZ2xvYmFsIHVzZXIubmFtZSAiRUtTIFdvcmtzaG9wIExlYXJuZXIiJwo=" | base64 -d | bash
 `,
               ],
             },
@@ -4086,55 +3677,55 @@ echo "c2V0IC1lCgpybSAtcmYgL3RtcC93b3Jrc2hvcC1yZXBvc2l0b3J5CmdpdCBjbG9uZSBodHRwcz
       Name: "eks-workshop-gitops-ssh",
       Type: "SecureString",
       Value: `-----BEGIN RSA PRIVATE KEY-----
-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
+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
 -----END RSA PRIVATE KEY-----
 `,
       DataType: "text",

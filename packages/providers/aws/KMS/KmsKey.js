@@ -12,6 +12,7 @@ const {
   or,
   pick,
   omit,
+  fork,
 } = require("rubico");
 const {
   find,
@@ -321,12 +322,20 @@ exports.KmsKey = () => ({
   destroy: {
     postDestroy: ({ endpoint }) =>
       pipe([
-        tap((params) => {
-          assert(true);
+        fork({
+          deleteAlias: when(
+            get("Alias"),
+            pipe([
+              ({ Alias }) => ({ AliasName: Alias }),
+              endpoint().deleteAlias,
+            ])
+          ),
+          scheduleKeyDeletion: pipe([
+            pickId,
+            defaultsDeep({ PendingWindowInDays: 7 }),
+            endpoint().scheduleKeyDeletion,
+          ]),
         }),
-        pickId,
-        defaultsDeep({ PendingWindowInDays: 7 }),
-        endpoint().scheduleKeyDeletion,
       ]),
     pickId,
     method: "disableKey",
