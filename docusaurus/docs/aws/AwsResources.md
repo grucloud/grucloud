@@ -48,6 +48,8 @@ List of resources for provider aws:
 [ComputeEnvironment](./resources/Batch/ComputeEnvironment.md), [JobDefinition](./resources/Batch/JobDefinition.md), [JobQueue](./resources/Batch/JobQueue.md), [SchedulingPolicy](./resources/Batch/SchedulingPolicy.md)
 * Budgets: 
 [Budget](./resources/Budgets/Budget.md)
+* Cloud9: 
+[Environment](./resources/Cloud9/Environment.md), [EnvironmentMembership](./resources/Cloud9/EnvironmentMembership.md)
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
 * CloudFront: 

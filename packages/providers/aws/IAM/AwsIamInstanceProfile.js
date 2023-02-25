@@ -84,7 +84,11 @@ const managedByOther =
       }),
       () => live,
       get("InstanceProfileName"),
-      or([callProp("startsWith", "eks-")]),
+      or([
+        //
+        callProp("startsWith", "eks-"),
+        callProp("startsWith", "AWSCloud9"),
+      ]),
       tap((params) => {
         assert(true);
       }),

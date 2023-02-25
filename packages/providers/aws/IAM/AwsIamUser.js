@@ -129,9 +129,6 @@ const attachUserPolicy = ({ endpoint, name }) =>
 
 const findId = () =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
     get("Arn"),
     tap((Arn) => {
       assert(Arn);
@@ -207,6 +204,7 @@ const deleteSSHPublicKey =
       ),
     ])();
 
+// TODO DeactivateMFADevice, DeleteVirtualMFADevice
 // TODO DeleteSigningCertificate
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteSigningCertificate-property
 // TODO deleteServiceSpecificCredential
@@ -392,7 +390,6 @@ exports.IAMUser = ({}) => ({
               tap(detachUserPolicy({ endpoint })),
               deleteUserPolicy({ endpoint }),
             ]),
-
             sshPublicKeys: deleteSSHPublicKey({ endpoint }),
             loginProfile: deleteLoginProfile({ endpoint }),
             accessKey: destroyAccessKey({ endpoint }),
