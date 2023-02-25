@@ -1,32 +1,30 @@
 const assert = require("assert");
-const { pipe, tap } = require("rubico");
-const { createEndpoint } = require("../AwsCommon");
-const { createTagger } = require("../AwsTagger");
-
-exports.createKMS = createEndpoint("kms", "KMS");
-
-exports.Tagger = createTagger({
-  methodTagResource: "tagResource",
-  methodUnTagResource: "untagResource",
-  ResourceArn: "KeyId",
-  TagsKey: "Tags",
-  UnTagsKey: "TagKeys",
-});
+const { pipe, map, tap } = require("rubico");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#tagResource-property
 exports.tagResource =
-  ({ kms }) =>
-  ({ id }) =>
-    pipe([(Tags) => ({ KeyId: id, Tags }), kms().tagResource]);
+  ({ endpoint }) =>
+  ({ id, live }) =>
+    pipe([
+      tap((params) => {
+        assert(live.KeyId);
+      }),
+      map(({ Key, Value }) => ({ TagKey: Key, TagValue: Value })),
+      (Tags) => ({ KeyId: live.KeyId, Tags }),
+      endpoint().tagResource,
+    ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#untagResource-property
 exports.untagResource =
-  ({ kms }) =>
-  ({ id }) =>
+  ({ endpoint }) =>
+  ({ live }) =>
     pipe([
-      (TagKeys) => ({ KeyId: id, TagKeys }),
+      tap((params) => {
+        assert(live.KeyId);
+      }),
+      (TagKeys) => ({ KeyId: live.KeyId, TagKeys }),
       tap((params) => {
         assert(true);
       }),
-      kms().untagResource,
+      endpoint().untagResource,
     ]);

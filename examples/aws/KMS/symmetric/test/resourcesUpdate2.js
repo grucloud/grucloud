@@ -19,7 +19,7 @@ exports.createResources = () => [
           },
         ],
       },
-      Tags: [{ TagKey: "mykey-new", TagValue: "value" }],
+      Tags: [{ Key: "mykey-new", Value: "value" }],
     }),
   },
 ];
