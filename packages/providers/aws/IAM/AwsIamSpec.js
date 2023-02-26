@@ -37,7 +37,7 @@ const { createAwsService } = require("../AwsService");
 
 const { IAMGroup } = require("./AwsIamGroup");
 const { AwsIamRole, findDependenciesRole } = require("./AwsIamRole");
-const { AwsIamInstanceProfile } = require("./AwsIamInstanceProfile");
+const { IAMInstanceProfile } = require("./AwsIamInstanceProfile");
 const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
 const { IAMUser } = require("./AwsIamUser");
 const { IAMUserPolicy } = require("./IAMUserPolicy");
@@ -68,20 +68,6 @@ module.exports = pipe([
     {
       type: "OpenIDConnectProvider",
       Client: AwsIamOpenIDConnectProvider,
-      inferName:
-        ({ dependenciesSpec: { cluster } }) =>
-        (properties) =>
-          pipe([
-            switchCase([
-              () => cluster,
-              () => `eks-cluster::${cluster}`,
-              pipe([
-                () => properties,
-                get("Url"),
-                callProp("replace", "https://", ""),
-              ]),
-            ]),
-          ])(),
       compare: compare({
         filterLive: () =>
           pipe([
@@ -139,6 +125,7 @@ module.exports = pipe([
         ])(),
     },
     createAwsService(IAMGroup({ compare })),
+    createAwsService(IAMInstanceProfile({ compare })),
     {
       type: "Role",
       Client: AwsIamRole,
@@ -333,27 +320,6 @@ module.exports = pipe([
           ]),
       ]),
       dependencies: buildDependenciesPolicy({ policyKey: "PolicyDocument" }),
-    },
-    {
-      type: "InstanceProfile",
-      Client: AwsIamInstanceProfile,
-      compare: compare({
-        //TODO remove
-        filterAll: () => pipe([omit(["Tags"])]),
-        filterLive: () =>
-          pipe([
-            omit(["Path", "InstanceProfileId", "Arn", "CreateDate", "Roles"]),
-          ]),
-      }),
-      filterLive: () => pick([]),
-      dependencies: {
-        roles: {
-          type: "Role",
-          group: "IAM",
-          list: true,
-          dependencyIds: () => pipe([get("Roles"), pluck("Arn")]),
-        },
-      },
     },
     createAwsService(IAMUser({ compare })),
     createAwsService(IAMUserPolicy({ compare })),

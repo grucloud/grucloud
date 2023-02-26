@@ -4,6 +4,14 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "ecsInstanceRole",
+    dependencies: ({}) => ({
+      roles: ["ecsInstanceRole"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -28,14 +36,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "ecsInstanceRole",
-    dependencies: ({}) => ({
-      roles: ["ecsInstanceRole"],
     }),
   },
 ];

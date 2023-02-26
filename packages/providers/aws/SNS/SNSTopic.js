@@ -39,13 +39,19 @@ const decorate = ({ endpoint }) =>
         get("Attributes"),
         assign({
           Policy: pipe([get("Policy"), JSON.parse, sortStatements]),
-          DeliveryPolicy: pipe([
-            get("EffectiveDeliveryPolicy"),
-            JSON.parse,
-            sortStatements,
-          ]),
         }),
-        omit(["EffectiveDeliveryPolicy"]),
+        when(
+          get("EffectiveDeliveryPolicy"),
+          pipe([
+            assign({
+              DeliveryPolicy: pipe([
+                get("EffectiveDeliveryPolicy"),
+                JSON.parse,
+              ]),
+            }),
+            omit(["EffectiveDeliveryPolicy"]),
+          ])
+        ),
       ]),
       Tags: pipe([
         get("Attributes"),

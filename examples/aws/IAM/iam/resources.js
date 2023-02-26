@@ -14,6 +14,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "my-profile",
+    dependencies: ({}) => ({
+      roles: ["role-allow-assume-role"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -97,14 +105,6 @@ exports.createResources = () => [
       },
       Path: "/",
       Description: "Allow ec2:Describe",
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "my-profile",
-    dependencies: ({}) => ({
-      roles: ["role-allow-assume-role"],
     }),
   },
   {
