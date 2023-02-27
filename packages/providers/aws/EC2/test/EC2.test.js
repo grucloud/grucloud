@@ -222,6 +222,21 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  // LocalGatewayRoute
+  it.skip("LocalGatewayRoute", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::LocalGatewayRoute",
+        livesNotFound: ({ config }) => [
+          {
+            DestinationCidrBlock: "",
+            LocalGatewayRouteTableId: "lt-12345",
+            DestinationPrefixListId: "d",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("LaunchTemplate", () =>
     pipe([
       () => ({

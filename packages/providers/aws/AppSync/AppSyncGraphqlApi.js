@@ -45,16 +45,12 @@ const resolveSchemaFile = ({ programOptions, schemaFile }) =>
     () => path.resolve(programOptions.workingDirectory, schemaFile),
   ])();
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
-exports.AppSyncGraphqlApi = ({ spec, config }) => {
-  const appSync = createAppSync(config);
-  const client = AwsClient({ spec, config })(appSync);
-
-  const getIntrospectionSchema = tryCatch(
+const getIntrospectionSchema = ({ endpoint }) =>
+  tryCatch(
     pipe([
       pick(["apiId"]),
       defaultsDeep({ format: "SDL", includeDirectives: true }),
-      (params) => appSync().getIntrospectionSchema(params),
+      endpoint().getIntrospectionSchema,
       get("schema"),
       Buffer.from,
       callProp("toString"),
@@ -68,16 +64,41 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
       ])()
   );
 
+const createApiKeys =
+  ({ endpoint }) =>
+  ({ apiId, apiKeys = [] }) =>
+    pipe([
+      () => apiKeys,
+      map(
+        tryCatch(
+          pipe([
+            //
+            defaultsDeep({ apiId }),
+            endpoint().createApiKey,
+          ]),
+          (error) => {
+            throw error;
+          }
+        )
+      ),
+    ])();
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
+exports.AppSyncGraphqlApi = ({ spec, config }) => {
+  const appSync = createAppSync(config);
+  const client = AwsClient({ spec, config })(appSync);
+
   const getById = client.getById({
     pickId,
     method: "getGraphqlApi",
     getField: "graphqlApi",
     ignoreErrorCodes,
-    decorate: () =>
+    decorate: ({ endpoint }) =>
       pipe([
         assign({
-          schema: getIntrospectionSchema,
-          apiKeys: pipe([pickId, appSync().listApiKeys, get("apiKeys")]),
+          //TODO
+          schema: getIntrospectionSchema({ endpoint: appSync }),
+          apiKeys: pipe([pickId, endpoint().listApiKeys, get("apiKeys")]),
         }),
       ]),
   });
@@ -92,7 +113,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   const updateSchema =
-    ({ programOptions, payload }) =>
+    ({ endpoint, programOptions, payload }) =>
     ({ apiId, definition }) =>
       pipe([
         tap(() => {
@@ -104,12 +125,12 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
         () =>
           retryCall({
             name: `getSchemaCreationStatus: ${apiId}`,
-            fn: pipe([() => ({ apiId }), appSync().getSchemaCreationStatus]),
+            fn: pipe([() => ({ apiId }), endpoint().getSchemaCreationStatus]),
             isExpectedResult: eq(get("status"), "SUCCESS"),
             config,
           }),
         () => ({ apiId }),
-        getIntrospectionSchema,
+        getIntrospectionSchema({ endpoint }),
         //TODO do not write if empty
         (content) =>
           fs.writeFile(
@@ -121,19 +142,6 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
           ),
       ])();
 
-  const createApiKeys = ({ apiId, apiKeys = [] }) =>
-    pipe([
-      () => apiKeys,
-      map(
-        tryCatch(
-          pipe([defaultsDeep({ apiId }), appSync().createApiKey]),
-          (error) => {
-            throw error;
-          }
-        )
-      ),
-    ])();
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createGraphqlApi-property
   const create = client.create({
     method: "createGraphqlApi",
@@ -141,7 +149,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     pickCreated: () => get("graphqlApi"),
     getById,
     postCreate:
-      ({ name, payload, programOptions }) =>
+      ({ name, payload, programOptions, endpoint }) =>
       ({ apiId }) =>
         pipe([
           tap(() => {
@@ -149,9 +157,10 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
             assert(payload);
             assert(payload.schema);
           }),
-          () => createApiKeys({ apiId, apiKeys: payload.apiKeys }),
+          () => ({ apiId, apiKeys: payload.apiKeys }),
+          createApiKeys({ endpoint }),
           () => ({ apiId, definition: payload.schema }),
-          updateSchema({ payload, programOptions }),
+          updateSchema({ endpoint, payload, programOptions }),
         ])(),
   });
 

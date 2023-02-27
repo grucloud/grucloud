@@ -7,8 +7,6 @@ exports.createResources = () => [
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
-      name: "events",
-      type: "HTTP",
       httpConfig: {
         authorizationConfig: {
           authorizationType: "AWS_IAM",
@@ -19,6 +17,8 @@ exports.createResources = () => [
         },
         endpoint: `https://events.${config.region}.amazonaws.com/`,
       },
+      name: "events",
+      type: "HTTP",
     }),
     dependencies: ({}) => ({
       graphqlApi: "AppSyncEventBridgeAPI",
