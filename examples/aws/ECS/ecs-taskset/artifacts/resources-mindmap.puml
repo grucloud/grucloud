@@ -34,8 +34,8 @@ skinparam monochrome true
 ++++ LoadBalancer (2)
 ++++ TargetGroup (2)
 +++ IAM
-++++ Role (5)
 ++++ InstanceProfile (2)
+++++ Role (5)
 +++ KMS
 ++++ Key (1)
 +++ Lambda

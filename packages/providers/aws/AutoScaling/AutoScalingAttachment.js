@@ -15,48 +15,49 @@ const { createAutoScaling } = require("./AutoScalingCommon");
 
 const ignoreErrorMessages = ["not found"];
 
+const findId = () => get("TargetGroupARN");
+
+const findName =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      () => live,
+      get("TargetGroupARN"),
+      lives.getById({
+        providerName: config.providerName,
+        type: "TargetGroup",
+        group: "ElasticLoadBalancingV2",
+      }),
+      get("name", live.TargetGroupARN),
+      tap((targetGroupName) => {
+        assert(targetGroupName);
+      }),
+      (targetGroupName) => `attachment::${live.name}::${targetGroupName}`,
+    ])();
+
+const managedByOther =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(config);
+        assert(live);
+        assert(live.TargetGroupARN);
+      }),
+      () => live,
+      get("TargetGroupARN"),
+      lives.getById({
+        providerName: config.providerName,
+        type: "TargetGroup",
+        group: "ElasticLoadBalancingV2",
+      }),
+      get("managedByOther"),
+    ])();
+
 exports.AutoScalingAttachment = ({ spec, config }) => {
   const autoScaling = createAutoScaling(config);
 
   const client = AwsClient({ spec, config })(autoScaling);
-  const findId = () => get("TargetGroupARN");
-
-  const findName =
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        () => live,
-        get("TargetGroupARN"),
-        lives.getById({
-          providerName: config.providerName,
-          type: "TargetGroup",
-          group: "ElasticLoadBalancingV2",
-        }),
-        get("name", live.TargetGroupARN),
-        tap((targetGroupName) => {
-          assert(targetGroupName);
-        }),
-        (targetGroupName) => `attachment::${live.name}::${targetGroupName}`,
-      ])();
-
-  const managedByOther =
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        tap((params) => {
-          assert(config);
-          assert(live);
-          assert(live.TargetGroupARN);
-        }),
-        () => live,
-        get("TargetGroupARN"),
-        lives.getById({
-          providerName: config.providerName,
-          type: "TargetGroup",
-          group: "ElasticLoadBalancingV2",
-        }),
-        get("managedByOther"),
-      ])();
 
   const getList = client.getListWithParent({
     parent: { type: "AutoScalingGroup", group: "AutoScaling" },

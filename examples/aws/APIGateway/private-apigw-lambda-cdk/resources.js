@@ -493,6 +493,14 @@ restart amazon-ssm-agent`,
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "PrivateAPIGatewayEc2-PrivateAPIGatewayEc2Profile-qZJnuwy2ztCR",
+    dependencies: ({}) => ({
+      roles: ["PrivateAPIGatewayEc2-apigatewayEC2Role0C7CF12E-805DC7BJETWT"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -593,14 +601,6 @@ restart amazon-ssm-agent`,
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "PrivateAPIGatewayEc2-PrivateAPIGatewayEc2Profile-qZJnuwy2ztCR",
-    dependencies: ({}) => ({
-      roles: ["PrivateAPIGatewayEc2-apigatewayEC2Role0C7CF12E-805DC7BJETWT"],
     }),
   },
   {

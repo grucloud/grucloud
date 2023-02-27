@@ -372,10 +372,23 @@ exports.ECSTaskDefinition = ({ compare }) => ({
       ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deregisterTaskDefinition-property
   destroy: {
-    pickId,
-    method: "deregisterTaskDefinition",
+    pickId: pipe([
+      tap((taskDefinitionArn) => {
+        assert(taskDefinitionArn);
+      }),
+      ({ taskDefinitionArn }) => ({ taskDefinitions: [taskDefinitionArn] }),
+    ]),
+    preDestroy: ({ endpoint }) =>
+      tap(pipe([pickId, endpoint().deregisterTaskDefinition])),
+    method: "deleteTaskDefinitions",
     ignoreErrorMessages,
-    isInstanceDown: pipe([eq(get("status"), "INACTIVE")]),
+    //shouldRetryOnExceptionMessages: []
+    isInstanceDown: pipe([
+      tap((status) => {
+        assert(status);
+      }),
+      eq(get("status"), "INACTIVE"),
+    ]),
   },
   getByName:
     ({ getList }) =>

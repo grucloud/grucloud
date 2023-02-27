@@ -19,6 +19,6 @@ skinparam monochrome true
 +++ ECS
 ++++ Cluster (1)
 +++ IAM
-++++ Role (1)
 ++++ InstanceProfile (1)
+++++ Role (1)
 @endmindmap
