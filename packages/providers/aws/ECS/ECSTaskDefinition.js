@@ -382,12 +382,12 @@ exports.ECSTaskDefinition = ({ compare }) => ({
       tap(pipe([pickId, endpoint().deregisterTaskDefinition])),
     method: "deleteTaskDefinitions",
     ignoreErrorMessages,
-    //shouldRetryOnExceptionMessages: []
     isInstanceDown: pipe([
-      tap((status) => {
+      tap(({ status }) => {
         assert(status);
       }),
-      eq(get("status"), "INACTIVE"),
+      // TODO: status is stuck at 'DELETE_IN_PROGRESS' even when it is deleted
+      () => true,
     ]),
   },
   getByName:
