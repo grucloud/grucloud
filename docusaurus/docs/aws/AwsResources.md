@@ -133,7 +133,7 @@ List of resources for provider aws:
 * GuardDuty: 
 [Detector](./resources/GuardDuty/Detector.md), [Filter](./resources/GuardDuty/Filter.md), [IPSet](./resources/GuardDuty/IPSet.md), [Member](./resources/GuardDuty/Member.md), [OrganizationAdminAccount](./resources/GuardDuty/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/GuardDuty/OrganizationConfiguration.md), [PublishingDestination](./resources/GuardDuty/PublishingDestination.md), [ThreatIntelSet](./resources/GuardDuty/ThreatIntelSet.md)
 * IAM: 
-[OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md), [User](./resources/IAM/User.md), [UserPolicy](./resources/IAM/UserPolicy.md)
+[OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [Group](./resources/IAM/Group.md), [InstanceProfile](./resources/IAM/InstanceProfile.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [User](./resources/IAM/User.md), [UserPolicy](./resources/IAM/UserPolicy.md)
 * IdentityStore: 
 [GroupMembership](./resources/IdentityStore/GroupMembership.md), [User](./resources/IdentityStore/User.md), [Group](./resources/IdentityStore/Group.md)
 * Imagebuilder: 
