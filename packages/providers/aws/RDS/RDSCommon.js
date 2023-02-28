@@ -38,7 +38,7 @@ exports.omitDBClusterParameterGroupDefault = pipe([
   when(
     pipe([
       get("DBClusterParameterGroup", ""),
-      callProp("startsWith", "default"),
+      callProp("startsWith", "default."),
     ]),
     omit(["DBClusterParameterGroup"])
   ),

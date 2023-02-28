@@ -97,9 +97,9 @@ const decorate = ({ endpoint }) =>
     renameTagList,
     omitStorageThroughput,
     omitAllocatedStorage,
-    omitDBClusterParameterGroupDefault,
     assignManageMasterUserPassword,
     assignDBParameterGroupName,
+    omitDBClusterParameterGroupDefault,
   ]);
 
 exports.RDSDBInstance = ({ compare }) => ({

@@ -71,15 +71,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-rds-vpc::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-rds-vpc",
-    }),
-  },
-  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -107,26 +98,13 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "DBSubnetGroup",
-    group: "RDS",
-    properties: ({}) => ({
-      DBSubnetGroupName: "default-vpc-0bd4727520b9fc3a7",
-      DBSubnetGroupDescription: "Created from the RDS Management Console",
-    }),
-    dependencies: ({ config }) => ({
-      subnets: [
-        `vpc-rds-vpc::vpc-rds-subnet-private1-${config.region}a`,
-        `vpc-rds-vpc::vpc-rds-subnet-private2-${config.region}b`,
-      ],
-    }),
-  },
-  {
     type: "DBInstance",
     group: "RDS",
     properties: ({}) => ({
       DBInstanceIdentifier: "database-1",
       DBInstanceClass: "db.t3.micro",
       Engine: "postgres",
+      MasterUsername: process.env.DATABASE_1_MASTER_USERNAME,
       AllocatedStorage: 200,
       PreferredBackupWindow: "06:51-07:21",
       BackupRetentionPeriod: 7,
@@ -141,11 +119,24 @@ exports.createResources = () => [
       MaxAllocatedStorage: 1000,
       ManageMasterUserPassword: true,
       EnablePerformanceInsights: true,
-      MasterUsername: "masterusername",
     }),
     dependencies: ({}) => ({
       dbSubnetGroup: "default-vpc-0bd4727520b9fc3a7",
       securityGroups: ["sg::vpc-rds-vpc::default"],
+    }),
+  },
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
+    properties: ({}) => ({
+      DBSubnetGroupName: "default-vpc-0bd4727520b9fc3a7",
+      DBSubnetGroupDescription: "Created from the RDS Management Console",
+    }),
+    dependencies: ({ config }) => ({
+      subnets: [
+        `vpc-rds-vpc::vpc-rds-subnet-private1-${config.region}a`,
+        `vpc-rds-vpc::vpc-rds-subnet-private2-${config.region}b`,
+      ],
     }),
   },
 ];
