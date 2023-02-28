@@ -24,6 +24,7 @@ const {
   findDependenciesSecret,
   isAuroraEngine,
   omitUsernamePassword,
+  omitDBClusterParameterGroupDefault,
 } = require("./RDSCommon");
 
 const managedByOther = ({ lives, config }) =>
@@ -96,6 +97,7 @@ const decorate = ({ endpoint }) =>
     renameTagList,
     omitStorageThroughput,
     omitAllocatedStorage,
+    omitDBClusterParameterGroupDefault,
     assignManageMasterUserPassword,
     assignDBParameterGroupName,
   ]);

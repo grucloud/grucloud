@@ -13,6 +13,7 @@ const exludesFiles = [".DS_Store"];
 const getFilesWalk = ({ dir, dirResolved }) =>
   pipe([
     () => readdir(dir, { withFileTypes: true }),
+    // TODO use isIn filterOut
     filter(({ name }) => !includes(name)(exludesFiles)),
     map((dirent) => {
       const res = resolve(dir, dirent.name);

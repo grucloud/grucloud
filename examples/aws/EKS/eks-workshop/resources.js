@@ -3586,7 +3586,6 @@ exports.createResources = () => [
       PubliclyAccessible: false,
       StorageEncrypted: true,
       DeletionProtection: false,
-      DBClusterParameterGroup: "default.mysql8.0",
       MasterUserPassword: process.env.EKS_WORKSHOP_CATALOG_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({

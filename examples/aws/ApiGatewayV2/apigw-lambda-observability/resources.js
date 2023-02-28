@@ -390,12 +390,6 @@ exports.createResources = () => [
           },
         ],
       },
-      Tags: [
-        {
-          TagKey: "Stack",
-          TagValue: "sam-app",
-        },
-      ],
     }),
   },
   {

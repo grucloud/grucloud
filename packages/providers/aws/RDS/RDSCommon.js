@@ -34,6 +34,13 @@ exports.omitAllocatedStorage = pipe([
   when(or([isAuroraEngine, isNeptune]), omit(["AllocatedStorage"])),
 ]);
 
+exports.omitDBClusterParameterGroupDefault = pipe([
+  when(
+    pipe([get("DBClusterParameterGroup"), callProp("startsWith", "default")]),
+    omit(["DBClusterParameterGroup"])
+  ),
+]);
+
 exports.omitUsernamePassword = when(
   isNeptune,
   omit(["MasterUsername", "MasterUserPassword"])
