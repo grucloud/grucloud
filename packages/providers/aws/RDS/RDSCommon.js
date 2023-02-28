@@ -36,7 +36,10 @@ exports.omitAllocatedStorage = pipe([
 
 exports.omitDBClusterParameterGroupDefault = pipe([
   when(
-    pipe([get("DBClusterParameterGroup"), callProp("startsWith", "default")]),
+    pipe([
+      get("DBClusterParameterGroup", ""),
+      callProp("startsWith", "default"),
+    ]),
     omit(["DBClusterParameterGroup"])
   ),
 ]);
