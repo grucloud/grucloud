@@ -26,7 +26,6 @@ exports.createResources = () => [
       Name: "test.grucloud.org.",
     }),
     dependencies: ({}) => ({
-      domain: "grucloud.org",
       vpc: "vpc-1",
     }),
   },
@@ -37,11 +36,5 @@ exports.createResources = () => [
       hostedZone: "test.grucloud.org.",
       vpc: "vpc-2",
     }),
-  },
-  {
-    type: "Domain",
-    group: "Route53Domains",
-    name: "grucloud.org",
-    readOnly: true,
   },
 ];

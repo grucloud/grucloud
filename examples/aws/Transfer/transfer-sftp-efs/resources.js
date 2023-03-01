@@ -102,9 +102,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       Name: "grucloud.org.",
     }),
-    dependencies: ({}) => ({
-      domain: "grucloud.org",
-    }),
   },
   {
     type: "Record",
@@ -113,12 +110,6 @@ exports.createResources = () => [
       hostedZone: "grucloud.org.",
       transferServer: "EFS::PUBLIC",
     }),
-  },
-  {
-    type: "Domain",
-    group: "Route53Domains",
-    name: "grucloud.org",
-    readOnly: true,
   },
   {
     type: "Server",

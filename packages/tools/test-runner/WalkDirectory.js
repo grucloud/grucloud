@@ -34,7 +34,22 @@ const ExcludeDirsDefault = [
   "node_modules",
   "artifacts",
   "empty",
-  "certificate",
+  "certificate", // // on main account for Route53Domain
+  "cloudfront-distribution", // on main account for Route53Domain
+  "apihw-mutualtls-lambda",
+  "http-lambda",
+  "auth0",
+  "apprunner-github",
+  "apprunner-leaderboard",
+  "apprunner-nginx",
+  "cloudfront-distribution",
+  "cloudfront-lambda-edge-cdk-python", // TODO
+  "cloudfront-le-apigw-cdk", // TODO
+  "eks-load-balancer",
+  "load-balancer",
+  "lightsail-wordpress",
+  "route53-delegation-set",
+  "website-https",
   "kops", // TODO update
   "docker", // TODO move docker dir out of the example
   "xray-lambdalayers-cdk-python",
@@ -46,6 +61,8 @@ const ExcludeDirsDefault = [
   "apprunner-secrets-manager",
   "apigw-http-eventbridge-terraform",
   "aws-route53-recovery-control-config",
+  "amplify-nextjs",
+  "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
 ];
 
 const fileExist = pipe([

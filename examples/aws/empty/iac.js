@@ -1,6 +1,8 @@
 const assert = require("assert");
 const { map, pipe, tap } = require("rubico");
 
+const region = "us-east-1";
+
 const profiles = [
   //
   "e2e-alpha",
@@ -17,6 +19,7 @@ const profiles = [
   "e2e-mike",
   "e2e-november",
   "e2e-oscar",
+  "e2e-papa",
 ];
 
 exports.createStack = pipe([
@@ -26,7 +29,7 @@ exports.createStack = pipe([
     providerFactory: require("@grucloud/provider-aws").AwsProvider,
     createResources: () => [],
     config: () => ({
-      region: "us-east-1",
+      region,
       projectName: "empty-multi",
       credentials: { profile },
     }),

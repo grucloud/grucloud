@@ -8,6 +8,5 @@ module.exports = () => ({
     "ElasticLoadBalancingV2",
     "Lambda",
     "Route53",
-    //"Route53Domains",
   ],
 });

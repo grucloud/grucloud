@@ -32,6 +32,7 @@ const environments = [
   { awsAccount: "e2e-mike" },
   { awsAccount: "e2e-november" },
   { awsAccount: "e2e-oscar" },
+  { awsAccount: "e2e-papa" },
 ];
 
 exports.environments = environments;
@@ -140,7 +141,7 @@ const runCommandWrapper = ({
           }),
         ])()
     ),
-    () => ({ resultMap }),
+    () => ({ resultMap, environment }),
     findNextDirectory,
     switchCase([
       isEmpty,
@@ -155,8 +156,12 @@ const runCommandWrapper = ({
     ]),
   ]);
 
-const findNextDirectory = ({ resultMap }) =>
-  pipe([() => [...resultMap.values()], find(eq(get("state"), "init"))])();
+const findNextDirectory = ({ resultMap, environment }) =>
+  pipe([
+    //
+    () => [...resultMap.values()],
+    find(eq(get("state"), "init")),
+  ])();
 
 const findCompletedCount = ({ resultMap }) =>
   pipe([
@@ -197,7 +202,7 @@ const testRunner =
           () => environments,
           map((environment) =>
             pipe([
-              () => ({ resultMap }),
+              () => ({ resultMap, environment }),
               findNextDirectory,
               unless(
                 isEmpty,
