@@ -5,7 +5,6 @@ skinparam monochrome true
 ++ aws
 +++ CloudWatchLogs
 ++++ LogGroup (1)
-++++ ResourcePolicy (1)
 +++ IAM
 ++++ Role (2)
 +++ Lambda

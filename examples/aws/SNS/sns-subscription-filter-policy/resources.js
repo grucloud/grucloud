@@ -314,6 +314,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-deliverystream-sns",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   { type: "Topic", group: "SNS", name: "my-topic" },

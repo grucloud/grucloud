@@ -7,123 +7,25 @@ const {
   get,
   tryCatch,
   switchCase,
-  assign,
+  filter,
 } = require("rubico");
-const { find, isEmpty, unless } = require("rubico/x");
+const { find, isEmpty, unless, size } = require("rubico/x");
 const shell = require("shelljs");
-const Spinnies = require("spinnies");
 
-const onDoneDefault = ({ uri, displayText, state, spinnies, spinnerMap }) => {
-  assert(uri);
-  assert(spinnies);
-  assert(spinnerMap);
-  assert(displayText);
+const { createSpinnies } = require("./SpinniesUtils");
 
-  spinnies.update(uri, {
-    text: displayText(state),
-    status: "succeed",
-  });
+const environments = [
+  //
+  { awsAccount: "default" },
+  { awsAccount: "e2e-alpha" },
+  { awsAccount: "e2e-bravo" },
+  { awsAccount: "e2e-charly" },
+  { awsAccount: "e2e-delta" },
+  //{ awsAccount: "e2e-echo" },
+  //{ awsAccount: "e2e-golf" },
+];
 
-  spinnerMap.delete(uri);
-};
-
-const onErrorDefault = ({ uri, spinnerMap }) => {
-  assert(uri);
-  assert(spinnerMap);
-  spinnerMap.delete(uri);
-};
-
-const onStateChange =
-  ({ spinnies, spinnerMap }) =>
-  ({ context, previousState, nextState, error = {}, indent }) => {
-    assert(context, "onStateChange: missing context");
-
-    const {
-      uri,
-      displayText,
-      onDone = onDoneDefault,
-      onError = onErrorDefault,
-    } = context;
-
-    assert(displayText, "onStateChange: missing context displayText");
-    assert(uri, "onStateChange: missing context uri");
-
-    if (process.env.CONTINUOUS_INTEGRATION) {
-      return;
-    }
-
-    switch (nextState) {
-      case "WAITING": {
-        assert(!spinnies.pick(uri), `${uri} already created`);
-        spinnerMap.set(uri, { state: context.state });
-        spinnies.add(uri, {
-          text: displayText(context.state),
-          indent,
-          color: "yellow",
-        });
-        break;
-      }
-      case "RUNNING": {
-        const spinner = spinnerMap.get(uri);
-        if (!spinner) {
-          return;
-        }
-        const spinny = spinnies.pick(uri);
-        assert(spinny, `spinnies create in running state: ${uri}`);
-        spinnies.update(uri, {
-          text: displayText(spinner.state),
-          color: "blue",
-          status: "spinning",
-        });
-        break;
-      }
-      case "DONE": {
-        const spinny = spinnies.pick(uri);
-        if (!spinny) {
-          return;
-        }
-        const spinner = spinnerMap.get(uri);
-        if (!spinner) {
-          return;
-        }
-        onDone({
-          uri,
-          displayText,
-          state: spinner.state,
-          spinnerMap,
-          spinnies,
-        });
-        break;
-      }
-      case "ERROR": {
-        const spinny = spinnies.pick(uri);
-        if (!spinny) {
-          return;
-        }
-        assert(error, `should have set the error, id: ${uri}`);
-        const spinner = spinnerMap.get(uri);
-        if (!spinner) {
-          return;
-        }
-
-        const textWithError = `${displayText(spinner.state).padEnd(30, " ")} ${
-          error.Message || ""
-        } ${error.message || ""}`;
-
-        spinnies.fail(uri, { text: textWithError });
-        onError({
-          uri,
-          displayText,
-          state: spinner.state,
-          spinnerMap,
-          spinnies,
-        });
-        break;
-      }
-      default:
-        assert(false, `unknown state ${nextState}`);
-    }
-  };
+exports.environments = environments;
 
 const executeCommand = ({ command, environment }) =>
   pipe([
@@ -159,6 +61,12 @@ const executeCommand = ({ command, environment }) =>
       assert(directory);
     }),
   ]);
+
+const buildContextSummary = ({ total, completed }) => ({
+  uri: "summary",
+  displayText: (state) => `${state.completed}/${state.total} tests `,
+  state: { completed, total },
+});
 
 const buildContext = ({ directory, name }) => ({
   uri: directory,
@@ -202,6 +110,13 @@ const runCommandWrapper = ({
               context: buildContext({ name, directory }),
               nextState: "DONE",
             });
+            onStateChange({
+              context: buildContextSummary({
+                completed: findCompletedCount({ resultMap }),
+                total: resultMap.size,
+              }),
+              nextState: "RUNNING",
+            });
           }),
         ])(),
       (error, { directory, name }) =>
@@ -234,15 +149,14 @@ const runCommandWrapper = ({
 const findNextDirectory = ({ resultMap }) =>
   pipe([() => [...resultMap.values()], find(eq(get("state"), "init"))])();
 
-const createSpinnies = () =>
-  new Spinnies({
-    spinner: {
-      interval: 300,
-      frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
-    },
-  });
+const findCompletedCount = ({ resultMap }) =>
+  pipe([
+    () => [...resultMap.values()],
+    filter(eq(get("state"), "done")),
+    size,
+  ])();
 
-exports.testRunner =
+const testRunner =
   ({ command, environments }) =>
   (testSuite) =>
     pipe([
@@ -258,14 +172,19 @@ exports.testRunner =
       ]),
       (mapInit) => ({
         resultMap: new Map(mapInit),
-        spinnies: createSpinnies(),
-        spinnerMap: new Map(),
-      }),
-      assign({
-        onStateChange,
+        ...createSpinnies(),
       }),
       tap(({ resultMap, onStateChange }) =>
         pipe([
+          tap((params) => {
+            onStateChange({
+              context: buildContextSummary({
+                completed: 0,
+                total: size(testSuite),
+              }),
+              nextState: "WAITING",
+            });
+          }),
           () => environments,
           map((environment) =>
             pipe([
@@ -288,3 +207,5 @@ exports.testRunner =
         spinnies.stopAll();
       }),
     ])();
+
+exports.testRunner = testRunner;

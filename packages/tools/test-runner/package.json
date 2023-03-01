@@ -4,14 +4,15 @@
   "description": "GruCloud Test Runner",
   "main": "index.js",
   "bin": {
-    "gc-test": "./TestRunner.js"
+    "gc-test": "./TestRunnerApp.js"
   },
   "directories": {
     "test": "test"
   },
   "scripts": {
     "test": "mocha './test/*.test.js'",
-    "start": "node ./TestRunner.js"
+    "start": "node ./TestRunnerApp.js",
+    "apigateway": "node ./TestRunnerApp.js -i ../../../examples/aws/APIGateway -c 'npm t'"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
   },
   "homepage": "https://github.com/grucloud/grucloud#readme",
   "dependencies": {
+    "commander": "^10.0.0",
     "rubico": "1.9.5",
     "shelljs": "^0.8.5",
     "spinnies": "^0.5.1",

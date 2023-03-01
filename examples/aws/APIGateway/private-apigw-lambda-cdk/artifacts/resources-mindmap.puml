@@ -23,8 +23,8 @@ skinparam monochrome true
 ++++ Instance (1)
 ++++ VpcEndpoint (1)
 +++ IAM
-++++ Role (3)
 ++++ InstanceProfile (1)
+++++ Role (3)
 +++ Lambda
 ++++ Function (1)
 ++++ Permission (1)

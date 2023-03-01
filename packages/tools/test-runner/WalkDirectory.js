@@ -27,6 +27,23 @@ const { readdir } = require("fs").promises;
 const path = require("path");
 const fs = require("fs").promises;
 
+const ExcludeDirsDefault = [
+  //
+  ".DS_Store",
+  "node_modules",
+  "kops", // TODO update
+  "docker", // TODO move docker dir out of the example
+  "xray-lambdalayers-cdk-python",
+  "stepfunctions-eventbridge-lambda-sam-java",
+  "role-everywhere",
+  "lambda-layer-terraform",
+  "retail-store-sample-app",
+  "appflow-redshift",
+  "apprunner-secrets-manager",
+  "apigw-http-eventbridge-terraform",
+  "aws-route53-recovery-control-config",
+];
+
 const fileExist = pipe([
   tap((directory) => {
     assert(directory);
@@ -45,17 +62,29 @@ const fileExist = pipe([
   ),
 ]);
 
-const ExcludeDirsDefault = [".DS_Store", "node_modules"];
-
 const filterExcludeFiles = ({ excludeDirs }) =>
-  filterOut(pipe([get("name"), isIn([excludeDirs, ...ExcludeDirsDefault])]));
+  filterOut(
+    pipe([
+      get("name"),
+      tap((content) => {
+        assert(content);
+      }),
+      isIn([excludeDirs, ...ExcludeDirsDefault]),
+    ])
+  );
 
 const isGruCloudExample = ({ directory, name }) =>
   pipe([
     get("name"),
     (fileName) => path.resolve(directory, name, fileName),
     (filename) => fs.readFile(filename, "utf-8"),
+    tap((content) => {
+      assert(content);
+    }),
     JSON.parse,
+    tap((content) => {
+      assert(content);
+    }),
     get("dependencies"),
     keys,
     any(includes("@grucloud/core")),
@@ -108,6 +137,8 @@ exports.walkDirectory =
       fileExist,
       () => readdir(directory, { withFileTypes: true }),
       filter(callProp("isDirectory")),
+      filterExcludeFiles({ excludeDirs }),
+
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])
       ),

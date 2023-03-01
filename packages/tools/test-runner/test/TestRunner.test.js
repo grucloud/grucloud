@@ -2,17 +2,11 @@ const assert = require("assert");
 const path = require("path");
 
 const { walkDirectory } = require("../WalkDirectory");
-const { testRunner } = require("../TestRunner");
+const { testRunner, environments } = require("../TestRunner");
 
 const { map, pipe, tap, get, assign } = require("rubico");
 
 const defaultDirectory = "../../../examples/aws/APIGateway";
-
-const environments = [
-  //
-  { awsAccount: "default" },
-  { awsAccount: "e2e-bravo" },
-];
 
 describe("TestRunner", function () {
   it.only("test runner", () =>
@@ -20,6 +14,7 @@ describe("TestRunner", function () {
       () => [
         { name: "apigw-api-key" },
         { name: "apigw-canary-deployment-cdk" },
+        { name: "apigw-client-certificate" },
       ],
       map(
         assign({
@@ -30,7 +25,7 @@ describe("TestRunner", function () {
         })
       ),
       testRunner({
-        command: "gc info",
+        command: "gc plan",
         environments,
       }),
     ])());

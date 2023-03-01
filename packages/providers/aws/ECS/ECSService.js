@@ -206,6 +206,7 @@ exports.ECSService = ({ compare }) => ({
     method: "createService",
     shouldRetryOnExceptionMessages: [
       "does not have an associated load balancer",
+      "Unable to assume the service linked role. Please verify that the ECS service linked role exists.",
     ],
     pickCreated:
       ({ name }) =>
