@@ -34,7 +34,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "EFS LAMBDA APIGATEWAY",
-      lambdaFunction: "LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-4lqoQXa068di",
+      lambdaFunction: "LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-AzvJusy7C1Tt",
     }),
   },
   {
@@ -46,7 +46,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       api: "EFS LAMBDA APIGATEWAY",
       integration:
-        "integration::EFS LAMBDA APIGATEWAY::LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-4lqoQXa068di",
+        "integration::EFS LAMBDA APIGATEWAY::LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-AzvJusy7C1Tt",
     }),
   },
   {
@@ -83,7 +83,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "LambdaEfsCdkStack/theVpc/PublicSubnet1",
     properties: ({}) => ({
-      PrivateIpAddressIndex: 7656,
+      PrivateIpAddressIndex: 4314,
     }),
     dependencies: ({}) => ({
       subnet:
@@ -96,7 +96,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "LambdaEfsCdkStack/theVpc/PublicSubnet2",
     properties: ({}) => ({
-      PrivateIpAddressIndex: 13775,
+      PrivateIpAddressIndex: 13628,
     }),
     dependencies: ({}) => ({
       subnet:
@@ -283,7 +283,7 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       GroupName:
-        "LambdaEfsCdkStack-lambdaEfsHandlerSecurityGroup32CE0F81-EMH4JCPGIQL9",
+        "LambdaEfsCdkStack-lambdaEfsHandlerSecurityGroup32CE0F81-1VVQUCNXTK3GD",
       Description:
         "Automatic security group for Lambda Function LambdaEfsCdkStacklambdaEfsHandlerB00F09C4",
     }),
@@ -296,7 +296,7 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       GroupName:
-        "LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-94CWPTNBN535",
+        "LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-VZYS8FSPIGKI",
       Description: "LambdaEfsCdkStack/theFileSystem/EfsSecurityGroup",
     }),
     dependencies: ({}) => ({
@@ -313,9 +313,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-94CWPTNBN535",
+        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-VZYS8FSPIGKI",
       securityGroupFrom: [
-        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-lambdaEfsHandlerSecurityGroup32CE0F81-EMH4JCPGIQL9",
+        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-lambdaEfsHandlerSecurityGroup32CE0F81-1VVQUCNXTK3GD",
       ],
     }),
   },
@@ -333,7 +333,7 @@ exports.createResources = () => [
   {
     type: "AccessPoint",
     group: "EFS",
-    name: "fsap-0f9b5098e28420897",
+    name: "fsap-041c369c9636128ee",
     properties: ({}) => ({
       PosixUser: {
         Gid: 1001,
@@ -364,7 +364,7 @@ exports.createResources = () => [
       subnet:
         "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet1",
       securityGroups: [
-        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-94CWPTNBN535",
+        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-VZYS8FSPIGKI",
       ],
     }),
   },
@@ -379,16 +379,16 @@ exports.createResources = () => [
       subnet:
         "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet2",
       securityGroups: [
-        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-94CWPTNBN535",
+        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-VZYS8FSPIGKI",
       ],
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config, getId }) => ({
+    properties: ({ getId }) => ({
       RoleName:
-        "LambdaEfsCdkStack-lambdaEfsHandlerServiceRoleEBA1A-M6GQ3IQFDWIJ",
+        "LambdaEfsCdkStack-lambdaEfsHandlerServiceRoleEBA1A-MHK95VUBE4FX",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -412,7 +412,7 @@ exports.createResources = () => [
                     "elasticfilesystem:AccessPointArn": `${getId({
                       type: "AccessPoint",
                       group: "EFS",
-                      name: "fsap-0f9b5098e28420897",
+                      name: "fsap-041c369c9636128ee",
                     })}`,
                   },
                 },
@@ -422,9 +422,11 @@ exports.createResources = () => [
               },
               {
                 Action: "elasticfilesystem:ClientWrite",
-                Resource: `arn:aws:elasticfilesystem:${
-                  config.region
-                }:${config.accountId()}:file-system/fs-091f9d849810b485a`,
+                Resource: `${getId({
+                  type: "FileSystem",
+                  group: "EFS",
+                  name: "LambdaEfsCdkStack/theFileSystem",
+                })}`,
                 Effect: "Allow",
               },
             ],
@@ -446,7 +448,8 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      efsFileSystems: ["fsap-0f9b5098e28420897"],
+      efsAccessPoints: ["fsap-041c369c9636128ee"],
+      efsFileSystems: ["LambdaEfsCdkStack/theFileSystem"],
     }),
   },
   {
@@ -459,26 +462,26 @@ exports.createResources = () => [
             Arn: `${getId({
               type: "AccessPoint",
               group: "EFS",
-              name: "fsap-0f9b5098e28420897",
+              name: "fsap-041c369c9636128ee",
             })}`,
             LocalMountPath: "/mnt/text",
           },
         ],
-        FunctionName: "LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-4lqoQXa068di",
+        FunctionName: "LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-AzvJusy7C1Tt",
         Handler: "lambda_function.lambda_handler",
         Runtime: "python3.8",
       },
     }),
     dependencies: ({}) => ({
-      role: "LambdaEfsCdkStack-lambdaEfsHandlerServiceRoleEBA1A-M6GQ3IQFDWIJ",
+      role: "LambdaEfsCdkStack-lambdaEfsHandlerServiceRoleEBA1A-MHK95VUBE4FX",
       subnets: [
         "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet1",
         "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet2",
       ],
       securityGroups: [
-        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-lambdaEfsHandlerSecurityGroup32CE0F81-EMH4JCPGIQL9",
+        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-lambdaEfsHandlerSecurityGroup32CE0F81-1VVQUCNXTK3GD",
       ],
-      efsAccessPoints: ["fsap-0f9b5098e28420897"],
+      efsAccessPoints: ["fsap-041c369c9636128ee"],
     }),
   },
   {
@@ -489,10 +492,10 @@ exports.createResources = () => [
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
-            "LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-4lqoQXa068di",
+            "LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-AzvJusy7C1Tt",
           Principal: "apigateway.amazonaws.com",
           StatementId:
-            "LambdaEfsCdkStack-EFSLAMBDAAPIGATEWAYDefaultRouteLambdaFunctionPermission8726AE76-B6AB3FDTLP5B",
+            "LambdaEfsCdkStack-EFSLAMBDAAPIGATEWAYDefaultRouteLambdaFunctionPermission8726AE76-1T030YUOOHVA4",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
@@ -503,7 +506,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction: "LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-4lqoQXa068di",
+      lambdaFunction: "LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-AzvJusy7C1Tt",
       apiGatewayV2Apis: ["EFS LAMBDA APIGATEWAY"],
     }),
   },
