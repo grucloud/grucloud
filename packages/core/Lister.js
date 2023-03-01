@@ -68,7 +68,7 @@ exports.Lister =
               logger.error(`runItem error with key: ${key}`);
               logError("runItem", error);
               onStateChange({ key, meta, nextState: STATES.ERROR, error });
-              return { ...meta, key, error };
+              return { key, error };
             }
           ),
           tap((result) => {

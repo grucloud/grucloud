@@ -1,0 +1,40 @@
+{
+  "name": "@grucloud/test-runner",
+  "version": "11.0.0",
+  "description": "GruCloud Test Runner",
+  "main": "index.js",
+  "bin": {
+    "gc-test": "./TestRunner.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha './test/*.test.js'",
+    "start": "node ./TestRunner.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grucloud/grucloud.git"
+  },
+  "keywords": [
+    "iac",
+    "test"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grucloud/grucloud/issues"
+  },
+  "homepage": "https://github.com/grucloud/grucloud#readme",
+  "dependencies": {
+    "rubico": "1.9.5",
+    "shelljs": "^0.8.5",
+    "spinnies": "^0.5.1",
+    "winston": "3.3.3"
+  },
+  "devDependencies": {
+    "mocha": "9.1.3",
+    "mocha-junit-reporter": "2.0.2"
+  }
+}

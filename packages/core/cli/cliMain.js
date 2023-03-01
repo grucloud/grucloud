@@ -2,7 +2,6 @@
 const Duration = require("duration");
 const pkg = require("../package.json");
 const { createProgram } = require("./program");
-const { convertError } = require("../Common");
 const logger = require("../logger")({ prefix: "CliMain" });
 const executableName = "gc";
 
