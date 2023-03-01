@@ -10,13 +10,14 @@ const {
   switchCase,
   flatMap,
   any,
+  and,
 } = require("rubico");
 const {
   filterOut,
   isIn,
   callProp,
   isEmpty,
-  unless,
+  find,
   keys,
   includes,
 } = require("rubico/x");
@@ -31,6 +32,7 @@ const ExcludeDirsDefault = [
   //
   ".DS_Store",
   "node_modules",
+  "artifacts",
   "kops", // TODO update
   "docker", // TODO move docker dir out of the example
   "xray-lambdalayers-cdk-python",
@@ -95,36 +97,41 @@ const walkDirectoryUnit =
   (name) =>
     pipe([
       () => name,
-      tap((name) => {
+      tap((params) => {
         assert(directory);
         assert(name);
       }),
       () => readdir(path.resolve(directory, name), { withFileTypes: true }),
       filterExcludeFiles({ excludeDirs }),
-      flatMap(
-        switchCase([
-          // isDir ?
-          callProp("isDirectory"),
-          pipe([
-            get("name"),
-            walkDirectoryUnit({
-              excludeDirs,
-              directory: path.resolve(directory, name),
-            }),
-          ]),
-          // is GruCloud Example ?
-          eq(get("name"), "package.json"),
-          pipe([
-            switchCase([
-              isGruCloudExample({ directory, name }),
-              () => [{ name, directory: path.resolve(directory, name) }],
-              pipe([() => []]),
+      tap((params) => {
+        assert(true);
+      }),
+      (dirs) =>
+        pipe([
+          () => dirs,
+          switchCase([
+            and([
+              find(eq(get("name"), "resources.js")),
+              find(eq(get("name"), "package.json")),
+            ]),
+            pipe([() => [{ name, directory: path.resolve(directory, name) }]]),
+            pipe([
+              filter(callProp("isDirectory")),
+              flatMap(
+                pipe([
+                  get("name"),
+                  walkDirectoryUnit({
+                    excludeDirs,
+                    directory: path.resolve(directory, name),
+                  }),
+                ])
+              ),
             ]),
           ]),
-          // Default
-          pipe([() => undefined]),
-        ])
-      ),
+        ])(),
+      tap((params) => {
+        assert(true);
+      }),
       filterOut(isEmpty),
     ])();
 

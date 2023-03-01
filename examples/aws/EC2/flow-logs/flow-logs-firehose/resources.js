@@ -102,6 +102,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({ config }) => ({
+      s3BucketDestination: "gc-firehose-destination",
       roles: [
         `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
       ],
@@ -260,6 +261,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-firehose-destination",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   {
@@ -267,6 +277,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-firehose-error",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
 ];

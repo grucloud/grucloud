@@ -1,7 +1,6 @@
 const assert = require("assert");
 const path = require("path");
 
-const { walkDirectory } = require("../WalkDirectory");
 const { testRunner, environments } = require("../TestRunner");
 
 const { map, pipe, tap, get, assign } = require("rubico");
@@ -9,7 +8,7 @@ const { map, pipe, tap, get, assign } = require("rubico");
 const defaultDirectory = "../../../examples/aws/APIGateway";
 
 describe("TestRunner", function () {
-  it.only("test runner", () =>
+  it("test runner", () =>
     pipe([
       () => [
         { name: "apigw-api-key" },
@@ -27,14 +26,6 @@ describe("TestRunner", function () {
       testRunner({
         command: "gc plan",
         environments,
-      }),
-    ])());
-  it("list dir", () =>
-    pipe([
-      () => path.resolve(process.cwd(), defaultDirectory),
-      walkDirectory({}),
-      tap((arn) => {
-        assert(true);
       }),
     ])());
 });

@@ -71,6 +71,15 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-rds-vpc::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-rds-vpc",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({

@@ -194,6 +194,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: `sample-bucket-glue-scripts-terraform-${config.accountId()}`,
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   {

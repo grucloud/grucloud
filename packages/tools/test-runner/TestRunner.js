@@ -21,8 +21,15 @@ const environments = [
   { awsAccount: "e2e-bravo" },
   { awsAccount: "e2e-charly" },
   { awsAccount: "e2e-delta" },
-  //{ awsAccount: "e2e-echo" },
-  //{ awsAccount: "e2e-golf" },
+  { awsAccount: "e2e-echo" },
+  { awsAccount: "e2e-foxtrot" },
+  { awsAccount: "e2e-golf" },
+  { awsAccount: "e2e-hotel" },
+  { awsAccount: "e2e-india" },
+  { awsAccount: "e2e-juliett" },
+  { awsAccount: "e2e-kilo" },
+  // { awsAccount: "e2e-lima" },
+  // { awsAccount: "e2e-mike" },
 ];
 
 exports.environments = environments;

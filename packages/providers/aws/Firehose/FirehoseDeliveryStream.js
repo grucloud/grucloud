@@ -148,56 +148,61 @@ exports.FirehoseDeliveryStream = ({}) => ({
         assign({
           ExtendedS3DestinationConfiguration: pipe([
             get("ExtendedS3DestinationConfiguration"),
+            when(
+              get("ProcessingConfiguration"),
+              assign({
+                ProcessingConfiguration: pipe([
+                  get("ProcessingConfiguration"),
+                  assign({
+                    Processors: pipe([
+                      get("Processors"),
+                      map(
+                        assign({
+                          Parameters: pipe([
+                            get("Parameters"),
+                            map(
+                              pipe([
+                                tap((params) => {
+                                  assert(true);
+                                }),
+                                switchCase([
+                                  eq(get("ParameterName"), "LambdaArn"),
+                                  assign({
+                                    ParameterValue: pipe([
+                                      get("ParameterValue"),
+                                      replaceWithName({
+                                        groupType: "Lambda::Function",
+                                        path: "id",
+                                        providerConfig,
+                                        lives,
+                                      }),
+                                    ]),
+                                  }),
+                                  eq(get("ParameterName"), "RoleArn"),
+                                  assign({
+                                    ParameterValue: pipe([
+                                      get("ParameterValue"),
+                                      replaceWithName({
+                                        groupType: "IAM::Role",
+                                        path: "id",
+                                        providerConfig,
+                                        lives,
+                                      }),
+                                    ]),
+                                  }),
+                                  identity,
+                                ]),
+                              ])
+                            ),
+                          ]),
+                        })
+                      ),
+                    ]),
+                  }),
+                ]),
+              })
+            ),
             assign({
-              ProcessingConfiguration: pipe([
-                get("ProcessingConfiguration"),
-                assign({
-                  Processors: pipe([
-                    get("Processors"),
-                    map(
-                      assign({
-                        Parameters: pipe([
-                          get("Parameters"),
-                          map(
-                            pipe([
-                              tap((params) => {
-                                assert(true);
-                              }),
-                              switchCase([
-                                eq(get("ParameterName"), "LambdaArn"),
-                                assign({
-                                  ParameterValue: pipe([
-                                    get("ParameterValue"),
-                                    replaceWithName({
-                                      groupType: "Lambda::Function",
-                                      path: "id",
-                                      providerConfig,
-                                      lives,
-                                    }),
-                                  ]),
-                                }),
-                                eq(get("ParameterName"), "RoleArn"),
-                                assign({
-                                  ParameterValue: pipe([
-                                    get("ParameterValue"),
-                                    replaceWithName({
-                                      groupType: "IAM::Role",
-                                      path: "id",
-                                      providerConfig,
-                                      lives,
-                                    }),
-                                  ]),
-                                }),
-                                identity,
-                              ]),
-                            ])
-                          ),
-                        ]),
-                      })
-                    ),
-                  ]),
-                }),
-              ]),
               RoleARN: pipe([
                 get("RoleARN"),
                 replaceWithName({

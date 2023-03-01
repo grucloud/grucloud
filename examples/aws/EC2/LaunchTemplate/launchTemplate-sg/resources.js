@@ -104,6 +104,22 @@ chkconfig docker on`,
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-ecs",
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "value",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      roles: ["role-ecs"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -120,22 +136,6 @@ chkconfig docker on`,
           },
         ],
       },
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "role-ecs",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "value",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      roles: ["role-ecs"],
     }),
   },
 ];

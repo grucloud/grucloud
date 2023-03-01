@@ -54,7 +54,7 @@ const {
 
 const dependenciesFromEnv = {
   apiGatewayRestApis: {
-    pathLive: "live.url",
+    pathLive: "live.endpoint",
     type: "RestApi",
     group: "APIGateway",
   },
