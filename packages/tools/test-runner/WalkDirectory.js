@@ -33,6 +33,8 @@ const ExcludeDirsDefault = [
   ".DS_Store",
   "node_modules",
   "artifacts",
+  "empty",
+  "certificate",
   "kops", // TODO update
   "docker", // TODO move docker dir out of the example
   "xray-lambdalayers-cdk-python",

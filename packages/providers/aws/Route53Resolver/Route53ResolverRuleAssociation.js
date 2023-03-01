@@ -4,18 +4,29 @@ const { defaultsDeep, find } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const cannotBeDeleted =
-  ({ config, lives }) =>
-  (live) =>
-    pipe([
-      lives.getByType({
-        type: "Rule",
-        group: "Route53Resolver",
-        providerName: config.providerName,
-      }),
-      find(eq(get("live.Id"), live.ResolverRuleId)),
-      get("cannotBeDeleted"),
-    ])();
+const cannotBeDeleted = ({ config, lives }) =>
+  or([
+    eq(get("Name"), "System Rule Association"),
+    (live) =>
+      pipe([
+        tap((params) => {
+          assert(live.ResolverRuleId);
+        }),
+        lives.getByType({
+          type: "Rule",
+          group: "Route53Resolver",
+          providerName: config.providerName,
+        }),
+        tap((params) => {
+          assert(live.ResolverRuleId);
+        }),
+        find(eq(get("live.Id"), live.ResolverRuleId)),
+        get("cannotBeDeleted"),
+        tap((params) => {
+          assert(live.ResolverRuleId);
+        }),
+      ])(),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html
 exports.Route53ResolverRuleAssociation = ({}) => ({

@@ -37,7 +37,7 @@ const findName =
         providerName: config.providerName,
       }),
       find(eq(get("live.ApiId"), live.ApiId)),
-      get("name"),
+      get("name", live.ApiId),
       tap((name) => {
         assert(name);
       }),

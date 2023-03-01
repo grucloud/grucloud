@@ -29,7 +29,9 @@ const environments = [
   { awsAccount: "e2e-juliett" },
   { awsAccount: "e2e-kilo" },
   { awsAccount: "e2e-lima" },
-  // { awsAccount: "e2e-mike" },
+  { awsAccount: "e2e-mike" },
+  { awsAccount: "e2e-november" },
+  { awsAccount: "e2e-oscar" },
 ];
 
 exports.environments = environments;
