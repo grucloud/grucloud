@@ -70,6 +70,7 @@ const findName =
         assert(EventSourceArn);
       }),
       fork({
+        EventSourceArn: get("EventSourceArn"),
         functionName: pipe([
           get("FunctionArn"),
           lives.getById({
@@ -120,25 +121,6 @@ const findName =
           group: "SQS",
         }),
       }),
-      tap(
-        ({
-          dynamoDbTable,
-          sqsQueueName,
-          kinesisStreamName,
-          kinesisStreamConsumerName,
-          mqBrokerName,
-          mskClusterName,
-        }) => {
-          assert(
-            dynamoDbTable ||
-              sqsQueueName ||
-              kinesisStreamName ||
-              kinesisStreamConsumerName ||
-              mqBrokerName ||
-              mskClusterName
-          );
-        }
-      ),
       ({
         functionName,
         dynamoDbTable,
@@ -147,6 +129,7 @@ const findName =
         kinesisStreamConsumerName,
         mqBrokerName,
         mskClusterName,
+        EventSourceArn,
       }) =>
         `mapping::${functionName}::${
           dynamoDbTable ||
@@ -154,7 +137,8 @@ const findName =
           kinesisStreamName ||
           kinesisStreamConsumerName ||
           mqBrokerName ||
-          mskClusterName
+          mskClusterName ||
+          EventSourceArn
         }`,
     ])();
 
