@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project RDS Postgres
+title Resources for project postgres
 skinparam monochrome true
 + Infra
 ++ aws
@@ -16,6 +16,6 @@ skinparam monochrome true
 +++ IAM
 ++++ Policy (1)
 +++ RDS
-++++ DBSubnetGroup (1)
 ++++ DBInstance (1)
+++++ DBSubnetGroup (1)
 @endmindmap

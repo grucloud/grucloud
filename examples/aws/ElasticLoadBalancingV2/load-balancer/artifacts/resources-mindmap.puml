@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project AWS Load Balancer
+title Resources for project load-balancer
 skinparam monochrome true
 + Infra
 ++ aws

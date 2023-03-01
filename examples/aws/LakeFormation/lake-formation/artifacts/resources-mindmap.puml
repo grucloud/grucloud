@@ -4,7 +4,6 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ LakeFormation
-++++ DataLakeSettings (1)
 ++++ LFTag (1)
 ++++ Resource (1)
 +++ S3

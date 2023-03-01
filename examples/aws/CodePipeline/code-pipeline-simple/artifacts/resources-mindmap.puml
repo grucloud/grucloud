@@ -3,8 +3,6 @@ title Resources for project code-pipeline-simple
 skinparam monochrome true
 + Infra
 ++ aws
-+++ CloudWatchLogs
-++++ LogGroup (1)
 +++ CodeBuild
 ++++ Project (1)
 +++ CodePipeline

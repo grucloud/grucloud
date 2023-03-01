@@ -3,5 +3,7 @@ title Resources for project apprunner-github
 skinparam monochrome true
 + Infra
 ++ aws
-
++++ AppRunner
+++++ Connection (1)
+++++ Service (1)
 @endmindmap

@@ -6,6 +6,7 @@ skinparam monochrome true
 +++ EC2
 ++++ Vpc (1)
 ++++ Subnet (1)
+++++ SecurityGroup (1)
 +++ FSx
 ++++ FileSystem (1)
 ++++ StorageVirtualMachine (1)

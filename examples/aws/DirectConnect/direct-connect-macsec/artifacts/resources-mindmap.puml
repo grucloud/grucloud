@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project direct-connect-macsec
+skinparam monochrome true
++ Infra
+++ aws
++++ DirectConnect
+++++ Connection (2)
+++++ ConnectionAssociation (1)
+++++ Gateway (1)
+++++ Lag (1)
+++++ MacSecKeyAssociation (1)
+++++ VirtualInterface (1)
+@endmindmap

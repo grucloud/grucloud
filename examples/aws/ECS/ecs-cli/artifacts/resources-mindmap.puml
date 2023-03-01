@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project ECS created by ecs-cli
+title Resources for project ecs-cli
 skinparam monochrome true
 + Infra
 ++ aws

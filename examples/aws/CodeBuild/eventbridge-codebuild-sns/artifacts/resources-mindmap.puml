@@ -6,8 +6,6 @@ skinparam monochrome true
 +++ CloudWatchEvents
 ++++ Rule (2)
 ++++ Target (2)
-+++ CloudWatchLogs
-++++ LogGroup (1)
 +++ CodeBuild
 ++++ Project (1)
 +++ IAM

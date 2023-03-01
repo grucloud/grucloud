@@ -6,8 +6,8 @@ skinparam monochrome true
 +++ IAM
 ++++ Role (1)
 +++ Lambda
-++++ Layer (1)
 ++++ Function (1)
+++++ Layer (1)
 ++++ Permission (1)
 +++ SSM
 ++++ Parameter (2)

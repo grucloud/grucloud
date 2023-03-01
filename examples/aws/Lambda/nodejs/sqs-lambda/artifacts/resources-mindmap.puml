@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project Lambda SQS
+title Resources for project sqs-lambda
 skinparam monochrome true
 + Infra
 ++ aws

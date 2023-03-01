@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project RestApiGateway Lambda
+title Resources for project restapi-lambda
 skinparam monochrome true
 + Infra
 ++ aws

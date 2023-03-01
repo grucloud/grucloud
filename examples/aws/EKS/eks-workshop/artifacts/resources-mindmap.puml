@@ -5,6 +5,8 @@ skinparam monochrome true
 ++ aws
 +++ Aps
 ++++ Workspace (1)
++++ Cloud9
+++++ Environment (1)
 +++ CloudWatchEvents
 ++++ Rule (4)
 ++++ Target (4)
@@ -21,11 +23,10 @@ skinparam monochrome true
 ++++ RouteTable (2)
 ++++ RouteTableAssociation (6)
 ++++ Route (2)
-++++ SecurityGroup (9)
-++++ SecurityGroupRuleIngress (18)
+++++ SecurityGroup (7)
+++++ SecurityGroupRuleIngress (16)
 ++++ SecurityGroupRuleEgress (7)
 ++++ ElasticIpAddress (1)
-++++ Instance (1)
 ++++ VpcIpv4CidrBlockAssociation (1)
 +++ EFS
 ++++ FileSystem (1)
@@ -37,9 +38,8 @@ skinparam monochrome true
 ++++ NodeGroup (3)
 +++ IAM
 ++++ OpenIDConnectProvider (1)
-++++ Role (20)
-++++ Policy (18)
-++++ InstanceProfile (1)
+++++ Role (22)
+++++ Policy (17)
 ++++ User (1)
 +++ KMS
 ++++ Key (3)

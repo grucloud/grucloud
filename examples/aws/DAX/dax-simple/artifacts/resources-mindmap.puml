@@ -4,9 +4,14 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ DAX
+++++ Cluster (1)
 ++++ ParameterGroup (1)
 ++++ SubnetGroup (1)
 +++ EC2
 ++++ Vpc (1)
 ++++ Subnet (2)
+++++ SecurityGroup (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
 @endmindmap

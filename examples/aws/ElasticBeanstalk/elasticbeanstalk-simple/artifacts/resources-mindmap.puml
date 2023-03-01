@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project elasticbeanstalk-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ ElasticBeanstalk
+++++ Application (1)
+++++ ApplicationVersion (1)
+++++ Environment (1)
++++ IAM
+++++ Role (2)
+++++ InstanceProfile (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

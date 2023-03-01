@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project neptune-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (6)
+++++ SecurityGroup (1)
++++ RDS
+++++ DBCluster (1)
+++++ DBSubnetGroup (1)
+++++ DBInstance (1)
+@endmindmap

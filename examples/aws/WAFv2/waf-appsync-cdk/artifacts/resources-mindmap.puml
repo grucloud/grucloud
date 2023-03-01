@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project waf-appsync-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ AppSync
+++++ DataSource (1)
+++++ GraphqlApi (1)
+++++ Resolver (2)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (1)
++++ WAFv2
+++++ WebACL (1)
+++++ WebACLAssociation (1)
+@endmindmap

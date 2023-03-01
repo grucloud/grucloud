@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project Route to default Internet Gateway
+title Resources for project route-table-igw-default
 skinparam monochrome true
 + Infra
 ++ aws

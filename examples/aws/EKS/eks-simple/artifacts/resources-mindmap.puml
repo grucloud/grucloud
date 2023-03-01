@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project EKS Simple
+title Resources for project eks-simple
 skinparam monochrome true
 + Infra
 ++ aws

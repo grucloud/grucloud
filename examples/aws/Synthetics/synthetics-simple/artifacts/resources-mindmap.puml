@@ -7,8 +7,8 @@ skinparam monochrome true
 ++++ Role (1)
 ++++ Policy (1)
 +++ Lambda
-++++ Layer (2)
-++++ Function (1)
+++++ Layer (3)
+++++ Function (2)
 +++ S3
 ++++ Bucket (1)
 +++ Synthetics
