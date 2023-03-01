@@ -9,14 +9,14 @@ const {
   switchCase,
   filter,
 } = require("rubico");
-const { find, isEmpty, unless, size } = require("rubico/x");
+const { find, isEmpty, unless, size, isIn } = require("rubico/x");
 const shell = require("shelljs");
 
 const { createSpinnies } = require("./SpinniesUtils");
 
 const environments = [
   //
-  { awsAccount: "default" },
+  //{ awsAccount: "default" },
   { awsAccount: "e2e-alpha" },
   { awsAccount: "e2e-bravo" },
   { awsAccount: "e2e-charly" },
@@ -28,7 +28,7 @@ const environments = [
   { awsAccount: "e2e-india" },
   { awsAccount: "e2e-juliett" },
   { awsAccount: "e2e-kilo" },
-  // { awsAccount: "e2e-lima" },
+  { awsAccount: "e2e-lima" },
   // { awsAccount: "e2e-mike" },
 ];
 
@@ -159,7 +159,7 @@ const findNextDirectory = ({ resultMap }) =>
 const findCompletedCount = ({ resultMap }) =>
   pipe([
     () => [...resultMap.values()],
-    filter(eq(get("state"), "done")),
+    filter(pipe([get("state"), isIn(["done", "error"])])),
     size,
   ])();
 
