@@ -77,7 +77,7 @@ exports.CodePipelinePipeline = ({}) => ({
           ),
         ]),
     },
-    codeBuildProject: {
+    codeBuildProjects: {
       type: "Project",
       group: "CodeBuild",
       list: true,
@@ -163,7 +163,7 @@ exports.CodePipelinePipeline = ({}) => ({
               assign({
                 location: pipe([
                   get("location"),
-                  replaceRegion({ lives, providerConfig }),
+                  replaceAccountAndRegion({ lives, providerConfig }),
                 ]),
               }),
             ]),

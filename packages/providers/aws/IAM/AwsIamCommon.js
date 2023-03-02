@@ -102,6 +102,11 @@ const dependenciesFromPolicies = {
     type: "FileSystem",
     group: "EFS",
   },
+  kmsKeys: {
+    pathLive: "id",
+    type: "Key",
+    group: "KMS",
+  },
   mqBrokers: {
     pathLive: "id",
     type: "Broker",

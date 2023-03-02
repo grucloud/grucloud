@@ -237,7 +237,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "ParallelE2EPipelineCDK-PipelineRole1E536F97-IZIWS0O1DTXY",
-      codeBuildProject: [
+      codeBuildProjects: [
         "E2ETestsGroupOne5C705D7F-AlarL1qzSAzx",
         "E2ETestsGroupTwoCD478F60-ndZB2YRCtJxb",
       ],
@@ -718,9 +718,7 @@ exports.createResources = () => [
         Rules: [
           {
             ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "aws:kms",
-              KMSMasterKeyID:
-                "arn:aws:kms:us-east-1:840541460064:key/2fff1651-05aa-461a-b1a8-a47263ab57de",
+              SSEAlgorithm: "AES256",
             },
           },
         ],
