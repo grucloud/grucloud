@@ -92,9 +92,17 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-budget-ec2",
+    dependencies: ({}) => ({
+      roles: ["role-budget-ec2"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       RoleName: "role-budget-ec2",
       Description: "Allows EC2 instances to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
@@ -118,18 +126,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "role-budget-ec2",
-    dependencies: ({}) => ({
-      roles: ["role-budget-ec2"],
-    }),
-  },
-  {
     type: "Topic",
     group: "SNS",
     name: "topic-budget",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       Attributes: {
         Policy: {
           Version: "2008-10-17",

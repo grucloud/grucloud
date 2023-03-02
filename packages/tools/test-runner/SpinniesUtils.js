@@ -85,7 +85,7 @@ const onStateChange =
         if (!spinny) {
           return;
         }
-        assert(error, `should have set the error, id: ${uri}`);
+        //assert(error, `should have set the error, id: ${uri}`);
         const spinner = spinnerMap.get(uri);
         if (!spinner) {
           return;

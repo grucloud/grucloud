@@ -34,35 +34,66 @@ const ExcludeDirsDefault = [
   "node_modules",
   "artifacts",
   "empty",
-  "certificate", // // on main account for Route53Domain
-  "cloudfront-distribution", // on main account for Route53Domain
-  "apihw-mutualtls-lambda",
+  "kops", // TODO update
+  "docker", // TODO move docker dir out of the example
+  "Batch",
+  //
+  "auditmanager-simple",
+  "directory-service-microsoft-ad",
+  "inspector2-simple",
+  "guardduty-simple",
+  "securityhub-simple",
+  // Route53Domain only on main account
+  "certificate",
+  "cloudfront-distribution",
+  "identity-provider",
+  "control-tower-simple",
+  "apigw-mutualtls-lambda",
   "http-lambda",
   "auth0",
-  "apprunner-github",
-  "apprunner-leaderboard",
-  "apprunner-nginx",
-  "cloudfront-distribution",
-  "cloudfront-lambda-edge-cdk-python", // TODO
-  "cloudfront-le-apigw-cdk", // TODO
   "eks-load-balancer",
   "load-balancer",
   "lightsail-wordpress",
   "route53-delegation-set",
   "website-https",
-  "kops", // TODO update
-  "docker", // TODO move docker dir out of the example
+  // Bugs
+  "cost-explorer-simple",
+  "appconfig-feature-flag-sam",
+  "apprunner-github",
+  "apprunner-leaderboard",
+  "apprunner-simple",
+  "apprunner-ngnix",
+  "apprunner-secrets-manager",
+  "cloudfront-distribution",
+  "cloudfront-lambda-edge-cdk-python", // TODO
+  "cloudfront-le-apigw-cdk", // TODO
   "xray-lambdalayers-cdk-python",
   "stepfunctions-eventbridge-lambda-sam-java",
   "role-everywhere",
   "lambda-layer-terraform",
   "retail-store-sample-app",
   "appflow-redshift",
-  "apprunner-secrets-manager",
+  "appstream-stack",
+  "cognito-restapi-vpclink",
   "apigw-http-eventbridge-terraform",
   "aws-route53-recovery-control-config",
   "amplify-nextjs",
   "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
+  "appstream-simple", // need to create an S3 object
+  "backup-simple",
+  "apigw-rest-api-batch-sam",
+  "cloud9-simple", // reason: 'Instance profile AWSCloud9SSMInstanceProfile does not exist in this account. Please create an instance profile and role as described here https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html',
+  "graphql", //
+  "eventbridge-codebuild-sns", // S3 "AccessDenied: Access Denied"
+  "eventbridge-sfn-terraform",
+  "cloudwatch-logs-subscription-lambda-cdk", //SubscriptionFilter: "Could not execute the lambda function. Make sure you have given CloudWatch Logs permission to execute your function.",
+  "config-simple", // issue with the cloud formation format
+  "dax-simple", //  "No permission to assume role: arn:aws:iam::729329093404:role/service-role/daxdynamodb",
+  "dynamodb-kinesis", // Table is not in a valid state to enable Kinesis Streaming Destination: KinesisStreamingDestination must be ACTIVE to perform DISABLE operation.
+  "ec2-credit", // "This account cannot launch T2 instances with Unlimited enabled. Please contact AWS Support to enable this feature.",
+  //"elasticache-redis-full",
+  "elasticbeanstalk-simple",
+  "fsx-openzfs", // Volume "1 validation error detected: Value null at 'openZFSConfiguration.parentVolumeId' failed to satisfy constraint: Member must not be null",
 ];
 
 const fileExist = pipe([

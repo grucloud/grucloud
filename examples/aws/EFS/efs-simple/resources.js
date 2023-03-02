@@ -204,8 +204,8 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      efsFileSystems: ["fs-0c95a09faadb73087"],
       efsAccessPoints: ["fsap-0ef29121aa02af8f7"],
+      efsFileSystems: ["fs-0c95a09faadb73087"],
     }),
   },
   {

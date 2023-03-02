@@ -115,6 +115,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "SSMCloudWatchAlarmDiscoveryRole",
+    dependencies: ({}) => ({
+      roles: ["SSMCloudWatchAlarmDiscoveryRole"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -153,14 +161,6 @@ exports.createResources = () => [
         ],
       },
       Path: "/",
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "SSMCloudWatchAlarmDiscoveryRole",
-    dependencies: ({}) => ({
-      roles: ["SSMCloudWatchAlarmDiscoveryRole"],
     }),
   },
   { type: "Topic", group: "SNS", name: "5xx_Errors_SNS_Topic" },

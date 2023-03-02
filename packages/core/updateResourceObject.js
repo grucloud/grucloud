@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, switchCase, or } = require("rubico");
+const { keys, includes } = require("rubico/x");
 
 exports.updateResourceObject =
   ({ path, onAdded, onUpdated, onDeleted }) =>
@@ -14,7 +15,14 @@ exports.updateResourceObject =
       () => diff,
       switchCase([
         // Updated
-        or([get(`liveDiff.updated.${path}`)]),
+        pipe([
+          get(`liveDiff.updated`),
+          keys,
+          tap((params) => {
+            assert(true);
+          }),
+          includes(path),
+        ]),
         pipe([() => payload, onUpdated({ endpoint, live })]),
         // Added
         or([get(`liveDiff.added.${path}`)]),

@@ -111,6 +111,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-ecs",
+    dependencies: ({}) => ({
+      roles: ["role-ecs"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -127,14 +135,6 @@ exports.createResources = () => [
           },
         ],
       },
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "role-ecs",
-    dependencies: ({}) => ({
-      roles: ["role-ecs"],
     }),
   },
 ];

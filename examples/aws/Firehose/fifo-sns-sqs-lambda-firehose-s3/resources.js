@@ -16,9 +16,6 @@ exports.createResources = () => [
           IntervalInSeconds: 60,
           SizeInMBs: 1,
         },
-        CloudWatchLoggingOptions: {
-          Enabled: false,
-        },
         CompressionFormat: "UNCOMPRESSED",
         DataFormatConversionConfiguration: {
           Enabled: false,
@@ -193,6 +190,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "fifo-sns-sqs-lambda-firehose-s3-bucket-5d62e6b5",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   {

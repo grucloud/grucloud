@@ -93,7 +93,7 @@ const cannotBeDeleted = () =>
         get("RoleName"),
         or([
           includes("cdk-"),
-          callProp("startsWith", "AWS"),
+          //callProp("startsWith", "AWS"),
           callProp("startsWith", "stacksets-exec-"),
           eq(identity, "OrganizationAccountAccessRole"),
         ]),

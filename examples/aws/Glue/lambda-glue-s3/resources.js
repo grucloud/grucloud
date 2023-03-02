@@ -276,6 +276,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "my-glue-job-bucket",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       Policy: {
         Version: "2012-10-17",
         Statement: [

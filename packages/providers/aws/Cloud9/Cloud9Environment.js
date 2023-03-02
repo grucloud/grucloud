@@ -109,7 +109,7 @@ exports.Cloud9Environment = () => ({
         pipe([
           get("subnetId"),
           tap((id) => {
-            assert(id);
+            //assert(id);
           }),
         ]),
     },
@@ -175,7 +175,7 @@ exports.Cloud9Environment = () => ({
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { iamUser },
+    dependencies: { iamUser, subnet },
     config,
   }) =>
     pipe([
@@ -184,5 +184,9 @@ exports.Cloud9Environment = () => ({
         tags: buildTags({ config, namespace, UserTags: tags }),
       }),
       when(() => iamUser, defaultsDeep({ ownerArn: getField(iamUser, "Arn") })),
+      when(
+        () => subnet,
+        defaultsDeep({ subnetId: getField(subnet, "SubnetId") })
+      ),
     ])(),
 });

@@ -87,6 +87,7 @@ exports.DynamoDBKinesisStreamingDestination = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#enableKinesisStreamingDestination-property
   create: { method: "enableKinesisStreamingDestination" },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#disableKinesisStreamingDestination-property
+  // TODO ValidationException: Table is not in a valid state to enable Kinesis Streaming Destination: KinesisStreamingDestination must be ACTIVE to perform DISABLE operation.
   destroy: {
     method: "disableKinesisStreamingDestination",
     pickId,

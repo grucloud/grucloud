@@ -52,7 +52,11 @@ const executeCommand = ({ command, environment }) =>
             silent: true,
             async: true,
             cwd: directory,
-            env: { ...process.env, AWS_PROFILE: environment.awsAccount },
+            env: {
+              ...process.env,
+              AWS_PROFILE: environment.awsAccount,
+              CONTINUOUS_INTEGRATION: true,
+            },
           },
           (code, stdout, stderr) =>
             pipe([

@@ -22,6 +22,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "grucloud-s3-event-bridge-logs",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       Policy: {
         Version: "2012-10-17",
         Statement: [

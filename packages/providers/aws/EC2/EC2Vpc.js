@@ -35,6 +35,8 @@ const { buildTags, findNameInTagsOrId, arnFromId } = require("../AwsCommon");
 
 const { tagResource, untagResource } = require("./EC2Common");
 
+const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
+
 const isDefault = () => pipe([get("IsDefault")]);
 const cannotBeDeleted = isDefault;
 const managedByOther = isDefault;
@@ -214,6 +216,31 @@ const destroyRouteTables =
         )
       ),
     ])();
+
+const onUpdated =
+  ({ path, propertyKey }) =>
+  ({ endpoint, live }) =>
+    pipe([
+      tap((params) => {
+        assert(live.VpcId);
+      }),
+      get(path, false),
+      (Value) => ({
+        [propertyKey]: {
+          Value,
+        },
+        VpcId: live.VpcId,
+      }),
+      endpoint().modifyVpcAttribute,
+    ]);
+
+const updateVpcProperty = ({ path, propertyKey }) =>
+  updateResourceObject({
+    path,
+    onDeleted: onUpdated({ path, propertyKey }),
+    onAdded: onUpdated({ path, propertyKey }),
+    onUpdated: onUpdated({ path, propertyKey }),
+  });
 
 exports.EC2Vpc = ({ compare }) => ({
   type: "Vpc",
@@ -406,37 +433,16 @@ exports.EC2Vpc = ({ compare }) => ({
         tap((params) => {
           assert(live.VpcId);
         }),
-        () => diff,
-        tap.if(
-          pipe([
-            get("liveDiff.updated", ""),
-            callProp("hasOwnProperty", "DnsSupport"),
-          ]),
-          pipe([
-            () => ({
-              EnableDnsSupport: {
-                Value: payload.DnsSupport,
-              },
-              VpcId: live.VpcId,
-            }),
-            endpoint().modifyVpcAttribute,
-          ])
-        ),
-        tap.if(
-          pipe([
-            get("liveDiff.updated", ""),
-            callProp("hasOwnProperty", "DnsHostnames"),
-          ]),
-          pipe([
-            () => ({
-              EnableDnsHostnames: {
-                Value: payload.DnsHostnames,
-              },
-              VpcId: live.VpcId,
-            }),
-            endpoint().modifyVpcAttribute,
-          ])
-        ),
+        () => ({ payload, live, diff, endpoint }),
+        updateVpcProperty({
+          path: "DnsSupport",
+          propertyKey: "EnableDnsSupport",
+        }),
+        () => ({ payload, live, diff, endpoint }),
+        updateVpcProperty({
+          path: "DnsHostnames",
+          propertyKey: "EnableDnsHostnames",
+        }),
       ])(),
   destroy: {
     pickId,
