@@ -15,6 +15,7 @@ const profiles = [
   "e2e-golf",
   "e2e-hotel",
   "e2e-india",
+  "e2e-juliett",
   "e2e-kilo",
   "e2e-lima",
   "e2e-mike",

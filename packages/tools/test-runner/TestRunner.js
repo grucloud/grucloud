@@ -82,9 +82,9 @@ const buildContextSummary = ({ total, completed }) => ({
   state: { completed, total },
 });
 
-const buildContext = ({ directory, name }) => ({
+const buildContext = ({ directory, name, environment }) => ({
   uri: directory,
-  displayText: () => name,
+  displayText: () => `${name.padEnd(32, " ")} [${environment.awsAccount}]`,
 });
 
 const runCommandWrapper = ({
@@ -108,11 +108,11 @@ const runCommandWrapper = ({
           tap(() => {
             resultMap.set(directory, { state: "running" });
             onStateChange({
-              context: buildContext({ directory, name }),
+              context: buildContext({ directory, name, environment }),
               nextState: "WAITING",
             });
             onStateChange({
-              context: buildContext({ directory, name }),
+              context: buildContext({ directory, name, environment }),
               nextState: "RUNNING",
             });
           }),
@@ -121,7 +121,7 @@ const runCommandWrapper = ({
           tap(() => {
             resultMap.set(directory, { state: "done" });
             onStateChange({
-              context: buildContext({ name, directory }),
+              context: buildContext({ name, directory, environment }),
               nextState: "DONE",
             });
             onStateChange({
@@ -138,7 +138,7 @@ const runCommandWrapper = ({
           tap(() => {
             resultMap.set(directory, { state: "error", error });
             onStateChange({
-              context: buildContext({ name, directory }),
+              context: buildContext({ name, directory, environment }),
               nextState: "ERROR",
               error,
             });
