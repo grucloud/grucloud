@@ -163,6 +163,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "kvsrekognitionstack-eventstoragebucket14454e38-o5telhg78x4s",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   {
