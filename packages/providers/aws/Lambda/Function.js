@@ -622,7 +622,7 @@ exports.LambdaFunction = () => ({
         ),
         // putFunctionEventInvokeConfig
         when(
-          () => get("liveDiff.updated.FunctionUrlConfig")(diff),
+          () => get("liveDiff.updated.EventInvokeConfig")(diff),
           pipe([
             tap((params) => {
               assert(true);

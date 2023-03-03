@@ -43,6 +43,7 @@ const ExcludeDirsDefault = [
   "inspector2-simple",
   "guardduty-simple",
   "securityhub-simple",
+  "identity-store-simple",
   // Route53Domain only on main account
   "certificate",
   "cloudfront-distribution",
@@ -56,7 +57,12 @@ const ExcludeDirsDefault = [
   "lightsail-wordpress",
   "route53-delegation-set",
   "website-https",
+
   // Bugs
+  "Ivschat", // 'Your account is pending verification. Until the verification process is complete, you may not be able to carry out requests with this account. If you have questions, contact AWS Support.',
+  "IVS",
+  "lake-formation", // "Insufficient Lake Formation permission(s): Required Create Tag on Catalog",
+
   "cost-explorer-simple",
   "appconfig-feature-flag-sam",
   "apprunner-github",
