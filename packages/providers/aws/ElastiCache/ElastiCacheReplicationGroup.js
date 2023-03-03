@@ -105,6 +105,7 @@ exports.ElastiCacheReplicationGroup = () => ({
     "KmsKeyId",
     "NotificationTopicArn",
     "MultiAZ",
+    "SnapshotRetentionLimit",
   ],
   inferName: () => get("ReplicationGroupId"),
   //TODO check all deps

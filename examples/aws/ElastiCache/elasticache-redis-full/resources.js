@@ -196,7 +196,7 @@ exports.createResources = () => [
       DeliveryStreamName: "delivery-stream-s3",
       DeliveryStreamType: "DirectPut",
       ExtendedS3DestinationConfiguration: {
-        BucketARN: "arn:aws:s3:::gc-firehose-destination",
+        BucketARN: `arn:aws:s3:::gc-firehose-destination-${config.accountId()}`,
         BufferingHints: {
           IntervalInSeconds: 300,
           SizeInMBs: 5,
@@ -298,8 +298,8 @@ exports.createResources = () => [
               "s3:PutObject",
             ],
             Resource: [
-              "arn:aws:s3:::gc-firehose-destination",
-              "arn:aws:s3:::gc-firehose-destination/*",
+              `arn:aws:s3:::gc-firehose-destination-${config.accountId()}`,
+              `arn:aws:s3:::gc-firehose-destination-${config.accountId()}/*`,
             ],
           },
           {
@@ -386,8 +386,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    properties: ({}) => ({
-      Name: "gc-firehose-destination",
+    properties: ({ config }) => ({
+      Name: `gc-firehose-destination-${config.accountId()}`,
     }),
   },
   {

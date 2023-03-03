@@ -101,7 +101,6 @@ exports.createResources = () => [
       SnapshotWindow: "06:30-07:30",
       ClusterEnabled: false,
       CacheNodeType: "cache.t2.micro",
-      LogDeliveryConfigurations: [],
       CacheParameterGroupName: "default.redis7",
       CacheSubnetGroupName: "my-sutnet-group",
       NumCacheClusters: 2,
