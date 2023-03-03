@@ -77,12 +77,17 @@ exports.EFSFileSystem = ({ compare }) => ({
   create: {
     method: "createFileSystem",
     isInstanceUp: eq(get("LifeCycleState"), "available"),
+    configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
   },
   update: {
     method: "updateFileSystem",
     filterParams: ({ payload }) => pipe([() => payload]),
   },
-  destroy: { method: "deleteFileSystem", pickId },
+  destroy: {
+    method: "deleteFileSystem",
+    pickId,
+    configIsDown: { retryCount: 40 * 12, retryDelay: 5e3 },
+  },
   getByName: getByNameCore,
   tagger: ({ config }) =>
     Tagger({

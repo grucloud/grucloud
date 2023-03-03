@@ -5,6 +5,7 @@ const region = "us-east-1";
 
 const profiles = [
   //
+  "default",
   "e2e-alpha",
   "e2e-bravo",
   "e2e-charly",
