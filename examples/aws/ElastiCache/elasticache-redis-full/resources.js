@@ -391,13 +391,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Bucket",
-    group: "S3",
-    properties: ({}) => ({
-      Name: "gc-firehose-error",
-    }),
-  },
-  {
     type: "Topic",
     group: "SNS",
     name: "topic-elasticache-redis.fifo",
