@@ -37,6 +37,8 @@ const ExcludeDirsDefault = [
   "kops", // TODO update
   "docker", // TODO move docker dir out of the example
   "Batch",
+  "FSx", // "much expensive $$$"
+  "DirectoryService", // "much expensive $$$"
   //
   "auditmanager-simple",
   "directory-service-microsoft-ad",
@@ -44,6 +46,9 @@ const ExcludeDirsDefault = [
   "guardduty-simple",
   "securityhub-simple",
   "identity-store-simple",
+  "organisations-policy",
+  "account-bulk",
+  "macie-simple",
   // Route53Domain only on main account
   "certificate",
   "cloudfront-distribution",

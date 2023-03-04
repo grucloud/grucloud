@@ -76,6 +76,10 @@ exports.OpenSearchDomain = ({ compare }) => ({
     EncryptionAtRestOptions: {
       Enabled: true,
     },
+    AutoTuneOptions: {
+      UseOffPeakWindow: false,
+      DesiredState: "ENABLED",
+    },
     DomainEndpointOptions: { TLSSecurityPolicy: "Policy-Min-TLS-1-0-2019-07" },
     EBSOptions: {
       EBSEnabled: true,
@@ -88,6 +92,15 @@ exports.OpenSearchDomain = ({ compare }) => ({
       Enabled: true,
     },
     SnapshotOptions: {},
+    OffPeakWindowOptions: {
+      Enabled: true,
+      OffPeakWindow: {
+        WindowStartTime: {
+          Hours: 3,
+          Minutes: 0,
+        },
+      },
+    },
   },
   omitProperties: [
     "DomainId",

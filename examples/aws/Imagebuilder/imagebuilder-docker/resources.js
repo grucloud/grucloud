@@ -18,6 +18,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "EC2InstanceProfileForImageBuilder",
+    dependencies: ({}) => ({
+      roles: ["EC2InstanceProfileForImageBuilder"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -50,14 +58,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/EC2InstanceProfileForImageBuilderECRContainerBuilds",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "EC2InstanceProfileForImageBuilder",
-    dependencies: ({}) => ({
-      roles: ["EC2InstanceProfileForImageBuilder"],
     }),
   },
   {
