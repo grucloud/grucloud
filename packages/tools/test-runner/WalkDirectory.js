@@ -39,6 +39,7 @@ const ExcludeDirsDefault = [
   "Batch",
   "FSx", // "much expensive $$$"
   "DirectoryService", // "much expensive $$$"
+  "datasync-fsxwindows", // "much expensive $$$"
   //
   "auditmanager-simple",
   "directory-service-microsoft-ad",
@@ -49,6 +50,9 @@ const ExcludeDirsDefault = [
   "organisations-policy",
   "account-bulk",
   "macie-simple",
+  "ssoadmin-simple",
+  "securityhub-simple/",
+  //"redshiftserverless-simple",
   // Route53Domain only on main account
   "certificate",
   "cloudfront-distribution",
@@ -62,10 +66,14 @@ const ExcludeDirsDefault = [
   "lightsail-wordpress",
   "route53-delegation-set",
   "website-https",
-
   // Bugs
+  //"codedeploy-ecs", // CodeDeploy::DeploymentGroup 0/1  AWS CodeDeploy does not have the permissions required to assume the role arn:aws:iam::840541460064:role/roleECSCodeDeploy.
+  "memorydb-parameter-group-default", // "Subnets: [subnet-08ff91f6dbe67999c] are not in a supported availability zone. Supported availability zones are [us-east-1c, us-east-1d, us-east-1b]."
+  "memorydb-simple",
+  "subscription-filter", // Could not execute the lambda function. Make sure you have given CloudWatch Logs permission to execute your function.
+  "cloudhsmv2", // CloudHSM is not currently available in us-east-1a
   "Ivschat", // 'Your account is pending verification. Until the verification process is complete, you may not be able to carry out requests with this account. If you have questions, contact AWS Support.',
-  "IVS",
+  "IVS", // 'Your account is pending verification. Until the verification process is complete, you may not be able to carry out requests with this account. If you have questions, contact AWS Support.',
   "lake-formation", // "Insufficient Lake Formation permission(s): Required Create Tag on Catalog",
 
   "cost-explorer-simple",

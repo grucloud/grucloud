@@ -335,6 +335,9 @@ exports.CodeDeployDeploymentGroup = ({ compare }) => ({
       ({ payload }) =>
       () =>
         payload,
+    shouldRetryOnExceptionMessages: [
+      "AWS CodeDeploy does not have the permissions required to assume the role",
+    ],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeDeploy.html#updateDeploymentGroup-property
   update: {

@@ -204,21 +204,24 @@ const filterLiveCacheBehavior = ({ providerConfig, lives }) =>
       assign({
         FunctionAssociations: pipe([
           get("FunctionAssociations"),
-          assign({
-            Items: pipe([
-              get("Items"),
-              map(
-                pipe([
-                  assign({
-                    FunctionARN: pipe([
-                      get("FunctionARN"),
-                      replaceAccountAndRegion({ providerConfig, lives }),
-                    ]),
-                  }),
-                ])
-              ),
-            ]),
-          }),
+          when(
+            get("Items"),
+            assign({
+              Items: pipe([
+                get("Items"),
+                map(
+                  pipe([
+                    assign({
+                      FunctionARN: pipe([
+                        get("FunctionARN"),
+                        replaceAccountAndRegion({ providerConfig, lives }),
+                      ]),
+                    }),
+                  ])
+                ),
+              ]),
+            })
+          ),
         ]),
       })
     ),
@@ -227,21 +230,24 @@ const filterLiveCacheBehavior = ({ providerConfig, lives }) =>
       assign({
         LambdaFunctionAssociations: pipe([
           get("LambdaFunctionAssociations"),
-          assign({
-            Items: pipe([
-              get("Items"),
-              map(
-                pipe([
-                  assign({
-                    LambdaFunctionARN: pipe([
-                      get("LambdaFunctionARN"),
-                      replaceAccountAndRegion({ providerConfig, lives }),
-                    ]),
-                  }),
-                ])
-              ),
-            ]),
-          }),
+          when(
+            get("Items"),
+            assign({
+              Items: pipe([
+                get("Items"),
+                map(
+                  pipe([
+                    assign({
+                      LambdaFunctionARN: pipe([
+                        get("LambdaFunctionARN"),
+                        replaceAccountAndRegion({ providerConfig, lives }),
+                      ]),
+                    }),
+                  ])
+                ),
+              ]),
+            })
+          ),
         ]),
       })
     ),

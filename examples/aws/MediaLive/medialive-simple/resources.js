@@ -29,13 +29,8 @@ exports.createResources = () => [
             Name: "audio_0hmr8r",
           },
         ],
-        AvailBlanking: {},
         AvailConfiguration: {},
-        BlackoutSlate: {},
         CaptionDescriptions: [],
-        FeatureActivations: {},
-        GlobalConfiguration: {},
-        NielsenConfiguration: {},
         OutputGroups: [
           {
             Name: "gr-medialiveoutput",
@@ -121,7 +116,6 @@ exports.createResources = () => [
             type: "Input",
             group: "MediaLive",
             name: "my-input",
-            path: "live.InputId",
           })}`,
           InputSettings: {
             AudioSelectors: [],

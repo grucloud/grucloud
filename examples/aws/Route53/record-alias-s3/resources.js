@@ -31,6 +31,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "site.grucloud.org",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       WebsiteConfiguration: {
         IndexDocument: {
           Suffix: "index.html",

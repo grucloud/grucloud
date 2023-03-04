@@ -88,36 +88,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Layer",
-    group: "Lambda",
-    properties: ({}) => ({
-      LayerName: "cwsyn-my-canary-2bf3df82-6b6a-4cf0-983a-b489fc267051",
-      Description:
-        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
-      CompatibleRuntimes: ["nodejs14.x"],
-    }),
-  },
-  {
-    type: "Layer",
-    group: "Lambda",
-    properties: ({}) => ({
-      LayerName: "cwsyn-my-canary-351357ed-53be-4586-b1b3-e83dda2a8f15",
-      Description:
-        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
-      CompatibleRuntimes: ["nodejs14.x"],
-    }),
-  },
-  {
-    type: "Layer",
-    group: "Lambda",
-    properties: ({}) => ({
-      LayerName: "cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3",
-      Description:
-        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
-      CompatibleRuntimes: ["nodejs14.x"],
-    }),
-  },
-  {
     type: "Function",
     group: "Lambda",
     properties: ({ getId }) => ({
@@ -148,6 +118,32 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ getId }) => ({
       Configuration: {
+        FunctionName: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
+        Handler: "index.handler",
+        Layers: [
+          "arn:aws:lambda:us-east-1:378653112637:layer:Synthetics:30",
+          `${getId({
+            type: "Layer",
+            group: "Lambda",
+            name: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
+            path: "live.LayerVersionArn",
+          })}`,
+        ],
+        MemorySize: 1000,
+        Runtime: "nodejs14.x",
+        Timeout: 300,
+      },
+    }),
+    dependencies: ({}) => ({
+      layers: ["cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e"],
+      role: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
+    }),
+  },
+  {
+    type: "Function",
+    group: "Lambda",
+    properties: ({ getId }) => ({
+      Configuration: {
         FunctionName: "cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3",
         Handler: "index.handler",
         Layers: [
@@ -167,6 +163,46 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       layers: ["cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3"],
       role: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
+    }),
+  },
+  {
+    type: "Layer",
+    group: "Lambda",
+    properties: ({}) => ({
+      LayerName: "cwsyn-my-canary-2bf3df82-6b6a-4cf0-983a-b489fc267051",
+      Description:
+        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
+      CompatibleRuntimes: ["nodejs14.x"],
+    }),
+  },
+  {
+    type: "Layer",
+    group: "Lambda",
+    properties: ({}) => ({
+      LayerName: "cwsyn-my-canary-351357ed-53be-4586-b1b3-e83dda2a8f15",
+      Description:
+        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
+      CompatibleRuntimes: ["nodejs14.x"],
+    }),
+  },
+  {
+    type: "Layer",
+    group: "Lambda",
+    properties: ({}) => ({
+      LayerName: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
+      Description:
+        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
+      CompatibleRuntimes: ["nodejs14.x"],
+    }),
+  },
+  {
+    type: "Layer",
+    group: "Lambda",
+    properties: ({}) => ({
+      LayerName: "cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3",
+      Description:
+        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
+      CompatibleRuntimes: ["nodejs14.x"],
     }),
   },
   {
@@ -214,8 +250,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       iamRole: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
-      lambdaFunction: "cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3",
-      lambdaLayer: "cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3",
+      lambdaFunction: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
+      lambdaLayer: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
     }),
   },
 ];

@@ -102,7 +102,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({}) => ({
       RoleName: "role-budget-ec2",
       Description: "Allows EC2 instances to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
@@ -129,7 +129,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "topic-budget",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       Attributes: {
         Policy: {
           Version: "2008-10-17",

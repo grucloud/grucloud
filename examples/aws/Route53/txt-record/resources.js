@@ -15,9 +15,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      domain: "grucloud.org",
-    }),
   },
   {
     type: "Record",
@@ -32,6 +29,9 @@ exports.createResources = () => [
             '"google-site-verification=DPVEQ54F8sKTj__itc4iAXA4my_hB-bzUlMYFqx6gCI"',
         },
       ],
+    }),
+    dependencies: ({}) => ({
+      hostedZone: "grucloud.org.",
     }),
   },
 ];

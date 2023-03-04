@@ -97,7 +97,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       ReplicationGroupDescription: " ",
       ReplicationGroupId: "my-simple-redis-cluster-3",
-      SnapshotRetentionLimit: 1,
       SnapshotWindow: "06:30-07:30",
       ClusterEnabled: false,
       CacheNodeType: "cache.t2.micro",

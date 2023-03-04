@@ -7,158 +7,8 @@ exports.createResources = () => [
     type: "Distribution",
     group: "CloudFront",
     properties: ({ getId }) => ({
-      PriceClass: "PriceClass_All",
       DefaultRootObject: "",
-      CacheBehaviors: {
-        Quantity: 3,
-        Items: [
-          {
-            PathPattern: "*.m3u8",
-            TargetOriginId:
-              "StreamingStackMyCloudFrontDistributionOrigin198011964",
-            TrustedSigners: {
-              Enabled: false,
-            },
-            TrustedKeyGroups: {
-              Enabled: false,
-            },
-            ViewerProtocolPolicy: "redirect-to-https",
-            AllowedMethods: {
-              Quantity: 7,
-              Items: [
-                "HEAD",
-                "DELETE",
-                "POST",
-                "GET",
-                "OPTIONS",
-                "PUT",
-                "PATCH",
-              ],
-              CachedMethods: {
-                Quantity: 2,
-                Items: ["HEAD", "GET"],
-              },
-            },
-            SmoothStreaming: false,
-            Compress: true,
-            LambdaFunctionAssociations: {
-              Quantity: 0,
-            },
-            FunctionAssociations: {
-              Quantity: 0,
-              Items: undefined,
-            },
-            FieldLevelEncryptionId: "",
-            CachePolicyId: "08627262-05a9-4f76-9ded-b50ca2e3a84f",
-            OriginRequestPolicyId: `${getId({
-              type: "OriginRequestPolicy",
-              group: "CloudFront",
-              name: "StreamingStackViewer-Country-City",
-            })}`,
-          },
-          {
-            PathPattern: "*.ts",
-            TargetOriginId:
-              "StreamingStackMyCloudFrontDistributionOrigin198011964",
-            TrustedSigners: {
-              Enabled: false,
-            },
-            TrustedKeyGroups: {
-              Enabled: false,
-            },
-            ViewerProtocolPolicy: "redirect-to-https",
-            AllowedMethods: {
-              Quantity: 2,
-              Items: ["HEAD", "GET"],
-              CachedMethods: {
-                Quantity: 2,
-                Items: ["HEAD", "GET"],
-              },
-            },
-            SmoothStreaming: false,
-            Compress: true,
-            LambdaFunctionAssociations: {
-              Quantity: 0,
-            },
-            FunctionAssociations: {
-              Quantity: 0,
-              Items: undefined,
-            },
-            FieldLevelEncryptionId: "",
-            CachePolicyId: "08627262-05a9-4f76-9ded-b50ca2e3a84f",
-            OriginRequestPolicyId: `${getId({
-              type: "OriginRequestPolicy",
-              group: "CloudFront",
-              name: "StreamingStackViewer-Country-City",
-            })}`,
-          },
-          {
-            PathPattern: "*.mpd",
-            TargetOriginId:
-              "StreamingStackMyCloudFrontDistributionOrigin198011964",
-            TrustedSigners: {
-              Enabled: false,
-            },
-            TrustedKeyGroups: {
-              Enabled: false,
-            },
-            ViewerProtocolPolicy: "redirect-to-https",
-            AllowedMethods: {
-              Quantity: 2,
-              Items: ["HEAD", "GET"],
-              CachedMethods: {
-                Quantity: 2,
-                Items: ["HEAD", "GET"],
-              },
-            },
-            SmoothStreaming: false,
-            Compress: true,
-            LambdaFunctionAssociations: {
-              Quantity: 0,
-            },
-            FunctionAssociations: {
-              Quantity: 0,
-              Items: undefined,
-            },
-            FieldLevelEncryptionId: "",
-            CachePolicyId: "08627262-05a9-4f76-9ded-b50ca2e3a84f",
-            OriginRequestPolicyId: `${getId({
-              type: "OriginRequestPolicy",
-              group: "CloudFront",
-              name: "StreamingStackViewer-Country-City",
-            })}`,
-          },
-        ],
-      },
-      DefaultCacheBehavior: {
-        TargetOriginId: "StreamingStackMyCloudFrontDistributionOrigin198011964",
-        TrustedSigners: {
-          Enabled: false,
-        },
-        TrustedKeyGroups: {
-          Enabled: false,
-        },
-        ViewerProtocolPolicy: "redirect-to-https",
-        AllowedMethods: {
-          Quantity: 2,
-          Items: ["HEAD", "GET"],
-          CachedMethods: {
-            Quantity: 2,
-            Items: ["HEAD", "GET"],
-          },
-        },
-        SmoothStreaming: false,
-        Compress: true,
-        FieldLevelEncryptionId: "",
-        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
-        OriginRequestPolicyId: `${getId({
-          type: "OriginRequestPolicy",
-          group: "CloudFront",
-          name: "StreamingStackViewer-Country-City",
-        })}`,
-      },
       Origins: {
-        Quantity: 1,
         Items: [
           {
             Id: "StreamingStackMyCloudFrontDistributionOrigin198011964",
@@ -198,13 +48,141 @@ exports.createResources = () => [
           },
         ],
       },
-      Comment: "StreamingStack - CDK deployment Secure Media Delivery",
-      Logging: {
-        Enabled: false,
-        IncludeCookies: false,
-        Bucket: "",
-        Prefix: "",
+      DefaultCacheBehavior: {
+        TargetOriginId: "StreamingStackMyCloudFrontDistributionOrigin198011964",
+        TrustedSigners: {
+          Enabled: false,
+        },
+        TrustedKeyGroups: {
+          Enabled: false,
+        },
+        ViewerProtocolPolicy: "redirect-to-https",
+        AllowedMethods: {
+          Quantity: 2,
+          Items: ["HEAD", "GET"],
+          CachedMethods: {
+            Quantity: 2,
+            Items: ["HEAD", "GET"],
+          },
+        },
+        SmoothStreaming: false,
+        Compress: true,
+        FieldLevelEncryptionId: "",
+        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
+        OriginRequestPolicyId: `${getId({
+          type: "OriginRequestPolicy",
+          group: "CloudFront",
+          name: "StreamingStackViewer-Country-City",
+        })}`,
       },
+      CacheBehaviors: {
+        Quantity: 3,
+        Items: [
+          {
+            PathPattern: "*.m3u8",
+            TargetOriginId:
+              "StreamingStackMyCloudFrontDistributionOrigin198011964",
+            TrustedSigners: {
+              Enabled: false,
+            },
+            TrustedKeyGroups: {
+              Enabled: false,
+            },
+            ViewerProtocolPolicy: "redirect-to-https",
+            AllowedMethods: {
+              Quantity: 7,
+              Items: [
+                "HEAD",
+                "DELETE",
+                "POST",
+                "GET",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+              ],
+              CachedMethods: {
+                Quantity: 2,
+                Items: ["HEAD", "GET"],
+              },
+            },
+            SmoothStreaming: false,
+            Compress: true,
+            LambdaFunctionAssociations: {},
+            FunctionAssociations: {},
+            FieldLevelEncryptionId: "",
+            CachePolicyId: "08627262-05a9-4f76-9ded-b50ca2e3a84f",
+            OriginRequestPolicyId: `${getId({
+              type: "OriginRequestPolicy",
+              group: "CloudFront",
+              name: "StreamingStackViewer-Country-City",
+            })}`,
+          },
+          {
+            PathPattern: "*.ts",
+            TargetOriginId:
+              "StreamingStackMyCloudFrontDistributionOrigin198011964",
+            TrustedSigners: {
+              Enabled: false,
+            },
+            TrustedKeyGroups: {
+              Enabled: false,
+            },
+            ViewerProtocolPolicy: "redirect-to-https",
+            AllowedMethods: {
+              Quantity: 2,
+              Items: ["HEAD", "GET"],
+              CachedMethods: {
+                Quantity: 2,
+                Items: ["HEAD", "GET"],
+              },
+            },
+            SmoothStreaming: false,
+            Compress: true,
+            LambdaFunctionAssociations: {},
+            FunctionAssociations: {},
+            FieldLevelEncryptionId: "",
+            CachePolicyId: "08627262-05a9-4f76-9ded-b50ca2e3a84f",
+            OriginRequestPolicyId: `${getId({
+              type: "OriginRequestPolicy",
+              group: "CloudFront",
+              name: "StreamingStackViewer-Country-City",
+            })}`,
+          },
+          {
+            PathPattern: "*.mpd",
+            TargetOriginId:
+              "StreamingStackMyCloudFrontDistributionOrigin198011964",
+            TrustedSigners: {
+              Enabled: false,
+            },
+            TrustedKeyGroups: {
+              Enabled: false,
+            },
+            ViewerProtocolPolicy: "redirect-to-https",
+            AllowedMethods: {
+              Quantity: 2,
+              Items: ["HEAD", "GET"],
+              CachedMethods: {
+                Quantity: 2,
+                Items: ["HEAD", "GET"],
+              },
+            },
+            SmoothStreaming: false,
+            Compress: true,
+            LambdaFunctionAssociations: {},
+            FunctionAssociations: {},
+            FieldLevelEncryptionId: "",
+            CachePolicyId: "08627262-05a9-4f76-9ded-b50ca2e3a84f",
+            OriginRequestPolicyId: `${getId({
+              type: "OriginRequestPolicy",
+              group: "CloudFront",
+              name: "StreamingStackViewer-Country-City",
+            })}`,
+          },
+        ],
+      },
+      Comment: "StreamingStack - CDK deployment Secure Media Delivery",
+      PriceClass: "PriceClass_All",
       ViewerCertificate: {
         CloudFrontDefaultCertificate: true,
         SSLSupportMethod: "vip",
