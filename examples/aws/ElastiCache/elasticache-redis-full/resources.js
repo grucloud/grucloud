@@ -134,7 +134,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       ReplicationGroupDescription: " my description",
       ReplicationGroupId: "my-redis-cluster",
-      SnapshotRetentionLimit: 1,
       SnapshotWindow: "05:00-06:00",
       ClusterEnabled: false,
       CacheNodeType: "cache.t3.micro",
@@ -230,6 +229,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({ config }) => ({
+      s3BucketDestination: `gc-firehose-destination-${config.accountId()}`,
       roles: [
         `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
       ],
@@ -388,6 +388,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: `gc-firehose-destination-${config.accountId()}`,
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   {

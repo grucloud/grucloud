@@ -58,6 +58,7 @@ const GROUPS = [
   ["Backup", "backup"],
   ["Batch", "batch"],
   ["Budgets", "budgets"],
+  ["CodeArtifact", "codeartifact"],
   ["CodeBuild", "codebuild"],
   ["CodeCommit", "codecommit"],
   ["CodeDeploy", "codedeploy"],

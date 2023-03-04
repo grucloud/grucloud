@@ -4,49 +4,51 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("CodeArtifact", async function () {
-  it.skip("Domain", () =>
+  it("Domain", () =>
     pipe([
       () => ({
         groupType: "CodeArtifact::Domain",
         livesNotFound: ({ config }) => [
           {
-            name: "123",
+            domain: "d123",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("DomainPermissionsPolicy", () =>
+  it("DomainPermissionsPolicy", () =>
     pipe([
       () => ({
         groupType: "CodeArtifact::DomainPermissionsPolicy",
         livesNotFound: ({ config }) => [
           {
-            name: "123",
+            domain: "d123",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Repository", () =>
+  it("Repository", () =>
     pipe([
       () => ({
         groupType: "CodeArtifact::Repository",
         livesNotFound: ({ config }) => [
           {
-            name: "123",
+            domain: "d123",
+            repository: "d123",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("RepositoryPermissionsPolicy", () =>
+  it("RepositoryPermissionsPolicy", () =>
     pipe([
       () => ({
         groupType: "CodeArtifact::RepositoryPermissionsPolicy",
         livesNotFound: ({ config }) => [
           {
-            name: "123",
+            domain: "d123",
+            repository: "d123",
           },
         ],
       }),

@@ -510,7 +510,6 @@ exports.createResources = () => [
         },
       ],
       Type: "URL_PULL",
-      MediaConnectFlows: undefined,
     }),
   },
   {

@@ -64,6 +64,8 @@ List of resources for provider aws:
 [ApiDestination](./resources/CloudWatchEvents/ApiDestination.md), [Connection](./resources/CloudWatchEvents/Connection.md), [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
 [LogGroup](./resources/CloudWatchLogs/LogGroup.md), [LogStream](./resources/CloudWatchLogs/LogStream.md), [ResourcePolicy](./resources/CloudWatchLogs/ResourcePolicy.md), [SubscriptionFilter](./resources/CloudWatchLogs/SubscriptionFilter.md)
+* CodeArtifact: 
+[Domain](./resources/CodeArtifact/Domain.md), [DomainPermissionsPolicy](./resources/CodeArtifact/DomainPermissionsPolicy.md), [Repository](./resources/CodeArtifact/Repository.md), [RepositoryPermissionsPolicy](./resources/CodeArtifact/RepositoryPermissionsPolicy.md)
 * CodeBuild: 
 [Project](./resources/CodeBuild/Project.md)
 * CodeCommit: 

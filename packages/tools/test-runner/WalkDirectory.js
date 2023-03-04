@@ -40,6 +40,9 @@ const ExcludeDirsDefault = [
   "FSx", // "much expensive $$$"
   "DirectoryService", // "much expensive $$$"
   "datasync-fsxwindows", // "much expensive $$$"
+  "cloud-wan",
+  "servicediscovery", // TODO
+  "resource-share",
   //
   "auditmanager-simple",
   "directory-service-microsoft-ad",
