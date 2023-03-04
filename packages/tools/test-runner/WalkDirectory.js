@@ -40,9 +40,15 @@ const ExcludeDirsDefault = [
   "FSx", // "much expensive $$$"
   "DirectoryService", // "much expensive $$$"
   "datasync-fsxwindows", // "much expensive $$$"
-  "datasync-fsxwindows", // Too slow
+  "datasync-fsxlustre", // "much expensive $$$"
+  "datasync-fsxlustre-s3", // "much expensive $$$"
+  "datasync-fsxopenzfs",
   "globalcluster", // Too slow
   "msk-lambda-cdk", //  Too slow
+  "private-apigw-lambda-cdk", //  Too slow
+  "cloudfront-lambda-url-java", //  Too slow
+  "direct-connect-simple",
+  "repository", // TODO
   "transfer-ftps-s3", //TODO  create Transfer::Server Certificate type not supported
   "xray-simple", // TODO
   "hub-and-spoke-with-inspection-vpc",
