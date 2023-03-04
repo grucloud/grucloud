@@ -92,10 +92,10 @@ const dependenciesFromEnv = {
 
 const replaceDependency =
   (dependencies) =>
-  ({ lives, providerConfig }) =>
+  ({ lives, providerConfig, dependenciesOveride = {} }) =>
   (idToMatch) =>
     pipe([
-      () => dependencies,
+      () => ({ ...dependencies, ...dependenciesOveride }),
       find(({ type, group, pathLive = "id" }) =>
         pipe([
           () => lives,

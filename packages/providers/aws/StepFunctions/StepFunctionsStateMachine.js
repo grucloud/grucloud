@@ -228,7 +228,19 @@ exports.StepFunctionsStateMachine = () => ({
                     callProp("endsWith", ".amazonaws.com"),
                   ]),
                 ]),
-                pipe([replaceEnv({ providerConfig, lives })]),
+                pipe([
+                  replaceEnv({
+                    providerConfig,
+                    lives,
+                    dependenciesOveride: {
+                      apiGatewayRestApis: {
+                        pathLive: "live.endpoint",
+                        type: "RestApi",
+                        group: "APIGateway",
+                      },
+                    },
+                  }),
+                ]),
                 () => undefined,
               ]),
             ])
