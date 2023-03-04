@@ -40,9 +40,18 @@ const ExcludeDirsDefault = [
   "FSx", // "much expensive $$$"
   "DirectoryService", // "much expensive $$$"
   "datasync-fsxwindows", // "much expensive $$$"
+  "datasync-fsxwindows", // Too slow
+  "globalcluster", // Too slow
+  "msk-lambda-cdk", //  Too slow
+  "transfer-ftps-s3", //TODO  create Transfer::Server Certificate type not supported
+  "xray-simple", // TODO
+  "hub-and-spoke-with-inspection-vpc",
+  "hub-and-spoke-with-shared-services-vpc-terraform",
   "cloud-wan",
   "servicediscovery", // TODO
   "resource-share",
+  "hub-and-spoke-with-inspection-vpc",
+  "eks-workshop",
   //
   "auditmanager-simple",
   "directory-service-microsoft-ad",

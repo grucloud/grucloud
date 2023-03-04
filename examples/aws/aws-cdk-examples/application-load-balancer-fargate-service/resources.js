@@ -471,6 +471,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Listener",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      Port: 80,
+      Protocol: "HTTP",
+    }),
+    dependencies: ({}) => ({
+      loadBalancer: "ECSSe-amazo-NBIYVNWJ9TTY",
+      targetGroup: "ECSSe-amazo-1HU1HZ8BFKNTJ",
+    }),
+  },
+  {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
@@ -497,22 +509,11 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
-    }),
-  },
-  {
-    type: "Listener",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Port: 80,
-      Protocol: "HTTP",
-    }),
-    dependencies: ({}) => ({
-      loadBalancer: "ECSSe-amazo-NBIYVNWJ9TTY",
-      targetGroup: "ECSSe-amazo-1HU1HZ8BFKNTJ",
     }),
   },
   {

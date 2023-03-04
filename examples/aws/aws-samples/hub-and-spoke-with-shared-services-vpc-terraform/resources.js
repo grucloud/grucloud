@@ -889,6 +889,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "ec2_instance_profile_hubspoke-shared-services",
+    dependencies: ({}) => ({
+      roles: ["ec2_ssm_role_hubspoke-shared-services"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -1123,14 +1131,6 @@ exports.createResources = () => [
       Path: "/",
       Description:
         "Cloudwatch permissions policy for spoke-vpc-2 with vpc-flow-logs",
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "ec2_instance_profile_hubspoke-shared-services",
-    dependencies: ({}) => ({
-      roles: ["ec2_ssm_role_hubspoke-shared-services"],
     }),
   },
   {
