@@ -4,11 +4,17 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("ResourceGroups", async function () {
-  it.skip("Group", () =>
+  it("Group", () =>
     pipe([
       () => ({
         groupType: "ResourceGroups::Group",
-        livesNotFound: ({ config }) => [{ Group: "e123" }],
+        livesNotFound: ({ config }) => [
+          {
+            GroupArn: `arn:aws:resource-groups:${
+              config.region
+            }:${config.accountId()}:group/g123`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

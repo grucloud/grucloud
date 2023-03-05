@@ -188,6 +188,8 @@ List of resources for provider aws:
 [Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md), [EndpointAccess](./resources/Redshift/EndpointAccess.md), [EndpointAuthorization](./resources/Redshift/EndpointAuthorization.md), [UsageLimit](./resources/Redshift/UsageLimit.md)
 * Rekognition: 
 [StreamProcessor](./resources/Rekognition/StreamProcessor.md)
+* ResourceGroups: 
+[Group](./resources/ResourceGroups/Group.md)
 * Route53: 
 [CidrCollection](./resources/Route53/CidrCollection.md), [DelegationSet](./resources/Route53/DelegationSet.md), [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
 * Route53Domains: 

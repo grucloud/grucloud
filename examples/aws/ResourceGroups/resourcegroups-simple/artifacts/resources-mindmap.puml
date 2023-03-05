@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project resourcegroups-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ ResourceGroups
+++++ Group (1)
+@endmindmap
