@@ -1,6 +1,6 @@
 {
   "name": "s3-object-lambda",
-  "version": "11.0.2",
+  "version": "11.0.3",
   "private": true,
   "description": "",
   "main": "index.js",

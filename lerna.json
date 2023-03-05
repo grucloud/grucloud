@@ -1,6 +1,6 @@
 {
   "packages": ["packages/**/*", "examples/**/*"],
-  "version": "11.0.2",
+  "version": "11.0.3",
   "command": {
     "publish": {
       "ignoreChanges": ["@grucloud/example-*"],
