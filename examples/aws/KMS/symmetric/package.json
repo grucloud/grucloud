@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-kms-symmetric",
-  "version": "11.0.1",
+  "version": "11.0.2",
   "private": true,
   "description": "",
   "main": "iac.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^11.0.1",
-    "@grucloud/provider-aws": "^11.0.1",
+    "@grucloud/core": "^11.0.2",
+    "@grucloud/provider-aws": "^11.0.2",
     "rubico": "^1.8.11"
   },
   "devDependencies": {
