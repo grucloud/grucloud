@@ -315,6 +315,14 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "ecsInstanceRole",
+    dependencies: ({}) => ({
+      roles: ["ecsInstanceRole"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -339,14 +347,6 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
             "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "ecsInstanceRole",
-    dependencies: ({}) => ({
-      roles: ["ecsInstanceRole"],
     }),
   },
 ];

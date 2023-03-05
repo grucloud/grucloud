@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, pick, eq, assign, set } = require("rubico");
+const { defaultsDeep, when, callProp } = require("rubico/x");
 
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -51,6 +51,10 @@ const decorate = ({ endpoint, config }) =>
       },
       ...other
     }) => ({ ...other, CwLogEnabled }),
+    set(
+      "AppMonitorConfiguration.Telemetries",
+      pipe([get("AppMonitorConfiguration.Telemetries"), callProp("sort")])
+    ),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RUM.html
@@ -63,7 +67,7 @@ exports.RUMAppMonitor = () => ({
       AllowCookies: true,
       EnableXRay: false,
       SessionSampleRate: 1,
-      Telemetries: ["performance", "errors", "http"],
+      Telemetries: ["errors", "http", "performance"],
     },
     CustomEvents: {
       Status: "DISABLED",

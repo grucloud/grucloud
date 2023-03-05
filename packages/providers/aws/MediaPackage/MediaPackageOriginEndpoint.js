@@ -1,8 +1,8 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { pipe, tap, get, pick, assign, tryCatch } = require("rubico");
+const { defaultsDeep, identity, when } = require("rubico/x");
 
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
@@ -28,6 +28,13 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assign({
+      DomainName: tryCatch(
+        pipe([get("Url"), (url) => new URL(url).host]),
+        () => undefined
+      ),
+    }),
+    omitIfEmpty(["Whitelist", "Url", "DomainName"]),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaPackage.html
@@ -35,8 +42,20 @@ exports.MediaPackageOriginEndpoint = () => ({
   type: "OriginEndpoint",
   package: "mediapackage",
   client: "MediaPackage",
-  propertiesDefault: {},
-  omitProperties: ["Arn", "ChannelId"],
+  propertiesDefault: {
+    ManifestName: "index",
+    Origination: "ALLOW",
+    StartoverWindowSeconds: 0,
+    TimeDelaySeconds: 0,
+  },
+  omitProperties: [
+    "Arn",
+    "ChannelId",
+    "Authorization",
+    "DomainName",
+    "Url",
+    "CmafPackage.HlsManifests[].Url",
+  ],
   inferName: () =>
     pipe([
       get("Id"),
@@ -62,11 +81,22 @@ exports.MediaPackageOriginEndpoint = () => ({
     channel: {
       type: "Channel",
       group: "MediaPackage",
-      list: true,
       dependencyId: ({ lives, config }) => pipe([get("ChannelId")]),
     },
+    iamRoleSecret: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("Authorization.SecretsRoleArn")]),
+    },
+    secretsManagerSecret: {
+      type: "Secret",
+      group: "SecretsManager",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("Authorization.CdnIdentifierSecret")]),
+    },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["NotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaPackage.html#getOriginEndpoint-property
   getById: {
     method: "describeOriginEndpoint",
@@ -79,11 +109,13 @@ exports.MediaPackageOriginEndpoint = () => ({
     getParam: "OriginEndpoints",
     decorate: ({ getById }) => pipe([getById]),
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaPackage.html#createOriginEndpoint-property
   create: {
     method: "createOriginEndpoint",
     pickCreated: ({ payload }) => pipe([identity]),
+    shouldRetryOnExceptionMessages: [
+      "The secret could not be accessed using the given role",
+    ],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaPackage.html#updateOriginEndpoint-property
   update: {
@@ -105,14 +137,33 @@ exports.MediaPackageOriginEndpoint = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { channel },
+    dependencies: { channel, iamRoleSecret, secretsManagerSecret },
     config,
   }) =>
     pipe([
       () => otherProps,
+      tap(() => {
+        assert(channel);
+      }),
       defaultsDeep({
         ChannelId: getField(channel, "Id"),
         Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
       }),
+      when(
+        () => iamRoleSecret,
+        defaultsDeep({
+          Authorization: {
+            SecretsRoleArn: getField(iamRoleSecret, "Arn"),
+          },
+        })
+      ),
+      when(
+        () => secretsManagerSecret,
+        defaultsDeep({
+          Authorization: {
+            CdnIdentifierSecret: getField(secretsManagerSecret, "ARN"),
+          },
+        })
+      ),
     ])(),
 });

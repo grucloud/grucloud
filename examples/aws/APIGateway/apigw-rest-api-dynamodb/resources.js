@@ -15,11 +15,11 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "ApiDynamoRestApi",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
       },
+      name: "ApiDynamoRestApi",
       schema: {
         openapi: "3.0.1",
         info: {
@@ -235,9 +235,6 @@ exports.createResources = () => [
           PolicyName: "IntegrationRoleDefaultPolicy99182A66",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      table: "ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN",
     }),
   },
 ];

@@ -57,7 +57,6 @@ exports.ApiGatewayV2VpcLink = ({ spec, config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createVpcLink-property
   create: {
     method: "createVpcLink",
-    getErrorMessage: get("VpcLinkStatusMessage", "error"),
     isInstanceError: eq(get("VpcLinkStatus"), "FAILED"),
     getErrorMessage: get("VpcLinkStatusMessage", "FAILED"),
     isInstanceUp: eq(get("VpcLinkStatus"), "AVAILABLE"),

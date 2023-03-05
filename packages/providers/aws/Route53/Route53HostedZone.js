@@ -499,6 +499,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
     properties: { Tags, ...otherProp },
     namespace,
     dependencies: { vpc, delegationSet },
+    config,
   }) =>
     pipe([
       () => otherProp,

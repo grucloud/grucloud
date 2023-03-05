@@ -69,6 +69,7 @@ exports.EFSFileSystem = ({ compare }) => ({
       ),
     ]),
   getById: { method: "describeFileSystems", getField: "FileSystems", pickId },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EFS.html#describeFileSystems-property
   getList: {
     method: "describeFileSystems",
     getParam: "FileSystems",
@@ -76,12 +77,17 @@ exports.EFSFileSystem = ({ compare }) => ({
   create: {
     method: "createFileSystem",
     isInstanceUp: eq(get("LifeCycleState"), "available"),
+    configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
   },
   update: {
     method: "updateFileSystem",
     filterParams: ({ payload }) => pipe([() => payload]),
   },
-  destroy: { method: "deleteFileSystem", pickId },
+  destroy: {
+    method: "deleteFileSystem",
+    pickId,
+    configIsDown: { retryCount: 40 * 12, retryDelay: 5e3 },
+  },
   getByName: getByNameCore,
   tagger: ({ config }) =>
     Tagger({
@@ -102,7 +108,7 @@ exports.EFSFileSystem = ({ compare }) => ({
       when(
         () => kmsKey,
         defaultsDeep({
-          kmsArn: getField(kmsKey, "Arn"),
+          KmsKeyId: getField(kmsKey, "Arn"),
         })
       ),
     ])(),

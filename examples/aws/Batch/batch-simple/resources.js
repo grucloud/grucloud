@@ -116,6 +116,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-execution-batch",
+    dependencies: ({}) => ({
+      roles: ["role-execution-batch"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -133,14 +141,6 @@ exports.createResources = () => [
           },
         ],
       },
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "role-execution-batch",
-    dependencies: ({}) => ({
-      roles: ["role-execution-batch"],
     }),
   },
 ];

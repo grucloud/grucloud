@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, map, not } = require("rubico");
+const { pipe, tap, get, pick, eq, assign, map, not, omit } = require("rubico");
 const { defaultsDeep, pluck, when, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
@@ -106,7 +106,7 @@ exports.EKSCluster = ({ compare }) => ({
       group: "KMS",
       list: true,
       dependencyIds: ({ lives, config }) =>
-        pipe([get("encryptionConfig"), pluck("provider.keyArn")]),
+        pipe([get("encryptionConfig"), map(get("provider.keyArn"))]),
     },
   },
   propertiesDefault: {

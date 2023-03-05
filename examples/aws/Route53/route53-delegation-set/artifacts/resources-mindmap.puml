@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project route53-delegation-set
+skinparam monochrome true
++ Infra
+++ aws
++++ Route53
+++++ DelegationSet (1)
+++++ HostedZone (1)
++++ Route53Domains
+++++ Domain (1)
+@endmindmap

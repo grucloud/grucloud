@@ -40,12 +40,14 @@ const assignTags = ({ endpoint }) =>
     })
   );
 
+const toName = ({ LoadBalancerName, ...other }) => ({
+  Name: LoadBalancerName,
+  ...other,
+});
+
 const decorate = ({ endpoint }) =>
   pipe([
-    ({ LoadBalancerName, ...other }) => ({
-      Name: LoadBalancerName,
-      ...other,
-    }),
+    toName,
     assignTags({ endpoint }),
     assign({ DNSName: pipe([get("DNSName", ""), callProp("toLowerCase")]) }),
   ]);
@@ -70,7 +72,7 @@ const ignoreErrorCodes = [
 //   key: "elbv2.k8s.aws/cluster",
 // });
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ElasticLoadBalancingV2LoadBalancer = () => ({
   type: "LoadBalancer",
   package: "elastic-load-balancing-v2",
@@ -127,7 +129,7 @@ exports.ElasticLoadBalancingV2LoadBalancer = () => ({
     "SecurityGroups",
   ],
   filterLive: () => pick(["Name", "Scheme", "Type", "IpAddressType"]),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#getLoadBalancer-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#getLoadBalancer-property
   getById: {
     pickId: pipe([
       tap(({ Name }) => {
@@ -139,34 +141,34 @@ exports.ElasticLoadBalancingV2LoadBalancer = () => ({
     getField: "LoadBalancers",
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#listLoadBalancers-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#listLoadBalancers-property
   getList: {
     method: "describeLoadBalancers",
     getParam: "LoadBalancers",
     decorate,
   },
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#createLoadBalancer-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createLoadBalancer-property
   create: {
     method: "createLoadBalancer",
     isInstanceUp: pipe([
-      tap(({ State }) => {
-        logger.info(`createLoadBalancer state: ${State.Code}`);
+      get("State"),
+      tap((State) => {
+        logger.info(`createLoadBalancer state: ${State?.Code}`);
       }),
-      eq(get("State.Code"), "active"),
+      eq(get("Code"), "active"),
     ]),
     isInstanceError: eq(get("State.Code"), "failed"),
     getErrorMessage: get("State.Reason", "failed"),
     pickCreated: ({ payload }) => pipe([() => payload]),
     config: { retryCount: 60 * 10, retryDelay: 10e3 },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#updateLoadBalancer-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#updateLoadBalancer-property
   update: {
     method: "updateLoadBalancer",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#deleteLoadBalancer-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteLoadBalancer-property
   destroy: {
     pickId,
     method: "deleteLoadBalancer",

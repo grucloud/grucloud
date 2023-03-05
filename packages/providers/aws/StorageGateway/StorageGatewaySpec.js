@@ -8,7 +8,7 @@ const { createAwsService } = require("../AwsService");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/StorageGateway.html
 
 //const { StorageGatewayCache } = require("./StorageGatewayCache");
-//const { StorageGatewayGateway } = require("./StorageGatewayGateway");
+const { StorageGatewayGateway } = require("./StorageGatewayGateway");
 //const { StorageGatewayTable } = require("./StorageGatewayTable");
 
 const GROUP = "StorageGateway";
@@ -18,14 +18,16 @@ const compare = compareAws({});
 module.exports = pipe([
   () => [
     //StorageGatewayCache({ compare }),
-    //StorageGatewayGateway({ compare }),
+    StorageGatewayGateway({ compare }),
     //StorageGatewayCache({ compare }),
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);

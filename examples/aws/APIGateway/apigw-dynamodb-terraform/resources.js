@@ -22,11 +22,11 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "APIGW DynamoDB Serverless Pattern Demo",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
       },
+      name: "APIGW DynamoDB Serverless Pattern Demo",
       schema: {
         openapi: "3.0.1",
         info: {
@@ -133,7 +133,6 @@ exports.createResources = () => [
     type: "Stage",
     group: "APIGateway",
     properties: ({}) => ({
-      stageName: "v1",
       methodSettings: {
         "*/*": {
           cacheDataEncrypted: false,
@@ -149,6 +148,7 @@ exports.createResources = () => [
             "SUCCEED_WITH_RESPONSE_HEADER",
         },
       },
+      stageName: "v1",
     }),
     dependencies: ({}) => ({
       restApi: "APIGW DynamoDB Serverless Pattern Demo",
@@ -225,12 +225,7 @@ exports.createResources = () => [
       },
       GlobalSecondaryIndexes: [
         {
-          IndexArn:
-            "arn:aws:dynamodb:us-east-1:840541460064:table/Pets/index/PetType-index",
           IndexName: "PetType-index",
-          IndexSizeBytes: 0,
-          IndexStatus: "ACTIVE",
-          ItemCount: 0,
           KeySchema: [
             {
               AttributeName: "PetType",
@@ -242,7 +237,6 @@ exports.createResources = () => [
             ProjectionType: "INCLUDE",
           },
           ProvisionedThroughput: {
-            NumberOfDecreasesToday: 0,
             ReadCapacityUnits: 5,
             WriteCapacityUnits: 5,
           },
@@ -338,9 +332,6 @@ exports.createResources = () => [
         Version: "2012-10-17",
       },
       Path: "/",
-    }),
-    dependencies: ({}) => ({
-      table: "Pets",
     }),
   },
 ];

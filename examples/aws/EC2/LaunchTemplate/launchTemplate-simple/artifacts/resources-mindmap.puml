@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project launchTemplate
+title Resources for project launchTemplate-simple
 skinparam monochrome true
 + Infra
 ++ aws
@@ -12,6 +12,6 @@ skinparam monochrome true
 ++++ Instance (1)
 ++++ LaunchTemplate (1)
 +++ IAM
-++++ Role (1)
 ++++ InstanceProfile (1)
+++++ Role (1)
 @endmindmap

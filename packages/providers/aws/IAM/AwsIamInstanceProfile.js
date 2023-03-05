@@ -1,11 +1,21 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, not, pick, assign, or } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  get,
+  eq,
+  not,
+  pick,
+  assign,
+  or,
+  omit,
+} = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
   forEach,
   find,
-  first,
   pluck,
   callProp,
   unless,
@@ -18,15 +28,9 @@ const logger = require("@grucloud/core/logger")({
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const {
-  buildTags,
-  findNamespaceInTags,
-  removeRoleFromInstanceProfile,
-} = require("../AwsCommon");
+const { buildTags, removeRoleFromInstanceProfile } = require("../AwsCommon");
 
-const { AwsClient } = require("../AwsClient");
 const {
-  createIAM,
   tagResourceIam,
   untagResourceIam,
   ignoreErrorCodes,
@@ -44,146 +48,148 @@ const untagResource = untagResourceIam({
   method: "untagInstanceProfile",
 });
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
-exports.AwsIamInstanceProfile = ({ spec, config }) => {
-  const iam = createIAM(config);
-  const client = AwsClient({ spec, config })(iam);
+const findId = () => get("Arn");
+const pickId = pick(["InstanceProfileName"]);
 
-  const findId = () => get("Arn");
-  const pickId = pick(["InstanceProfileName"]);
-
-  const findNameEks =
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        tap(() => {
-          assert(lives);
-          assert(live.InstanceProfileName);
-        }),
-        lives.getByType({
-          type: "LaunchTemplate",
-          group: "EC2",
-          providerName: config.providerName,
-        }),
-        find(eq(get("live.LaunchTemplateName"), live.InstanceProfileName)),
-        get("name"),
-        unless(isEmpty, prepend("instance-profile-")),
-      ])();
-
-  const findName = (params) => (live) => {
-    const fns = [findNameEks(params), get("InstanceProfileName")];
-    for (fn of fns) {
-      const name = fn(live);
-      if (!isEmpty(name)) {
-        return name;
-      }
-    }
-  };
-
-  const managedByOther =
-    ({ lives }) =>
-    (live) =>
-      pipe([
-        tap(() => {
-          assert(live.InstanceProfileName);
-        }),
-        () => live,
-        get("InstanceProfileName"),
-        or([callProp("startsWith", "eks-")]),
-        tap((params) => {
-          assert(true);
-        }),
-      ])();
-
-  const findDependencies = ({ live }) => [
-    {
-      type: "Role",
-      group: "IAM",
-      ids: pipe([() => live, get("Roles"), pluck("Arn")])(),
-    },
-  ];
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listInstanceProfiles-property
-  const getList = client.getList({
-    method: "listInstanceProfiles",
-    getParam: "InstanceProfiles",
-    decorate: () =>
-      pipe([
-        assign({
-          Tags: pipe([
-            pick(["InstanceProfileName"]),
-            iam().listInstanceProfileTags,
-            get("Tags"),
-          ]),
-        }),
-      ]),
-  });
-
-  //TODO getById should be getByName
-  const getByName = getByNameCore({ getList, findName });
-
-  const getById = client.getById({
-    pickId,
-    method: "getInstanceProfile",
-    getField: "InstanceProfile",
-    ignoreErrorCodes,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        InstanceProfileName: name,
-        Tags: buildTags({
-          name,
-          config,
-          namespace,
-          UserTags: Tags,
-        }),
-      }),
-    ])();
-
-  const create = ({ name, payload = {}, dependencies }) =>
+const findNameEks =
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       tap(() => {
-        logger.info(`create iam instance profile ${name}`);
-        logger.debug(`payload: ${tos(payload)}`);
+        assert(lives);
+        assert(live.InstanceProfileName);
       }),
-      () => payload,
-      iam().createInstanceProfile,
-      dependencies,
-      get("roles"),
-      tap((roles) => {
-        assert(roles, "missing dependency roles");
-        assert(Array.isArray(roles), "roles must be an array");
+      lives.getByType({
+        type: "LaunchTemplate",
+        group: "EC2",
+        providerName: config.providerName,
       }),
-      forEach((iamRole) =>
-        iam().addRoleToInstanceProfile({
-          InstanceProfileName: name,
-          RoleName: iamRole.name,
-        })
-      ),
-      () =>
-        retryCall({
-          name: `create instance profile, getById: ${name}`,
-          fn: pipe([() => ({ InstanceProfileName: name }), getById({})]),
-          isExpectedResult: pipe([get("Roles"), not(isEmpty)]),
-          config: { retryDelay: 2e3 },
-        }),
-      tap((instance) => {
-        logger.info(`created iam instance profile  ${name}`);
-        logger.debug(`created iam instance profile ${tos({ name, instance })}`);
+      find(eq(get("live.LaunchTemplateName"), live.InstanceProfileName)),
+      get("name"),
+      unless(isEmpty, prepend("instance-profile-")),
+    ])();
+
+const findName = (params) => (live) => {
+  const fns = [findNameEks(params), get("InstanceProfileName")];
+  for (fn of fns) {
+    const name = fn(live);
+    if (!isEmpty(name)) {
+      return name;
+    }
+  }
+};
+
+const managedByOther =
+  ({ lives }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(live.InstanceProfileName);
+      }),
+      () => live,
+      get("InstanceProfileName"),
+      or([
+        //
+        callProp("startsWith", "eks-"),
+        callProp("startsWith", "AWSCloud9"),
+      ]),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 
+const decorate = ({ endpoint }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+    assign({
+      Tags: pipe([
+        pick(["InstanceProfileName"]),
+        endpoint().listInstanceProfileTags,
+        get("Tags"),
+      ]),
+    }),
+  ]);
+
+exports.IAMInstanceProfile = ({ compare }) => ({
+  type: "InstanceProfile",
+  package: "IAM",
+  client: "IAM",
+  propertiesDefault: {},
+  omitProperties: ["InstanceProfileId", "Arn", "CreateDate", "Roles"],
+  managedByOther,
+  findName,
+  findId,
+  ignoreErrorCodes,
+  compare: compare({
+    //TODO remove
+    filterAll: () => pipe([omit(["Tags"])]),
+    filterLive: () => pipe([omit(["Path"])]),
+  }),
+  filterLive: () => pick([]),
+  dependencies: {
+    roles: {
+      type: "Role",
+      group: "IAM",
+      list: true,
+      dependencyIds: () => pipe([get("Roles"), pluck("Arn")]),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#getInstanceProfile-property
+  getById: {
+    method: "getInstanceProfile",
+    getField: "InstanceProfile",
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listInstanceProfiles-property
+  getList: {
+    method: "listInstanceProfiles",
+    getParam: "InstanceProfiles",
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property
+  create:
+    ({ endpoint, getById }) =>
+    ({ name, payload = {}, dependencies }) =>
+      pipe([
+        tap(() => {
+          logger.info(`create iam instance profile ${name}`);
+          logger.debug(`payload: ${tos(payload)}`);
+        }),
+        () => payload,
+        endpoint().createInstanceProfile,
+        dependencies,
+        get("roles"),
+        tap((roles) => {
+          assert(roles, "missing dependency roles");
+          assert(Array.isArray(roles), "roles must be an array");
+        }),
+        forEach((iamRole) =>
+          endpoint().addRoleToInstanceProfile({
+            InstanceProfileName: name,
+            RoleName: iamRole.name,
+          })
+        ),
+        () =>
+          retryCall({
+            name: `create instance profile, getById: ${name}`,
+            fn: pipe([() => ({ InstanceProfileName: name }), getById({})]),
+            isExpectedResult: pipe([get("Roles"), not(isEmpty)]),
+            config: { retryDelay: 2e3 },
+          }),
+        tap((instance) => {
+          logger.info(`created iam instance profile  ${name}`);
+          logger.debug(
+            `created iam instance profile ${tos({ name, instance })}`
+          );
+        }),
+      ])(),
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#updateInstanceProfile-property
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteInstanceProfile-property
-  const destroy = client.destroy({
+  destroy: {
     pickId,
     preDestroy: ({ endpoint }) =>
       tap(
@@ -203,46 +209,29 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       ),
     method: "deleteInstanceProfile",
     ignoreErrorCodes,
-    getById,
-  });
-
-  return {
-    spec,
-    findId,
-    findDependencies,
-    findNamespace:
-      ({ lives, config }) =>
-      (live) =>
-        pipe([
-          () => live,
-          get("Roles"),
-          tap((roles) => {
-            logger.info(`IamInstanceProfile ${roles}`);
-          }),
-          first,
-          unless(
-            isEmpty,
-            pipe([
-              get("RoleName"),
-              lives.getByName({
-                name: RoleName,
-                type: "Role",
-                group: "IAM",
-                providerName: config.providerName,
-              }),
-              unless(isEmpty, findNamespaceInTags({ config })),
-            ])
-          ),
-        ])(),
-    getByName,
-    getById,
-    findName,
-    create,
-    destroy,
-    getList,
-    configDefault,
-    managedByOther,
-    tagResource: tagResource({ iam }),
-    untagResource: untagResource({ iam }),
-  };
-};
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) => ({
+    tagResource,
+    untagResource,
+  }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        InstanceProfileName: name,
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
+        }),
+      }),
+    ])(),
+});

@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project delayed-eventbridge-events
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ EventBus (1)
+++++ Rule (2)
+++++ Target (1)
++++ IAM
+++++ Role (3)
++++ Lambda
+++++ Function (2)
+@endmindmap

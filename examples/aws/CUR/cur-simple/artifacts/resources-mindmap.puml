@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project cur-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ CUR
+++++ ReportDefinition (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

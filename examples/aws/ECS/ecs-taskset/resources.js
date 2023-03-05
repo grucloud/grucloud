@@ -1124,6 +1124,22 @@ nohup ./startup.sh &
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "appmesh-workshop-InstanceProfile-KMl4m5zQVs1I",
+    dependencies: ({}) => ({
+      roles: ["appmesh-workshop-EC2InstanceRole-P65NSC5SSWJH"],
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "appmesh-workshop-InstanceProfileExternal-Gyr3M1YtaL0v",
+    dependencies: ({}) => ({
+      roles: ["appmesh-workshop-EC2ExternalInstanceRole-7TP1XLCF2830"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -1369,22 +1385,6 @@ nohup ./startup.sh &
           PolicyName: "KeyPairHelperExecutionPolicy",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "appmesh-workshop-InstanceProfile-KMl4m5zQVs1I",
-    dependencies: ({}) => ({
-      roles: ["appmesh-workshop-EC2InstanceRole-P65NSC5SSWJH"],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "appmesh-workshop-InstanceProfileExternal-Gyr3M1YtaL0v",
-    dependencies: ({}) => ({
-      roles: ["appmesh-workshop-EC2ExternalInstanceRole-7TP1XLCF2830"],
     }),
   },
   {

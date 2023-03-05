@@ -217,6 +217,14 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-1V2DBJVUCN7IT",
+    dependencies: ({}) => ({
+      roles: ["amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-TERDPQNAO5Q2"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -246,14 +254,6 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
           Value: "my-value",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-1V2DBJVUCN7IT",
-    dependencies: ({}) => ({
-      roles: ["amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-TERDPQNAO5Q2"],
     }),
   },
 ];

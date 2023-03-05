@@ -46,21 +46,20 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Layer",
-    group: "Lambda",
-    properties: ({}) => ({
-      LayerName: "lambda-layer",
-      Description: "My Layer",
-      CompatibleRuntimes: ["nodejs"],
-    }),
-  },
-  {
     type: "Function",
     group: "Lambda",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         FunctionName: "lambda-hello-world",
         Handler: "helloworld.handler",
+        Layers: [
+          `${getId({
+            type: "Layer",
+            group: "Lambda",
+            name: "lambda-layer",
+            path: "live.LayerVersionArn",
+          })}`,
+        ],
         Runtime: "nodejs14.x",
       },
       Tags: {
@@ -70,6 +69,15 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       layers: ["lambda-layer"],
       role: "lambda-role",
+    }),
+  },
+  {
+    type: "Layer",
+    group: "Lambda",
+    properties: ({}) => ({
+      LayerName: "lambda-layer",
+      Description: "My Layer",
+      CompatibleRuntimes: ["nodejs"],
     }),
   },
 ];

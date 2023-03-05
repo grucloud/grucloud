@@ -29,9 +29,9 @@ const {
   compareAws,
   isOurMinion,
   replaceArnWithAccountAndRegion,
-  assignPolicyAccountAndRegion,
   replaceAccountAndRegion,
 } = require("../AwsCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
 const GROUP = "S3";
 
@@ -251,6 +251,24 @@ module.exports = pipe([
                     ]),
                   })
                 ),
+              ]),
+            })
+          ),
+          // ReplicationConfiguration
+          when(
+            get("ReplicationConfiguration"),
+            assign({
+              ReplicationConfiguration: pipe([
+                get("ReplicationConfiguration"),
+                assign({
+                  Role: pipe([
+                    get("Role"),
+                    replaceArnWithAccountAndRegion({
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                }),
               ]),
             })
           ),

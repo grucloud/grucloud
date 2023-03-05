@@ -11,7 +11,6 @@ const {
   switchCase,
   fork,
   get,
-  all,
   tryCatch,
   any,
   assign,
@@ -55,6 +54,60 @@ const managedByOther =
       any((prefix) => Name.startsWith(prefix)),
     ])();
 
+const putBucketEncryption = ({
+  endpoint,
+  Bucket,
+  ServerSideEncryptionConfiguration,
+}) =>
+  tap.if(
+    get("ServerSideEncryptionConfiguration"),
+    pipe([
+      () => ({
+        Bucket,
+        ServerSideEncryptionConfiguration,
+      }),
+      endpoint().putBucketEncryption,
+    ])
+  );
+
+const putBucketNotificationConfiguration = ({
+  endpoint,
+  Bucket,
+  NotificationConfiguration,
+}) =>
+  tap.if(
+    get("NotificationConfiguration"),
+    pipe([
+      () => ({
+        Bucket,
+        NotificationConfiguration,
+      }),
+      endpoint().putBucketNotificationConfiguration,
+    ])
+  );
+
+const putBucketPolicy = ({ endpoint, Bucket, Policy }) =>
+  tap.if(
+    get("Policy"),
+    pipe([
+      fork({ Policy: pipe([() => Policy, JSON.stringify]) }),
+      defaultsDeep({ Bucket }),
+      endpoint().putBucketPolicy,
+    ])
+  );
+
+const putBucketVersioning = ({ endpoint, Bucket, VersioningConfiguration }) =>
+  tap.if(
+    get("VersioningConfiguration"),
+    pipe([
+      () => ({
+        Bucket,
+        VersioningConfiguration,
+      }),
+      endpoint().putBucketVersioning,
+    ])
+  );
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
   const s3 = createS3(config);
@@ -65,10 +118,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const findId = findName;
   const findNamespace = findNamespaceInTags;
 
-  const getAccelerateConfiguration = ({ name, params }) =>
+  const getAccelerateConfiguration = ({}) =>
     tryCatch(
       pipe([
-        () => params,
         s3().getBucketAccelerateConfiguration,
         when(isEmpty, () => undefined),
       ]),
@@ -77,10 +129,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       }
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketAcl-property
-  const getACL = ({ name, params }) =>
+  const getACL = ({}) =>
     tryCatch(
       pipe([
-        () => s3().getBucketAcl(params),
+        s3().getBucketAcl,
         get("Grants"),
         tap((params) => {
           assert(true);
@@ -117,16 +169,16 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       }
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketCors-property
-  const getCORSConfiguration = ({ name, params }) =>
+  const getCORSConfiguration = ({}) =>
     tryCatch(
-      pipe([() => s3().getBucketCors(params)]),
+      pipe([s3().getBucketCors]),
       throwIfNotAwsError("NoSuchCORSConfiguration")
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketEncryption-property
-  const getServerSideEncryptionConfiguration = ({ name, params }) =>
+  const getServerSideEncryptionConfiguration = ({}) =>
     tryCatch(
       pipe([
-        () => s3().getBucketEncryption(params),
+        s3().getBucketEncryption,
         get("ServerSideEncryptionConfiguration"),
         assign({
           Rules: pipe([
@@ -145,27 +197,27 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       throwIfNotAwsError("ServerSideEncryptionConfigurationNotFoundError")
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLifecycleConfiguration-property
-  const getLifecycleConfiguration = ({ name, params }) =>
+  const getLifecycleConfiguration = ({}) =>
     tryCatch(
       pipe([
-        () => s3().getBucketLifecycleConfiguration(params),
+        s3().getBucketLifecycleConfiguration,
         when(isEmpty, () => undefined),
       ]),
       throwIfNotAwsError("NoSuchLifecycleConfiguration")
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLocation-property
-  const getLocationConstraint = ({ name, params }) =>
+  const getLocationConstraint = ({}) =>
     tryCatch(
-      pipe([() => s3().getBucketLocation(params), get("LocationConstraint")]),
+      pipe([s3().getBucketLocation, get("LocationConstraint")]),
       (error) => {
         throw error;
       }
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLogging-property
-  const getBucketLoggingStatus = ({ name, params }) =>
+  const getBucketLoggingStatus = ({}) =>
     tryCatch(
       pipe([
-        () => s3().getBucketLogging(params),
+        s3().getBucketLogging,
         tap((params) => {
           assert(true);
         }),
@@ -178,49 +230,46 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketNotificationConfiguration-property
-  const getNotificationConfiguration = ({ name, params }) =>
+  const getNotificationConfiguration = ({}) =>
     tryCatch(
       pipe([
-        () => s3().getBucketNotificationConfiguration(params),
-        when(
-          (data) => all(isEmpty)(Object.values(data)),
-          () => undefined
-        ),
+        s3().getBucketNotificationConfiguration,
+        tap((params) => {
+          assert(true);
+        }),
+        when(isEmpty, () => undefined),
       ]),
       (error) => {
         throw error;
       }
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
-  const getPolicy = ({ name, params }) =>
+  const getPolicy = ({}) =>
     tryCatch(
       pipe([
-        () => s3().getBucketPolicy(params),
+        s3().getBucketPolicy,
         get("Policy"),
         tryCatch(JSON.parse, () => undefined),
       ]),
       throwIfNotAwsError("NoSuchBucketPolicy")
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicyStatus-property
-  const getPolicyStatus = ({ name, params }) =>
+  const getPolicyStatus = ({}) =>
     tryCatch(
-      pipe([() => s3().getBucketPolicyStatus(params), get("PolicyStatus")]),
+      pipe([s3().getBucketPolicyStatus, get("PolicyStatus")]),
       throwIfNotAwsError("NoSuchBucketPolicy")
     );
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketReplication-property
-  const getReplicationConfiguration = ({ name, params }) =>
+  const getReplicationConfiguration = ({}) =>
     tryCatch(
-      pipe([
-        () => s3().getBucketReplication(params),
-        get("ReplicationConfiguration"),
-      ]),
+      pipe([s3().getBucketReplication, get("ReplicationConfiguration")]),
       throwIfNotAwsError("ReplicationConfigurationNotFoundError")
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketRequestPayment-property
-  const getRequestPaymentConfiguration = ({ name, params }) =>
+  const getRequestPaymentConfiguration = ({}) =>
     tryCatch(
       pipe([
-        () => s3().getBucketRequestPayment(params),
+        s3().getBucketRequestPayment,
         when(eq(get("Payer"), "BucketOwner"), () => undefined),
       ]),
       (err) => {
@@ -228,13 +277,13 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       }
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketVersioning-property
-  const getVersioningConfiguration = ({ name, params }) =>
+  const getVersioningConfiguration = ({ name }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketVersioning(params),
-        tap((params) => {
-          assert(true);
+        tap((input) => {
+          assert(name);
         }),
+        s3().getBucketVersioning,
         omitIfEmpty(["MFADelete"]),
         when(isEmpty, () => undefined),
       ]),
@@ -243,12 +292,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       }
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketWebsite-property
-  const getWebsiteConfiguration = ({ name, params }) =>
+  const getWebsiteConfiguration = ({}) =>
     tryCatch(
-      pipe([
-        () => s3().getBucketWebsite(params),
-        when(isEmpty, () => undefined),
-      ]),
+      pipe([s3().getBucketWebsite, when(isEmpty, () => undefined)]),
       throwIfNotAwsError("NoSuchWebsiteConfiguration")
     );
 
@@ -263,7 +309,8 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           retryCall({
             name: `getBucketTagging ${params.Bucket}`,
             fn: pipe([
-              () => s3().getBucketTagging(params),
+              () => params,
+              s3().getBucketTagging,
               get("TagSet"),
               tap((TagSet) => {
                 logger.debug(
@@ -330,49 +377,50 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           (params) =>
             retryCall({
               name: `get s3 properties ${name}`,
-              fn: fork({
-                Name: () => name,
-                Arn: () => `arn:aws:s3:::${name}`,
-                ...(getTags && { Tags: getBucketTagging(params) }),
-                ...(deep && {
-                  AccelerateConfiguration: getAccelerateConfiguration({
-                    name,
-                    params,
-                  }),
-                  ACL: getACL({ name, params }),
-                  CORSConfiguration: getCORSConfiguration({ name, params }),
-                  ServerSideEncryptionConfiguration:
-                    getServerSideEncryptionConfiguration({ name, params }),
-                  LocationConstraint: getLocationConstraint({ name, params }),
-                  BucketLoggingStatus: getBucketLoggingStatus({ name, params }),
-                  NotificationConfiguration: getNotificationConfiguration({
-                    name,
-                    params,
-                  }),
-                  Policy: getPolicy({ name, params }),
-                  PolicyStatus: getPolicyStatus({ name, params }),
-                  ReplicationConfiguration: getReplicationConfiguration({
-                    name,
-                    params,
-                  }),
-                  RequestPaymentConfiguration: getRequestPaymentConfiguration({
-                    name,
-                    params,
-                  }),
-                  VersioningConfiguration: getVersioningConfiguration({
-                    name,
-                    params,
-                  }),
-                  LifecycleConfiguration: getLifecycleConfiguration({
-                    name,
-                    params,
-                  }),
-                  WebsiteConfiguration: getWebsiteConfiguration({
-                    name,
-                    params,
+              fn: pipe([
+                () => params,
+                fork({
+                  Name: () => name,
+                  Arn: () => `arn:aws:s3:::${name}`,
+                  ...(getTags && { Tags: getBucketTagging(params) }),
+                  ...(deep && {
+                    AccelerateConfiguration: getAccelerateConfiguration({
+                      name,
+                      params,
+                    }),
+                    ACL: getACL({ name }),
+                    CORSConfiguration: getCORSConfiguration({ name }),
+                    ServerSideEncryptionConfiguration:
+                      getServerSideEncryptionConfiguration({ name }),
+                    LocationConstraint: getLocationConstraint({ name }),
+                    BucketLoggingStatus: getBucketLoggingStatus({
+                      name,
+                    }),
+                    NotificationConfiguration: getNotificationConfiguration({
+                      name,
+                    }),
+                    Policy: getPolicy({ name, params }),
+                    PolicyStatus: getPolicyStatus({ name, params }),
+                    ReplicationConfiguration: getReplicationConfiguration({
+                      name,
+                    }),
+                    RequestPaymentConfiguration: getRequestPaymentConfiguration(
+                      {
+                        name,
+                      }
+                    ),
+                    VersioningConfiguration: getVersioningConfiguration({
+                      name,
+                    }),
+                    LifecycleConfiguration: getLifecycleConfiguration({
+                      name,
+                    }),
+                    WebsiteConfiguration: getWebsiteConfiguration({
+                      name,
+                    }),
                   }),
                 }),
-              }),
+              ]),
               shouldRetryOnException,
               config: { retryCount: 5, retryDelay: config.retryDelay },
             }),
@@ -436,39 +484,32 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     Policy,
     NotificationConfiguration,
     ServerSideEncryptionConfiguration,
+    VersioningConfiguration,
   }) =>
     pipe([
       tap((params) => {
         assert(Bucket);
       }),
-      tap.if(
-        get("ServerSideEncryptionConfiguration"),
-        pipe([
-          () => ({
-            Bucket,
-            ServerSideEncryptionConfiguration,
-          }),
-          s3().putBucketEncryption,
-        ])
-      ),
-      tap.if(
-        get("NotificationConfiguration"),
-        pipe([
-          () =>
-            s3().putBucketNotificationConfiguration({
-              Bucket,
-              NotificationConfiguration,
-            }),
-        ])
-      ),
-      tap.if(
-        get("Policy"),
-        pipe([
-          fork({ Policy: pipe([() => Policy, JSON.stringify]) }),
-          defaultsDeep({ Bucket }),
-          s3().putBucketPolicy,
-        ])
-      ),
+      putBucketEncryption({
+        endpoint: s3,
+        Bucket,
+        ServerSideEncryptionConfiguration,
+      }),
+      putBucketNotificationConfiguration({
+        endpoint: s3,
+        Bucket,
+        NotificationConfiguration,
+      }),
+      putBucketPolicy({
+        endpoint: s3,
+        Bucket,
+        Policy,
+      }),
+      putBucketVersioning({
+        endpoint: s3,
+        Bucket,
+        VersioningConfiguration,
+      }),
     ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
@@ -602,6 +643,13 @@ exports.AwsS3Bucket = ({ spec, config }) => {
               ]),
             });
           }
+
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketVersioning-property
+          // Must be before replication configuration:
+          // "Versioning must be 'Enabled' on the bucket to apply a replication configuration"
+          if (VersioningConfiguration) {
+            await s3().putBucketVersioning({ Bucket, VersioningConfiguration });
+          }
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property
           if (CORSConfiguration) {
             await s3().putBucketCors({ Bucket, CORSConfiguration });
@@ -628,9 +676,23 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           }
           //  https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketNotificationConfiguration-property
           if (NotificationConfiguration) {
-            await s3().putBucketNotificationConfiguration({
-              Bucket,
-              NotificationConfiguration,
+            await retryCall({
+              name: `putBucketNotificationConfiguration ${Bucket}`,
+              fn: pipe([
+                () => ({
+                  Bucket,
+                  NotificationConfiguration,
+                }),
+                s3().putBucketNotificationConfiguration,
+              ]),
+              shouldRetryOnException: ({ error, name }) =>
+                pipe([
+                  () => [
+                    "Unable to validate the following destination configurations",
+                  ],
+                  any(isIn(error.message)),
+                ])(),
+              config: { retryCount: 12, retryDelay: 5e3 },
             });
           }
 
@@ -655,10 +717,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
               RequestPaymentConfiguration,
             });
           }
-          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketVersioning-property
-          if (VersioningConfiguration) {
-            await s3().putBucketVersioning({ Bucket, VersioningConfiguration });
-          }
+
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property
           if (WebsiteConfiguration) {
             logger.debug(
@@ -815,7 +874,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = ({ name, properties }) =>
+  const configDefault = ({ name, properties, config }) =>
     defaultsDeep({ Bucket: name })(properties);
 
   return {

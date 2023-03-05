@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project dynamodb-streams-to-eventbridge-outbox-pattern
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ EventBus (1)
+++++ Rule (1)
+++++ Target (1)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (3)
++++ Lambda
+++++ EventSourceMapping (1)
+++++ Function (3)
+++++ Permission (1)
+@endmindmap

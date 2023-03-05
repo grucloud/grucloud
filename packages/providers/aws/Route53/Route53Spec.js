@@ -38,6 +38,9 @@ const {
   replaceAccountAndRegion,
   replaceRegion,
 } = require("../AwsCommon");
+
+const { Route53CidrCollection } = require("./Route53CidrCollection");
+
 const {
   Route53HostedZone,
   findDnsServers,
@@ -139,6 +142,9 @@ const assignResourceRecords = ({ lives, providerConfig }) =>
 
 module.exports = pipe([
   () => [
+    createAwsService(Route53CidrCollection({ compare })),
+    //createAwsService(Route53CidrLocation({ compare })),
+
     createAwsService(Route53DelegationSet({ compare })),
     createAwsService(Route53HealthCheck({ compare })),
     {

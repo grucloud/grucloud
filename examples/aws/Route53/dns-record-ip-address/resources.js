@@ -28,9 +28,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      domain: "grucloud.org",
-    }),
   },
   {
     type: "Record",
@@ -54,11 +51,5 @@ exports.createResources = () => [
       hostedZone: "grucloud.org.",
       elasticIpAddress: "myip",
     }),
-  },
-  {
-    type: "Domain",
-    group: "Route53Domains",
-    name: "grucloud.org",
-    readOnly: true,
   },
 ];

@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project apigw-lambda-dynamodb-xray
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Account (1)
+++++ RestApi (1)
+++++ Stage (1)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap

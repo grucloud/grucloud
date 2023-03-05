@@ -14,11 +14,12 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "apigw-api-key",
       apiKeySource: "HEADER",
+      description: "API key REST API demo",
       endpointConfiguration: {
         types: ["EDGE"],
       },
+      name: "apigw-api-key",
       schema: {
         openapi: "3.0.1",
         info: {
@@ -29,7 +30,6 @@ exports.createResources = () => [
         paths: {
           "/": {
             get: {
-              responses: {},
               "x-amazon-apigateway-integration": {
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_MATCH",

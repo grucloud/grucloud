@@ -4,13 +4,16 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("KinesisVideo", async function () {
-  it.skip("Stream", () =>
+  it("Stream", () =>
     pipe([
       () => ({
         groupType: "KinesisVideo::Stream",
         livesNotFound: ({ config }) => [
           {
-            StreamARN: "a-12345",
+            // arn:aws:kinesisvideo:us-east-1:840541460064:stream/input-video-stream/1676469240353
+            StreamARN: `arn:aws:kinesisvideo:${
+              config.region
+            }:${config.accountId()}:stream/input-video-stream/1676469240352`,
           },
         ],
       }),

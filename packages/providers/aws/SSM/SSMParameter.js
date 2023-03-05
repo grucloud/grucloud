@@ -29,6 +29,12 @@ const decorate =
       get("Parameter"),
       defaultsDeep(live),
       assignTags({ endpoint, ResourceType: "Parameter" }),
+      // assign({
+      //   Value: pipe([
+      //     get("Value"),
+      //     tryCatch(JSON.parse, (error, value) => value),
+      //   ]),
+      // }),
     ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html

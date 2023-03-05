@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project EC2 Instance with Security Group
+title Resources for project instance-security-group
 skinparam monochrome true
 + Infra
 ++ aws

@@ -96,7 +96,7 @@ exports.CloudWatchEventRule = ({ compare }) => ({
         assert(id);
       }),
     ]),
-  propertiesDefault: {},
+  propertiesDefault: { State: "ENABLED" },
   cannotBeDeleted,
   managedByOther: cannotBeDeleted,
   ignoreErrorCodes: ["ResourceNotFoundException"],

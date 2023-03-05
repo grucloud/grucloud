@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project rds-option-group
+skinparam monochrome true
++ Infra
+++ aws
++++ RDS
+++++ OptionGroup (1)
+@endmindmap

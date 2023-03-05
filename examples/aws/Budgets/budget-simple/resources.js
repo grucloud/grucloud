@@ -92,6 +92,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-budget-ec2",
+    dependencies: ({}) => ({
+      roles: ["role-budget-ec2"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -115,14 +123,6 @@ exports.createResources = () => [
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "role-budget-ec2",
-    dependencies: ({}) => ({
-      roles: ["role-budget-ec2"],
     }),
   },
   {

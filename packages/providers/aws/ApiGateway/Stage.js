@@ -122,6 +122,7 @@ exports.Stage = ({ compare }) => ({
     "accessLogSettings",
     "restApiId",
     "restApiName",
+    "canarySettings.deploymentId",
   ],
   propertiesDefault: { cacheClusterEnabled: false, tracingEnabled: false },
   compare: compare({
@@ -129,16 +130,6 @@ exports.Stage = ({ compare }) => ({
   }),
   filterLive: () =>
     pipe([
-      pick([
-        "stageName",
-        "description",
-        "StageVariables",
-        "methodSettings",
-        "accessLogSettings",
-        "cacheClusterEnabled",
-        "cacheClusterSize",
-        "tracingEnabled",
-      ]),
       omitIfEmpty(["methodSettings"]),
       omit(["accessLogSettings.destinationArn"]),
     ]),
@@ -197,6 +188,9 @@ exports.Stage = ({ compare }) => ({
       () =>
         payload,
     filterPayload: omit(["methodSettings", "accessLogSettings"]),
+    shouldRetryOnExceptionMessages: [
+      "Unable to complete operation due to concurrent modification. Please try again later",
+    ],
     postCreate:
       ({ endpoint, payload, name }) =>
       ({ restApiId, stageName }) =>
@@ -272,6 +266,14 @@ exports.Stage = ({ compare }) => ({
             clientCertificate,
             "clientCertificateId"
           ),
+        })
+      ),
+      when(
+        get("canarySettings"),
+        defaultsDeep({
+          canarySettings: {
+            deploymentId: getField(restApi, "deployments[0].id"),
+          },
         })
       ),
     ])(),

@@ -1,0 +1,27 @@
+@startmindmap
+title Resources for project eventbridge-globalendpoint-sqs
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ CloudWatch
+++++ MetricAlarm (1)
++++ CloudWatchEvents
+++++ EventBus (1)
+++++ Rule (1)
+++++ Target (1)
++++ EventBridge
+++++ Endpoint (1)
++++ IAM
+++++ Role (1)
++++ Route53
+++++ HealthCheck (1)
++++ SQS
+++++ Queue (1)
+-- aws-secondary
+--- CloudWatchEvents
+---- EventBus (1)
+---- Rule (1)
+---- Target (1)
+--- SQS
+---- Queue (1)
+@endmindmap

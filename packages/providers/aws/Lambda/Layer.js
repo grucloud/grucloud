@@ -1,39 +1,43 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, tryCatch, omit, pick } = require("rubico");
-const { first, defaultsDeep, size } = require("rubico/x");
+const {
+  pipe,
+  tap,
+  get,
+  assign,
+  tryCatch,
+  omit,
+  pick,
+  fork,
+} = require("rubico");
+const { defaultsDeep, size } = require("rubico/x");
+
+const AdmZip = require("adm-zip");
 const path = require("path");
+const os = require("os");
+
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "Layer",
 });
 
-const { AwsClient } = require("../AwsClient");
-
 const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
+const { sortStatements } = require("../IAM/AwsIamCommon");
+const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 
-const {
-  createLambda,
-  fetchZip,
-  createZipBuffer,
-  computeHash256,
-} = require("./LambdaCommon");
+const createTempDir = () => os.tmpdir();
 
-const findId = () => get("LayerVersionArn");
-const findName = () => get("LayerName");
 const pickId = pick(["LayerName"]);
 
-exports.Layer = ({ spec, config }) => {
-  const lambda = createLambda(config);
-  const client = AwsClient({ spec, config })(lambda);
-
-  const decorate = assign({
+const decorate = ({ endpoint }) =>
+  assign({
     Content: ({ LayerVersionArn }) =>
       pipe([
         tap((params) => {
           assert(LayerVersionArn);
         }),
         () => ({ Arn: LayerVersionArn }),
-        lambda().getLayerVersionByArn,
+        endpoint().getLayerVersionByArn,
         get("Content"),
         assign({
           Data: fetchZip(),
@@ -49,81 +53,138 @@ exports.Layer = ({ spec, config }) => {
           LayerName,
           VersionNumber: Version,
         }),
-        (params) => lambda().getLayerVersionPolicy(params),
+        endpoint().getLayerVersionPolicy,
         get("Policy"),
+        sortStatements,
       ]),
       throwIfNotAwsError("ResourceNotFoundException")
     ),
   });
 
-  const getById = client.getById({
+exports.LambdaLayer = () => ({
+  type: "Layer",
+  package: "lambda",
+  client: "Lambda",
+  propertiesDefault: {},
+  omitProperties: [],
+  inferName: () =>
+    pipe([
+      get("LayerName"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
+  findName: () =>
+    pipe([
+      get("LayerName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("LayerVersionArn"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  compare: compareLayer,
+  displayResource: () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      //TODO check
+      omit(["Content.Data", "Content.ZipFile"]),
+    ]),
+  filterLive:
+    ({ resource, programOptions }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(resource.name);
+          assert(live.Content.Data);
+        }),
+        () => live,
+        pick(["LayerName", "Description", "CompatibleRuntimes", "LicenseInfo"]),
+        tap(
+          pipe([
+            fork({
+              zip: () => new AdmZip(Buffer.from(live.Content.Data, "base64")),
+              zipFile: () =>
+                path.resolve(createTempDir(), `${resource.name}.zip`),
+            }),
+            tap(({ zipFile }) => {
+              logger.debug(`zip written to`, zipFile);
+            }),
+            ({ zip, zipFile }) => zip.writeZip(zipFile),
+          ])
+        ),
+        tap(
+          pipe([
+            () => new AdmZip(Buffer.from(live.Content.Data, "base64")),
+            (zip) =>
+              zip.extractAllTo(
+                path.resolve(programOptions.workingDirectory, resource.name),
+                true
+              ),
+          ])
+        ),
+      ])(),
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listLayerVersions-property
+  getById: {
     pickId,
     method: "listLayerVersions",
     getField: "LayerVersions",
     ignoreErrorCodes: ["NotFoundException"],
-    decorate: ({ live: { LayerName } }) =>
-      pipe([defaultsDeep({ LayerName }), decorate]),
-  });
-
+    decorate: ({ live: { LayerName }, endpoint }) =>
+      pipe([defaultsDeep({ LayerName }), decorate({ endpoint })]),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listLayers-property
-  const getList = client.getList({
+  getList: {
     method: "listLayers",
     getParam: "Layers",
-    decorate: () =>
+    decorate: ({ endpoint }) =>
       pipe([
         ({ LatestMatchingVersion, ...other }) => ({
           ...LatestMatchingVersion,
           ...other,
         }),
-        decorate,
+        decorate({ endpoint }),
       ]),
-  });
-
-  const getByName = ({ name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getByName ${name}`);
-      }),
-      () => ({ LayerName: name }),
-      getList,
-      first,
-      tap((result) => {
-        //logger.debug(`getByName result: ${tos(result)}`);
-      }),
-    ])();
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#publishLayerVersion-property
-
-  const create = client.create({
+  create: {
     filterPayload: (payload) => pipe([() => payload])(),
     method: "publishLayerVersion",
     pickCreated:
       ({ payload }) =>
       () =>
         payload,
-    getById,
-  });
-
-  const update = client.update({
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateLayer-property
+  update: {
     pickId,
     method: "publishLayerVersion",
-    getById,
-    config,
     filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteLayerVersion-property
-  const destroy = client.destroy({
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteLayer-property
+  destroy: {
     pickId: ({ Version, LayerName }) => ({ VersionNumber: Version, LayerName }),
     method: "deleteLayerVersion",
-    //TODO error codes ?
-  });
-
-  const configDefault = ({
+  },
+  getByName: getByNameCore,
+  // tagger: ({ config }) =>
+  //   Tagger({
+  //     buildArn: buildArn({ config }),
+  //   }),
+  configDefault: ({
     name,
     properties: { Tags, ...otherProps },
     namespace,
     programOptions,
+    config,
   }) =>
     pipe([
       () => ({
@@ -141,23 +202,10 @@ exports.Layer = ({ spec, config }) => {
             Content: { ZipFile },
           }),
         ])(),
-    ])();
+    ])(),
+});
 
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    update,
-    destroy,
-    getByName,
-    getById,
-    getList,
-    configDefault,
-  };
-};
-
-exports.compareLayer = pipe([
+const compareLayer = pipe([
   compareAws({})({
     filterTarget: () =>
       pipe([

@@ -9,9 +9,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       Name: "grucloud.org.",
     }),
-    dependencies: ({}) => ({
-      domain: "grucloud.org",
-    }),
   },
   {
     type: "Record",
@@ -30,16 +27,19 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Domain",
-    group: "Route53Domains",
-    name: "grucloud.org",
-    readOnly: true,
-  },
-  {
     type: "Bucket",
     group: "S3",
     properties: ({}) => ({
       Name: "site.grucloud.org",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       WebsiteConfiguration: {
         IndexDocument: {
           Suffix: "index.html",

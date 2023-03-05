@@ -11,7 +11,11 @@ const { ApiGatewayV2Authorizer } = require("./Authorizer");
 const { ApiGatewayV2Deployment } = require("./Deployment");
 const { ApiGatewayV2DomainName } = require("./DomainName");
 const { ApiGatewayV2Integration } = require("./Integration");
+const {
+  ApiGatewayV2IntegrationResponse,
+} = require("./ApiGatewayV2IntegrationResponse");
 const { ApiGatewayV2Route } = require("./Route");
+const { ApiGatewayV2RouteResponse } = require("./ApiGatewayV2RouteResponse");
 const { ApiGatewayV2Stage } = require("./Stage");
 const { ApiGatewayV2VpcLink } = require("./ApiGatewayV2VpcLink");
 
@@ -27,7 +31,9 @@ module.exports = pipe([
     ApiGatewayV2Deployment({ compare }),
     ApiGatewayV2DomainName({ compare }),
     ApiGatewayV2Integration({ compare }),
+    ApiGatewayV2IntegrationResponse({ compare }),
     ApiGatewayV2Route({ compare }),
+    ApiGatewayV2RouteResponse({ compare }),
     ApiGatewayV2Stage({ compare }),
     ApiGatewayV2VpcLink({ compare }),
   ],

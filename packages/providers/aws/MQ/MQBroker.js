@@ -26,8 +26,9 @@ exports.MQBroker = ({ compare }) => ({
   client: "Mq",
   inferName: () => get("BrokerName"),
   findName: () => pipe([get("BrokerName")]),
-  findId: () => pipe([get("BrokerId")]),
+  findId: () => pipe([get("BrokerArn")]),
   omitProperties: [
+    "ActionsRequired",
     "BrokerArn",
     "BrokerId",
     "BrokerState",
@@ -124,18 +125,21 @@ exports.MQBroker = ({ compare }) => ({
       (live) =>
         pipe([
           () => live,
-          ({ Configurations: { Current }, ...other }) => ({
-            Configuration: Current,
+          ({ Configurations = {}, ...other }) => ({
+            Configuration: Configurations.Current,
             ...other,
           }),
-          assign({
-            Users: pipe([
-              () => live,
-              pick(["BrokerId"]),
-              endpoint().listUsers,
-              get("Users"),
-            ]),
-          }),
+          when(
+            eq(get("EngineType"), "ActiveMQ"),
+            assign({
+              Users: pipe([
+                () => live,
+                pick(["BrokerId"]),
+                endpoint().listUsers,
+                get("Users"),
+              ]),
+            })
+          ),
         ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MQ.html#listBrokers-property

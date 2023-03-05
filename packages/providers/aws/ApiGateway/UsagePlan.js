@@ -1,11 +1,9 @@
 const assert = require("assert");
 const { pipe, tap, get, map, assign } = require("rubico");
-const { defaultsDeep, unless, isEmpty } = require("rubico/x");
+const { defaultsDeep, unless, isEmpty, callProp } = require("rubico/x");
 
 const { Tagger } = require("./ApiGatewayCommon");
 const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
-
-const findId = () => pipe([get("id")]);
 
 const { replaceWithName } = require("@grucloud/core/Common");
 
@@ -17,15 +15,26 @@ const buildArn =
 const pickId = pipe([({ id }) => ({ usagePlanId: id })]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
-exports.UsagePlan = ({}) => ({
+exports.UsagePlan = ({ compare }) => ({
   type: "UsagePlan",
   package: "api-gateway",
   client: "APIGateway",
   inferName: () => get("name"),
   findName: () => pipe([get("name")]),
-  findId,
+  findId: () => pipe([get("id")]),
   omitProperties: ["id"],
   propertiesDefault: {},
+  compare: compare({
+    filterAll: () =>
+      pipe([
+        assign({
+          apiStages: pipe([
+            get("apiStages"),
+            callProp("sort", (a, b) => a.apiId.localeCompare(b.apiId)),
+          ]),
+        }),
+      ]),
+  }),
   filterLive: ({ lives, providerConfig }) =>
     pipe([
       assign({
@@ -134,14 +143,14 @@ exports.UsagePlan = ({}) => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: {},
     config,
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
-        tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
       }),
     ])(),
 });

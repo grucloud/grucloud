@@ -9,8 +9,10 @@ skinparam monochrome true
 ++++ Target (1)
 +++ CloudWatchLogs
 ++++ LogGroup (1)
++++ DynamoDB
+++++ Table (1)
 +++ IAM
-++++ Role (1)
+++++ Role (5)
 +++ StepFunctions
-++++ StateMachine (1)
+++++ StateMachine (2)
 @endmindmap

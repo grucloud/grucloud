@@ -4,14 +4,19 @@ const { defaultsDeep } = require("rubico/x");
 
 const { createAwsService } = require("../AwsService");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
 const { CodeBuildProject } = require("./CodeBuildProject");
 
 const GROUP = "CodeBuild";
 
 const tagsKey = "tags";
 
-const compare = compareAws({ tagsKey: "Tags" });
+const compare = compareAws({
+  tagsKey,
+  key: "key",
+  getTargetTags: () => [],
+  getLiveTags: () => [],
+});
 
 module.exports = pipe([
   () => [
@@ -23,7 +28,6 @@ module.exports = pipe([
       createAwsService,
       defaultsDeep({
         group: GROUP,
-        isOurMinion,
         tagsKey,
         compare: compare({}),
       }),

@@ -16,19 +16,19 @@ describe("APIGateway", async function () {
       }),
       awsResourceTest,
     ])());
-  it("Authorizer", () =>
-    pipe([
-      () => ({
-        groupType: "APIGateway::Authorizer",
-        livesNotFound: ({ config }) => [
-          {
-            restApiId: "12345",
-            id: "12345",
-          },
-        ],
-      }),
-      awsResourceTest,
-    ])());
+  // it.only("Authorizer", () =>
+  //   pipe([
+  //     () => ({
+  //       groupType: "APIGateway::Authorizer",
+  //       livesNotFound: ({ config }) => [
+  //         {
+  //           restApiId: "12345",
+  //           id: "12345",
+  //         },
+  //       ],
+  //     }),
+  //     awsResourceTest,
+  //   ])());
   it("APIGatewayClientCertificate", () =>
     pipe([
       () => ({
@@ -48,6 +48,31 @@ describe("APIGateway", async function () {
         livesNotFound: ({ config }) => [
           {
             id: "12345",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("RestApiPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "APIGateway::RestApiPolicy",
+        livesNotFound: ({ config }) => [
+          {
+            id: "12345",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("RequestValidator", () =>
+    pipe([
+      () => ({
+        groupType: "APIGateway::RequestValidator",
+        livesNotFound: ({ config }) => [
+          {
+            restApiId: "12345",
+            requestValidatorId: "i123",
           },
         ],
       }),

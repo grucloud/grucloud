@@ -66,7 +66,6 @@ zookeeper.session.timeout.ms=18000
     group: "MSK",
     properties: ({ getId }) => ({
       ClusterName: "demo-cluster-1",
-      ClusterType: "SERVERLESS",
       Serverless: {
         ClientAuthentication: {
           Sasl: {

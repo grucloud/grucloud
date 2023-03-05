@@ -121,6 +121,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-glue-database",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
 ];

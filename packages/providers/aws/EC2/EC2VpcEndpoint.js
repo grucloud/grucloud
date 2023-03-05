@@ -31,9 +31,11 @@ const {
   buildTags,
   findNameInTagsOrId,
   replaceRegion,
-  assignPolicyDocumentAccountAndRegion,
 } = require("../AwsCommon");
-const { findInStatement } = require("../IAM/AwsIamCommon");
+const {
+  findInStatement,
+  assignPolicyDocumentAccountAndRegion,
+} = require("../IAM/AwsIamCommon");
 
 const {
   tagResource,

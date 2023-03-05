@@ -115,6 +115,8 @@ exports.CloudWatchSubscriptionFilter = ({ compare }) => ({
   create: {
     method: "putSubscriptionFilter",
     pickCreated: ({ payload }) => pipe([() => payload]),
+    // TODO
+    // "Could not execute the lambda function. Make sure you have given CloudWatch Logs permission to execute your function.",
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#deleteSubscriptionFilter-property
   destroy: {

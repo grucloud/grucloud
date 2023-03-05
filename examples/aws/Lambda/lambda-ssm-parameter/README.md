@@ -1,3 +1,3 @@
-# Aws deploymemt
+# Aws Lambda SSM Parameter
 
-Boilerplate to deploy infrastructure on Aws with GruCloud.
+See https://serverlessland.com/patterns/lambda-ssm

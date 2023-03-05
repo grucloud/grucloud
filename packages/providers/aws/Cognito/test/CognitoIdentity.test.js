@@ -14,4 +14,24 @@ describe("CognitoIdentity", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("IdentityPoolProviderPrincipalTag", () =>
+    pipe([
+      () => ({
+        groupType: "Cognito::IdentityPoolProviderPrincipalTag",
+        livesNotFound: ({ config }) => [
+          { IdentityPoolId: "us-east-1:64a8f1cb-e5e1-4d32-9405-ca6e7ff4ee4a" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("IdentityPoolRolesAttachments", () =>
+    pipe([
+      () => ({
+        groupType: "Cognito::IdentityPoolRolesAttachments",
+        livesNotFound: ({ config }) => [
+          { IdentityPoolId: "us-east-1:64a8f1cb-e5e1-4d32-9405-ca6e7ff4ee4a" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });

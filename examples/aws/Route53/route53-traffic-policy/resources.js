@@ -9,9 +9,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       Name: "grucloud.org.",
     }),
-    dependencies: ({}) => ({
-      domain: "grucloud.org",
-    }),
   },
   {
     type: "TrafficPolicy",
@@ -31,11 +28,5 @@ exports.createResources = () => [
         StartEndpoint: "endpoint-start-OlMP",
       },
     }),
-  },
-  {
-    type: "Domain",
-    group: "Route53Domains",
-    name: "grucloud.org",
-    readOnly: true,
   },
 ];

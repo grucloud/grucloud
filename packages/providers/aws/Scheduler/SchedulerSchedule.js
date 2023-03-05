@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign } = require("rubico");
+const { pipe, tap, get, pick, set, assign } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -25,11 +25,20 @@ const pickId = pipe([
   pick(["Name", "GroupName"]),
 ]);
 
+const filterPayload = set(
+  "Target.Input",
+  pipe([get("Target.Input"), JSON.stringify])
+);
+
 const decorate = ({ endpoint }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
+    when(
+      get("Target.Input"),
+      set("Target.Input", pipe([get("Target.Input"), JSON.parse]))
+    ),
     // 13:21:58.620 error: AwsClient    getById Schedule name: ValidationException, message: 1 validation error detected: Value 'arn:aws:scheduler:us-east-1:840541460064:schedule/default/scheduleLambda' at 'resourceArn' failed to satisfy constraint: Member must satisfy regular expression pattern: arn:aws(-[a-z]+)?:scheduler:[a-z0-9\-]+:\d{12}:schedule-group\/[0-9a-zA-Z-_.]+, error: ValidationException: 1 validation error detected: Value 'arn:aws:scheduler:us-east-1:840541460064:schedule/default/scheduleLambda' at 'resourceArn' failed to satisfy constraint: Member must satisfy regular expression pattern: arn:aws(-[a-z]+)?:scheduler:[a-z0-9\-]+:\d{12}:schedule-group\/[0-9a-zA-Z-_.]+
     // assign({
     //   Tags: pipe([
@@ -61,7 +70,7 @@ exports.SchedulerSchedule = ({ compare }) => ({
     "CreationDate",
     "KmsKeyArn",
     "LastModificationDate",
-    "Target.DeadLetterConfig.Arn",
+    "Target.DeadLetterConfig",
     "Target.RoleArn",
   ],
   inferName: () => get("Name"),
@@ -181,6 +190,7 @@ exports.SchedulerSchedule = ({ compare }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#createSchedule-property
   create: {
+    filterPayload,
     method: "createSchedule",
     pickCreated: ({ payload }) => pipe([() => payload]),
     shouldRetryOnExceptionMessages: [
@@ -191,7 +201,8 @@ exports.SchedulerSchedule = ({ compare }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#updateSchedule-property
   update: {
     method: "updateSchedule",
-    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, filterPayload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Scheduler.html#deleteSchedule-property
   destroy: {

@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project eventbridge-schema-notifications
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ Rule (1)
+++++ Target (2)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (2)
+++++ Permission (1)
+@endmindmap

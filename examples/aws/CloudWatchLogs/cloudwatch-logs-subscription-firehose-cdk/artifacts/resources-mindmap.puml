@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project cloudwatch-logs-subscription-firehose-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
+++++ SubscriptionFilter (1)
++++ Firehose
+++++ DeliveryStream (1)
++++ IAM
+++++ Role (2)
++++ S3
+++++ Bucket (1)
+@endmindmap

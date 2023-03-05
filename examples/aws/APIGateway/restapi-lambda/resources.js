@@ -24,10 +24,15 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     properties: ({ config }) => ({
-      name: "PetStore",
       apiKeySource: "HEADER",
+      description:
+        "Your first API with Amazon API Gateway. This is a sample API that integrates via HTTP with our demo Pet Store endpoints",
       endpointConfiguration: {
         types: ["REGIONAL"],
+      },
+      name: "PetStore",
+      tags: {
+        mykey: "myvalue",
       },
       schema: {
         openapi: "3.0.1",
@@ -433,16 +438,13 @@ exports.createResources = () => [
       deployment: {
         stageName: "dev",
       },
-      tags: {
-        mykey: "myvalue",
-      },
     }),
   },
   {
     type: "Stage",
     group: "APIGateway",
     properties: ({}) => ({
-      stageName: "dev",
+      cacheClusterSize: "0.5",
       description: "dev",
       methodSettings: {
         "*/*": {
@@ -458,7 +460,7 @@ exports.createResources = () => [
             "SUCCEED_WITH_RESPONSE_HEADER",
         },
       },
-      cacheClusterSize: "0.5",
+      stageName: "dev",
       tags: {
         mykey: "myvalue3",
       },
@@ -472,8 +474,8 @@ exports.createResources = () => [
     type: "Stage",
     group: "APIGateway",
     properties: ({}) => ({
-      stageName: "prod",
       description: "prod",
+      stageName: "prod",
     }),
     dependencies: ({}) => ({
       restApi: "PetStore",

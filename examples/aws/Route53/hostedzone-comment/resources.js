@@ -12,14 +12,5 @@ exports.createResources = () => [
         Comment: "My Hosted Zone New",
       },
     }),
-    dependencies: ({}) => ({
-      domain: "grucloud.org",
-    }),
-  },
-  {
-    type: "Domain",
-    group: "Route53Domains",
-    name: "grucloud.org",
-    readOnly: true,
   },
 ];

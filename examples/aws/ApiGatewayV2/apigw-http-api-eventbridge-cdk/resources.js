@@ -36,12 +36,10 @@ exports.createResources = () => [
         Source: "WebApp",
         Detail: "$request.body",
       },
-      RequestTemplates: {},
       TimeoutInMillis: 10000,
     }),
     dependencies: ({}) => ({
       api: "MyHttpApi",
-      eventBus: "MyEventBus",
       role: "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-1LXDAK3DKUOQS",
     }),
   },
@@ -53,7 +51,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "MyHttpApi",
-      integration: "integration::MyHttpApi::MyEventBus",
+      integration: "integration::MyHttpApi::eventBusDefault",
     }),
   },
   {
@@ -83,7 +81,6 @@ exports.createResources = () => [
         region: ["ap-southeast-2"],
       },
       Name: "ApiEventbridgeStack-EventLoggerRuleC0DD3E40-G6CDILDRSIPL",
-      State: "ENABLED",
     }),
     dependencies: ({}) => ({
       eventBus: "MyEventBus",

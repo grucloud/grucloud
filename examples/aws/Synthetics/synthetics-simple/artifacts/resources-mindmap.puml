@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project synthetics-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ Lambda
+++++ Layer (3)
+++++ Function (2)
++++ S3
+++++ Bucket (1)
++++ Synthetics
+++++ Canary (1)
+@endmindmap

@@ -4,8 +4,8 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ APIGateway
-++++ Authorizer (1)
 ++++ RestApi (1)
+++++ RestApiPolicy (1)
 ++++ Stage (1)
 +++ CognitoIdentityServiceProvider
 ++++ UserPool (1)

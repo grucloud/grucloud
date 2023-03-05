@@ -132,7 +132,7 @@ describe("RDS", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("OptionGroup", () =>
+  it("OptionGroup", () =>
     pipe([
       () => ({
         groupType: "RDS::OptionGroup",

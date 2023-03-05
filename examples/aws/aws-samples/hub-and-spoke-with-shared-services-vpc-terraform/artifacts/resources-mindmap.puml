@@ -29,8 +29,8 @@ skinparam monochrome true
 ++++ Key (1)
 +++ Route53
 ++++ HostedZone (4)
-++++ ZoneVpcAssociation (8)
 ++++ Record (5)
+++++ ZoneVpcAssociation (8)
 +++ Route53Resolver
 ++++ Endpoint (2)
 ++++ Rule (2)

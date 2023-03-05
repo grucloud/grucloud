@@ -15,9 +15,9 @@ List of resources for provider aws:
 * Amplify: 
 [App](./resources/Amplify/App.md), [BackendEnvironment](./resources/Amplify/BackendEnvironment.md), [Branch](./resources/Amplify/Branch.md), [DomainAssociation](./resources/Amplify/DomainAssociation.md), [Webhook](./resources/Amplify/Webhook.md)
 * APIGateway: 
-[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Authorizer](./resources/APIGateway/Authorizer.md), [ClientCertificate](./resources/APIGateway/ClientCertificate.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
+[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Authorizer](./resources/APIGateway/Authorizer.md), [ClientCertificate](./resources/APIGateway/ClientCertificate.md), [RestApi](./resources/APIGateway/RestApi.md), [RestApiPolicy](./resources/APIGateway/RestApiPolicy.md), [RequestValidator](./resources/APIGateway/RequestValidator.md), [Stage](./resources/APIGateway/Stage.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
 * ApiGatewayV2: 
-[Api](./resources/ApiGatewayV2/Api.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [DomainName](./resources/ApiGatewayV2/DomainName.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Stage](./resources/ApiGatewayV2/Stage.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
+[Api](./resources/ApiGatewayV2/Api.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [DomainName](./resources/ApiGatewayV2/DomainName.md), [Integration](./resources/ApiGatewayV2/Integration.md), [IntegrationResponse](./resources/ApiGatewayV2/IntegrationResponse.md), [Route](./resources/ApiGatewayV2/Route.md), [RouteResponse](./resources/ApiGatewayV2/RouteResponse.md), [Stage](./resources/ApiGatewayV2/Stage.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
 * AppConfig: 
 [Application](./resources/AppConfig/Application.md), [ConfigurationProfile](./resources/AppConfig/ConfigurationProfile.md), [Deployment](./resources/AppConfig/Deployment.md), [DeploymentStrategy](./resources/AppConfig/DeploymentStrategy.md), [Environment](./resources/AppConfig/Environment.md), [Extension](./resources/AppConfig/Extension.md), [ExtensionAssociation](./resources/AppConfig/ExtensionAssociation.md), [HostedConfigurationVersion](./resources/AppConfig/HostedConfigurationVersion.md)
 * Appflow: 
@@ -48,6 +48,8 @@ List of resources for provider aws:
 [ComputeEnvironment](./resources/Batch/ComputeEnvironment.md), [JobDefinition](./resources/Batch/JobDefinition.md), [JobQueue](./resources/Batch/JobQueue.md), [SchedulingPolicy](./resources/Batch/SchedulingPolicy.md)
 * Budgets: 
 [Budget](./resources/Budgets/Budget.md)
+* Cloud9: 
+[Environment](./resources/Cloud9/Environment.md), [EnvironmentMembership](./resources/Cloud9/EnvironmentMembership.md)
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
 * CloudFront: 
@@ -61,9 +63,13 @@ List of resources for provider aws:
 * CloudWatchEvents: 
 [ApiDestination](./resources/CloudWatchEvents/ApiDestination.md), [Connection](./resources/CloudWatchEvents/Connection.md), [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
-[LogGroup](./resources/CloudWatchLogs/LogGroup.md), [LogStream](./resources/CloudWatchLogs/LogStream.md), [SubscriptionFilter](./resources/CloudWatchLogs/SubscriptionFilter.md)
+[LogGroup](./resources/CloudWatchLogs/LogGroup.md), [LogStream](./resources/CloudWatchLogs/LogStream.md), [ResourcePolicy](./resources/CloudWatchLogs/ResourcePolicy.md), [SubscriptionFilter](./resources/CloudWatchLogs/SubscriptionFilter.md)
+* CodeArtifact: 
+[Domain](./resources/CodeArtifact/Domain.md), [DomainPermissionsPolicy](./resources/CodeArtifact/DomainPermissionsPolicy.md), [Repository](./resources/CodeArtifact/Repository.md), [RepositoryPermissionsPolicy](./resources/CodeArtifact/RepositoryPermissionsPolicy.md)
 * CodeBuild: 
 [Project](./resources/CodeBuild/Project.md)
+* CodeCommit: 
+[Repository](./resources/CodeCommit/Repository.md)
 * CodeDeploy: 
 [Application](./resources/CodeDeploy/Application.md), [DeploymentGroup](./resources/CodeDeploy/DeploymentGroup.md)
 * CodePipeline: 
@@ -99,7 +105,7 @@ List of resources for provider aws:
 * EFS: 
 [FileSystem](./resources/EFS/FileSystem.md), [FileSystemPolicy](./resources/EFS/FileSystemPolicy.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
-[Addon](./resources/EKS/Addon.md), [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
+[Addon](./resources/EKS/Addon.md), [Cluster](./resources/EKS/Cluster.md), [FargateProfile](./resources/EKS/FargateProfile.md), [NodeGroup](./resources/EKS/NodeGroup.md)
 * ElastiCache: 
 [CacheCluster](./resources/ElastiCache/CacheCluster.md), [CacheParameterGroup](./resources/ElastiCache/CacheParameterGroup.md), [CacheSubnetGroup](./resources/ElastiCache/CacheSubnetGroup.md), [ReplicationGroup](./resources/ElastiCache/ReplicationGroup.md), [User](./resources/ElastiCache/User.md), [UserGroup](./resources/ElastiCache/UserGroup.md)
 * ElasticBeanstalk: 
@@ -108,6 +114,8 @@ List of resources for provider aws:
 [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [TargetGroupAttachments](./resources/ElasticLoadBalancingV2/TargetGroupAttachments.md)
 * EMRServerless: 
 [Application](./resources/EMRServerless/Application.md)
+* EventBridge: 
+[Endpoint](./resources/EventBridge/Endpoint.md)
 * Evidently: 
 [Experiment](./resources/Evidently/Experiment.md), [Feature](./resources/Evidently/Feature.md), [Launch](./resources/Evidently/Launch.md), [Project](./resources/Evidently/Project.md), [Segment](./resources/Evidently/Segment.md)
 * Firehose: 
@@ -127,7 +135,7 @@ List of resources for provider aws:
 * GuardDuty: 
 [Detector](./resources/GuardDuty/Detector.md), [Filter](./resources/GuardDuty/Filter.md), [IPSet](./resources/GuardDuty/IPSet.md), [Member](./resources/GuardDuty/Member.md), [OrganizationAdminAccount](./resources/GuardDuty/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/GuardDuty/OrganizationConfiguration.md), [PublishingDestination](./resources/GuardDuty/PublishingDestination.md), [ThreatIntelSet](./resources/GuardDuty/ThreatIntelSet.md)
 * IAM: 
-[OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
+[OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [Group](./resources/IAM/Group.md), [InstanceProfile](./resources/IAM/InstanceProfile.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [User](./resources/IAM/User.md), [UserPolicy](./resources/IAM/UserPolicy.md)
 * IdentityStore: 
 [GroupMembership](./resources/IdentityStore/GroupMembership.md), [User](./resources/IdentityStore/User.md), [Group](./resources/IdentityStore/Group.md)
 * Imagebuilder: 
@@ -137,13 +145,15 @@ List of resources for provider aws:
 * Ivschat: 
 [Room](./resources/Ivschat/Room.md), [LoggingConfiguration](./resources/Ivschat/LoggingConfiguration.md)
 * Kinesis: 
-[Stream](./resources/Kinesis/Stream.md)
+[Stream](./resources/Kinesis/Stream.md), [StreamConsumer](./resources/Kinesis/StreamConsumer.md)
+* KinesisVideo: 
+[Stream](./resources/KinesisVideo/Stream.md)
 * KMS: 
 [Key](./resources/KMS/Key.md)
 * LakeFormation: 
 [DataLakeSettings](./resources/LakeFormation/DataLakeSettings.md), [LFTag](./resources/LakeFormation/LFTag.md), [Resource](./resources/LakeFormation/Resource.md)
 * Lambda: 
-[Layer](./resources/Lambda/Layer.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md), [Function](./resources/Lambda/Function.md), [Permission](./resources/Lambda/Permission.md)
+[Alias](./resources/Lambda/Alias.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md), [Function](./resources/Lambda/Function.md), [Layer](./resources/Lambda/Layer.md), [Permission](./resources/Lambda/Permission.md)
 * Lightsail: 
 [Bucket](./resources/Lightsail/Bucket.md), [Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
 * Macie2: 
@@ -153,7 +163,7 @@ List of resources for provider aws:
 * MediaLive: 
 [Channel](./resources/MediaLive/Channel.md), [Input](./resources/MediaLive/Input.md), [InputSecurityGroup](./resources/MediaLive/InputSecurityGroup.md), [Multiplex](./resources/MediaLive/Multiplex.md), [MultiplexProgram](./resources/MediaLive/MultiplexProgram.md)
 * MediaPackage: 
-[Channel](./resources/MediaPackage/Channel.md)
+[Channel](./resources/MediaPackage/Channel.md), [OriginEndpoint](./resources/MediaPackage/OriginEndpoint.md)
 * MemoryDB: 
 [ACL](./resources/MemoryDB/ACL.md), [Cluster](./resources/MemoryDB/Cluster.md), [ParameterGroup](./resources/MemoryDB/ParameterGroup.md), [SubnetGroup](./resources/MemoryDB/SubnetGroup.md), [User](./resources/MemoryDB/User.md)
 * MQ: 
@@ -173,11 +183,13 @@ List of resources for provider aws:
 * RAM: 
 [ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * RDS: 
-[DBCluster](./resources/RDS/DBCluster.md), [DBClusterEndpoint](./resources/RDS/DBClusterEndpoint.md), [DBClusterParameterGroup](./resources/RDS/DBClusterParameterGroup.md), [DBClusterSnapshot](./resources/RDS/DBClusterSnapshot.md), [DBEngineVersion](./resources/RDS/DBEngineVersion.md), [DBInstance](./resources/RDS/DBInstance.md), [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSnapshot](./resources/RDS/DBSnapshot.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [EventSubscription](./resources/RDS/EventSubscription.md), [GlobalCluster](./resources/RDS/GlobalCluster.md)
+[DBCluster](./resources/RDS/DBCluster.md), [DBClusterEndpoint](./resources/RDS/DBClusterEndpoint.md), [DBClusterParameterGroup](./resources/RDS/DBClusterParameterGroup.md), [DBClusterSnapshot](./resources/RDS/DBClusterSnapshot.md), [DBEngineVersion](./resources/RDS/DBEngineVersion.md), [DBInstance](./resources/RDS/DBInstance.md), [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSnapshot](./resources/RDS/DBSnapshot.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [EventSubscription](./resources/RDS/EventSubscription.md), [GlobalCluster](./resources/RDS/GlobalCluster.md), [OptionGroup](./resources/RDS/OptionGroup.md)
 * Redshift: 
 [Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md), [EndpointAccess](./resources/Redshift/EndpointAccess.md), [EndpointAuthorization](./resources/Redshift/EndpointAuthorization.md), [UsageLimit](./resources/Redshift/UsageLimit.md)
+* Rekognition: 
+[StreamProcessor](./resources/Rekognition/StreamProcessor.md)
 * Route53: 
-[DelegationSet](./resources/Route53/DelegationSet.md), [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
+[CidrCollection](./resources/Route53/CidrCollection.md), [DelegationSet](./resources/Route53/DelegationSet.md), [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
 * Route53Domains: 
 [Domain](./resources/Route53Domains/Domain.md)
 * Route53RecoveryControlConfig: 
@@ -191,7 +203,7 @@ List of resources for provider aws:
 * S3: 
 [Bucket](./resources/S3/Bucket.md), [Object](./resources/S3/Object.md)
 * S3Control: 
-[AccessPoint](./resources/S3Control/AccessPoint.md), [MultiRegionAccessPoint](./resources/S3Control/MultiRegionAccessPoint.md)
+[AccessPoint](./resources/S3Control/AccessPoint.md), [MultiRegionAccessPoint](./resources/S3Control/MultiRegionAccessPoint.md), [ObjectLambdaAccessPoint](./resources/S3Control/ObjectLambdaAccessPoint.md)
 * Scheduler: 
 [Schedule](./resources/Scheduler/Schedule.md), [ScheduleGroup](./resources/Scheduler/ScheduleGroup.md)
 * EventSchemas: 
@@ -218,8 +230,10 @@ List of resources for provider aws:
 [AccountAssignment](./resources/SSOAdmin/AccountAssignment.md), [Instance](./resources/SSOAdmin/Instance.md), [InstanceAccessControlAttribute](./resources/SSOAdmin/InstanceAccessControlAttribute.md), [PermissionSet](./resources/SSOAdmin/PermissionSet.md)
 * StepFunctions: 
 [StateMachine](./resources/StepFunctions/StateMachine.md)
+* StorageGateway: 
+[Gateway](./resources/StorageGateway/Gateway.md)
 * Synthetics: 
-[Canary](./resources/Synthetics/Canary.md)
+[Canary](./resources/Synthetics/Canary.md), [Group](./resources/Synthetics/Group.md)
 * TimestreamWrite: 
 [Database](./resources/TimestreamWrite/Database.md), [Table](./resources/TimestreamWrite/Table.md)
 * Transfer: 

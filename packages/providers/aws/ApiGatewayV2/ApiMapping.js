@@ -7,26 +7,22 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { ignoreErrorCodes } = require("./ApiGatewayV2Common");
 
-const findId = () => get("ApiMappingId");
-
-const findName = () =>
+const findId = () =>
   pipe([
-    tap(({ DomainName, ApiName, Stage, ApiMappingKey }) => {
-      assert(DomainName);
-      assert(Stage);
-      assert(ApiName);
+    get("ApiMappingId"),
+    tap((ApiMappingId) => {
+      assert(ApiMappingId);
     }),
-    ({ DomainName, ApiName, Stage, ApiMappingKey }) =>
-      `apimapping::${DomainName}::${ApiName}::${Stage}::${ApiMappingKey}`,
   ]);
 
 const pickId = pick(["ApiMappingId", "DomainName"]);
 
-const decorate = ({ endpoint, config }) =>
+const decorate = ({ endpoint, live }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
+    defaultsDeep({ ApiName: live.ApiName }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
@@ -37,15 +33,24 @@ exports.ApiGatewayV2ApiMapping = ({}) => ({
   propertiesDefault: {},
   inferName:
     ({ dependenciesSpec: { domainName, stage } }) =>
-    ({ ApiMappingKey }) =>
+    ({}) =>
       pipe([
         tap(() => {
           assert(domainName);
           assert(stage);
         }),
-        () => `apimapping::${domainName}::${stage}::${ApiMappingKey}`,
+        () => `apimapping::${domainName}::${stage}`,
       ])(),
-  findName,
+  findName: () =>
+    pipe([
+      tap(({ DomainName, ApiName, Stage }) => {
+        assert(DomainName);
+        assert(ApiName);
+        assert(Stage);
+      }),
+      ({ DomainName, ApiName, Stage }) =>
+        `apimapping::${DomainName}::${ApiName}::${Stage}`,
+    ]),
   findId,
   ignoreErrorCodes,
   omitProperties: ["ApiMappingId", "ApiName"],
@@ -87,17 +92,17 @@ exports.ApiGatewayV2ApiMapping = ({}) => ({
     decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listApiMappings-property
-  getList: {
-    method: "listApiMappings",
-    getParam: "ApiMappings",
-    decorate,
-  },
   getList: ({ client, endpoint, getById, config }) =>
     pipe([
       () =>
         client.getListWithParent({
           parent: { type: "DomainName", group: "ApiGatewayV2" },
-          pickKey: pick(["DomainName"]),
+          pickKey: pipe([
+            pick(["DomainName"]),
+            tap(({ DomainName }) => {
+              assert(DomainName);
+            }),
+          ]),
           method: "getApiMappings",
           getParam: "Items",
           config,
@@ -109,10 +114,10 @@ exports.ApiGatewayV2ApiMapping = ({}) => ({
                 defaultsDeep({ DomainName }),
                 assign({
                   ApiName: pipe([
-                    ({ ApiId }) =>
-                      `arn:aws:execute-api:${
-                        config.region
-                      }:${config.accountId()}:${ApiId}`,
+                    get("ApiId"),
+                    tap((ApiId) => {
+                      assert(ApiId);
+                    }),
                     lives.getById({
                       providerName: config.providerName,
                       type: "Api",

@@ -56,11 +56,20 @@ exports.createResources = () => [
   {
     type: "DomainName",
     group: "ApiGatewayV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       DomainName: "grucloud.org",
+      DomainNameConfigurations: [
+        {
+          CertificateArn: `${getId({
+            type: "Certificate",
+            group: "ACM",
+            name: "grucloud.org",
+          })}`,
+        },
+      ],
     }),
     dependencies: ({}) => ({
-      certificate: "grucloud.org",
+      certificates: ["grucloud.org"],
     }),
   },
   {
@@ -182,6 +191,7 @@ exports.createResources = () => [
             type: "Api",
             group: "ApiGatewayV2",
             name: "my-api",
+            path: "live.ArnV2",
           })}/*/*/my-function`,
         },
       ],

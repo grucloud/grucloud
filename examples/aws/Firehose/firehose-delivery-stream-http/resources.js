@@ -37,10 +37,6 @@ exports.createResources = () => [
           Name: "HTTP endpoint",
           Url: "https://mydomain.com",
         },
-        ProcessingConfiguration: {
-          Enabled: false,
-          Processors: [],
-        },
         RequestConfiguration: {
           CommonAttributes: [],
           ContentEncoding: "NONE",
@@ -386,6 +382,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-delivery-stream-backup",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   {
@@ -393,13 +398,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-firehose-destination",
-    }),
-  },
-  {
-    type: "Bucket",
-    group: "S3",
-    properties: ({}) => ({
-      Name: "gc-firehose-error",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
 ];

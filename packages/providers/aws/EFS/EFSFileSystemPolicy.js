@@ -3,7 +3,10 @@ const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { assignPolicyAccountAndRegion } = require("../AwsCommon");
+const {
+  assignPolicyAccountAndRegion,
+  sortStatements,
+} = require("../IAM/AwsIamCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { ignoreErrorCodes } = require("./EFSCommon");
@@ -16,10 +19,7 @@ const pickId = pipe([
 ]);
 
 const decorate = ({ endpoint, live }) =>
-  pipe([
-    //
-    assign({ Policy: pipe([get("Policy"), JSON.parse]) }),
-  ]);
+  pipe([assign({ Policy: pipe([get("Policy"), JSON.parse, sortStatements]) })]);
 
 const filterPayload = pipe([
   assign({ Policy: pipe([get("Policy"), JSON.stringify]) }),

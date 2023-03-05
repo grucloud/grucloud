@@ -89,24 +89,27 @@ exports.MediaLiveInput = () => ({
     ]),
   filterLive: ({ lives, providerConfig }) =>
     pipe([
-      assign({
-        MediaConnectFlows: pipe([
-          get("MediaConnectFlows"),
-          map(
-            assign({
-              FlowArn: pipe([
-                get("FlowArn"),
-                replaceWithName({
-                  groupType: "MediaConnect::Flow",
-                  path: "id",
-                  providerConfig,
-                  lives,
-                }),
-              ]),
-            })
-          ),
-        ]),
-      }),
+      when(
+        get("MediaConnectFlows"),
+        assign({
+          MediaConnectFlows: pipe([
+            get("MediaConnectFlows"),
+            map(
+              assign({
+                FlowArn: pipe([
+                  get("FlowArn"),
+                  replaceWithName({
+                    groupType: "MediaConnect::Flow",
+                    path: "id",
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        })
+      ),
     ]),
   ignoreErrorCodes: ["NotFoundException"],
   dependencies: {

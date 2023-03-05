@@ -75,7 +75,7 @@ exports.createResources = () => [
         Arn: `arn:aws:sqs:${
           config.region
         }:${config.accountId()}:queue-scheduler`,
-        Input: "{}",
+        Input: {},
         RetryPolicy: {
           MaximumEventAgeInSeconds: 86400,
           MaximumRetryAttempts: 185,

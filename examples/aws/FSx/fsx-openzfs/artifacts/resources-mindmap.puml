@@ -10,4 +10,5 @@ skinparam monochrome true
 ++++ SecurityGroupRuleIngress (1)
 +++ FSx
 ++++ FileSystem (1)
+++++ Volume (1)
 @endmindmap

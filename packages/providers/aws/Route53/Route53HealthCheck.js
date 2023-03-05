@@ -17,9 +17,20 @@ const buildArn = () =>
     }),
   ]);
 
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        tap(({ Id }) => {
+          assert(Id);
+        }),
+        ({ Id }) => `arn:aws:route53:::healthcheck/${Id}`,
+      ]),
+    }),
+  ]);
 const pickId = pipe([({ Id }) => ({ HealthCheckId: Id })]);
 
-const decorate = ({ endpoint, getById }) =>
+const decorate = ({ endpoint, config, getById }) =>
   pipe([
     getById,
     assign({
@@ -29,9 +40,8 @@ const decorate = ({ endpoint, getById }) =>
         get("ResourceTagSet.Tags"),
       ]),
     }),
+    assignArn({ config }),
   ]);
-
-const model = ({ config }) => ({});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html
 exports.Route53HealthCheck = ({ compare }) => ({
@@ -117,13 +127,13 @@ exports.Route53HealthCheck = ({ compare }) => ({
   findId: () => pipe([get("Id")]),
   dependencies: {
     cloudWatchAlarm: {
-      type: "Alarm",
+      type: "MetricAlarm",
       group: "CloudWatch",
       dependencyId: ({ lives, config }) =>
         pipe([
-          get("AlarmIdentifier.Name"),
+          get("HealthCheckConfig.AlarmIdentifier.Name"),
           lives.getByName({
-            type: "Alarm",
+            type: "MetricAlarm",
             group: "CloudWatch",
             config: config.providerName,
           }),
@@ -148,6 +158,7 @@ exports.Route53HealthCheck = ({ compare }) => ({
     },
   },
   omitProperties: [
+    "Arn",
     "Id",
     "CallerReference",
     "LinkedService",

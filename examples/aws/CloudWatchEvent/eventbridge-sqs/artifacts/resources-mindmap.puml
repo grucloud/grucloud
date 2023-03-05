@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project eventbridge-sqs
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Account (1)
++++ CloudWatchEvents
+++++ Rule (1)
+++++ Target (1)
++++ IAM
+++++ Role (2)
++++ S3
+++++ Bucket (2)
++++ SQS
+++++ Queue (1)
+@endmindmap

@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project codecommit-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ CodeCommit
+++++ Repository (1)
+@endmindmap

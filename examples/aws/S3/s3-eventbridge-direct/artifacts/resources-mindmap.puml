@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project s3-eventbridge-direct
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ Rule (1)
+++++ Target (1)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

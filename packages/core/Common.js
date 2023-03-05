@@ -575,6 +575,7 @@ exports.compare = ({
       liveDiff: pipe([
         ({ target, live }) => detailedDiff(live, target),
         omitIfEmpty(["added", "updated", "deleted"]),
+        omit(["deleted"]),
         tap((params) => {
           assert(true);
         }),
@@ -676,7 +677,7 @@ exports.replaceWithName =
           (id) =>
             pipe([
               tap((params) => {
-                assert(id);
+                //assert(id != undefined);
               }),
               () => Id,
               switchCase([

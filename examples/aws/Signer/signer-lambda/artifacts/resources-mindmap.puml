@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project signer-lambda
+skinparam monochrome true
++ Infra
+++ aws
++++ Signer
+++++ SigningProfile (1)
+@endmindmap

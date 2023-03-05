@@ -60,6 +60,7 @@ const decorate =
           omitIfEmpty([
             "GlobalReplicationGroupInfo.GlobalReplicationGroupId",
             "GlobalReplicationGroupInfo.GlobalReplicationGroupMemberRole",
+            "LogDeliveryConfigurations",
           ]),
           omitIfEmpty(["GlobalReplicationGroupInfo", "NotificationTopicArn"]),
           ({ Description, ...other }) => ({
@@ -104,6 +105,7 @@ exports.ElastiCacheReplicationGroup = () => ({
     "KmsKeyId",
     "NotificationTopicArn",
     "MultiAZ",
+    "SnapshotRetentionLimit",
   ],
   inferName: () => get("ReplicationGroupId"),
   //TODO check all deps

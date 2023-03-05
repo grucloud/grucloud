@@ -24,10 +24,13 @@ const {
 } = require("rubico/x");
 const { buildTags, compareAws } = require("../AwsCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { Tagger, assignTags } = require("./FirehoseCommon");
 
 const pickId = pipe([pick(["DeliveryStreamName"])]);
+
+const bucketArnToId = pipe([callProp("replace", "arn:aws:s3:::", "")]);
 
 const buildArn = () =>
   pipe([
@@ -61,6 +64,24 @@ const decorate =
         ...other,
         ExtendedS3DestinationConfiguration: ExtendedS3DestinationDescription,
       }),
+      when(
+        eq(
+          get(
+            "ExtendedS3DestinationConfiguration.CloudWatchLoggingOptions.Enabled"
+          ),
+          false
+        ),
+        omit(["ExtendedS3DestinationConfiguration.CloudWatchLoggingOptions"])
+      ),
+      when(
+        eq(
+          get(
+            "ExtendedS3DestinationConfiguration.ProcessingConfiguration.Enabled"
+          ),
+          false
+        ),
+        omit(["ExtendedS3DestinationConfiguration.ProcessingConfiguration"])
+      ),
       (Destination) => ({ ...other, ...Destination }),
       assignTags({ endpoint }),
     ])();
@@ -127,56 +148,61 @@ exports.FirehoseDeliveryStream = ({}) => ({
         assign({
           ExtendedS3DestinationConfiguration: pipe([
             get("ExtendedS3DestinationConfiguration"),
+            when(
+              get("ProcessingConfiguration"),
+              assign({
+                ProcessingConfiguration: pipe([
+                  get("ProcessingConfiguration"),
+                  assign({
+                    Processors: pipe([
+                      get("Processors"),
+                      map(
+                        assign({
+                          Parameters: pipe([
+                            get("Parameters"),
+                            map(
+                              pipe([
+                                tap((params) => {
+                                  assert(true);
+                                }),
+                                switchCase([
+                                  eq(get("ParameterName"), "LambdaArn"),
+                                  assign({
+                                    ParameterValue: pipe([
+                                      get("ParameterValue"),
+                                      replaceWithName({
+                                        groupType: "Lambda::Function",
+                                        path: "id",
+                                        providerConfig,
+                                        lives,
+                                      }),
+                                    ]),
+                                  }),
+                                  eq(get("ParameterName"), "RoleArn"),
+                                  assign({
+                                    ParameterValue: pipe([
+                                      get("ParameterValue"),
+                                      replaceWithName({
+                                        groupType: "IAM::Role",
+                                        path: "id",
+                                        providerConfig,
+                                        lives,
+                                      }),
+                                    ]),
+                                  }),
+                                  identity,
+                                ]),
+                              ])
+                            ),
+                          ]),
+                        })
+                      ),
+                    ]),
+                  }),
+                ]),
+              })
+            ),
             assign({
-              ProcessingConfiguration: pipe([
-                get("ProcessingConfiguration"),
-                assign({
-                  Processors: pipe([
-                    get("Processors"),
-                    map(
-                      assign({
-                        Parameters: pipe([
-                          get("Parameters"),
-                          map(
-                            pipe([
-                              tap((params) => {
-                                assert(true);
-                              }),
-                              switchCase([
-                                eq(get("ParameterName"), "LambdaArn"),
-                                assign({
-                                  ParameterValue: pipe([
-                                    get("ParameterValue"),
-                                    replaceWithName({
-                                      groupType: "Lambda::Function",
-                                      path: "id",
-                                      providerConfig,
-                                      lives,
-                                    }),
-                                  ]),
-                                }),
-                                eq(get("ParameterName"), "RoleArn"),
-                                assign({
-                                  ParameterValue: pipe([
-                                    get("ParameterValue"),
-                                    replaceWithName({
-                                      groupType: "IAM::Role",
-                                      path: "id",
-                                      providerConfig,
-                                      lives,
-                                    }),
-                                  ]),
-                                }),
-                                identity,
-                              ]),
-                            ])
-                          ),
-                        ]),
-                      })
-                    ),
-                  ]),
-                }),
-              ]),
               RoleARN: pipe([
                 get("RoleARN"),
                 replaceWithName({
@@ -223,16 +249,19 @@ exports.FirehoseDeliveryStream = ({}) => ({
     s3BucketDestination: {
       type: "Bucket",
       group: "S3",
-      //list: true,
       dependencyId: ({ lives, config }) =>
-        pipe([get("S3DestinationDescription.BucketARN")]),
+        pipe([get("S3DestinationDescription.BucketARN", ""), bucketArnToId]),
     },
     s3BucketBackup: {
       type: "Bucket",
       group: "S3",
       dependencyId: ({ lives, config }) =>
         pipe([
-          get("ExtendedS3DestinationDescription.S3BackupDescription.BucketARN"),
+          get(
+            "ExtendedS3DestinationDescription.S3BackupDescription.BucketARN",
+            ""
+          ),
+          bucketArnToId,
         ]),
     },
     kmsKey: {
@@ -240,21 +269,23 @@ exports.FirehoseDeliveryStream = ({}) => ({
       group: "KMS",
       dependencyIds: () => get("DeliveryStreamEncryptionConfiguration.KeyARN"),
     },
-    lambdaFunction: {
+    lambdaFunctions: {
       type: "Function",
       group: "Lambda",
-      lits: true,
+      list: true,
       dependencyIds: ({ lives, config }) =>
         pipe([
-          get("ExtendedS3DestinationDescription"),
-          pluck("ProcessingConfiguration"),
-          pluck("Processors"),
-          flatten,
+          get("ExtendedS3DestinationConfiguration"),
+          get("ProcessingConfiguration"),
+          get("Processors"),
           pluck("Parameters"),
           flatten,
           filter(eq(get("ParameterName"), "LambdaArn")),
           pluck("ParameterValue"),
           map(callProp("replace", ":$LATEST", "")),
+          tap((params) => {
+            assert(true);
+          }),
         ]),
     },
     cloudWatchLogStreams: {
@@ -365,6 +396,13 @@ exports.FirehoseDeliveryStream = ({}) => ({
       defaultsDeep({
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
-      when(() => kmsKey, defaultsDeep({})),
+      when(
+        () => kmsKey,
+        defaultsDeep({
+          DeliveryStreamEncryptionConfiguration: {
+            KeyARN: getField(kmsKey, "Arn"),
+          },
+        })
+      ),
     ])(),
 });

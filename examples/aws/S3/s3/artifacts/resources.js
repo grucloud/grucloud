@@ -18,6 +18,15 @@ exports.createResources = () => [
           },
         ],
       },
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   {
@@ -41,6 +50,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "grucloud-lifecycleconfiguration",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       LifecycleConfiguration: {
         Rules: [
           {
@@ -68,6 +86,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "grucloud-log-destination",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   {
@@ -75,6 +102,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "grucloud-policy",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -99,6 +135,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "grucloud-request-payment",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       RequestPaymentConfiguration: {
         Payer: "Requester",
       },
@@ -109,6 +154,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "grucloud-tag",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       Tags: [
         {
           Key: "Key1",
@@ -126,6 +180,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "grucloud-test-basic.txt",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   {
@@ -134,6 +197,15 @@ exports.createResources = () => [
     properties: ({}) => ({
       Name: "grucloud-website",
       ACL: "public-read",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       WebsiteConfiguration: {
         ErrorDocument: {
           Key: "error.html",

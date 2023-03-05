@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project apigw-custom-resource-policy
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ RestApi (1)
+++++ RestApiPolicy (1)
+++++ Stage (2)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap

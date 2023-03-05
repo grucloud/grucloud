@@ -24,6 +24,6 @@ skinparam monochrome true
 ++++ Service (1)
 ++++ TaskDefinition (1)
 +++ IAM
-++++ Role (1)
 ++++ InstanceProfile (1)
+++++ Role (1)
 @endmindmap

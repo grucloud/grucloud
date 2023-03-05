@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",
+    properties: ({ getId }) => ({
+      RoleName: "sam-app-LambdaFunctionRole-1H8HS58WE9MGP",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -26,9 +26,12 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["secretsmanager:GetSecretValue"],
-                Resource: `arn:aws:secretsmanager:${
-                  config.region
-                }:${config.accountId()}:secret:aurora-test-cluster-AuroraUserSecret-uVYAMe`,
+                Resource: `${getId({
+                  type: "Secret",
+                  group: "SecretsManager",
+                  name: "aurora-test-cluster-AuroraUserSecret",
+                  path: "live.ARN",
+                })}`,
                 Effect: "Allow",
               },
             ],
@@ -40,9 +43,12 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "rds-data:ExecuteStatement",
-                Resource: `arn:aws:rds:${
-                  config.region
-                }:${config.accountId()}:cluster:aurora-test-cluster`,
+                Resource: `${getId({
+                  type: "DBCluster",
+                  group: "RDS",
+                  name: "aurora-test-cluster",
+                  path: "live.DBClusterArn",
+                })}`,
                 Effect: "Allow",
               },
             ],
@@ -57,29 +63,31 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-      Tags: [
-        {
-          Key: "lambda:createdBy",
-          Value: "SAM",
-        },
-      ],
+    }),
+    dependencies: ({}) => ({
+      rdsDbClusters: ["aurora-test-cluster"],
+      secretsManagerSecrets: ["aurora-test-cluster-AuroraUserSecret"],
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ config, getId }) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         Environment: {
           Variables: {
             SecretArn: `${getId({
               type: "Secret",
               group: "SecretsManager",
-              name: "DBSecret",
+              name: "aurora-test-cluster-AuroraUserSecret",
+              path: "live.ARN",
             })}`,
-            DBClusterArn: `arn:aws:rds:${
-              config.region
-            }:${config.accountId()}:cluster:aurora-test-cluster`,
+            DBClusterArn: `${getId({
+              type: "DBCluster",
+              group: "RDS",
+              name: "aurora-test-cluster",
+              path: "live.DBClusterArn",
+            })}`,
             DBName: "aurora_test_db",
           },
         },
@@ -88,14 +96,11 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
         Timeout: 30,
       },
-      Tags: {
-        "lambda:createdBy": "SAM",
-      },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",
-      secrets: ["DBSecret"],
-      dbClusters: ["aurora-test-cluster"],
+      role: "sam-app-LambdaFunctionRole-1H8HS58WE9MGP",
+      rdsDbClusters: ["aurora-test-cluster"],
+      secretsManagerSecrets: ["aurora-test-cluster-AuroraUserSecret"],
     }),
   },
   {
@@ -109,8 +114,8 @@ exports.createResources = () => [
       EngineVersion: "5.6.mysql_aurora.1.22.3",
       Port: 3306,
       MasterUsername: process.env.AURORA_TEST_CLUSTER_MASTER_USERNAME,
-      PreferredBackupWindow: "08:17-08:47",
-      PreferredMaintenanceWindow: "thu:06:25-thu:06:55",
+      PreferredBackupWindow: "08:55-09:25",
+      PreferredMaintenanceWindow: "thu:08:21-thu:08:51",
       IAMDatabaseAuthenticationEnabled: false,
       EngineMode: "serverless",
       DeletionProtection: false,
@@ -126,14 +131,14 @@ exports.createResources = () => [
       MasterUserPassword: process.env.AURORA_TEST_CLUSTER_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
-      secret: "DBSecret",
+      secret: "aurora-test-cluster-AuroraUserSecret",
     }),
   },
   {
     type: "Secret",
     group: "SecretsManager",
     properties: ({ generatePassword }) => ({
-      Name: "DBSecret",
+      Name: "aurora-test-cluster-AuroraUserSecret",
       SecretString: {
         password: generatePassword({ length: 30 }),
         username: "admin_user",

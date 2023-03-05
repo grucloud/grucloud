@@ -149,9 +149,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "Waf2AppSyncStack-DemoTableEE720AED-QD4D1MGH6MYO",
-    }),
   },
   {
     type: "WebACL",

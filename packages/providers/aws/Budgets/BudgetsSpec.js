@@ -10,7 +10,7 @@ const GROUP = "Budgets";
 
 // TODO no tags for budgets
 const tagsKey = "Tags";
-const compare = compareAws({ tagsKey, key: "key" });
+const compare = compareAws({ tagsKey });
 
 const { BudgetsBudget } = require("./BudgetsBudget");
 

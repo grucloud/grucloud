@@ -1,8 +1,11 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, omit, and, eq } = require("rubico");
-const { defaultsDeep, callProp, last, when, size } = require("rubico/x");
+const { defaultsDeep, callProp, last, when, size, find } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { assignPolicyAccountAndRegion } = require("../AwsCommon");
+const {
+  assignPolicyAccountAndRegion,
+  sortStatements,
+} = require("../IAM/AwsIamCommon");
 
 const { buildTags } = require("../AwsCommon");
 const { Tagger } = require("./SNSCommon");
@@ -35,10 +38,20 @@ const decorate = ({ endpoint }) =>
       Attributes: pipe([
         get("Attributes"),
         assign({
-          Policy: pipe([get("Policy"), JSON.parse]),
-          DeliveryPolicy: pipe([get("EffectiveDeliveryPolicy"), JSON.parse]),
+          Policy: pipe([get("Policy"), JSON.parse, sortStatements]),
         }),
-        omit(["EffectiveDeliveryPolicy"]),
+        when(
+          get("EffectiveDeliveryPolicy"),
+          pipe([
+            assign({
+              DeliveryPolicy: pipe([
+                get("EffectiveDeliveryPolicy"),
+                JSON.parse,
+              ]),
+            }),
+            omit(["EffectiveDeliveryPolicy"]),
+          ])
+        ),
       ]),
       Tags: pipe([
         get("Attributes"),
@@ -81,11 +94,23 @@ exports.SNSTopic = ({ compare }) => ({
     kmsKey: {
       type: "Key",
       group: "KMS",
-      dependencyId: ({ lives, config }) => get("Attributes.KmsMasterKeyId"),
+      dependencyId:
+        ({ lives, config }) =>
+        ({ Attributes }) =>
+          pipe([
+            lives.getByType({
+              type: "Key",
+              group: "KMS",
+              providerName: config.providerName,
+            }),
+            find(eq(get("live.KeyId"), Attributes.KmsMasterKeyId)),
+            get("id"),
+          ])(),
     },
   },
   omitProperties: [
     "Name",
+    "Attributes.KmsMasterKeyId",
     "Attributes.TopicArn",
     "Attributes.Owner",
     "Attributes.SubscriptionsPending",
@@ -129,7 +154,6 @@ exports.SNSTopic = ({ compare }) => ({
       tap((params) => {
         assert(true);
       }),
-
       assign({
         Attributes: pipe([
           get("Attributes"),
@@ -175,6 +199,20 @@ exports.SNSTopic = ({ compare }) => ({
     ]),
     pickCreated: () => pipe([({ TopicArn }) => ({ Attributes: { TopicArn } })]),
   },
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        () => diff,
+        tap((params) => {
+          assert(true);
+          throw Error("TODO update topic");
+        }),
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#setTopicAttributes-property
+        /**
+         * AttributeName TopicArn AttributeValue
+         */
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#deleteTopic-property
   destroy: { method: "deleteTopic", pickId },
   getByName: getByNameCore,
@@ -198,7 +236,7 @@ exports.SNSTopic = ({ compare }) => ({
       when(
         () => kmsKey,
         defaultsDeep({
-          Attributes: { KmsMasterKeyId: getField(kmsKey, "Arn") },
+          Attributes: { KmsMasterKeyId: getField(kmsKey, "KeyId") },
         })
       ),
     ])(),

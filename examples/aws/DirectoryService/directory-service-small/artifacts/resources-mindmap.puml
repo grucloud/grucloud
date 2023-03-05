@@ -8,6 +8,4 @@ skinparam monochrome true
 +++ EC2
 ++++ Vpc (1)
 ++++ Subnet (2)
-+++ SNS
-++++ Topic (2)
 @endmindmap

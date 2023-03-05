@@ -5,7 +5,7 @@ const { defaultsDeep, isEmpty, find } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { dependencyIdApi } = require("./ApiGatewayV2Common");
+const { dependencyIdApi, managedByOther } = require("./ApiGatewayV2Common");
 
 const pickId = pipe([
   tap(({ ApiId, DeploymentId }) => {
@@ -42,6 +42,8 @@ exports.ApiGatewayV2Deployment = ({ compare }) => ({
         assert(id);
       }),
     ]),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   propertiesDefault: {},
   ignoreErrorCodes: ["NotFoundException", "BadRequestException"],
   ignoreResource: () =>

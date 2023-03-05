@@ -20,7 +20,6 @@ exports.createResources = () => [
         "detail-type": ["EC2 Instance State-change Notification"],
       },
       Name: "rule-test",
-      State: "ENABLED",
       Tags: [
         {
           Key: "mytag",
@@ -38,7 +37,6 @@ exports.createResources = () => [
         "detail-type": ["ACM Certificate Approaching Expiration"],
       },
       Name: "rule-test-ec2",
-      State: "ENABLED",
       Tags: [
         {
           Key: "mytag",

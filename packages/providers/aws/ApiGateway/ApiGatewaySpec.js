@@ -6,14 +6,17 @@ const { compareAws } = require("../AwsCommon");
 
 const { createAwsService } = require("../AwsService");
 
+const { Account } = require("./Account");
+const { ApiKey } = require("./ApiKey");
+const { APIGatewayAuthorizer } = require("./APIGatewayAuthorizer");
+
 const {
   APIGatewayClientCertificate,
 } = require("./APIGatewayClientCertificate");
 const { RestApi } = require("./RestApi");
+const { APIGatewayRestApiPolicy } = require("./APIGatewayRestApiPolicy");
 const { Stage } = require("./Stage");
-const { Authorizer } = require("./Authorizer");
-const { ApiKey } = require("./ApiKey");
-const { Account } = require("./Account");
+const { APIGatewayRequestValidator } = require("./APIGatewayRequestValidator");
 const { UsagePlan } = require("./UsagePlan");
 const { UsagePlanKey } = require("./UsagePlanKey");
 
@@ -25,9 +28,11 @@ module.exports = pipe([
   () => [
     Account({}),
     ApiKey({}),
-    Authorizer({}),
+    APIGatewayAuthorizer({}),
     APIGatewayClientCertificate({}),
     RestApi({ compare }),
+    APIGatewayRestApiPolicy({}),
+    APIGatewayRequestValidator({ compare }),
     Stage({ compare }),
     UsagePlan({ compare }),
     UsagePlanKey({ compare }),

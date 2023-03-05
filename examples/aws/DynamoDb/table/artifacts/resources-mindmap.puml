@@ -5,5 +5,4 @@ skinparam monochrome true
 ++ aws
 +++ DynamoDB
 ++++ Table (1)
-++++ TableItem (1)
 @endmindmap

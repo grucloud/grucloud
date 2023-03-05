@@ -18,4 +18,15 @@ module.exports = () => ({
         not(includes(key)),
       ])(),
   ]),
+  includeGroups: [
+    "AutoScaling",
+    "DynamoDB",
+    "CodeBuild",
+    "CodeDeploy",
+    "EC2",
+    "Route53",
+    "Route53RecoveryControlConfig",
+    "Route53RecoveryReadiness",
+    "S3",
+  ],
 });

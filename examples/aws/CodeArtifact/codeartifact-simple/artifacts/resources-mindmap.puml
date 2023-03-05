@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project codeartifact-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ CodeArtifact
+++++ Domain (1)
+++++ Repository (2)
+@endmindmap

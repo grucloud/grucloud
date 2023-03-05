@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project subnet
+title Resources for project subnet-all
 skinparam monochrome true
 + Infra
 ++ aws

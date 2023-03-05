@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project elemental-mediapackage-cloudfront-cdk-ts
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudFront
+++++ Distribution (1)
+++++ OriginRequestPolicy (1)
++++ IAM
+++++ Role (1)
++++ MediaPackage
+++++ Channel (1)
+++++ OriginEndpoint (4)
++++ SecretsManager
+++++ Secret (1)
+@endmindmap

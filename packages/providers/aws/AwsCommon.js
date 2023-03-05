@@ -15,6 +15,7 @@ const {
   fork,
   map,
   filter,
+  pick,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -58,7 +59,7 @@ const dependenciesFromEnv = {
     group: "APIGateway",
   },
   apiGatewayV2Apis: {
-    pathLive: "id",
+    pathLive: "live.Endpoint",
     type: "Api",
     group: "ApiGatewayV2",
   },
@@ -86,68 +87,21 @@ const dependenciesFromEnv = {
     pathLive: "live.ARN",
     type: "Secret",
     group: "SecretsManager",
-  },
-  snsTopics: {
-    pathLive: "id",
-    type: "Topic",
-    group: "SNS",
-  },
-};
-
-const dependenciesFromPolicies = {
-  apiGatewayRestApis: {
-    pathLive: "live.arnv2",
-    type: "RestApi",
-    group: "APIGateway",
-  },
-  apiGatewayV2Apis: {
-    pathLive: "id",
-    type: "Api",
-    group: "ApiGatewayV2",
-  },
-  appsyncGraphqlApis: {
-    pathLive: "live.uris.GRAPHQL",
-    type: "GraphqlApi",
-    group: "AppSync",
-  },
-  cognitoUserPools: {
-    pathLive: "id",
-    type: "UserPool",
-    group: "CognitoIdentityServiceProvider",
-  },
-  cognitoUserPoolClient: {
-    pathLive: "id",
-    type: "UserPoolClient",
-    group: "CognitoIdentityServiceProvider",
-  },
-  rdsDbClusters: {
-    pathLive: "live.DBClusterArn",
-    type: "DBCluster",
-    group: "RDS",
-  },
-  secretsManagerSecrets: {
-    pathLive: "live.ARN",
-    type: "Secret",
-    group: "SecretsManager",
-  },
-  snsTopics: {
-    pathLive: "id",
-    type: "Topic",
-    group: "SNS",
   },
 };
 
 const replaceDependency =
   (dependencies) =>
-  ({ lives, providerConfig }) =>
+  ({ lives, providerConfig, dependenciesOveride = {} }) =>
   (idToMatch) =>
     pipe([
-      () => dependencies,
-      find(({ type, group, pathLive }) =>
+      () => ({ ...dependencies, ...dependenciesOveride }),
+      find(({ type, group, pathLive = "id" }) =>
         pipe([
           () => lives,
           tap((params) => {
-            assert(true);
+            assert(type);
+            assert(pathLive);
           }),
           any(
             and([
@@ -179,8 +133,9 @@ const replaceDependency =
       ]),
     ])();
 
+exports.replaceDependency = replaceDependency;
+
 exports.replaceEnv = replaceDependency(dependenciesFromEnv);
-exports.replacePolicy = replaceDependency(dependenciesFromPolicies);
 
 const buildDependencyFromEnv =
   ({ pathEnvironment }) =>
@@ -224,6 +179,8 @@ const sortObject = pipe([
   callProp("sort", (a, b) => a[0].localeCompare(b[0])),
   Object.fromEntries,
 ]);
+
+exports.sortObject = sortObject;
 
 exports.arnFromId = ({ config, service }) =>
   pipe([
@@ -448,7 +405,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
           tap((params) => {
             assert(true);
           }),
-          omit(["$metadata", "Status"]),
+          omit(["$metadata"]),
         ]),
         isExpectedResult: () => true,
         config: { retryDelay: 30e3 },
@@ -530,6 +487,14 @@ const createEndpointOption = (config) =>
       () => config.credentials,
       defaultsDeep({ credentials: fromIni(config.credentials) })
     ),
+    when(
+      () => process.env.LOCALSTACK,
+      defaultsDeep({
+        endpoint: "http://localhost:4566",
+        forcePathStyle: true,
+      })
+    ),
+    defaultsDeep(pick(["endpoint", "forcePathStyle"])(config)),
     tap((params) => {
       assert(true);
     }),
@@ -1180,10 +1145,11 @@ const replaceArnWithAccountAndRegion =
               ({ id }) => Id.startsWith(id),
               //TODO
               () =>
-                !Id.endsWith("amazonaws.com") &&
+                //!Id.endsWith("amazonaws.com") &&
                 Id != providerConfig.accountId() &&
                 !Id.startsWith("arn:aws:ecr") &&
                 !Id.startsWith("arn:aws:kinesis") &&
+                !Id.startsWith("budgets.amazonaws.com") &&
                 !Id.startsWith("arn:aws:lambda") &&
                 !Id.startsWith("arn:aws:dynamodb") &&
                 !Id.startsWith("arn:aws:es") &&
@@ -1266,233 +1232,3 @@ const replaceAccountAndRegion =
     ])();
 
 exports.replaceAccountAndRegion = replaceAccountAndRegion;
-
-const assignPolicyResource = ({ providerConfig, lives }) =>
-  pipe([
-    tap((params) => {
-      assert(lives);
-      assert(providerConfig);
-    }),
-    when(
-      get("Resource"),
-      assign({
-        Resource: pipe([
-          get("Resource"),
-          switchCase([
-            Array.isArray,
-            map(replaceArnWithAccountAndRegion({ providerConfig, lives })),
-            replaceArnWithAccountAndRegion({ providerConfig, lives }),
-          ]),
-        ]),
-      })
-    ),
-  ]);
-
-exports.assignPolicyResource = assignPolicyResource;
-
-const replacePrincipal = ({ providerConfig, lives, principalKind }) =>
-  pipe([
-    when(
-      get(principalKind),
-      assign({
-        [principalKind]: pipe([
-          get(principalKind),
-          switchCase([
-            Array.isArray,
-            map(replaceArnWithAccountAndRegion({ providerConfig, lives })),
-            replaceArnWithAccountAndRegion({ providerConfig, lives }),
-          ]),
-        ]),
-      })
-    ),
-  ]);
-
-const replaceCondition = ({ conditionCriteria, providerConfig, lives }) =>
-  when(
-    get(conditionCriteria),
-    assign({
-      [conditionCriteria]: pipe([
-        get(conditionCriteria),
-        map(
-          pipe([
-            switchCase([
-              Array.isArray,
-              map(
-                replaceArnWithAccountAndRegion({
-                  providerConfig,
-                  lives,
-                })
-              ),
-              replaceArnWithAccountAndRegion({
-                providerConfig,
-                lives,
-              }),
-            ]),
-          ])
-        ),
-      ]),
-    })
-  );
-
-const replaceStatement = ({ providerConfig, lives }) =>
-  pipe([
-    tap((params) => {
-      assert(lives);
-    }),
-    when(
-      get("Principal"),
-      assign({
-        Principal: pipe([
-          get("Principal"),
-          replacePrincipal({ providerConfig, lives, principalKind: "Service" }),
-          replacePrincipal({ providerConfig, lives, principalKind: "AWS" }),
-          replacePrincipal({
-            providerConfig,
-            lives,
-            principalKind: "Federated",
-          }),
-          when(
-            get("AWS"),
-            assign({
-              AWS: pipe([
-                get("AWS"),
-                when(
-                  includes("CloudFront Origin Access Identity"),
-                  pipe([
-                    replaceWithName({
-                      groupType: "CloudFront::OriginAccessIdentity",
-                      path: "id",
-                      providerConfig,
-                      lives,
-                    }),
-                  ])
-                ),
-              ]),
-            })
-          ),
-        ]),
-      })
-    ),
-    when(
-      get("Condition"),
-      assign({
-        Condition: pipe([
-          get("Condition"),
-          replaceCondition({
-            conditionCriteria: "ArnLike",
-            providerConfig,
-            lives,
-          }),
-          replaceCondition({
-            conditionCriteria: "StringLike",
-            providerConfig,
-            lives,
-          }),
-          when(
-            get("StringEquals"),
-            assign({
-              StringEquals: pipe([
-                get("StringEquals"),
-                map(
-                  switchCase([
-                    Array.isArray,
-                    map(
-                      replaceArnWithAccountAndRegion({
-                        providerConfig,
-                        lives,
-                      })
-                    ),
-                    replaceArnWithAccountAndRegion({
-                      providerConfig,
-                      lives,
-                    }),
-                  ])
-                ),
-                when(
-                  get("elasticfilesystem:AccessPointArn"),
-                  assign({
-                    "elasticfilesystem:AccessPointArn": pipe([
-                      get("elasticfilesystem:AccessPointArn"),
-                      replaceWithName({
-                        groupType: "EFS::AccessPoint",
-                        path: "id",
-                        providerConfig,
-                        lives,
-                      }),
-                    ]),
-                  })
-                ),
-                sortObject,
-              ]),
-            })
-          ),
-          when(
-            get("ArnEquals"),
-            assign({
-              ArnEquals: pipe([
-                get("ArnEquals"),
-                when(
-                  get("aws:PrincipalArn"),
-                  assign({
-                    "aws:PrincipalArn": pipe([
-                      get("aws:PrincipalArn"),
-                      replaceArnWithAccountAndRegion({
-                        providerConfig,
-                        lives,
-                      }),
-                    ]),
-                  })
-                ),
-                when(
-                  get("aws:SourceArn"),
-                  assign({
-                    "aws:SourceArn": pipe([
-                      get("aws:SourceArn"),
-                      replaceArnWithAccountAndRegion({
-                        providerConfig,
-                        lives,
-                      }),
-                    ]),
-                  })
-                ),
-              ]),
-            })
-          ),
-        ]),
-      })
-    ),
-    assignPolicyResource({ providerConfig, lives }),
-  ]);
-
-const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    assign({
-      Statement: pipe([
-        get("Statement"),
-        tap((params) => {
-          assert(true);
-        }),
-        switchCase([
-          Array.isArray,
-          map(replaceStatement({ providerConfig, lives })),
-          replaceStatement({ providerConfig, lives }),
-        ]),
-      ]),
-    }),
-  ]);
-
-exports.assignPolicyAccountAndRegion = assignPolicyAccountAndRegion;
-
-exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig, lives }) =>
-  assign({
-    PolicyDocument: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      get("PolicyDocument"),
-      assignPolicyAccountAndRegion({ providerConfig, lives }),
-    ]),
-  });

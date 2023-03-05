@@ -119,6 +119,7 @@ exports.EC2VpcIpv4CidrBlockAssociation = ({ compare }) => ({
     method: "disassociateVpcCidrBlock",
     pickId,
     isInstanceDown: pipe([eq(get("CidrBlockState.State"), "disassociated")]),
+    shouldRetryOnExceptionCodes: ["InvalidCidrBlock.InUse"],
   },
   getByName:
     ({ endpoint, getList }) =>

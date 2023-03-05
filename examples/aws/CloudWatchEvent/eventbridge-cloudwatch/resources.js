@@ -2,4 +2,85 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "test-bus",
+    }),
+  },
+  {
+    type: "Rule",
+    group: "CloudWatchEvents",
+    properties: ({ config }) => ({
+      EventPattern: {
+        account: [`${config.accountId()}`],
+        source: ["my-application"],
+      },
+      Name: "eventbridge-cloudwatch-LogsRule-1F67T9N3BJWR4",
+    }),
+    dependencies: ({}) => ({
+      eventBus: "test-bus",
+    }),
+  },
+  {
+    type: "Target",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Id: "LogTarget",
+    }),
+    dependencies: ({}) => ({
+      rule: "eventbridge-cloudwatch-LogsRule-1F67T9N3BJWR4",
+      logGroup: "/aws/vendedlogs/events/resource-policy-test",
+    }),
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    properties: ({}) => ({
+      logGroupName: "/aws/vendedlogs/events/resource-policy-test",
+    }),
+  },
+  {
+    type: "ResourcePolicy",
+    group: "CloudWatchLogs",
+    properties: ({ config }) => ({
+      policyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "EventBridgetoCWLogsCreateLogStreamPolicy",
+            Effect: "Allow",
+            Principal: {
+              Service: "events.amazonaws.com",
+            },
+            Action: "logs:CreateLogStream",
+            Resource: `arn:aws:logs:${
+              config.region
+            }:${config.accountId()}:log-group:/aws/vendedlogs/events/resource-policy-test:*`,
+          },
+          {
+            Sid: "EventBridgetoCWLogsPutLogEventsPolicy",
+            Effect: "Allow",
+            Principal: {
+              Service: "events.amazonaws.com",
+            },
+            Action: "logs:PutLogEvents",
+            Resource: `arn:aws:logs:${
+              config.region
+            }:${config.accountId()}:log-group:/aws/vendedlogs/events/resource-policy-test:*`,
+            Condition: {
+              ArnEquals: {
+                "AWS:SourceArn": `arn:aws:events:${
+                  config.region
+                }:${config.accountId()}:rule/test-bus/eventbridge-cloudwatch-LogsRule-1F67T9N3BJWR4`,
+              },
+            },
+          },
+        ],
+      },
+      policyName: "EventBridgeToCWLogsPolicy",
+    }),
+  },
+];

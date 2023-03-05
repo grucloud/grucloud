@@ -607,8 +607,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "terraform-20220708211446252500000004",
     properties: ({}) => ({
+      PolicyName: "terraform-20220708211446252500000004",
       PolicyDocument: {
         Statement: [
           {
@@ -638,8 +638,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "tf-arc-us-east-2-dynamodb_rw_policy",
     properties: ({}) => ({
+      PolicyName: "tf-arc-us-east-2-dynamodb_rw_policy",
       PolicyDocument: {
         Statement: [
           {
@@ -656,8 +656,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: ({ config }) => `tf-arc-${config.region}-dynamodb_rw_policy`,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      PolicyName: `tf-arc-${config.region}-dynamodb_rw_policy`,
       PolicyDocument: {
         Statement: [
           {
@@ -715,44 +715,37 @@ exports.createResources = () => [
     type: "Cluster",
     group: "Route53RecoveryControlConfig",
     properties: ({}) => ({
-      Name: "tf-arc-Cluster",
+      ClusterName: "tf-arc-Cluster",
     }),
   },
   {
     type: "ControlPanel",
     group: "Route53RecoveryControlConfig",
     properties: ({}) => ({
-      Name: "tf-arc-ControlPanel",
+      ControlPanelName: "tf-arc-ControlPanel",
+    }),
+    dependencies: ({}) => ({
+      cluster: "tf-arc-Cluster",
     }),
   },
   {
     type: "RoutingControl",
     group: "Route53RecoveryControlConfig",
     properties: ({}) => ({
-      Name: "tf-arc-Cell1-us-east-2",
-      CellName: {
-        ControlPanelArn:
-          "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d",
-        Name: "tf-arc-Cell1-us-east-2",
-        RoutingControlArn:
-          "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/routingcontrol/21d6c872221c4960",
-        Status: "DEPLOYED",
-      },
+      RoutingControlName: "tf-arc-Cell1-us-east-2",
+    }),
+    dependencies: ({}) => ({
+      controlPanel: "tf-arc-ControlPanel",
     }),
   },
   {
     type: "RoutingControl",
     group: "Route53RecoveryControlConfig",
     properties: ({}) => ({
-      Name: "tf-arc-Cell2-us-west-2",
-      CellName: {
-        ControlPanelArn:
-          "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d",
-        Name: "tf-arc-Cell2-us-west-2",
-        RoutingControlArn:
-          "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/routingcontrol/ebbfbb0c2b9f4447",
-        Status: "DEPLOYED",
-      },
+      RoutingControlName: "tf-arc-Cell2-us-west-2",
+    }),
+    dependencies: ({}) => ({
+      controlPanel: "tf-arc-ControlPanel",
     }),
   },
   {
@@ -768,6 +761,9 @@ exports.createResources = () => [
         },
         WaitPeriodMs: 5000,
       },
+    }),
+    dependencies: ({}) => ({
+      controlPanel: "tf-arc-ControlPanel",
     }),
   },
   {

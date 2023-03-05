@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, map, assign, omit, eq, or } = require("rubico");
-const { defaultsDeep, when, pluck, isEmpty } = require("rubico/x");
+const { defaultsDeep, when, pluck, isEmpty, isIn } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { replaceArnWithAccountAndRegion } = require("../AwsCommon");
@@ -13,7 +13,7 @@ const managedByOther = () =>
   or([
     isInstanceDown,
     // TODO should be only for instances created by an autoscaling group
-    eq(get("TargetType"), "instance"),
+    pipe([get("TargetType"), isIn(["instance", "ip"])]),
   ]);
 
 const pickId = pipe([

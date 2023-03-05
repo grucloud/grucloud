@@ -14,7 +14,6 @@ exports.createResources = () => [
     type: "Distribution",
     group: "CloudFront",
     properties: ({ config, getId }) => ({
-      PriceClass: "PriceClass_100",
       Aliases: {
         Quantity: 1,
         Items: [
@@ -27,6 +26,31 @@ exports.createResources = () => [
         ],
       },
       DefaultRootObject: "index.html",
+      Origins: {
+        Items: [
+          {
+            Id: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
+            DomainName: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
+            OriginPath: "",
+            CustomHeaders: {
+              Quantity: 0,
+            },
+            S3OriginConfig: {
+              OriginAccessIdentity: `origin-access-identity/cloudfront/${getId({
+                type: "OriginAccessIdentity",
+                group: "CloudFront",
+                name: `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
+              })}`,
+            },
+            ConnectionAttempts: 3,
+            ConnectionTimeout: 10,
+            OriginShield: {
+              Enabled: false,
+            },
+            OriginAccessControlId: "",
+          },
+        ],
+      },
       DefaultCacheBehavior: {
         TargetOriginId: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
         TrustedSigners: {
@@ -56,44 +80,8 @@ exports.createResources = () => [
         FieldLevelEncryptionId: "",
         CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
       },
-      Origins: {
-        Quantity: 1,
-        Items: [
-          {
-            Id: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
-            DomainName: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
-            OriginPath: "",
-            CustomHeaders: {
-              Quantity: 0,
-            },
-            S3OriginConfig: {
-              OriginAccessIdentity: `origin-access-identity/cloudfront/${getId({
-                type: "OriginAccessIdentity",
-                group: "CloudFront",
-                name: `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
-              })}`,
-            },
-            ConnectionAttempts: 3,
-            ConnectionTimeout: 10,
-            OriginShield: {
-              Enabled: false,
-            },
-            OriginAccessControlId: "",
-          },
-        ],
-      },
-      Restrictions: {
-        GeoRestriction: {
-          RestrictionType: "none",
-        },
-      },
       Comment: "",
-      Logging: {
-        Enabled: false,
-        IncludeCookies: false,
-        Bucket: "",
-        Prefix: "",
-      },
+      PriceClass: "PriceClass_100",
       ViewerCertificate: {
         CloudFrontDefaultCertificate: false,
         SSLSupportMethod: "sni-only",

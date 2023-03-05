@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project lambda-sfn
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

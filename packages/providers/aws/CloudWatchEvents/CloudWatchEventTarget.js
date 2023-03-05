@@ -68,6 +68,9 @@ const findTargetDependency =
         group,
         providerName: config.providerName,
       }),
+      tap((params) => {
+        assert(true);
+      }),
     ]);
 
 const EventTargetDependencies = {
@@ -101,11 +104,17 @@ const EventTargetDependencies = {
   logGroup: {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    buildArn: () => get("arn"),
-    dependencyId: findTargetDependency({
-      type: "LogGroup",
-      group: "CloudWatchLogs",
-    }),
+    buildArn: () => pipe([get("arn", ""), callProp("replace", ":*", "")]),
+    dependencyId: ({ config, lives }) =>
+      pipe([
+        get("Arn"),
+        callProp("replace", ":*", ""),
+        lives.getById({
+          type: "LogGroup",
+          group: "CloudWatchLogs",
+          providerName: config.providerName,
+        }),
+      ]),
   },
   sqsQueue: {
     type: "Queue",
@@ -119,7 +128,7 @@ const EventTargetDependencies = {
   snsTopic: {
     type: "Topic",
     group: "SNS",
-    buildArn: () => get("TopicArn"),
+    buildArn: () => get("Attributes.TopicArn"),
     dependencyId: findTargetDependency({
       type: "Topic",
       group: "SNS",
@@ -128,10 +137,11 @@ const EventTargetDependencies = {
   apiGatewayRest: {
     type: "RestApi",
     group: "APIGateway",
-    buildArn:
-      () =>
-      ({ id }) =>
-        `arn:aws:apigateway:${config.region}::/restapis/${id}`,
+    buildArn: () =>
+      pipe([
+        get("id"),
+        (id) => `arn:aws:apigateway:${config.region}::/restapis/${id}`,
+      ]),
     dependencyId: findTargetDependency({
       type: "RestApi",
       group: "APIGateway",
@@ -140,12 +150,7 @@ const EventTargetDependencies = {
   eventBus: {
     type: "EventBus",
     group: "CloudWatchEvents",
-    buildArn:
-      ({ config }) =>
-      ({ Name }) =>
-        `arn:aws:events:${
-          config.region
-        }:${config.accountId()}:event-bus/${Name}`,
+    buildArn: ({ config }) => pipe([get("Arn")]),
     dependencyId: findTargetDependency({
       type: "EventBus",
       group: "CloudWatchEvents",
@@ -230,7 +235,7 @@ const assignArnTarget = ({ dependencies, config }) =>
         (key) =>
           pipe([
             () => dependencies[key].live,
-            tap((params) => {
+            tap((live) => {
               assert(EventTargetDependencies[key]);
             }),
             EventTargetDependencies[key].buildArn({ config }),
@@ -240,7 +245,7 @@ const assignArnTarget = ({ dependencies, config }) =>
     }),
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvent.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
 exports.CloudWatchEventTarget = () => ({
   type: "Target",
   package: "cloudwatch-events",
@@ -321,7 +326,7 @@ exports.CloudWatchEventTarget = () => ({
         find(and([eq(get("Id"), Id)])),
       ]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvent.html#listTargets-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTargets-property
   getList: ({ client, endpoint, getById, config }) =>
     pipe([
       () =>
@@ -351,7 +356,7 @@ exports.CloudWatchEventTarget = () => ({
             ]),
         }),
     ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvent.html#createTarget-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putTargets-property
   create: {
     method: "putTargets",
     filterPayload: pipe([
@@ -369,12 +374,12 @@ exports.CloudWatchEventTarget = () => ({
         }),
       ]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvent.html#updateTarget-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#updateTarget-property
   update: {
     method: "putTargets",
     filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvent.html#deleteTarget-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#deleteTarget-property
   destroy: {
     pickId: pipe([
       tap(({ Rule, EventBusName, Id }) => {

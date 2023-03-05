@@ -8,9 +8,14 @@ const {
   assign,
   filter,
   not,
+  any,
+  eq,
+  flatMap,
+  switchCase,
 } = require("rubico");
 const {
   isEmpty,
+  isFunction,
   isObject,
   unless,
   when,
@@ -24,93 +29,414 @@ const {
 } = require("rubico/x");
 const querystring = require("querystring");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint } = require("../AwsCommon");
+const {
+  createEndpoint,
+  replaceDependency,
+  replaceArnWithAccountAndRegion,
+  sortObject,
+} = require("../AwsCommon");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamCommon" });
 
 exports.ignoreErrorCodes = ["NoSuchEntity", "NoSuchEntityException"];
 
-exports.dependenciesPoliciesKind = [
-  { type: "IdentityPool", group: "Cognito" },
-  { type: "Table", group: "DynamoDB" },
-  //{ type: "Topic", group: "SNS" },
-  // { type: "Queue", group: "SQS" },
-  { type: "FileSystem", group: "EFS" },
-  { type: "AccessPoint", group: "EFS" },
-  //{ type: "EventBus", group: "CloudWatchEvents" },
-  //{ type: "StateMachine", group: "StepFunctions" },
-  //{ type: "LogGroup", group: "CloudWatchLogs" },
-  { type: "Secret", group: "SecretsManager" },
-  //{ type: "Parameter", group: "SSM" },
-  { type: "Organisation", group: "Organisations" },
-
-  //{ type: "Function", group: "Lambda" },
-  //{ type: "DBCluster", group: "RDS" },
-];
-
-exports.dependenciesPolicy = {
-  openIdConnectProvider: {
-    type: "OpenIDConnectProvider",
-    group: "IAM",
-    parent: true,
+const dependenciesFromPolicies = {
+  apiGatewayAuthorizers: {
+    pathLive: "live.arn",
+    type: "Authorizer",
+    group: "APIGateway",
   },
-  cognitoIdentityPool: { type: "IdentityPool", group: "Cognito", parent: true },
-  // TODO
-  table: { type: "Table", group: "DynamoDB", parent: true },
-  //queue: { type: "Queue", group: "SQS", parent: true },
-  //snsTopic: { type: "Topic", group: "SNS", parent: true },
-  efsFileSystems: {
-    type: "FileSystem",
-    group: "EFS",
-    list: true,
+  apiGatewayRestApis: {
+    pathLive: "live.arnv2",
+    type: "RestApi",
+    group: "APIGateway",
+  },
+  apiGatewayV2Apis: {
+    pathLive: "live.ArnV2",
+    type: "Api",
+    group: "ApiGatewayV2",
+  },
+  appConfigConfigurationProfile: {
+    pathLive: "live.Arn",
+    type: "ConfigurationProfile",
+    group: "AppConfig",
+  },
+  appsyncGraphqlApis: {
+    pathLive: "live.uris.GRAPHQL",
+    type: "GraphqlApi",
+    group: "AppSync",
+  },
+  eventsApiDestinations: {
+    type: "ApiDestination",
+    group: "CloudWatchEvents",
+    pathLive: "live.ApiDestinationArn",
+  },
+  cognitoIdentityPools: {
+    pathLive: "id",
+    type: "IdentityPool",
+    group: "Cognito",
+  },
+  cognitoUserPools: {
+    pathLive: "id",
+    type: "UserPool",
+    group: "CognitoIdentityServiceProvider",
+  },
+  cognitoUserPoolClient: {
+    pathLive: "id",
+    type: "UserPoolClient",
+    group: "CognitoIdentityServiceProvider",
+  },
+  dynamoDbTables: {
+    type: "Table",
+    group: "DynamoDB",
+    pathLive: "live.LatestStreamArn",
   },
   efsAccessPoints: {
+    pathLive: "id",
     type: "AccessPoint",
     group: "EFS",
-    list: true,
   },
-  //eventBus: { type: "EventBus", group: "CloudWatchEvents" },
-  // lambdaFunctions: {
-  //   type: "Function",
-  //   group: "Lambda",
-  //   list: true,
-  //   ignoreOnDestroy: true,
-  // },
-  // stateMachines: {
-  //   type: "StateMachine",
-  //   group: "StepFunctions",
-  //   list: true,
-  //   ignoreOnDestroy: true,
-  // },
-  logGroups: {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    list: true,
-    ignoreOnDestroy: true,
+  efsFileSystems: {
+    pathLive: "id",
+    type: "FileSystem",
+    group: "EFS",
   },
-  secrets: {
-    type: "Secret",
-    group: "SecretsManager",
-    list: true,
+  kmsKeys: {
+    pathLive: "id",
+    type: "Key",
+    group: "KMS",
   },
-  ssmParameters: {
-    type: "Parameter",
-    group: "SSM",
-    list: true,
+  mqBrokers: {
+    pathLive: "id",
+    type: "Broker",
+    group: "MQ",
   },
   organisations: {
+    pathLive: "id",
     type: "Organisation",
     group: "Organisations",
-    list: true,
   },
-  //dbClusters: { type: "DBCluster", group: "RDS", list: true },
+  rdsDbClusters: {
+    pathLive: "live.DBClusterArn",
+    type: "DBCluster",
+    group: "RDS",
+  },
+  secretsManagerSecrets: {
+    pathLive: "live.ARN",
+    type: "Secret",
+    group: "SecretsManager",
+  },
 };
+exports.dependenciesFromPolicies = dependenciesFromPolicies;
+
+const replacePolicy = replaceDependency(dependenciesFromPolicies);
+exports.replacePolicy = replacePolicy;
+
+const assignPolicyResource = ({ providerConfig, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(lives);
+      assert(providerConfig);
+    }),
+    when(
+      get("Resource"),
+      assign({
+        Resource: pipe([
+          get("Resource"),
+          switchCase([
+            Array.isArray,
+            map(replacePolicy({ providerConfig, lives })),
+            replacePolicy({ providerConfig, lives }),
+          ]),
+        ]),
+      })
+    ),
+  ]);
+
+exports.assignPolicyResource = assignPolicyResource;
+
+const replacePrincipal = ({ providerConfig, lives, principalKind }) =>
+  pipe([
+    when(
+      get(principalKind),
+      assign({
+        [principalKind]: pipe([
+          get(principalKind),
+          switchCase([
+            Array.isArray,
+            map(replaceArnWithAccountAndRegion({ providerConfig, lives })),
+            replaceArnWithAccountAndRegion({ providerConfig, lives }),
+          ]),
+        ]),
+      })
+    ),
+  ]);
+
+const replaceCondition = ({ conditionCriteria, providerConfig, lives }) =>
+  when(
+    get(conditionCriteria),
+    assign({
+      [conditionCriteria]: pipe([
+        get(conditionCriteria),
+        map.entries(([key, value]) => [
+          // key
+          pipe([
+            () => key,
+            replaceWithName({
+              groupType: "IAM::OpenIDConnectProvider",
+              path: "live.Url",
+              pathLive: "live.Url",
+              providerConfig,
+              lives,
+              withSuffix: true,
+            }),
+            (params) => (isFunction(params) ? params() : params),
+          ])(),
+          // value
+          pipe([
+            () => value,
+            switchCase([
+              Array.isArray,
+              map(
+                replaceArnWithAccountAndRegion({
+                  providerConfig,
+                  lives,
+                })
+              ),
+              replaceArnWithAccountAndRegion({
+                providerConfig,
+                lives,
+              }),
+            ]),
+          ])(),
+        ]),
+      ]),
+    })
+  );
+
+const replaceArnByKey = ({ key, providerConfig, lives }) =>
+  pipe([
+    when(
+      get(key),
+      assign({
+        [key]: pipe([
+          get(key),
+          replaceArnWithAccountAndRegion({
+            providerConfig,
+            lives,
+          }),
+        ]),
+      })
+    ),
+  ]);
+
+const replaceStatement = ({ providerConfig, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(lives);
+    }),
+    when(
+      get("Principal"),
+      assign({
+        Principal: pipe([
+          get("Principal"),
+          replacePrincipal({ providerConfig, lives, principalKind: "Service" }),
+          replacePrincipal({ providerConfig, lives, principalKind: "AWS" }),
+          switchCase([
+            pipe([get("Federated"), includes("oidc-provider")]),
+            pipe([
+              assign({
+                Federated: pipe([
+                  get("Federated"),
+                  replaceWithName({
+                    groupType: "IAM::OpenIDConnectProvider",
+                    path: "id",
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+              }),
+            ]),
+            replacePrincipal({
+              providerConfig,
+              lives,
+              principalKind: "Federated",
+            }),
+          ]),
+          when(
+            get("AWS"),
+            assign({
+              AWS: pipe([
+                get("AWS"),
+                when(
+                  includes("CloudFront Origin Access Identity"),
+                  pipe([
+                    replaceWithName({
+                      groupType: "CloudFront::OriginAccessIdentity",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ])
+                ),
+              ]),
+            })
+          ),
+        ]),
+      })
+    ),
+    when(
+      get("Condition"),
+      assign({
+        Condition: pipe([
+          get("Condition"),
+          replaceCondition({
+            conditionCriteria: "ArnLike",
+            providerConfig,
+            lives,
+          }),
+          replaceCondition({
+            conditionCriteria: "StringLike",
+            providerConfig,
+            lives,
+          }),
+          replaceCondition({
+            conditionCriteria: "StringEquals",
+            providerConfig,
+            lives,
+          }),
+          when(
+            get("StringEquals"),
+            assign({
+              StringEquals: pipe([
+                get("StringEquals"),
+                when(
+                  get("elasticfilesystem:AccessPointArn"),
+                  assign({
+                    "elasticfilesystem:AccessPointArn": pipe([
+                      get("elasticfilesystem:AccessPointArn"),
+                      replaceWithName({
+                        groupType: "EFS::AccessPoint",
+                        path: "id",
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+                sortObject,
+              ]),
+            })
+          ),
+          when(
+            get("ArnEquals"),
+            assign({
+              ArnEquals: pipe([
+                get("ArnEquals"),
+                replaceArnByKey({
+                  key: "aws:PrincipalArn",
+                  providerConfig,
+                  lives,
+                }),
+                replaceArnByKey({
+                  key: "aws:SourceArn",
+                  providerConfig,
+                  lives,
+                }),
+                replaceArnByKey({
+                  key: "AWS:SourceArn",
+                  providerConfig,
+                  lives,
+                }),
+              ]),
+            })
+          ),
+        ]),
+      })
+    ),
+    assignPolicyResource({ providerConfig, lives }),
+  ]);
+
+const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    assign({
+      Statement: pipe([
+        get("Statement"),
+        tap((params) => {
+          assert(true);
+        }),
+        switchCase([
+          Array.isArray,
+          map(replaceStatement({ providerConfig, lives })),
+          replaceStatement({ providerConfig, lives }),
+        ]),
+      ]),
+    }),
+  ]);
+
+exports.assignPolicyAccountAndRegion = assignPolicyAccountAndRegion;
+
+exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig, lives }) =>
+  assign({
+    PolicyDocument: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      get("PolicyDocument"),
+      assignPolicyAccountAndRegion({ providerConfig, lives }),
+    ]),
+  });
+
+const sortStatement = pipe([
+  tap((param) => {
+    assert(param);
+  }),
+  assign({
+    Principal: pipe([
+      get("Principal"),
+      when(
+        get("Service"),
+        assign({
+          Service: pipe([
+            get("Service"),
+            when(
+              Array.isArray,
+              pipe([callProp("sort", (a, b) => a.localeCompare(b))])
+            ),
+          ]),
+        })
+      ),
+    ]),
+  }),
+  when(
+    get("Condition"),
+    assign({ Condition: pipe([get("Condition"), map(sortObject)]) })
+  ),
+]);
+
+const sortStatements = pipe([
+  tap(({ Statement }) => {
+    assert(Statement);
+  }),
+  assign({
+    Statement: pipe([
+      get("Statement"),
+      switchCase([Array.isArray, map(sortStatement), sortStatement]),
+    ]),
+  }),
+]);
+
+exports.sortStatements = sortStatements;
 
 exports.createIAM = createEndpoint("iam", "IAM");
 
 exports.tagResourceIam =
   ({ propertyName, field, method }) =>
-  ({ iam }) =>
+  ({ endpoint }) =>
   ({ live }) =>
     pipe([
       tap((params) => {
@@ -120,21 +446,21 @@ exports.tagResourceIam =
         [propertyName || field]: live[field],
         Tags,
       }),
-      iam()[method],
+      endpoint()[method],
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagUser-property
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagPolicy-property
 exports.untagResourceIam =
   ({ propertyName, field, method }) =>
-  ({ iam }) =>
+  ({ endpoint }) =>
   ({ live }) =>
     pipe([
       (TagKeys) => ({
         [propertyName || field]: live[field],
         TagKeys,
       }),
-      iam()[method],
+      endpoint()[method],
     ]);
 
 exports.createFetchPolicyDocument =
@@ -178,6 +504,7 @@ exports.assignAttachedPolicies = ({ policies = [] }) =>
       ),
     ]),
   });
+
 const findArnInCondition = ({ Condition }) =>
   pipe([
     () => [
@@ -191,12 +518,13 @@ const findArnInCondition = ({ Condition }) =>
     map((prop) => get(prop)(Condition)),
   ])();
 
-exports.findInStatement =
-  ({ type, group, lives, config }) =>
+const findInStatement =
+  ({ type, group, lives, config, pathLive = "id" }) =>
   ({ Condition, Resource }) =>
     pipe([
       tap(() => {
-        assert(true);
+        assert(pathLive);
+        //assert(Resource);
       }),
       () => Resource,
       unless(Array.isArray, (resource) => [resource]),
@@ -209,21 +537,81 @@ exports.findInStatement =
             type,
             group,
           }),
-          find(({ id }) =>
+          find(
             pipe([
-              () => arn,
-              when(isObject, pipe([values, first])),
-              includes(id),
-            ])()
+              get(pathLive),
+              (id) =>
+                pipe([
+                  tap(() => {
+                    //assert(id, `no value at ${pathLive}, type: ${type}`);
+                  }),
+                  () => arn,
+                  when(isObject, pipe([values, first])),
+                  includes(id),
+                ])(),
+            ])
           ),
         ])()
       ),
-      tap((params) => {
+      filter(not(isEmpty)),
+      tap((param) => {
         assert(true);
       }),
-      filter(not(isEmpty)),
     ])();
+
+exports.findInStatement = findInStatement;
 
 exports.sortPolicies = callProp("sort", (a, b) =>
   a.PolicyArn.localeCompare(b.PolicyArn)
 );
+
+exports.filterAttachedPolicies = ({ lives }) =>
+  pipe([
+    assign({
+      AttachedPolicies: pipe([
+        get("AttachedPolicies"),
+        filter(
+          not(({ PolicyArn }) =>
+            pipe([() => lives, any(eq(get("id"), PolicyArn))])()
+          )
+        ),
+      ]),
+    }),
+    omitIfEmpty(["AttachedPolicies"]),
+  ]);
+
+const buildDependencyPolicy =
+  ({ policyKey }) =>
+  ({ type, group, pathLive }) => ({
+    type,
+    group,
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([
+        tap((params) => {
+          assert(policyKey);
+          assert(pathLive);
+        }),
+        get(policyKey),
+        tap((policy) => {
+          assert(policy);
+        }),
+        get("Statement", []),
+        tap((Statement) => {
+          assert(Statement);
+        }),
+        flatMap(findInStatement({ type, group, lives, config, pathLive })),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+  });
+
+exports.buildDependenciesPolicy = ({ policyKey }) =>
+  pipe([
+    () => dependenciesFromPolicies,
+    map(buildDependencyPolicy({ policyKey })),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();

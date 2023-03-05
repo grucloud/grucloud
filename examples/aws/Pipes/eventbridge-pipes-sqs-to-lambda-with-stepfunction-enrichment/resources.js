@@ -87,9 +87,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "sam-app-orders",
-    }),
   },
   {
     type: "Role",

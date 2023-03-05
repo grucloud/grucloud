@@ -4,13 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logGroupName: "/aws/codebuild/starhackit",
-    }),
-  },
-  {
     type: "Project",
     group: "CodeBuild",
     properties: ({}) => ({
@@ -52,7 +45,7 @@ exports.createResources = () => [
     properties: ({ config, getId }) => ({
       pipeline: {
         artifactStore: {
-          location: `codepipeline-${config.region}-709458114120`,
+          location: `codepipeline-${config.region}-${config.accountId()}`,
           type: "S3",
         },
         name: "my-pipeline",
@@ -127,8 +120,8 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       role: `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
       connections: ["myconn"],
-      codeBuildProject: ["starhackit"],
-      s3Bucket: `codepipeline-${config.region}-709458114120`,
+      codeBuildProjects: ["starhackit"],
+      s3Bucket: `codepipeline-${config.region}-${config.accountId()}`,
     }),
   },
   {
@@ -416,7 +409,16 @@ exports.createResources = () => [
     type: "Bucket",
     group: "S3",
     properties: ({ config }) => ({
-      Name: `codepipeline-${config.region}-709458114120`,
+      Name: `codepipeline-${config.region}-${config.accountId()}`,
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       Policy: {
         Version: "2012-10-17",
         Id: "SSEAndSSLPolicy",
@@ -426,7 +428,9 @@ exports.createResources = () => [
             Effect: "Deny",
             Principal: "*",
             Action: "s3:PutObject",
-            Resource: `arn:aws:s3:::codepipeline-${config.region}-709458114120/*`,
+            Resource: `arn:aws:s3:::codepipeline-${
+              config.region
+            }-${config.accountId()}/*`,
             Condition: {
               StringNotEquals: {
                 "s3:x-amz-server-side-encryption": "aws:kms",
@@ -438,7 +442,9 @@ exports.createResources = () => [
             Effect: "Deny",
             Principal: "*",
             Action: "s3:*",
-            Resource: `arn:aws:s3:::codepipeline-${config.region}-709458114120/*`,
+            Resource: `arn:aws:s3:::codepipeline-${
+              config.region
+            }-${config.accountId()}/*`,
             Condition: {
               Bool: {
                 "aws:SecureTransport": "false",

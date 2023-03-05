@@ -93,24 +93,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "DBSubnetGroup",
-    group: "RDS",
-    properties: ({}) => ({
-      DBSubnetGroupName: "default-vpc-faff3987",
-      DBSubnetGroupDescription: "Created from the Neptune Management Console",
-    }),
-    dependencies: ({}) => ({
-      subnets: [
-        "vpc-default::subnet-default-a",
-        "vpc-default::subnet-default-b",
-        "vpc-default::subnet-default-c",
-        "vpc-default::subnet-default-d",
-        "vpc-default::subnet-default-e",
-        "vpc-default::subnet-default-f",
-      ],
-    }),
-  },
-  {
     type: "DBInstance",
     group: "RDS",
     properties: ({}) => ({
@@ -128,6 +110,24 @@ exports.createResources = () => [
       dbSubnetGroup: "default-vpc-faff3987",
       securityGroups: ["sg::vpc-default::default"],
       dbCluster: "database-2",
+    }),
+  },
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
+    properties: ({}) => ({
+      DBSubnetGroupName: "default-vpc-faff3987",
+      DBSubnetGroupDescription: "Created from the Neptune Management Console",
+    }),
+    dependencies: ({}) => ({
+      subnets: [
+        "vpc-default::subnet-default-a",
+        "vpc-default::subnet-default-b",
+        "vpc-default::subnet-default-c",
+        "vpc-default::subnet-default-d",
+        "vpc-default::subnet-default-e",
+        "vpc-default::subnet-default-f",
+      ],
     }),
   },
 ];

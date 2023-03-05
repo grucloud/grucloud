@@ -27,13 +27,13 @@ exports.XRayEncryptionConfig = () => ({
   type: "EncryptionConfig",
   package: "xray",
   client: "XRay",
-  propertiesDefault: {},
   omitProperties: ["KeyId", "Status"],
   inferName: () => pipe([() => "default"]),
   findName: () => pipe([() => "default"]),
   findId: () => pipe([() => "default"]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
   managedByOther,
+  cannotBeDeleted: managedByOther,
   dependencies: {
     kmsKey: {
       type: "Key",

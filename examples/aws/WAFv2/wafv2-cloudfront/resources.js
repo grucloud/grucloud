@@ -15,36 +15,8 @@ exports.createResources = () => [
     type: "Distribution",
     group: "CloudFront",
     properties: ({ getId }) => ({
-      PriceClass: "PriceClass_100",
-      Aliases: {
-        Quantity: 0,
-        Items: undefined,
-      },
       DefaultRootObject: "",
-      DefaultCacheBehavior: {
-        TargetOriginId: "website.grucloud.org.s3.eu-west-2.amazonaws.com",
-        TrustedSigners: {
-          Enabled: false,
-        },
-        TrustedKeyGroups: {
-          Enabled: false,
-        },
-        ViewerProtocolPolicy: "redirect-to-https",
-        AllowedMethods: {
-          Quantity: 2,
-          Items: ["HEAD", "GET"],
-          CachedMethods: {
-            Quantity: 2,
-            Items: ["HEAD", "GET"],
-          },
-        },
-        SmoothStreaming: false,
-        Compress: true,
-        FieldLevelEncryptionId: "",
-        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
-      },
       Origins: {
-        Quantity: 1,
         Items: [
           {
             Id: "website.grucloud.org.s3.eu-west-2.amazonaws.com",
@@ -69,18 +41,30 @@ exports.createResources = () => [
           },
         ],
       },
-      Restrictions: {
-        GeoRestriction: {
-          RestrictionType: "none",
+      DefaultCacheBehavior: {
+        TargetOriginId: "website.grucloud.org.s3.eu-west-2.amazonaws.com",
+        TrustedSigners: {
+          Enabled: false,
         },
+        TrustedKeyGroups: {
+          Enabled: false,
+        },
+        ViewerProtocolPolicy: "redirect-to-https",
+        AllowedMethods: {
+          Quantity: 2,
+          Items: ["HEAD", "GET"],
+          CachedMethods: {
+            Quantity: 2,
+            Items: ["HEAD", "GET"],
+          },
+        },
+        SmoothStreaming: false,
+        Compress: true,
+        FieldLevelEncryptionId: "",
+        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
       },
       Comment: "",
-      Logging: {
-        Enabled: false,
-        IncludeCookies: false,
-        Bucket: "",
-        Prefix: "",
-      },
+      PriceClass: "PriceClass_100",
       ViewerCertificate: {
         CloudFrontDefaultCertificate: false,
         SSLSupportMethod: "sni-only",

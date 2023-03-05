@@ -167,6 +167,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-ec2-ssm",
+    dependencies: ({}) => ({
+      roles: ["role-ec2-ssm"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -190,14 +198,6 @@ exports.createResources = () => [
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "role-ec2-ssm",
-    dependencies: ({}) => ({
-      roles: ["role-ec2-ssm"],
     }),
   },
 ];

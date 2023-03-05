@@ -20,7 +20,6 @@ exports.createResources = () => [
         "detail-type": ["ECR Image Action"],
       },
       Name: "codepipeline-starha-latest-615512-rule",
-      State: "ENABLED",
     }),
   },
   {
@@ -77,7 +76,7 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       pipeline: {
         artifactStore: {
-          location: `codepipeline-${config.region}-149415713660`,
+          location: `codepipeline-${config.region}-${config.accountId()}`,
           type: "S3",
         },
         name: "my-pipeline",
@@ -144,9 +143,9 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       role: "AWSCodePipelineServiceRole-my-pipeline",
-      codeBuildProject: ["my-project"],
+      codeBuildProjects: ["my-project"],
       ecrRepository: ["starhackit"],
-      s3Bucket: `codepipeline-${config.region}-149415713660`,
+      s3Bucket: `codepipeline-${config.region}-${config.accountId()}`,
     }),
   },
   {
@@ -487,7 +486,16 @@ exports.createResources = () => [
     type: "Bucket",
     group: "S3",
     properties: ({ config }) => ({
-      Name: `codepipeline-${config.region}-149415713660`,
+      Name: `codepipeline-${config.region}-${config.accountId()}`,
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       Policy: {
         Version: "2012-10-17",
         Id: "SSEAndSSLPolicy",
@@ -497,7 +505,9 @@ exports.createResources = () => [
             Effect: "Deny",
             Principal: "*",
             Action: "s3:PutObject",
-            Resource: `arn:aws:s3:::codepipeline-${config.region}-149415713660/*`,
+            Resource: `arn:aws:s3:::codepipeline-${
+              config.region
+            }-${config.accountId()}/*`,
             Condition: {
               StringNotEquals: {
                 "s3:x-amz-server-side-encryption": "aws:kms",
@@ -509,7 +519,9 @@ exports.createResources = () => [
             Effect: "Deny",
             Principal: "*",
             Action: "s3:*",
-            Resource: `arn:aws:s3:::codepipeline-${config.region}-149415713660/*`,
+            Resource: `arn:aws:s3:::codepipeline-${
+              config.region
+            }-${config.accountId()}/*`,
             Condition: {
               Bool: {
                 "aws:SecureTransport": "false",

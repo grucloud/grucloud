@@ -16,13 +16,15 @@ describe("StorageGateway", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Gateway", () =>
+  it("Gateway", () =>
     pipe([
       () => ({
         groupType: "StorageGateway::Gateway",
         livesNotFound: ({ config }) => [
           {
-            //stateMachineArn: `arn:aws:states:us-east-1:${config.accountId()}:stateMachine:test-test`,
+            GatewayARN: `arn:aws:storagegateway:${
+              config.region
+            }:${config.accountId()}:gateway/sgw-12A3456B`,
           },
         ],
       }),

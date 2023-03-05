@@ -75,7 +75,7 @@ exports.createResources = () => [
         Arn: `arn:aws:sns:${
           config.region
         }:${config.accountId()}:topic-scheduler`,
-        Input: "{}",
+        Input: {},
         RetryPolicy: {
           MaximumEventAgeInSeconds: 86400,
           MaximumRetryAttempts: 185,

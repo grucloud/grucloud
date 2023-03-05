@@ -6,12 +6,8 @@ exports.createResources = () => [
   {
     type: "Distribution",
     group: "CloudFront",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       PriceClass: "PriceClass_All",
-      Aliases: {
-        Quantity: 0,
-        Items: undefined,
-      },
       DefaultRootObject: "",
       DefaultCacheBehavior: {
         TargetOriginId:
@@ -37,11 +33,9 @@ exports.createResources = () => [
           Quantity: 1,
           Items: [
             {
-              FunctionARN: `${getId({
-                type: "Function",
-                group: "CloudFront",
-                name: "us-east-1CloudfronS3CdkPythonStackFunction980062BC::DEVELOPMENT",
-              })}`,
+              FunctionARN: `arn:aws:cloudfront::${config.accountId()}:function/${
+                config.region
+              }CloudfronS3CdkPythonStackFunction980062BC`,
               EventType: "viewer-request",
             },
           ],
@@ -54,12 +48,8 @@ exports.createResources = () => [
         Items: [
           {
             Id: "CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
-            DomainName: `${getId({
-              type: "Bucket",
-              group: "S3",
-              name: "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5",
-              path: "name",
-            })}.s3.us-east-1.amazonaws.com`,
+            DomainName:
+              "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d.s3.us-east-1.amazonaws.com",
             OriginPath: "",
             CustomHeaders: {
               Quantity: 0,
@@ -99,13 +89,11 @@ exports.createResources = () => [
         CertificateSource: "cloudfront",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       buckets: [
-        "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5",
+        "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d",
       ],
-      functions: [
-        "us-east-1CloudfronS3CdkPythonStackFunction980062BC::DEVELOPMENT",
-      ],
+      functions: [`${config.region}CloudfronS3CdkPythonStackFunction980062BC`],
       originAccessIdentities: [
         "Identity for CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
       ],
@@ -115,31 +103,25 @@ exports.createResources = () => [
     type: "Function",
     group: "CloudFront",
     properties: ({}) => ({
-      ContentType: "application/octet-stream",
-      FunctionCode:
-        "//A version of the homepage\nvar X_Experiment_A = 'index.html';\n//B version of the homepage\nvar X_Experiment_B = 'index_b.html';\n\nfunction handler(event) {\n    var request = event.request;\n    if (Math.random() < 0.8) {\n        request.uri = '/' + X_Experiment_A;\n    } else {\n        request.uri = '/' + X_Experiment_B;\n    }\n    //log which version is displayed\n    console.log('X_Experiment_V ' + (request.uri == '/index.html' ? 'A_VERSION' : 'B_VERSION'));\n    return request;\n}",
+      FunctionCode: `//A version of the homepage
+var X_Experiment_A = 'index.html';
+//B version of the homepage
+var X_Experiment_B = 'index_b.html';
+
+function handler(event) {
+    var request = event.request;
+    if (Math.random() < 0.8) {
+        request.uri = '/' + X_Experiment_A;
+    } else {
+        request.uri = '/' + X_Experiment_B;
+    }
+    //log which version is displayed
+    console.log('X_Experiment_V ' + (request.uri == '/index.html' ? 'A_VERSION' : 'B_VERSION'));
+    return request;
+}`,
       Name: "us-east-1CloudfronS3CdkPythonStackFunction980062BC",
       FunctionConfig: {
         Runtime: "cloudfront-js-1.0",
-      },
-      FunctionMetadata: {
-        Stage: "DEVELOPMENT",
-      },
-    }),
-  },
-  {
-    type: "Function",
-    group: "CloudFront",
-    properties: ({}) => ({
-      ContentType: "application/octet-stream",
-      FunctionCode:
-        "//A version of the homepage\nvar X_Experiment_A = 'index.html';\n//B version of the homepage\nvar X_Experiment_B = 'index_b.html';\n\nfunction handler(event) {\n    var request = event.request;\n    if (Math.random() < 0.8) {\n        request.uri = '/' + X_Experiment_A;\n    } else {\n        request.uri = '/' + X_Experiment_B;\n    }\n    //log which version is displayed\n    console.log('X_Experiment_V ' + (request.uri == '/index.html' ? 'A_VERSION' : 'B_VERSION'));\n    return request;\n}",
-      Name: "us-east-1CloudfronS3CdkPythonStackFunction980062BC",
-      FunctionConfig: {
-        Runtime: "cloudfront-js-1.0",
-      },
-      FunctionMetadata: {
-        Stage: "LIVE",
       },
     }),
   },
@@ -151,15 +133,16 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-1VYB8Q83IK84K",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      RoleName:
+        "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-KMS6QWJCA4L1",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -173,8 +156,12 @@ exports.createResources = () => [
               {
                 Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
                 Resource: [
-                  "arn:aws:s3:::cdk-hnb659fds-assets-840541460064-us-east-1",
-                  "arn:aws:s3:::cdk-hnb659fds-assets-840541460064-us-east-1/*",
+                  `arn:aws:s3:::cdk-hnb659fds-assets-${config.accountId()}-${
+                    config.region
+                  }`,
+                  `arn:aws:s3:::cdk-hnb659fds-assets-${config.accountId()}-${
+                    config.region
+                  }/*`,
                 ],
                 Effect: "Allow",
               },
@@ -188,8 +175,8 @@ exports.createResources = () => [
                   "s3:Abort*",
                 ],
                 Resource: [
-                  "arn:aws:s3:::cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5",
-                  "arn:aws:s3:::cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5/*",
+                  "arn:aws:s3:::cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d",
+                  "arn:aws:s3:::cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d/*",
                 ],
                 Effect: "Allow",
               },
@@ -222,22 +209,22 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName:
-          "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-fRgMn9FyLO2d",
+          "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-BZsaOKxXpJhr",
         Handler: "index.handler",
         Runtime: "python3.7",
         Timeout: 900,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       layers: ["myDeploymentAwsCliLayerEF6B12EC"],
-      role: "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-1VYB8Q83IK84K",
+      role: "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-KMS6QWJCA4L1",
     }),
   },
   {
     type: "Bucket",
     group: "S3",
     properties: ({ getId }) => ({
-      Name: "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5",
+      Name: "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d",
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -254,41 +241,22 @@ exports.createResources = () => [
             },
             Action: "s3:GetObject",
             Resource:
-              "arn:aws:s3:::cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5/*",
+              "arn:aws:s3:::cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d/*",
           },
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       originAccessIdentities: [
         "Identity for CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
       ],
     }),
   },
   {
-    type: "Object",
+    type: "Bucket",
     group: "S3",
-    name: "index_b.html",
     properties: ({}) => ({
-      ContentType: "text/html",
-      source:
-        "s3/cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5/index_b.html",
-    }),
-    dependencies: () => ({
-      bucket: "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5",
-    }),
-  },
-  {
-    type: "Object",
-    group: "S3",
-    name: "index.html",
-    properties: ({}) => ({
-      ContentType: "text/html",
-      source:
-        "s3/cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5/index.html",
-    }),
-    dependencies: () => ({
-      bucket: "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5",
+      Name: "cloudwatchlogssubscriptionfi-mylogsbucket57652dd1-5m0kw1cg40sd",
     }),
   },
 ];

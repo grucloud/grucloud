@@ -49,10 +49,7 @@ exports.EFSMountTarget = ({ compare }) => ({
           providerName: config.providerName,
         }),
         find(eq(get("live.FileSystemId"), live.FileSystemId)),
-        get("name"),
-        tap((name) => {
-          assert(name);
-        }),
+        get("name", live.FileSystemId),
         prepend("mount-target::"),
         append("::"),
         append(pipe([() => live.AvailabilityZoneName, last])()),

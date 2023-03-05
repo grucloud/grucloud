@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project opensearchserverless-vpce
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ SecurityGroup (1)
++++ OpenSearchServerless
+++++ Collection (1)
+++++ SecurityPolicy (2)
+++++ VpcEndpoint (1)
+@endmindmap

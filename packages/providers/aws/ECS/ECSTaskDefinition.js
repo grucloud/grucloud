@@ -372,10 +372,23 @@ exports.ECSTaskDefinition = ({ compare }) => ({
       ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deregisterTaskDefinition-property
   destroy: {
-    pickId,
-    method: "deregisterTaskDefinition",
+    pickId: pipe([
+      tap((taskDefinitionArn) => {
+        assert(taskDefinitionArn);
+      }),
+      ({ taskDefinitionArn }) => ({ taskDefinitions: [taskDefinitionArn] }),
+    ]),
+    preDestroy: ({ endpoint }) =>
+      tap(pipe([pickId, endpoint().deregisterTaskDefinition])),
+    method: "deleteTaskDefinitions",
     ignoreErrorMessages,
-    isInstanceDown: pipe([eq(get("status"), "INACTIVE")]),
+    isInstanceDown: pipe([
+      tap(({ status }) => {
+        assert(status);
+      }),
+      // TODO: status is stuck at 'DELETE_IN_PROGRESS' even when it is deleted
+      () => true,
+    ]),
   },
   getByName:
     ({ getList }) =>

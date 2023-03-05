@@ -12,7 +12,6 @@ exports.createResources = () => [
         source: ["demo.sfn"],
       },
       Name: "terraform-20220331194511828000000002",
-      State: "ENABLED",
     }),
   },
   {

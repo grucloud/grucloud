@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project servicediscovery
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
++++ ServiceDiscovery
+++++ PrivateDnsNamespace (1)
+++++ PublicDnsNamespace (1)
+++++ Service (1)
+@endmindmap

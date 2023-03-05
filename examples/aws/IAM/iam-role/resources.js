@@ -4,6 +4,14 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-ec2-read-only",
+    dependencies: ({}) => ({
+      roles: ["role-ec2-read-only"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -33,14 +41,6 @@ exports.createResources = () => [
           Value: "myvalue",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "role-ec2-read-only",
-    dependencies: ({}) => ({
-      roles: ["role-ec2-read-only"],
     }),
   },
 ];

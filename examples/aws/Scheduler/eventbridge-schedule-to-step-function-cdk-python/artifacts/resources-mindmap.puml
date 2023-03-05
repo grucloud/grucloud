@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project eventbridge-schedule-to-step-function-cdk-python
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (2)
++++ Scheduler
+++++ Schedule (1)
+++++ ScheduleGroup (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

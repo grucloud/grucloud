@@ -1,11 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, omit } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, pick, eq, assign, omit, map } = require("rubico");
+const { defaultsDeep, when, find } = require("rubico/x");
 
-const { buildTags } = require("../AwsCommon");
+const { buildTags, replaceAccountAndRegion } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { Tagger, assignTags } = require("./DynamoDBCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const isInstanceUp = eq(get("TableStatus"), "ACTIVE");
 
@@ -37,6 +38,7 @@ const decorate = ({ endpoint, config }) =>
         omit(["ProvisionedThroughput", "BillingModeSummary"]),
       ])
     ),
+    omitIfEmpty(["Replicas"]),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html
@@ -55,9 +57,27 @@ exports.DynamoDBTable = () => ({
     "ProvisionedThroughput.LastDecreaseDateTime",
     "CreationDateTime",
     "TableStatus",
-    "SSEDescription",
     "LatestStreamArn",
     "LatestStreamLabel",
+    "SSEDescription", //TODO
+    "SSEDescription.Status",
+    "SSEDescription.KMSMasterKeyId",
+    "LocalSecondaryIndexes[].IndexSizeBytes",
+    "LocalSecondaryIndexes[].ItemCount",
+    "GlobalSecondaryIndexes[].IndexArn",
+    "GlobalSecondaryIndexes[].Backfilling",
+    "GlobalSecondaryIndexes[].IndexSizeBytes",
+    "GlobalSecondaryIndexes[].IndexStatus",
+    "GlobalSecondaryIndexes[].ItemCount",
+    "GlobalSecondaryIndexes[].ProvisionedThroughput.NumberOfDecreasesToday",
+    "Replicas[].ReplicaStatus",
+    "Replicas[].ReplicaStatusDescription",
+    "Replicas[].ReplicaStatusPercentProgress",
+    "Replicas[].KMSMasterKeyId",
+    "Replicas[].ReplicaInaccessibleDateTime",
+    "Replicas[].ReplicaTableClassSummary.LastUpdateDateTime",
+    "ArchivalSummary",
+    "TableClassSummary.LastUpdateDateTime",
   ],
   inferName: findName,
   findName,
@@ -69,7 +89,7 @@ exports.DynamoDBTable = () => ({
       }),
     ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  filterLive: () =>
+  filterLive: ({ lives, providerConfig }) =>
     pipe([
       //TODO remove pick
       pick([
@@ -87,10 +107,21 @@ exports.DynamoDBTable = () => ({
     kmsKey: {
       type: "Key",
       group: "KMS",
-      dependencyId: ({ lives, config }) => get("SSEDescription.KMSMasterKeyId"),
+      dependencyId:
+        ({ lives, config }) =>
+        ({ SSEDescription = {} }) =>
+          pipe([
+            lives.getByType({
+              type: "Key",
+              group: "KMS",
+              providerName: config.providerName,
+            }),
+            find(eq(get("live.KeyId"), SSEDescription.KmsMasterKeyId)),
+            get("id"),
+          ])(),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#getTable-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#describeTable-property
   getById: {
     method: "describeTable",
     getField: "Table",
@@ -142,7 +173,7 @@ exports.DynamoDBTable = () => ({
       when(
         () => kmsKey,
         defaultsDeep({
-          SSEDescription: { KMSMasterKeyId: getField(kmsKey, "Arn") },
+          SSEDescription: { KMSMasterKeyId: getField(kmsKey, "KeyId") },
         })
       ),
     ])(),

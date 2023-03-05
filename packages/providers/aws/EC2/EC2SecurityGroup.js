@@ -94,6 +94,7 @@ const managedByOther = ({ lives, config }) =>
       callProp("startsWith", "AWS created security group"),
     ]), // Directory Service
     pipe([get("GroupName"), callProp("startsWith", "cloudhsm-cluster-")]), // CloudHSM
+    pipe([get("GroupName"), callProp("startsWith", "aws-cloud9-")]), // Cloud9
     hasKeyInTags({
       key: "aws:eks:cluster-name",
     }),

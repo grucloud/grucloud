@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, omit, tap, assign } = require("rubico");
+const { pipe, omit, tap, assign, get } = require("rubico");
 const { callProp } = require("rubico/x");
 
 const { createEndpoint } = require("../AwsCommon");
@@ -16,10 +16,21 @@ exports.Tagger = createTagger({
   UnTagsKey: "TagKeys",
 });
 
-exports.dependencyIdApi =
-  ({ lives, config }) =>
-  (live) =>
-    `arn:aws:execute-api:${config.region}:${config.accountId()}:${live.ApiId}`;
+exports.managedByOther = () =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("ApiGatewayManaged"),
+  ]);
+
+exports.dependencyIdApi = ({ lives, config }) =>
+  pipe([
+    get("ApiId"),
+    tap((ApiId) => {
+      assert(ApiId);
+    }),
+  ]);
 
 exports.ignoreErrorCodes = ["NotFoundException"];
 

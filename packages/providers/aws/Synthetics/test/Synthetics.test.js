@@ -16,13 +16,13 @@ describe("Synthetics", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Group", () =>
+  it("Group", () =>
     pipe([
       () => ({
         groupType: "Synthetics::Group",
         livesNotFound: ({ config }) => [
           {
-            //stateMachineArn: `arn:aws:states:us-east-1:${config.accountId()}:stateMachine:test-test`,
+            Id: "22",
           },
         ],
       }),

@@ -1,0 +1,12 @@
+const pkg = require("./package.json");
+module.exports = () => ({
+  projectName: pkg.name,
+  includeGroups: [
+    "CloudWatchLogs",
+    "DynamoDB",
+    "EC2",
+    "ECR",
+    "ECS",
+    "ElasticLoadBalancingV2",
+  ],
+});

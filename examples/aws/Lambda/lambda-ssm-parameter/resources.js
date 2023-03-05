@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
-      RoleName: "sam-app-LambdaFunctionRole-1C9B4X0VUWW95",
+      RoleName: "sam-app-LambdaFunctionRole-QMWSR32TPZLQ",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -55,14 +55,14 @@ exports.createResources = () => [
             SSMParameterName: "ExampleParameterName",
           },
         },
-        FunctionName: "sam-app-LambdaFunction-0c5CYs3DOq13",
+        FunctionName: "sam-app-LambdaFunction-X4hNZs6zzhip",
         Handler: "app.handler",
         Runtime: "nodejs14.x",
         Timeout: 15,
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-LambdaFunctionRole-1C9B4X0VUWW95",
+      role: "sam-app-LambdaFunctionRole-QMWSR32TPZLQ",
     }),
   },
   {

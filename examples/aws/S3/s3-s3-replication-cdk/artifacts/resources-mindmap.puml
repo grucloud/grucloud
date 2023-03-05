@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project s3-s3-replication-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ S3
+++++ Bucket (3)
+@endmindmap

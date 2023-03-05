@@ -1,19 +1,39 @@
 const assert = require("assert");
 const AdmZip = require("adm-zip");
+const { pipe, tap, eq, get, tryCatch, not } = require("rubico");
+const path = require("path");
 
-describe("Lambda", async function () {
+const { createZipBuffer, computeHash256 } = require("../LambdaCommon");
+describe("Lambda utils", async function () {
   before(async function () {});
   after(async () => {});
   it("zip", async function () {
-    const Data =
-      "UEsDBBQAAAAIANFE+1JLjaw72AAAAHABAAANAAAAaGVsbG93b3JsZC5qc3WQzWqDUBBG9z7FhxsVxBCzq9hdNiWk0DyBvY4/5HamjFeNlL57by0Fs8h6DufwjREexFJmpY3Dk1R1zy2akY3rhcOkCAK6fYq6Iesqri0pSlTDwgYxTcQuhRF2dHMJymd8BcBuZzbO6I0M9RPVWPGnKMXL5fWcDU59qW+Wfw2P1qbIE58EtoZwquxIe5Rh+ufIrrTsH2D5PZY/wA732GHFlNyovGkUfguOphO8V+YK1xGaXgcHf8TqWef6g8oMphlHVdE4usgHue73k7N3YVbhNvKN7yL4AVBLAQIUAxQAAAAIANFE+1JLjaw72AAAAHABAAANAAAAAAAAAAAAAACkgQAAAABoZWxsb3dvcmxkLmpzUEsFBgAAAAABAAEAOwAAAAMBAAAAAA==";
-    const zip = new AdmZip(Buffer.from(Data, "base64"));
-    const zipEntries = zip.getEntries();
-
-    zipEntries.forEach(function (zipEntry) {
-      //console.log(zipEntry.toString()); // outputs zip entries information
-      //console.log(zip.readAsText(zipEntry.entryName));
-    });
-    //zip.extractAllTo(/*target path*/ "/home/me/zipcontent/", /*overwrite*/ true);
+    const zip = new AdmZip();
+    zip.addLocalFolder(path.resolve(__dirname, "zipfolder"));
+    const buffer = zip.toBuffer();
+    const hash = computeHash256(buffer);
+    //assert.equal(hash, "LvqSvA1Te7Mz/Y79IdvnX1HXPXRTLREdfXRlHThYVro=");
   });
+  it("createZipBuffer", () =>
+    pipe([
+      () => ({
+        localPath: path.resolve(__dirname, "zipfolder"),
+      }),
+      createZipBuffer,
+      computeHash256,
+      tap((hash) => {
+        //assert.equal(hash, "LvqSvA1Te7Mz/Y79IdvnX1HXPXRTLREdfXRlHThYVro=");
+      }),
+    ])());
+  it("computeHash256", () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => Buffer.from("test"),
+      computeHash256,
+      tap((result) => {
+        assert.equal(result, "n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=");
+      }),
+    ])());
 });

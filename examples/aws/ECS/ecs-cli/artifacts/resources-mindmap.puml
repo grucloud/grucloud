@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project ECS created by ecs-cli
+title Resources for project ecs-cli
 skinparam monochrome true
 + Infra
 ++ aws
@@ -19,6 +19,6 @@ skinparam monochrome true
 +++ ECS
 ++++ Cluster (1)
 +++ IAM
-++++ Role (1)
 ++++ InstanceProfile (1)
+++++ Role (1)
 @endmindmap

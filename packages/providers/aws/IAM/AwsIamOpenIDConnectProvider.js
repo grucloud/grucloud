@@ -193,6 +193,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     namespace,
     properties: { Tags, Url, ...otherProps },
     dependencies: { cluster },
+    config,
   }) =>
     pipe([
       tap(() => {
@@ -225,7 +226,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    tagResource: tagResource({ iam }),
-    untagResource: untagResource({ iam }),
+    tagResource: tagResource({ endpoint: iam }),
+    untagResource: untagResource({ endpoint: iam }),
   };
 };

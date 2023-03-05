@@ -5,6 +5,7 @@ skinparam monochrome true
 ++ aws
 +++ Cognito
 ++++ IdentityPool (1)
+++++ IdentityPoolProviderPrincipalTag (1)
 ++++ IdentityPoolRolesAttachments (1)
 +++ CognitoIdentityServiceProvider
 ++++ UserPool (1)

@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project cloud9-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Cloud9
+++++ Environment (1)
+@endmindmap

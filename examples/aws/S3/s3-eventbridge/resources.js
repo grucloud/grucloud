@@ -48,7 +48,6 @@ exports.createResources = () => [
         },
       },
       Name: "sam-app-S3NewImageEvent-WQBVMJ27U1IW",
-      State: "ENABLED",
     }),
   },
   {
@@ -67,6 +66,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-s3-eventbridge",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       Policy: {
         Version: "2008-10-17",
         Statement: [
@@ -93,6 +101,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "gc-s3-eventbridge-cloudtrail",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
       Policy: {
         Version: "2012-10-17",
         Statement: [

@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project elemental-medialive-mediapackage-cdk-ts
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ MediaLive
+++++ Channel (1)
+++++ Input (1)
+++++ InputSecurityGroup (1)
++++ MediaPackage
+++++ Channel (1)
+++++ OriginEndpoint (4)
+@endmindmap

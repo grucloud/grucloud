@@ -9,6 +9,5 @@ module.exports = () => ({
     "ElasticLoadBalancingV2",
     "Lambda",
     "IAM",
-    "S3",
   ],
 });

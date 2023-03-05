@@ -7,6 +7,8 @@ const { buildTags } = require("../AwsCommon");
 
 const { Tagger } = require("./RDSCommon");
 
+const managedByOther = () => pipe([eq(get("SnapshotType"), "automated")]);
+
 const buildArn = () =>
   pipe([
     get("DBSnapshotIdentifier"),
@@ -102,7 +104,7 @@ exports.RDSDBSnapshot = ({ compare }) => ({
     method: "deleteDBSnapshot",
     pickId,
   },
-  // managedByOther,
+  managedByOther,
   // cannotBeDeleted: managedByOther,
   getByName: ({ getById }) =>
     pipe([({ name }) => ({ DBSnapshotIdentifier: name }), getById({})]),

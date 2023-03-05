@@ -31,9 +31,6 @@ exports.createResources = () => [
           MasterUserPassword: process.env.MY_DOMAIN_MASTER_USER_PASSWORD,
         },
       },
-      AutoTuneOptions: {
-        DesiredState: "ENABLED",
-      },
       ClusterConfig: {
         ColdStorageOptions: {
           Enabled: false,
@@ -50,6 +47,9 @@ exports.createResources = () => [
       },
       DomainName: "my-domain",
       EngineVersion: "OpenSearch_2.3",
+      SoftwareUpdateOptions: {
+        AutoSoftwareUpdateEnabled: false,
+      },
     }),
   },
 ];

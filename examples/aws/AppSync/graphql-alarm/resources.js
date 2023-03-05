@@ -7,15 +7,15 @@ exports.createResources = () => [
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
-      name: "MyModelTypeTable",
       description: "DynamoDB table backing the MyModelType object type.",
-      type: "AMAZON_DYNAMODB",
       dynamodbConfig: {
         awsRegion: `${config.region}`,
         tableName: "MyModelTypeTable",
         useCallerCredentials: false,
         versioned: false,
       },
+      name: "MyModelTypeTable",
+      type: "AMAZON_DYNAMODB",
     }),
     dependencies: ({}) => ({
       graphqlApi: "My AppSync App",
@@ -335,9 +335,6 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
-    }),
-    dependencies: ({}) => ({
-      table: "MyModelTypeTable",
     }),
   },
   { type: "Topic", group: "SNS", name: "Default_CloudWatch_Alarms_Topic" },

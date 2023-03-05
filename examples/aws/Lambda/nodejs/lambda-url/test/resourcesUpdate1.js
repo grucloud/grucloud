@@ -13,9 +13,10 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
       },
       FunctionUrlConfig: {
-        AuthType: "AWS_IAM",
+        AuthType: "NONE",
         Cors: {
           AllowOrigins: ["*"],
+          MaxAge: 65000,
         },
       },
     }),

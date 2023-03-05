@@ -19,10 +19,11 @@ const {
   uniq,
   pluck,
   find,
+  isIn,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { buildTags, replaceArnWithAccountAndRegion } = require("../AwsCommon");
+const { buildTags, replaceEnv } = require("../AwsCommon");
 const { tagResource, untagResource } = require("./StepFunctionsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { cloneDeepWith } = require("lodash/fp");
@@ -69,6 +70,51 @@ exports.StepFunctionsStateMachine = () => ({
       type: "Role",
       group: "IAM",
       dependencyId: ({ lives, config }) => get("roleArn"),
+    },
+    apiGatewayRestApis: {
+      type: "RestApi",
+      group: "APIGateway",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("definition.States"),
+          flattenObject({ filterKey: (key) => key === "ApiEndpoint" }),
+          map((ApiEndpoint) =>
+            pipe([
+              lives.getByType({
+                type: "RestApi",
+                group: "APIGateway",
+                providerName: config.providerName,
+              }),
+              find(pipe([get("live.endpoint"), isIn(ApiEndpoint)])),
+              get("id"),
+            ])()
+          ),
+          uniq,
+        ]),
+    },
+    apiGatewayV2Apis: {
+      type: "Api",
+      group: "ApiGatewayV2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("definition.States"),
+          flattenObject({ filterKey: (key) => key === "ApiEndpoint" }),
+          map((ApiEndpoint) =>
+            pipe([
+              lives.getByType({
+                type: "Api",
+                group: "ApiGatewayV2",
+                providerName: config.providerName,
+              }),
+              find(pipe([get("live.ApiId"), isIn(ApiEndpoint)])),
+              get("id"),
+            ])()
+          ),
+          //TODO move uniq to flattenObject
+          uniq,
+        ]),
     },
     glueJob: {
       type: "Job",
@@ -183,7 +229,17 @@ exports.StepFunctionsStateMachine = () => ({
                   ]),
                 ]),
                 pipe([
-                  replaceArnWithAccountAndRegion({ providerConfig, lives }),
+                  replaceEnv({
+                    providerConfig,
+                    lives,
+                    dependenciesOveride: {
+                      apiGatewayRestApis: {
+                        pathLive: "live.endpoint",
+                        type: "RestApi",
+                        group: "APIGateway",
+                      },
+                    },
+                  }),
                 ]),
                 () => undefined,
               ]),

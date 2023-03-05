@@ -12,7 +12,11 @@ const {
 } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { buildTags, replaceRegion } = require("../AwsCommon");
+const {
+  buildTags,
+  replaceRegion,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./CodePipelineCommon");
@@ -73,7 +77,7 @@ exports.CodePipelinePipeline = ({}) => ({
           ),
         ]),
     },
-    codeBuildProject: {
+    codeBuildProjects: {
       type: "Project",
       group: "CodeBuild",
       list: true,
@@ -129,6 +133,12 @@ exports.CodePipelinePipeline = ({}) => ({
           ),
         ]),
     },
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      dependencyId: ({ lives, config }) =>
+        get("pipeline.artifactStore.encryptionKey.id"),
+    },
     s3Bucket: {
       type: "Bucket",
       group: "S3",
@@ -136,7 +146,11 @@ exports.CodePipelinePipeline = ({}) => ({
         pipe([get("pipeline.artifactStore.location")]),
     },
   },
-  omitProperties: ["metadata", "pipeline.roleArn"],
+  omitProperties: [
+    "metadata",
+    "pipeline.roleArn",
+    "pipeline.artifactStore.encryptionKey",
+  ],
   propertiesDefault: {},
   filterLive: ({ lives, providerConfig }) =>
     pipe([
@@ -149,7 +163,7 @@ exports.CodePipelinePipeline = ({}) => ({
               assign({
                 location: pipe([
                   get("location"),
-                  replaceRegion({ lives, providerConfig }),
+                  replaceAccountAndRegion({ lives, providerConfig }),
                 ]),
               }),
             ]),
@@ -160,29 +174,44 @@ exports.CodePipelinePipeline = ({}) => ({
                   actions: pipe([
                     get("actions"),
                     map(
-                      assign({
-                        configuration: pipe([
-                          get("configuration"),
-                          when(
-                            get("ConnectionArn"),
-                            assign({
-                              ConnectionArn: pipe([
-                                get("ConnectionArn"),
-                                tap((params) => {
-                                  assert(true);
-                                }),
-                                replaceWithName({
-                                  groupType: "CodeStarConnections::Connection",
-                                  path: "id",
-                                  pathLive: "id",
-                                  providerConfig,
-                                  lives,
-                                }),
-                              ]),
-                            })
-                          ),
-                        ]),
-                      })
+                      pipe([
+                        when(
+                          get("roleArn"),
+                          assign({
+                            roleArn: pipe([
+                              get("roleArn"),
+                              replaceAccountAndRegion({
+                                providerConfig,
+                                lives,
+                              }),
+                            ]),
+                          })
+                        ),
+                        assign({
+                          configuration: pipe([
+                            get("configuration"),
+                            when(
+                              get("ConnectionArn"),
+                              assign({
+                                ConnectionArn: pipe([
+                                  get("ConnectionArn"),
+                                  tap((params) => {
+                                    assert(true);
+                                  }),
+                                  replaceWithName({
+                                    groupType:
+                                      "CodeStarConnections::Connection",
+                                    path: "id",
+                                    pathLive: "id",
+                                    providerConfig,
+                                    lives,
+                                  }),
+                                ]),
+                              })
+                            ),
+                          ]),
+                        }),
+                      ])
                     ),
                   ]),
                 })
@@ -237,7 +266,7 @@ exports.CodePipelinePipeline = ({}) => ({
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { role },
+    dependencies: { role, kmsKey },
     config,
   }) =>
     pipe([
@@ -253,5 +282,18 @@ exports.CodePipelinePipeline = ({}) => ({
           value: "value",
         }),
       }),
+      when(
+        () => kmsKey,
+        defaultsDeep({
+          pipeline: {
+            artifactStore: {
+              encryptionKey: {
+                id: getField(kmsKey, "Arn"),
+                type: "KMS",
+              },
+            },
+          },
+        })
+      ),
     ])(),
 });

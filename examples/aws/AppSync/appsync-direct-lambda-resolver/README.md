@@ -1,3 +1,3 @@
-# Aws AppSync DynamoDb
+# Aws AppSync Direct Lambda Resolver
 
-See https://serverlessland.com/patterns/appsync-dynamodb
+See https://github.com/aws-samples/serverless-patterns/tree/main/appsync-direct-lambda-resolver

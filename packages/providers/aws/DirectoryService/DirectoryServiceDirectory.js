@@ -24,6 +24,7 @@ const {
 
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { updateResourceArray } = require("@grucloud/core/updateResourceArray");
+const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags, replaceAccountAndRegion } = require("../AwsCommon");
@@ -89,40 +90,42 @@ const registerEventTopic = ({ endpoint, live }) =>
 const deregisterEventTopic = ({ endpoint, live }) =>
   pipe([endpoint().deregisterEventTopic]);
 
-const updateRadius =
-  ({ endpoint, getById }) =>
-  async ({ payload, live, diff }) =>
-    pipe([
-      () => diff,
-      switchCase([
-        // Added
-        or([eq(get("targetDiff.updated.RadiusSettings"), undefined)]),
-        pipe([
-          () => ({
-            DirectoryId: live.DirectoryId,
-            RadiusSettings: payload.RadiusSettings,
-          }),
-          endpoint().enableRadius,
-        ]),
-        // Update
-        or([get("liveDiff.updated.RadiusSettings")]),
-        pipe([
-          () => ({
-            DirectoryId: live.DirectoryId,
-            RadiusSettings: payload.RadiusSettings,
-          }),
-          endpoint().updateRadius,
-        ]),
-        // Deleted
-        or([get("targetDiff.added.RadiusSettings")]),
-        pipe([
-          () => ({
-            DirectoryId: live.DirectoryId,
-          }),
-          endpoint().disableRadius,
-        ]),
-      ]),
-    ])();
+const enableRadius = ({ endpoint, live }) =>
+  pipe([
+    tap(({ RadiusSettings }) => {
+      assert(RadiusSettings);
+      assert(live.DirectoryId);
+    }),
+    ({ RadiusSettings }) => ({
+      DirectoryId: live.DirectoryId,
+      RadiusSettings,
+    }),
+    endpoint().enableRadius,
+  ]);
+
+const updateRadius = ({ endpoint, live }) =>
+  pipe([
+    tap(({ RadiusSettings }) => {
+      assert(RadiusSettings);
+      assert(live.DirectoryId);
+    }),
+    ({ RadiusSettings }) => ({
+      DirectoryId: live.DirectoryId,
+      RadiusSettings,
+    }),
+    endpoint().enableRadius,
+  ]);
+
+const disableRadius = ({ endpoint, live }) =>
+  pipe([
+    tap(() => {
+      assert(live.DirectoryId);
+    }),
+    () => ({
+      DirectoryId: live.DirectoryId,
+    }),
+    endpoint().disableRadius,
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectoryService.html
 exports.DirectoryServiceDirectory = ({ compare }) => ({
@@ -293,8 +296,13 @@ exports.DirectoryServiceDirectory = ({ compare }) => ({
           onAdd: registerEventTopic,
           onRemove: deregisterEventTopic,
         }),
-        () => ({ payload, live, diff }),
-        updateRadius({ endpoint }),
+        () => ({ payload, live, diff, endpoint }),
+        updateResourceObject({
+          path: "RadiusSettings",
+          onDeleted: disableRadius,
+          onAdded: enableRadius,
+          onUpdated: updateRadius,
+        }),
       ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectoryService.html#deleteDirectory-property
   destroy: {

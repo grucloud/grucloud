@@ -146,7 +146,7 @@ exports.createResources = () => [
         Arn: `arn:aws:lambda:${
           config.region
         }:${config.accountId()}:function:mylambda`,
-        Input: "{}",
+        Input: {},
         RetryPolicy: {
           MaximumEventAgeInSeconds: 86400,
           MaximumRetryAttempts: 185,

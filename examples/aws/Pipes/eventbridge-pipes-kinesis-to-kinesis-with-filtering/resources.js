@@ -70,9 +70,6 @@ exports.createResources = () => [
     type: "Stream",
     group: "Kinesis",
     properties: ({}) => ({
-      StreamModeDetails: {
-        StreamMode: "PROVISIONED",
-      },
       StreamName: "sam-app-existing-customers-target",
       ShardCount: 1,
     }),
@@ -81,9 +78,6 @@ exports.createResources = () => [
     type: "Stream",
     group: "Kinesis",
     properties: ({}) => ({
-      StreamModeDetails: {
-        StreamMode: "PROVISIONED",
-      },
       StreamName: "sam-app-new-customers-target",
       ShardCount: 1,
     }),
@@ -92,9 +86,6 @@ exports.createResources = () => [
     type: "Stream",
     group: "Kinesis",
     properties: ({}) => ({
-      StreamModeDetails: {
-        StreamMode: "PROVISIONED",
-      },
       StreamName: "sam-app-source",
       ShardCount: 1,
     }),

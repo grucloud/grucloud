@@ -32,7 +32,6 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PassthroughBehavior: "WHEN_NO_MATCH",
       PayloadFormatVersion: "1.0",
-      RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
     dependencies: ({}) => ({
@@ -50,7 +49,6 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PassthroughBehavior: "WHEN_NO_MATCH",
       PayloadFormatVersion: "1.0",
-      RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
     dependencies: ({}) => ({
@@ -68,7 +66,6 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PassthroughBehavior: "WHEN_NO_MATCH",
       PayloadFormatVersion: "1.0",
-      RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
     dependencies: ({}) => ({
@@ -154,7 +151,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
-      RoleName: "sam-app-OnConnectLambdaFunctionRole-BWZIV6IR9OMV",
+      RoleName: "sam-app-OnConnectLambdaFunctionRole-JVP4H9R01OWU",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -207,15 +204,12 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "sam-app-websocket_connections",
-    }),
   },
   {
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
-      RoleName: "sam-app-OnDisconnectLambdaFunctionRole-1K1VHGSO99JHS",
+      RoleName: "sam-app-OnDisconnectLambdaFunctionRole-1MKK06XQ6QZWM",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -268,15 +262,12 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "sam-app-websocket_connections",
-    }),
   },
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: "sam-app-PostLambdaFunctionRole-1DAT8LSZH0D2Y",
+    properties: ({ config, getId }) => ({
+      RoleName: "sam-app-PostLambdaFunctionRole-1K0THTSGHQ5HT",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -326,9 +317,12 @@ exports.createResources = () => [
               {
                 Action: ["execute-api:ManageConnections"],
                 Resource: [
-                  `arn:aws:execute-api:${
-                    config.region
-                  }:${config.accountId()}:0oc15ekvc4/*`,
+                  `${getId({
+                    type: "Api",
+                    group: "ApiGatewayV2",
+                    name: "sam-app",
+                    path: "live.ArnV2",
+                  })}/*`,
                 ],
                 Effect: "Allow",
               },
@@ -346,7 +340,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      table: "sam-app-websocket_connections",
+      apiGatewayV2Apis: ["sam-app"],
     }),
   },
   {
@@ -367,7 +361,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-OnConnectLambdaFunctionRole-BWZIV6IR9OMV",
+      role: "sam-app-OnConnectLambdaFunctionRole-JVP4H9R01OWU",
     }),
   },
   {
@@ -388,7 +382,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-OnDisconnectLambdaFunctionRole-1K1VHGSO99JHS",
+      role: "sam-app-OnDisconnectLambdaFunctionRole-1MKK06XQ6QZWM",
     }),
   },
   {
@@ -409,7 +403,81 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-PostLambdaFunctionRole-1DAT8LSZH0D2Y",
+      role: "sam-app-PostLambdaFunctionRole-1K0THTSGHQ5HT",
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ getId }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "sam-app-onconnect-function",
+          Principal: "apigateway.amazonaws.com",
+          StatementId:
+            "sam-app-OnConnectFunctionResourcePermission-R1AMDRNUZVVW",
+          SourceArn: `${getId({
+            type: "Api",
+            group: "ApiGatewayV2",
+            name: "sam-app",
+            path: "live.ArnV2",
+          })}/*`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "sam-app-onconnect-function",
+      apiGatewayV2Apis: ["sam-app"],
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ getId }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "sam-app-ondisconnect-function",
+          Principal: "apigateway.amazonaws.com",
+          StatementId:
+            "sam-app-OnDisconnectFunctionResourcePermission-XCAB2M1W299T",
+          SourceArn: `${getId({
+            type: "Api",
+            group: "ApiGatewayV2",
+            name: "sam-app",
+            path: "live.ArnV2",
+          })}/*`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "sam-app-ondisconnect-function",
+      apiGatewayV2Apis: ["sam-app"],
+    }),
+  },
+  {
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ getId }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName: "sam-app-post-function",
+          Principal: "apigateway.amazonaws.com",
+          StatementId: "sam-app-PostFunctionResourcePermission-NHMFH7IDB7JO",
+          SourceArn: `${getId({
+            type: "Api",
+            group: "ApiGatewayV2",
+            name: "sam-app",
+            path: "live.ArnV2",
+          })}/*`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      lambdaFunction: "sam-app-post-function",
+      apiGatewayV2Apis: ["sam-app"],
     }),
   },
 ];

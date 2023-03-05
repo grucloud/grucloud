@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project SecurityGroup source from itself
+title Resources for project securityGroupSelf
 skinparam monochrome true
 + Infra
 ++ aws

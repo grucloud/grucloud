@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project Lambda Hello
+title Resources for project helloworld
 skinparam monochrome true
 + Infra
 ++ aws
@@ -7,6 +7,6 @@ skinparam monochrome true
 ++++ Role (1)
 ++++ Policy (1)
 +++ Lambda
-++++ Layer (1)
 ++++ Function (1)
+++++ Layer (1)
 @endmindmap

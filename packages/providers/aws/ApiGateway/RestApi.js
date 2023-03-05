@@ -15,10 +15,11 @@ const {
   switchCase,
   fork,
   reduce,
-  pick,
   and,
 } = require("rubico");
 const {
+  includes,
+  flatten,
   uniq,
   find,
   defaultsDeep,
@@ -36,20 +37,28 @@ const {
   unless,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "RestApi",
 });
 
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
-const { assignPolicyAccountAndRegion } = require("../AwsCommon");
+const {
+  getByNameCore,
+  buildTagsObject,
+  omitIfEmpty,
+} = require("@grucloud/core/Common");
 
 const { flattenObject } = require("@grucloud/core/Common");
 const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const { throwIfNotAwsError } = require("../AwsCommon");
-const { diffToPatch, ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
+const {
+  diffToPatch,
+  ignoreErrorCodes,
+  Tagger,
+  filterPayloadRestApiPolicy,
+} = require("./ApiGatewayCommon");
 
 const buildArn = () =>
   pipe([
@@ -71,6 +80,19 @@ const assignUrl = ({ config }) =>
       ]),
     }),
   ]);
+
+const assignEndpoint = ({ config }) =>
+  pipe([
+    assign({
+      endpoint: pipe([
+        tap(({ id }) => {
+          assert(id);
+        }),
+        ({ id }) => `${id}.execute-api.${config.region}.amazonaws.com`,
+      ]),
+    }),
+  ]);
+
 const assignArn = ({ config }) =>
   pipe([
     tap((params) => {
@@ -85,6 +107,7 @@ const assignArn = ({ config }) =>
       ]),
     }),
   ]);
+
 const assignArnV2 = ({ config }) =>
   pipe([
     assign({
@@ -169,30 +192,63 @@ const updateObject = (update) =>
     ]),
   ]);
 
-const assignMethodIntegration = ({ method }) =>
-  when(
-    () => method.methodIntegration,
-    assign({
-      ["x-amazon-apigateway-integration"]: pipe([
-        () => method,
-        get("methodIntegration", {}),
-        omit([
-          "timeoutInMillis",
-          "cacheNamespace",
-          "cacheKeyParameters",
-          "connectionType",
-        ]),
-        ({ integrationResponses, ...otherProps }) => ({
-          ...otherProps,
-          ...(integrationResponses && {
-            responses: {
-              default: pipe([() => integrationResponses, values, first])(),
-            },
+const assignSecurity = ({ method, authorizers }) =>
+  pipe([
+    when(
+      () => method.authorizerId,
+      assign({
+        security: pipe([
+          () => authorizers,
+          find(eq(get("id"), method.authorizerId)),
+          get("name"),
+          tap((name) => {
+            assert(name);
           }),
+          (name) => [{ [name]: [] }],
+        ]),
+      })
+    ),
+  ]);
+
+const assignMethodIntegration = ({ method }) =>
+  pipe([
+    when(
+      () => method.methodIntegration,
+      assign({
+        ["x-amazon-apigateway-integration"]: pipe([
+          () => method,
+          get("methodIntegration", {}),
+          omitIfEmpty(["requestParameters", "requestTemplates"]),
+          omit([
+            "timeoutInMillis",
+            "cacheNamespace",
+            "cacheKeyParameters",
+            "connectionType",
+          ]),
+          ({ integrationResponses, ...otherProps }) => ({
+            ...otherProps,
+            ...(integrationResponses && {
+              responses: {
+                default: pipe([() => integrationResponses, values, first])(),
+              },
+            }),
+          }),
+        ]),
+      })
+    ),
+  ]);
+
+const assignAuth = ({ method }) =>
+  pipe([
+    unless(
+      () => method.authorizationType == "NONE",
+      assign({
+        ["x-amazon-apigateway-auth"]: () => ({
+          type: method.authorizationType,
         }),
-      ]),
-    })
-  );
+      })
+    ),
+  ]);
 
 const buildOpenApiMethodResponses = ({ method }) =>
   pipe([
@@ -317,8 +373,15 @@ const buildOpenApiRequestBody = ({ requestModels }) =>
       })
     ),
   ]);
+const buildHttpMethod = pipe([
+  switchCase([
+    eq(get("httpMethod"), "ANY"),
+    () => "x-amazon-apigateway-any-method",
+    pipe([get("httpMethod"), callProp("toLowerCase")]),
+  ]),
+]);
 
-const buildOpenApiPath = ({ resources }) =>
+const buildOpenApiPath = ({ resources, authorizers }) =>
   pipe([
     () => resources,
     reduce(
@@ -329,37 +392,45 @@ const buildOpenApiPath = ({ resources }) =>
             () => resource.methods,
             reduce(
               (acc, method) =>
-                set(
-                  method.httpMethod.toLowerCase(),
-                  pipe([
-                    () => ({}),
-                    when(
-                      () => method.operationName,
-                      assign({ operationId: () => method.operationName })
-                    ),
-                    buildOpenApiRequestBody(method),
-                    when(
-                      () => method.requestParameters,
+                pipe([
+                  () => acc,
+                  set(
+                    buildHttpMethod(method),
+                    pipe([
+                      () => ({}),
+                      when(
+                        () => method.operationName,
+                        assign({ operationId: () => method.operationName })
+                      ),
+                      buildOpenApiRequestBody(method),
+                      when(
+                        () => method.requestParameters,
+                        assign({
+                          parameters: () => buildRequestParameters(method),
+                        })
+                      ),
+                      when(
+                        () =>
+                          get("methodIntegration.requestParameters")(method),
+                        assign({
+                          parameters: () =>
+                            buildIntegrationRequestParameters({
+                              integrationRequestParameters:
+                                method.methodIntegration.requestParameters,
+                            }),
+                        })
+                      ),
                       assign({
-                        parameters: () => buildRequestParameters(method),
-                      })
-                    ),
-                    when(
-                      () => get("methodIntegration.requestParameters")(method),
-                      assign({
-                        parameters: () =>
-                          buildIntegrationRequestParameters({
-                            integrationRequestParameters:
-                              method.methodIntegration.requestParameters,
-                          }),
-                      })
-                    ),
-                    assign({
-                      responses: () => buildOpenApiMethodResponses({ method }),
-                    }),
-                    assignMethodIntegration({ method }),
-                  ])()
-                )(acc),
+                        responses: () =>
+                          buildOpenApiMethodResponses({ method }),
+                      }),
+                      omitIfEmpty(["parameters", "responses"]),
+                      assignAuth({ method }),
+                      assignSecurity({ method, authorizers }),
+                      assignMethodIntegration({ method }),
+                    ])()
+                  ),
+                ])(),
               {}
             ),
           ])()
@@ -401,6 +472,44 @@ const buildModelSchema = ({ models, refPrefix }) =>
     ),
   ])();
 
+// openapi v3
+const buildSecuritySchemes = ({ authorizers }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    () => authorizers,
+    reduce(
+      (acc, { name, token, authType, id, ...other }) =>
+        pipe([
+          () => other,
+          omitIfEmpty([
+            "authorizerCredentials",
+            "authorizerUri",
+            "providerARNs",
+          ]),
+          (props) => ({
+            ...acc,
+            [name]: {
+              type: "apiKey", // Required and the value must be "apiKey" for an API Gateway API.
+              name: "Authorization", // The name of the header containing the authorization token.
+              in: "header", // Required and the value must be "header" for an API Gateway API.
+              "x-amazon-apigateway-authtype": authType, // Specifies the authorization mechanism for the client.
+              "x-amazon-apigateway-authorizer": {
+                // An API Gateway Lambda authorizer definition
+                type: "token", // Required property and the value must "token"
+                ...props,
+              },
+            },
+          }),
+        ])(),
+      {}
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
 // const generateSwagger2Schema =
 //   ({ name, description }) =>
 //   ({ resources, models }) =>
@@ -427,7 +536,7 @@ const buildModelSchema = ({ models, refPrefix }) =>
 
 const generateOpenApi2Schema =
   ({ name, description }) =>
-  ({ resources, models }) =>
+  ({ resources, models, authorizers }) =>
     pipe([
       tap(() => {
         assert(resources);
@@ -441,14 +550,18 @@ const generateOpenApi2Schema =
           title: name,
           version: "1",
         },
-        paths: buildOpenApiPath({ resources }),
+        paths: buildOpenApiPath({ resources, authorizers }),
         components: {
+          securitySchemes: buildSecuritySchemes({
+            authorizers,
+          }),
           schemas: buildModelSchema({
             models,
             refPrefix: "components/schemas",
           }),
         },
       }),
+      omitIfEmpty(["components.securitySchemes"]),
       tap((params) => {
         assert(true);
       }),
@@ -457,60 +570,100 @@ const generateOpenApi2Schema =
 const fetchRestApiChilds =
   ({ endpoint }) =>
   ({ restApiId }) =>
-    fork({
-      resources: pipe([
-        () => ({ restApiId }),
-        endpoint().getResources,
-        get("items"),
-        callProp("sort", (a, b) => a.path.localeCompare(b.path)),
-        map(
-          assign({
-            methods: ({ id: resourceId }) =>
-              pipe([
-                () => ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-                map((httpMethod) =>
-                  tryCatch(
-                    pipe([
-                      () => ({
-                        restApiId,
-                        resourceId,
-                        httpMethod,
-                      }),
-                      endpoint().getMethod,
-                      tap((params) => {
-                        assert(true);
-                      }),
-                    ]),
-                    throwIfNotAwsError("NotFoundException")
-                  )()
-                ),
-                filter(not(isEmpty)),
-                callProp("sort", (a, b) =>
-                  a.httpMethod.localeCompare(b.httpMethod)
-                ),
-              ])(),
-          })
-        ),
-      ]),
-      models: pipe([
-        () => ({ restApiId }),
-        endpoint().getModels,
-        get("items"),
-        callProp("sort", (a, b) => a.name.localeCompare(b.name)),
-      ]),
-    })();
+    pipe([
+      () => ({ restApiId }),
+      fork({
+        resources: pipe([
+          endpoint().getResources,
+          get("items"),
+          callProp("sort", (a, b) => a.path.localeCompare(b.path)),
+          map(
+            assign({
+              methods: ({ id: resourceId }) =>
+                pipe([
+                  () => [
+                    "ANY",
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE",
+                    "OPTIONS",
+                  ],
+                  map((httpMethod) =>
+                    tryCatch(
+                      pipe([
+                        () => ({
+                          restApiId,
+                          resourceId,
+                          httpMethod,
+                        }),
+                        endpoint().getMethod,
+                      ]),
+                      throwIfNotAwsError("NotFoundException")
+                    )()
+                  ),
+                  filter(not(isEmpty)),
+                  callProp("sort", (a, b) =>
+                    a.httpMethod.localeCompare(b.httpMethod)
+                  ),
+                ])(),
+            })
+          ),
+        ]),
+        models: pipe([
+          endpoint().getModels,
+          get("items"),
+          callProp("sort", (a, b) => a.name.localeCompare(b.name)),
+        ]),
+        authorizers: pipe([endpoint().getAuthorizers, get("items")]),
+      }),
+    ])();
 
-const assignPolicy = () =>
+const isPrivateApi = pipe([
+  get("endpointConfiguration.types"),
+  find(includes("PRIVATE")),
+]);
+
+const setPrivatePolicyDefault = ({ endpoint, config, live }) =>
   pipe([
+    tap(({ endpointConfiguration }) => {
+      assert(endpoint);
+      assert(config);
+      assert(live.id);
+      assert(endpointConfiguration);
+    }),
     when(
-      get("policy"),
+      isPrivateApi,
       pipe([
-        assign({
-          policy: pipe([
-            get("policy"),
-            callProp("replaceAll", "\\", ""),
-            JSON.parse,
-          ]),
+        () => ({
+          id: live.id,
+          policy: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Effect: "Allow",
+                Principal: {
+                  AWS: "*",
+                },
+                Action: "execute-api:Invoke",
+                Resource: `arn:aws:execute-api:${
+                  config.region
+                }:${config.accountId()}:${live.id}/*/*/*`,
+              },
+            ],
+          },
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+        filterPayloadRestApiPolicy,
+        tap((params) => {
+          assert(true);
+        }),
+        endpoint().updateRestApi,
+        tap((params) => {
+          assert(true);
         }),
       ])
     ),
@@ -521,7 +674,7 @@ const decorate = ({ endpoint, config }) =>
     assignArn({ config }),
     assignArnV2({ config }),
     assignUrl({ config }),
-    assignPolicy(),
+    assignEndpoint({ config }),
     assign({
       deployments: ({ id: restApiId }) =>
         pipe([
@@ -538,6 +691,9 @@ const decorate = ({ endpoint, config }) =>
           fetchRestApiChilds({ endpoint }),
           generateOpenApi2Schema({ name, description }),
         ])(),
+    }),
+    tap((params) => {
+      assert(true);
     }),
   ]);
 
@@ -557,23 +713,6 @@ const putRestApi =
       (body) => ({ body, restApiId: id, mode: "overwrite" }),
       endpoint().putRestApi,
     ])();
-
-const createPolicy = ({ endpoint, live }) =>
-  pipe([
-    get("policy"),
-    unless(
-      isEmpty,
-      pipe([
-        JSON.stringify,
-        (value) => ({ op: "replace", path: "/policy", value }),
-        (patchOperation) => ({
-          restApiId: live.id,
-          patchOperations: [patchOperation],
-        }),
-        endpoint().updateRestApi,
-      ])
-    ),
-  ]);
 
 const createVpcEndpoints = ({ endpoint, live }) =>
   pipe([
@@ -599,11 +738,10 @@ const createDeployment = ({ endpoint, live }) =>
   pipe([
     () => live,
     ({ id }) => ({ restApiId: id }),
-    omit(["stageName"]),
     endpoint().createDeployment,
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
 exports.RestApi = ({ compare }) => ({
   type: "RestApi",
   package: "api-gateway",
@@ -616,11 +754,13 @@ exports.RestApi = ({ compare }) => ({
     "id",
     "arn",
     "arnv2",
+    "endpoint",
     "url",
     "createdDate",
     "deployments",
     "version",
     "endpointConfiguration.vpcEndpointIds",
+    "policy",
   ],
   propertiesDefault: { disableExecuteApiEndpoint: false },
   compare: compare({
@@ -638,16 +778,10 @@ exports.RestApi = ({ compare }) => ({
     decorate,
   },
   create: {
-    filterPayload: pipe([
-      omit(["schemaFile", "schema", "deployment"]),
-      when(
-        get("policy"),
-        assign({ policy: pipe([get("policy"), JSON.stringify]) })
-      ),
-    ]),
+    filterPayload: pipe([omit(["schemaFile", "schema", "deployment"])]),
     method: "createRestApi",
     postCreate:
-      ({ endpoint, payload }) =>
+      ({ endpoint, config, payload }) =>
       (live) =>
         pipe([
           tap((params) => {
@@ -656,7 +790,7 @@ exports.RestApi = ({ compare }) => ({
           () => live,
           putRestApi({ endpoint, payload }),
           () => payload,
-          createPolicy({ endpoint, live }),
+          setPrivatePolicyDefault({ endpoint, config, live }),
           () => payload,
           createVpcEndpoints({ endpoint, live }),
           () => payload,
@@ -694,38 +828,14 @@ exports.RestApi = ({ compare }) => ({
       pipe([
         () => ({ payload, live, diff, endpoint }),
         fork({
-          policy: pipe([
-            updateResourceObject({
-              path: "policy",
-              onDeleted: () => () => ({
-                op: "replace",
-                path: "/policy",
-                value: "",
-              }),
-              onAdded:
-                () =>
-                ({ policy }) => ({
-                  op: "replace",
-                  path: "/policy",
-                  value: JSON.stringify(policy),
-                }),
-              onUpdated:
-                () =>
-                ({ policy }) => ({
-                  op: "replace",
-                  path: "/policy",
-                  value: JSON.stringify(policy),
-                }),
-            }),
-          ]),
           other: pipe([
             diffToPatch, //
-            filter(not(pipe([get("path"), isIn(["/schema", "/policy"])]))),
+            filter(not(pipe([get("path"), isIn(["/schema"])]))),
           ]),
         }),
-        ({ policy, other }) => ({
+        ({ other }) => ({
           restApiId: live.id,
-          patchOperations: [policy, ...other],
+          patchOperations: [...other],
         }),
       ])(),
   },
@@ -741,25 +851,78 @@ exports.RestApi = ({ compare }) => ({
           assert(providerConfig);
         }),
         () => live,
-        pick([
-          "name",
-          "apiKeySource",
-          "endpointConfiguration",
-          "schema",
-          "policy",
-        ]),
-        when(
-          get("policy"),
-          assign({
-            policy: pipe([
-              get("policy"),
-              assignPolicyAccountAndRegion({ providerConfig, lives }),
-            ]),
-          })
-        ),
         assign({
           schema: pipe([
             get("schema"),
+            when(
+              get("components"),
+              assign({
+                components: pipe([
+                  get("components"),
+                  when(
+                    get("securitySchemes"),
+                    assign({
+                      securitySchemes: pipe([
+                        get("securitySchemes"),
+                        map(
+                          assign({
+                            ["x-amazon-apigateway-authorizer"]: pipe([
+                              get("x-amazon-apigateway-authorizer"),
+                              tap((params) => {
+                                assert(true);
+                              }),
+
+                              when(
+                                get("authorizerCredentials"),
+                                assign({
+                                  authorizerCredentials: pipe([
+                                    get("authorizerCredentials"),
+                                    replaceAccountAndRegion({
+                                      providerConfig,
+                                      lives,
+                                    }),
+                                  ]),
+                                })
+                              ),
+                              when(
+                                get("authorizerUri"),
+                                assign({
+                                  authorizerUri: pipe([
+                                    get("authorizerUri"),
+                                    replaceAccountAndRegion({
+                                      providerConfig,
+                                      lives,
+                                    }),
+                                  ]),
+                                })
+                              ),
+                              when(
+                                get("providerARNs"),
+                                assign({
+                                  providerARNs: pipe([
+                                    get("providerARNs"),
+                                    map(
+                                      replaceWithName({
+                                        groupType:
+                                          "CognitoIdentityServiceProvider::UserPool",
+                                        path: "live.Arn",
+                                        pathLive: "live.Arn",
+                                        providerConfig,
+                                        lives,
+                                      })
+                                    ),
+                                  ]),
+                                })
+                              ),
+                            ]),
+                          })
+                        ),
+                      ]),
+                    })
+                  ),
+                ]),
+              })
+            ),
             assign({
               paths: pipe([
                 get("paths"),
@@ -772,10 +935,20 @@ exports.RestApi = ({ compare }) => ({
                           assign({
                             "x-amazon-apigateway-integration": pipe([
                               get("x-amazon-apigateway-integration"),
-                              tap((params) => {
-                                assert(true);
-                              }),
-                              //TODO requestTemplates
+                              when(
+                                get("requestTemplates"),
+                                assign({
+                                  requestTemplates: pipe([
+                                    get("requestTemplates"),
+                                    map(
+                                      replaceAccountAndRegion({
+                                        providerConfig,
+                                        lives,
+                                      })
+                                    ),
+                                  ]),
+                                })
+                              ),
                               when(
                                 get("credentials"),
                                 assign({
@@ -793,15 +966,9 @@ exports.RestApi = ({ compare }) => ({
                                 assign({
                                   uri: pipe([
                                     get("uri"),
-                                    tap((params) => {
-                                      assert(true);
-                                    }),
                                     replaceAccountAndRegion({
                                       providerConfig,
                                       lives,
-                                    }),
-                                    tap((params) => {
-                                      assert(true);
                                     }),
                                   ]),
                                 })
@@ -827,7 +994,10 @@ exports.RestApi = ({ compare }) => ({
                 find(
                   and([
                     eq(get("groupType"), "APIGateway::Stage"),
-                    eq(get("live.deploymentId"), deploymentId),
+                    or([
+                      eq(get("live.deploymentId"), deploymentId),
+                      eq(get("live.canarySettings.deploymentId"), deploymentId),
+                    ]),
                   ])
                 ),
                 get("live.stageName"),
@@ -867,6 +1037,29 @@ exports.RestApi = ({ compare }) => ({
       list: true,
       dependencyIds: ({ lives, config }) =>
         pipe([get("endpointConfiguration.vpcEndpointIds")]),
+    },
+    userPools: {
+      type: "UserPool",
+      group: "CognitoIdentityServiceProvider",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("schema.components.securitySchemes"),
+          map(pipe([get("x-amazon-apigateway-authorizer.providerARNs")])),
+          values,
+          flatten,
+          map((Arn) =>
+            pipe([
+              lives.getByType({
+                type: "UserPool",
+                group: "CognitoIdentityServiceProvider",
+                providerName: config.providerName,
+              }),
+              find(eq(get("live.Arn"), Arn)),
+              get("id"),
+            ])()
+          ),
+        ]),
     },
   },
   tagger: ({ config }) =>

@@ -1,0 +1,31 @@
+@startmindmap
+title Resources for project private-apigw-lambda-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Account (1)
+++++ RestApi (1)
+++++ RestApiPolicy (1)
+++++ Stage (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NatGateway (1)
+++++ Subnet (4)
+++++ RouteTable (4)
+++++ RouteTableAssociation (4)
+++++ Route (4)
+++++ SecurityGroup (3)
+++++ SecurityGroupRuleIngress (1)
+++++ ElasticIpAddress (1)
+++++ Instance (1)
+++++ VpcEndpoint (1)
++++ IAM
+++++ InstanceProfile (1)
+++++ Role (3)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
+@endmindmap

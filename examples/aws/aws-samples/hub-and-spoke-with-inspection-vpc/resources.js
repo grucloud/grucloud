@@ -1608,6 +1608,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "terraform-ssm-ec2",
+    dependencies: ({}) => ({
+      roles: ["test-ssm-ec2"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -1635,14 +1643,6 @@ exports.createResources = () => [
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "terraform-ssm-ec2",
-    dependencies: ({}) => ({
-      roles: ["test-ssm-ec2"],
     }),
   },
   {

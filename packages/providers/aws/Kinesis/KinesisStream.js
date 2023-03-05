@@ -23,7 +23,13 @@ exports.KinesisStream = ({}) => ({
     "Shards",
     "EnhancedMonitoring", // TODO
   ],
-  propertiesDefault: { EncryptionType: "NONE", RetentionPeriodHours: 24 },
+  propertiesDefault: {
+    StreamModeDetails: {
+      StreamMode: "PROVISIONED",
+    },
+    EncryptionType: "NONE",
+    RetentionPeriodHours: 24,
+  },
   compare: compareAws({ filterTarget: () => pipe([omit(["ShardCount"])]) }),
   filterLive: () =>
     pipe([

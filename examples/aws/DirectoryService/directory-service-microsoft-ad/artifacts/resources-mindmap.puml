@@ -5,7 +5,10 @@ skinparam monochrome true
 ++ aws
 +++ DirectoryService
 ++++ Directory (1)
+++++ SharedDirectory (1)
 +++ EC2
 ++++ Vpc (1)
 ++++ Subnet (2)
++++ Organisations
+++++ Account (1)
 @endmindmap

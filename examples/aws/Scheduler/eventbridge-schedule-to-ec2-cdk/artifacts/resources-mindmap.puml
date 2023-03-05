@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project eventbridge-schedule-to-ec2-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ Scheduler
+++++ Schedule (2)
+++++ ScheduleGroup (1)
++++ SQS
+++++ Queue (1)
+@endmindmap

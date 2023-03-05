@@ -26,25 +26,6 @@ exports.createResources = () => [
       snsTopics: ["DirectoryMonitoring_grucloud"],
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-a",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-b",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
   {
     type: "Topic",
     group: "SNS",

@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project kinesis-lambda-efo
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ Kinesis
+++++ Stream (1)
+++++ StreamConsumer (1)
++++ Lambda
+++++ EventSourceMapping (1)
+++++ Function (1)
+@endmindmap

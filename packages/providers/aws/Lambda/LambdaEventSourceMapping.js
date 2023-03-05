@@ -1,6 +1,26 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, switchCase, fork, omit } = require("rubico");
-const { defaultsDeep, prepend, when } = require("rubico/x");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  switchCase,
+  fork,
+  omit,
+  eq,
+  filter,
+  assign,
+  map,
+} = require("rubico");
+const {
+  defaultsDeep,
+  prepend,
+  when,
+  find,
+  callProp,
+  pluck,
+} = require("rubico/x");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -30,6 +50,7 @@ const getNameFromSource = ({ lives, config, type, group }) =>
     get("EventSourceArn"),
     tap((id) => {
       assert(id);
+      assert(lives);
     }),
     lives.getById({
       providerName: config.providerName,
@@ -49,6 +70,7 @@ const findName =
         assert(EventSourceArn);
       }),
       fork({
+        EventSourceArn: get("EventSourceArn"),
         functionName: pipe([
           get("FunctionArn"),
           lives.getById({
@@ -58,21 +80,66 @@ const findName =
           }),
           get("name"),
         ]),
-        sqsQueueName: getNameFromSource({
-          lives,
-          config,
-          type: "Queue",
-          group: "SQS",
-        }),
+        dynamoDbTable: ({ EventSourceArn }) =>
+          pipe([
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Table",
+              group: "DynamoDB",
+            }),
+            find(eq(get("live.LatestStreamArn"), EventSourceArn)),
+            get("name"),
+          ])(),
         kinesisStreamName: getNameFromSource({
           lives,
           config,
           type: "Stream",
           group: "Kinesis",
         }),
+        kinesisStreamConsumerName: getNameFromSource({
+          lives,
+          config,
+          type: "StreamConsumer",
+          group: "Kinesis",
+        }),
+        mqBrokerName: getNameFromSource({
+          lives,
+          config,
+          type: "Broker",
+          group: "MQ",
+        }),
+        mskClusterName: getNameFromSource({
+          lives,
+          config,
+          type: "ClusterV2",
+          group: "MSK",
+        }),
+        sqsQueueName: getNameFromSource({
+          lives,
+          config,
+          type: "Queue",
+          group: "SQS",
+        }),
       }),
-      ({ functionName, sqsQueueName, kinesisStreamName }) =>
-        `mapping::${functionName}::${sqsQueueName || kinesisStreamName}`,
+      ({
+        functionName,
+        dynamoDbTable,
+        sqsQueueName,
+        kinesisStreamName,
+        kinesisStreamConsumerName,
+        mqBrokerName,
+        mskClusterName,
+        EventSourceArn,
+      }) =>
+        `mapping::${functionName}::${
+          dynamoDbTable ||
+          sqsQueueName ||
+          kinesisStreamName ||
+          kinesisStreamConsumerName ||
+          mqBrokerName ||
+          mskClusterName ||
+          EventSourceArn
+        }`,
     ])();
 
 const pickId = pipe([
@@ -106,21 +173,45 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
   propertiesDefault: {
     BatchSize: 10,
     MaximumBatchingWindowInSeconds: 0,
-    //FunctionResponseTypes: [],
   },
   inferName:
-    ({ dependenciesSpec: { lambdaFunction, sqsQueue, kinesisStream } }) =>
+    ({
+      dependenciesSpec: {
+        lambdaFunction,
+        dynamoDbTable,
+        sqsQueue,
+        kinesisStream,
+        kinesisStreamConsumer,
+        mqBroker,
+        mskCluster,
+      },
+    }) =>
     () =>
       pipe([
         tap((params) => {
           assert(lambdaFunction);
-          assert(sqsQueue || kinesisStream);
+          assert(
+            dynamoDbTable ||
+              sqsQueue ||
+              kinesisStream ||
+              kinesisStreamConsumer ||
+              mqBroker ||
+              mskCluster
+          );
         }),
         switchCase([
-          () => sqsQueue,
-          () => sqsQueue,
+          () => dynamoDbTable,
+          () => dynamoDbTable,
           () => kinesisStream,
           () => kinesisStream,
+          () => kinesisStreamConsumer,
+          () => kinesisStreamConsumer,
+          () => mqBroker,
+          () => mqBroker,
+          () => mskCluster,
+          () => mskCluster,
+          () => sqsQueue,
+          () => sqsQueue,
           () => {
             assert(false, `missing EventSourceMapping dependency`);
           },
@@ -154,13 +245,21 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
       parent: true,
       dependencyId: ({ lives, config }) => pipe([get("FunctionArn")]),
     },
-    sqsQueue: {
-      type: "Queue",
-      group: "SQS",
-      dependencyId: dependencyIdEventSource({
-        type: "Queue",
-        group: "SQS",
-      }),
+    dynamoDbTable: {
+      type: "Table",
+      group: "DynamoDB",
+      dependencyId:
+        ({ lives, config }) =>
+        ({ EventSourceArn }) =>
+          pipe([
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Table",
+              group: "DynamoDB",
+            }),
+            find(eq(get("live.LatestStreamArn"), EventSourceArn)),
+            get("id"),
+          ])(),
     },
     kinesisStream: {
       type: "Stream",
@@ -170,29 +269,95 @@ exports.LambdaEventSourceMapping = ({ compare }) => ({
         group: "Kinesis",
       }),
     },
-    //TODO other event source
-    /*
-  Amazon DynamoDB Streams
-Amazon MQ::Broker
-Amazon MSK::ClusterV2
-Apache Kafka
-*/
+    kinesisStreamConsumer: {
+      type: "StreamConsumer",
+      group: "Kinesis",
+      parent: true,
+      dependencyId: dependencyIdEventSource({
+        type: "StreamConsumer",
+        group: "Kinesis",
+      }),
+    },
+    mqBroker: {
+      type: "Broker",
+      group: "MQ",
+      dependencyId: dependencyIdEventSource({
+        type: "Broker",
+        group: "MQ",
+      }),
+    },
+    mskCluster: {
+      type: "ClusterV2",
+      group: "MSK",
+      dependencyId: dependencyIdEventSource({
+        type: "ClusterV2",
+        group: "MSK",
+      }),
+    },
+    secretsManagerSecrets: {
+      type: "Secret",
+      group: "SecretsManager",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("SourceAccessConfigurations"),
+          filter(
+            pipe([
+              get("URI", ""),
+              callProp("startsWith", "arn:aws:secretsmanager:"),
+            ])
+          ),
+          pluck("URI"),
+        ]),
+    },
+    sqsQueue: {
+      type: "Queue",
+      group: "SQS",
+      dependencyId: dependencyIdEventSource({
+        type: "Queue",
+        group: "SQS",
+      }),
+    },
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      when(
+        get("SourceAccessConfigurations"),
+        assign({
+          SourceAccessConfigurations: pipe([
+            get("SourceAccessConfigurations"),
+            map(
+              assign({
+                URI: pipe([
+                  get("URI"),
+                  replaceWithName({
+                    groupType: "SecretsManager::Secret",
+                    pathLive: "id",
+                    path: "id",
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        })
+      ),
+    ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#getEventSourceMapping-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getEventSourceMapping-property
   getById: {
     pickId,
     method: "getEventSourceMapping",
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#listEventSourceMappings-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listEventSourceMappings-property
   getList: {
     method: "listEventSourceMappings",
     getParam: "EventSourceMappings",
     decorate,
   },
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#createEventSourceMapping-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createEventSourceMapping-property
   create: {
     method: "createEventSourceMapping",
     shouldRetryOnExceptionMessages: [
@@ -200,13 +365,13 @@ Apache Kafka
       "Please add Lambda as a Trusted Entity",
     ],
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#updateEventSourceMapping-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateEventSourceMapping-property
   update: {
     method: "updateEventSourceMapping",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#deleteEventSourceMapping-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteEventSourceMapping-property
   destroy: {
     method: "deleteEventSourceMapping",
     pickId,
@@ -216,7 +381,15 @@ Apache Kafka
     name,
     namespace,
     properties,
-    dependencies: { lambdaFunction, sqsQueue, kinesisStream },
+    dependencies: {
+      lambdaFunction,
+      dynamoDbTable,
+      kinesisStream,
+      kinesisStreamConsumer,
+      mqBroker,
+      mskCluster,
+      sqsQueue,
+    },
   }) =>
     pipe([
       tap(() => {
@@ -224,17 +397,32 @@ Apache Kafka
       }),
       () => properties,
       defaultsDeep({
-        // TODO  FunctionArn ?
         FunctionName: getField(lambdaFunction, "Configuration.FunctionName"),
       }),
       switchCase([
+        () => dynamoDbTable,
+        defaultsDeep({
+          EventSourceArn: getField(dynamoDbTable, "LatestStreamArn"),
+        }),
         () => sqsQueue,
         defaultsDeep({
           EventSourceArn: getField(sqsQueue, "Attributes.QueueArn"),
         }),
+        () => mskCluster,
+        defaultsDeep({
+          EventSourceArn: getField(mskCluster, "ClusterArn"),
+        }),
+        () => mqBroker,
+        defaultsDeep({
+          EventSourceArn: getField(mqBroker, "BrokerArn"),
+        }),
         () => kinesisStream,
         defaultsDeep({
           EventSourceArn: getField(kinesisStream, "StreamARN"),
+        }),
+        () => kinesisStreamConsumer,
+        defaultsDeep({
+          EventSourceArn: getField(kinesisStreamConsumer, "ConsumerARN"),
         }),
         () => {
           assert(false, "missing EventSourceMapping dependency");

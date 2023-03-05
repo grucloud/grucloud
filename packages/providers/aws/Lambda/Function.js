@@ -5,26 +5,31 @@ const {
   tap,
   get,
   assign,
-  filter,
   tryCatch,
   pick,
   eq,
   omit,
   any,
-  flatMap,
+  reduce,
+  switchCase,
+  and,
+  filter,
 } = require("rubico");
 const {
-  pluck,
-  values,
   defaultsDeep,
-  includes,
   callProp,
   when,
-  find,
-  first,
+  unless,
+  isEmpty,
+  pluck,
   append,
+  isIn,
+  includes,
 } = require("rubico/x");
 const path = require("path");
+
+const AdmZip = require("adm-zip");
+
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 const { retryCall } = require("@grucloud/core/Retry");
 
@@ -32,31 +37,34 @@ const logger = require("@grucloud/core/logger")({
   prefix: "Function",
 });
 
-const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
-const { throwIfNotAwsError, compareAws } = require("../AwsCommon");
-const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createLambda, tagResource, untagResource } = require("./LambdaCommon");
+const { replaceWithName } = require("@grucloud/core/Common");
 
-const { findInStatement } = require("../IAM/AwsIamCommon");
-//TODO
-const dependenciesPoliciesKind = [
-  // { type: "Table", group: "DynamoDB" },
-  // { type: "Topic", group: "SNS" },
-  // { type: "Queue", group: "SQS" },
-  // { type: "FileSystem", group: "EFS" },
-  // { type: "AccessPoint", group: "EFS" },
-  // { type: "EventBus", group: "CloudWatchEvents" },
-  // { type: "StateMachine", group: "StepFunctions" },
-  // { type: "LogGroup", group: "CloudWatchLogs" },
-  { type: "Api", group: "ApiGatewayV2" },
-];
+const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
+const {
+  compareAws,
+  replaceEnv,
+  buildDependenciesFromEnv,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
+const { Tagger } = require("./LambdaCommon");
 
 const compareLambda = compareAws({});
 const findId = () => get("Configuration.FunctionArn");
 const findName = () => get("Configuration.FunctionName");
 
+const buildArn = () =>
+  pipe([
+    get("Configuration.FunctionArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
 const pickId = pipe([
+  tap((params) => {
+    assert(params);
+  }),
   ({ Configuration: { FunctionArn } }) => ({
     FunctionName: FunctionArn,
   }),
@@ -68,6 +76,38 @@ const removeVersion = pipe([
   callProp("join", ":"),
 ]);
 exports.removeVersion = removeVersion;
+
+const eventInvokeConfigDependencies = [
+  { type: "Function", group: "Lambda", prefix: "lambdaFunction" },
+  { type: "Topic", group: "SNS", prefix: "snsTopic" },
+  { type: "EventBus", group: "CloudWatchEvents", prefix: "cloudWatchEventBus" },
+  { type: "Queue", group: "SQS", prefix: "sqsQueue" },
+];
+
+const buildInvokeConfigDependency =
+  ({ type, group, prefix }) =>
+  (method) => ({
+    [`${prefix}${method}`]: {
+      type,
+      group,
+      dependencyId: () =>
+        get(`EventInvokeConfig.DestinationConfig.${method}.Destination`),
+    },
+  });
+
+const buildEventInvokeConfigDependencies = pipe([
+  () => eventInvokeConfigDependencies,
+  reduce(
+    (acc, dep) => ({
+      ...acc,
+      ...buildInvokeConfigDependency(dep)("OnSuccess"),
+      ...buildInvokeConfigDependency(dep)("OnFailure"),
+    }),
+    {}
+  ),
+]);
+
+exports.buildEventInvokeConfigDependencies = buildEventInvokeConfigDependencies;
 
 const managedByOther =
   ({ lives, config }) =>
@@ -87,115 +127,386 @@ const managedByOther =
       ),
     ])();
 
-exports.Function = ({ spec, config }) => {
-  const lambda = createLambda(config);
-  const client = AwsClient({ spec, config })(lambda);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
-  const getById = client.getById({
-    pickId,
-    method: "getFunction",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
-  const getList = client.getList({
-    method: "listFunctions",
-    getParam: "Functions",
-    decorate: () =>
-      pipe([
-        pick(["FunctionName"]),
-        lambda().getFunction,
-        pick(["Configuration", "Code", "Tags"]),
-        assign({
-          FunctionUrlConfig: tryCatch(
-            pipe([
-              get("Configuration"),
-              pick(["FunctionName"]),
-              lambda().listFunctionUrlConfigs,
-              get("FunctionUrlConfigs"),
-              first,
-            ]),
-            (error, params) => {
-              assert(params);
-              throw error;
-            }
-          ),
-          Policy: tryCatch(
-            pipe([
-              get("Configuration"),
-              pick(["FunctionName"]),
-              lambda().getPolicy,
-              get("Policy"),
-              tryCatch(JSON.parse, () => undefined),
-            ]),
-            throwIfNotAwsError("ResourceNotFoundException")
-          ),
-          Code: pipe([
-            get("Code"),
-            assign({
-              Data: pipe([fetchZip()]),
-            }),
+const decorate = ({ endpoint }) =>
+  pipe([
+    pick(["Configuration", "Code", "Tags"]),
+    assign({
+      Configuration: pipe([
+        get("Configuration"),
+        unless(
+          pipe([get("Layers"), isEmpty]),
+          assign({
+            Layers: pipe([get("Layers"), pluck("Arn")]),
+          })
+        ),
+      ]),
+      EventInvokeConfig: tryCatch(
+        pipe([
+          get("Configuration"),
+          pick(["FunctionName"]),
+          endpoint().getFunctionEventInvokeConfig,
+          pick([
+            "DestinationConfig",
+            "MaximumRetryAttempts",
+            "MaximumEventAgeInSeconds",
           ]),
-          //TODO
-          // CodeSigningConfigArn: pipe([
-          //   get("Configuration"),
-          //   pick(["FunctionName"]),
-          //   lambda().getFunctionCodeSigningConfig,
-          //   get("CodeSigningConfigArn"),
-          // ]),
-          // ReservedConcurrentExecutions: pipe([
-          //   get("Configuration"),
-          //   pick(["FunctionName"]),
-          //   lambda().getFunctionConcurrency,
-          //   get("ReservedConcurrentExecutions"),
-          // ]),
-        }),
-        omitIfEmpty(["Policy"]),
-        tap((params) => {
-          assert(true);
+        ]),
+        (error, params) => {
+          return;
+        }
+      ),
+      FunctionUrlConfig: tryCatch(
+        pipe([
+          get("Configuration"),
+          pick(["FunctionName"]),
+          endpoint().getFunctionUrlConfig,
+          // For Cloudfront Distribution
+          assign({
+            DomainName: pipe([
+              get("FunctionUrl"),
+              callProp("replace", "https://", ""),
+              callProp("replace", "/", ""),
+            ]),
+          }),
+        ]),
+        (error, params) => {
+          return;
+        }
+      ),
+      Code: pipe([
+        get("Code"),
+        assign({
+          Data: pipe([fetchZip()]),
         }),
       ]),
-  });
-
-  const getByName = pipe([
-    ({ name }) => ({ Configuration: { FunctionArn: name } }),
-    getById({}),
+      //TODO
+      // CodeSigningConfigArn: pipe([
+      //   get("Configuration"),
+      //   pick(["FunctionName"]),
+      //   lambda().getFunctionCodeSigningConfig,
+      //   get("CodeSigningConfigArn"),
+      // ]),
+      // ReservedConcurrentExecutions: pipe([
+      //   get("Configuration"),
+      //   pick(["FunctionName"]),
+      //   lambda().getFunctionConcurrency,
+      //   get("ReservedConcurrentExecutions"),
+      // ]),
+    }),
+    omitIfEmpty(["Policy", "Layers"]),
+    tap((params) => {
+      assert(true);
+    }),
   ]);
 
-  const lambdaAddPermission = ({ Policy, FunctionName }) =>
-    pipe([
-      () => Policy,
-      get("Statement"),
-      map(({ Principal, Sid, Condition }) =>
-        pipe([
-          () => ({
-            Action: "lambda:InvokeFunction",
-            FunctionName,
-            Principal: Principal.Service,
-            StatementId: Sid,
-          }),
-          when(
-            () => get(["ArnLike", "AWS:SourceArn"])(Condition),
-            defaultsDeep({
-              SourceArn: get(["ArnLike", "AWS:SourceArn"])(Condition),
-            })
-          ),
-          when(
-            () => get(["StringEquals", "AWS:SourceAccount"])(Condition),
-            defaultsDeep({
-              SourceAccount: get(["StringEquals", "AWS:SourceAccount"])(
-                Condition
-              ),
-            })
-          ),
-          lambda().addPermission,
-        ])()
-      ),
-    ]);
+const compareFunction = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  compareLambda({
+    filterTarget: () => (target) =>
+      pipe([
+        () => target,
+        tap((params) => {
+          assert(target);
+        }),
+        defaultsDeep({
+          Configuration: {
+            CodeSha256: pipe([
+              () => target,
+              get("Configuration.Code.ZipFile"),
+              computeHash256,
+            ])(),
+          },
+        }),
+      ])(),
+  }),
+  tap((diff) => {
+    assert(true);
+  }),
+]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property
-  const create = client.create({
+exports.LambdaFunction = () => ({
+  type: "Function",
+  package: "lambda",
+  client: "Lambda",
+  inferName: () => get("Configuration.FunctionName"),
+  findName,
+  findId,
+  displayResource: () => pipe([omit(["Configuration.Code.ZipFile"])]),
+  ignoreResource: () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      get("name"),
+      includes("AWSCDK"),
+    ]),
+  compare: compareFunction,
+  managedByOther,
+  omitProperties: [
+    "Code",
+    "Configuration.Code",
+    "Configuration.CodeSize",
+    "Configuration.FunctionArn",
+    "Configuration.LastModified",
+    "Configuration.LastUpdateStatus",
+    "Configuration.LastUpdateStatusReason",
+    "Configuration.LastUpdateStatusReasonCode",
+    "Configuration.MasterArn",
+    "Configuration.RevisionId",
+    "Configuration.Role",
+    "Configuration.SigningJobArn",
+    "Configuration.State",
+    "Configuration.StateReason",
+    "Configuration.StateReasonCode",
+    "Configuration.Version",
+    "Configuration.VpcConfig",
+    "Configuration.SigningProfileVersionArn",
+    "Configuration.SigningJobArn",
+    "Configuration.RuntimeVersionConfig",
+    "Policy",
+    "FunctionUrlConfig.CreationTime",
+    "FunctionUrlConfig.LastModifiedTime",
+    "FunctionUrlConfig.FunctionArn",
+    "FunctionUrlConfig.FunctionUrl",
+    "FunctionUrlConfig.DomainName",
+  ],
+  propertiesDefault: {
+    Publish: true,
+    Configuration: {
+      Architectures: ["x86_64"],
+      Description: "",
+      MemorySize: 128,
+      Timeout: 3,
+      PackageType: "Zip",
+      TracingConfig: { Mode: "PassThrough" },
+      EphemeralStorage: { Size: 512 },
+      SnapStart: {
+        ApplyOn: "None",
+        OptimizationStatus: "Off",
+      },
+    },
+  },
+  filterLive:
+    ({ resource, programOptions, lives, providerConfig }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(resource.name);
+          assert(live.Code.Data);
+        }),
+        () => live,
+        when(
+          get("EventInvokeConfig"),
+          assign({
+            EventInvokeConfig: pipe([
+              get("EventInvokeConfig"),
+              assign({
+                DestinationConfig: pipe([
+                  get("DestinationConfig"),
+                  when(
+                    get("OnSuccess"),
+                    assign({
+                      OnSuccess: pipe([
+                        get("OnSuccess"),
+                        assign({
+                          Destination: pipe([
+                            get("Destination"),
+                            replaceAccountAndRegion({
+                              lives,
+                              providerConfig,
+                            }),
+                          ]),
+                        }),
+                      ]),
+                    })
+                  ),
+                  when(
+                    get("OnFailure"),
+                    assign({
+                      OnFailure: pipe([
+                        get("OnFailure"),
+                        assign({
+                          Destination: pipe([
+                            get("Destination"),
+                            replaceAccountAndRegion({
+                              lives,
+                              providerConfig,
+                            }),
+                          ]),
+                        }),
+                      ]),
+                    })
+                  ),
+                ]),
+              }),
+            ]),
+          })
+        ),
+        assign({
+          Configuration: pipe([
+            get("Configuration"),
+            omit(["CodeSha256"]),
+            unless(
+              pipe([get("Layers"), isEmpty]),
+              assign({
+                Layers: pipe([
+                  get("Layers"),
+                  map(
+                    replaceWithName({
+                      groupType: "Lambda::Layer",
+                      path: "live.LayerVersionArn",
+                      pathLive: "live.LayerVersionArn",
+                      providerConfig,
+                      lives,
+                    })
+                  ),
+                ]),
+              })
+            ),
+            when(
+              get("FileSystemConfigs"),
+              assign({
+                FileSystemConfigs: pipe([
+                  get("FileSystemConfigs"),
+                  map(
+                    assign({
+                      Arn: pipe([
+                        get("Arn"),
+                        replaceWithName({
+                          groupType: "EFS::AccessPoint",
+                          path: "id",
+                          providerConfig,
+                          lives,
+                        }),
+                      ]),
+                    })
+                  ),
+                ]),
+              })
+            ),
+            when(
+              get("Environment"),
+              assign({
+                Environment: pipe([
+                  get("Environment"),
+                  assign({
+                    Variables: pipe([
+                      get("Variables"),
+                      map(replaceEnv({ lives, providerConfig })),
+                    ]),
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        }),
+        omitIfEmpty(["FunctionUrlConfig"]),
+        tap(
+          pipe([
+            () => new AdmZip(Buffer.from(live.Code.Data, "base64")),
+            (zip) =>
+              zip.extractAllTo(
+                path.resolve(programOptions.workingDirectory, resource.name),
+                true
+              ),
+          ])
+        ),
+      ])(),
+  // TODO SigningJobArn
+  dependencies: {
+    ...buildEventInvokeConfigDependencies(),
+    layers: {
+      type: "Layer",
+      group: "Lambda",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("Configuration.Layers"),
+          (layersArn) =>
+            pipe([
+              lives.getByType({
+                providerName: config.providerName,
+                type: "Layer",
+                group: "Lambda",
+              }),
+              filter(
+                pipe([
+                  get("live.LayerVersionArn"),
+                  removeVersion,
+                  (layerVersionArn) =>
+                    pipe([
+                      () => layersArn,
+                      map(removeVersion),
+                      includes(layerVersionArn),
+                    ])(),
+                ])
+              ),
+            ])(),
+          pluck("id"),
+        ]),
+    },
+    role: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: () => get("Configuration.Role"),
+    },
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      dependencyId: () => get("Configuration.KMSKeyArn"),
+    },
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: () => get("Configuration.VpcConfig.SubnetIds"),
+    },
+    securityGroups: {
+      type: "SecurityGroup",
+      group: "EC2",
+      list: true,
+      dependencyIds: () => get("Configuration.VpcConfig.SecurityGroupIds"),
+    },
+    s3Buckets: {
+      type: "Bucket",
+      group: "S3",
+      parent: true,
+      list: true,
+      ignoreOnDestroy: true,
+    },
+    efsAccessPoints: {
+      type: "AccessPoint",
+      group: "EFS",
+      list: true,
+      dependencyIds: () =>
+        pipe([get("Configuration.FileSystemConfigs"), pluck("Arn")]),
+    },
+    ...buildDependenciesFromEnv({
+      pathEnvironment: "Configuration.Environment.Variables",
+    }),
+  },
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
+  getById: {
+    method: "getFunction",
+    //getField: "MyResource",
+    pickId,
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
+  getList: {
+    method: "listFunctions",
+    getParam: "Functions",
+    decorate: ({ getById }) =>
+      pipe([
+        ({ FunctionArn }) => ({ Configuration: { FunctionArn } }),
+        getById,
+      ]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createMyResource-property
+  create: {
     method: "createFunction",
     filterPayload: ({ Configuration, Tags }) =>
       pipe([
@@ -211,116 +522,139 @@ exports.Function = ({ spec, config }) => {
         }),
         ({ FunctionArn }) => ({ Configuration: { FunctionArn } }),
       ]),
+    isInstanceUp: pipe([
+      and([
+        pipe([get("Configuration.State"), isIn(["Active"])]),
+        switchCase([
+          get("FunctionUrlConfig"),
+          get("FunctionUrlConfig.DomainName"),
+          () => true,
+        ]),
+      ]),
+    ]),
+    isInstanceError: pipe([get("Configuration.State"), isIn(["Failed"])]),
+    getErrorMessage: get("Configuration.StateReason", "failed"),
     shouldRetryOnExceptionMessages: [
       "Lambda was unable to configure access to your environment variables because the KMS key is invalid for CreateGrant.",
       "The role defined for the function cannot be assumed by Lambda",
       "EFS file system",
       "The provided execution role does not have permissions to call CreateNetworkInterface on EC2",
     ],
-    getById,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunctionUrlConfig-property
     postCreate: ({
+      endpoint,
       payload: {
         Configuration: { FunctionName },
         FunctionUrlConfig,
-        Policy,
+        EventInvokeConfig,
       },
     }) =>
       pipe([
-        //TODO
-        when(() => Policy, lambdaAddPermission({ Policy, FunctionName })),
+        tap((params) => {
+          assert(endpoint);
+          assert(FunctionName);
+        }),
         when(
           () => FunctionUrlConfig,
           pipe([
-            tap(() => {
-              assert(FunctionName);
-            }),
             () => FunctionUrlConfig,
             defaultsDeep({ FunctionName }),
-            lambda().createFunctionUrlConfig,
+            endpoint().createFunctionUrlConfig,
+          ])
+        ),
+        when(
+          () => EventInvokeConfig,
+          pipe([
+            () => EventInvokeConfig,
+            defaultsDeep({ FunctionName }),
+            endpoint().putFunctionEventInvokeConfig,
           ])
         ),
       ]),
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateFunctionConfiguration-property
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateFunctionCode-property
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update function: ${name}`);
-        assert(diff);
-      }),
-      () => ({
-        FunctionName: payload.Configuration.FunctionName,
-        ZipFile: payload.Configuration.Code.ZipFile,
-      }),
-      // updateFunctionConfiguration
-      lambda().updateFunctionCode,
-      () =>
-        retryCall({
-          name: `update function code ${name}`,
-          fn: pipe([
-            () => payload,
-            tap((params) => {
-              assert(true);
-            }),
-            get("Configuration"),
-            pick(["FunctionName"]),
-            tap((params) => {
-              assert(true);
-            }),
-            lambda().getFunction,
-            eq(get("Configuration.LastUpdateStatus"), "Successful"),
-          ]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateMyResource-property
+  update:
+    ({ endpoint }) =>
+    ({ name, payload, diff, live }) =>
+      pipe([
+        tap(() => {
+          logger.info(`update function: ${name}`);
+          assert(diff);
         }),
-      // updateFunctionConfiguration
-      when(
-        () => get("liveDiff.updated.Configuration")(diff),
-        pipe([
-          () => payload,
-          get("Configuration"),
-          lambda().updateFunctionConfiguration,
-          tap(() => {
-            logger.info(`updated function done ${name}`);
+        () => ({
+          FunctionName: payload.Configuration.FunctionName,
+          ZipFile: payload.Configuration.Code.ZipFile,
+          Publish: true,
+        }),
+        // updateFunctionConfiguration
+        endpoint().updateFunctionCode,
+        () =>
+          retryCall({
+            name: `update function code ${name}`,
+            fn: pipe([
+              () => payload,
+              tap((params) => {
+                assert(true);
+              }),
+              get("Configuration"),
+              pick(["FunctionName"]),
+              tap((params) => {
+                assert(true);
+              }),
+              endpoint().getFunction,
+              tap((params) => {
+                assert(true);
+              }),
+              eq(get("Configuration.LastUpdateStatus"), "Successful"),
+            ]),
           }),
-        ])
-      ),
-      // updateFunctionUrlConfig
-      when(
-        () => get("liveDiff.updated.FunctionUrlConfig")(diff),
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => ({
-            FunctionName: payload.Configuration.FunctionName,
-            ...payload.FunctionUrlConfig,
-          }),
-          lambda().updateFunctionUrlConfig,
-        ])
-      ),
-      // TODO
-      // when(
-      //   () =>
-      //     get("liveDiff.updated.Policy")(diff) ||
-      //     get("liveDiff.added.Policy")(diff),
-      //   pipe([
-      //     () => ({
-      //       FunctionName: payload.Configuration.FunctionName,
-      //       Policy: payload.Policy,
-      //     }),
-      //     lambdaAddPermission,
-      //   ])
-      // ),
-      tap(() => {
-        logger.info(`updated function done ${name}`);
-      }),
-    ])();
-
+        // updateFunctionConfiguration
+        when(
+          () => get("liveDiff.updated.Configuration")(diff),
+          pipe([
+            () => payload,
+            get("Configuration"),
+            endpoint().updateFunctionConfiguration,
+            tap(() => {
+              logger.info(`updated function done ${name}`);
+            }),
+          ])
+        ),
+        // putFunctionEventInvokeConfig
+        when(
+          () => get("liveDiff.updated.EventInvokeConfig")(diff),
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => ({
+              FunctionName: payload.Configuration.FunctionName,
+              ...payload.EventInvokeConfig,
+            }),
+            endpoint().putFunctionEventInvokeConfig,
+          ])
+        ),
+        // updateFunctionUrlConfig
+        when(
+          () => get("liveDiff.updated.FunctionUrlConfig")(diff),
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => ({
+              FunctionName: payload.Configuration.FunctionName,
+              ...payload.FunctionUrlConfig,
+            }),
+            endpoint().updateFunctionUrlConfig,
+          ])
+        ),
+        tap(() => {
+          logger.info(`updated function done ${name}`);
+        }),
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
-  const destroy = client.destroy({
-    preDestroy: () =>
+  destroy: {
+    preDestroy: ({ endpoint }) =>
       tap(
         pipe([
           when(
@@ -328,29 +662,39 @@ exports.Function = ({ spec, config }) => {
             pipe([
               get("Configuration"),
               pick(["FunctionName"]),
-              lambda().deleteFunctionUrlConfig,
+              endpoint().deleteFunctionUrlConfig,
             ])
           ),
         ])
       ),
     pickId,
     method: "deleteFunction",
-    getById,
-    ignoreErrorCodes: ["ResourceNotFoundException"],
-  });
-
-  const configDefault = ({
+    shouldRetryOnExceptionMessages: [
+      "Please see our documentation for Deleting Lambda@Edge Functions and Replicas",
+    ],
+    configIsDown: { retryCount: 40 * 12, retryDelay: 5e3 },
+  },
+  getByName: ({ getById }) =>
+    pipe([
+      ({ name }) => ({ Configuration: { FunctionArn: name } }),
+      getById({}),
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { role, layers = [], kmsKey, subnets, securityGroups },
+    dependencies: { role, kmsKey, subnets, securityGroups },
     programOptions,
+    config,
   }) =>
     pipe([
       tap(() => {
         assert(programOptions);
         assert(role, "missing role dependencies");
-        assert(Array.isArray(layers), "layers must be an array");
       }),
       () => ({
         localPath: path.resolve(programOptions.workingDirectory, name),
@@ -369,10 +713,6 @@ exports.Function = ({ spec, config }) => {
             Configuration: {
               FunctionName: name,
               Role: getField(role, "Arn"),
-              Layers: pipe([
-                () => layers,
-                map((layer) => getField(layer, "LayerVersionArn")),
-              ])(),
               Code: { ZipFile },
             },
           }),
@@ -407,62 +747,18 @@ exports.Function = ({ spec, config }) => {
             })
           ),
         ])(),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    update,
-    destroy,
-    getByName,
-    getById,
-    getList,
-    configDefault,
-    managedByOther,
-    tagResource: tagResource({ lambda }),
-    untagResource: untagResource({ lambda }),
-  };
-};
+    ])(),
+});
 
 const filterFunctionUrlConfig = pipe([
   get("FunctionUrlConfig"),
-  omit(["CreationTime", "LastModifiedTime", "FunctionArn", "FunctionUrl"]),
+  omit([
+    "CreationTime",
+    "LastModifiedTime",
+    "FunctionArn",
+    "FunctionUrl",
+    "DomainName",
+  ]),
 ]);
 
 exports.filterFunctionUrlConfig = filterFunctionUrlConfig;
-
-exports.compareFunction = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  compareLambda({
-    filterTarget: () => (target) =>
-      pipe([
-        () => target,
-        tap((params) => {
-          assert(target);
-        }),
-        defaultsDeep({
-          Configuration: {
-            CodeSha256: pipe([
-              () => target,
-              get("Configuration.Code.ZipFile"),
-              computeHash256,
-            ])(),
-          },
-        }),
-      ])(),
-    filterLive: () =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        assign({ FunctionUrlConfig: filterFunctionUrlConfig }),
-      ]),
-  }),
-  tap((diff) => {
-    //logger.debug(`compareFunction ${tos(diff)}`);
-  }),
-]);

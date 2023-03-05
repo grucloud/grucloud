@@ -12,4 +12,16 @@ describe("Rekognition", async function () {
       }),
       awsResourceTest,
     ])());
+  it("StreamProcessor", () =>
+    pipe([
+      () => ({
+        groupType: "Rekognition::StreamProcessor",
+        livesNotFound: ({ config }) => [
+          {
+            Name: "s123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });

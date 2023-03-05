@@ -10,12 +10,13 @@ const {
   map,
   omit,
   or,
+  not,
 } = require("rubico");
-const { defaultsDeep, when, size, pluck, includes } = require("rubico/x");
+const { defaultsDeep, when, size, pluck, isObject } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { replaceWithName } = require("@grucloud/core/Common");
 
-const { buildTags, isAwsError, findNameInTagsOrId } = require("../AwsCommon");
+const { buildTags, isAwsError } = require("../AwsCommon");
 const { Tagger } = require("./SecretsManagerCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const ignoreErrorMessages = [
@@ -71,6 +72,18 @@ const decorate =
       }),
     ])();
 
+const assignGeneratePassword = (path) =>
+  pipe([
+    when(
+      get(path),
+      assign({
+        [path]: pipe([
+          get(path),
+          (password) => () => `generatePassword({length:${size(password)}})`,
+        ]),
+      })
+    ),
+  ]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecretsManager.html
 exports.SecretsManagerSecret = ({ compare }) => ({
   type: "Secret",
@@ -118,8 +131,8 @@ exports.SecretsManagerSecret = ({ compare }) => ({
     "NextRotationDate",
     "DeletedDate",
     "SecretVersionsToStages",
-    "SecretString.DBClusterIdentifier",
-    "SecretString.host",
+    // "SecretString.DBClusterIdentifier",
+    // "SecretString.host",
     "RotationEnabled",
     "RotationLambdaARN",
     "RotationRules",
@@ -131,8 +144,19 @@ exports.SecretsManagerSecret = ({ compare }) => ({
   compare: compare({
     filterAll: () => pipe([omit(["SecretString", "SecretBinary"])]),
   }),
+  environmentVariables: [
+    {
+      path: "SecretString",
+      suffix: "SECRET_STRING",
+      rejectEnvironmentVariable: () => pipe([get("SecretString"), isObject]),
+    },
+  ],
   filterLive: ({ lives, providerConfig }) =>
     pipe([
+      when(
+        pipe([get("SecretString"), isObject]),
+        omit(["SecretString.DBClusterIdentifier", "SecretString.host"])
+      ),
       when(
         get("AddReplicaRegions"),
         assign({
@@ -160,16 +184,8 @@ exports.SecretsManagerSecret = ({ compare }) => ({
       assign({
         SecretString: pipe([
           get("SecretString"),
-          when(
-            get("password"),
-            assign({
-              password: pipe([
-                get("password"),
-                (password) => () =>
-                  `generatePassword({length:${size(password)}})`,
-              ]),
-            })
-          ),
+          assignGeneratePassword("SecretString"),
+          assignGeneratePassword("password"),
         ]),
       }),
     ]),

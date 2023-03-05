@@ -187,7 +187,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      cognitoIdentityPool: "my-identity-pool",
+      cognitoIdentityPools: ["my-identity-pool"],
     }),
   },
   {
@@ -237,7 +237,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      cognitoIdentityPool: "my-identity-pool",
+      cognitoIdentityPools: ["my-identity-pool"],
     }),
   },
 ];

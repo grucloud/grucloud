@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project eventbridge-schedule-remove-one-time-schedules
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (3)
++++ Lambda
+++++ EventSourceMapping (1)
+++++ Function (2)
++++ SQS
+++++ Queue (2)
+++++ QueueRedrivePolicy (1)
+@endmindmap

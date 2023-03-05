@@ -12,6 +12,7 @@ skinparam monochrome true
 ++++ Role (2)
 +++ Lambda
 ++++ Function (1)
+++++ Permission (1)
 +++ StepFunctions
 ++++ StateMachine (1)
 @endmindmap

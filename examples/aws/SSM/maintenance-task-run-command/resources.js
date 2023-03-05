@@ -165,6 +165,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-maintenance-window-run-command",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   { type: "Topic", group: "SNS", name: "Default_CloudWatch_Alarms_Topic" },

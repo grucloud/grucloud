@@ -11,11 +11,13 @@ const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
 const { MediaPackageChannel } = require("./MediaPackageChannel");
+const { MediaPackageOriginEndpoint } = require("./MediaPackageOriginEndpoint");
 
 module.exports = pipe([
   () => [
     //
     MediaPackageChannel({}),
+    MediaPackageOriginEndpoint({}),
   ],
   map(
     pipe([

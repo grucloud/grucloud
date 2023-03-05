@@ -1,0 +1,21 @@
+@startmindmap
+title Resources for project fifo-sns-sqs-lambda-firehose-s3
+skinparam monochrome true
++ Infra
+++ aws
++++ Firehose
+++++ DeliveryStream (1)
++++ IAM
+++++ Role (2)
+++++ Policy (2)
++++ Lambda
+++++ EventSourceMapping (1)
+++++ Function (1)
++++ S3
+++++ Bucket (1)
++++ SNS
+++++ Topic (1)
+++++ Subscription (1)
++++ SQS
+++++ Queue (1)
+@endmindmap

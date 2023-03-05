@@ -14,12 +14,9 @@ const {
 const { defaultsDeep, last, callProp, when } = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { findInStatement } = require("../IAM/AwsIamCommon");
-
-const {
-  throwIfNotAwsError,
-  assignPolicyAccountAndRegion,
-} = require("../AwsCommon");
+const { findInStatement, sortStatements } = require("../IAM/AwsIamCommon");
+const { throwIfNotAwsError } = require("../AwsCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
 const { Tagger, ignoreErrorCodes } = require("./SQSCommon");
 
@@ -74,7 +71,7 @@ const decorate = ({ endpoint, live }) =>
         when(
           get("Policy"),
           assign({
-            Policy: pipe([get("Policy"), JSON.parse]),
+            Policy: pipe([get("Policy"), JSON.parse, sortStatements]),
           })
         ),
       ]),

@@ -10,6 +10,7 @@ const {
   Tagger,
   ignoreErrorCodes,
   dependencyIdApi,
+  managedByOther,
 } = require("./ApiGatewayV2Common");
 
 const buildArn = ({ config }) =>
@@ -36,7 +37,7 @@ const findName =
         providerName: config.providerName,
       }),
       find(eq(get("live.ApiId"), live.ApiId)),
-      get("name"),
+      get("name", live.ApiId),
       tap((name) => {
         assert(name);
       }),
@@ -76,6 +77,8 @@ exports.ApiGatewayV2Stage = () => ({
   findName,
   findId: buildArn,
   ignoreErrorCodes,
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   propertiesDefault: {
     RouteSettings: {},
     DefaultRouteSettings: {
@@ -90,6 +93,7 @@ exports.ApiGatewayV2Stage = () => ({
     "AccessLogSettings.DestinationArn",
     "LastDeploymentStatusMessage",
     "ApiId",
+    "ApiGatewayManaged",
   ],
   filterLive: () => pipe([omitIfEmpty(["StageVariables"])]),
   dependencies: {

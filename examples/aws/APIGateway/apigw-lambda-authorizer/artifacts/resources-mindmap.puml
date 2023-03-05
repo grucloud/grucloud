@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project apigw-lambda-authorizer
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Authorizer (1)
+++++ RestApi (1)
+++++ Stage (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (2)
+++++ Permission (2)
+@endmindmap

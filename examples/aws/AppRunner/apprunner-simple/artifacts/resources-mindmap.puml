@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project apprunner-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ AppRunner
+++++ Service (1)
++++ ECR
+++++ Repository (1)
++++ IAM
+++++ Role (1)
+@endmindmap

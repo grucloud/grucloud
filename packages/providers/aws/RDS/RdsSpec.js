@@ -16,6 +16,7 @@ const { RDSDBProxyTargetGroup } = require("./RDSDBProxyTargetGroup");
 const { RDSDBSnapshot } = require("./RDSDBSnapshot");
 const { RDSEventSubscription } = require("./RDSEventSubscription");
 const { RDSGlobalCluster } = require("./RDSGlobalCluster");
+const { RDSOptionGroup } = require("./RDSOptionGroup");
 
 const GROUP = "RDS";
 const compareRDS = compareAws({});
@@ -34,6 +35,7 @@ module.exports = pipe([
     RDSDBSubnetGroup({ compare: compareRDS }),
     RDSEventSubscription({ compare: compareRDS }),
     RDSGlobalCluster({}),
+    RDSOptionGroup({}),
   ],
   map(
     pipe([

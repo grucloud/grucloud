@@ -92,6 +92,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Listener",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      Port: 80,
+      Protocol: "HTTP",
+    }),
+    dependencies: ({}) => ({
+      loadBalancer: "alb",
+      targetGroup: "tg1",
+    }),
+  },
+  {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
@@ -116,22 +128,11 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({
       vpc: "wafv2-vpc",
-    }),
-  },
-  {
-    type: "Listener",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Port: 80,
-      Protocol: "HTTP",
-    }),
-    dependencies: ({}) => ({
-      loadBalancer: "alb",
-      targetGroup: "tg1",
     }),
   },
   {

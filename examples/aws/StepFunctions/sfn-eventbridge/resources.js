@@ -23,7 +23,6 @@ exports.createResources = () => [
         ],
       },
       Name: "sam-app-EventBusLogRule-O6HEQDLDXZKV",
-      State: "ENABLED",
     }),
     dependencies: ({}) => ({
       eventBus: "sam-app-EventBus",
@@ -221,9 +220,6 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: ({}) => ({
-      table: "sam-app-SamStepFunctionsTable-1O67WMRRPTIDD",
-    }),
   },
   {
     type: "Role",
@@ -318,9 +314,6 @@ exports.createResources = () => [
           PolicyName: "SamStepFunctionStateMachineRolePolicy1",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      table: "sam-app-SamStepFunctionsTable-1O67WMRRPTIDD",
     }),
   },
   {

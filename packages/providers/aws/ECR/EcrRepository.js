@@ -133,6 +133,7 @@ exports.EcrRepository = ({ spec, config }) => {
     namespace,
     properties,
     dependencies: { kmsKey },
+    config,
   }) =>
     pipe([
       () => properties,

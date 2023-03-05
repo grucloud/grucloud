@@ -20,7 +20,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
-      firehoseDeliveryStream: "delivery-stream-s3",
+      firehoseDeliveryStream: "flowlogs-delivery-stream-s3",
     }),
   },
   {
@@ -65,10 +65,10 @@ exports.createResources = () => [
     type: "DeliveryStream",
     group: "Firehose",
     properties: ({ config, getId }) => ({
-      DeliveryStreamName: "delivery-stream-s3",
+      DeliveryStreamName: "flowlogs-delivery-stream-s3",
       DeliveryStreamType: "DirectPut",
       ExtendedS3DestinationConfiguration: {
-        BucketARN: "arn:aws:s3:::gc-firehose-destination",
+        BucketARN: "arn:aws:s3:::gc-flowlogs-firehose-destination",
         BufferingHints: {
           IntervalInSeconds: 300,
           SizeInMBs: 5,
@@ -87,10 +87,6 @@ exports.createResources = () => [
         },
         ErrorOutputPrefix: "",
         Prefix: "",
-        ProcessingConfiguration: {
-          Enabled: false,
-          Processors: [],
-        },
         RoleARN: `${getId({
           type: "Role",
           group: "IAM",
@@ -106,6 +102,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({ config }) => ({
+      s3BucketDestination: "gc-flowlogs-firehose-destination",
       roles: [
         `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
       ],
@@ -174,8 +171,8 @@ exports.createResources = () => [
               "s3:PutObject",
             ],
             Resource: [
-              "arn:aws:s3:::gc-firehose-destination",
-              "arn:aws:s3:::gc-firehose-destination/*",
+              "arn:aws:s3:::gc-flowlogs-firehose-destination",
+              "arn:aws:s3:::gc-flowlogs-firehose-destination/*",
             ],
           },
           {
@@ -263,14 +260,16 @@ exports.createResources = () => [
     type: "Bucket",
     group: "S3",
     properties: ({}) => ({
-      Name: "gc-firehose-destination",
-    }),
-  },
-  {
-    type: "Bucket",
-    group: "S3",
-    properties: ({}) => ({
-      Name: "gc-firehose-error",
+      Name: "gc-flowlogs-firehose-destination",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
 ];

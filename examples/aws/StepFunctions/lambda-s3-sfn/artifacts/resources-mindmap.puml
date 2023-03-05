@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project lambda-s3-sfn
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (4)
++++ Lambda
+++++ Function (3)
++++ S3
+++++ Bucket (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

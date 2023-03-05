@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project SQS Queue
+title Resources for project sqs-simple
 skinparam monochrome true
 + Infra
 ++ aws

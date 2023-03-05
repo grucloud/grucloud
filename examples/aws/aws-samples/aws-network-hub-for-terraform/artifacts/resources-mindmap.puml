@@ -39,9 +39,9 @@ skinparam monochrome true
 ++++ Key (1)
 +++ NetworkFirewall
 ++++ Firewall (1)
+++++ LoggingConfiguration (1)
 ++++ Policy (1)
 ++++ RuleGroup (1)
-++++ LoggingConfiguration (1)
 +++ Organisations
 ++++ Organisation (1)
 +++ RAM

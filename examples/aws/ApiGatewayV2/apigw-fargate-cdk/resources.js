@@ -34,7 +34,6 @@ exports.createResources = () => [
       IntegrationMethod: "GET",
       IntegrationType: "HTTP_PROXY",
       PayloadFormatVersion: "1.0",
-      RequestTemplates: {},
     }),
     dependencies: ({}) => ({
       api: "ApigwFargate",

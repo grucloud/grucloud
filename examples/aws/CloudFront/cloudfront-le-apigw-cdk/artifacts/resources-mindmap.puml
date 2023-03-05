@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project cloudfront-le-apigw-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ ApiGatewayV2
+++++ Api (1)
+++++ Deployment (1)
+++++ Integration (1)
+++++ Route (1)
+++++ Stage (1)
++++ CloudFront
+++++ Distribution (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (2)
+++++ Permission (1)
+@endmindmap

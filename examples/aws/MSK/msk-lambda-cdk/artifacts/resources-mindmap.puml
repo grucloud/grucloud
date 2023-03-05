@@ -1,0 +1,25 @@
+@startmindmap
+title Resources for project msk-lambda-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NatGateway (2)
+++++ Subnet (4)
+++++ RouteTable (4)
+++++ RouteTableAssociation (4)
+++++ Route (4)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (1)
+++++ ElasticIpAddress (2)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ EventSourceMapping (1)
+++++ Function (1)
++++ MSK
+++++ ClusterV2 (1)
+@endmindmap

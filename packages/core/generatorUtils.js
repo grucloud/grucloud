@@ -411,11 +411,23 @@ const printPropertiesDo = (value) =>
       ]),
       isObject,
       pipe([
-        map.entries(([key, value]) => [
-          key,
-          `"${key}": ${printPropertiesDo(value)},`,
-        ]),
-        values,
+        tap((params) => {
+          assert(true);
+        }),
+        Object.entries,
+        map(([key, value]) =>
+          pipe([
+            () => key,
+            switchCase([
+              callProp("startsWith", "`"),
+              () => `[${key}]`,
+              `"${key}"`,
+            ]),
+            append(": "),
+            append(`${printPropertiesDo(value)}`),
+            append(","),
+          ])()
+        ),
         callProp("join", "\n"),
         (result) => `{\n${result}}`,
       ]),

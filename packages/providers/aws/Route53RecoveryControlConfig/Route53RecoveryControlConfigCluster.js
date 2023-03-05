@@ -28,8 +28,6 @@ const decorate = ({ endpoint }) =>
     ({ Name, ...other }) => ({ ClusterName: Name, ...other }),
   ]);
 
-const model = ({ config }) => ({});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html
 exports.Route53RecoveryControlConfigCluster = ({ spec, config }) => ({
   type: "Cluster",

@@ -140,23 +140,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "DBSubnetGroup",
-    group: "RDS",
-    properties: ({}) => ({
-      DBSubnetGroupName: "subnet-group-postgres",
-      DBSubnetGroupDescription: "db subnet group",
-      Tags: [
-        {
-          Key: "mykey2",
-          Value: "myvalue",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      subnets: ["vpc-postgres::subnet-1", "vpc-postgres::subnet-2"],
-    }),
-  },
-  {
     type: "DBInstance",
     group: "RDS",
     properties: ({}) => ({
@@ -183,6 +166,23 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       dbSubnetGroup: "subnet-group-postgres",
       securityGroups: ["sg::vpc-postgres::security-group"],
+    }),
+  },
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
+    properties: ({}) => ({
+      DBSubnetGroupName: "subnet-group-postgres",
+      DBSubnetGroupDescription: "db subnet group",
+      Tags: [
+        {
+          Key: "mykey2",
+          Value: "myvalue",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      subnets: ["vpc-postgres::subnet-1", "vpc-postgres::subnet-2"],
     }),
   },
 ];

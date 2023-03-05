@@ -1,0 +1,56 @@
+@startmindmap
+title Resources for project eks-workshop
+skinparam monochrome true
++ Infra
+++ aws
++++ Aps
+++++ Workspace (1)
++++ Cloud9
+++++ Environment (1)
++++ CloudWatchEvents
+++++ Rule (4)
+++++ Target (4)
++++ CloudWatchLogs
+++++ LogGroup (2)
++++ DynamoDB
+++++ Table (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NatGateway (1)
+++++ Subnet (6)
+++++ RouteTable (2)
+++++ RouteTableAssociation (6)
+++++ Route (2)
+++++ SecurityGroup (7)
+++++ SecurityGroupRuleIngress (16)
+++++ SecurityGroupRuleEgress (7)
+++++ ElasticIpAddress (1)
+++++ VpcIpv4CidrBlockAssociation (1)
++++ EFS
+++++ FileSystem (1)
+++++ MountTarget (3)
++++ EKS
+++++ Addon (2)
+++++ Cluster (1)
+++++ FargateProfile (1)
+++++ NodeGroup (3)
++++ IAM
+++++ OpenIDConnectProvider (1)
+++++ Role (22)
+++++ Policy (17)
+++++ User (1)
++++ KMS
+++++ Key (3)
++++ Lambda
+++++ Function (1)
++++ RDS
+++++ DBInstance (1)
+++++ DBSubnetGroup (1)
++++ SQS
+++++ Queue (1)
++++ SSM
+++++ Document (1)
+++++ Parameter (1)
+@endmindmap

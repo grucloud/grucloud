@@ -4,11 +4,13 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Lambda", async function () {
-  it.skip("Alias", () =>
+  it("Alias", () =>
     pipe([
       () => ({
         groupType: "Lambda::Alias",
-        livesNotFound: ({ config }) => [{ FunctionName: "a12345", Name: "" }],
+        livesNotFound: ({ config }) => [
+          { FunctionName: "a12345", Name: "n123" },
+        ],
       }),
       awsResourceTest,
     ])());

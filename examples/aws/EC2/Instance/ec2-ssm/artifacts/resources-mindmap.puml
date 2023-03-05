@@ -13,6 +13,6 @@ skinparam monochrome true
 ++++ Instance (1)
 ++++ VpcEndpoint (3)
 +++ IAM
-++++ Role (1)
 ++++ InstanceProfile (1)
+++++ Role (1)
 @endmindmap

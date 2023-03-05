@@ -7,15 +7,15 @@ exports.createResources = () => [
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
-      name: "NotesDataSource",
       description: "The Notes Table AppSync Data Source",
-      type: "AMAZON_DYNAMODB",
       dynamodbConfig: {
         awsRegion: `${config.region}`,
         tableName: "sam-app-DynamoDBNotesTable-8JRUXR2K56WX",
         useCallerCredentials: false,
         versioned: false,
       },
+      name: "NotesDataSource",
+      type: "AMAZON_DYNAMODB",
     }),
     dependencies: ({}) => ({
       graphqlApi: "NotesApi",
@@ -198,9 +198,6 @@ exports.createResources = () => [
           PolicyName: "DDBAccess",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      table: "sam-app-DynamoDBNotesTable-8JRUXR2K56WX",
     }),
   },
 ];

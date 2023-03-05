@@ -175,6 +175,10 @@ const pickId = pipe([
 
 const managedByOther = ({ lives, config }) =>
   or([
+    // TODO refactor
+    hasKeyInTags({
+      key: "aws:cloud9:environment",
+    }),
     hasKeyInTags({
       key: "eks:cluster-name",
     }),

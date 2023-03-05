@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project apigw-rest-apigw-rest
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ ApiKey (1)
+++++ RestApi (3)
+++++ Stage (6)
+++++ UsagePlan (1)
+++++ UsagePlanKey (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (2)
+++++ Permission (2)
+@endmindmap

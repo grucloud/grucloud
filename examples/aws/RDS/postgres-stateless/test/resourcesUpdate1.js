@@ -6,7 +6,7 @@ exports.createResources = () => [
       DatabaseName: "dev",
       DBClusterIdentifier: "cluster-postgres-stateless",
       Engine: "aurora-postgresql",
-      EngineVersion: "10.18",
+      EngineVersion: "10.21",
       EngineMode: "serverless",
       Port: 5432,
       PreferredBackupWindow: "01:39-02:09",

@@ -10,7 +10,6 @@ exports.createResources = () => [
       Description: "Sample Event for Glue terraform example",
       Name: "stf_trigger_rule",
       ScheduleExpression: "rate(10 minutes)",
-      State: "ENABLED",
     }),
   },
   {
@@ -195,6 +194,15 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: `sample-bucket-glue-scripts-terraform-${config.accountId()}`,
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
     }),
   },
   {

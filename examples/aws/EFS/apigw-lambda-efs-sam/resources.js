@@ -37,20 +37,19 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "sam-app",
-      lambdaFunction: "sam-app-HelloEfsFunction-UmbGAb1UVtxg",
+      lambdaFunction: "sam-app-HelloEfsFunction-gxX5FJyW51jA",
     }),
   },
   {
     type: "Route",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      RequestParameters: {},
       RouteKey: "$default",
     }),
     dependencies: ({}) => ({
       api: "sam-app",
       integration:
-        "integration::sam-app::sam-app-HelloEfsFunction-UmbGAb1UVtxg",
+        "integration::sam-app::sam-app-HelloEfsFunction-gxX5FJyW51jA",
     }),
   },
   {
@@ -105,7 +104,7 @@ exports.createResources = () => [
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
-      GroupName: "sam-app-EfsLambdaSecurityGroup-1E39G8T9GYK9C",
+      GroupName: "sam-app-EfsLambdaSecurityGroup-1470HXE3IQCYM",
       Description: "EFS + Lambda on SAM Security Group",
     }),
     dependencies: ({}) => ({
@@ -127,7 +126,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1E39G8T9GYK9C",
+        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1470HXE3IQCYM",
     }),
   },
   {
@@ -145,13 +144,13 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1E39G8T9GYK9C",
+        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1470HXE3IQCYM",
     }),
   },
   {
     type: "FileSystem",
     group: "EFS",
-    name: "fs-088a52d52514435ea",
+    name: "fs-0ecf7b37ffa6a3610",
     properties: ({}) => ({
       Encrypted: false,
     }),
@@ -159,7 +158,7 @@ exports.createResources = () => [
   {
     type: "AccessPoint",
     group: "EFS",
-    name: "fsap-02d7fc476a7e960ba",
+    name: "fsap-0c808ca4e28193cea",
     properties: ({}) => ({
       PosixUser: {
         Gid: 1000,
@@ -176,7 +175,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      fileSystem: "fs-088a52d52514435ea",
+      fileSystem: "fs-0ecf7b37ffa6a3610",
     }),
   },
   {
@@ -186,10 +185,10 @@ exports.createResources = () => [
       AvailabilityZoneName: `${config.region}a`,
     }),
     dependencies: ({}) => ({
-      fileSystem: "fs-088a52d52514435ea",
+      fileSystem: "fs-0ecf7b37ffa6a3610",
       subnet: "EfsLambdaVpc::EfsLambdaSubnetA",
       securityGroups: [
-        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1E39G8T9GYK9C",
+        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1470HXE3IQCYM",
       ],
     }),
   },
@@ -200,10 +199,10 @@ exports.createResources = () => [
       AvailabilityZoneName: `${config.region}b`,
     }),
     dependencies: ({}) => ({
-      fileSystem: "fs-088a52d52514435ea",
+      fileSystem: "fs-0ecf7b37ffa6a3610",
       subnet: "EfsLambdaVpc::EfsLambdaSubnetB",
       securityGroups: [
-        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1E39G8T9GYK9C",
+        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1470HXE3IQCYM",
       ],
     }),
   },
@@ -211,7 +210,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ getId }) => ({
-      RoleName: "sam-app-HelloEfsFunctionRole-WCHGT7XY468H",
+      RoleName: "sam-app-HelloEfsFunctionRole-FWOZW59G6M1X",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -234,7 +233,7 @@ exports.createResources = () => [
                     "elasticfilesystem:AccessPointArn": `${getId({
                       type: "AccessPoint",
                       group: "EFS",
-                      name: "fsap-02d7fc476a7e960ba",
+                      name: "fsap-0c808ca4e28193cea",
                     })}`,
                   },
                 },
@@ -245,7 +244,7 @@ exports.createResources = () => [
                 Resource: `${getId({
                   type: "FileSystem",
                   group: "EFS",
-                  name: "fs-088a52d52514435ea",
+                  name: "fs-0ecf7b37ffa6a3610",
                 })}`,
                 Effect: "Allow",
               },
@@ -268,8 +267,8 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      efsFileSystems: ["fs-088a52d52514435ea"],
-      efsAccessPoints: ["fsap-02d7fc476a7e960ba"],
+      efsAccessPoints: ["fsap-0c808ca4e28193cea"],
+      efsFileSystems: ["fs-0ecf7b37ffa6a3610"],
     }),
   },
   {
@@ -282,27 +281,27 @@ exports.createResources = () => [
             Arn: `${getId({
               type: "AccessPoint",
               group: "EFS",
-              name: "fsap-02d7fc476a7e960ba",
+              name: "fsap-0c808ca4e28193cea",
             })}`,
             LocalMountPath: "/mnt/msg",
           },
         ],
-        FunctionName: "sam-app-HelloEfsFunction-UmbGAb1UVtxg",
+        FunctionName: "sam-app-HelloEfsFunction-gxX5FJyW51jA",
         Handler: "app.lambda_handler",
         Runtime: "python3.8",
         Timeout: 15,
       },
     }),
     dependencies: ({}) => ({
-      role: "sam-app-HelloEfsFunctionRole-WCHGT7XY468H",
+      role: "sam-app-HelloEfsFunctionRole-FWOZW59G6M1X",
       subnets: [
         "EfsLambdaVpc::EfsLambdaSubnetA",
         "EfsLambdaVpc::EfsLambdaSubnetB",
       ],
       securityGroups: [
-        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1E39G8T9GYK9C",
+        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-1470HXE3IQCYM",
       ],
-      efsAccessPoints: ["fsap-02d7fc476a7e960ba"],
+      efsAccessPoints: ["fsap-0c808ca4e28193cea"],
     }),
   },
   {
@@ -312,19 +311,20 @@ exports.createResources = () => [
       Permissions: [
         {
           Action: "lambda:InvokeFunction",
-          FunctionName: "sam-app-HelloEfsFunction-UmbGAb1UVtxg",
+          FunctionName: "sam-app-HelloEfsFunction-gxX5FJyW51jA",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-HelloEfsFunctionAPIPermission-YH0N0K1GR7XB",
+          StatementId: "sam-app-HelloEfsFunctionAPIPermission-1VIC94H302OT7",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "sam-app",
+            path: "live.ArnV2",
           })}/*/*`,
         },
       ],
     }),
     dependencies: ({}) => ({
-      lambdaFunction: "sam-app-HelloEfsFunction-UmbGAb1UVtxg",
+      lambdaFunction: "sam-app-HelloEfsFunction-gxX5FJyW51jA",
       apiGatewayV2Apis: ["sam-app"],
     }),
   },

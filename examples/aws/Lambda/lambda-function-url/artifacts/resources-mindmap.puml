@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project lambda-function-url
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+@endmindmap
