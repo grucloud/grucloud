@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project servicecatalog-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ ServiceCatalog
+++++ Portfolio (1)
+@endmindmap

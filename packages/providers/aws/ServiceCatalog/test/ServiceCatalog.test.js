@@ -28,11 +28,11 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Portfolio", () =>
+  it("Portfolio", () =>
     pipe([
       () => ({
-        groupType: "ServiceCatalog::Product",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "ServiceCatalog::Portfolio",
+        livesNotFound: ({ config }) => [{ Id: "p123" }],
       }),
       awsResourceTest,
     ])());
