@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, assign, omit, get, eq, or } = require("rubico");
+const { pipe, tap, assign, omit, get, eq, or, tryCatch } = require("rubico");
 const { find, when, callProp, defaultsDeep } = require("rubico/x");
 const { createTagger } = require("../AwsTagger");
 
@@ -64,6 +64,21 @@ exports.Tagger = createTagger({
   TagsKey: "Tags",
   UnTagsKey: "TagKeys",
 });
+
+exports.assignTags = ({ buildArn, endpoint }) =>
+  pipe([
+    assign({
+      Tags: tryCatch(
+        pipe([
+          buildArn,
+          (ResourceName) => ({ ResourceName }),
+          endpoint().listTagsForResource,
+          get("TagList"),
+        ]),
+        (error) => []
+      ),
+    }),
+  ]);
 
 exports.renameTagList = pipe([
   assign({ Tags: get("TagList") }),

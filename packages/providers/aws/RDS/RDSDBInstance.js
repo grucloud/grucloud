@@ -13,7 +13,7 @@ const {
 } = require("rubico");
 const { defaultsDeep, when, pluck, first } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTags, createEndpoint } = require("../AwsCommon");
 
 const {
@@ -90,6 +90,16 @@ const assignDBParameterGroupName = assign({
     get("DBParameterGroupName"),
   ]),
 });
+const assignOptionGroup = pipe([
+  assign({
+    OptionGroupName: pipe([
+      get("OptionGroupMemberships"),
+      first,
+      get("OptionGroupName"),
+    ]),
+  }),
+  omitIfEmpty(["OptionGroupName"]),
+]);
 
 const decorate = ({ endpoint }) =>
   pipe([
@@ -100,6 +110,7 @@ const decorate = ({ endpoint }) =>
     assignManageMasterUserPassword,
     assignDBParameterGroupName,
     omitDBClusterParameterGroupDefault,
+    assignOptionGroup,
   ]);
 
 exports.RDSDBInstance = ({ compare }) => ({
@@ -140,6 +151,11 @@ exports.RDSDBInstance = ({ compare }) => ({
           }),
           get("id"),
         ]),
+    },
+    optionGroup: {
+      type: "OptionGroup",
+      group: "RDS",
+      dependencyId: ({ lives, config }) => pipe([get("OptionGroupName")]),
     },
     securityGroups: {
       type: "SecurityGroup",
