@@ -6,7 +6,7 @@ const { awsResourceTest } = require("../../AwsResourceTester");
 const config = () => ({ includeGroups: ["MediaConvert"] });
 
 describe("MediaConvert", async function () {
-  it.skip("Queue", () =>
+  it("Queue", () =>
     pipe([
       () => ({
         config,

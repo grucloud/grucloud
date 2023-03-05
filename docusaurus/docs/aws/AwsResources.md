@@ -188,6 +188,8 @@ List of resources for provider aws:
 [Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md), [EndpointAccess](./resources/Redshift/EndpointAccess.md), [EndpointAuthorization](./resources/Redshift/EndpointAuthorization.md), [UsageLimit](./resources/Redshift/UsageLimit.md)
 * Rekognition: 
 [StreamProcessor](./resources/Rekognition/StreamProcessor.md)
+* ResourceExplorer2: 
+[Index](./resources/ResourceExplorer2/Index.md), [View](./resources/ResourceExplorer2/View.md)
 * ResourceGroups: 
 [Group](./resources/ResourceGroups/Group.md)
 * Route53: 
