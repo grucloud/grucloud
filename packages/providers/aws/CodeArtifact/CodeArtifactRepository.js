@@ -1,14 +1,15 @@
 const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, pluck, first } = require("rubico/x");
 
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./CodeArtifactCommon");
+const { Tagger, assignTags } = require("./CodeArtifactCommon");
 
-const toDomain = ({ domainName, ...other }) => ({
+const toDomain = ({ domainName, name, ...other }) => ({
   domain: domainName,
+  repository: name,
   ...other,
 });
 
@@ -34,7 +35,35 @@ const decorate = ({ endpoint, config }) =>
       assert(endpoint);
     }),
     toDomain,
+    omitIfEmpty(["externalConnections", "upstreams"]),
+    assignTags({ buildArn: buildArn({ config }), endpoint }),
   ]);
+
+const associateExternalConnection =
+  ({ endpoint, live }) =>
+  ({ externalConnections, domain, repository, domainOwner }) =>
+    pipe([
+      tap((params) => {
+        assert(endpoint);
+        assert(domain);
+        assert(repository);
+      }),
+      () => externalConnections,
+      first,
+      ({ externalConnectionName }) => ({
+        externalConnection: externalConnectionName,
+        domain,
+        repository,
+        domainOwner,
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+      endpoint().associateExternalConnection,
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeArtifact.html
 exports.CodeArtifactRepository = () => ({
@@ -46,6 +75,7 @@ exports.CodeArtifactRepository = () => ({
     "domainOwner",
     "administratorAccount",
     "arn",
+    "externalConnections[].packageFormat",
     "externalConnections[].status",
   ],
   inferName: () =>
@@ -64,7 +94,7 @@ exports.CodeArtifactRepository = () => ({
     ]),
   findId: () =>
     pipe([
-      get("arn"),
+      get("repository"),
       tap((id) => {
         assert(id);
       }),
@@ -74,7 +104,20 @@ exports.CodeArtifactRepository = () => ({
     domain: {
       type: "Domain",
       group: "CodeArtifact",
-      dependencyId: ({ lives, config }) => get("domainName"),
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("domain"),
+          tap((domain) => {
+            assert(domain);
+          }),
+        ]),
+    },
+    upsteamRepositories: {
+      type: "Repository",
+      group: "CodeArtifact",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("upstreams"), pluck("repositoryName")]),
     },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeArtifact.html#describeRepository-property
@@ -94,6 +137,16 @@ exports.CodeArtifactRepository = () => ({
   create: {
     method: "createRepository",
     pickCreated: ({ payload }) => pipe([get("repository"), toDomain]),
+    postCreate:
+      ({ endpoint, payload, created }) =>
+      (live) =>
+        pipe([
+          () => payload,
+          tap.if(
+            get("externalConnections"),
+            pipe([associateExternalConnection({ endpoint, live })])
+          ),
+        ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeArtifact.html#updateRepository-property
   update: {

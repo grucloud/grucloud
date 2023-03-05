@@ -35,12 +35,12 @@ exports.untagResource =
 exports.assignTags = ({ buildArn, endpoint }) =>
   pipe([
     assign({
-      Tags: tryCatch(
+      tags: tryCatch(
         pipe([
           buildArn,
           (ResourceArn) => ({ ResourceArn }),
           endpoint().listTagsForResource,
-          get("Tags"),
+          get("tags"),
         ]),
         (error) => []
       ),

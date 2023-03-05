@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("CodeArtifact", async function () {
+describe.only("CodeArtifact", async function () {
   it("Domain", () =>
     pipe([
       () => ({

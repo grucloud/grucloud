@@ -6,7 +6,12 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./CodeArtifactCommon");
+const { Tagger, assignTags } = require("./CodeArtifactCommon");
+
+const toDomain = ({ name, ...other }) => ({
+  domain: name,
+  ...other,
+});
 
 const buildArn = () =>
   pipe([
@@ -28,6 +33,8 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    toDomain,
+    assignTags({ buildArn: buildArn({ config }), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeArtifact.html
@@ -55,6 +62,9 @@ exports.CodeArtifactDomain = () => ({
     ]),
   findName: () =>
     pipe([
+      tap((name) => {
+        assert(name);
+      }),
       get("domain"),
       tap((name) => {
         assert(name);
@@ -62,7 +72,7 @@ exports.CodeArtifactDomain = () => ({
     ]),
   findId: () =>
     pipe([
-      get("arn"),
+      get("domain"),
       tap((id) => {
         assert(id);
       }),
@@ -87,12 +97,12 @@ exports.CodeArtifactDomain = () => ({
   getList: {
     method: "listDomains",
     getParam: "domains",
-    decorate: ({ getById }) => pipe([getById]),
+    decorate: ({ getById }) => pipe([toDomain, getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeArtifact.html#createDomain-property
   create: {
     method: "createDomain",
-    pickCreated: ({ payload }) => pipe([get("domain")]),
+    pickCreated: ({ payload }) => pipe([get("domain"), toDomain]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeArtifact.html#updateDomain-property
   update: {
