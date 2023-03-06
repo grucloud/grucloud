@@ -52,11 +52,13 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ProductPortfolioAssociation", () =>
+  it("ProductPortfolioAssociation", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::ProductPortfolioAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ProductId: "pr123", PortfolioId: "pt123" },
+        ],
       }),
       awsResourceTest,
     ])());

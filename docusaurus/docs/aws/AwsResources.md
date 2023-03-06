@@ -217,7 +217,7 @@ List of resources for provider aws:
 * SecurityHub: 
 [Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [ProductSubscription](./resources/SecurityHub/ProductSubscription.md), [StandardsControl](./resources/SecurityHub/StandardsControl.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
 * ServiceCatalog: 
-[Portfolio](./resources/ServiceCatalog/Portfolio.md), [Product](./resources/ServiceCatalog/Product.md)
+[Portfolio](./resources/ServiceCatalog/Portfolio.md), [Product](./resources/ServiceCatalog/Product.md), [ProductPortfolioAssociation](./resources/ServiceCatalog/ProductPortfolioAssociation.md)
 * ServiceDiscovery: 
 [HttpNamespace](./resources/ServiceDiscovery/HttpNamespace.md), [PrivateDnsNamespace](./resources/ServiceDiscovery/PrivateDnsNamespace.md), [PublicDnsNamespace](./resources/ServiceDiscovery/PublicDnsNamespace.md), [Service](./resources/ServiceDiscovery/Service.md)
 * ServiceQuotas: 

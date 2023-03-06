@@ -61,4 +61,12 @@ exports.createResources = () => [
       s3Template: `cf-templates-x7lcu52auzd7-${config.region}/servicecatalog-product-2023065qIW-Network.yaml`,
     }),
   },
+  {
+    type: "ProductPortfolioAssociation",
+    group: "ServiceCatalog",
+    dependencies: ({}) => ({
+      portfolio: "my-portfolio",
+      product: "Vpc",
+    }),
+  },
 ];
