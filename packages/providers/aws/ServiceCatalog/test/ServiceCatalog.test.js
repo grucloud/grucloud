@@ -44,11 +44,11 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Product", () =>
+  it("Product", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::Product",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "p123" }],
       }),
       awsResourceTest,
     ])());

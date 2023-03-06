@@ -3,6 +3,10 @@ title Resources for project servicecatalog-simple
 skinparam monochrome true
 + Infra
 ++ aws
++++ S3
+++++ Bucket (1)
+++++ Object (1)
 +++ ServiceCatalog
 ++++ Portfolio (1)
+++++ Product (1)
 @endmindmap

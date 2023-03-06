@@ -9,7 +9,7 @@ const { createAwsService } = require("../AwsService");
 //const { ServiceCatalogOrganizationsAccess } = require("./ServiceCatalogOrganizationsAccess");
 const { ServiceCatalogPortfolio } = require("./ServiceCatalogPortfolio");
 //const { ServiceCatalogPortfolioShare } = require("./ServiceCatalogPortfolioShare");
-//const { ServiceCatalogProduct } = require("./ServiceCatalogProduct");
+const { ServiceCatalogProduct } = require("./ServiceCatalogProduct");
 //const { ServiceCatalogProductPortfolioAssociation } = require("./ServiceCatalogProductPortfolioAssociation");
 //const { ServiceCatalogPrincipalPortfolioAssociation } = require("./ServiceCatalogPrincipalPortfolioAssociation");
 //const { ServiceCatalogProvisionedProduct } = require("./ServiceCatalogProvisionedProduct");
@@ -26,7 +26,7 @@ module.exports = pipe([
     // ServiceCatalogConstraint({})
     ServiceCatalogPortfolio({}),
     // ServiceCatalogPortfolioShare({})
-    // ServiceCatalogProduct({}),
+    ServiceCatalogProduct({}),
     // ServiceCatalogProductPortfolioAssociation({})
     // ServiceCatalogPrincipalPortfolioAssociation({})
     // ServiceCatalogProvisionedProduct({})

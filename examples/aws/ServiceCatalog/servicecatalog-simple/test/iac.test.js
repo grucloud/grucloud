@@ -9,7 +9,11 @@ const title = pkg.name;
 describe(title, async function () {
   it("run", async function () {
     await testEnd2End({
-      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      programOptions: {
+        download: true,
+        workingDirectory: path.resolve(__dirname, "../"),
+      },
+      commandOptions: { download: true },
       title,
       steps: [{ createStack, configs: [config] }],
     });

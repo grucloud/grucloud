@@ -1,10 +1,10 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign } = require("rubico");
+const { pipe, tap, get, pick, omit } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
-
+const { assignDiffTags } = require("./ServiceCatalogCommon");
 const pickId = pipe([
   tap(({ Id }) => {
     assert(Id);
@@ -82,11 +82,7 @@ exports.ServiceCatalogPortfolio = () => ({
     filterParams: ({ payload, diff, live }) =>
       pipe([
         () => payload,
-        omit(["Tags"]),
-        assign({
-          AddTags: pipe([() => diff, get("liveDiff.added.Tags", [])]),
-          RemoveTags: pipe([() => diff, get("targetDiff.added.Tags", [])]),
-        }),
+        assignDiffTags({ diff }),
         defaultsDeep(pickId(live)),
       ])(),
   },

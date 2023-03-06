@@ -7,7 +7,7 @@
   "scripts": {
     "tree": "gc tree",
     "graph": "gc graph",
-    "gencode": "gc gencode",
+    "gencode": "gc gencode --download",
     "list": "gc list",
     "list-graph": "gc list -g",
     "plan": "gc plan",

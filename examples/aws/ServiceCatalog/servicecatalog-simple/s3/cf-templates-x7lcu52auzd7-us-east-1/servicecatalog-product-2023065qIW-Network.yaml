@@ -1,0 +1,222 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Portfolio setup for Service Catalog with EC2 and VPC products. (fdp-1p4da46nc)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Network parameters
+        Parameters:
+        - VPCCIDR
+        - PrivateSubnet1ACIDR
+        - PrivateSubnet1BCIDR
+Parameters:
+  VPCCIDR:
+    Type: String
+    Default: '172.29.10.0/24'
+  PrivateSubnet1ACIDR:
+    Default: 172.29.10.0/26
+    Description: CIDR block for private subnet 1A
+    Type: String
+  PublicSubnet1ACIDR:
+    Default: '172.29.10.128/26'
+    Description: CIDR block for private subnet
+    Type: String
+
+
+
+Resources:
+
+#blumbing first
+  DHCPOptions:
+    Type: AWS::EC2::DHCPOptions
+    Properties:
+      DomainName: 'ec2.internal'
+      DomainNameServers:
+        - AmazonProvidedDNS
+
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref 'VPCCIDR'
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      Tags:
+        - Key: Name
+          Value: 'Network Lab VPC'
+
+  VPCDHCPOptionsAssociation:
+    Type: AWS::EC2::VPCDHCPOptionsAssociation
+    Properties:
+      VpcId: !Ref 'VPC'
+      DhcpOptionsId: !Ref 'DHCPOptions'
+
+  PrivateSubnet1A:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref 'VPC'
+      CidrBlock: !Ref 'PrivateSubnet1ACIDR'
+      Tags:
+        - Key: Name
+          Value: Private subnet 1A
+        - Key: Network
+          Value: Private
+
+
+  PrivateSubnetRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref 'VPC'
+      Tags:
+        - Key: Name
+          Value: Private subnets A
+        - Key: Network
+          Value: Private
+
+  PublicSubnet1A:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref 'VPC'
+      CidrBlock: !Ref 'PublicSubnet1ACIDR'
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: Public subnet 1A
+        - Key: Network
+          Value: Public      
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Network
+          Value: Public
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref 'VPC'
+      InternetGatewayId: !Ref 'InternetGateway'
+
+  PublicSubnetRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref 'VPC'
+      Tags:
+        - Key: Name
+          Value: Public subnets 1a
+        - Key: Network
+          Value: Public
+    
+  PublicSubnetRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref 'PublicSubnetRouteTable'
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:  !Ref 'InternetGateway'
+
+  PublicSubnet1ARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref 'PublicSubnet1A'
+      RouteTableId: !Ref 'PublicSubnetRouteTable'
+
+  PrivateSubnet1ARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref 'PrivateSubnet1A'
+      RouteTableId: !Ref 'PrivateSubnetRouteTable'
+
+#########END POINTS
+  CfnEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPC
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.cloudformation"
+      VpcEndpointType: "Interface"
+      PrivateDnsEnabled: true
+      SubnetIds:
+        - !Ref PrivateSubnet1A
+      SecurityGroupIds:
+        - !Ref EndpointSG
+
+  S3VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPC
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action: '*'
+            Effect: Allow
+            Resource: '*'
+            Principal: '*'
+      RouteTableIds: 
+        - !Ref PrivateSubnetRouteTable
+        - !Ref PublicSubnetRouteTable
+      ServiceName: !Join ['', [com.amazonaws., !Ref 'AWS::Region', .s3]]
+      VpcId: !Ref 'VPC'
+
+  STSEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPC
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.sts"
+      VpcEndpointType: "Interface"
+      PrivateDnsEnabled: true
+      SubnetIds:
+        - !Ref PrivateSubnet1A
+      SecurityGroupIds:
+        - !Ref EndpointSG
+
+  EndpointSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Traffic into CloudFormation Endpoint"
+      SecurityGroupIngress:
+      -
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: "172.29.10.0/24"
+      -
+          IpProtocol: udp
+          FromPort: 53
+          ToPort: 53
+          CidrIp: "172.29.10.0/24"
+      VpcId: !Ref VPC
+      Tags:
+        -
+          Key: Name
+          Value: EndpointSG
+
+Outputs:
+  VPCID:
+    Description: VPC ID
+    Value: !Ref 'VPC'
+    Export:
+      Name: 'Network-VPC'
+  PrivateSubnet1A:
+    Description: Private subnet 1A
+    Value: !Ref 'PrivateSubnet1A'
+    Export:
+      Name: 'Network-PrivateSubnet1A'
+  PrivateSubnet1ACIDR:
+    Description: Private subnet 1A CIDR
+    Value: !Ref 'PrivateSubnet1ACIDR'
+    Export:
+      Name: 'Network-PrivateSubnet1ACIDR'
+  PrivateSubnetRouteTable:
+    Description: Subnet Route Table
+    Value: !Ref PrivateSubnetRouteTable
+    Export:
+      Name: Network-PrivateSubnetRouteTable
+  PublicSubnet1A:
+    Description: Private subnet 1A
+    Value: !Ref 'PublicSubnet1A'
+    Export:
+      Name: 'Network-PublicSubnet1A'
+  PublicSubnet1ACIDR:
+    Description: Private subnet 1A CIDR
+    Value: !Ref 'PrivateSubnet1ACIDR'
+    Export:
+      Name: 'Network-2-PublicSubnet1ACIDR'
