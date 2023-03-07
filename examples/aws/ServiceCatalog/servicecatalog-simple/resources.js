@@ -4,6 +4,59 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "SC-Constrain",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "servicecatalog.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEC2FullAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+        },
+        {
+          PolicyName: "AmazonS3ReadOnlyAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+        },
+        {
+          PolicyName: "AmazonSSMFullAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
+        },
+        {
+          PolicyName: "AmazonVPCFullAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonVPCFullAccess",
+        },
+        {
+          PolicyName: "AWSCloudFormationFullAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AWSCloudFormationFullAccess",
+        },
+        {
+          PolicyName: "AWSKeyManagementServicePowerUser",
+          PolicyArn: "arn:aws:iam::aws:policy/AWSKeyManagementServicePowerUser",
+        },
+        {
+          PolicyName: "AWSServiceCatalogAdminFullAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AWSServiceCatalogAdminFullAccess",
+        },
+        {
+          PolicyName: "IAMFullAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/IAMFullAccess",
+        },
+      ],
+    }),
+  },
+  {
     type: "Bucket",
     group: "S3",
     properties: ({ config }) => ({
@@ -23,6 +76,19 @@ exports.createResources = () => [
     type: "Object",
     group: "S3",
     properties: ({ config }) => ({
+      Key: "2023-03-06T231452.907Z0w7-sc-roles.yaml",
+      ContentType: "application/octet-stream",
+      ServerSideEncryption: "AES256",
+      source: `s3/cf-templates-x7lcu52auzd7-${config.region}/2023-03-06T231452.907Z0w7-sc-roles.yaml`,
+    }),
+    dependencies: ({ config }) => ({
+      bucket: `cf-templates-x7lcu52auzd7-${config.region}`,
+    }),
+  },
+  {
+    type: "Object",
+    group: "S3",
+    properties: ({ config }) => ({
       Key: "servicecatalog-product-2023065qIW-Network.yaml",
       ContentType: "application/octet-stream",
       ServerSideEncryption: "AES256",
@@ -30,6 +96,20 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       bucket: `cf-templates-x7lcu52auzd7-${config.region}`,
+    }),
+  },
+  {
+    type: "Constraint",
+    group: "ServiceCatalog",
+    properties: ({ config }) => ({
+      Description: `Launch as arn:aws:iam::${config.accountId()}:role/SC-Constrain`,
+      Type: "LAUNCH",
+      Parameters: {},
+    }),
+    dependencies: ({}) => ({
+      iamRole: "SC-Constrain",
+      portfolio: "my-portfolio",
+      product: "Vpc",
     }),
   },
   {

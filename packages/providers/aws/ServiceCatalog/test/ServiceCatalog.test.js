@@ -12,11 +12,11 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Constraint", () =>
+  it("Constraint", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::Constraint",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "i12345" }],
       }),
       awsResourceTest,
     ])());

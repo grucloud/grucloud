@@ -5,7 +5,7 @@ const { compare } = require("@grucloud/core/Common");
 const { createAwsService } = require("../AwsService");
 
 //const { ServiceCatalogBudgetResourceAssociation } = require("./ServiceCatalogBudgetResourceAssociation");
-//const { ServiceCatalogConstraint } = require("./ServiceCatalogConstraint");
+const { ServiceCatalogConstraint } = require("./ServiceCatalogConstraint");
 //const { ServiceCatalogOrganizationsAccess } = require("./ServiceCatalogOrganizationsAccess");
 const { ServiceCatalogPortfolio } = require("./ServiceCatalogPortfolio");
 //const { ServiceCatalogPortfolioShare } = require("./ServiceCatalogPortfolioShare");
@@ -25,7 +25,7 @@ const GROUP = "ServiceCatalog";
 module.exports = pipe([
   () => [
     // ServiceCatalogBudgetResourceAssociation({})
-    // ServiceCatalogConstraint({})
+    ServiceCatalogConstraint({}),
     ServiceCatalogPortfolio({}),
     // ServiceCatalogPortfolioShare({})
     ServiceCatalogProduct({}),
