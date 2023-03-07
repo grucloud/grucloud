@@ -20,11 +20,13 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("OrganizationsAccess", () =>
+  it("OrganizationsAccess", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::OrganizationsAccess",
         livesNotFound: ({ config }) => [{}],
+        skipGetByName: true,
+        skipGetById: true,
       }),
       awsResourceTest,
     ])());
@@ -36,11 +38,17 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("PortfolioShare", () =>
+  it("PortfolioShare", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::PortfolioShare",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            PortfolioId: "pt123",
+            PrincipalId: "ou-123",
+            Type: "ORGANIZATIONAL_UNIT",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -62,11 +70,16 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("PrincipalPortfolioAssociation ", () =>
+  it("PrincipalPortfolioAssociation", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::PrincipalPortfolioAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            PortfolioId: "pt123",
+            PrincipalARN: `arn:aws:iam::${config.accountId()}:role/zzzzzzz`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

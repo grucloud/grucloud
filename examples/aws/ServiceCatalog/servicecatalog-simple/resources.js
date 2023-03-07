@@ -7,6 +7,34 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
+      RoleName: "AdminRole",
+      Description:
+        "Allows Service Catalog to access AWS resources on your behalf.",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "servicecatalog.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AdministratorAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AdministratorAccess",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
       RoleName: "SC-Constrain",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -52,6 +80,37 @@ exports.createResources = () => [
         {
           PolicyName: "IAMFullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/IAMFullAccess",
+        },
+      ],
+    }),
+  },
+  {
+    type: "OrganisationalUnit",
+    group: "Organisations",
+    name: "e2etest",
+    readOnly: true,
+    properties: ({}) => ({
+      Name: "e2etest",
+    }),
+    dependencies: ({}) => ({
+      root: "Root",
+    }),
+  },
+  {
+    type: "Root",
+    group: "Organisations",
+    name: "Root",
+    readOnly: true,
+    properties: ({}) => ({
+      Name: "Root",
+      PolicyTypes: [
+        {
+          Status: "ENABLED",
+          Type: "TAG_POLICY",
+        },
+        {
+          Status: "ENABLED",
+          Type: "SERVICE_CONTROL_POLICY",
         },
       ],
     }),
@@ -113,11 +172,32 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "OrganizationsAccess",
+    group: "ServiceCatalog",
+    properties: ({}) => ({
+      AccessStatus: "ENABLED",
+    }),
+  },
+  {
     type: "Portfolio",
     group: "ServiceCatalog",
     properties: ({}) => ({
       DisplayName: "my-portfolio",
       ProviderName: "ops",
+    }),
+  },
+  {
+    type: "PortfolioShare",
+    group: "ServiceCatalog",
+    properties: ({}) => ({
+      SharePrincipals: false,
+      ShareTagOptions: false,
+      OrganizationNode: {
+        Type: "ORGANIZATIONAL_UNIT",
+      },
+    }),
+    dependencies: ({}) => ({
+      organisationalUnit: "e2etest",
     }),
   },
   {
@@ -147,6 +227,17 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       portfolio: "my-portfolio",
       product: "Vpc",
+    }),
+  },
+  {
+    type: "PrincipalPortfolioAssociation",
+    group: "ServiceCatalog",
+    properties: ({}) => ({
+      PrincipalType: "IAM",
+    }),
+    dependencies: ({}) => ({
+      iamRole: "AdminRole",
+      portfolio: "my-portfolio",
     }),
   },
 ];

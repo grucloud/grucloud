@@ -6,14 +6,20 @@ const { createAwsService } = require("../AwsService");
 
 //const { ServiceCatalogBudgetResourceAssociation } = require("./ServiceCatalogBudgetResourceAssociation");
 const { ServiceCatalogConstraint } = require("./ServiceCatalogConstraint");
-//const { ServiceCatalogOrganizationsAccess } = require("./ServiceCatalogOrganizationsAccess");
+const {
+  ServiceCatalogOrganizationsAccess,
+} = require("./ServiceCatalogOrganizationsAccess");
 const { ServiceCatalogPortfolio } = require("./ServiceCatalogPortfolio");
-//const { ServiceCatalogPortfolioShare } = require("./ServiceCatalogPortfolioShare");
+const {
+  ServiceCatalogPortfolioShare,
+} = require("./ServiceCatalogPortfolioShare");
 const { ServiceCatalogProduct } = require("./ServiceCatalogProduct");
 const {
   ServiceCatalogProductPortfolioAssociation,
 } = require("./ServiceCatalogProductPortfolioAssociation");
-//const { ServiceCatalogPrincipalPortfolioAssociation } = require("./ServiceCatalogPrincipalPortfolioAssociation");
+const {
+  ServiceCatalogPrincipalPortfolioAssociation,
+} = require("./ServiceCatalogPrincipalPortfolioAssociation");
 //const { ServiceCatalogProvisionedProduct } = require("./ServiceCatalogProvisionedProduct");
 //const { ServiceCatalogProvisioningArtifact } = require("./ServiceCatalogProvisioningArtifact");
 //const { ServiceCatalogServiceAction } = require("./ServiceCatalogServiceAction");
@@ -26,11 +32,12 @@ module.exports = pipe([
   () => [
     // ServiceCatalogBudgetResourceAssociation({})
     ServiceCatalogConstraint({}),
+    ServiceCatalogOrganizationsAccess({}),
     ServiceCatalogPortfolio({}),
-    // ServiceCatalogPortfolioShare({})
+    ServiceCatalogPortfolioShare({}),
     ServiceCatalogProduct({}),
     ServiceCatalogProductPortfolioAssociation({}),
-    // ServiceCatalogPrincipalPortfolioAssociation({})
+    ServiceCatalogPrincipalPortfolioAssociation({}),
     // ServiceCatalogProvisionedProduct({})
     // ServiceCatalogProvisioningArtifact({})
     // ServiceCatalogTagOption({})

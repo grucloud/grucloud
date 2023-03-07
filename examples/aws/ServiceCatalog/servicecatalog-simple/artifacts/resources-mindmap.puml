@@ -4,13 +4,19 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ IAM
-++++ Role (1)
+++++ Role (2)
++++ Organisations
+++++ OrganisationalUnit (1)
+++++ Root (1)
 +++ S3
 ++++ Bucket (1)
 ++++ Object (2)
 +++ ServiceCatalog
 ++++ Constraint (1)
+++++ OrganizationsAccess (1)
 ++++ Portfolio (1)
+++++ PortfolioShare (1)
 ++++ Product (1)
 ++++ ProductPortfolioAssociation (1)
+++++ PrincipalPortfolioAssociation (1)
 @endmindmap
