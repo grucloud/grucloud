@@ -1,16 +1,19 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, pick, fork, set } = require("rubico");
+const { defaultsDeep, prepend, callProp, find, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+
+const cannotBeDeleted = () => () => true;
 
 const toProvisioningArtifactId = pipe([
   tap(({ Id }) => {
     assert(Id);
   }),
-  ({ Id }) => ({
+  ({ Id, ...other }) => ({
     ProvisioningArtifactId: Id,
+    ...other,
   }),
 ]);
 
@@ -26,7 +29,7 @@ const decorate =
   ({ endpoint, config, live }) =>
   ({
     ProvisioningArtifactDetail: { Name, Description, Type, ...other },
-    Info,
+    Info: { TemplateUrl, ...otherInfo },
     Status,
   }) =>
     pipe([
@@ -39,7 +42,12 @@ const decorate =
       () => ({
         ...other,
         Status,
-        Parameters: { Name, Description, Type, Info },
+        Parameters: {
+          Name,
+          Description,
+          Type,
+          Info: { LoadTemplateFromURL: TemplateUrl, ...otherInfo },
+        },
       }),
       defaultsDeep({ ProductId: live.ProductId }),
       toProvisioningArtifactId,
@@ -56,24 +64,53 @@ exports.ServiceCatalogProvisioningArtifact = () => ({
     "ProvisioningArtifactId",
     "CreatedTime",
     "Status",
+    "Active",
+    "Guidance",
+    "Parameters.Info.LoadTemplateFromURL",
   ],
-  inferName: () =>
+  cannotBeDeleted,
+  inferName: ({ dependenciesSpec: { product } }) =>
     pipe([
-      get("Name"),
+      tap((params) => {
+        assert(product);
+      }),
+      get("Parameters.Name"),
       tap((Name) => {
         assert(Name);
       }),
+      prepend("::"),
+      prepend(product),
     ]),
-  findName: () =>
-    pipe([
-      get("Name"),
-      tap((name) => {
-        assert(name);
-      }),
-    ]),
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        fork({
+          product: pipe([
+            get("ProductId"),
+            tap((id) => {
+              assert(id);
+            }),
+            lives.getById({
+              type: "Product",
+              group: "ServiceCatalog",
+              providerName: config.providerName,
+            }),
+            get("name", live.ProductId),
+          ]),
+          version: pipe([
+            get("Parameters.Name"),
+            tap((version) => {
+              assert(version);
+            }),
+          ]),
+        }),
+        ({ product, version }) => `${product}::${version}`,
+      ])(),
   findId: () =>
     pipe([
-      get("Arn"),
+      get("ProvisioningArtifactId"),
       tap((id) => {
         assert(id);
       }),
@@ -82,12 +119,36 @@ exports.ServiceCatalogProvisioningArtifact = () => ({
     product: {
       type: "Product",
       group: "ServiceCatalog",
+      parent: true,
       dependencyId: ({ lives, config }) =>
         pipe([
           get("ProductId"),
           tap((ProductId) => {
             assert(ProductId);
           }),
+        ]),
+    },
+    s3Template: {
+      type: "Object",
+      group: "S3",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("Parameters.Info.LoadTemplateFromURL"),
+          (LoadTemplateFromURL) =>
+            pipe([
+              lives.getByType({
+                type: "Object",
+                group: "S3",
+                providerName: config.providerName,
+              }),
+              find(
+                pipe([
+                  get("live.signedUrl"),
+                  callProp("startsWith", LoadTemplateFromURL),
+                ])
+              ),
+              get("id"),
+            ])(),
         ]),
     },
   },
@@ -116,17 +177,32 @@ exports.ServiceCatalogProvisioningArtifact = () => ({
           decorate: ({ parent }) =>
             pipe([
               tap((params) => {
-                assert(live.Id);
+                assert(parent.Id);
               }),
-              defaultsDeep({ ProductId: live.Id }),
+              toProvisioningArtifactId,
+              defaultsDeep({ ProductId: parent.Id }),
               getById({}),
+              tap((params) => {
+                assert(true);
+              }),
             ]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceCatalog.html#createProvisioningArtifact-property
   create: {
     method: "createProvisioningArtifact",
-    pickCreated: ({ payload }) => pipe([() => payload]),
+    pickCreated: ({ payload }) =>
+      pipe([
+        tap((id) => {
+          assert(id);
+        }),
+        get("ProvisioningArtifactDetail"),
+        toProvisioningArtifactId,
+        defaultsDeep({ ProductId: payload.ProductId }),
+        tap((id) => {
+          assert(id);
+        }),
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceCatalog.html#updateProvisioningArtifact-property
   update: {
@@ -144,7 +220,7 @@ exports.ServiceCatalogProvisioningArtifact = () => ({
     name,
     namespace,
     properties: { ...otherProps },
-    dependencies: { product },
+    dependencies: { product, s3Template },
     config,
   }) =>
     pipe([
@@ -153,5 +229,21 @@ exports.ServiceCatalogProvisioningArtifact = () => ({
       }),
       () => otherProps,
       defaultsDeep({ ProductId: getField(product, "Id") }),
+      when(
+        () => s3Template?.live,
+        pipe([
+          set(
+            "Parameters.Info.LoadTemplateFromURL",
+            pipe([
+              () => getField(s3Template, "signedUrl"),
+              (url) =>
+                pipe([
+                  () => url,
+                  callProp("replace", new URL(url).search, ""),
+                ])(),
+            ])
+          ),
+        ])
+      ),
     ])(),
 });

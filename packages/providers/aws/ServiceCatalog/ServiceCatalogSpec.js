@@ -28,15 +28,16 @@ const {
 const {
   ServiceCatalogProvisioningArtifact,
 } = require("./ServiceCatalogProvisioningArtifact");
-
+const {
+  ServiceCatalogServiceAction,
+} = require("./ServiceCatalogServiceAction");
+const {
+  ServiceCatalogServiceActionAssociation,
+} = require("./ServiceCatalogServiceActionAssociation");
 const { ServiceCatalogTagOption } = require("./ServiceCatalogTagOption");
 const {
   ServiceCatalogTagOptionResourceAssociation,
 } = require("./ServiceCatalogTagOptionResourceAssociation");
-
-const {
-  ServiceCatalogServiceAction,
-} = require("./ServiceCatalogServiceAction");
 
 const GROUP = "ServiceCatalog";
 
@@ -53,6 +54,7 @@ module.exports = pipe([
     ServiceCatalogProvisionedProduct({}),
     ServiceCatalogProvisioningArtifact({}),
     ServiceCatalogServiceAction({}),
+    ServiceCatalogServiceActionAssociation({}),
     ServiceCatalogTagOption({}),
     ServiceCatalogTagOptionResourceAssociation({}),
   ],

@@ -1,10 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, omit, assign } = require("rubico");
-const { defaultsDeep, first, find, callProp } = require("rubico/x");
+const { pipe, tap, get, pick, omit, set, assign } = require("rubico");
+const { defaultsDeep, first, find, callProp, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 const { assignDiffTags } = require("./ServiceCatalogCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 //
 const productIdToId = ({ ProductId, Id, ...other }) => ({
@@ -82,7 +83,14 @@ exports.ServiceCatalogProduct = () => ({
   package: "service-catalog",
   client: "ServiceCatalog",
   propertiesDefault: {},
-  omitProperties: ["Id", "ARN", "CreatedTime", "ProductId", "HasDefaultPath"],
+  omitProperties: [
+    "Id",
+    "ARN",
+    "CreatedTime",
+    "ProductId",
+    "HasDefaultPath",
+    "ProvisioningArtifactParameters.Info",
+  ],
   inferName: () =>
     pipe([
       get("Name"),
@@ -170,7 +178,7 @@ exports.ServiceCatalogProduct = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {},
+    dependencies: { s3Template },
     config,
   }) =>
     pipe([
@@ -178,5 +186,21 @@ exports.ServiceCatalogProduct = () => ({
       defaultsDeep({
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
+      when(
+        () => s3Template?.live,
+        pipe([
+          set(
+            "ProvisioningArtifactParameters.Info.LoadTemplateFromURL",
+            pipe([
+              () => getField(s3Template, "signedUrl"),
+              (url) =>
+                pipe([
+                  () => url,
+                  callProp("replace", new URL(url).search, ""),
+                ])(),
+            ])
+          ),
+        ])
+      ),
     ])(),
 });

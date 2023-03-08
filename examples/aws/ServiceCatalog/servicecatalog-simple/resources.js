@@ -211,10 +211,6 @@ exports.createResources = () => [
       ProvisioningArtifactParameters: {
         Name: "v1",
         Type: "CLOUD_FORMATION_TEMPLATE",
-        Info: {
-          LoadTemplateFromURL:
-            "https://cf-templates-x7lcu52auzd7-us-east-1.s3.us-east-1.amazonaws.com/servicecatalog-product-2023065qIW-Network.yaml",
-        },
       },
       Description: "Vpc",
       ProductType: "CLOUD_FORMATION_TEMPLATE",
@@ -243,6 +239,21 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "ProvisioningArtifact",
+    group: "ServiceCatalog",
+    properties: ({}) => ({
+      Parameters: {
+        Name: "v2",
+        Type: "CLOUD_FORMATION_TEMPLATE",
+        Info: {},
+      },
+    }),
+    dependencies: ({ config }) => ({
+      product: "Vpc",
+      s3Template: `cf-templates-x7lcu52auzd7-${config.region}/servicecatalog-product-2023065qIW-Network.yaml`,
+    }),
+  },
+  {
     type: "ServiceAction",
     group: "ServiceCatalog",
     properties: ({}) => ({
@@ -259,6 +270,14 @@ exports.createResources = () => [
         ],
         Version: "1",
       },
+    }),
+  },
+  {
+    type: "ServiceActionAssociation",
+    group: "ServiceCatalog",
+    dependencies: ({}) => ({
+      serviceAction: "AWS-DeleteCloudFormationStack",
+      provisioningArtifact: "Vpc::v2",
     }),
   },
   {

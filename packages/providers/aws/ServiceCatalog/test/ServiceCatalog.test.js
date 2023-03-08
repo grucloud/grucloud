@@ -115,11 +115,17 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ServiceActionAssociation", () =>
+  it("ServiceActionAssociation", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::ServiceActionAssociation",
-        livesNotFound: ({ config }) => [{ Id: "Id123" }],
+        livesNotFound: ({ config }) => [
+          {
+            ProductId: "prod-123",
+            ProvisioningArtifactId: "arti-123",
+            ServiceActionId: "act-fs-123",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
