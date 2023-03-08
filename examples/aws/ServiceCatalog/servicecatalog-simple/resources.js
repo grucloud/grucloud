@@ -197,7 +197,9 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
+      organizationsAccess: "default",
       organisationalUnit: "e2etest",
+      portfolio: "my-portfolio",
     }),
   },
   {
@@ -238,6 +240,25 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       iamRole: "AdminRole",
       portfolio: "my-portfolio",
+    }),
+  },
+  {
+    type: "ServiceAction",
+    group: "ServiceCatalog",
+    properties: ({}) => ({
+      DefinitionType: "SSM_AUTOMATION",
+      Description: "Delete CloudFormation Stack",
+      Name: "AWS-DeleteCloudFormationStack",
+      Definition: {
+        Name: "AWS-DeleteCloudFormationStack",
+        Parameters: [
+          {
+            Name: "StackNameOrId",
+            Type: "TARGET",
+          },
+        ],
+        Version: "1",
+      },
     }),
   },
 ];

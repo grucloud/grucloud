@@ -4,7 +4,9 @@ const { defaultsDeep } = require("rubico/x");
 const { compare } = require("@grucloud/core/Common");
 const { createAwsService } = require("../AwsService");
 
-//const { ServiceCatalogBudgetResourceAssociation } = require("./ServiceCatalogBudgetResourceAssociation");
+const {
+  ServiceCatalogBudgetResourceAssociation,
+} = require("./ServiceCatalogBudgetResourceAssociation");
 const { ServiceCatalogConstraint } = require("./ServiceCatalogConstraint");
 const {
   ServiceCatalogOrganizationsAccess,
@@ -20,17 +22,25 @@ const {
 const {
   ServiceCatalogPrincipalPortfolioAssociation,
 } = require("./ServiceCatalogPrincipalPortfolioAssociation");
-//const { ServiceCatalogProvisionedProduct } = require("./ServiceCatalogProvisionedProduct");
-//const { ServiceCatalogProvisioningArtifact } = require("./ServiceCatalogProvisioningArtifact");
-//const { ServiceCatalogServiceAction } = require("./ServiceCatalogServiceAction");
+const {
+  ServiceCatalogProvisionedProduct,
+} = require("./ServiceCatalogProvisionedProduct");
+const {
+  ServiceCatalogProvisioningArtifact,
+} = require("./ServiceCatalogProvisioningArtifact");
+
 //const { ServiceCatalogTagOption } = require("./ServiceCatalogTagOption");
 //const { ServiceCatalogTagOptionResourceAssociation } = require("./ServiceCatalogTagOptionResourceAssociation");
+
+const {
+  ServiceCatalogServiceAction,
+} = require("./ServiceCatalogServiceAction");
 
 const GROUP = "ServiceCatalog";
 
 module.exports = pipe([
   () => [
-    // ServiceCatalogBudgetResourceAssociation({})
+    ServiceCatalogBudgetResourceAssociation({}),
     ServiceCatalogConstraint({}),
     ServiceCatalogOrganizationsAccess({}),
     ServiceCatalogPortfolio({}),
@@ -38,10 +48,10 @@ module.exports = pipe([
     ServiceCatalogProduct({}),
     ServiceCatalogProductPortfolioAssociation({}),
     ServiceCatalogPrincipalPortfolioAssociation({}),
-    // ServiceCatalogProvisionedProduct({})
-    // ServiceCatalogProvisioningArtifact({})
+    ServiceCatalogProvisionedProduct({}),
+    ServiceCatalogProvisioningArtifact({}),
+    ServiceCatalogServiceAction({}),
     // ServiceCatalogTagOption({})
-    // ServiceCatalogServiceAction({})
     // ServiceCatalogTagOptionResourceAssociation({}),
   ],
   map(

@@ -19,4 +19,5 @@ skinparam monochrome true
 ++++ Product (1)
 ++++ ProductPortfolioAssociation (1)
 ++++ PrincipalPortfolioAssociation (1)
+++++ ServiceAction (1)
 @endmindmap

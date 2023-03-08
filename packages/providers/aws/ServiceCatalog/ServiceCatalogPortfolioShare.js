@@ -122,6 +122,14 @@ exports.ServiceCatalogPortfolioShare = () => ({
       parent: true,
       dependencyId: ({ lives, config }) => pipe([get("PrincipalId")]),
     },
+    organizationsAccess: {
+      type: "OrganizationsAccess",
+      group: "ServiceCatalog",
+      dependencyId:
+        ({ lives, config }) =>
+        () =>
+          "default",
+    },
     organisationalUnit: {
       type: "OrganisationalUnit",
       group: "Organisations",
@@ -141,7 +149,12 @@ exports.ServiceCatalogPortfolioShare = () => ({
       group: "ServiceCatalog",
       parent: true,
       dependencyId: ({ lives, config }) =>
-        pipe([get("OrganizationNode.Value")]),
+        pipe([
+          get("PortfolioId"),
+          tap((PortfolioId) => {
+            assert(PortfolioId);
+          }),
+        ]),
     },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceCatalog.html#describePortfolioShares-property

@@ -4,11 +4,13 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("ServiceCatalog", async function () {
-  it.skip("BudgetResourceAssociation", () =>
+  it("BudgetResourceAssociation", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::BudgetResourceAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ResourceId: "prod-123", BudgetName: "b123" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -45,8 +47,11 @@ describe("ServiceCatalog", async function () {
         livesNotFound: ({ config }) => [
           {
             PortfolioId: "pt123",
-            PrincipalId: "ou-123",
             Type: "ORGANIZATIONAL_UNIT",
+            OrganizationNode: {
+              Value: "ou-941x-mh5deyma",
+              Type: "ORGANIZATIONAL_UNIT",
+            },
           },
         ],
       }),
@@ -83,27 +88,29 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ProvisionedProduct", () =>
+  it("ProvisionedProduct", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::ProvisionedProduct",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "prod1243" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("ProvisioningArtifact", () =>
+  it("ProvisioningArtifact", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::ProvisioningArtifact",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ProductId: "prod-1243", ProvisioningArtifactId: "prov-123" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("ServiceAction", () =>
+  it("ServiceAction", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::ServiceAction",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "Id123" }],
       }),
       awsResourceTest,
     ])());
