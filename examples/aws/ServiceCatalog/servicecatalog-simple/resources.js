@@ -261,4 +261,20 @@ exports.createResources = () => [
       },
     }),
   },
+  {
+    type: "TagOption",
+    group: "ServiceCatalog",
+    properties: ({}) => ({
+      Key: "mykey",
+      Value: "myvalue",
+    }),
+  },
+  {
+    type: "TagOptionResourceAssociation",
+    group: "ServiceCatalog",
+    dependencies: ({}) => ({
+      product: "Vpc",
+      tagOption: "mykey",
+    }),
+  },
 ];

@@ -20,4 +20,6 @@ skinparam monochrome true
 ++++ ProductPortfolioAssociation (1)
 ++++ PrincipalPortfolioAssociation (1)
 ++++ ServiceAction (1)
+++++ TagOption (1)
+++++ TagOptionResourceAssociation (1)
 @endmindmap

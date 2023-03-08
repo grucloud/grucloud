@@ -13,7 +13,7 @@ const {
 const { defaultsDeep, filterOut, isEmpty, unless, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
+const { resourceId } = require("./ServiceCatalogCommon");
 
 const pickId = pipe([
   tap(({ BudgetName, ResourceId }) => {
@@ -53,22 +53,6 @@ const listBudgetsForResource = ({ endpoint, lives, config, type, group }) =>
     filterOut(isEmpty),
   ]);
 
-const resourceId = ({ portfolio, product }) =>
-  pipe([
-    switchCase([
-      () => portfolio,
-      () => getField(portfolio, "Id"),
-      () => product,
-      () => getField(product, "Id"),
-      () => {
-        assert(false, "missing portfolio or product");
-      },
-      tap((ResourceId) => {
-        assert(ResourceId);
-      }),
-    ]),
-  ])();
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceCatalog.html
 exports.ServiceCatalogBudgetResourceAssociation = () => ({
   type: "BudgetResourceAssociation",
@@ -98,14 +82,6 @@ exports.ServiceCatalogBudgetResourceAssociation = () => ({
       }),
       ({ BudgetName, ResourceId }) => `${BudgetName}::${ResourceId}`,
     ]),
-  findId: () =>
-    pipe([
-      get("BudgetName"),
-      tap((id) => {
-        assert(id);
-      }),
-    ]),
-
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceCatalog.html#getBudgetResourceAssociation-property
   getById: {

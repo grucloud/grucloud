@@ -29,6 +29,7 @@ describe("ServiceCatalog", async function () {
         livesNotFound: ({ config }) => [{}],
         skipGetByName: true,
         skipGetById: true,
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());
@@ -114,11 +115,29 @@ describe("ServiceCatalog", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("TagOption", () =>
+  it.skip("ServiceActionAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "ServiceCatalog::ServiceActionAssociation",
+        livesNotFound: ({ config }) => [{ Id: "Id123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("TagOption", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::TagOption",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "t123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("TagOptionResourceAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "ServiceCatalog::TagOptionResourceAssociation",
+        livesNotFound: ({ config }) => [
+          { ResourceId: "prod-123", TagOptionId: "t124" },
+        ],
       }),
       awsResourceTest,
     ])());

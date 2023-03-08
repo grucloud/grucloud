@@ -53,8 +53,6 @@ exports.ServiceCatalogServiceAction = () => ({
   client: "ServiceCatalog",
   propertiesDefault: {},
   omitProperties: ["Id", "Version"],
-  //   managedByOther,
-  //   cannotBeDeleted: managedByOther,
   inferName: () =>
     pipe([
       get("Name"),
