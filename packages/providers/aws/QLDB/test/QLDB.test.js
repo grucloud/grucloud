@@ -3,27 +3,19 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("Workspaces", async function () {
-  it.skip("Directory", () =>
+describe("QLDB", async function () {
+  it.skip("Ledger", () =>
     pipe([
       () => ({
-        groupType: "Workspaces::Directory",
+        groupType: "QLDB::Ledger",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
-  it.skip("IpGroup", () =>
+  it.skip("Stream", () =>
     pipe([
       () => ({
-        groupType: "Workspaces::IpGroup",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("Workspace", () =>
-    pipe([
-      () => ({
-        groupType: "Workspaces::Workspace",
+        groupType: "QLDB::Stream",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,

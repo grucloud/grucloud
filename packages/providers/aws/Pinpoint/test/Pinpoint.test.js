@@ -3,27 +3,19 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("Workspaces", async function () {
-  it.skip("Directory", () =>
+describe("Pinpoint", async function () {
+  it.skip("DataSource", () =>
     pipe([
       () => ({
-        groupType: "Workspaces::Directory",
+        groupType: "Pinpoint::App",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
-  it.skip("IpGroup", () =>
+  it.skip("EmailChannel", () =>
     pipe([
       () => ({
-        groupType: "Workspaces::IpGroup",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("Workspace", () =>
-    pipe([
-      () => ({
-        groupType: "Workspaces::Workspace",
+        groupType: "Pinpoint::EmailChannel",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
