@@ -142,6 +142,7 @@
     "@aws-sdk/client-app-mesh": "3.279.0",
     "@aws-sdk/client-appconfig": "3.279.0",
     "@aws-sdk/client-appflow": "3.279.0",
+    "@aws-sdk/client-appintegrations": "3.279.0",
     "@aws-sdk/client-application-auto-scaling": "3.279.0",
     "@aws-sdk/client-application-insights": "3.279.0",
     "@aws-sdk/client-apprunner": "3.279.0",

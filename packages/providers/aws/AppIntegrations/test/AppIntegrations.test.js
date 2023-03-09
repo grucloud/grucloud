@@ -4,11 +4,11 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("AppIntegrations", async function () {
-  it.skip("EventIntegration", () =>
+  it("EventIntegration", () =>
     pipe([
       () => ({
         groupType: "AppIntegrations::EventIntegration",
-        livesNotFound: ({ config }) => [{ flowName: "123" }],
+        livesNotFound: ({ config }) => [{ Name: "a123" }],
       }),
       awsResourceTest,
     ])());

@@ -50,6 +50,7 @@ const GROUPS = [
   ["ApplicationAutoScaling", "application-autoscaling"],
   ["ApplicationInsights", "application-insights"],
   ["Appflow", "appflow"],
+  ["AppIntegrations", "appintegrations"],
   ["AppStream", "appstream"],
   ["AppSync", "appsync"],
   ["Athena", "athena"],

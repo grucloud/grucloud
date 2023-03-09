@@ -22,6 +22,8 @@ List of resources for provider aws:
 [Application](./resources/AppConfig/Application.md), [ConfigurationProfile](./resources/AppConfig/ConfigurationProfile.md), [Deployment](./resources/AppConfig/Deployment.md), [DeploymentStrategy](./resources/AppConfig/DeploymentStrategy.md), [Environment](./resources/AppConfig/Environment.md), [Extension](./resources/AppConfig/Extension.md), [ExtensionAssociation](./resources/AppConfig/ExtensionAssociation.md), [HostedConfigurationVersion](./resources/AppConfig/HostedConfigurationVersion.md)
 * Appflow: 
 [Flow](./resources/Appflow/Flow.md), [ConnectorProfile](./resources/Appflow/ConnectorProfile.md)
+* AppIntegrations: 
+[EventIntegration](./resources/AppIntegrations/EventIntegration.md)
 * ApplicationAutoScaling: 
 [Policy](./resources/ApplicationAutoScaling/Policy.md), [Target](./resources/ApplicationAutoScaling/Target.md)
 * ApplicationInsights: 
