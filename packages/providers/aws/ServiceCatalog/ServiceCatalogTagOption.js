@@ -59,6 +59,7 @@ exports.ServiceCatalogTagOption = () => ({
     method: "listTagOptions",
     getParam: "TagOptionDetails",
     decorate,
+    ignoreErrorCodes: ["TagOptionNotMigratedException"],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceCatalog.html#createTagOption-property
   create: {

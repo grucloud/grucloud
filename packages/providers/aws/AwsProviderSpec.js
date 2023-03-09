@@ -106,11 +106,13 @@ const GROUPS = [
   ["Grafana", "grafana"],
   ["IdentityStore", "identitystore"],
   ["Inspector2", "inspector2"],
+  ["Keyspaces", "keyspaces"],
   ["Kinesis", "kinesis"],
   ["KinesisVideo", "kinesisvideo"],
   ["KMS", "kms"],
   ["LakeFormation", "lakeformation"],
   ["Lambda", "lambda"],
+  ["LicenseManager", "license-manager"],
   ["Lightsail", "lightsail"],
   ["Macie2", "macie"],
   ["MediaConnect", "mediaconnect"],
@@ -157,11 +159,19 @@ const GROUPS = [
   ["TimestreamWrite", "timestream-write"],
   ["Transfer", "transfer"],
   ["WAFv2", "waf"],
+  ["WorkSpaces", "workspaces"],
+  ["WorkSpacesWeb", "workspaces-web"],
   ["XRay", "xray"],
 ];
 
+// TODO open an AWS ticket support
 const mapRegionService = {
-  "us-east-1": ["RedshiftServerless", "OpenSearch", "DirectoryService"],
+  "us-east-1": [
+    "RedshiftServerless",
+    "OpenSearch",
+    "DirectoryService",
+    "Keyspaces",
+  ],
 };
 
 const GROUPS_MISSING = [

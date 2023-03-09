@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project keyspaces-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Keyspaces
+++++ Keyspace (1)
+++++ Table (1)
+@endmindmap
