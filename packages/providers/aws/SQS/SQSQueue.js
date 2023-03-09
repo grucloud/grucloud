@@ -55,7 +55,7 @@ const findName = () => pipe([queueUrlToName]);
 const assignTags = ({ endpoint }) =>
   pipe([
     assign({
-      tags: pipe([pickId, endpoint().listQueueTags, get("Tags")]),
+      Tags: pipe([pickId, endpoint().listQueueTags, get("Tags")]),
     }),
   ]);
 
