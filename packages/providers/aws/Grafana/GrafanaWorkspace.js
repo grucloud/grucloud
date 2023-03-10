@@ -127,6 +127,7 @@ exports.GrafanaWorkspace = () => ({
     "workspaceRoleArn",
     "vpcConfiguration",
     "authentication",
+    "networkAccessControl",
   ],
   inferName: () =>
     pipe([
@@ -174,6 +175,20 @@ exports.GrafanaWorkspace = () => ({
       list: true,
       dependencyIds: ({ lives, config }) =>
         get("vpcConfiguration.securityGroupIds"),
+    },
+    prefixLists: {
+      type: "ManagedPrefixList",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("networkAccessControl.prefixListIds")]),
+    },
+    vpcEndpoints: {
+      type: "VpcEndpoint",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("networkAccessControl.vpceIds")]),
     },
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],
@@ -233,6 +248,8 @@ exports.GrafanaWorkspace = () => ({
       securityGroups,
       workspaceRole,
       organizationalUnits,
+      prefixLists,
+      vpcEndpoints,
     },
     config,
   }) =>
@@ -272,6 +289,28 @@ exports.GrafanaWorkspace = () => ({
             securityGroupIds: pipe([
               () => securityGroups,
               map((securityGroup) => getField(securityGroup, "GroupId")),
+            ])(),
+          },
+        })
+      ),
+      when(
+        () => prefixLists,
+        defaultsDeep({
+          networkAccessControl: {
+            prefixListIds: pipe([
+              () => prefixLists,
+              map((prefixList) => getField(prefixList, "PrefixListId")),
+            ])(),
+          },
+        })
+      ),
+      when(
+        () => vpcEndpoints,
+        defaultsDeep({
+          networkAccessControl: {
+            prefixListIds: pipe([
+              () => vpcEndpoints,
+              map((vpcEndpoint) => getField(vpcEndpoint, "VpcEndpointId")),
             ])(),
           },
         })
