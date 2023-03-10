@@ -227,7 +227,9 @@ exports.EC2Subnet = ({ compare }) => ({
       switchCase([
         get("DefaultForAz"),
         pipe([get("AvailabilityZone", ""), last, prepend("subnet-default-")]),
+        get("Tags"),
         getResourceNameFromTag(),
+        get("SubnetId"),
       ]),
     ]),
   inferName:

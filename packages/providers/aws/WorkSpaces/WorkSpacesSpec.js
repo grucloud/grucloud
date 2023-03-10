@@ -5,12 +5,9 @@ const { defaultsDeep } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 const { createAwsService } = require("../AwsService");
 
-// const {
-//   WorkSpacesDirectory,
-// } = require("./WorkSpacesDirectory");
-// const {
-//   WorkSpacesWorkspace,
-// } = require("./WorkSpacesWorkspace");
+const { WorkSpacesDirectory } = require("./WorkSpacesDirectory");
+const { WorkSpacesIpGroup } = require("./WorkSpacesIpGroup");
+const { WorkSpacesWorkspace } = require("./WorkSpacesWorkspace");
 
 //  https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html
 const GROUP = "WorkSpaces";
@@ -20,8 +17,9 @@ const compare = compareAws({ tagsKey, key: "Key" });
 
 module.exports = pipe([
   () => [
-    // WorkSpacesDirectory({}),
-    // WorkSpacesWorkspace({}),
+    WorkSpacesDirectory({}),
+    WorkSpacesIpGroup({}),
+    WorkSpacesWorkspace({}),
   ],
   map(
     pipe([
