@@ -121,8 +121,10 @@ exports.WorkSpacesWorkspace = () => ({
           switchCase([
             isEmpty,
             pipe([() => PendingRequests, first]),
-            (ErrorMessage) => {
-              throw Error(ErrorMessage);
+            (message) => {
+              const error = Error(message);
+              error.message = message;
+              throw error;
             },
           ]),
         ])(),

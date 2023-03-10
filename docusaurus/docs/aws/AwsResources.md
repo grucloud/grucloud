@@ -182,6 +182,8 @@ List of resources for provider aws:
 [Account](./resources/Organisations/Account.md), [Policy](./resources/Organisations/Policy.md), [PolicyAttachment](./resources/Organisations/PolicyAttachment.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md), [Root](./resources/Organisations/Root.md)
 * Pipes: 
 [Pipe](./resources/Pipes/Pipe.md)
+* QLDB: 
+[Ledger](./resources/QLDB/Ledger.md), [Stream](./resources/QLDB/Stream.md)
 * RAM: 
 [ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * RDS: 

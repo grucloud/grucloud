@@ -15,6 +15,7 @@ const {
 } = require("rubico");
 const {
   defaultsDeep,
+  isIn,
   first,
   pluck,
   callProp,
@@ -107,6 +108,9 @@ exports.MyModuleMyResource = () => ({
     pickCreated: ({ payload }) => pipe([get("MyResource")]),
     // pickCreated: ({ payload }) => pipe([() => payload]),
     // pickCreated: ({ payload }) => pipe([identity]),
+    // isInstanceUp: pipe([get("State"), isIn(["RUNNING"])]),
+    // isInstanceError: pipe([get("State"), isIn(["FAILED"])]),
+    // getErrorMessage: pipe([get("StateChangeReason.Message", "FAILED")]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#updateMyResource-property
   update: {

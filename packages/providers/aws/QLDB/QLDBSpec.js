@@ -7,8 +7,8 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QLDB.html
 
-// const { QLDBLedger } = require("./QLDBLedger");
-// const { QLDBStream } = require("./QLDBStream");
+const { QLDBLedger } = require("./QLDBLedger");
+const { QLDBStream } = require("./QLDBStream");
 
 const GROUP = "QLDB";
 
@@ -18,8 +18,8 @@ const compare = compareAws({ tagsKey, key: "Key" });
 module.exports = pipe([
   () => [
     //
-    // QLDBLedger({}),
-    // QLDBStream({}),
+    QLDBLedger({}),
+    QLDBStream({}),
   ],
   map(
     pipe([

@@ -1241,6 +1241,7 @@
             "rds-data",
             "redshift",
             "redshift-data",
+            "redshift-serverless",
             "rekognition",
             "resiliencehub",
             "resource-explorer-2",
