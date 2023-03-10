@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project workspaces-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ DirectoryService
+++++ Directory (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
++++ IAM
+++++ Role (1)
++++ KMS
+++++ Key (1)
++++ WorkSpaces
+++++ Directory (1)
+++++ IpGroup (1)
+++++ Workspace (1)
+@endmindmap
