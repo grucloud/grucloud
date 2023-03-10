@@ -9,6 +9,12 @@ const { createAwsService } = require("../AwsService");
 //   LicenseManagerAssociation,
 // } = require("./LicenseManagerAssociation");
 // const {
+//   LicenseManagerGrant,
+// } = require("./LicenseManagerGrant");
+// const {
+//   LicenseManagerGrantAccepter,
+// } = require("./LicenseManagerGrantAccepter");
+// const {
 //   LicenseManagerLicenseConfiguration,
 // } = require("./LicenseManagerLicenseConfiguration");
 
@@ -21,6 +27,8 @@ const compare = compareAws({ tagsKey, key: "Key" });
 module.exports = pipe([
   () => [
     // LicenseManagerAssociation({}),
+    // LicenseManagerGrant({}),
+    // LicenseManagerGrantAccepter({}),
     // LicenseManagerLicenseConfiguration({}),
   ],
   map(

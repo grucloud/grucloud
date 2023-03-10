@@ -12,6 +12,22 @@ describe("LicenseManager", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("Grant", () =>
+    pipe([
+      () => ({
+        groupType: "LicenseManager::Grant",
+        livesNotFound: ({ config }) => [{ GrantArn: "" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("GrantAccepter", () =>
+    pipe([
+      () => ({
+        groupType: "LicenseManager::GrantAccepter",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it.skip("LicenseConfiguration", () =>
     pipe([
       () => ({
