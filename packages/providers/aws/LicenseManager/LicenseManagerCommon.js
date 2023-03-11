@@ -10,3 +10,9 @@ exports.Tagger = createTagger({
   TagsKey: "Tags",
   UnTagsKey: "TagKeys",
 });
+
+exports.ignoreErrorCodes = [
+  "ResourceNotFoundException",
+  "InvalidParameterValueException",
+  "ValidationException",
+];

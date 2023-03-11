@@ -228,12 +228,28 @@ const isInstanceDown = (instance) =>
     includes(getStateName(instance)),
   ])();
 
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        tap(({ InstanceId }) => {
+          assert(InstanceId);
+        }),
+        ({ InstanceId }) =>
+          `arn:aws:ec2:${
+            config.region
+          }:${config.accountId()}:instance/${InstanceId}`,
+      ]),
+    }),
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
 const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
+    assignArn({ config }),
     assign({
       Image: imageDescriptionFromId({ config }),
     }),
@@ -289,6 +305,7 @@ const decorate = ({ endpoint, config }) =>
       not(eq(get("CreditSpecification.CpuCredits"), "unlimited")),
       omit(["CreditSpecification"])
     ),
+
     tap((params) => {
       assert(true);
     }),
@@ -516,6 +533,7 @@ exports.EC2Instance = () => ({
   ignoreErrorCodes,
   managedByOther,
   omitProperties: [
+    "Arn",
     "KeyName",
     "PublicIpAddress",
     "AmiLaunchIndex",

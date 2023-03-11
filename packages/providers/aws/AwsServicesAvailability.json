@@ -3087,6 +3087,7 @@
             "resource-groups",
             "resourcegroupstaggingapi",
             "route53",
+            "route53resolver",
             "s3",
             "secretsmanager",
             "servicediscovery",
