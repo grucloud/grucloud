@@ -7,10 +7,15 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html
 
-// const { QuickSightDataSource } = require("./QuickSightDataSource");
-// const { QuickSightGroupMembership } = require("./QuickSightGroupMembership");
-// const { QuickSightUser } = require("./QuickSightUser");
-// const { QuickSightView } = require("./QuickSightView");
+const { QuickSightDashboard } = require("./QuickSightDashboard");
+const { QuickSightDataSet } = require("./QuickSightDataSet");
+
+const { QuickSightDataSource } = require("./QuickSightDataSource");
+const { QuickSightGroup } = require("./QuickSightGroup");
+const { QuickSightGroupMembership } = require("./QuickSightGroupMembership");
+const { QuickSightTemplate } = require("./QuickSightTemplate");
+const { QuickSightTheme } = require("./QuickSightTheme");
+const { QuickSightUser } = require("./QuickSightUser");
 
 const GROUP = "QuickSight";
 
@@ -19,11 +24,14 @@ const compare = compareAws({ tagsKey, key: "Key" });
 
 module.exports = pipe([
   () => [
-    //
-    // QuickSightDataSource({}),
-    // QuickSightGroupMembership({}),
-    // QuickSightUser({})
-    // QuickSightView({})
+    QuickSightDashboard({}),
+    QuickSightDataSet({}),
+    QuickSightDataSource({}),
+    QuickSightGroup({}),
+    QuickSightGroupMembership({}),
+    QuickSightTemplate({}),
+    QuickSightTheme({}),
+    QuickSightUser({}),
   ],
   map(
     pipe([
