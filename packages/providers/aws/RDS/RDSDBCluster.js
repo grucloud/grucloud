@@ -1,6 +1,13 @@
 const assert = require("assert");
 const { assign, map, pipe, tap, get, eq, pick, omit, or } = require("rubico");
-const { defaultsDeep, pluck, when } = require("rubico/x");
+const {
+  defaultsDeep,
+  pluck,
+  when,
+  first,
+  unless,
+  isEmpty,
+} = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -38,6 +45,14 @@ const decorate = () =>
       ScalingConfiguration: ScalingConfigurationInfo,
     }),
     assignManageMasterUserPassword,
+    unless(
+      pipe([get("DomainMemberships"), isEmpty]),
+      pipe([
+        assign({
+          Domain: pipe([get("DomainMemberships"), first, get("Domain")]),
+        }),
+      ])
+    ),
   ]);
 
 const pickId = pipe([
@@ -55,6 +70,11 @@ exports.RDSDBCluster = ({ compare }) => ({
   findName: () => get("DBClusterIdentifier"),
   findId: () => get("DBClusterIdentifier"),
   dependencies: {
+    directory: {
+      type: "Directory",
+      group: "DirectoryService",
+      dependencyId: ({ lives, config }) => pipe([get("Domain")]),
+    },
     dbClusterParameterGroup: {
       type: "DBClusterParameterGroup",
       group: "RDS",
@@ -154,8 +174,10 @@ exports.RDSDBCluster = ({ compare }) => ({
     "EnabledCloudwatchLogsExports", // TODO Check
     "ActivityStreamStatus",
     "DomainMemberships",
+    "Domain",
     "EarliestBacktrackTime",
     "ReaderEndpoint",
+    "ActivityStreamKmsKeyId",
   ],
   propertiesDefault: {
     MultiAZ: false,
@@ -264,6 +286,7 @@ exports.RDSDBCluster = ({ compare }) => ({
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: {
+      directory,
       dbSubnetGroup,
       dbClusterParameterGroup,
       globalCluster,
@@ -280,6 +303,12 @@ exports.RDSDBCluster = ({ compare }) => ({
         DBClusterIdentifier: name,
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(
+        () => directory,
+        assign({
+          Domain: () => getField(directory, "DirectoryId"),
+        })
+      ),
       when(
         () => dbClusterParameterGroup,
         assign({

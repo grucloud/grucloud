@@ -3,28 +3,28 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("Workspaces", async function () {
-  it.skip("Directory", () =>
+describe("WorkSpaces", async function () {
+  it("Directory", () =>
     pipe([
       () => ({
-        groupType: "Workspaces::Directory",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "WorkSpaces::Directory",
+        livesNotFound: ({ config }) => [{ DirectoryId: "d-1234567890" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("IpGroup", () =>
+  it("IpGroup", () =>
     pipe([
       () => ({
-        groupType: "Workspaces::IpGroup",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "WorkSpaces::IpGroup",
+        livesNotFound: ({ config }) => [{ GroupId: "wsipg-4lg9qdh9y" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Workspace", () =>
+  it("Workspace", () =>
     pipe([
       () => ({
-        groupType: "Workspaces::Workspace",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "WorkSpaces::Workspace",
+        livesNotFound: ({ config }) => [{ WorkspaceId: "ws-xgydcfbqc" }],
       }),
       awsResourceTest,
     ])());

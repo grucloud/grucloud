@@ -95,6 +95,11 @@ const managedByOther = ({ lives, config }) =>
     ]), // Directory Service
     pipe([get("GroupName"), callProp("startsWith", "cloudhsm-cluster-")]), // CloudHSM
     pipe([get("GroupName"), callProp("startsWith", "aws-cloud9-")]), // Cloud9
+    // WorkSpaces
+    pipe([
+      get("Description"),
+      callProp("startsWith", "Amazon WorkSpaces Security Group"),
+    ]),
     hasKeyInTags({
       key: "aws:eks:cluster-name",
     }),

@@ -60,6 +60,10 @@ exports.TransferWorkflow = () => ({
   // compare: compare({
   //   filterTarget: () => pipe([omit(["compare"])]),
   // }),
+  // TODO dependencies:
+  // - EFS FileSystem
+  // - Lambda Function
+  // - S3 Bucket
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Transfer.html#describeWorkflow-property
   getById: {

@@ -156,6 +156,8 @@ List of resources for provider aws:
 [DataLakeSettings](./resources/LakeFormation/DataLakeSettings.md), [LFTag](./resources/LakeFormation/LFTag.md), [Resource](./resources/LakeFormation/Resource.md)
 * Lambda: 
 [Alias](./resources/Lambda/Alias.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md), [Function](./resources/Lambda/Function.md), [Layer](./resources/Lambda/Layer.md), [Permission](./resources/Lambda/Permission.md)
+* LicenseManager: 
+[Association](./resources/LicenseManager/Association.md), [Grant](./resources/LicenseManager/Grant.md), [GrantAccepter](./resources/LicenseManager/GrantAccepter.md), [License](./resources/LicenseManager/License.md), [LicenseConfiguration](./resources/LicenseManager/LicenseConfiguration.md)
 * Lightsail: 
 [Bucket](./resources/Lightsail/Bucket.md), [Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
 * Macie2: 
@@ -182,6 +184,8 @@ List of resources for provider aws:
 [Account](./resources/Organisations/Account.md), [Policy](./resources/Organisations/Policy.md), [PolicyAttachment](./resources/Organisations/PolicyAttachment.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md), [Root](./resources/Organisations/Root.md)
 * Pipes: 
 [Pipe](./resources/Pipes/Pipe.md)
+* QLDB: 
+[Ledger](./resources/QLDB/Ledger.md), [Stream](./resources/QLDB/Stream.md)
 * RAM: 
 [ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * RDS: 
@@ -248,5 +252,7 @@ List of resources for provider aws:
 [Access](./resources/Transfer/Access.md), [Server](./resources/Transfer/Server.md), [User](./resources/Transfer/User.md), [Workflow](./resources/Transfer/Workflow.md)
 * WAFv2: 
 [WebACL](./resources/WAFv2/WebACL.md), [WebACLCloudFront](./resources/WAFv2/WebACLCloudFront.md), [WebACLAssociation](./resources/WAFv2/WebACLAssociation.md)
+* WorkSpaces: 
+[Directory](./resources/WorkSpaces/Directory.md), [IpGroup](./resources/WorkSpaces/IpGroup.md), [Workspace](./resources/WorkSpaces/Workspace.md)
 * XRay: 
 [EncryptionConfig](./resources/XRay/EncryptionConfig.md), [Group](./resources/XRay/Group.md), [SamplingRule](./resources/XRay/SamplingRule.md)

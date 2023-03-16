@@ -165,6 +165,11 @@ exports.EC2FlowLogs = ({ compare }) => ({
       group: "IAM",
       dependencyId: ({ lives, config }) => get("DeliverLogsPermissionArn"),
     },
+    iamRoleCrossAccount: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => get("DeliverCrossAccountRole"),
+    },
     cloudWatchLogGroup: {
       type: "LogGroup",
       group: "CloudWatchLogs",
@@ -267,6 +272,7 @@ exports.EC2FlowLogs = ({ compare }) => ({
     method: "createFlowLogs",
     pickCreated: ({ payload }) =>
       pipe([get("FlowLogIds"), first, (FlowLogId) => ({ FlowLogId })]),
+    shouldRetryOnExceptionMessages: ["Unable to assume given IAM role"],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteFlowLogs-property
   destroy: {

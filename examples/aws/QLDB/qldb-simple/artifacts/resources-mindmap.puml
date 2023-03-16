@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project qldb-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Account (1)
+++++ RestApi (1)
+++++ RequestValidator (2)
+++++ Stage (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (1)
+++++ Permission (1)
++++ QLDB
+++++ Ledger (1)
+@endmindmap
