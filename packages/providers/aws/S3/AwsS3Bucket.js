@@ -41,7 +41,7 @@ const {
 
 const { createS3 } = require("./AwsS3Common");
 
-const rejectPrefixes = ["appstream", "cf-template"];
+const rejectPrefixes = ["appstream" /*"cf-template"*/];
 
 const managedByOther =
   () =>

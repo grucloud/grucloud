@@ -43,6 +43,7 @@ const compareS3 = compareAws({
 const objectFileNameFromLive = ({
   live: { Bucket, Key, ContentType },
   commandOptions,
+  providerConfig,
 }) =>
   pipe([
     tap((params) => {
@@ -51,6 +52,7 @@ const objectFileNameFromLive = ({
     }),
     //() => `s3/${Bucket}/${Key}.${mime.extension(ContentType)}`,
     () => `s3/${Bucket}/${Key}`,
+    replaceAccountAndRegion({ providerConfig }),
   ])();
 
 //TODO
@@ -296,21 +298,37 @@ module.exports = pipe([
         },
       },
       Client: AwsS3Object,
+      inferName:
+        ({ dependenciesSpec: { bucket } }) =>
+        ({ Key }) =>
+          pipe([
+            tap((params) => {
+              assert(bucket);
+              assert(Key);
+            }),
+            () => `${bucket}/${Key}`,
+          ])(),
       compare: compareS3Object,
       ignoreResource: () =>
         or([
           pipe([get("live.Bucket"), ignoreBuckets]),
           pipe([get("name"), ignoreObjects]),
         ]),
-      filterLive: ({ commandOptions, programOptions, resource: { live } }) =>
+      filterLive: ({
+        commandOptions,
+        programOptions,
+        resource: { live },
+        providerConfig,
+      }) =>
         pipe([
-          pick(["ContentType", "ServerSideEncryption", "StorageClass"]),
+          pick(["Key", "ContentType", "ServerSideEncryption", "StorageClass"]),
           assign({
             source: () =>
               objectFileNameFromLive({
                 live,
                 commandOptions,
                 programOptions,
+                providerConfig,
               }),
           }),
         ]),

@@ -4,29 +4,26 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Keyspaces", async function () {
-  it.skip("Keyspace", () =>
+  it("Keyspace", () =>
     pipe([
       () => ({
         groupType: "Keyspaces::Keyspace",
         livesNotFound: ({ config }) => [
           {
-            // arn: `arn:aws:ivschat:${
-            //   config.region
-            // }:${config.accountId()}:logging-configuration/y47bQ0MmtKmd`,
+            keyspaceName: "k123",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Table", () =>
+  it("Table", () =>
     pipe([
       () => ({
         groupType: "Keyspaces::Table",
         livesNotFound: ({ config }) => [
           {
-            // arn: `arn:aws:ivschat:${
-            //   config.region
-            // }:${config.accountId()}:room/32no4tl70Fmr`,
+            keyspaceName: "k123",
+            tableName: "t123",
           },
         ],
       }),

@@ -1262,6 +1262,7 @@ const readModel = ({
 }) =>
   pipe([
     tap(() => {
+      assert(filterModel);
       assert(writersSpec);
       assert(programOptions);
       assert(programOptions.workingDirectory);

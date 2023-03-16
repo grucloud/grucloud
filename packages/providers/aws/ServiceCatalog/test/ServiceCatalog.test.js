@@ -4,99 +4,146 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("ServiceCatalog", async function () {
-  it.skip("BudgetResourceAssociation", () =>
+  it("BudgetResourceAssociation", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::BudgetResourceAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ResourceId: "prod-123", BudgetName: "b123" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Constraint", () =>
+  it("Constraint", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::Constraint",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "i12345" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("OrganizationsAccess", () =>
+  it("OrganizationsAccess", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::OrganizationsAccess",
         livesNotFound: ({ config }) => [{}],
+        skipGetByName: true,
+        skipGetById: true,
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());
-  it.skip("Portfolio", () =>
+  it("Portfolio", () =>
     pipe([
       () => ({
-        groupType: "ServiceCatalog::Product",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "ServiceCatalog::Portfolio",
+        livesNotFound: ({ config }) => [{ Id: "p123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("PortfolioShare", () =>
+  it("PortfolioShare", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::PortfolioShare",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            PortfolioId: "pt123",
+            Type: "ORGANIZATIONAL_UNIT",
+            OrganizationNode: {
+              Value: "ou-941x-mh5deyma",
+              Type: "ORGANIZATIONAL_UNIT",
+            },
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Product", () =>
+  it("Product", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::Product",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "p123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("ProductPortfolioAssociation", () =>
+  it("ProductPortfolioAssociation", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::ProductPortfolioAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ProductId: "pr123", PortfolioId: "pt123" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("PrincipalPortfolioAssociation ", () =>
+  it("PrincipalPortfolioAssociation", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::PrincipalPortfolioAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            PortfolioId: "pt123",
+            PrincipalARN: `arn:aws:iam::${config.accountId()}:role/zzzzzzz`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("ProvisionedProduct", () =>
+  it("ProvisionedProduct", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::ProvisionedProduct",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "prod1243" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("ProvisioningArtifact", () =>
+  it("ProvisioningArtifact", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::ProvisioningArtifact",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ProductId: "prod-1243", ProvisioningArtifactId: "prov-123" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("ServiceAction", () =>
+  it("ServiceAction", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::ServiceAction",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "Id123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("TagOption", () =>
+  it("ServiceActionAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "ServiceCatalog::ServiceActionAssociation",
+        livesNotFound: ({ config }) => [
+          {
+            ProductId: "prod-123",
+            ProvisioningArtifactId: "arti-123",
+            ServiceActionId: "act-fs-123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("TagOption", () =>
     pipe([
       () => ({
         groupType: "ServiceCatalog::TagOption",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "t123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("TagOptionResourceAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "ServiceCatalog::TagOptionResourceAssociation",
+        livesNotFound: ({ config }) => [
+          { ResourceId: "prod-123", TagOptionId: "t124" },
+        ],
       }),
       awsResourceTest,
     ])());

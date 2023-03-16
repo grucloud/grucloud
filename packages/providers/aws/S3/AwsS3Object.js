@@ -81,7 +81,11 @@ exports.AwsS3Object = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(s3);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 
-  const findName = () => get("Key");
+  const findName =
+    () =>
+    ({ Bucket, Key }) =>
+      `${Bucket}/${Key}`;
+
   const findId = findName;
 
   const findNamespace = findNamespaceInTags;
@@ -232,15 +236,15 @@ exports.AwsS3Object = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name, dependencies }) =>
+  const getByName = ({ name, dependencies, properties }) =>
     pipe([
       tap(() => {
+        assert(config);
         logger.info(`getByName ${name}`);
       }),
-      () => getBucket({ dependencies, name }),
-      (bucket) => ({
-        Bucket: bucket.name,
-        Key: name,
+      fork({
+        Bucket: pipe([() => getBucket({ dependencies, name }), get("name")]),
+        Key: pipe([() => properties({ config }), get("Key")]),
       }),
       getByKey,
     ])();
@@ -254,16 +258,8 @@ exports.AwsS3Object = ({ spec, config }) => {
       }),
       () => ({ Bucket, Key }),
       tryCatch(
-        pipe([s3().headObject, () => true]),
-        switchCase([
-          eq(get("statusCode"), 404),
-          () => false,
-          () => {
-            logger.error(`headObject ${JSON.stringify({ Bucket, Key })}`);
-            logger.error(error);
-            throw error;
-          },
-        ])
+        switchCase([s3().headObject, () => true, () => false]),
+        () => false
       ),
     ])();
 
@@ -349,8 +345,7 @@ exports.AwsS3Object = ({ spec, config }) => {
       }),
       () => otherProps,
       defaultsDeep({
-        Bucket: bucket.config.Bucket,
-        Key: name,
+        Bucket: get("config.Bucket")(bucket),
         Tagging: buildTagsS3Object({ config, namespace, Tags }),
       }),
     ])();

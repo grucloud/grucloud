@@ -12,14 +12,7 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Group", () =>
-    pipe([
-      () => ({
-        groupType: "QuickSight::View",
-        livesNotFound: ({ config }) => [{ Group: "e123" }],
-      }),
-      awsResourceTest,
-    ])());
+
   it.skip("GroupMembership", () =>
     pipe([
       () => ({
@@ -32,6 +25,14 @@ describe("QuickSight", async function () {
     pipe([
       () => ({
         groupType: "QuickSight::User",
+        livesNotFound: ({ config }) => [{ Group: "e123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("Group", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::View",
         livesNotFound: ({ config }) => [{ Group: "e123" }],
       }),
       awsResourceTest,

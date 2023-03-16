@@ -22,6 +22,8 @@ List of resources for provider aws:
 [Application](./resources/AppConfig/Application.md), [ConfigurationProfile](./resources/AppConfig/ConfigurationProfile.md), [Deployment](./resources/AppConfig/Deployment.md), [DeploymentStrategy](./resources/AppConfig/DeploymentStrategy.md), [Environment](./resources/AppConfig/Environment.md), [Extension](./resources/AppConfig/Extension.md), [ExtensionAssociation](./resources/AppConfig/ExtensionAssociation.md), [HostedConfigurationVersion](./resources/AppConfig/HostedConfigurationVersion.md)
 * Appflow: 
 [Flow](./resources/Appflow/Flow.md), [ConnectorProfile](./resources/Appflow/ConnectorProfile.md)
+* AppIntegrations: 
+[EventIntegration](./resources/AppIntegrations/EventIntegration.md)
 * ApplicationAutoScaling: 
 [Policy](./resources/ApplicationAutoScaling/Policy.md), [Target](./resources/ApplicationAutoScaling/Target.md)
 * ApplicationInsights: 
@@ -188,6 +190,10 @@ List of resources for provider aws:
 [Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md), [EndpointAccess](./resources/Redshift/EndpointAccess.md), [EndpointAuthorization](./resources/Redshift/EndpointAuthorization.md), [UsageLimit](./resources/Redshift/UsageLimit.md)
 * Rekognition: 
 [StreamProcessor](./resources/Rekognition/StreamProcessor.md)
+* ResourceExplorer2: 
+[Index](./resources/ResourceExplorer2/Index.md), [View](./resources/ResourceExplorer2/View.md)
+* ResourceGroups: 
+[Group](./resources/ResourceGroups/Group.md)
 * Route53: 
 [CidrCollection](./resources/Route53/CidrCollection.md), [DelegationSet](./resources/Route53/DelegationSet.md), [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
 * Route53Domains: 
@@ -212,6 +218,8 @@ List of resources for provider aws:
 [Secret](./resources/SecretsManager/Secret.md), [SecretRotation](./resources/SecretsManager/SecretRotation.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SecurityHub: 
 [Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [ProductSubscription](./resources/SecurityHub/ProductSubscription.md), [StandardsControl](./resources/SecurityHub/StandardsControl.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
+* ServiceCatalog: 
+[BudgetResourceAssociation](./resources/ServiceCatalog/BudgetResourceAssociation.md), [Constraint](./resources/ServiceCatalog/Constraint.md), [OrganizationsAccess](./resources/ServiceCatalog/OrganizationsAccess.md), [Portfolio](./resources/ServiceCatalog/Portfolio.md), [PortfolioShare](./resources/ServiceCatalog/PortfolioShare.md), [Product](./resources/ServiceCatalog/Product.md), [ProductPortfolioAssociation](./resources/ServiceCatalog/ProductPortfolioAssociation.md), [PrincipalPortfolioAssociation](./resources/ServiceCatalog/PrincipalPortfolioAssociation.md), [ProvisionedProduct](./resources/ServiceCatalog/ProvisionedProduct.md), [ProvisioningArtifact](./resources/ServiceCatalog/ProvisioningArtifact.md), [ServiceAction](./resources/ServiceCatalog/ServiceAction.md), [ServiceActionAssociation](./resources/ServiceCatalog/ServiceActionAssociation.md), [TagOption](./resources/ServiceCatalog/TagOption.md), [TagOptionResourceAssociation](./resources/ServiceCatalog/TagOptionResourceAssociation.md)
 * ServiceDiscovery: 
 [HttpNamespace](./resources/ServiceDiscovery/HttpNamespace.md), [PrivateDnsNamespace](./resources/ServiceDiscovery/PrivateDnsNamespace.md), [PublicDnsNamespace](./resources/ServiceDiscovery/PublicDnsNamespace.md), [Service](./resources/ServiceDiscovery/Service.md)
 * ServiceQuotas: 

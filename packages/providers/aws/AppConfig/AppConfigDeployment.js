@@ -27,7 +27,10 @@ const buildArn =
     `arn:aws:appconfig:${region}:${accountId()}:application/${ApplicationId}/environment/${EnvironmentId}/deployment/${DeploymentNumber}`;
 
 const decorate = ({ endpoint, config }) =>
-  pipe([assignTags({ buildArn: buildArn({ config }), endpoint })]);
+  pipe([
+    //
+    assignTags({ buildArn: buildArn({ config }), endpoint }),
+  ]);
 
 exports.AppConfigDeployment = () => ({
   type: "Deployment",

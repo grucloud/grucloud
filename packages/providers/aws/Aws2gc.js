@@ -215,7 +215,7 @@ const downloadAssets = ({ specs, commandOptions, programOptions }) =>
         writersSpec: createWritersSpec(specs),
         commandOptions,
         programOptions,
-        filterModel,
+        filterModel: filterModel({ commandOptions }),
       }),
       mapping: readMapping({ commandOptions, programOptions }),
     }),

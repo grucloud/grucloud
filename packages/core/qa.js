@@ -22,6 +22,7 @@ const isEmptyPlan = pipe([
 
 exports.testEnd2End = ({
   programOptions,
+  commandOptions,
   title,
   listOptions,
   outputDir = "",
@@ -104,6 +105,7 @@ exports.testEnd2End = ({
                 outputDir,
                 outputEnv: "default.template.env",
                 prompt: false,
+                ...commandOptions,
               },
             }),
           // () =>

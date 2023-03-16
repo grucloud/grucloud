@@ -16,9 +16,9 @@ exports.createResourcesS3Object = async ({ provider }) => {
     map((file) => ({
       type: "Object",
       group: "S3",
-      name: file,
       dependencies: () => ({ bucket: bucketName }),
       properties: () => ({
+        Key: file,
         ACL: "public-read",
         ContentType: mime.lookup(file) || "text/plain",
         source: path.join(websiteDir, file),
