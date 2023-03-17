@@ -3,23 +3,25 @@ const { tap, pipe, map } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { createAwsService } = require("../AwsService");
-
 const { compareAws } = require("../AwsCommon");
-const { CodeDeployApplication } = require("./CodeDeployApplication");
-const { CodeDeployDeploymentGroup } = require("./CodeDeployDeploymentGroup");
 
-const GROUP = "CodeDeploy";
-const tagsKey = "tags";
+// const {
+//   CodeGuruReviewerRepositoryAssociation,
+// } = require("./CodeGuruReviewerRepositoryAssociation");
+
+const GROUP = "CodeGuruReviewer";
+
+const tagsKey = "Tags";
+
 const compare = compareAws({
   tagsKey,
-  key: "key",
+  key: "Key",
 });
 
 module.exports = pipe([
   () => [
     //
-    CodeDeployApplication({ compare }),
-    CodeDeployDeploymentGroup({ compare }),
+    //CodeGuruReviewerRepositoryAssociation({ compare }),
   ],
   map(
     pipe([

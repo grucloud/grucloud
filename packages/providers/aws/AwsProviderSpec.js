@@ -64,6 +64,7 @@ const GROUPS = [
   ["CodeCommit", "codecommit"],
   ["CodeDeploy", "codedeploy"],
   ["CodePipeline", "codepipeline"],
+  ["CodeGuruReviewer", "codeguru-reviewer"],
   ["CodeStar", "codestar"],
   ["CodeStarConnections", "codestar-connections"],
   ["CodeStarNotifications", "codestar-notifications"],
