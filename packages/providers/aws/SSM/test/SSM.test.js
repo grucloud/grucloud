@@ -93,7 +93,7 @@ describe("SSM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ResourceDataSync", () =>
+  it("ResourceDataSync", () =>
     pipe([
       () => ({
         groupType: "SSM::ResourceDataSync",
