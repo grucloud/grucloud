@@ -20,6 +20,8 @@ const Tagger = createTagger({
   UnTagsKey: "TagKeys",
 });
 
+exports.Tagger = Tagger;
+
 const buildArn = () =>
   pipe([
     get("ARN"),
@@ -27,32 +29,6 @@ const buildArn = () =>
       assert(arn);
     }),
   ]);
-
-// // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#tagResource-property
-// exports.tagResource =
-//   ({ findId }) =>
-//   ({ endpoint }) =>
-//   ({ live }) =>
-//     pipe([
-//       tap((params) => {
-//         assert(findId(live));
-//       }),
-//       (Tags) => ({ ResourceARN: findId(live), Tags }),
-//       endpoint().tagResource,
-//     ]);
-
-// // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#untagResource-property
-// exports.untagResource =
-//   ({ findId }) =>
-//   ({ endpoint }) =>
-//   ({ live }) =>
-//     pipe([
-//       tap((params) => {
-//         assert(findId(live));
-//       }),
-//       (TagKeys) => ({ ResourceARN: findId(live), TagKeys }),
-//       endpoint().untagResource,
-//     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#listTagsForResource-property
 const assignTags = ({ findId, endpoint }) =>
@@ -70,6 +46,8 @@ const assignTags = ({ findId, endpoint }) =>
 exports.assignTags = assignTags;
 
 const findId = () => pipe([get("ARN")]);
+
+const pickId = pick(["Id", "LockToken", "Name", "Scope"]);
 
 const decorate =
   ({ Scope }) =>
@@ -128,13 +106,7 @@ exports.createModelWebAcls = ({ compare, type, region, Scope }) => ({
   create: {
     method: "createWebACL",
     pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("Summary"),
-        defaultsDeep({ Scope }),
-      ]),
+      pipe([get("Summary"), defaultsDeep({ Scope })]),
     //isInstanceUp: eq(get("Status"), "DEPLOYED"),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#updateWebACL-property
@@ -143,21 +115,14 @@ exports.createModelWebAcls = ({ compare, type, region, Scope }) => ({
     filterParams: ({ payload, live }) =>
       pipe([
         () => payload,
-        defaultsDeep(
-          pipe([() => live, pick(["Id", "LockToken", "Name", "Scope"])])()
-        ),
+        defaultsDeep(pipe([() => live, pickId])()),
         omit(["Tags"]),
       ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#deleteWebACL-property
   destroy: {
     method: "deleteWebACL",
-    pickId: pipe([
-      pick(["Id", "LockToken", "Name", "Scope"]),
-      tap(({ Scope }) => {
-        assert(Scope);
-      }),
-    ]),
+    pickId,
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

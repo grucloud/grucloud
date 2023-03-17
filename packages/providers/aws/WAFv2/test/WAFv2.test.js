@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("WAFv2", async function () {
-  it.skip("RegexPatternSet", () =>
+  it("RegexPatternSet", () =>
     pipe([
       () => ({
         groupType: "WAFv2::RegexPatternSet",

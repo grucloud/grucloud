@@ -259,7 +259,7 @@ List of resources for provider aws:
 * Transfer: 
 [Access](./resources/Transfer/Access.md), [Server](./resources/Transfer/Server.md), [User](./resources/Transfer/User.md), [Workflow](./resources/Transfer/Workflow.md)
 * WAFv2: 
-[WebACL](./resources/WAFv2/WebACL.md), [WebACLCloudFront](./resources/WAFv2/WebACLCloudFront.md), [WebACLAssociation](./resources/WAFv2/WebACLAssociation.md)
+[RegexPatternSet](./resources/WAFv2/RegexPatternSet.md), [WebACL](./resources/WAFv2/WebACL.md), [WebACLCloudFront](./resources/WAFv2/WebACLCloudFront.md), [WebACLAssociation](./resources/WAFv2/WebACLAssociation.md)
 * WorkSpaces: 
 [Directory](./resources/WorkSpaces/Directory.md), [IpGroup](./resources/WorkSpaces/IpGroup.md), [Workspace](./resources/WorkSpaces/Workspace.md)
 * XRay: 
