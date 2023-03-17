@@ -11,8 +11,8 @@ const {
 //TODO Host
 
 const GROUP = "CodeStarConnections";
-const tagsKey = "tags";
-const compare = compareAws({ tagsKey });
+const tagsKey = "Tags";
+const compare = compareAws({ tagsKey, key: "Key" });
 
 module.exports = pipe([
   () => [

@@ -76,8 +76,12 @@ List of resources for provider aws:
 [Application](./resources/CodeDeploy/Application.md), [DeploymentGroup](./resources/CodeDeploy/DeploymentGroup.md)
 * CodePipeline: 
 [Pipeline](./resources/CodePipeline/Pipeline.md)
+* CodeStar: 
+[Project](./resources/CodeStar/Project.md)
 * CodeStarConnections: 
 [Connection](./resources/CodeStarConnections/Connection.md)
+* CodeStarNotifications: 
+[NotificationRule](./resources/CodeStarNotifications/NotificationRule.md)
 * Cognito: 
 [IdentityPool](./resources/Cognito/IdentityPool.md), [IdentityPoolProviderPrincipalTag](./resources/Cognito/IdentityPoolProviderPrincipalTag.md), [IdentityPoolRolesAttachments](./resources/Cognito/IdentityPoolRolesAttachments.md)
 * CognitoIdentityServiceProvider: 
@@ -168,6 +172,8 @@ List of resources for provider aws:
 [Channel](./resources/MediaLive/Channel.md), [Input](./resources/MediaLive/Input.md), [InputSecurityGroup](./resources/MediaLive/InputSecurityGroup.md), [Multiplex](./resources/MediaLive/Multiplex.md), [MultiplexProgram](./resources/MediaLive/MultiplexProgram.md)
 * MediaPackage: 
 [Channel](./resources/MediaPackage/Channel.md), [OriginEndpoint](./resources/MediaPackage/OriginEndpoint.md)
+* MediaStore: 
+[Container](./resources/MediaStore/Container.md)
 * MemoryDB: 
 [ACL](./resources/MemoryDB/ACL.md), [Cluster](./resources/MemoryDB/Cluster.md), [ParameterGroup](./resources/MemoryDB/ParameterGroup.md), [SubnetGroup](./resources/MemoryDB/SubnetGroup.md), [User](./resources/MemoryDB/User.md)
 * MQ: 

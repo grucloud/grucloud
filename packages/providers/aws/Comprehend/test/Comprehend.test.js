@@ -6,6 +6,15 @@ const { awsResourceTest } = require("../../AwsResourceTester");
 const config = () => ({ includeGroups: ["Comprehend"] });
 
 describe("Comprehend", async function () {
+  it.skip("DominantLanguageDetectionJob", () =>
+    pipe([
+      () => ({
+        config,
+        groupType: "Comprehend::DominantLanguageDetectionJob",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("DocumentClassifier", () =>
     pipe([
       () => ({
@@ -30,6 +39,15 @@ describe("Comprehend", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("EntitiesDetectionJob", () =>
+    pipe([
+      () => ({
+        config,
+        groupType: "Comprehend::EntitiesDetectionJob",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("EntityRecognizer", () =>
     pipe([
       () => ({
@@ -42,6 +60,24 @@ describe("Comprehend", async function () {
             }:${config.accountId()}:entity-recognizer/m1`,
           },
         ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("KeyPhrasesDetectionJob", () =>
+    pipe([
+      () => ({
+        config,
+        groupType: "Comprehend::KeyPhrasesDetectionJob",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("SentimentDetectionJob", () =>
+    pipe([
+      () => ({
+        config,
+        groupType: "Comprehend::SentimentDetectionJob",
+        livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
