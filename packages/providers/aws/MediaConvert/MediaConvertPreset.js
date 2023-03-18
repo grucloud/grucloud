@@ -1,13 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
+const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
-const { Tagger, assignTags, setup } = require("./MediaConvertCommon");
-
-const cannotBeDeleted = () => pipe([eq(get("Name"), "Default")]);
+const { Tagger, assignTags } = require("./MediaConvertCommon");
 
 const buildArn = () =>
   pipe([
@@ -27,31 +25,19 @@ const pickId = pipe([
 const decorate = ({ endpoint, config, endpointConfig }) =>
   pipe([
     tap((params) => {
-      assert(endpointConfig);
       assert(endpoint);
     }),
     assignTags({ buildArn: buildArn(config), endpoint, endpointConfig }),
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html
-exports.MediaConvertQueue = () => ({
-  type: "Queue",
+exports.MediaConvertPreset = () => ({
+  type: "Preset",
   package: "mediaconvert",
   client: "MediaConvert",
   propertiesDefault: {},
-  omitProperties: [
-    "Arn",
-    "CreatedAt",
-    "LastUpdated",
-    "ProgressingJobsCount",
-    "Status",
-    "SubmittedJobsCount",
-    "Type",
-  ],
-  setup,
+  omitProperties: ["Arn", "CreatedAt", "LastUpdated"],
+  getEndpointConfig: identity,
   inferName: () =>
     pipe([
       get("Name"),
@@ -73,42 +59,34 @@ exports.MediaConvertQueue = () => ({
         assert(id);
       }),
     ]),
-  cannotBeDeleted,
-  managedByOther: cannotBeDeleted,
   ignoreErrorCodes: ["NotFoundException"],
-  getEndpointConfig: identity,
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#getQueue-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#getPreset-property
   getById: {
-    getEndpointConfig: identity,
-    method: "getQueue",
-    getField: "Queue",
+    method: "getPreset",
+    getField: "Preset",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#listQueues-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#listPresets-property
   getList: {
-    getEndpointConfig: identity,
-    method: "listQueues",
-    getParam: "Queues",
+    method: "listPresets",
+    getParam: "Presets",
     decorate: ({ getById }) => pipe([getById]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#createQueue-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#createPreset-property
   create: {
-    getEndpointConfig: identity,
-    method: "createQueue",
-    pickCreated: ({ payload }) => pipe([get("Queue")]),
+    method: "createPreset",
+    pickCreated: ({ payload }) => pipe([get("Preset")]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#updateQueue-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#updatePreset-property
   update: {
-    getEndpointConfig: identity,
-    method: "updateQueue",
+    method: "updatePreset",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#deleteQueue-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#deletePreset-property
   destroy: {
-    getEndpointConfig: identity,
-    method: "deleteQueue",
+    method: "deletePreset",
     pickId,
   },
   getByName: getByNameCore,

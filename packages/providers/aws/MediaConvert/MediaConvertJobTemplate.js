@@ -1,13 +1,14 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
+const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
-const { getByNameCore } = require("@grucloud/core/Common");
-const { buildTagsObject } = require("@grucloud/core/Common");
+const {
+  getByNameCore,
+  omitIfEmpty,
+  buildTagsObject,
+} = require("@grucloud/core/Common");
 
 const { Tagger, assignTags, setup } = require("./MediaConvertCommon");
-
-const cannotBeDeleted = () => pipe([eq(get("Name"), "Default")]);
 
 const buildArn = () =>
   pipe([
@@ -24,34 +25,29 @@ const pickId = pipe([
   pick(["Name"]),
 ]);
 
-const decorate = ({ endpoint, config, endpointConfig }) =>
+const decorate = ({ endpoint, endpointConfig, config }) =>
   pipe([
     tap((params) => {
-      assert(endpointConfig);
       assert(endpoint);
+      assert(endpointConfig);
     }),
     assignTags({ buildArn: buildArn(config), endpoint, endpointConfig }),
-    tap((params) => {
-      assert(true);
-    }),
+    omitIfEmpty(["HopDestinations"]),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html
-exports.MediaConvertQueue = () => ({
-  type: "Queue",
+exports.MediaConvertJobTemplate = () => ({
+  type: "JobTemplate",
   package: "mediaconvert",
   client: "MediaConvert",
-  propertiesDefault: {},
-  omitProperties: [
-    "Arn",
-    "CreatedAt",
-    "LastUpdated",
-    "ProgressingJobsCount",
-    "Status",
-    "SubmittedJobsCount",
-    "Type",
-  ],
-  setup,
+  propertiesDefault: {
+    AccelerationSettings: {
+      Mode: "DISABLED",
+    },
+    Priority: 0,
+  },
+  omitProperties: ["Arn", "CreatedAt", "LastUpdated"],
+  getEndpointConfig: identity,
   inferName: () =>
     pipe([
       get("Name"),
@@ -73,42 +69,34 @@ exports.MediaConvertQueue = () => ({
         assert(id);
       }),
     ]),
-  cannotBeDeleted,
-  managedByOther: cannotBeDeleted,
   ignoreErrorCodes: ["NotFoundException"],
-  getEndpointConfig: identity,
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#getQueue-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#getJobTemplate-property
   getById: {
-    getEndpointConfig: identity,
-    method: "getQueue",
-    getField: "Queue",
+    method: "getJobTemplate",
+    getField: "JobTemplate",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#listQueues-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#listJobTemplates-property
   getList: {
-    getEndpointConfig: identity,
-    method: "listQueues",
-    getParam: "Queues",
+    method: "listJobTemplates",
+    getParam: "JobTemplates",
     decorate: ({ getById }) => pipe([getById]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#createQueue-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#createJobTemplate-property
   create: {
-    getEndpointConfig: identity,
-    method: "createQueue",
-    pickCreated: ({ payload }) => pipe([get("Queue")]),
+    method: "createJobTemplate",
+    pickCreated: ({ payload }) => pipe([get("JobTemplate")]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#updateQueue-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#updateJobTemplate-property
   update: {
-    getEndpointConfig: identity,
-    method: "updateQueue",
+    method: "updateJobTemplate",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#deleteQueue-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConvert.html#deleteJobTemplate-property
   destroy: {
-    getEndpointConfig: identity,
-    method: "deleteQueue",
+    method: "deleteJobTemplate",
     pickId,
   },
   getByName: getByNameCore,

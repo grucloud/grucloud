@@ -10,11 +10,15 @@ const GROUP = "MediaConvert";
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
+const { MediaConvertJobTemplate } = require("./MediaConvertJobTemplate");
+const { MediaConvertPreset } = require("./MediaConvertPreset");
 const { MediaConvertQueue } = require("./MediaConvertQueue");
 
 module.exports = pipe([
   () => [
     //
+    MediaConvertJobTemplate({}),
+    MediaConvertPreset({}),
     MediaConvertQueue({}),
   ],
   map(

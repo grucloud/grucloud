@@ -6,7 +6,7 @@ const { awsResourceTest } = require("../../AwsResourceTester");
 const config = () => ({ includeGroups: ["MediaConvert"] });
 
 describe("MediaConvert", async function () {
-  it.skip("JobTemplate", () =>
+  it("JobTemplate", () =>
     pipe([
       () => ({
         config,
@@ -15,7 +15,7 @@ describe("MediaConvert", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Preset", () =>
+  it("Preset", () =>
     pipe([
       () => ({
         config,
