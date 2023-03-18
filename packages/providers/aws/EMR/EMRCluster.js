@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, map, pick } = require("rubico");
+const { pipe, tap, get, eq, not, pick } = require("rubico");
 const { defaultsDeep, when, identity, isIn } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -8,6 +8,11 @@ const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./EMRCommon");
 const { buildTags } = require("../AwsCommon");
+
+const isInstanceDown = pipe([
+  get("Status.State"),
+  isIn(["TERMINATED", "TERMINATED_WITH_ERRORS"]),
+]);
 
 const pickId = pipe([
   pick(["ClusterId"]),
@@ -175,6 +180,7 @@ exports.EMRCluster = ({}) => ({
   getList: {
     method: "listClusters",
     getParam: "Clusters",
+    filterResource: not(isInstanceDown),
     decorate: ({ getById }) => pipe([toClusterId, getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMR.html#runJobFlow-property
@@ -198,10 +204,7 @@ exports.EMRCluster = ({}) => ({
       }),
       ({ ClusterId }) => ({ JobFlowIds: [ClusterId] }),
     ]),
-    isInstanceDown: pipe([
-      get("Status.State"),
-      isIn(["TERMINATED", "TERMINATED_WITH_ERRORS"]),
-    ]),
+    isInstanceDown,
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

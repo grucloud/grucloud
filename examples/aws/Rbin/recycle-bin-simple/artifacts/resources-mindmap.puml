@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project recycle-bin-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Rbin
+++++ Rule (2)
+@endmindmap

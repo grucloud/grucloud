@@ -72,11 +72,6 @@ exports.WAFV2RegexPatternSet = () => ({
     decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#listRegexPatternSets-property
-  getList: {
-    method: "listRegexPatternSets",
-    getParam: "RegexPatternSets",
-    decorate: ({ getById }) => pipe([getById]),
-  },
   getList: ({ endpoint }) =>
     pipe([
       () => ["CLOUDFRONT", "REGIONAL"],

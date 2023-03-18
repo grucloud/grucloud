@@ -147,6 +147,7 @@ const GROUPS = [
   ["QLDB", "qldb"],
   ["QuickSight", "quicksight"],
   ["RAM", "ram"],
+  ["Rbin", "rbin"],
   ["Rekognition", "rekognition"],
   ["Redshift", "redshift"],
   //["RedshiftData", "redshift-data"],
