@@ -91,6 +91,7 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
+  // CloudFront Real-Time Logs deprecated according to ChatGPT
   it("ResponseHeadersPolicy", () =>
     pipe([
       () => ({

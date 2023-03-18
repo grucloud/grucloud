@@ -118,6 +118,8 @@ List of resources for provider aws:
 [Application](./resources/ElasticBeanstalk/Application.md), [ApplicationVersion](./resources/ElasticBeanstalk/ApplicationVersion.md), [Environment](./resources/ElasticBeanstalk/Environment.md)
 * ElasticLoadBalancingV2: 
 [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [TargetGroupAttachments](./resources/ElasticLoadBalancingV2/TargetGroupAttachments.md)
+* EMR: 
+[Cluster](./resources/EMR/Cluster.md)
 * EMRServerless: 
 [Application](./resources/EMRServerless/Application.md)
 * EventBridge: 
