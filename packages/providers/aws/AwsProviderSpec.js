@@ -99,6 +99,7 @@ const GROUPS = [
   ["ElasticTranscoder", "elastictranscoder"],
   ["ElastiCache", "elasticache"],
   ["EMR", "emr"],
+  ["EMRContainers", "emr-containers"],
   ["EMRServerless", "emr-serverless"],
   ["ElasticLoadBalancingV2", "elb"],
   ["Evidently", "evidently"],

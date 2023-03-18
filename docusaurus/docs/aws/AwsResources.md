@@ -120,6 +120,8 @@ List of resources for provider aws:
 [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [TargetGroupAttachments](./resources/ElasticLoadBalancingV2/TargetGroupAttachments.md)
 * EMR: 
 [Cluster](./resources/EMR/Cluster.md)
+* EMRContainers: 
+[VirtualCluster](./resources/EMRContainers/VirtualCluster.md)
 * EMRServerless: 
 [Application](./resources/EMRServerless/Application.md)
 * EventBridge: 
