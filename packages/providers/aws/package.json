@@ -214,6 +214,7 @@
     "@aws-sdk/client-identitystore": "3.279.0",
     "@aws-sdk/client-imagebuilder": "3.279.0",
     "@aws-sdk/client-inspector2": "3.279.0",
+    "@aws-sdk/client-internetmonitor": "3.294.0",
     "@aws-sdk/client-iot": "3.279.0",
     "@aws-sdk/client-ivs": "3.279.0",
     "@aws-sdk/client-ivschat": "3.279.0",

@@ -115,6 +115,7 @@ const GROUPS = [
   ["Grafana", "grafana"],
   ["IdentityStore", "identitystore"],
   ["Inspector2", "inspector2"],
+  ["InternetMonitor", "internetmonitor"],
   ["Keyspaces", "keyspaces"],
   ["Kinesis", "kinesis"],
   ["KinesisAnalyticsV2", "kinesisanalytics"],
