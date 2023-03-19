@@ -99,7 +99,6 @@ exports.QuickSightGroup = () => ({
   getByName: getByNameCore,
   configDefault: ({
     name,
-    namespace,
     properties: { ...otherProps },
     dependencies: { namespace },
     config,

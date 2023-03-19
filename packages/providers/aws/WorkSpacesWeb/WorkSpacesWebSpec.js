@@ -11,7 +11,7 @@ const { createAwsService } = require("../AwsService");
 // const {
 //   WorkSpacesWebNetworkSettings,
 // } = require("./WorkSpacesWebNetworkSettings");
-// const { WorkSpacesWebPortal } = require("./WorkSpacesWebPortal");
+const { WorkSpacesWebPortal } = require("./WorkSpacesWebPortal");
 // const {
 //   WorkSpacesWebBrowserSettings,
 // } = require("./WorkSpacesWebBrowserSettings");
@@ -21,14 +21,14 @@ const { createAwsService } = require("../AwsService");
 //  https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html
 const GROUP = "WorkSpacesWeb";
 const tagsKey = "tags";
-
+// NOTE:  tags is lowercase and Key upeercase
 const compare = compareAws({ tagsKey, key: "Key" });
 
 module.exports = pipe([
   () => [
     // WorkSpacesWebBrowserSettings({}),
     // WorkSpacesWebNetworkSettings({}),
-    // WorkSpacesWebPortal({}),
+    WorkSpacesWebPortal({}),
     // WorkSpacesWebTrustStore({}),
     // WorkSpacesWebUserSettings({}),
   ],

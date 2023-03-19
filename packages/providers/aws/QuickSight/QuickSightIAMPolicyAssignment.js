@@ -114,7 +114,6 @@ exports.QuickSightIAMPolicyAssignment = () => ({
   getByName: getByNameCore,
   configDefault: ({
     name,
-    namespace,
     properties: { Tags, ...otherProps },
     dependencies: { iamPolicy, namespace },
     config,

@@ -24,7 +24,8 @@ describe("WorkSpacesWeb", async function () {
     pipe([
       () => ({
         groupType: "WorkSpacesWeb::Portal",
-        livesNotFound: ({ config }) => [{}],
+        //TODO
+        livesNotFound: ({ config }) => [{ portalArn: `` }],
       }),
       awsResourceTest,
     ])());
