@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of resources for provider aws:
+List of 600 resources in 140 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -92,12 +92,18 @@ List of resources for provider aws:
 [ConfigRule](./resources/Config/ConfigRule.md), [ConfigurationRecorder](./resources/Config/ConfigurationRecorder.md), [ConfigurationRecorderStatus](./resources/Config/ConfigurationRecorderStatus.md), [ConformancePack](./resources/Config/ConformancePack.md), [DeliveryChannel](./resources/Config/DeliveryChannel.md)
 * ControlTower: 
 [Control](./resources/ControlTower/Control.md)
+* CostExplorer: 
+[AnomalyMonitor](./resources/CostExplorer/AnomalyMonitor.md), [AnomalySubscription](./resources/CostExplorer/AnomalySubscription.md), [CostAllocationTag](./resources/CostExplorer/CostAllocationTag.md), [CostCategory](./resources/CostExplorer/CostCategory.md)
+* CUR: 
+[ReportDefinition](./resources/CUR/ReportDefinition.md)
 * DataSync: 
 [LocationEfs](./resources/DataSync/LocationEfs.md), [LocationFsxLustre](./resources/DataSync/LocationFsxLustre.md), [LocationFsxOpenZfs](./resources/DataSync/LocationFsxOpenZfs.md), [LocationFsxWindows](./resources/DataSync/LocationFsxWindows.md), [LocationS3](./resources/DataSync/LocationS3.md), [Task](./resources/DataSync/Task.md)
 * DAX: 
 [Cluster](./resources/DAX/Cluster.md), [ParameterGroup](./resources/DAX/ParameterGroup.md), [SubnetGroup](./resources/DAX/SubnetGroup.md)
 * DirectConnect: 
 [BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [MacSecKeyAssociation](./resources/DirectConnect/MacSecKeyAssociation.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
+* DirectoryService: 
+[ConditionalForwarder](./resources/DirectoryService/ConditionalForwarder.md), [Directory](./resources/DirectoryService/Directory.md), [Region](./resources/DirectoryService/Region.md), [SharedDirectory](./resources/DirectoryService/SharedDirectory.md)
 * DMS: 
 [Certificate](./resources/DMS/Certificate.md), [Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
 * DynamoDB: 
@@ -154,6 +160,8 @@ List of resources for provider aws:
 [DelegatedAdminAccount](./resources/Inspector2/DelegatedAdminAccount.md), [Enabler](./resources/Inspector2/Enabler.md), [OrganizationConfiguration](./resources/Inspector2/OrganizationConfiguration.md)
 * Ivschat: 
 [Room](./resources/Ivschat/Room.md), [LoggingConfiguration](./resources/Ivschat/LoggingConfiguration.md)
+* Keyspaces: 
+[Keyspace](./resources/Keyspaces/Keyspace.md), [Table](./resources/Keyspaces/Table.md)
 * Kinesis: 
 [Stream](./resources/Kinesis/Stream.md), [StreamConsumer](./resources/Kinesis/StreamConsumer.md)
 * KinesisVideo: 
@@ -188,6 +196,8 @@ List of resources for provider aws:
 [Firewall](./resources/NetworkFirewall/Firewall.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md)
 * NetworkManager: 
 [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Device](./resources/NetworkManager/Device.md), [GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [Link](./resources/NetworkManager/Link.md), [Site](./resources/NetworkManager/Site.md), [SiteToSiteVpnAttachment](./resources/NetworkManager/SiteToSiteVpnAttachment.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md), [VpcAttachment](./resources/NetworkManager/VpcAttachment.md)
+* OpenSearch: 
+[Domain](./resources/OpenSearch/Domain.md), [VpcEndpoint](./resources/OpenSearch/VpcEndpoint.md)
 * OpenSearchServerless: 
 [AccessPolicy](./resources/OpenSearchServerless/AccessPolicy.md), [Collection](./resources/OpenSearchServerless/Collection.md), [SecurityConfig](./resources/OpenSearchServerless/SecurityConfig.md), [SecurityPolicy](./resources/OpenSearchServerless/SecurityPolicy.md), [VpcEndpoint](./resources/OpenSearchServerless/VpcEndpoint.md)
 * Organisations: 
@@ -206,6 +216,8 @@ List of resources for provider aws:
 [DBCluster](./resources/RDS/DBCluster.md), [DBClusterEndpoint](./resources/RDS/DBClusterEndpoint.md), [DBClusterParameterGroup](./resources/RDS/DBClusterParameterGroup.md), [DBClusterSnapshot](./resources/RDS/DBClusterSnapshot.md), [DBEngineVersion](./resources/RDS/DBEngineVersion.md), [DBInstance](./resources/RDS/DBInstance.md), [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSnapshot](./resources/RDS/DBSnapshot.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [EventSubscription](./resources/RDS/EventSubscription.md), [GlobalCluster](./resources/RDS/GlobalCluster.md), [OptionGroup](./resources/RDS/OptionGroup.md)
 * Redshift: 
 [Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md), [EndpointAccess](./resources/Redshift/EndpointAccess.md), [EndpointAuthorization](./resources/Redshift/EndpointAuthorization.md), [UsageLimit](./resources/Redshift/UsageLimit.md)
+* RedshiftServerless: 
+[EndpointAccess](./resources/RedshiftServerless/EndpointAccess.md), [Namespace](./resources/RedshiftServerless/Namespace.md), [Snapshot](./resources/RedshiftServerless/Snapshot.md), [ResourcePolicy](./resources/RedshiftServerless/ResourcePolicy.md), [UsageLimit](./resources/RedshiftServerless/UsageLimit.md), [Workgroup](./resources/RedshiftServerless/Workgroup.md)
 * Rekognition: 
 [StreamProcessor](./resources/Rekognition/StreamProcessor.md)
 * ResourceExplorer2: 

@@ -17,7 +17,7 @@ const {
   eq,
   not,
   pick,
-  omit,
+  fork,
   and,
 } = require("rubico");
 
@@ -1690,27 +1690,33 @@ function CoreProvider({
         assert(commandOptions);
       }),
       getSpecs,
-      groupBy("group"),
-      map.entries(([key, values]) => [
-        key,
-        pipe([
-          () => values,
-          map((spec) => `[${spec.type}](${docPrefix(spec)})`),
-          switchCase([
-            () => isEmpty(key),
-            pipe([map(prepend("* ")), callProp("join", "\n")]),
-            pipe([callProp("join", ", "), prepend(`* ${key}: \n`)]),
+      fork({
+        resourcesCount: size,
+        servicesCount: pipe([groupBy("group"), values, size]),
+        content: pipe([
+          groupBy("group"),
+          map.entries(([key, values]) => [
+            key,
+            pipe([
+              () => values,
+              map((spec) => `[${spec.type}](${docPrefix(spec)})`),
+              switchCase([
+                () => isEmpty(key),
+                pipe([map(prepend("* ")), callProp("join", "\n")]),
+                pipe([callProp("join", ", "), prepend(`* ${key}: \n`)]),
+              ]),
+            ])(),
           ]),
-        ])(),
-      ]),
-      values,
-      callProp("join", "\n"),
-      prepend(`---
+          values,
+          callProp("join", "\n"),
+        ]),
+      }),
+      ({ resourcesCount, servicesCount, content }) => `---
 id: ResourcesList
 title: Resources List
 ---
-List of resources for provider ${providerName}:\n
-`),
+List of ${resourcesCount} resources in ${servicesCount} services for provider ${providerName}:\n
+${content}`,
       (content) => fs.writeFile(commandOptions.output, content),
     ])();
 
