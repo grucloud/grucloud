@@ -55,7 +55,7 @@ describe("WAFv2", async function () {
         groupType: "WAFv2::WebACLAssociation",
         livesNotFound: ({ config }) => [
           {
-            ResourceArn: `arn:aws:apigateway:us-east-1::/restapis/j9zcm72xm6/stages/dev`,
+            ResourceArn: `arn:aws:apigateway:${config.region}::/restapis/j9zcm72xm6/stages/dev`,
           },
         ],
         skipGetById: true,

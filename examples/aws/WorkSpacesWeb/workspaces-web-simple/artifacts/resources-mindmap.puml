@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project workspaces-web-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ SecurityGroup (1)
++++ WorkSpacesWeb
+++++ BrowserSettings (1)
+++++ NetworkSettings (1)
+++++ Portal (1)
+++++ UserSettings (1)
+@endmindmap

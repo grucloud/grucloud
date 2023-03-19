@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get, pick, map } = require("rubico");
 const { defaultsDeep, isIn, when, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -71,34 +71,6 @@ exports.WorkSpacesWebPortal = () => ({
       }),
     ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  dependencies: {
-    browserSettings: {
-      type: "BrowserSettings",
-      group: "WorkSpacesWeb",
-      dependencyId: ({ lives, config }) => pipe([get("browserSettingsArn")]),
-    },
-    networkSettings: {
-      type: "NetworkSettings",
-      group: "WorkSpacesWeb",
-      dependencyId: ({ lives, config }) => pipe([get("networkSettingsArn")]),
-    },
-    trustStore: {
-      type: "TrustStore",
-      group: "WorkSpacesWeb",
-      dependencyId: ({ lives, config }) => pipe([get("trustStoreArn")]),
-    },
-    userAccessLoggingSettings: {
-      type: "UserAccessLoggingSettings",
-      group: "WorkSpacesWeb",
-      dependencyId: ({ lives, config }) =>
-        pipe([get("userAccessLoggingSettingsArn")]),
-    },
-    userSettings: {
-      type: "UserSettings",
-      group: "WorkSpacesWeb",
-      dependencyId: ({ lives, config }) => pipe([get("userSettingsArn")]),
-    },
-  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WorkSpacesWeb.html#getPortal-property
   getById: {
     method: "getPortal",
@@ -139,7 +111,7 @@ exports.WorkSpacesWebPortal = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: {
       browserSettings,
       networkSettings,
@@ -152,7 +124,7 @@ exports.WorkSpacesWebPortal = () => ({
     pipe([
       () => otherProps,
       defaultsDeep({
-        tags: buildTags({ name, config, namespace, UserTags: Tags }),
+        tags: buildTags({ name, config, namespace, UserTags: tags }),
       }),
       when(
         () => browserSettings,

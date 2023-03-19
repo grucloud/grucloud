@@ -268,5 +268,7 @@ List of resources for provider aws:
 [RegexPatternSet](./resources/WAFv2/RegexPatternSet.md), [WebACL](./resources/WAFv2/WebACL.md), [WebACLCloudFront](./resources/WAFv2/WebACLCloudFront.md), [WebACLAssociation](./resources/WAFv2/WebACLAssociation.md)
 * WorkSpaces: 
 [Directory](./resources/WorkSpaces/Directory.md), [IpGroup](./resources/WorkSpaces/IpGroup.md), [Workspace](./resources/WorkSpaces/Workspace.md)
+* WorkSpacesWeb: 
+[BrowserSettings](./resources/WorkSpacesWeb/BrowserSettings.md), [IdentityProvider](./resources/WorkSpacesWeb/IdentityProvider.md), [NetworkSettings](./resources/WorkSpacesWeb/NetworkSettings.md), [Portal](./resources/WorkSpacesWeb/Portal.md), [TrustStore](./resources/WorkSpacesWeb/TrustStore.md), [UserAccessLoggingSettings](./resources/WorkSpacesWeb/UserAccessLoggingSettings.md), [UserSettings](./resources/WorkSpacesWeb/UserSettings.md)
 * XRay: 
 [EncryptionConfig](./resources/XRay/EncryptionConfig.md), [Group](./resources/XRay/Group.md), [SamplingRule](./resources/XRay/SamplingRule.md)

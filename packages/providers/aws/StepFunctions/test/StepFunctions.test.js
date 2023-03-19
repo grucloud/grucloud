@@ -10,7 +10,9 @@ describe("StepFunctions", async function () {
         groupType: "StepFunctions::StateMachine",
         livesNotFound: ({ config }) => [
           {
-            stateMachineArn: `arn:aws:states:us-east-1:${config.accountId()}:stateMachine:test-test`,
+            stateMachineArn: `arn:aws:states:${
+              config.region
+            }:${config.accountId()}:stateMachine:test-test`,
           },
         ],
       }),
