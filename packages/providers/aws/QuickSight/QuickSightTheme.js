@@ -1,16 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, map, not } = require("rubico");
+const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
-const { replaceWithName } = require("@grucloud/core/Common");
 
-const {
-  Tagger,
-  //assignTags,
-} = require("./QuickSightCommon");
+const { Tagger, assignTags } = require("./QuickSightCommon");
 
 const buildArn = () =>
   pipe([
@@ -33,6 +29,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html
@@ -41,7 +38,7 @@ exports.QuickSightTheme = () => ({
   package: "quicksight",
   client: "QuickSight",
   propertiesDefault: {},
-  omitProperties: ["ThemeId"],
+  omitProperties: ["Arn", "CreatedTime", "LastUpdatedTime"],
   inferName: () =>
     pipe([
       get("Name"),

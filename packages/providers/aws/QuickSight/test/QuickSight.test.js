@@ -4,6 +4,24 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("QuickSight", async function () {
+  it("AccountSubscription", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::AccountSubscription",
+        livesNotFound: ({ config }) => [{ AwsAccountId: config.accountId() }],
+      }),
+      awsResourceTest,
+    ])());
+  it("Analysis", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::Analysis",
+        livesNotFound: ({ config }) => [
+          { AnalysisId: "i1234567890", AwsAccountId: config.accountId() },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Dashboard", () =>
     pipe([
       () => ({
@@ -34,7 +52,21 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Folder", () =>
+  it("IAMPolicyAssignment", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::IAMPolicyAssignment",
+        livesNotFound: ({ config }) => [
+          {
+            AssignmentName: "a123",
+            Namespace: "default",
+            AwsAccountId: config.accountId(),
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("Folder", () =>
     pipe([
       () => ({
         groupType: "QuickSight::Folder",
@@ -72,12 +104,16 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Ingestion", () =>
+  it("Ingestion", () =>
     pipe([
       () => ({
         groupType: "QuickSight::Ingestion",
         livesNotFound: ({ config }) => [
-          { IngestionId: "e123", AwsAccountId: config.accountId() },
+          {
+            IngestionId: "e123",
+            DataSetId: "i1234567890",
+            AwsAccountId: config.accountId(),
+          },
         ],
       }),
       awsResourceTest,

@@ -4,7 +4,6 @@ const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { replaceWithName } = require("@grucloud/core/Common");
 
 const pickId = pipe([
   tap(({ UserName }) => {
@@ -27,7 +26,7 @@ exports.QuickSightUser = () => ({
   package: "quicksight",
   client: "QuickSight",
   propertiesDefault: { Namespace: "default" },
-  omitProperties: ["IamArn"],
+  omitProperties: ["IamArn", "AwsAccountId"],
   inferName: () =>
     pipe([
       get("UserName"),

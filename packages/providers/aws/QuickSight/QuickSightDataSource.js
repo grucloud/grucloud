@@ -5,12 +5,8 @@ const { defaultsDeep, identity } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
-const { replaceWithName } = require("@grucloud/core/Common");
 
-const {
-  Tagger,
-  //assignTags,
-} = require("./QuickSightCommon");
+const { Tagger, assignTags } = require("./QuickSightCommon");
 
 const buildArn = () =>
   pipe([
@@ -33,6 +29,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html

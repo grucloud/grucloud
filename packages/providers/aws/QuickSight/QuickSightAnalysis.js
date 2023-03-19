@@ -3,10 +3,10 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 
 const { Tagger, assignTags } = require("./QuickSightCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const buildArn = () =>
   pipe([
@@ -17,11 +17,11 @@ const buildArn = () =>
   ]);
 
 const pickId = pipe([
-  tap(({ DashboardId, AwsAccountId }) => {
-    assert(DashboardId);
+  tap(({ AnalysisId, AwsAccountId }) => {
+    assert(AnalysisId);
     assert(AwsAccountId);
   }),
-  pick(["DashboardId", "AwsAccountId"]),
+  pick(["AnalysisId", "AwsAccountId"]),
 ]);
 
 const decorate = ({ endpoint, config }) =>
@@ -30,24 +30,29 @@ const decorate = ({ endpoint, config }) =>
       assert(endpoint);
     }),
     assignTags({ buildArn: buildArn(config), endpoint }),
+    defaultsDeep({ AwsAccountId: config.accountId() }),
+    // TODO
+    // DataSetArns
+    // endpoint().describeAnalysisDefinition
+    // get("Definition")
+    // get the sheets
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html
-exports.QuickSightDashboard = () => ({
-  type: "Dashboard",
+exports.QuickSightAnalysis = () => ({
+  type: "Analysis",
   package: "quicksight",
   client: "QuickSight",
   propertiesDefault: {},
   omitProperties: [
     "Arn",
-    "DashboardId",
     "CreatedTime",
-    "LastPublishedTime",
     "LastUpdatedTime",
-    "Version",
-    "Status",
-    "SecretArn",
     "AwsAccountId",
+    "ThemeArn",
+    "Status",
+    "Errors",
+    "SourceEntity.SourceTemplate.Arn",
   ],
   inferName: () =>
     pipe([
@@ -65,7 +70,7 @@ exports.QuickSightDashboard = () => ({
     ]),
   findId: () =>
     pipe([
-      get("DashboardId"),
+      get("AnalysisId"),
       tap((id) => {
         assert(id);
       }),
@@ -75,59 +80,58 @@ exports.QuickSightDashboard = () => ({
     "UnsupportedUserEditionException",
   ],
   dependencies: {
-    // iamRole: {
-    //   type: "Role",
-    //   group: "IAM",
-    //   dependsOnTypeOnly: true,
-    //   dependencyId: ({ lives, config }) => pipe([get("IamRoleArn")]),
-    // },
-    secretsManagerSecret: {
-      type: "Secret",
-      group: "SecretsManager",
-      dependencyId: ({ lives, config }) => pipe([get("SecretArn")]),
+    dataSets: {
+      type: "DataSet",
+      group: "QuickSight",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("SourceEntity.SourceTemplate.DataSetReferences")]),
     },
+    // TODO: How to get the template ARN from describeAnalysis ?
     template: {
       type: "Template",
       group: "QuickSight",
-      dependencyIds: ({ lives, config }) => pipe([get("SourceTemplate")]),
+      dependencyId: ({ lives, config }) =>
+        pipe([get("SourceEntity.SourceTemplate.Arn")]),
     },
     theme: {
       type: "Theme",
       group: "QuickSight",
-      dependencyIds: ({ lives, config }) => pipe([get("ThemeArn")]),
+      dependencyId: ({ lives, config }) => pipe([get("ThemeArn")]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#describeDashboard-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#describeAnalysis-property
   getById: {
-    method: "describeDashboard",
-    getField: "Dashboard",
+    method: "describeAnalysis",
+    getField: "Analysis",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#listDashboards-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#listAnalyses-property
   getList: {
     enhanceParams:
       ({ config }) =>
       () => ({ AwsAccountId: config.accountId() }),
-    method: "listDashboards",
-    getParam: "Dashboards",
+    method: "listAnalyses",
+    getParam: "AnalysisSummaryList",
     decorate,
     ignoreErrorCodes: ["UnsupportedUserEditionException"],
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#createDashboard-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#createAnalysis-property
   create: {
-    method: "createDashboard",
+    method: "createAnalysis",
     pickCreated: ({ payload }) => pipe([identity]),
+    // Status CREATION_SUCCESSFUL
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#updateDashboard-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#updateAnalysis-property
   update: {
-    method: "updateDashboard",
+    method: "updateAnalysis",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#deleteDashboard-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#deleteAnalysis-property
   destroy: {
-    method: "deleteDashboard",
+    method: "deleteAnalysis",
     pickId,
   },
   getByName: getByNameCore,
@@ -139,7 +143,7 @@ exports.QuickSightDashboard = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { secretsManagerSecret },
+    dependencies: { template, theme },
     config,
   }) =>
     pipe([
@@ -148,10 +152,11 @@ exports.QuickSightDashboard = () => ({
         AwsAccountId: config.accountId(),
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
+      when(() => theme, defaultsDeep({ ThemeArn: getField(theme, "Arn") })),
       when(
-        () => secretsManagerSecret,
+        () => template,
         defaultsDeep({
-          SecretArn: getField(secretsManagerSecret, "ARN"),
+          SourceEntity: { SourceTemplate: { Arn: getField(template, "Arn") } },
         })
       ),
     ])(),

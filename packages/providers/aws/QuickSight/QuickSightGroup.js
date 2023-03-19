@@ -3,15 +3,12 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
-const { replaceWithName } = require("@grucloud/core/Common");
 
 const pickId = pipe([
   tap(({ GroupName, Namespace }) => {
     assert(GroupName);
   }),
   pick(["GroupName", "Namespace", "AwsAccountId"]),
-  defaultsDeep({ Namespace: "default" }),
 ]);
 
 const decorate = ({ endpoint, config }) =>
@@ -19,6 +16,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    defaultsDeep({ Namespace: "default" }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html
@@ -50,6 +48,21 @@ exports.QuickSightGroup = () => ({
       }),
     ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  dependencies: {
+    namespace: {
+      type: "Namespace",
+      group: "QuickSight",
+      parent: true,
+      excludeDefaultDependencies: true,
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("Namespace"),
+          tap((Namespace) => {
+            assert(true);
+          }),
+        ]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#describeGroup-property
   getById: {
     method: "describeGroup",
@@ -58,6 +71,7 @@ exports.QuickSightGroup = () => ({
     decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#listGroups-property
+  // TODO list namespace
   getList: {
     enhanceParams:
       ({ config }) =>
@@ -87,11 +101,15 @@ exports.QuickSightGroup = () => ({
     name,
     namespace,
     properties: { ...otherProps },
-    dependencies: {},
+    dependencies: { namespace },
     config,
   }) =>
     pipe([
       () => otherProps,
-      defaultsDeep({ AwsAccountId: config.accountId() }),
+      defaultsDeep({
+        AwsAccountId: config.accountId(),
+        Namespace: "default",
+      }),
+      // TODO namespace
     ])(),
 });

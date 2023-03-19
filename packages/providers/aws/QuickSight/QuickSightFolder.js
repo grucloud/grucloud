@@ -1,9 +1,8 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, map, not } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { pipe, tap, get, pick, assign } = require("rubico");
+const { defaultsDeep, identity, pluck } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 
 const { Tagger, assignTags } = require("./QuickSightCommon");
@@ -17,11 +16,11 @@ const buildArn = () =>
   ]);
 
 const pickId = pipe([
-  tap(({ DataSetId, AwsAccountId }) => {
-    assert(DataSetId);
+  tap(({ FolderId, AwsAccountId }) => {
+    assert(FolderId);
     assert(AwsAccountId);
   }),
-  pick(["DataSetId", "AwsAccountId"]),
+  pick(["FolderId", "AwsAccountId"]),
 ]);
 
 const decorate = ({ endpoint, config }) =>
@@ -30,21 +29,29 @@ const decorate = ({ endpoint, config }) =>
       assert(endpoint);
     }),
     assignTags({ buildArn: buildArn(config), endpoint }),
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#describeFolderPermissions-property
+    assign({
+      Permissions: pipe([
+        pickId,
+        endpoint().describeFolderPermissions,
+        get("Permissions"),
+      ]),
+    }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html
-exports.QuickSightDataSet = () => ({
-  type: "DataSet",
+exports.QuickSightFolder = () => ({
+  type: "Folder",
   package: "quicksight",
   client: "QuickSight",
   propertiesDefault: {},
   omitProperties: [
-    "DataSetId",
     "Arn",
-    "ConsumedSpiceCapacityInBytes",
     "CreatedTime",
     "LastUpdatedTime",
+    "Version",
     "AwsAccountId",
+    "ParentFolderArn",
   ],
   inferName: () =>
     pipe([
@@ -62,55 +69,57 @@ exports.QuickSightDataSet = () => ({
     ]),
   findId: () =>
     pipe([
-      get("DataSetId"),
+      get("FolderId"),
       tap((id) => {
         assert(id);
       }),
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException"],
-  dependencies: {
-    // s3Buckets: {
-    //   type: "Bucket",
-    //   group: "S3",
-    //   list: true,
-    //   dependencyIds: ({ lives, config }) =>
-    //     pipe([
-    //       get("Credentials.CredentialPair.AlternateDataSetParameters"),
-    //       map(get("S3Parameters.ManifestFileLocation.Bucket")),
-    //     ]),
-    // },
-  },
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#describeDataSet-property
+  ignoreErrorCodes: [
+    "ResourceNotFoundException",
+    "UnsupportedUserEditionException",
+  ],
+  dependencies: {
+    groups: {
+      type: "Group",
+      group: "QuickSight",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("Permissions"), pluck("Principal")]),
+    },
+    // TODO parent_folder_arn
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#describeFolder-property
   getById: {
-    method: "describeDataSet",
-    getField: "DataSet",
+    method: "describeFolder",
+    getField: "Folder",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#listDataSets-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#listFolders-property
   getList: {
     enhanceParams:
       ({ config }) =>
       () => ({ AwsAccountId: config.accountId() }),
-    method: "listDataSets",
-    getParam: "DataSets",
+    method: "listFolders",
+    getParam: "Folders",
     decorate,
+    ignoreErrorCodes: ["UnsupportedUserEditionException"],
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#createDataSet-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#createFolder-property
   create: {
-    method: "createDataSet",
+    method: "createFolder",
     pickCreated: ({ payload }) => pipe([identity]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#updateDataSet-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#updateFolder-property
   update: {
-    method: "updateDataSet",
+    method: "updateFolder",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#deleteDataSet-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#deleteFolder-property
   destroy: {
-    method: "deleteDataSet",
+    method: "deleteFolder",
     pickId,
   },
   getByName: getByNameCore,

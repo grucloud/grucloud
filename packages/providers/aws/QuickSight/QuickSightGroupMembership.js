@@ -26,7 +26,7 @@ exports.QuickSightGroupMembership = () => ({
   package: "quicksight",
   client: "QuickSight",
   propertiesDefault: {},
-  omitProperties: ["AwsAccountId"],
+  omitProperties: ["AwsAccountId", "MemberName", "GroupName"],
   inferName:
     ({ dependenciesSpec: { user, group } }) =>
     () =>
@@ -39,13 +39,13 @@ exports.QuickSightGroupMembership = () => ({
       ])(),
   findName:
     () =>
-    ({ UserName, GroupName }) =>
+    ({ MemberName, GroupName }) =>
       pipe([
         tap((params) => {
-          assert(UserName);
+          assert(MemberName);
           assert(GroupName);
         }),
-        () => `${GroupName}::${UserName}`,
+        () => `${GroupName}::${MemberName}`,
       ]),
   findId: () =>
     pipe([
