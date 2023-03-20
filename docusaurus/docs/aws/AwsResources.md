@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 600 resources in 140 services for provider aws:
+List of 601 resources in 141 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -44,6 +44,8 @@ List of 600 resources in 140 services for provider aws:
 [AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Assessment](./resources/AuditManager/Assessment.md), [AssessmentDelegation](./resources/AuditManager/AssessmentDelegation.md), [AssessmentReport](./resources/AuditManager/AssessmentReport.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [AssessmentFrameworkShare](./resources/AuditManager/AssessmentFrameworkShare.md), [Settings](./resources/AuditManager/Settings.md), [OrganizationAdminAccount](./resources/AuditManager/OrganizationAdminAccount.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
+* AutoScalingPlans: 
+[ScalingPlan](./resources/AutoScalingPlans/ScalingPlan.md)
 * Backup: 
 [BackupPlan](./resources/Backup/BackupPlan.md), [BackupSelection](./resources/Backup/BackupSelection.md), [BackupVault](./resources/Backup/BackupVault.md), [BackupVaultLockConfiguration](./resources/Backup/BackupVaultLockConfiguration.md), [BackupVaultNotification](./resources/Backup/BackupVaultNotification.md), [BackupVaultPolicy](./resources/Backup/BackupVaultPolicy.md), [Framework](./resources/Backup/Framework.md), [GlobalSettings](./resources/Backup/GlobalSettings.md), [RegionSettings](./resources/Backup/RegionSettings.md), [RegionSettings](./resources/Backup/RegionSettings.md), [ReportPlan](./resources/Backup/ReportPlan.md)
 * Batch: 

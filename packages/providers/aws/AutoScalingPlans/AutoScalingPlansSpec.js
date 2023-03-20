@@ -9,14 +9,14 @@ const GROUP = "AutoScalingPlans";
 
 const compare = compareAws({});
 
-// const {
-//   AutoScalingPlansScalingPlan,
-// } = require("./AutoScalingPlansScalingPlan");
+const {
+  AutoScalingPlansScalingPlan,
+} = require("./AutoScalingPlansScalingPlan");
 
 module.exports = pipe([
   () => [
     //
-    //AutoScalingPlansScalingPlan({}),
+    AutoScalingPlansScalingPlan({}),
   ],
   map(
     pipe([

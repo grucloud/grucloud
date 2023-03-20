@@ -56,6 +56,7 @@ const GROUPS = [
   ["Athena", "athena"],
   ["AuditManager", "auditmanager"],
   ["AutoScaling", "autoscaling"],
+  ["AutoScalingPlans", "autoscaling"],
   ["Backup", "backup"],
   ["Batch", "batch"],
   ["Budgets", "budgets"],

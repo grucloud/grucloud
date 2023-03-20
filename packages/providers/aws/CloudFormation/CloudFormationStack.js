@@ -9,7 +9,8 @@ const ignoreErrorCodes = ["NoSuchCloudFormationOriginAccessIdentity"];
 const ignoreErrorMessages = ["does not exist"];
 
 const findName = () => pipe([get("StackName")]);
-const findId = () => get("StackId");
+// TODO use ARN instead
+const findId = () => get("Arn");
 
 const managedByOther = () =>
   pipe([get("StackName"), callProp("startsWith", "awsconfigconforms-pack")]);
@@ -20,6 +21,25 @@ const pickId = pipe([
     assert(StackName);
   }),
 ]);
+
+// TODO Add Arn to cloudFormationStack
+const assignArn = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    assign({
+      Arn: pipe([
+        tap(({ StackId }) => {
+          assert(StackId);
+        }),
+        ({ StackId }) =>
+          `arn:aws:cloudformation:${
+            config.region
+          }:${config.accountId()}:stack/${StackId}`,
+      ]),
+    }),
+  ]);
 
 const decorate = ({ endpoint }) =>
   pipe([
@@ -32,6 +52,7 @@ const decorate = ({ endpoint }) =>
         map(omit(["StackName", "StackId"])),
       ]),
     }),
+    assignArn({ config }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html
