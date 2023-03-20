@@ -1,6 +1,6 @@
 {
   "name": "grucloud-example-azure-app-service",
-  "version": "11.0.2",
+  "version": "11.1.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,8 +21,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^11.0.2",
-    "@grucloud/provider-azure": "^11.0.2",
+    "@grucloud/core": "^11.1.0",
+    "@grucloud/provider-azure": "^11.1.0",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
