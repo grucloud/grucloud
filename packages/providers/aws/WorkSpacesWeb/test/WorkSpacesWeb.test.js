@@ -4,43 +4,101 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("WorkSpacesWeb", async function () {
-  it.skip("BrowserSettings", () =>
+  it("BrowserSettings", () =>
     pipe([
       () => ({
         groupType: "WorkSpacesWeb::BrowserSettings",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            browserSettingsArn: `arn:aws:workspaces-web:${
+              config.region
+            }:${config.accountId()}:browserSettings/dc06c8cb-be70-43a8-aba1-0d70fd47e7d1`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("NetworkSettings", () =>
+  it.skip("IdentityProvider", () =>
+    pipe([
+      () => ({
+        groupType: "WorkSpacesWeb::IdentityProvider",
+        livesNotFound: ({ config }) => [
+          {
+            identityProviderArn: `arn:aws:workspaces-web:${
+              config.region
+            }:${config.accountId()}:identityProvider/dc06c8cb-be70-43a8-aba1-0d70fd47e7d1`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("NetworkSettings", () =>
     pipe([
       () => ({
         groupType: "WorkSpacesWeb::NetworkSettings",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            networkSettingsArn: `arn:aws:workspaces-web:${
+              config.region
+            }:${config.accountId()}:networkSettings/dc06c8cb-be70-43a8-aba1-0d70fd47e7d1`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Portal", () =>
+  it("Portal", () =>
     pipe([
       () => ({
         groupType: "WorkSpacesWeb::Portal",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            portalArn: `arn:aws:workspaces-web:${
+              config.region
+            }:${config.accountId()}:portal/0e3de158-d2a8-4423-be6e-e68eb8800b3a`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("TrustStore", () =>
+  it("TrustStore", () =>
     pipe([
       () => ({
         groupType: "WorkSpacesWeb::TrustStore",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            trustStoreArn: `arn:aws:workspaces-web:${
+              config.region
+            }:${config.accountId()}:trustStore/a6b659c1-eca8-4a15-86b0-ca6929156241`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("UserSettings", () =>
+  it("UserAccessLoggingSettings", () =>
+    pipe([
+      () => ({
+        groupType: "WorkSpacesWeb::UserAccessLoggingSettings",
+        livesNotFound: ({ config }) => [
+          {
+            userAccessLoggingSettingsArn: `arn:aws:workspaces-web:${
+              config.region
+            }:${config.accountId()}:userAccessLoggingSettings/a6b659c1-eca8-4a15-86b0-ca6929156241`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("UserSettings", () =>
     pipe([
       () => ({
         groupType: "WorkSpacesWeb::UserSettings",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            userSettingsArn: `arn:aws:workspaces-web:${
+              config.region
+            }:${config.accountId()}:userSettings/a6b659c1-eca8-4a15-86b0-ca6929156241`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

@@ -48,7 +48,15 @@ describe("DirectoryService", async function () {
     pipe([
       () => ({
         groupType: "DirectoryService::SharedDirectoryAccepter",
-        livesNotFound: ({ config }) => [{ DirectoryId: "d123" }],
+        livesNotFound: ({ config }) => [{ DirectoryId: "d-1234567890" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("Trust", () =>
+    pipe([
+      () => ({
+        groupType: "DirectoryService::Trust",
+        livesNotFound: ({ config }) => [{ DirectoryId: "d-1234567890" }],
       }),
       awsResourceTest,
     ])());

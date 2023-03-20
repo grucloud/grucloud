@@ -36,7 +36,23 @@ describe("StorageGateway", async function () {
         groupType: "StorageGateway::TapePool",
         livesNotFound: ({ config }) => [
           {
-            //stateMachineArn: `arn:aws:states:us-east-1:${config.accountId()}:stateMachine:test-test`,
+            PoolARN: `arn:aws:storagegateway:${
+              config.region
+            }:${config.accountId()}:gateway/sgw-12A3456B/tapepool/tp-1122AABB`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("Volume", () =>
+    pipe([
+      () => ({
+        groupType: "StorageGateway::Volume",
+        livesNotFound: ({ config }) => [
+          {
+            VolumeARN: `arn:aws:storagegateway:${
+              config.region
+            }:${config.accountId()}:gateway/sgw-12A3456B/volume/vol-1122AABB`,
           },
         ],
       }),

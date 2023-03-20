@@ -16,6 +16,18 @@ describe("SESV2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("ContactList", () =>
+    pipe([
+      () => ({
+        groupType: "SESV2::ContactList",
+        livesNotFound: ({ config }) => [
+          {
+            ContactListName: "cl123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it.skip("DedicatedIpAssignment", () =>
     pipe([
       () => ({

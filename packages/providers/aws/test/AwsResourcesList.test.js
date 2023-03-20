@@ -6,11 +6,11 @@ const { callProp } = require("rubico/x");
 const { AwsProvider } = require("../AwsProvider");
 
 describe("AwsResourcesList", async function () {
-  it("resourcesList", async function () {
+  it("resourcesList", () =>
     pipe([
       () =>
         AwsProvider({
-          config: () => ({ region: "us-west-2" }),
+          config: () => ({ region: "us-east-1" }),
         }),
       callProp("resourcesList", {
         commandOptions: {
@@ -20,6 +20,5 @@ describe("AwsResourcesList", async function () {
           ),
         },
       }),
-    ])();
-  });
+    ])());
 });

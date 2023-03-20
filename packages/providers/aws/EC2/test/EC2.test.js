@@ -40,6 +40,26 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("CoipCidr", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::CoipCidr",
+        livesNotFound: ({ config }) => [
+          { Cidr: "10.1.0.0/28", CoipPoolId: "coip-032cb2c8350925850" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("CoipPool", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::CoipPool",
+        livesNotFound: ({ config }) => [
+          { CoipPoolId: "coip-032cb2c8350925850" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("CustomerGateway", () =>
     pipe([
       () => ({
@@ -320,6 +340,15 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("PublicIpv4Pool", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::PublicIpv4Pool",
+        livesNotFound: ({ config }) => [{ PoolId: "a-123" }],
+      }),
+      awsResourceTest,
+    ])());
+
   it("RouteTable", () =>
     pipe([
       () => ({

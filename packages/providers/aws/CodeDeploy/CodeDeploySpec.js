@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { tap, pipe, map, get, assign, flatMap } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { tap, pipe, map } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { createAwsService } = require("../AwsService");
 
@@ -12,8 +12,7 @@ const GROUP = "CodeDeploy";
 const tagsKey = "tags";
 const compare = compareAws({
   tagsKey,
-  // getTargetTags: () => [],
-  // getLiveTags: () => [],
+  key: "key",
 });
 
 module.exports = pipe([

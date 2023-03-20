@@ -12,6 +12,14 @@ describe("FMS", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("NotificationChannel", () =>
+    pipe([
+      () => ({
+        groupType: "FMS::NotificationChannel",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("Policy", () =>
     pipe([
       () => ({

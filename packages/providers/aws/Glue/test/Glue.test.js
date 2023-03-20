@@ -16,19 +16,7 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it("Table", () =>
-    pipe([
-      () => ({
-        groupType: "Glue::Table",
-        livesNotFound: ({ config }) => [
-          {
-            DatabaseName: "d-12345",
-            Name: "a-12345",
-          },
-        ],
-      }),
-      awsResourceTest,
-    ])());
+
   it("Classifier", () =>
     pipe([
       () => ({
@@ -131,6 +119,19 @@ describe("Glue", async function () {
         groupType: "Glue::SecurityConfiguration",
         livesNotFound: ({ config }) => [
           {
+            Name: "a-12345",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("Table", () =>
+    pipe([
+      () => ({
+        groupType: "Glue::Table",
+        livesNotFound: ({ config }) => [
+          {
+            DatabaseName: "d-12345",
             Name: "a-12345",
           },
         ],

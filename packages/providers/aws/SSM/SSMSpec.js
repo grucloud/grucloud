@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { map, pipe, tap } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
 
 const { createAwsService } = require("../AwsService");
 
@@ -13,6 +13,7 @@ const { SSMMaintenanceWindowTarget } = require("./SSMMaintenanceWindowTarget");
 const { SSMMaintenanceWindowTask } = require("./SSMMaintenanceWindowTask");
 const { SSMPatchBaseline } = require("./SSMPatchBaseline");
 const { SSMParameter } = require("./SSMParameter");
+const { SSMResourceDataSync } = require("./SSMResourceDataSync");
 const { SSMServiceSetting } = require("./SSMServiceSetting");
 
 const GROUP = "SSM";
@@ -28,8 +29,13 @@ module.exports = pipe([
     SSMMaintenanceWindowTask({}),
     SSMParameter({}),
     SSMPatchBaseline({}),
+    SSMResourceDataSync({}),
     SSMServiceSetting({}),
   ],
-  map(createAwsService),
-  map(defaultsDeep({ group: GROUP, isOurMinion, compare: compareSSM({}) })),
+  map(
+    pipe([
+      createAwsService,
+      defaultsDeep({ group: GROUP, compare: compareSSM({}) }),
+    ])
+  ),
 ]);

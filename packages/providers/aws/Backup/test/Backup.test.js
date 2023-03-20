@@ -99,6 +99,16 @@ describe("Backup", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("RecoveryPoint", () =>
+    pipe([
+      () => ({
+        groupType: "Backup::RecoveryPoint",
+        livesNotFound: ({ config }) => [
+          { BackupVaultName: "vault", RecoveryPointArn: "" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("RegionSettings", () =>
     pipe([
       () => ({

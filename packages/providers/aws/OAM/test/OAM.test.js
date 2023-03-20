@@ -20,4 +20,12 @@ describe("OAM", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("SinkPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "OAM::SinkPolicy",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
 });

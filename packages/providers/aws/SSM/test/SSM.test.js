@@ -93,6 +93,14 @@ describe("SSM", async function () {
       }),
       awsResourceTest,
     ])());
+  it("ResourceDataSync", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::ResourceDataSync",
+        livesNotFound: ({ config }) => [{ SyncName: "n123" }],
+      }),
+      awsResourceTest,
+    ])());
   it("ServiceSetting", () =>
     pipe([
       () => ({

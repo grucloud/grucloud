@@ -77,6 +77,66 @@ describe("IAM", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("SAMLProvider", () =>
+    pipe([
+      () => ({
+        groupType: "IAM::SAMLProvider",
+        livesNotFound: ({ config }) => [
+          {
+            SAMLProviderArn: "TODO",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("ServerCertificate", () =>
+    pipe([
+      () => ({
+        groupType: "IAM::ServerCertificate",
+        livesNotFound: ({ config }) => [
+          {
+            ServerCertificateName: "s123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("ServiceSpecificCredential", () =>
+    pipe([
+      () => ({
+        groupType: "IAM::ServiceSpecificCredential",
+        livesNotFound: ({ config }) => [
+          {
+            ServiceSpecificCredentialId: "s123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("SigningCertificate", () =>
+    pipe([
+      () => ({
+        groupType: "IAM::SigningCertificate",
+        livesNotFound: ({ config }) => [
+          {
+            CertificateId: "s123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("VirtualMFADevice", () =>
+    pipe([
+      () => ({
+        groupType: "IAM::VirtualMFADevice",
+        livesNotFound: ({ config }) => [
+          {
+            SerialNumber: `arn:aws:iam::${config.accountId()}:mfa/ExampleName`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("User", () =>
     pipe([
       () => ({

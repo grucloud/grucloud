@@ -7,10 +7,13 @@ const { createAwsService } = require("../AwsService");
 const { compareAws } = require("../AwsCommon");
 
 const { GlueClassifier } = require("./GlueClassifier");
+//const { GlueConnection } = require("./GlueConnection");
 const { GlueCrawler } = require("./GlueCrawler");
 const { GlueDatabase } = require("./GlueDatabase");
+//const { GlueDevEndpoint } = require("./GlueDevEndpoint");
 const { GlueJob } = require("./GlueJob");
 const { GlueTable } = require("./GlueTable");
+//const { GlueTrigger } = require("./GlueTrigger");
 
 const GROUP = "Glue";
 
@@ -21,10 +24,13 @@ const compare = compareAws({ tagsKey });
 module.exports = pipe([
   () => [
     GlueClassifier({ compare }),
+    //GlueConnection({ compare }),
     GlueCrawler({ compare }),
     GlueDatabase({ compare }),
+    //GlueDevEndpoint({ compare }),
     GlueJob({ compare }),
     GlueTable({ compare }),
+    //GlueTrigger({ compare }),
   ],
   map(
     pipe([

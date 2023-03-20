@@ -1,12 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, tryCatch } = require("rubico");
-const { defaultsDeep, first, identity } = require("rubico/x");
+const { pipe, tap, get, pick, eq } = require("rubico");
+const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint } = require("../AwsCommon");
 
-const { Tagger, assignTags } = require("./MediaConvertCommon");
+const { Tagger, assignTags, setup } = require("./MediaConvertCommon");
 
 const cannotBeDeleted = () => pipe([eq(get("Name"), "Default")]);
 
@@ -52,25 +51,7 @@ exports.MediaConvertQueue = () => ({
     "SubmittedJobsCount",
     "Type",
   ],
-  setup: ({ config }) =>
-    pipe([
-      () => config,
-      createEndpoint("mediaconvert", "MediaConvert"),
-      (endpoint) =>
-        pipe([
-          () => ({
-            Mode: "DEFAULT",
-          }),
-          endpoint().describeEndpoints,
-          get("Endpoints"),
-          first,
-          get("Url"),
-          tap((url) => {
-            assert(url);
-          }),
-          (endpoint) => ({ endpoint }),
-        ])(),
-    ])(),
+  setup,
   inferName: () =>
     pipe([
       get("Name"),

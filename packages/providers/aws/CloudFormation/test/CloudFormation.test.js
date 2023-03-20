@@ -16,4 +16,28 @@ describe("CloudFormation", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("StackSet", () =>
+    pipe([
+      () => ({
+        groupType: "CloudFormation::StackSet",
+        livesNotFound: ({ config }) => [
+          {
+            StackName: "b123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("Type", () =>
+    pipe([
+      () => ({
+        groupType: "CloudFormation::Type",
+        livesNotFound: ({ config }) => [
+          {
+            StackName: "b123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });

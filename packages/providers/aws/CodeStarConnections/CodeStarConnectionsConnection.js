@@ -3,8 +3,9 @@ const { pipe, map, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { Tagger } = require("./CodeStarConnectionsCommon");
 const { buildTags } = require("../AwsCommon");
+
+const { Tagger } = require("./CodeStarConnectionsCommon");
 
 const pickId = pick(["ConnectionArn"]);
 
@@ -12,7 +13,7 @@ const pickId = pick(["ConnectionArn"]);
 const assignTags = ({ endpoint }) =>
   pipe([
     assign({
-      tags: pipe([
+      Tags: pipe([
         ({ ConnectionArn }) => ({ ResourceArn: ConnectionArn }),
         endpoint().listTagsForResource,
         get("Tags"),
@@ -65,13 +66,13 @@ exports.CodeStarConnectionsConnection = ({}) => ({
     method: "createConnection",
     pickCreated: ({ payload }) => pickId,
     postCreate:
-      ({ endpoint, payload: { tags } }) =>
+      ({ endpoint, payload: { Tags } }) =>
       ({ ConnectionArn }) =>
         pipe([
           tap((params) => {
-            assert(true);
+            assert(ConnectionArn);
           }),
-          () => ({ ResourceArn: ConnectionArn, Tags: tags }),
+          () => ({ ResourceArn: ConnectionArn, Tags }),
           endpoint().tagResource,
         ])(),
   },
@@ -91,7 +92,7 @@ exports.CodeStarConnectionsConnection = ({}) => ({
     pipe([
       () => otherProps,
       defaultsDeep({
-        tags: buildTags({
+        Tags: buildTags({
           name,
           config,
           namespace,

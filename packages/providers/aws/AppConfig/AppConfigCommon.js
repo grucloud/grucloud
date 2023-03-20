@@ -10,7 +10,7 @@ exports.Tagger = createTagger({
   TagsKey: "Tags",
   UnTagsKey: "TagKeyList",
 });
-
+// TODO remove
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#tagResource-property
 exports.tagResource =
   ({ buildArn }) =>

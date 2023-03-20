@@ -28,4 +28,16 @@ describe("KMS", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("KeyPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "KMS::KeyPolicy",
+        livesNotFound: ({ config }) => [
+          {
+            KeyId: "12345",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });
