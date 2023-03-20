@@ -96,7 +96,7 @@ exports.TimestreamWriteDatabase = () => ({
       dependencyId: ({ lives, config }) => get("KmsKeyId"),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/TimestreamWrite.html#getDatabase-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/TimestreamWrite.html#describeDatabase-property
   getById: {
     method: "describeDatabase",
     getField: "Database",
@@ -145,7 +145,7 @@ exports.TimestreamWriteDatabase = () => ({
       when(
         () => kmsKey,
         defaultsDeep({
-          kmsArn: getField(kmsKey, "Arn"),
+          KmsKeyId: getField(kmsKey, "Arn"),
         })
       ),
     ])(),

@@ -1,16 +1,28 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, assign, omit, map } = require("rubico");
-const { defaultsDeep, callProp } = require("rubico/x");
+const { defaultsDeep, callProp, when, isIn } = require("rubico/x");
+const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { AwsClient } = require("../AwsClient");
-const { createCloudFormation } = require("./CloudFormationCommon");
-
-const ignoreErrorCodes = ["NoSuchCloudFormationOriginAccessIdentity"];
 const ignoreErrorMessages = ["does not exist"];
 
-const findName = () => pipe([get("StackName")]);
-// TODO use ARN instead
-const findId = () => get("Arn");
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html
+
+const findName = () =>
+  pipe([
+    get("StackName"),
+    tap((StackName) => {
+      assert(StackName);
+    }),
+  ]);
+
+const findId = () =>
+  pipe([
+    get("Arn"),
+    tap((Arn) => {
+      assert(Arn);
+    }),
+  ]);
 
 const managedByOther = () =>
   pipe([get("StackName"), callProp("startsWith", "awsconfigconforms-pack")]);
@@ -22,7 +34,6 @@ const pickId = pipe([
   }),
 ]);
 
-// TODO Add Arn to cloudFormationStack
 const assignArn = ({ config }) =>
   pipe([
     tap((params) => {
@@ -55,59 +66,106 @@ const decorate = ({ endpoint, config }) =>
     assignArn({ config }),
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html
-exports.CloudFormationStack = ({ spec, config }) => {
-  const cloudFormation = createCloudFormation(config);
-  const client = AwsClient({ spec, config })(cloudFormation);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#describeStacks-property
-  const getById = client.getById({
+exports.CloudFormationStack = () => ({
+  type: "Stack",
+  package: "cloudformation",
+  client: "CloudFormation",
+  propertiesDefault: {},
+  omitProperties: [
+    "StackId",
+    "ChangeSetId",
+    "Arn",
+    "RoleARN",
+    "NotificationARNs",
+    "CreationTime",
+    "DeletionTime",
+    "LastUpdatedTime",
+    "StackStatus",
+  ],
+  inferName: findName,
+  findName,
+  findId,
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  managedByOther,
+  cannotBeDeleted: managedByOther,
+  dependencies: {
+    iamRole: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => pipe([get("RoleARN")]),
+    },
+    snsTopics: {
+      type: "Topic",
+      group: "SNS",
+      list: true,
+      dependencyIds: ({ lives, config }) => pipe([get("NotificationARNs")]),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#getStack-property
+  getById: {
     pickId,
     method: "describeStacks",
     getField: "Stacks",
-    ignoreErrorCodes,
     ignoreErrorMessages,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#describeStacks-property
-  const getList = client.getList({
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#listStacks-property
+  getList: {
     method: "describeStacks",
     getParam: "Stacks",
     decorate,
-  });
-
-  const getByName = pipe([({ name }) => ({ StackName: name }), getById({})]);
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#createStack-property
-  const configDefault = ({ name, properties, dependencies: {} }) =>
-    pipe([() => properties, defaultsDeep({ StackName: name })])();
-
-  const create = client.create({
+  create: {
     method: "createStack",
-    getById,
-  });
-
+    pickCreated: ({ payload }) => pipe([() => payload]),
+    isInstanceUp: pipe([get("StackStatus"), isIn(["CREATE_COMPLETE"])]),
+    isInstanceError: pipe([
+      get("StackStatus"),
+      isIn(["CREATE_FAILED", "ROLLBACK_FAILED"]),
+    ]),
+    getErrorMessage: pipe([get("StackStatusReason", "FAILED")]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#updateStack-property
+  update: {
+    method: "updateStack",
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#deleteStack-property
-  const destroy = client.destroy({
+  destroy: {
     pickId,
     method: "deleteStack",
-    getById,
-    ignoreErrorCodes,
     ignoreErrorMessages,
+    isInstanceDown: pipe([get("StackStatus"), isIn(["DELETE_COMPLETE"])]),
     isInstanceError: pipe([eq(get("StackStatus"), "DELETE_FAILED")]),
-  });
-
-  return {
-    spec,
-    findId,
-    getByName,
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    getById,
-    findName,
-    create,
-    destroy,
-    getList,
-    configDefault,
-  };
-};
+    getErrorMessage: pipe([get("StackStatusReason", "DELETE_FAILED")]),
+  },
+  getByName: getByNameCore,
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { iamRole, snsTopics },
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+      when(
+        () => iamRole,
+        assign({
+          RoleARN: () => getField(iamRole, "Arn"),
+        })
+      ),
+      when(
+        () => snsTopics,
+        assign({
+          NotificationARNs: pipe([
+            () => snsTopics,
+            map((snsTopic) => getField(snsTopic, "Attributes.TopicArn")),
+          ]),
+        })
+      ),
+    ])(),
+});

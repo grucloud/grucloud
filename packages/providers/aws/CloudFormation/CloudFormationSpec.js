@@ -1,50 +1,28 @@
 const assert = require("assert");
 const { pipe, tap, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const {} = require("@grucloud/core/Common");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { createAwsService } = require("../AwsService");
+const { compareAws } = require("../AwsCommon");
+
 const { CloudFormationStack } = require("./CloudFormationStack");
+const { CloudFormationStackSet } = require("./CloudFormationStackSet");
+const { CloudFormationType } = require("./CloudFormationType");
 
 const GROUP = "CloudFormation";
-const compareCloudFormation = compareAws({});
+
+const compare = compareAws({});
 
 module.exports = pipe([
   () => [
-    {
-      type: "Stack",
-      dependencies: {
-        role: {
-          type: "Role",
-          group: "IAM",
-          dependencyId: ({ lives, config }) => get("RoleARN"),
-        },
-      },
-      inferName: () => get("StackName"),
-      Client: CloudFormationStack,
-      isOurMinion,
-      ignoreResource: () => () => true,
-      compare: compareCloudFormation({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-      }),
-      filterLive: ({ lives }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-    },
+    CloudFormationStack({}),
+    CloudFormationStackSet({}),
+    CloudFormationType({}),
   ],
-  map(defaultsDeep({ group: GROUP })),
+  map(
+    pipe([
+      createAwsService,
+      defaultsDeep({ group: GROUP, compare: compare({}) }),
+    ])
+  ),
 ]);

@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 602 resources in 141 services for provider aws:
+List of 604 resources in 141 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -55,7 +55,7 @@ List of 602 resources in 141 services for provider aws:
 * Cloud9: 
 [Environment](./resources/Cloud9/Environment.md), [EnvironmentMembership](./resources/Cloud9/EnvironmentMembership.md)
 * CloudFormation: 
-[Stack](./resources/CloudFormation/Stack.md)
+[Stack](./resources/CloudFormation/Stack.md), [StackSet](./resources/CloudFormation/StackSet.md), [Type](./resources/CloudFormation/Type.md)
 * CloudFront: 
 [CachePolicy](./resources/CloudFront/CachePolicy.md), [Distribution](./resources/CloudFront/Distribution.md), [Function](./resources/CloudFront/Function.md), [KeyGroup](./resources/CloudFront/KeyGroup.md), [OriginRequestPolicy](./resources/CloudFront/OriginRequestPolicy.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md), [PublicKey](./resources/CloudFront/PublicKey.md), [ResponseHeadersPolicy](./resources/CloudFront/ResponseHeadersPolicy.md)
 * CloudHSMV2: 
