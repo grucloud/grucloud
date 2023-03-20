@@ -41,7 +41,7 @@ const assignArn = ({ config }) =>
     }),
   ]);
 
-const decorate = ({ endpoint }) =>
+const decorate = ({ endpoint, config }) =>
   pipe([
     assign({
       TemplateBody: pipe([pickId, endpoint().getTemplate, get("TemplateBody")]),

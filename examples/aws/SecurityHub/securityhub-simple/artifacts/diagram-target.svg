@@ -212,12 +212,12 @@
 <path fill="none" stroke="#707070" d="M708.63,-275.8C716.57,-279.84 724.1,-284.54 731,-290 804.1,-347.83 839.56,-456.8 854.07,-515.72"/>
 <polygon fill="#707070" stroke="#707070" points="850.63,-516.41 856.35,-525.34 857.45,-514.8 850.63,-516.41"/>
 </g>
-<!-- StandardsControl::arn:aws:securityhub:us&#45;east&#45;1:728713477404:control/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0/CloudFront.1 -->
+<!-- StandardsControl::arn:aws:securityhub:us&#45;east&#45;1:840541460064:control/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0/CloudFront.1 -->
 <g id="node17" class="node">
-<title>StandardsControl::arn:aws:securityhub:us&#45;east&#45;1:728713477404:control/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0/CloudFront.1</title>
+<title>StandardsControl::arn:aws:securityhub:us&#45;east&#45;1:840541460064:control/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0/CloudFront.1</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="332.5,-205 55.5,-205 55.5,-147 332.5,-147 332.5,-205"/>
 <text text-anchor="start" x="68" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SecurityHub::StandardsControl</text>
-<text text-anchor="start" x="68" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">arn:aws:securityhub:us&#45;east&#45;1:72...</text>
+<text text-anchor="start" x="68" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">arn:aws:securityhub:us&#45;east&#45;1:84...</text>
 </g>
 <!-- StandardsSubscription::arn:aws:securityhub:us&#45;east&#45;1::standards/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0 -->
 <g id="node19" class="node">
@@ -226,9 +226,9 @@
 <text text-anchor="start" x="425.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SecurityHub::StandardsSubscription</text>
 <text text-anchor="start" x="425.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">arn:aws:securityhub:us&#45;east&#45;1::s...</text>
 </g>
-<!-- StandardsControl::arn:aws:securityhub:us&#45;east&#45;1:728713477404:control/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0/CloudFront.1&#45;&gt;StandardsSubscription::arn:aws:securityhub:us&#45;east&#45;1::standards/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0 -->
+<!-- StandardsControl::arn:aws:securityhub:us&#45;east&#45;1:840541460064:control/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0/CloudFront.1&#45;&gt;StandardsSubscription::arn:aws:securityhub:us&#45;east&#45;1::standards/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0 -->
 <g id="edge14" class="edge">
-<title>StandardsControl::arn:aws:securityhub:us&#45;east&#45;1:728713477404:control/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0/CloudFront.1&#45;&gt;StandardsSubscription::arn:aws:securityhub:us&#45;east&#45;1::standards/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0</title>
+<title>StandardsControl::arn:aws:securityhub:us&#45;east&#45;1:840541460064:control/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0/CloudFront.1&#45;&gt;StandardsSubscription::arn:aws:securityhub:us&#45;east&#45;1::standards/aws&#45;foundational&#45;security&#45;best&#45;practices/v/1.0.0</title>
 <path fill="none" stroke="#707070" d="M332.85,-176C355.32,-176 378.78,-176 401.78,-176"/>
 <polygon fill="#707070" stroke="#707070" points="401.52,-179.5 411.52,-176 401.52,-172.5 401.52,-179.5"/>
 </g>

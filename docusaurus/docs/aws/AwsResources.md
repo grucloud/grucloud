@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 601 resources in 141 services for provider aws:
+List of 602 resources in 141 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -249,7 +249,7 @@ List of 601 resources in 141 services for provider aws:
 * SecretsManager: 
 [Secret](./resources/SecretsManager/Secret.md), [SecretRotation](./resources/SecretsManager/SecretRotation.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SecurityHub: 
-[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [ProductSubscription](./resources/SecurityHub/ProductSubscription.md), [StandardsControl](./resources/SecurityHub/StandardsControl.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
+[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [InviteAccepter](./resources/SecurityHub/InviteAccepter.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [ProductSubscription](./resources/SecurityHub/ProductSubscription.md), [StandardsControl](./resources/SecurityHub/StandardsControl.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
 * ServiceCatalog: 
 [BudgetResourceAssociation](./resources/ServiceCatalog/BudgetResourceAssociation.md), [Constraint](./resources/ServiceCatalog/Constraint.md), [OrganizationsAccess](./resources/ServiceCatalog/OrganizationsAccess.md), [Portfolio](./resources/ServiceCatalog/Portfolio.md), [PortfolioShare](./resources/ServiceCatalog/PortfolioShare.md), [Product](./resources/ServiceCatalog/Product.md), [ProductPortfolioAssociation](./resources/ServiceCatalog/ProductPortfolioAssociation.md), [PrincipalPortfolioAssociation](./resources/ServiceCatalog/PrincipalPortfolioAssociation.md), [ProvisionedProduct](./resources/ServiceCatalog/ProvisionedProduct.md), [ProvisioningArtifact](./resources/ServiceCatalog/ProvisioningArtifact.md), [ServiceAction](./resources/ServiceCatalog/ServiceAction.md), [ServiceActionAssociation](./resources/ServiceCatalog/ServiceActionAssociation.md), [TagOption](./resources/ServiceCatalog/TagOption.md), [TagOptionResourceAssociation](./resources/ServiceCatalog/TagOptionResourceAssociation.md)
 * ServiceDiscovery: 
