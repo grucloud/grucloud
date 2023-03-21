@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 604 resources in 141 services for provider aws:
+List of 607 resources in 142 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -198,6 +198,8 @@ List of 604 resources in 141 services for provider aws:
 [Firewall](./resources/NetworkFirewall/Firewall.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md)
 * NetworkManager: 
 [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Device](./resources/NetworkManager/Device.md), [GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [Link](./resources/NetworkManager/Link.md), [Site](./resources/NetworkManager/Site.md), [SiteToSiteVpnAttachment](./resources/NetworkManager/SiteToSiteVpnAttachment.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md), [VpcAttachment](./resources/NetworkManager/VpcAttachment.md)
+* OAM: 
+[Link](./resources/OAM/Link.md), [Sink](./resources/OAM/Sink.md), [SinkPolicy](./resources/OAM/SinkPolicy.md)
 * OpenSearch: 
 [Domain](./resources/OpenSearch/Domain.md), [VpcEndpoint](./resources/OpenSearch/VpcEndpoint.md)
 * OpenSearchServerless: 

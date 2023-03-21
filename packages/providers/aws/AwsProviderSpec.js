@@ -141,6 +141,7 @@ const GROUPS = [
   ["MWAA", "mwaa"],
   ["NetworkFirewall", "network-firewall"],
   ["NetworkManager", "networkmanager"],
+  ["OAM", "oam"],
   ["OpenSearchServerless", "opensearchserverless"],
   ["Organisations", "organizations"],
   ["Pipes", "pipes"],

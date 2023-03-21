@@ -10,7 +10,9 @@ describe("RAM", async function () {
         groupType: "RAM::PrincipalAssociation",
         livesNotFound: ({ config }) => [
           {
-            resourceShareArn: `arn:aws:ram:us-east-1:${config.accountId()}:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
+            resourceShareArn: `arn:aws:ram:${
+              config.region
+            }:${config.accountId()}:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
             associatedEntity: "123456789012",
           },
         ],
@@ -23,8 +25,12 @@ describe("RAM", async function () {
         groupType: "RAM::ResourceAssociation",
         livesNotFound: ({ config }) => [
           {
-            resourceShareArn: `arn:aws:ram:us-east-1:${config.accountId()}:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
-            associatedEntity: `arn:aws:ec2:us-east-1:${config.accountId()}:subnet/subnet-02635c742ca4543ba`,
+            resourceShareArn: `arn:aws:ram:${
+              config.region
+            }:${config.accountId()}:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
+            associatedEntity: `arn:aws:ec2:${
+              config.region
+            }:${config.accountId()}:subnet/subnet-02635c742ca4543ba`,
           },
         ],
       }),
@@ -36,7 +42,9 @@ describe("RAM", async function () {
         groupType: "RAM::ResourceShare",
         livesNotFound: ({ config }) => [
           {
-            resourceShareArn: `arn:aws:ram:us-east-1:${config.accountId()}:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
+            resourceShareArn: `arn:aws:ram:${
+              config.region
+            }:${config.accountId()}:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
           },
         ],
       }),
