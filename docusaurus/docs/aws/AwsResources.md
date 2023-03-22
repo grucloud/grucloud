@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 608 resources in 142 services for provider aws:
+List of 611 resources in 142 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -273,7 +273,7 @@ List of 608 resources in 142 services for provider aws:
 * StepFunctions: 
 [StateMachine](./resources/StepFunctions/StateMachine.md)
 * StorageGateway: 
-[Gateway](./resources/StorageGateway/Gateway.md)
+[Cache](./resources/StorageGateway/Cache.md), [Gateway](./resources/StorageGateway/Gateway.md), [TapePool](./resources/StorageGateway/TapePool.md), [Volume](./resources/StorageGateway/Volume.md)
 * Synthetics: 
 [Canary](./resources/Synthetics/Canary.md), [Group](./resources/Synthetics/Group.md)
 * TimestreamWrite: 

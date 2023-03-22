@@ -1,28 +1,6 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  pick,
-  eq,
-  assign,
-  map,
-  and,
-  or,
-  not,
-  filter,
-  fork,
-} = require("rubico");
-const {
-  defaultsDeep,
-  first,
-  pluck,
-  callProp,
-  when,
-  isEmpty,
-  unless,
-  identity,
-} = require("rubico/x");
+const { pipe, tap, get, pick, assign } = require("rubico");
+const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -53,6 +31,9 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assign({
+      LocalDisks: pipe([pickId, endpoint().listLocalDisks, get("Disks")]),
+    }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/StorageGateway.html
@@ -65,10 +46,15 @@ exports.StorageGatewayGateway = () => ({
     "GatewayId",
     "GatewayARN",
     "Ec2InstanceId",
+    "GatewayNetworkInterfaces",
+    "GatewayState",
     "HostEnvironmentId",
     "LastSoftwareUpdate",
     "NextUpdateAvailabilityDate",
     "GatewayNetworkInterfaces",
+    "LocalDisks",
+    "LastSoftwareUpdate",
+    "NextUpdateAvailabilityDate",
   ],
   inferName: () =>
     pipe([
@@ -92,6 +78,7 @@ exports.StorageGatewayGateway = () => ({
       }),
     ]),
   ignoreErrorCodes: ["InvalidGatewayRequestException"],
+  // Env ActivationKey
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/StorageGateway.html#describeGatewayInformation-property
   getById: {
     method: "describeGatewayInformation",
@@ -109,6 +96,7 @@ exports.StorageGatewayGateway = () => ({
   create: {
     method: "activateGateway",
     pickCreated: ({ payload }) => pipe([identity]),
+    // GatewayState STATE_RUNNING
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/StorageGateway.html#updateGatewayInformation-property
   update: {
