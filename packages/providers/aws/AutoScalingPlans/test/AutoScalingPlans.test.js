@@ -4,11 +4,13 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("AutoScalingPlans", async function () {
-  it.skip("AutoScalingGroup", () =>
+  it("ScalingPlan", () =>
     pipe([
       () => ({
         groupType: "AutoScalingPlans::ScalingPlan",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ScalingPlanName: "sp-123", ScalingPlanVersion: 1 },
+        ],
       }),
       awsResourceTest,
     ])());

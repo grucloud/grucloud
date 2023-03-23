@@ -114,11 +114,11 @@ describe("RDS", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ExportTask", () =>
+  it("ExportTask", () =>
     pipe([
       () => ({
         groupType: "RDS::ExportTask",
-        livesNotFound: ({ config }) => [{ SubscriptionName: "s123" }],
+        livesNotFound: ({ config }) => [{ ExportTaskIdentifier: "s123" }],
       }),
       awsResourceTest,
     ])());

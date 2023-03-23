@@ -59,6 +59,7 @@ exports.RDSDBEngineVersion = () => ({
   ignoreErrorCodes: [
     "CustomDBEngineVersionNotFoundFault",
     "InvalidParameterValue",
+    "AccessDenied",
   ],
   inferName: findName,
   findName,

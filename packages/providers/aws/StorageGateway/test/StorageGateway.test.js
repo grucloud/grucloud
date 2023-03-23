@@ -4,15 +4,18 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("StorageGateway", async function () {
-  it.skip("Cache", () =>
+  it("Cache", () =>
     pipe([
       () => ({
         groupType: "StorageGateway::Cache",
         livesNotFound: ({ config }) => [
           {
-            //stateMachineArn: `arn:aws:states:us-east-1:${config.accountId()}:stateMachine:test-test`,
+            GatewayARN: `arn:aws:storagegateway:${
+              config.region
+            }:${config.accountId()}:gateway/sgw-12A3456B`,
           },
         ],
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());
@@ -30,7 +33,7 @@ describe("StorageGateway", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("TapePool", () =>
+  it("TapePool", () =>
     pipe([
       () => ({
         groupType: "StorageGateway::TapePool",
@@ -44,7 +47,7 @@ describe("StorageGateway", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Volume", () =>
+  it("Volume", () =>
     pipe([
       () => ({
         groupType: "StorageGateway::Volume",

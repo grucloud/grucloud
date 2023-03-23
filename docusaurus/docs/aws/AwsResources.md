@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 600 resources in 140 services for provider aws:
+List of 611 resources in 142 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -44,6 +44,8 @@ List of 600 resources in 140 services for provider aws:
 [AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Assessment](./resources/AuditManager/Assessment.md), [AssessmentDelegation](./resources/AuditManager/AssessmentDelegation.md), [AssessmentReport](./resources/AuditManager/AssessmentReport.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [AssessmentFrameworkShare](./resources/AuditManager/AssessmentFrameworkShare.md), [Settings](./resources/AuditManager/Settings.md), [OrganizationAdminAccount](./resources/AuditManager/OrganizationAdminAccount.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
+* AutoScalingPlans: 
+[ScalingPlan](./resources/AutoScalingPlans/ScalingPlan.md)
 * Backup: 
 [BackupPlan](./resources/Backup/BackupPlan.md), [BackupSelection](./resources/Backup/BackupSelection.md), [BackupVault](./resources/Backup/BackupVault.md), [BackupVaultLockConfiguration](./resources/Backup/BackupVaultLockConfiguration.md), [BackupVaultNotification](./resources/Backup/BackupVaultNotification.md), [BackupVaultPolicy](./resources/Backup/BackupVaultPolicy.md), [Framework](./resources/Backup/Framework.md), [GlobalSettings](./resources/Backup/GlobalSettings.md), [RegionSettings](./resources/Backup/RegionSettings.md), [RegionSettings](./resources/Backup/RegionSettings.md), [ReportPlan](./resources/Backup/ReportPlan.md)
 * Batch: 
@@ -53,7 +55,7 @@ List of 600 resources in 140 services for provider aws:
 * Cloud9: 
 [Environment](./resources/Cloud9/Environment.md), [EnvironmentMembership](./resources/Cloud9/EnvironmentMembership.md)
 * CloudFormation: 
-[Stack](./resources/CloudFormation/Stack.md)
+[Stack](./resources/CloudFormation/Stack.md), [StackSet](./resources/CloudFormation/StackSet.md), [Type](./resources/CloudFormation/Type.md)
 * CloudFront: 
 [CachePolicy](./resources/CloudFront/CachePolicy.md), [Distribution](./resources/CloudFront/Distribution.md), [Function](./resources/CloudFront/Function.md), [KeyGroup](./resources/CloudFront/KeyGroup.md), [OriginRequestPolicy](./resources/CloudFront/OriginRequestPolicy.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md), [PublicKey](./resources/CloudFront/PublicKey.md), [ResponseHeadersPolicy](./resources/CloudFront/ResponseHeadersPolicy.md)
 * CloudHSMV2: 
@@ -196,6 +198,8 @@ List of 600 resources in 140 services for provider aws:
 [Firewall](./resources/NetworkFirewall/Firewall.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md)
 * NetworkManager: 
 [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Device](./resources/NetworkManager/Device.md), [GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [Link](./resources/NetworkManager/Link.md), [Site](./resources/NetworkManager/Site.md), [SiteToSiteVpnAttachment](./resources/NetworkManager/SiteToSiteVpnAttachment.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md), [VpcAttachment](./resources/NetworkManager/VpcAttachment.md)
+* OAM: 
+[Link](./resources/OAM/Link.md), [Sink](./resources/OAM/Sink.md), [SinkPolicy](./resources/OAM/SinkPolicy.md)
 * OpenSearch: 
 [Domain](./resources/OpenSearch/Domain.md), [VpcEndpoint](./resources/OpenSearch/VpcEndpoint.md)
 * OpenSearchServerless: 
@@ -213,7 +217,7 @@ List of 600 resources in 140 services for provider aws:
 * Rbin: 
 [Rule](./resources/Rbin/Rule.md)
 * RDS: 
-[DBCluster](./resources/RDS/DBCluster.md), [DBClusterEndpoint](./resources/RDS/DBClusterEndpoint.md), [DBClusterParameterGroup](./resources/RDS/DBClusterParameterGroup.md), [DBClusterSnapshot](./resources/RDS/DBClusterSnapshot.md), [DBEngineVersion](./resources/RDS/DBEngineVersion.md), [DBInstance](./resources/RDS/DBInstance.md), [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSnapshot](./resources/RDS/DBSnapshot.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [EventSubscription](./resources/RDS/EventSubscription.md), [GlobalCluster](./resources/RDS/GlobalCluster.md), [OptionGroup](./resources/RDS/OptionGroup.md)
+[DBCluster](./resources/RDS/DBCluster.md), [DBClusterEndpoint](./resources/RDS/DBClusterEndpoint.md), [DBClusterParameterGroup](./resources/RDS/DBClusterParameterGroup.md), [DBClusterSnapshot](./resources/RDS/DBClusterSnapshot.md), [DBEngineVersion](./resources/RDS/DBEngineVersion.md), [DBInstance](./resources/RDS/DBInstance.md), [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSnapshot](./resources/RDS/DBSnapshot.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [EventSubscription](./resources/RDS/EventSubscription.md), [ExportTask](./resources/RDS/ExportTask.md), [GlobalCluster](./resources/RDS/GlobalCluster.md), [OptionGroup](./resources/RDS/OptionGroup.md)
 * Redshift: 
 [Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md), [EndpointAccess](./resources/Redshift/EndpointAccess.md), [EndpointAuthorization](./resources/Redshift/EndpointAuthorization.md), [UsageLimit](./resources/Redshift/UsageLimit.md)
 * RedshiftServerless: 
@@ -247,7 +251,7 @@ List of 600 resources in 140 services for provider aws:
 * SecretsManager: 
 [Secret](./resources/SecretsManager/Secret.md), [SecretRotation](./resources/SecretsManager/SecretRotation.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SecurityHub: 
-[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [ProductSubscription](./resources/SecurityHub/ProductSubscription.md), [StandardsControl](./resources/SecurityHub/StandardsControl.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
+[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [InviteAccepter](./resources/SecurityHub/InviteAccepter.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [ProductSubscription](./resources/SecurityHub/ProductSubscription.md), [StandardsControl](./resources/SecurityHub/StandardsControl.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
 * ServiceCatalog: 
 [BudgetResourceAssociation](./resources/ServiceCatalog/BudgetResourceAssociation.md), [Constraint](./resources/ServiceCatalog/Constraint.md), [OrganizationsAccess](./resources/ServiceCatalog/OrganizationsAccess.md), [Portfolio](./resources/ServiceCatalog/Portfolio.md), [PortfolioShare](./resources/ServiceCatalog/PortfolioShare.md), [Product](./resources/ServiceCatalog/Product.md), [ProductPortfolioAssociation](./resources/ServiceCatalog/ProductPortfolioAssociation.md), [PrincipalPortfolioAssociation](./resources/ServiceCatalog/PrincipalPortfolioAssociation.md), [ProvisionedProduct](./resources/ServiceCatalog/ProvisionedProduct.md), [ProvisioningArtifact](./resources/ServiceCatalog/ProvisioningArtifact.md), [ServiceAction](./resources/ServiceCatalog/ServiceAction.md), [ServiceActionAssociation](./resources/ServiceCatalog/ServiceActionAssociation.md), [TagOption](./resources/ServiceCatalog/TagOption.md), [TagOptionResourceAssociation](./resources/ServiceCatalog/TagOptionResourceAssociation.md)
 * ServiceDiscovery: 
@@ -269,7 +273,7 @@ List of 600 resources in 140 services for provider aws:
 * StepFunctions: 
 [StateMachine](./resources/StepFunctions/StateMachine.md)
 * StorageGateway: 
-[Gateway](./resources/StorageGateway/Gateway.md)
+[Cache](./resources/StorageGateway/Cache.md), [Gateway](./resources/StorageGateway/Gateway.md), [TapePool](./resources/StorageGateway/TapePool.md), [Volume](./resources/StorageGateway/Volume.md)
 * Synthetics: 
 [Canary](./resources/Synthetics/Canary.md), [Group](./resources/Synthetics/Group.md)
 * TimestreamWrite: 

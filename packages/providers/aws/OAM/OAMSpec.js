@@ -5,18 +5,20 @@ const { defaultsDeep } = require("rubico/x");
 const { createAwsService } = require("../AwsService");
 const { compareAws } = require("../AwsCommon");
 
-const GROUP = "AutoScalingPlans";
+const GROUP = "OAM";
 
 const compare = compareAws({});
 
-const {
-  AutoScalingPlansScalingPlan,
-} = require("./AutoScalingPlansScalingPlan");
+const { OAMLink } = require("./OAMLink");
+const { OAMSink } = require("./OAMSink");
+const { OAMSinkPolicy } = require("./OAMSinkPolicy");
 
 module.exports = pipe([
   () => [
     //
-    AutoScalingPlansScalingPlan({}),
+    OAMLink({}),
+    OAMSink({}),
+    OAMSinkPolicy({}),
   ],
   map(
     pipe([

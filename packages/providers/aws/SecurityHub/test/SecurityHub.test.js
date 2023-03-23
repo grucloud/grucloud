@@ -54,11 +54,13 @@ describe("SecurityHub", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("InviteAcceptor", () =>
+  it("InviteAccepter", () =>
     pipe([
       () => ({
-        groupType: "SecurityHub::InviteAcceptor",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "SecurityHub::InviteAccepter",
+        livesNotFound: ({ config }) => [
+          { InvitationId: "i12345678", AdministratorId: config.accountId() },
+        ],
       }),
       awsResourceTest,
     ])());

@@ -18,7 +18,7 @@ describe("WorkSpacesWeb", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("IdentityProvider", () =>
+  it("IdentityProvider", () =>
     pipe([
       () => ({
         groupType: "WorkSpacesWeb::IdentityProvider",
@@ -26,7 +26,7 @@ describe("WorkSpacesWeb", async function () {
           {
             identityProviderArn: `arn:aws:workspaces-web:${
               config.region
-            }:${config.accountId()}:identityProvider/dc06c8cb-be70-43a8-aba1-0d70fd47e7d1`,
+            }:${config.accountId()}:identityProvider/-1EFcD1F--5b2a2F17EB38A080b9b7cabdCA/45EA0-dFde6a42cd72D2f-daFcbcdbd9D47B/2d18e991f9dBD50c6f8cAeaf0F80E9cFa28-/FD93dE5Fb931dCAcc62-d-cb95E674b5-afA/1D1585b9F6e6CC2efCaf2E9d5ef1-e6eA56A/f2a8269a2A2DfC04bAbcE23FFF0c52Bbaa19/46ff6db3bDCf6f-E9643AA8D-e51A--b13e9/5d-26Ef49ff56f2bE8d0B6f8bf7F7C8fA18B`,
           },
         ],
       }),

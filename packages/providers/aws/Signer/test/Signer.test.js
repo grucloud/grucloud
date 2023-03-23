@@ -6,12 +6,14 @@ const { awsResourceTest } = require("../../AwsResourceTester");
 const config = () => ({ includeGroups: ["Signer"] });
 
 describe("Signer", async function () {
-  it.skip("SigningJob", () =>
+  it("SigningJob", () =>
     pipe([
       () => ({
         config,
         groupType: "Signer::SigningJob",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { jobId: "6593e837-c99d-4b4e-a743-68f45fa54e9f" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -26,12 +28,14 @@ describe("Signer", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("SigningProfilePermission", () =>
+  it("SigningProfilePermission", () =>
     pipe([
       () => ({
         config,
         groupType: "Signer::SigningProfilePermission",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { profileName: "p1234", revisionId: "v1", statementId: "stmt" },
+        ],
       }),
       awsResourceTest,
     ])());

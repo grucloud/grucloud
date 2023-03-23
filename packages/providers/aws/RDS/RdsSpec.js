@@ -15,6 +15,7 @@ const { RDSDBProxy } = require("./RDSDBProxy");
 const { RDSDBProxyTargetGroup } = require("./RDSDBProxyTargetGroup");
 const { RDSDBSnapshot } = require("./RDSDBSnapshot");
 const { RDSEventSubscription } = require("./RDSEventSubscription");
+const { RDSExportTask } = require("./RDSExportTask");
 const { RDSGlobalCluster } = require("./RDSGlobalCluster");
 const { RDSOptionGroup } = require("./RDSOptionGroup");
 
@@ -34,6 +35,7 @@ module.exports = pipe([
     RDSDBSnapshot({}),
     RDSDBSubnetGroup({ compare: compareRDS }),
     RDSEventSubscription({ compare: compareRDS }),
+    RDSExportTask({}),
     RDSGlobalCluster({}),
     RDSOptionGroup({}),
   ],
