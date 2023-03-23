@@ -69,7 +69,7 @@ exports.SignerSigningProfile = () => ({
     ]),
   findId: () =>
     pipe([
-      get("arn"),
+      get("profileName"),
       tap((id) => {
         assert(id);
       }),
