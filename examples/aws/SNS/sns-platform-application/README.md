@@ -1,0 +1,1 @@
+# Aws SNS Platform Application

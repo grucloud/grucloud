@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 611 resources in 142 services for provider aws:
+List of 612 resources in 142 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -263,7 +263,7 @@ List of 611 resources in 142 services for provider aws:
 * Shield: 
 [Protection](./resources/Shield/Protection.md), [ProtectionGroup](./resources/Shield/ProtectionGroup.md)
 * SNS: 
-[Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
+[PlatformApplication](./resources/SNS/PlatformApplication.md), [Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 
 [Queue](./resources/SQS/Queue.md), [QueueRedriveAllowPolicy](./resources/SQS/QueueRedriveAllowPolicy.md), [QueueRedrivePolicy](./resources/SQS/QueueRedrivePolicy.md)
 * SSM: 
