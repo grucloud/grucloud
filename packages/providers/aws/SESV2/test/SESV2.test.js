@@ -16,7 +16,7 @@ describe("SESV2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ContactList", () =>
+  it("ContactList", () =>
     pipe([
       () => ({
         groupType: "SESV2::ContactList",
