@@ -17,6 +17,7 @@ const {
 const { SESV2ContactList } = require("./SESV2ContactList");
 const { SESV2DedicatedIpPool } = require("./SESV2DedicatedIpPool");
 const { SESV2EmailIdentity } = require("./SESV2EmailIdentity");
+const { SESV2EmailTemplate } = require("./SESV2EmailTemplate");
 
 module.exports = pipe([
   () => [
@@ -25,6 +26,7 @@ module.exports = pipe([
     SESV2ContactList({}),
     SESV2DedicatedIpPool({}),
     SESV2EmailIdentity({}),
+    SESV2EmailTemplate({}),
   ],
   map(
     pipe([

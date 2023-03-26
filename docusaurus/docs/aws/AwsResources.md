@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 614 resources in 142 services for provider aws:
+List of 615 resources in 142 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -259,7 +259,7 @@ List of 614 resources in 142 services for provider aws:
 * ServiceQuotas: 
 [ServiceQuota](./resources/ServiceQuotas/ServiceQuota.md)
 * SESV2: 
-[ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [ConfigurationSetEventDestination](./resources/SESV2/ConfigurationSetEventDestination.md), [ContactList](./resources/SESV2/ContactList.md), [DedicatedIpPool](./resources/SESV2/DedicatedIpPool.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md)
+[ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [ConfigurationSetEventDestination](./resources/SESV2/ConfigurationSetEventDestination.md), [ContactList](./resources/SESV2/ContactList.md), [DedicatedIpPool](./resources/SESV2/DedicatedIpPool.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md), [EmailTemplate](./resources/SESV2/EmailTemplate.md)
 * Shield: 
 [Protection](./resources/Shield/Protection.md), [ProtectionGroup](./resources/Shield/ProtectionGroup.md)
 * SNS: 

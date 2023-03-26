@@ -77,6 +77,18 @@ describe("SESV2", async function () {
       }),
       awsResourceTest,
     ])());
+  it("EmailTemplate", () =>
+    pipe([
+      () => ({
+        groupType: "SESV2::EmailTemplate",
+        livesNotFound: ({ config }) => [
+          {
+            TemplateName: "t123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it.skip("IdentityFeedbackAttributes", () =>
     pipe([
       () => ({
