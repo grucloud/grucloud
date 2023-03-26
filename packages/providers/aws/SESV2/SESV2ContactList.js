@@ -45,7 +45,7 @@ const decorate = ({ endpoint, config }) =>
     assignArn({ config }),
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESv2.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html
 exports.SESV2ContactList = () => ({
   type: "ContactList",
   package: "sesv2",
@@ -96,30 +96,29 @@ exports.SESV2ContactList = () => ({
         ]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESv2.html#getContactList-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#getContactList-property
   getById: {
     method: "getContactList",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESv2.html#listContactLists-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#listContactLists-property
   getList: {
     method: "listContactLists",
     getParam: "ContactLists",
     decorate: ({ getById }) => pipe([getById]),
   },
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESv2.html#createContactList-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#createContactList-property
   create: {
     method: "createContactList",
     pickCreated: ({ payload }) => pipe([() => payload]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESv2.html#updateContactList-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#updateContactList-property
   update: {
     method: "updateContactList",
     filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESv2.html#deleteContactList-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#deleteContactList-property
   destroy: {
     method: "deleteContactList",
     pickId,

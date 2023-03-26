@@ -16,6 +16,19 @@ describe("SESV2", async function () {
       }),
       awsResourceTest,
     ])());
+  it("ConfigurationSetEventDestination", () =>
+    pipe([
+      () => ({
+        groupType: "SESV2::ConfigurationSetEventDestination",
+        livesNotFound: ({ config }) => [
+          {
+            ConfigurationSetName: `c123`,
+            EventDestinationName: "e1234",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("ContactList", () =>
     pipe([
       () => ({
