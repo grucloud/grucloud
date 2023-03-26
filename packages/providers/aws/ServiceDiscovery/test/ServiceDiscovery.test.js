@@ -12,11 +12,13 @@ describe("ServiceDiscovery", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Instance", () =>
+  it("Instance", () =>
     pipe([
       () => ({
         groupType: "ServiceDiscovery::Instance",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { InstanceId: "i123", ServiceId: "a1234" },
+        ],
       }),
       awsResourceTest,
     ])());
