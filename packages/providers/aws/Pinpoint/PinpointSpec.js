@@ -7,18 +7,18 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Pinpoint.html
 
-// const { PinpointApp } = require("./PinpointApp");
+const { PinpointApp } = require("./PinpointApp");
 // const { PinpointEmailChannel } = require("./PinpointEmailChannel");
 
 const GROUP = "Pinpoint";
 
-const tagsKey = "Tags";
-const compare = compareAws({ tagsKey, key: "Key" });
+const tagsKey = "tags";
+const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
     //
-    // PinpointApp({}),
+    PinpointApp({}),
     // PinpointEmailChannel({}),
   ],
   map(

@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project pinpoint-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Pinpoint
+++++ App (1)
+@endmindmap
