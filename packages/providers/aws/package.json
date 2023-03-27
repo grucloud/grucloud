@@ -254,6 +254,7 @@
     "@aws-sdk/client-quicksight": "3.279.0",
     "@aws-sdk/client-ram": "3.279.0",
     "@aws-sdk/client-rbin": "3.279.0",
+    "@aws-sdk/client-resiliencehub": "3.279.0",
     "@aws-sdk/client-rds": "3.279.0",
     "@aws-sdk/client-redshift": "3.279.0",
     "@aws-sdk/client-redshift-serverless": "3.279.0",
