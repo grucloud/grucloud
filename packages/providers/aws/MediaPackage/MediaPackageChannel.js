@@ -36,7 +36,7 @@ exports.MediaPackageChannel = () => ({
   package: "mediapackage",
   client: "MediaPackage",
   propertiesDefault: {},
-  omitProperties: ["Arn", "HlsIngest"],
+  omitProperties: ["Arn", "HlsIngest", "CreatedAt"],
   inferName: () =>
     pipe([
       get("Id"),
