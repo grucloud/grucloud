@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 618 resources in 144 services for provider aws:
+List of 619 resources in 145 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -76,6 +76,8 @@ List of 618 resources in 144 services for provider aws:
 [Repository](./resources/CodeCommit/Repository.md)
 * CodeDeploy: 
 [Application](./resources/CodeDeploy/Application.md), [DeploymentGroup](./resources/CodeDeploy/DeploymentGroup.md)
+* CodeGuruReviewer: 
+[RepositoryAssociation](./resources/CodeGuruReviewer/RepositoryAssociation.md)
 * CodePipeline: 
 [Pipeline](./resources/CodePipeline/Pipeline.md)
 * CodeStar: 

@@ -5,9 +5,9 @@ const { defaultsDeep } = require("rubico/x");
 const { createAwsService } = require("../AwsService");
 const { compareAws } = require("../AwsCommon");
 
-// const {
-//   CodeGuruReviewerRepositoryAssociation,
-// } = require("./CodeGuruReviewerRepositoryAssociation");
+const {
+  CodeGuruReviewerRepositoryAssociation,
+} = require("./CodeGuruReviewerRepositoryAssociation");
 
 const GROUP = "CodeGuruReviewer";
 
@@ -21,7 +21,7 @@ const compare = compareAws({
 module.exports = pipe([
   () => [
     //
-    //CodeGuruReviewerRepositoryAssociation({ compare }),
+    CodeGuruReviewerRepositoryAssociation({ compare }),
   ],
   map(
     pipe([
