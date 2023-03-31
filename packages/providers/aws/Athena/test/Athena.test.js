@@ -12,11 +12,19 @@ describe("Athena", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Database", () =>
+  it("Database", () =>
     pipe([
       () => ({
         groupType: "Athena::Database",
-        livesNotFound: ({ config }) => [{ Name: "d123" }],
+        livesNotFound: ({ config }) => [
+          {
+            CatalogName: "c123",
+            DatabaseName: "d123",
+            ResultConfiguration: {
+              OutputLocation: "s3://gc-test-athena-database-output",
+            },
+          },
+        ],
       }),
       awsResourceTest,
     ])());

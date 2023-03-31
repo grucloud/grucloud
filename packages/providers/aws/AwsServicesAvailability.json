@@ -4520,6 +4520,7 @@
             "kinesis",
             "kinesisanalytics",
             "kms",
+            "lakeformation",
             "lambda",
             "logs",
             "marketplace",
