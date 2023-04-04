@@ -7,9 +7,11 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DAX.html
 
-// const { DetectiveGraph } = require("./DetectiveGraph");
-// const { DetectiveInvitation } = require("./DetectiveInvitation");
-// const { DetectiveMember } = require("./DetectiveMember");
+const { DetectiveGraph } = require("./DetectiveGraph");
+const {
+  DetectiveInvitationAccepter,
+} = require("./DetectiveInvitationAccepter");
+const { DetectiveMember } = require("./DetectiveMember");
 
 const GROUP = "Detective";
 
@@ -18,9 +20,9 @@ const compare = compareAws({});
 module.exports = pipe([
   () => [
     //
-    // DetectiveGraph({ compare }),
-    // DetectiveInvitation({}),
-    // DetectiveMember({}),
+    DetectiveGraph({ compare }),
+    DetectiveInvitationAccepter({}),
+    DetectiveMember({}),
   ],
   map(
     pipe([
