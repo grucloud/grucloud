@@ -12,8 +12,8 @@ const pickId = pipe([
   }),
 ]);
 
-exports.GlobalAcceleratorListener = () => ({
-  type: "Listener",
+exports.GlobalAcceleratorCustomRoutingListener = () => ({
+  type: "CustomRoutingListener",
   package: "global-accelerator",
   client: "GlobalAccelerator",
   region: "us-west-2",
@@ -51,7 +51,7 @@ exports.GlobalAcceleratorListener = () => ({
   omitProperties: ["AcceleratorArn", "ListenerArn"],
   dependencies: {
     accelerator: {
-      type: "Accelerator",
+      type: "CustomRoutingAccelerator",
       group: "GlobalAccelerator",
       parent: true,
       dependencyId: ({ lives, config }) =>
@@ -69,9 +69,12 @@ exports.GlobalAcceleratorListener = () => ({
     pipe([
       () =>
         client.getListWithParent({
-          parent: { type: "Accelerator", group: "GlobalAccelerator" },
+          parent: {
+            type: "CustomRoutingAccelerator",
+            group: "GlobalAccelerator",
+          },
           pickKey: pipe([pick(["AcceleratorArn"])]),
-          method: "listListeners",
+          method: "listCustomRoutingListeners",
           getParam: "Listeners",
           config,
           decorate: ({ parent }) =>
@@ -98,26 +101,26 @@ exports.GlobalAcceleratorListener = () => ({
         }),
         () => diff,
       ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#describeListener-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#describeCustomRoutingListener-property
   getById: {
-    method: "describeListener",
+    method: "describeCustomRoutingListener",
     getField: "Listener",
     pickId,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#createListener-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#createCustomRoutingListener-property
   create: {
-    method: "createListener",
+    method: "createCustomRoutingListener",
     pickCreated: ({ payload }) => pipe([get("Listener")]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#deleteListener-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#deleteCustomRoutingListener-property
   destroy: {
-    method: "deleteListener",
+    method: "deleteCustomRoutingListener",
     pickId,
   },
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { ...otherProps },
     dependencies: { accelerator },
   }) =>
     pipe([

@@ -24,8 +24,8 @@ const decorate = () =>
     }),
   ]);
 
-exports.GlobalAcceleratorEndpointGroup = () => ({
-  type: "EndpointGroup",
+exports.GlobalAcceleratorCustomRoutingEndpointGroup = () => ({
+  type: "CustomRoutingEndpointGroup",
   package: "global-accelerator",
   client: "GlobalAccelerator",
   region: "us-west-2",
@@ -75,7 +75,7 @@ exports.GlobalAcceleratorEndpointGroup = () => ({
   ],
   dependencies: {
     listener: {
-      type: "Listener",
+      type: "CustomRoutingListener",
       group: "GlobalAccelerator",
       parent: true,
       dependencyId: ({ lives, config }) =>
@@ -148,30 +148,30 @@ exports.GlobalAcceleratorEndpointGroup = () => ({
       }),
     ]),
   getByName: getByNameCore,
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#describeEndpointGroup-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#describeCustomRoutingEndpointGroup-property
   getById: {
-    method: "describeEndpointGroup",
+    method: "describeCustomRoutingEndpointGroup",
     getField: "EndpointGroup",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#createEndpointGroup-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#createCustomRoutingEndpointGroup-property
   create: {
-    method: "createEndpointGroup",
+    method: "createCustomRoutingEndpointGroup",
     pickCreated: ({ payload }) => pipe([get("EndpointGroup")]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateEndpointGroup-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateCustomRoutingEndpointGroup-property
   update: {
-    method: "updateEndpointGroup",
+    method: "updateCustomRoutingEndpointGroup",
     filterParams: ({ payload, live }) =>
       pipe([
         () => payload,
         defaultsDeep({ EndpointGroupArn: live.EndpointGroupArn }),
       ])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#deleteEndpointGroup-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#deleteCustomRoutingEndpointGroup-property
   destroy: {
-    method: "deleteEndpointGroup",
+    method: "deleteCustomRoutingEndpointGroup",
     pickId,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#listEndpointGroups-property
@@ -179,9 +179,9 @@ exports.GlobalAcceleratorEndpointGroup = () => ({
     pipe([
       () =>
         client.getListWithParent({
-          parent: { type: "Listener", group: "GlobalAccelerator" },
+          parent: { type: "CustomRoutingListener", group: "GlobalAccelerator" },
           pickKey: pipe([pick(["ListenerArn"])]),
-          method: "listEndpointGroups",
+          method: "listCustomRoutingEndpointGroups",
           getParam: "EndpointGroups",
           config,
           decorate: ({ parent }) =>

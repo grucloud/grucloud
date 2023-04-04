@@ -28,7 +28,7 @@ const decorate =
       }),
       () => live,
       pickId,
-      endpoint().describeAcceleratorAttributes,
+      endpoint().describeCustomRoutingAcceleratorAttributes,
       pick(["AcceleratorAttributes"]),
       defaultsDeep(live),
       assignTags({ buildArn: buildArn({ config }), endpoint }),
@@ -41,22 +41,21 @@ const updateAcceleratorAttributes = ({ endpoint, live }) =>
     }),
     get("AcceleratorAttributes"),
     defaultsDeep({ AcceleratorArn: live.AcceleratorArn }),
-    endpoint().updateAcceleratorAttributes,
+    endpoint().updateCustomRoutingAcceleratorAttributes,
   ]);
 
-exports.GlobalAcceleratorAccelerator = () => ({
-  type: "Accelerator",
+exports.GlobalAcceleratorCustomRoutingAccelerator = () => ({
+  type: "CustomRoutingAccelerator",
   package: "global-accelerator",
   client: "GlobalAccelerator",
   region: "us-west-2",
   ignoreErrorCodes: ["AcceleratorNotFoundException"],
-  inferName: () =>
-    pipe([
-      get("Name"),
-      tap((Name) => {
-        assert(Name);
-      }),
-    ]),
+  inferName: pipe([
+    get("Name"),
+    tap((Name) => {
+      assert(Name);
+    }),
+  ]),
   findName: () =>
     pipe([
       get("Name"),
@@ -90,22 +89,22 @@ exports.GlobalAcceleratorAccelerator = () => ({
         get("AcceleratorAttributes.FlowLogsS3Bucket"),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#describeAccelerator-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#describeCustomRoutingAccelerator-property
   getById: {
-    method: "describeAccelerator",
+    method: "describeCustomRoutingAccelerator",
     getField: "Accelerator",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#listAccelerators-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#listCustomRoutingAccelerators-property
   getList: {
-    method: "listAccelerators",
+    method: "listCustomRoutingAccelerators",
     getParam: "Accelerators",
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#createAccelerator-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#createCustomRoutingAccelerator-property
   create: {
-    method: "createAccelerator",
+    method: "createCustomRoutingAccelerator",
     pickCreated: ({ payload }) => pipe([get("Accelerator")]),
     isInstanceUp: pipe([eq(get("Status"), "DEPLOYED")]),
     postCreate:
@@ -119,9 +118,9 @@ exports.GlobalAcceleratorAccelerator = () => ({
           ),
         ])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#deleteAccelerator-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#deleteCustomRoutingAccelerator-property
   destroy: {
-    method: "deleteAccelerator",
+    method: "deleteCustomRoutingAccelerator",
     pickId,
     preDestroy: ({ endpoint, getById }) =>
       tap((live) =>
@@ -130,10 +129,10 @@ exports.GlobalAcceleratorAccelerator = () => ({
             AcceleratorArn: live.AcceleratorArn,
             Enabled: false,
           }),
-          endpoint().updateAccelerator,
+          endpoint().updateCustomRoutingAccelerator,
           () =>
             retryCall({
-              name: `describeAccelerator`,
+              name: `describeCustomRoutingAccelerator`,
               fn: pipe([() => live, getById]),
               isExpectedResult: eq(get("Status"), "DEPLOYED"),
             }),
@@ -145,9 +144,9 @@ exports.GlobalAcceleratorAccelerator = () => ({
     Tagger({
       buildArn: buildArn({ config }),
     }),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateAccelerator-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateCustomRoutingAccelerator-property
   // TODO
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateAcceleratorAttributes-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#updateCustomRoutingAcceleratorAttributes-property
   update:
     ({ endpoint }) =>
     async ({ pickId, payload, diff, live }) =>
@@ -160,7 +159,7 @@ exports.GlobalAcceleratorAccelerator = () => ({
             () => payload,
             pick(["Enabled", "IpAddressType"]),
             defaultsDeep({ AcceleratorArn: live.AcceleratorArn }),
-            endpoint().updateAccelerator,
+            endpoint().updateCustomRoutingAccelerator,
           ])
         ),
         tap.if(

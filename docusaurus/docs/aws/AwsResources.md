@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 620 resources in 145 services for provider aws:
+List of 623 resources in 145 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -147,7 +147,7 @@ List of 620 resources in 145 services for provider aws:
 * Glacier: 
 [Vault](./resources/Glacier/Vault.md)
 * GlobalAccelerator: 
-[Accelerator](./resources/GlobalAccelerator/Accelerator.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
+[Accelerator](./resources/GlobalAccelerator/Accelerator.md), [CustomRoutingAccelerator](./resources/GlobalAccelerator/CustomRoutingAccelerator.md), [CustomRoutingEndpointGroup](./resources/GlobalAccelerator/CustomRoutingEndpointGroup.md), [CustomRoutingListener](./resources/GlobalAccelerator/CustomRoutingListener.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
 * Glue: 
 [Classifier](./resources/Glue/Classifier.md), [Crawler](./resources/Glue/Crawler.md), [Database](./resources/Glue/Database.md), [Job](./resources/Glue/Job.md), [Table](./resources/Glue/Table.md)
 * Grafana: 

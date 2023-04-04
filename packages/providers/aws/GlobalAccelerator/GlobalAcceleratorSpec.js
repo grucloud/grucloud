@@ -9,9 +9,18 @@ const {
   GlobalAcceleratorAccelerator,
 } = require("./GlobalAcceleratorAccelerator");
 const {
+  GlobalAcceleratorCustomRoutingAccelerator,
+} = require("./GlobalAcceleratorCustomRoutingAccelerator");
+const {
+  GlobalAcceleratorCustomRoutingEndpointGroup,
+} = require("./GlobalAcceleratorCustomRoutingEndpointGroup");
+const {
+  GlobalAcceleratorCustomRoutingListener,
+} = require("./GlobalAcceleratorCustomRoutingListener");
+
+const {
   GlobalAcceleratorEndpointGroup,
 } = require("./GlobalAcceleratorEndpointGroup");
-
 const { GlobalAcceleratorListener } = require("./GlobalAcceleratorListener");
 
 const GROUP = "GlobalAccelerator";
@@ -21,6 +30,9 @@ const compare = compareAws({ tagsKey, key: "Key" });
 module.exports = pipe([
   () => [
     GlobalAcceleratorAccelerator({}),
+    GlobalAcceleratorCustomRoutingAccelerator({}),
+    GlobalAcceleratorCustomRoutingEndpointGroup({}),
+    GlobalAcceleratorCustomRoutingListener({}),
     GlobalAcceleratorEndpointGroup({}),
     GlobalAcceleratorListener({}),
   ],
