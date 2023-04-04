@@ -5,6 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 const { createAwsService } = require("../AwsService");
 
+const { SNSPlatformApplication } = require("./SNSPlatformApplication");
 const { SNSTopic } = require("./SNSTopic");
 const { SNSSubscription } = require("./SNSSubscription");
 
@@ -16,6 +17,7 @@ const compare = compareAws({});
 module.exports = pipe([
   () => [
     //
+    SNSPlatformApplication({}),
     SNSTopic({ compare }),
     SNSSubscription({ compare }),
   ],

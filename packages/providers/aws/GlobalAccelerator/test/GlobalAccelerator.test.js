@@ -16,37 +16,37 @@ describe("GlobalAccelerator", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("CustomRoutingAccelerator", () =>
+  it("CustomRoutingAccelerator", () =>
     pipe([
       () => ({
         groupType: "GlobalAccelerator::CustomRoutingAccelerator",
         livesNotFound: ({ config }) => [
           {
-            // AcceleratorArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/123`,
+            AcceleratorArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/123`,
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("CustomRoutingEndpointGroup", () =>
+  it("CustomRoutingEndpointGroup", () =>
     pipe([
       () => ({
         groupType: "GlobalAccelerator::CustomRoutingEndpointGroup",
         livesNotFound: ({ config }) => [
           {
-            // AcceleratorArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/123`,
+            EndpointGroupArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/310c604a-5013-416e-b940-e53d61b2da2d/listener/686088c5/endpoint-group/98de4326d002`,
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("CustomRoutingListener", () =>
+  it("CustomRoutingListener", () =>
     pipe([
       () => ({
         groupType: "GlobalAccelerator::CustomRoutingListener",
         livesNotFound: ({ config }) => [
           {
-            // AcceleratorArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/123`,
+            ListenerArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/a74affc1-eae0-427b-9011-0b04fadaf8e1/listener/f13b08ab`,
           },
         ],
       }),

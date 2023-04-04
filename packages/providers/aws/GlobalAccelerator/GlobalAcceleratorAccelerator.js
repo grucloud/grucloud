@@ -7,26 +7,31 @@ const { retryCall } = require("@grucloud/core/Retry");
 
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./GlobalAcceleratorCommon");
+const { Tagger, assignTags } = require("./GlobalAcceleratorCommon");
 
 const pickId = pick(["AcceleratorArn"]);
 
+const buildArn = () =>
+  pipe([
+    get("AcceleratorArn"),
+    tap((AcceleratorArn) => {
+      assert(AcceleratorArn);
+    }),
+  ]);
+
 const decorate =
-  ({ endpoint }) =>
+  ({ endpoint, config }) =>
   (live) =>
     pipe([
+      tap((params) => {
+        assert(live.AcceleratorArn);
+      }),
       () => live,
       pickId,
       endpoint().describeAcceleratorAttributes,
       pick(["AcceleratorAttributes"]),
       defaultsDeep(live),
-      assign({
-        Tags: pipe([
-          () => ({ ResourceArn: live.AcceleratorArn }),
-          endpoint().listTagsForResource,
-          get("Tags"),
-        ]),
-      }),
+      assignTags({ buildArn: buildArn({ config }), endpoint }),
     ])();
 
 const updateAcceleratorAttributes = ({ endpoint, live }) =>
@@ -39,17 +44,33 @@ const updateAcceleratorAttributes = ({ endpoint, live }) =>
     endpoint().updateAcceleratorAttributes,
   ]);
 
-const buildArn = () => pipe([get("AcceleratorArn")]);
-
 exports.GlobalAcceleratorAccelerator = () => ({
   type: "Accelerator",
   package: "global-accelerator",
   client: "GlobalAccelerator",
   region: "us-west-2",
   ignoreErrorCodes: ["AcceleratorNotFoundException"],
-  inferName: () => get("Name"),
-  findName: () => pipe([get("Name")]),
-  findId: () => pipe([get("AcceleratorArn")]),
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("AcceleratorArn"),
+      tap((AcceleratorArn) => {
+        assert(AcceleratorArn);
+      }),
+    ]),
   propertiesDefault: { Enabled: true, IpAddressType: "IPV4" },
   omitProperties: [
     "AcceleratorArn",
@@ -161,7 +182,7 @@ exports.GlobalAcceleratorAccelerator = () => ({
           name,
           config,
           namespace,
-          userTags: Tags,
+          UserTags: Tags,
         }),
       }),
     ])(),

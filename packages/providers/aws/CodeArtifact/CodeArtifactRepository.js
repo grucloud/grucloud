@@ -77,6 +77,7 @@ exports.CodeArtifactRepository = () => ({
     "arn",
     "externalConnections[].packageFormat",
     "externalConnections[].status",
+    "createdTime",
   ],
   inferName: () =>
     pipe([

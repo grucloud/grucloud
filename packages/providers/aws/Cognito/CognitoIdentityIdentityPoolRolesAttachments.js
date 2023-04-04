@@ -96,7 +96,7 @@ exports.CognitoIdentityIdentityPoolRolesAttachments = ({ compare }) => ({
           decorate,
         }),
     ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#createIdentityPoolRolesAttachments-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#setIdentityPoolRoles-property
   create: {
     method: "setIdentityPoolRoles",
     pickCreated: ({ payload }) => pipe([() => payload]),

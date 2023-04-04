@@ -7,6 +7,7 @@ exports.Tagger = createTagger({
   methodTagResource: "tagResource",
   methodUnTagResource: "untagResource",
   ResourceArn: "resourceArn",
+  // Tags is upper case and tagKeys is lowercase, go figure
   TagsKey: "Tags",
   UnTagsKey: "tagKeys",
 });

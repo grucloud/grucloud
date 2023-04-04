@@ -11,22 +11,24 @@ describe("SNS", async function () {
         livesNotFound: ({ config }) => [
           {
             Attributes: {
-              TopicArn: `arn:aws:sns:us-east-1:${config.accountId()}:idnonotexist`,
+              TopicArn: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:idnonotexist`,
             },
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("PlatformApplication", () =>
+  it("PlatformApplication", () =>
     pipe([
       () => ({
-        groupType: "SNS::Topic",
+        groupType: "SNS::PlatformApplication",
         livesNotFound: ({ config }) => [
           {
-            // Attributes: {
-            //   TopicArn: `arn:aws:sns:us-east-1:${config.accountId()}:idnonotexist`,
-            // },
+            PlatformApplicationArn: `arn:aws:sns:${
+              config.region
+            }:${config.accountId()}:app/GCM/ddddd`,
           },
         ],
       }),

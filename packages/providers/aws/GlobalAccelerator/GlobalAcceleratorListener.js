@@ -5,7 +5,12 @@ const { defaultsDeep } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const pickId = pick(["ListenerArn"]);
+const pickId = pipe([
+  pick(["ListenerArn"]),
+  tap(({ ListenerArn }) => {
+    assert(ListenerArn);
+  }),
+]);
 
 exports.GlobalAcceleratorListener = () => ({
   type: "Listener",
@@ -17,15 +22,31 @@ exports.GlobalAcceleratorListener = () => ({
     ({ dependenciesSpec: { accelerator } }) =>
     ({ Protocol, PortRanges }) =>
       pipe([
+        tap(() => {
+          assert(accelerator);
+          assert(Protocol);
+          assert(PortRanges);
+        }),
         () =>
           `${accelerator}::${Protocol}::${PortRanges[0].FromPort}::${PortRanges[0].ToPort}`,
       ])(),
   findName: () =>
     pipe([
+      tap(({ AcceleratorName, Protocol, PortRanges }) => {
+        assert(AcceleratorName);
+        assert(Protocol);
+        assert(PortRanges);
+      }),
       ({ AcceleratorName, Protocol, PortRanges }) =>
         `${AcceleratorName}::${Protocol}::${PortRanges[0].FromPort}::${PortRanges[0].ToPort}`,
     ]),
-  findId: () => pipe([get("ListenerArn")]),
+  findId: () =>
+    pipe([
+      get("ListenerArn"),
+      tap((ListenerArn) => {
+        assert(ListenerArn);
+      }),
+    ]),
   propertiesDefault: { ClientAffinity: "NONE" },
   omitProperties: ["AcceleratorArn", "ListenerArn"],
   dependencies: {
@@ -33,7 +54,13 @@ exports.GlobalAcceleratorListener = () => ({
       type: "Accelerator",
       group: "GlobalAccelerator",
       parent: true,
-      dependencyId: ({ lives, config }) => get("AcceleratorArn"),
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("AcceleratorArn"),
+          tap((AcceleratorArn) => {
+            assert(AcceleratorArn);
+          }),
+        ]),
     },
   },
   getByName: getByNameCore,
@@ -51,6 +78,7 @@ exports.GlobalAcceleratorListener = () => ({
             pipe([
               tap((params) => {
                 assert(parent.Name);
+                assert(parent.AcceleratorArn);
               }),
               defaultsDeep({
                 AcceleratorArn: parent.AcceleratorArn,

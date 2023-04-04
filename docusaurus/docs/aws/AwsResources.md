@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 611 resources in 142 services for provider aws:
+List of 623 resources in 145 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -39,7 +39,7 @@ List of 611 resources in 142 services for provider aws:
 * Aps: 
 [RuleGroupsNamespace](./resources/Aps/RuleGroupsNamespace.md), [Workspace](./resources/Aps/Workspace.md)
 * Athena: 
-[DataCatalog](./resources/Athena/DataCatalog.md), [NamedQuery](./resources/Athena/NamedQuery.md), [PreparedStatement](./resources/Athena/PreparedStatement.md), [WorkGroup](./resources/Athena/WorkGroup.md)
+[Database](./resources/Athena/Database.md), [DataCatalog](./resources/Athena/DataCatalog.md), [NamedQuery](./resources/Athena/NamedQuery.md), [PreparedStatement](./resources/Athena/PreparedStatement.md), [WorkGroup](./resources/Athena/WorkGroup.md)
 * AuditManager: 
 [AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Assessment](./resources/AuditManager/Assessment.md), [AssessmentDelegation](./resources/AuditManager/AssessmentDelegation.md), [AssessmentReport](./resources/AuditManager/AssessmentReport.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [AssessmentFrameworkShare](./resources/AuditManager/AssessmentFrameworkShare.md), [Settings](./resources/AuditManager/Settings.md), [OrganizationAdminAccount](./resources/AuditManager/OrganizationAdminAccount.md)
 * AutoScaling: 
@@ -76,6 +76,8 @@ List of 611 resources in 142 services for provider aws:
 [Repository](./resources/CodeCommit/Repository.md)
 * CodeDeploy: 
 [Application](./resources/CodeDeploy/Application.md), [DeploymentGroup](./resources/CodeDeploy/DeploymentGroup.md)
+* CodeGuruReviewer: 
+[RepositoryAssociation](./resources/CodeGuruReviewer/RepositoryAssociation.md)
 * CodePipeline: 
 [Pipeline](./resources/CodePipeline/Pipeline.md)
 * CodeStar: 
@@ -145,7 +147,7 @@ List of 611 resources in 142 services for provider aws:
 * Glacier: 
 [Vault](./resources/Glacier/Vault.md)
 * GlobalAccelerator: 
-[Accelerator](./resources/GlobalAccelerator/Accelerator.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
+[Accelerator](./resources/GlobalAccelerator/Accelerator.md), [CustomRoutingAccelerator](./resources/GlobalAccelerator/CustomRoutingAccelerator.md), [CustomRoutingEndpointGroup](./resources/GlobalAccelerator/CustomRoutingEndpointGroup.md), [CustomRoutingListener](./resources/GlobalAccelerator/CustomRoutingListener.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
 * Glue: 
 [Classifier](./resources/Glue/Classifier.md), [Crawler](./resources/Glue/Crawler.md), [Database](./resources/Glue/Database.md), [Job](./resources/Glue/Job.md), [Table](./resources/Glue/Table.md)
 * Grafana: 
@@ -206,6 +208,8 @@ List of 611 resources in 142 services for provider aws:
 [AccessPolicy](./resources/OpenSearchServerless/AccessPolicy.md), [Collection](./resources/OpenSearchServerless/Collection.md), [SecurityConfig](./resources/OpenSearchServerless/SecurityConfig.md), [SecurityPolicy](./resources/OpenSearchServerless/SecurityPolicy.md), [VpcEndpoint](./resources/OpenSearchServerless/VpcEndpoint.md)
 * Organisations: 
 [Account](./resources/Organisations/Account.md), [Policy](./resources/Organisations/Policy.md), [PolicyAttachment](./resources/Organisations/PolicyAttachment.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md), [Root](./resources/Organisations/Root.md)
+* Pinpoint: 
+[App](./resources/Pinpoint/App.md)
 * Pipes: 
 [Pipe](./resources/Pipes/Pipe.md)
 * QLDB: 
@@ -224,6 +228,8 @@ List of 611 resources in 142 services for provider aws:
 [EndpointAccess](./resources/RedshiftServerless/EndpointAccess.md), [Namespace](./resources/RedshiftServerless/Namespace.md), [Snapshot](./resources/RedshiftServerless/Snapshot.md), [ResourcePolicy](./resources/RedshiftServerless/ResourcePolicy.md), [UsageLimit](./resources/RedshiftServerless/UsageLimit.md), [Workgroup](./resources/RedshiftServerless/Workgroup.md)
 * Rekognition: 
 [StreamProcessor](./resources/Rekognition/StreamProcessor.md)
+* ResilienceHub: 
+[App](./resources/ResilienceHub/App.md)
 * ResourceExplorer2: 
 [Index](./resources/ResourceExplorer2/Index.md), [View](./resources/ResourceExplorer2/View.md)
 * ResourceGroups: 
@@ -255,15 +261,15 @@ List of 611 resources in 142 services for provider aws:
 * ServiceCatalog: 
 [BudgetResourceAssociation](./resources/ServiceCatalog/BudgetResourceAssociation.md), [Constraint](./resources/ServiceCatalog/Constraint.md), [OrganizationsAccess](./resources/ServiceCatalog/OrganizationsAccess.md), [Portfolio](./resources/ServiceCatalog/Portfolio.md), [PortfolioShare](./resources/ServiceCatalog/PortfolioShare.md), [Product](./resources/ServiceCatalog/Product.md), [ProductPortfolioAssociation](./resources/ServiceCatalog/ProductPortfolioAssociation.md), [PrincipalPortfolioAssociation](./resources/ServiceCatalog/PrincipalPortfolioAssociation.md), [ProvisionedProduct](./resources/ServiceCatalog/ProvisionedProduct.md), [ProvisioningArtifact](./resources/ServiceCatalog/ProvisioningArtifact.md), [ServiceAction](./resources/ServiceCatalog/ServiceAction.md), [ServiceActionAssociation](./resources/ServiceCatalog/ServiceActionAssociation.md), [TagOption](./resources/ServiceCatalog/TagOption.md), [TagOptionResourceAssociation](./resources/ServiceCatalog/TagOptionResourceAssociation.md)
 * ServiceDiscovery: 
-[HttpNamespace](./resources/ServiceDiscovery/HttpNamespace.md), [PrivateDnsNamespace](./resources/ServiceDiscovery/PrivateDnsNamespace.md), [PublicDnsNamespace](./resources/ServiceDiscovery/PublicDnsNamespace.md), [Service](./resources/ServiceDiscovery/Service.md)
+[HttpNamespace](./resources/ServiceDiscovery/HttpNamespace.md), [Instance](./resources/ServiceDiscovery/Instance.md), [PrivateDnsNamespace](./resources/ServiceDiscovery/PrivateDnsNamespace.md), [PublicDnsNamespace](./resources/ServiceDiscovery/PublicDnsNamespace.md), [Service](./resources/ServiceDiscovery/Service.md)
 * ServiceQuotas: 
 [ServiceQuota](./resources/ServiceQuotas/ServiceQuota.md)
 * SESV2: 
-[ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [DedicatedIpPool](./resources/SESV2/DedicatedIpPool.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md)
+[ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [ConfigurationSetEventDestination](./resources/SESV2/ConfigurationSetEventDestination.md), [ContactList](./resources/SESV2/ContactList.md), [DedicatedIpPool](./resources/SESV2/DedicatedIpPool.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md), [EmailTemplate](./resources/SESV2/EmailTemplate.md)
 * Shield: 
 [Protection](./resources/Shield/Protection.md), [ProtectionGroup](./resources/Shield/ProtectionGroup.md)
 * SNS: 
-[Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
+[PlatformApplication](./resources/SNS/PlatformApplication.md), [Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 
 [Queue](./resources/SQS/Queue.md), [QueueRedriveAllowPolicy](./resources/SQS/QueueRedriveAllowPolicy.md), [QueueRedrivePolicy](./resources/SQS/QueueRedrivePolicy.md)
 * SSM: 

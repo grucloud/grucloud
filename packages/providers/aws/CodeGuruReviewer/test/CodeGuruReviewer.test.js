@@ -4,11 +4,17 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("CodeGuruReviewer", async function () {
-  it.skip("RepositoryAssociation", () =>
+  it("RepositoryAssociation", () =>
     pipe([
       () => ({
         groupType: "CodeGuruReviewer::RepositoryAssociation",
-        livesNotFound: ({ config }) => [{ AssociationArn: "" }],
+        livesNotFound: ({ config }) => [
+          {
+            AssociationArn: `arn:aws:codeguru-reviewer:${
+              config.region
+            }:${config.accountId()}:association:3ff47938-9aff-4c64-99da-13a0ac87ab31`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

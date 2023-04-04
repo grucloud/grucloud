@@ -16,7 +16,20 @@ describe("SESV2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ContactList", () =>
+  it("ConfigurationSetEventDestination", () =>
+    pipe([
+      () => ({
+        groupType: "SESV2::ConfigurationSetEventDestination",
+        livesNotFound: ({ config }) => [
+          {
+            ConfigurationSetName: `c123`,
+            EventDestinationName: "e1234",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("ContactList", () =>
     pipe([
       () => ({
         groupType: "SESV2::ContactList",
@@ -59,6 +72,18 @@ describe("SESV2", async function () {
         livesNotFound: ({ config }) => [
           {
             EmailIdentity: `pipo`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("EmailTemplate", () =>
+    pipe([
+      () => ({
+        groupType: "SESV2::EmailTemplate",
+        livesNotFound: ({ config }) => [
+          {
+            TemplateName: "t123",
           },
         ],
       }),

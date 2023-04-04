@@ -10,7 +10,7 @@ const { createAwsService } = require("../AwsService");
 const {
   ServiceDiscoveryHttpNamespace,
 } = require("./ServiceDiscoveryHttpNamespace");
-//const { ServiceDiscoveryInstance } = require("./ServiceDiscoveryInstance");
+const { ServiceDiscoveryInstance } = require("./ServiceDiscoveryInstance");
 const {
   ServiceDiscoveryPrivateDnsNamespace,
 } = require("./ServiceDiscoveryPrivateDnsNamespace");
@@ -27,7 +27,7 @@ module.exports = pipe([
   () => [
     //
     ServiceDiscoveryHttpNamespace({ compare }),
-    //ServiceDiscoveryInstance({ compare }),
+    ServiceDiscoveryInstance({ compare }),
     ServiceDiscoveryPrivateDnsNamespace({ compare }),
     ServiceDiscoveryPublicDnsNamespace({ compare }),
     ServiceDiscoveryService({ compare }),

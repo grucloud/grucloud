@@ -4,13 +4,13 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("CloudTrail", async function () {
-  it.skip("Channel", () =>
+  it("Channel", () =>
     pipe([
       () => ({
         groupType: "CloudTrail::Channel",
         livesNotFound: ({ config }) => [
           {
-            ChannelArn: "uuid",
+            ChannelArn: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
           },
         ],
       }),

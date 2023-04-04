@@ -6,10 +6,18 @@ const { replaceWithName } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const pickId = pick(["EndpointGroupArn"]);
+const pickId = pipe([
+  pick(["EndpointGroupArn"]),
+  tap(({ EndpointGroupArn }) => {
+    assert(EndpointGroupArn);
+  }),
+]);
 
 const decorate = () =>
   pipe([
+    tap(({ EndpointDescriptions }) => {
+      assert(EndpointDescriptions);
+    }),
     ({ EndpointDescriptions, ...other }) => ({
       EndpointConfigurations: EndpointDescriptions,
       ...other,
@@ -25,11 +33,20 @@ exports.GlobalAcceleratorEndpointGroup = () => ({
   inferName:
     ({ dependenciesSpec: { listener } }) =>
     ({ EndpointGroupRegion }) =>
-      pipe([() => `${listener}::${EndpointGroupRegion}`])(),
+      pipe([
+        tap(() => {
+          assert(listener);
+          assert(EndpointGroupRegion);
+        }),
+        () => `${listener}::${EndpointGroupRegion}`,
+      ])(),
   findName:
     ({ lives, config }) =>
     (live) =>
       pipe([
+        tap(() => {
+          assert(live.EndpointGroupRegion);
+        }),
         () => live,
         get("ListenerArn"),
         lives.getById({
@@ -56,13 +73,18 @@ exports.GlobalAcceleratorEndpointGroup = () => ({
     "EndpointConfigurations[].HealthState",
     "EndpointConfigurations[].HealthReason",
   ],
-
   dependencies: {
     listener: {
       type: "Listener",
       group: "GlobalAccelerator",
       parent: true,
-      dependencyId: ({ lives, config }) => get("ListenerArn"),
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("ListenerArn"),
+          tap((ListenerArn) => {
+            assert(ListenerArn);
+          }),
+        ]),
     },
     ec2Instances: {
       type: "Instance",
@@ -178,7 +200,7 @@ exports.GlobalAcceleratorEndpointGroup = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { ...otherProps },
     dependencies: { listener },
   }) =>
     pipe([

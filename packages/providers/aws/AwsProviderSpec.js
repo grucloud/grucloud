@@ -150,6 +150,7 @@ const GROUPS = [
   ["QuickSight", "quicksight"],
   ["RAM", "ram"],
   ["Rbin", "rbin"],
+  ["ResilienceHub", "resiliencehub"],
   ["Rekognition", "rekognition"],
   ["Redshift", "redshift"],
   //["RedshiftData", "redshift-data"],
