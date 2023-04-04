@@ -12,6 +12,12 @@ const {
   DetectiveInvitationAccepter,
 } = require("./DetectiveInvitationAccepter");
 const { DetectiveMember } = require("./DetectiveMember");
+const {
+  DetectiveOrganizationAdminAccount,
+} = require("./DetectiveOrganizationAdminAccount");
+const {
+  DetectiveOrganizationConfiguration,
+} = require("./DetectiveOrganizationConfiguration");
 
 const GROUP = "Detective";
 
@@ -23,6 +29,8 @@ module.exports = pipe([
     DetectiveGraph({ compare }),
     DetectiveInvitationAccepter({}),
     DetectiveMember({}),
+    DetectiveOrganizationAdminAccount({}),
+    DetectiveOrganizationConfiguration({}),
   ],
   map(
     pipe([

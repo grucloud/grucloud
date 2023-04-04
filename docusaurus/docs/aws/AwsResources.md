@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 626 resources in 146 services for provider aws:
+List of 628 resources in 146 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -105,7 +105,7 @@ List of 626 resources in 146 services for provider aws:
 * DAX: 
 [Cluster](./resources/DAX/Cluster.md), [ParameterGroup](./resources/DAX/ParameterGroup.md), [SubnetGroup](./resources/DAX/SubnetGroup.md)
 * Detective: 
-[Graph](./resources/Detective/Graph.md), [InvitationAccepter](./resources/Detective/InvitationAccepter.md), [Member](./resources/Detective/Member.md)
+[Graph](./resources/Detective/Graph.md), [InvitationAccepter](./resources/Detective/InvitationAccepter.md), [Member](./resources/Detective/Member.md), [OrganizationAdminAccount](./resources/Detective/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/Detective/OrganizationConfiguration.md)
 * DirectConnect: 
 [BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [MacSecKeyAssociation](./resources/DirectConnect/MacSecKeyAssociation.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
 * DirectoryService: 
