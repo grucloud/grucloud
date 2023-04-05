@@ -12,7 +12,7 @@ const { SQSQueueRedrivePolicy } = require("./SQSQueueRedrivePolicy");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html
 const GROUP = "SQS";
-const tagsKey = "Tags";
+const tagsKey = "tags";
 
 const compareSQS = compareAws({ tagsKey, key: "Key" });
 
