@@ -12,7 +12,7 @@ exports.createResources = () => [
           DataResources: [
             {
               Type: "AWS::S3::Object",
-              Values: ["arn:aws:s3:::gc-s3-eventbridgeaaa/"],
+              Values: ["arn:aws:s3:::gc-s3-eventbridge/"],
             },
           ],
           ExcludeManagementEventSources: [],

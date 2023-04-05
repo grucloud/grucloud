@@ -15,7 +15,6 @@ const {
   any,
   assign,
   omit,
-  pick,
 } = require("rubico");
 const {
   size,
@@ -765,6 +764,11 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             );
             await s3().putBucketWebsite({ Bucket, WebsiteConfiguration });
           }
+          await putPublicAccessBlockConfiguration({
+            endpoint: s3,
+            Bucket,
+            PublicAccessBlockConfiguration,
+          })();
         },
         isExpectedResult: () => true,
         shouldRetryOnException,
@@ -918,7 +922,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     defaultsDeep({ Bucket: name })(properties);
 
   return {
-    propertiesDefault: {},
     spec,
     config: clientConfig,
     managedByOther,

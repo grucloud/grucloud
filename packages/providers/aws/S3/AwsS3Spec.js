@@ -114,6 +114,24 @@ module.exports = pipe([
             ]),
         },
       },
+      propertiesDefault: {
+        ServerSideEncryptionConfiguration: {
+          Rules: [
+            {
+              ApplyServerSideEncryptionByDefault: {
+                SSEAlgorithm: "AES256",
+              },
+              BucketKeyEnabled: true,
+            },
+          ],
+        },
+        PublicAccessBlockConfiguration: {
+          BlockPublicAcls: true,
+          IgnorePublicAcls: true,
+          BlockPublicPolicy: true,
+          RestrictPublicBuckets: true,
+        },
+      },
       compare: compareS3({
         filterTarget: () =>
           pipe([
@@ -190,6 +208,7 @@ module.exports = pipe([
             "ServerSideEncryptionConfiguration",
             "BucketLoggingStatus",
             "NotificationConfiguration",
+            "PublicAccessBlockConfiguration",
             "Policy",
             //"PolicyStatus",
             "ReplicationConfiguration",
