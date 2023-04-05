@@ -131,6 +131,9 @@ exports.SNSTopic = ({ compare }) => ({
             numMinDelayRetries: 0,
             backoffFunction: "linear",
           },
+          defaultRequestPolicy: {
+            headerContentType: "text/plain; charset=UTF-8",
+          },
           disableSubscriptionOverrides: false,
         },
       },

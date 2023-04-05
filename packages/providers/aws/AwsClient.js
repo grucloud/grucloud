@@ -191,6 +191,8 @@ const AwsClient =
           "BadRequestException",
           "ResourceNotFoundException",
           "PermanentRedirect",
+          "InvalidAction",
+          "BadRequest",
         ],
         getById,
       }) =>
