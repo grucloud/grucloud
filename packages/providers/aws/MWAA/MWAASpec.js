@@ -9,12 +9,12 @@ const GROUP = "MWAA";
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
-//const { MWAAEnvironment } = require("./MWAAEnvironment");
+const { MWAAEnvironment } = require("./MWAAEnvironment");
 
 module.exports = pipe([
   () => [
     //
-    //MWAAEnvironment({}),
+    MWAAEnvironment({}),
   ],
   map(
     pipe([

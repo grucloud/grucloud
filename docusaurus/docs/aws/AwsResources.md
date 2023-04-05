@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 628 resources in 146 services for provider aws:
+List of 629 resources in 147 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -198,6 +198,8 @@ List of 628 resources in 146 services for provider aws:
 [Broker](./resources/MQ/Broker.md), [Configuration](./resources/MQ/Configuration.md)
 * MSK: 
 [Configuration](./resources/MSK/Configuration.md), [ClusterV2](./resources/MSK/ClusterV2.md)
+* MWAA: 
+[Environment](./resources/MWAA/Environment.md)
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md)
 * NetworkManager: 

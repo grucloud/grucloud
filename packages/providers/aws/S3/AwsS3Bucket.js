@@ -15,6 +15,7 @@ const {
   any,
   assign,
   omit,
+  pick,
 } = require("rubico");
 const {
   size,
@@ -106,6 +107,34 @@ const putBucketVersioning = ({ endpoint, Bucket, VersioningConfiguration }) =>
       }),
       endpoint().putBucketVersioning,
     ])
+  );
+
+const putPublicAccessBlockConfiguration = ({
+  endpoint,
+  Bucket,
+  PublicAccessBlockConfiguration = {
+    BlockPublicAcls: true,
+    BlockPublicPolicy: true,
+    IgnorePublicAcls: true,
+    RestrictPublicBuckets: true,
+  },
+}) =>
+  pipe([
+    () => ({
+      Bucket,
+      PublicAccessBlockConfiguration,
+    }),
+    endpoint().putPublicAccessBlock,
+  ]);
+
+const getPublicAccessBlock = ({ endpoint }) =>
+  tryCatch(
+    pipe([
+      endpoint().getPublicAccessBlock,
+      get("PublicAccessBlockConfiguration"),
+      when(isEmpty, () => undefined),
+    ]),
+    (error) => undefined
   );
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
@@ -228,15 +257,11 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         throw error;
       }
     );
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketNotificationConfiguration-property
   const getNotificationConfiguration = ({}) =>
     tryCatch(
       pipe([
         s3().getBucketNotificationConfiguration,
-        tap((params) => {
-          assert(true);
-        }),
         when(isEmpty, () => undefined),
       ]),
       (error) => {
@@ -400,6 +425,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                       name,
                     }),
                     Policy: getPolicy({ name, params }),
+                    PublicAccessBlockConfiguration: getPublicAccessBlock({
+                      endpoint: s3,
+                    }),
                     PolicyStatus: getPolicyStatus({ name, params }),
                     ReplicationConfiguration: getReplicationConfiguration({
                       name,
@@ -485,6 +513,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     NotificationConfiguration,
     ServerSideEncryptionConfiguration,
     VersioningConfiguration,
+    PublicAccessBlockConfiguration,
   }) =>
     pipe([
       tap((params) => {
@@ -509,6 +538,11 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         endpoint: s3,
         Bucket,
         VersioningConfiguration,
+      }),
+      putPublicAccessBlockConfiguration({
+        endpoint,
+        Bucket,
+        PublicAccessBlockConfiguration,
       }),
     ]);
 
@@ -538,6 +572,12 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       Tags = [],
       VersioningConfiguration,
       WebsiteConfiguration,
+      PublicAccessBlockConfiguration = {
+        BlockPublicAcls: true,
+        BlockPublicPolicy: true,
+        IgnorePublicAcls: true,
+        RestrictPublicBuckets: true,
+      },
       ...otherProperties
     } = payload;
 
@@ -878,6 +918,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     defaultsDeep({ Bucket: name })(properties);
 
   return {
+    propertiesDefault: {},
     spec,
     config: clientConfig,
     managedByOther,
