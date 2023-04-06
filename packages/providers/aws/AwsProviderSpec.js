@@ -110,6 +110,7 @@ const GROUPS = [
   ["FSx", "fsx"],
   ["Glacier", "glacier"],
   ["Imagebuilder", "imagebuilder"],
+  ["Iot", "iot"],
   ["IVS", "ivs"],
   ["Ivschat", "ivschat"],
   ["GuardDuty", "guardduty"],

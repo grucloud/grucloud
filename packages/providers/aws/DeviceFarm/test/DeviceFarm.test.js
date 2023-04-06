@@ -3,10 +3,13 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
+let config = () => ({ region: "us-west-2" });
+
 describe("DeviceFarm", async function () {
-  it.skip("Project", () =>
+  it("Project", () =>
     pipe([
       () => ({
+        config,
         groupType: "DeviceFarm::Project",
         livesNotFound: ({ config }) => [
           {
