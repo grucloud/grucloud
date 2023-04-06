@@ -76,36 +76,6 @@ exports.MWAAEnvironment = () => ({
     ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
   dependencies: {
-    cloudWatchLogGroupDagProcessing: {
-      type: "LogGroup",
-      group: "CloudWatchLogs",
-      dependencyId: ({ lives, config }) =>
-        get("LoggingConfiguration.DagProcessingLogs.CloudWatchLogGroupArn"),
-    },
-    cloudWatchLogGroupScheduler: {
-      type: "LogGroup",
-      group: "CloudWatchLogs",
-      dependencyId: ({ lives, config }) =>
-        get("LoggingConfiguration.Scheduler.CloudWatchLogGroupArn"),
-    },
-    cloudWatchLogGroupTask: {
-      type: "LogGroup",
-      group: "CloudWatchLogs",
-      dependencyId: ({ lives, config }) =>
-        get("LoggingConfiguration.TaskLogs.CloudWatchLogGroupArn"),
-    },
-    cloudWatchLogGroupWebserver: {
-      type: "LogGroup",
-      group: "CloudWatchLogs",
-      dependencyId: ({ lives, config }) =>
-        get("LoggingConfiguration.WebserverLogs.CloudWatchLogGroupArn"),
-    },
-    cloudWatchLogGroupWorker: {
-      type: "LogGroup",
-      group: "CloudWatchLogs",
-      dependencyId: ({ lives, config }) =>
-        get("LoggingConfiguration.WorkerLogs.CloudWatchLogGroupArn"),
-    },
     iamRoleExecution: {
       type: "Role",
       group: "IAM",
@@ -182,6 +152,7 @@ exports.MWAAEnvironment = () => ({
     pickCreated: ({ payload }) => pipe([() => payload]),
     isInstanceUp: pipe([get("Status"), isIn(["AVAILABLE"])]),
     isInstanceError: pipe([get("Status"), isIn(["CREATE_FAILED"])]),
+    configIsUp: { retryCount: 40 * 10, retryDelay: 5e3 },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MWAA.html#updateEnvironment-property
   update: {
@@ -209,18 +180,7 @@ exports.MWAAEnvironment = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {
-      // TODO
-      cloudWatchLogGroupDagProcessing,
-      cloudWatchLogGroupScheduler,
-      cloudWatchLogGroupTask,
-      cloudWatchLogGroupWebserver,
-      cloudWatchLogGroupWorker,
-      iamRoleExecution,
-      kmsKey,
-      securityGroups,
-      subnets,
-    },
+    dependencies: { iamRoleExecution, kmsKey, securityGroups, subnets },
     config,
   }) =>
     pipe([

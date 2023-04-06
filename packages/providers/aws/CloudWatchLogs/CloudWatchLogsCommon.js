@@ -28,6 +28,7 @@ exports.assignTags = ({ endpoint, buildArn }) =>
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 
 exports.LogGroupNameManagedByOther = [
+  "airflow-",
   "/aws/amazonmq/broker/",
   "/aws/codebuild/",
   "/aws/APIGW",

@@ -1,0 +1,27 @@
+@startmindmap
+title Resources for project mwaa-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NatGateway (2)
+++++ Subnet (4)
+++++ RouteTable (3)
+++++ RouteTableAssociation (4)
+++++ Route (3)
+++++ SecurityGroup (3)
+++++ SecurityGroupRuleIngress (1)
+++++ ElasticIpAddress (2)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ MWAA
+++++ Environment (1)
++++ S3
+++++ Bucket (1)
+@endmindmap
