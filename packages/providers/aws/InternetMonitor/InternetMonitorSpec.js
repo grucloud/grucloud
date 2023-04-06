@@ -5,7 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 const { createAwsService } = require("../AwsService");
 
-//const { InternetMonitorMonitor } = require("./InternetMonitorMonitor");
+const { InternetMonitorMonitor } = require("./InternetMonitorMonitor");
 
 const GROUP = "InternetMonitor";
 
@@ -16,7 +16,7 @@ const compare = compareAws({ tagsKey });
 module.exports = pipe([
   () => [
     //
-    //InternetMonitorMonitor({ compare }),
+    InternetMonitorMonitor({ compare }),
   ],
   map(
     pipe([

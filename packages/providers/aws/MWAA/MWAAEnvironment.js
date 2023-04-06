@@ -210,6 +210,7 @@ exports.MWAAEnvironment = () => ({
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: {
+      // TODO
       cloudWatchLogGroupDagProcessing,
       cloudWatchLogGroupScheduler,
       cloudWatchLogGroupTask,
