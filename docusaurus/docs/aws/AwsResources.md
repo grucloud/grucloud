@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 630 resources in 148 services for provider aws:
+List of 631 resources in 149 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -166,6 +166,8 @@ List of 630 resources in 148 services for provider aws:
 [DelegatedAdminAccount](./resources/Inspector2/DelegatedAdminAccount.md), [Enabler](./resources/Inspector2/Enabler.md), [OrganizationConfiguration](./resources/Inspector2/OrganizationConfiguration.md)
 * InternetMonitor: 
 [Monitor](./resources/InternetMonitor/Monitor.md)
+* Iot: 
+[Authorizer](./resources/Iot/Authorizer.md)
 * Ivschat: 
 [Room](./resources/Ivschat/Room.md), [LoggingConfiguration](./resources/Ivschat/LoggingConfiguration.md)
 * Keyspaces: 
