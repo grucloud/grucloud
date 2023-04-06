@@ -4,13 +4,14 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("KinesisAnalyticsV2", async function () {
-  it.skip("Stream", () =>
+  it("Stream", () =>
     pipe([
       () => ({
         groupType: "KinesisAnalyticsV2::Application",
         livesNotFound: ({ config }) => [
           {
-            //StreamName: "a-12345",
+            ApplicationName: "a-12345",
+            CreateTimestamp: new Date(),
           },
         ],
       }),

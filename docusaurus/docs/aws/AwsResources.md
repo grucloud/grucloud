@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 631 resources in 149 services for provider aws:
+List of 632 resources in 150 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -166,14 +166,16 @@ List of 631 resources in 149 services for provider aws:
 [DelegatedAdminAccount](./resources/Inspector2/DelegatedAdminAccount.md), [Enabler](./resources/Inspector2/Enabler.md), [OrganizationConfiguration](./resources/Inspector2/OrganizationConfiguration.md)
 * InternetMonitor: 
 [Monitor](./resources/InternetMonitor/Monitor.md)
-* Iot: 
-[Authorizer](./resources/Iot/Authorizer.md)
+* IoT: 
+[Authorizer](./resources/IoT/Authorizer.md)
 * Ivschat: 
 [Room](./resources/Ivschat/Room.md), [LoggingConfiguration](./resources/Ivschat/LoggingConfiguration.md)
 * Keyspaces: 
 [Keyspace](./resources/Keyspaces/Keyspace.md), [Table](./resources/Keyspaces/Table.md)
 * Kinesis: 
 [Stream](./resources/Kinesis/Stream.md), [StreamConsumer](./resources/Kinesis/StreamConsumer.md)
+* KinesisAnalyticsV2: 
+[Application](./resources/KinesisAnalyticsV2/Application.md)
 * KinesisVideo: 
 [Stream](./resources/KinesisVideo/Stream.md)
 * KMS: 

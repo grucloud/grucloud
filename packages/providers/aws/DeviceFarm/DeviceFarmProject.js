@@ -146,7 +146,7 @@ exports.DeviceFarmProject = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {},
+    dependencies: { subnets, securityGroups },
     config,
   }) =>
     pipe([
