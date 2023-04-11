@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 638 resources in 151 services for provider aws:
+List of 644 resources in 152 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -190,6 +190,8 @@ List of 638 resources in 151 services for provider aws:
 [Association](./resources/LicenseManager/Association.md), [Grant](./resources/LicenseManager/Grant.md), [GrantAccepter](./resources/LicenseManager/GrantAccepter.md), [License](./resources/LicenseManager/License.md), [LicenseConfiguration](./resources/LicenseManager/LicenseConfiguration.md)
 * Lightsail: 
 [Bucket](./resources/Lightsail/Bucket.md), [Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
+* Location: 
+[GeofenceCollection](./resources/Location/GeofenceCollection.md), [Map](./resources/Location/Map.md), [PlaceIndex](./resources/Location/PlaceIndex.md), [RouteCalculator](./resources/Location/RouteCalculator.md), [Tracker](./resources/Location/Tracker.md), [TrackerAssociation](./resources/Location/TrackerAssociation.md)
 * Macie2: 
 [Account](./resources/Macie2/Account.md), [AllowList](./resources/Macie2/AllowList.md), [ClassificationExportConfiguration](./resources/Macie2/ClassificationExportConfiguration.md), [ClassificationJob](./resources/Macie2/ClassificationJob.md), [CustomDataIdentifier](./resources/Macie2/CustomDataIdentifier.md), [FindingsFilter](./resources/Macie2/FindingsFilter.md), [InvitationAccepter](./resources/Macie2/InvitationAccepter.md), [Member](./resources/Macie2/Member.md), [OrganizationAdminAccount](./resources/Macie2/OrganizationAdminAccount.md)
 * MediaConnect: 
