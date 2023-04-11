@@ -104,12 +104,7 @@ exports.MWAAEnvironment = () => ({
       group: "EC2",
       list: true,
       dependencyIds: ({ lives, config }) =>
-        pipe([
-          get("NetworkConfiguration.SubnetIds"),
-          tap((ids) => {
-            assert(ids);
-          }),
-        ]),
+        pipe([get("NetworkConfiguration.SubnetIds")]),
     },
     s3BucketSource: {
       type: "Bucket",

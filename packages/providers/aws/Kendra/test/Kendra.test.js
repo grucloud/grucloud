@@ -4,71 +4,78 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Kendra", async function () {
-  it.skip("DataSource", () =>
+  it("DataSource", () =>
     pipe([
       () => ({
         groupType: "Kendra::DataSource",
         livesNotFound: ({ config }) => [
           {
-            // arn: `arn:aws:ivschat:${
-            //   config.region
-            // }:${config.accountId()}:logging-configuration/y47bQ0MmtKmd`,
+            Id: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
+            IndexId: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Experience", () =>
+  it("Experience", () =>
     pipe([
       () => ({
         groupType: "Kendra::Experience",
         livesNotFound: ({ config }) => [
           {
-            // arn: `arn:aws:ivschat:${
-            //   config.region
-            // }:${config.accountId()}:room/32no4tl70Fmr`,
+            Id: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
+            IndexId: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Faq", () =>
+  it("Faq", () =>
     pipe([
       () => ({
         groupType: "Kendra::Faq",
         livesNotFound: ({ config }) => [
           {
-            // arn: `arn:aws:ivschat:${
-            //   config.region
-            // }:${config.accountId()}:room/32no4tl70Fmr`,
+            Id: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
+            IndexId: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Index", () =>
+  it("Index", () =>
     pipe([
       () => ({
         groupType: "Kendra::Index",
         livesNotFound: ({ config }) => [
           {
-            // arn: `arn:aws:ivschat:${
-            //   config.region
-            // }:${config.accountId()}:room/32no4tl70Fmr`,
+            Id: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("QuerySuggestionsBlockList", () =>
+  it("QuerySuggestionsBlockList", () =>
     pipe([
       () => ({
         groupType: "Kendra::QuerySuggestionsBlockList",
         livesNotFound: ({ config }) => [
           {
-            // arn: `arn:aws:ivschat:${
-            //   config.region
-            // }:${config.accountId()}:room/32no4tl70Fmr`,
+            Id: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
+            IndexId: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("Thesaurus", () =>
+    pipe([
+      () => ({
+        groupType: "Kendra::Thesaurus",
+        livesNotFound: ({ config }) => [
+          {
+            Id: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
+            IndexId: "6593e837-c99d-4b4e-a743-68f45fa54e9f",
           },
         ],
       }),

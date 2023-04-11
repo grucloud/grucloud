@@ -119,6 +119,7 @@ const GROUPS = [
   ["IdentityStore", "identitystore"],
   ["Inspector2", "inspector2"],
   ["InternetMonitor", "internetmonitor"],
+  ["Kendra", "kendra"],
   ["Keyspaces", "keyspaces"],
   ["Kinesis", "kinesis"],
   ["KinesisAnalyticsV2", "kinesisanalytics"],

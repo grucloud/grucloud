@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 632 resources in 150 services for provider aws:
+List of 638 resources in 151 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -170,6 +170,8 @@ List of 632 resources in 150 services for provider aws:
 [Authorizer](./resources/IoT/Authorizer.md)
 * Ivschat: 
 [Room](./resources/Ivschat/Room.md), [LoggingConfiguration](./resources/Ivschat/LoggingConfiguration.md)
+* Kendra: 
+[DataSource](./resources/Kendra/DataSource.md), [Experience](./resources/Kendra/Experience.md), [Faq](./resources/Kendra/Faq.md), [Index](./resources/Kendra/Index.md), [QuerySuggestionsBlockList](./resources/Kendra/QuerySuggestionsBlockList.md), [Thesaurus](./resources/Kendra/Thesaurus.md)
 * Keyspaces: 
 [Keyspace](./resources/Keyspaces/Keyspace.md), [Table](./resources/Keyspaces/Table.md)
 * Kinesis: 
