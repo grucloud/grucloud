@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 644 resources in 152 services for provider aws:
+List of 648 resources in 153 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -186,6 +186,8 @@ List of 644 resources in 152 services for provider aws:
 [DataLakeSettings](./resources/LakeFormation/DataLakeSettings.md), [LFTag](./resources/LakeFormation/LFTag.md), [Resource](./resources/LakeFormation/Resource.md)
 * Lambda: 
 [Alias](./resources/Lambda/Alias.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md), [Function](./resources/Lambda/Function.md), [Layer](./resources/Lambda/Layer.md), [Permission](./resources/Lambda/Permission.md)
+* LexModelsV2: 
+[Bot](./resources/LexModelsV2/Bot.md), [BotAlias](./resources/LexModelsV2/BotAlias.md), [BotLocale](./resources/LexModelsV2/BotLocale.md), [Intent](./resources/LexModelsV2/Intent.md)
 * LicenseManager: 
 [Association](./resources/LicenseManager/Association.md), [Grant](./resources/LicenseManager/Grant.md), [GrantAccepter](./resources/LicenseManager/GrantAccepter.md), [License](./resources/LicenseManager/License.md), [LicenseConfiguration](./resources/LicenseManager/LicenseConfiguration.md)
 * Lightsail: 

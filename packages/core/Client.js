@@ -119,7 +119,11 @@ const decorateLive =
               if (!isString(id)) {
                 assert(
                   isString(id),
-                  `no id in live: ${JSON.stringify(live, null, 4)}`
+                  `no id in live for type ${groupType}: ${JSON.stringify(
+                    live,
+                    null,
+                    4
+                  )}`
                 );
               }
             }),

@@ -7,7 +7,6 @@ const {
   filter,
   get,
   fork,
-  switchCase,
   not,
   assign,
   pick,
@@ -40,7 +39,6 @@ const {
   removeRoleFromInstanceProfile,
 } = require("../AwsCommon");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createIAM,
@@ -266,7 +264,13 @@ exports.AwsIamRole = ({ spec, config }) => {
       }),
       and([
         ({ CreateDate }) => moment(CreateDate).isAfter("2021-09-11"),
-        ({ RoleName }) => !RoleName.includes("AWSServiceRole"),
+        pipe([
+          get("RoleName"),
+          or([
+            includes("AWSServiceRoleForLexV2Bots"),
+            not(includes("AWSServiceRole")),
+          ]),
+        ]),
       ]),
       tap((params) => {
         assert(true);

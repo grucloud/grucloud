@@ -127,6 +127,7 @@ const GROUPS = [
   ["KMS", "kms"],
   ["LakeFormation", "lakeformation"],
   ["Lambda", "lambda"],
+  ["LexModelsV2", "lexv2-models"],
   ["LicenseManager", "license-manager"],
   ["Lightsail", "lightsail"],
   ["Location", "amazonlocationservice"],
