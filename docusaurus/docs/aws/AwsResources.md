@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 648 resources in 153 services for provider aws:
+List of 649 resources in 154 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -204,6 +204,8 @@ List of 648 resources in 153 services for provider aws:
 [Channel](./resources/MediaPackage/Channel.md), [OriginEndpoint](./resources/MediaPackage/OriginEndpoint.md)
 * MediaStore: 
 [Container](./resources/MediaStore/Container.md)
+* MediaTailor: 
+[PlaybackConfiguration](./resources/MediaTailor/PlaybackConfiguration.md)
 * MemoryDB: 
 [ACL](./resources/MemoryDB/ACL.md), [Cluster](./resources/MemoryDB/Cluster.md), [ParameterGroup](./resources/MemoryDB/ParameterGroup.md), [SubnetGroup](./resources/MemoryDB/SubnetGroup.md), [User](./resources/MemoryDB/User.md)
 * MQ: 

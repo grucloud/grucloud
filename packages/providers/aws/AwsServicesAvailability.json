@@ -2182,6 +2182,7 @@
             "ec2",
             "ecr",
             "ecs",
+            "efs",
             "eks",
             "elasticache",
             "elb",
