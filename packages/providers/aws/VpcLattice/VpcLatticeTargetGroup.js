@@ -1,6 +1,14 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, map, switchCase } = require("rubico");
-const { defaultsDeep, isIn, when, pluck, identity } = require("rubico/x");
+const {
+  defaultsDeep,
+  isIn,
+  when,
+  pluck,
+  identity,
+  isEmpty,
+  unless,
+} = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -223,7 +231,7 @@ exports.VpcLatticeTargetGroup = () => ({
             assert(true);
           }),
           pick(["targetGroupIdentifier", "targets"]),
-          endpoint().deregisterTargets,
+          unless(pipe([get("targets"), isEmpty]), endpoint().deregisterTargets),
         ])
       ),
     method: "deleteTargetGroup",
