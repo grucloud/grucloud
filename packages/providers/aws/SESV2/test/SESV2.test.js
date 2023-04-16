@@ -90,12 +90,4 @@ describe("SESV2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("IdentityFeedbackAttributes", () =>
-    pipe([
-      () => ({
-        groupType: "SESV2::IdentityFeedbackAttributes",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
 });
