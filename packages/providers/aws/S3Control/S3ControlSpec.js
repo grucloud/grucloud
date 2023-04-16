@@ -19,7 +19,9 @@ const {
 const {
   S3ControlObjectLambdaAccessPoint,
 } = require("./S3ControlObjectLambdaAccessPoint");
-// const { S3ControlStorageLensConfiguration } = require("./S3ControlStorageLensConfiguration");
+const {
+  S3ControlStorageLensConfiguration,
+} = require("./S3ControlStorageLensConfiguration");
 
 module.exports = pipe([
   () => [
@@ -27,7 +29,7 @@ module.exports = pipe([
     S3ControlAccessPoint({ compare }),
     S3ControlMultiRegionAccessPoint({ compare }),
     S3ControlObjectLambdaAccessPoint({ compare }),
-    //S3ControlStorageLensConfiguration({ compare }),
+    S3ControlStorageLensConfiguration({ compare }),
   ],
   map(
     pipe([

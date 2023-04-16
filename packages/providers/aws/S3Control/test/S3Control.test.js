@@ -44,11 +44,13 @@ describe("S3Control", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("StorageLensConfiguration", () =>
+  it("StorageLensConfiguration", () =>
     pipe([
       () => ({
         groupType: "S3Control::StorageLensConfiguration",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { ConfigId: "c123", AccountId: config.accountId() },
+        ],
       }),
       awsResourceTest,
     ])());
