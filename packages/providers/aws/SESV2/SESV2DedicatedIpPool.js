@@ -64,10 +64,7 @@ exports.SESV2DedicatedIpPool = ({ compare }) => ({
     ]),
   findId: () =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      get("Arn"),
+      get("PoolName"),
       tap((id) => {
         assert(id);
       }),

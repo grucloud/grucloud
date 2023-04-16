@@ -26,9 +26,6 @@ const decorate = ({ endpoint, live }) =>
       assert(endpoint);
     }),
     defaultsDeep({ EmailIdentity: live.EmailIdentity }),
-    //({ name, ...other }) => ({ loadBalancerName: name, ...other }),
-    //assign({ MyJSON: pipe([get("MyJSON", JSON.parse)]) }),
-    //assignTags({ endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html
@@ -97,37 +94,7 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
   create: {
     method: "createEmailIdentity",
     pickCreated: ({ payload }) => pipe([() => payload]),
-    // isInstanceUp: pipe([eq(get("Status"), "OPERATIONAL")]),
-    // isInstanceError: pipe([eq(get("Status"), "ACTION_NEEDED")]),
-    // getErrorMessage: get("StatusMessage", "error"),
-
-    // shouldRetryOnExceptionCodes: [],
-    // shouldRetryOnExceptionMessages: [],
   },
-
-  // Custom update
-  // update:
-  //   ({ endpoint, getById }) =>
-  //   async ({ payload, live, diff }) =>
-  //     pipe([
-  //       () => diff,
-  //       tap.if(
-  //         or([get("liveDiff.deleted.resourceTypes")]),
-  //         pipe([
-  //           () => payload.resourceTypes,
-  //           differenceWith(isDeepEqual, resourceTypesAll),
-  //           (resourceTypes) => ({
-  //             accountIds: payload.accountIds,
-  //             resourceTypes,
-  //           }),
-  //           endpoint().disable,
-  //         ])
-  //       ),
-  //       tap.if(
-  //         or([get("liveDiff.added.resourceTypes")]),
-  //         pipe([() => payload, endpoint().enable])
-  //       ),
-  //     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#deleteEmailIdentity-property
   destroy: {
     method: "deleteEmailIdentity",
@@ -147,6 +114,9 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
     config,
   }) =>
     pipe([
+      tap(() => {
+        assert(configurationSet);
+      }),
       () => otherProps,
       defaultsDeep({
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),

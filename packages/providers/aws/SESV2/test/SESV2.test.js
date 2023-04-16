@@ -41,15 +41,16 @@ describe("SESV2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("DedicatedIpAssignment", () =>
+  it("DedicatedIp", () =>
     pipe([
       () => ({
-        groupType: "SESV2::DedicatedIpAssignment",
+        groupType: "SESV2::DedicatedIp",
         livesNotFound: ({ config }) => [
           {
-            Arn: ``,
+            Ip: "1.2.3.4",
           },
         ],
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());
@@ -93,11 +94,7 @@ describe("SESV2", async function () {
     pipe([
       () => ({
         groupType: "SESV2::IdentityFeedbackAttributes",
-        livesNotFound: ({ config }) => [
-          {
-            Arn: ``,
-          },
-        ],
+        livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
