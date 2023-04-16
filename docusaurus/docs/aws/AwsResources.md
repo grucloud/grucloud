@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 649 resources in 154 services for provider aws:
+List of 659 resources in 155 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -304,6 +304,8 @@ List of 649 resources in 154 services for provider aws:
 [Database](./resources/TimestreamWrite/Database.md), [Table](./resources/TimestreamWrite/Table.md)
 * Transfer: 
 [Access](./resources/Transfer/Access.md), [Server](./resources/Transfer/Server.md), [User](./resources/Transfer/User.md), [Workflow](./resources/Transfer/Workflow.md)
+* VpcLattice: 
+[AccessLogSubscription](./resources/VpcLattice/AccessLogSubscription.md), [AuthPolicy](./resources/VpcLattice/AuthPolicy.md), [Listener](./resources/VpcLattice/Listener.md), [Rule](./resources/VpcLattice/Rule.md), [ResourcePolicy](./resources/VpcLattice/ResourcePolicy.md), [Service](./resources/VpcLattice/Service.md), [ServiceNetwork](./resources/VpcLattice/ServiceNetwork.md), [ServiceNetworkServiceAssociation](./resources/VpcLattice/ServiceNetworkServiceAssociation.md), [ServiceNetworkVpcAssociation](./resources/VpcLattice/ServiceNetworkVpcAssociation.md), [TargetGroup](./resources/VpcLattice/TargetGroup.md)
 * WAFv2: 
 [RegexPatternSet](./resources/WAFv2/RegexPatternSet.md), [WebACL](./resources/WAFv2/WebACL.md), [WebACLCloudFront](./resources/WAFv2/WebACLCloudFront.md), [WebACLAssociation](./resources/WAFv2/WebACLAssociation.md)
 * WorkSpaces: 

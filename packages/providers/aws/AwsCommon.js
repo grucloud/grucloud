@@ -88,6 +88,11 @@ const dependenciesFromEnv = {
     type: "Secret",
     group: "SecretsManager",
   },
+  vpcLatticeService: {
+    pathLive: "live.dnsEntry.domainName",
+    type: "Service",
+    group: "VpcLattice",
+  },
 };
 
 const replaceDependency =

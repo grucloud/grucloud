@@ -197,6 +197,7 @@ const mapRegionService = {
     "OpenSearch",
     "DirectoryService",
     "Keyspaces",
+    "VpcLattice",
   ],
 };
 

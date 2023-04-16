@@ -127,6 +127,11 @@ const dependenciesFromPolicies = {
     type: "Secret",
     group: "SecretsManager",
   },
+  vpcLatticeTargetGroups: {
+    pathLive: "live.arn",
+    type: "TargetGroup",
+    group: "VpcLattice",
+  },
 };
 exports.dependenciesFromPolicies = dependenciesFromPolicies;
 

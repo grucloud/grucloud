@@ -292,6 +292,7 @@
     "@aws-sdk/client-timestream-query": "3.279.0",
     "@aws-sdk/client-timestream-write": "3.280.0",
     "@aws-sdk/client-transfer": "3.279.0",
+    "@aws-sdk/client-vpc-lattice": "3.312.0",
     "@aws-sdk/client-wafv2": "3.279.0",
     "@aws-sdk/client-workspaces": "3.279.0",
     "@aws-sdk/client-workspaces-web": "3.279.0",

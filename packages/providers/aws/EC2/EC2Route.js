@@ -13,6 +13,7 @@ const {
   flatMap,
   and,
   omit,
+  or,
 } = require("rubico");
 const {
   isEmpty,
@@ -92,6 +93,9 @@ const findId =
           callProp("startsWith", "igw-"),
         ]),
         pipe([append("::igw")]),
+        // Lattice
+        pipe([() => live, eq(get("GatewayId"), "VpcLattice")]),
+        pipe([append("::vpclattice")]),
         // Vpc Endpoint
         pipe([
           () => live,
@@ -138,7 +142,10 @@ const findId =
         pipe([append(`::eogw`)]),
         // Other
         () => {
-          assert(false, "invalid route target");
+          assert(
+            false,
+            `invalid route target ${JSON.stringify(live, null, 4)}`
+          );
         },
       ]),
       switchCase([
@@ -182,7 +189,13 @@ const findName = (params) => (live) => {
   assert(false, "should have a name");
 };
 
-const isDefault = () => pipe([eq(get("GatewayId"), "local")]);
+const isDefault = () =>
+  pipe([
+    or([
+      eq(get("GatewayId"), "local"), //
+      eq(get("GatewayId"), "VpcLattice"),
+    ]),
+  ]);
 
 const findRoute = ({
   CoreNetworkArn,
