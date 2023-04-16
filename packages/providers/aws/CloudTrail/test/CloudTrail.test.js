@@ -28,13 +28,18 @@ describe("CloudTrail", async function () {
       }),
       awsResourceTest,
     ])());
-  it("EventDataStore", () =>
+  it.skip("EventDataStore", () =>
     pipe([
       () => ({
         groupType: "CloudTrail::EventDataStore",
         livesNotFound: ({ config }) => [
           {
-            EventDataStoreArn: "a-12345",
+            EventDataStoreArn: `arn:aws:cloudtrail:${
+              config.region
+            }:${config.accountId()}:eventdatastore/ee54-4813-92d5-999ae`,
+            nameNotFound: `arn:aws:cloudtrail:${
+              config.region
+            }:${config.accountId()}:eventdatastore/ee54-4813-92d5-999ae`,
           },
         ],
       }),

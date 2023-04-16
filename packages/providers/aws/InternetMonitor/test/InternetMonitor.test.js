@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("InternetMonitor", async function () {
-  it.skip("Monitor", () =>
+  it("Monitor", () =>
     pipe([
       () => ({
         groupType: "InternetMonitor::Monitor",

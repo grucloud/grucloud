@@ -1,0 +1,29 @@
+{
+  "SchemaVersion": 1,
+  "FaqDocuments": [
+    {
+      "Question": "How many free clinics are in Spokane WA?",
+      "Answer": "13"
+    },
+    {
+      "Question": "How many free clinics are there in Mountain View Missouri?",
+      "Answer": "7",
+      "Attributes": {
+        "_source_uri": "https://www.freeclinics.com",
+        "_category": "Charitable Clinics"
+      },
+      "AccessControlList": [
+        {
+          "Name": "user@amazon.com",
+          "Type": "USER",
+          "Access": "ALLOW"
+        },
+        {
+          "Name": "Admin",
+          "Type": "GROUP",
+          "Access": "ALLOW"
+        }
+      ]
+    }
+  ]
+}

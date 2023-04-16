@@ -1,0 +1,39 @@
+@startmindmap
+title Resources for project vpc-lattice-cousous
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (2)
+++++ InternetGateway (2)
+++++ InternetGatewayAttachment (2)
+++++ NatGateway (2)
+++++ Subnet (5)
+++++ RouteTable (4)
+++++ RouteTableAssociation (5)
+++++ Route (4)
+++++ SecurityGroup (5)
+++++ SecurityGroupRuleIngress (6)
+++++ SecurityGroupRuleEgress (2)
+++++ ElasticIpAddress (2)
+++++ Instance (1)
++++ ECS
+++++ Cluster (1)
+++++ Service (1)
+++++ TaskDefinition (1)
++++ ElasticLoadBalancingV2
+++++ Listener (1)
+++++ LoadBalancer (1)
+++++ TargetGroup (1)
++++ IAM
+++++ OpenIDConnectProvider (1)
+++++ InstanceProfile (1)
+++++ Role (5)
++++ VpcLattice
+++++ Listener (1)
+++++ Service (1)
+++++ ServiceNetwork (1)
+++++ ServiceNetworkServiceAssociation (1)
+++++ ServiceNetworkVpcAssociation (2)
+++++ TargetGroup (2)
+@endmindmap

@@ -5,17 +5,19 @@ const { defaultsDeep } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 const { createAwsService } = require("../AwsService");
 
-const GROUP = "MediaConvert";
+const GROUP = "MediaTailor";
 
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
-//const { MediaTailorConfiguration } = require("./MediaTailorConfiguration");
+const {
+  MediaTailorPlaybackConfiguration,
+} = require("./MediaTailorPlaybackConfiguration");
 
 module.exports = pipe([
   () => [
     //
-    //MediaTailorConfiguration({}),
+    MediaTailorPlaybackConfiguration({}),
   ],
   map(
     pipe([

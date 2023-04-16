@@ -24,10 +24,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const pickId = pipe([pick(["HostedZoneId", "VPC"])]);
 
-const createModel = ({ config }) => ({
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#associateVPCWithHostedZone-property
-});
-
 // Do not manage the first vpc association with this hosted zone,
 const managedByOther =
   ({ lives, config }) =>

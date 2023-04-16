@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 /**
- * IotAuthorizer
+ * 
 IotCACertificate
 IotCertificate
 IotJob
@@ -20,11 +20,11 @@ IotTopicRule
  */
 
 describe("Iot", async function () {
-  it.skip("Authorizer", () =>
+  it("Authorizer", () =>
     pipe([
       () => ({
-        groupType: "Iot::Authorizer",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "IoT::Authorizer",
+        livesNotFound: ({ config }) => [{ authorizerName: "a123" }],
       }),
       awsResourceTest,
     ])());

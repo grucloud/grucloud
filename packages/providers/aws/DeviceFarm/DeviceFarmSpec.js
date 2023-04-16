@@ -10,12 +10,12 @@ const GROUP = "DeviceFarm";
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
-//const { DeviceFarmProject } = require("./DeviceFarmProject");
+const { DeviceFarmProject } = require("./DeviceFarmProject");
 
 module.exports = pipe([
   () => [
     //
-    // DeviceFarmProject({}),
+    DeviceFarmProject({}),
   ],
   map(
     pipe([

@@ -16,7 +16,7 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         tap(({ Name }) => {
-          assert(true);
+          assert(Name);
         }),
         ({ Name }) =>
           `arn:aws:ssm:${config.region}:${config.accountId()}:document/${Name}`,

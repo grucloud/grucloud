@@ -61,6 +61,13 @@ exports.createResources = () => [
             },
           ],
         },
+        DeliveryPolicy: {
+          http: {
+            defaultRequestPolicy: {
+              headerContentType: "text/plain; charset=UTF-8",
+            },
+          },
+        },
       },
     }),
   },

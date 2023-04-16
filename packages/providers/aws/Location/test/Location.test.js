@@ -4,59 +4,64 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Location", async function () {
-  it.skip("GeoFenceCollection", () =>
+  it("GeoFenceCollection", () =>
     pipe([
       () => ({
-        groupType: "Location::GeoFenceCollection",
+        groupType: "Location::GeofenceCollection",
         livesNotFound: ({ config }) => [
           {
-            //StreamName: "a-12345",
+            CollectionName: "a-12345",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Map", () =>
+  it("Map", () =>
     pipe([
       () => ({
         groupType: "Location::Map",
         livesNotFound: ({ config }) => [
           {
-            //StreamName: "a-12345",
+            MapName: "m-12345",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("PlaceIndex", () =>
+  it("PlaceIndex", () =>
     pipe([
       () => ({
         groupType: "Location::PlaceIndex",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ IndexName: "a123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("RouteCalculator", () =>
+  it("RouteCalculator", () =>
     pipe([
       () => ({
         groupType: "Location::RouteCalculator",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ CalculatorName: "c123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Tracker", () =>
+  it("Tracker", () =>
     pipe([
       () => ({
         groupType: "Location::Tracker",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ TrackerName: "t123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("TrackerAssociation", () =>
+  it("TrackerAssociation", () =>
     pipe([
       () => ({
         groupType: "Location::TrackerAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            ConsumerArn: `arn:aws:geo::${config.accountId()}:geofence-collection:geo-a6c366c3b3db7df6de6aaec566d10a54`,
+            TrackerName: "t123",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

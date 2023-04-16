@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("MWAA", async function () {
-  it.skip("Environment", () =>
+  it("Environment", () =>
     pipe([
       () => ({
         groupType: "MWAA::Environment",

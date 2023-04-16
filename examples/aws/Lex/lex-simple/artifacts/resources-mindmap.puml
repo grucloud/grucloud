@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project lex-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ LexModelsV2
+++++ Bot (1)
+@endmindmap

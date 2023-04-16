@@ -4,27 +4,76 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Detective", async function () {
-  it.skip("Graph", () =>
+  it("Graph", () =>
     pipe([
       () => ({
         groupType: "Detective::Graph",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            GraphArn: `arn:aws:detective:${
+              config.region
+            }:${config.accountId()}:graph/7ea40abc165723333fb7f3f08c8e6465`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Invitation", () =>
+  it("InvitationAccepter", () =>
     pipe([
       () => ({
-        groupType: "Detective::Invitation",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "Detective::InvitationAccepter",
+        livesNotFound: ({ config }) => [
+          {
+            GraphArn: `arn:aws:detective:${
+              config.region
+            }:${config.accountId()}:graph:7ea40abc165723333fb7f3f08c8e6465`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Member", () =>
+  it("Member", () =>
     pipe([
       () => ({
         groupType: "Detective::Member",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            GraphArn: `arn:aws:detective:${
+              config.region
+            }:${config.accountId()}:graph/7ea40abc165723333fb7f3f08c8e6465`,
+            AccountId: "1234567890",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("OrganizationAdminAccount", () =>
+    pipe([
+      () => ({
+        groupType: "Detective::OrganizationAdminAccount",
+        livesNotFound: ({ config }) => [
+          {
+            GraphArn: `arn:aws:detective:${
+              config.region
+            }:${config.accountId()}:graph/7ea40abc165723333fb7f3f08c8e6465`,
+            AccountId: "1234567890",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("OrganizationConfiguration", () =>
+    pipe([
+      () => ({
+        groupType: "Detective::OrganizationConfiguration",
+        livesNotFound: ({ config }) => [
+          {
+            GraphArn: `arn:aws:detective:${
+              config.region
+            }:${config.accountId()}:graph/7ea40abc165723333fb7f3f08c8e6465`,
+          },
+        ],
+        skipDelete: true,
       }),
       awsResourceTest,
     ])());

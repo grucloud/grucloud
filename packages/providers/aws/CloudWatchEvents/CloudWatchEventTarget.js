@@ -31,6 +31,7 @@ const ignoreArns = [
   "arn:aws:autoscaling",
   "arn:aws:inspector2",
   "arn:aws:schemas",
+  "arn:aws:codeguru-reviewer",
 ];
 
 const managedByOther = () =>

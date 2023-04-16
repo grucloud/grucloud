@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 623 resources in 145 services for provider aws:
+List of 660 resources in 155 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -104,10 +104,12 @@ List of 623 resources in 145 services for provider aws:
 [LocationEfs](./resources/DataSync/LocationEfs.md), [LocationFsxLustre](./resources/DataSync/LocationFsxLustre.md), [LocationFsxOpenZfs](./resources/DataSync/LocationFsxOpenZfs.md), [LocationFsxWindows](./resources/DataSync/LocationFsxWindows.md), [LocationS3](./resources/DataSync/LocationS3.md), [Task](./resources/DataSync/Task.md)
 * DAX: 
 [Cluster](./resources/DAX/Cluster.md), [ParameterGroup](./resources/DAX/ParameterGroup.md), [SubnetGroup](./resources/DAX/SubnetGroup.md)
+* Detective: 
+[Graph](./resources/Detective/Graph.md), [InvitationAccepter](./resources/Detective/InvitationAccepter.md), [Member](./resources/Detective/Member.md), [OrganizationAdminAccount](./resources/Detective/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/Detective/OrganizationConfiguration.md)
 * DirectConnect: 
 [BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [MacSecKeyAssociation](./resources/DirectConnect/MacSecKeyAssociation.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
 * DirectoryService: 
-[ConditionalForwarder](./resources/DirectoryService/ConditionalForwarder.md), [Directory](./resources/DirectoryService/Directory.md), [Region](./resources/DirectoryService/Region.md), [SharedDirectory](./resources/DirectoryService/SharedDirectory.md)
+[ConditionalForwarder](./resources/DirectoryService/ConditionalForwarder.md), [Directory](./resources/DirectoryService/Directory.md), [Region](./resources/DirectoryService/Region.md), [SharedDirectory](./resources/DirectoryService/SharedDirectory.md), [Trust](./resources/DirectoryService/Trust.md)
 * DMS: 
 [Certificate](./resources/DMS/Certificate.md), [Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
 * DynamoDB: 
@@ -162,12 +164,20 @@ List of 623 resources in 145 services for provider aws:
 [Component](./resources/Imagebuilder/Component.md), [ContainerRecipe](./resources/Imagebuilder/ContainerRecipe.md), [DistributionConfiguration](./resources/Imagebuilder/DistributionConfiguration.md), [Image](./resources/Imagebuilder/Image.md), [ImagePipeline](./resources/Imagebuilder/ImagePipeline.md), [ImageRecipe](./resources/Imagebuilder/ImageRecipe.md), [InfrastructureConfiguration](./resources/Imagebuilder/InfrastructureConfiguration.md)
 * Inspector2: 
 [DelegatedAdminAccount](./resources/Inspector2/DelegatedAdminAccount.md), [Enabler](./resources/Inspector2/Enabler.md), [OrganizationConfiguration](./resources/Inspector2/OrganizationConfiguration.md)
+* InternetMonitor: 
+[Monitor](./resources/InternetMonitor/Monitor.md)
+* IoT: 
+[Authorizer](./resources/IoT/Authorizer.md)
 * Ivschat: 
 [Room](./resources/Ivschat/Room.md), [LoggingConfiguration](./resources/Ivschat/LoggingConfiguration.md)
+* Kendra: 
+[DataSource](./resources/Kendra/DataSource.md), [Experience](./resources/Kendra/Experience.md), [Faq](./resources/Kendra/Faq.md), [Index](./resources/Kendra/Index.md), [QuerySuggestionsBlockList](./resources/Kendra/QuerySuggestionsBlockList.md), [Thesaurus](./resources/Kendra/Thesaurus.md)
 * Keyspaces: 
 [Keyspace](./resources/Keyspaces/Keyspace.md), [Table](./resources/Keyspaces/Table.md)
 * Kinesis: 
 [Stream](./resources/Kinesis/Stream.md), [StreamConsumer](./resources/Kinesis/StreamConsumer.md)
+* KinesisAnalyticsV2: 
+[Application](./resources/KinesisAnalyticsV2/Application.md)
 * KinesisVideo: 
 [Stream](./resources/KinesisVideo/Stream.md)
 * KMS: 
@@ -176,10 +186,14 @@ List of 623 resources in 145 services for provider aws:
 [DataLakeSettings](./resources/LakeFormation/DataLakeSettings.md), [LFTag](./resources/LakeFormation/LFTag.md), [Resource](./resources/LakeFormation/Resource.md)
 * Lambda: 
 [Alias](./resources/Lambda/Alias.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md), [Function](./resources/Lambda/Function.md), [Layer](./resources/Lambda/Layer.md), [Permission](./resources/Lambda/Permission.md)
+* LexModelsV2: 
+[Bot](./resources/LexModelsV2/Bot.md), [BotAlias](./resources/LexModelsV2/BotAlias.md), [BotLocale](./resources/LexModelsV2/BotLocale.md), [Intent](./resources/LexModelsV2/Intent.md)
 * LicenseManager: 
 [Association](./resources/LicenseManager/Association.md), [Grant](./resources/LicenseManager/Grant.md), [GrantAccepter](./resources/LicenseManager/GrantAccepter.md), [License](./resources/LicenseManager/License.md), [LicenseConfiguration](./resources/LicenseManager/LicenseConfiguration.md)
 * Lightsail: 
 [Bucket](./resources/Lightsail/Bucket.md), [Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
+* Location: 
+[GeofenceCollection](./resources/Location/GeofenceCollection.md), [Map](./resources/Location/Map.md), [PlaceIndex](./resources/Location/PlaceIndex.md), [RouteCalculator](./resources/Location/RouteCalculator.md), [Tracker](./resources/Location/Tracker.md), [TrackerAssociation](./resources/Location/TrackerAssociation.md)
 * Macie2: 
 [Account](./resources/Macie2/Account.md), [AllowList](./resources/Macie2/AllowList.md), [ClassificationExportConfiguration](./resources/Macie2/ClassificationExportConfiguration.md), [ClassificationJob](./resources/Macie2/ClassificationJob.md), [CustomDataIdentifier](./resources/Macie2/CustomDataIdentifier.md), [FindingsFilter](./resources/Macie2/FindingsFilter.md), [InvitationAccepter](./resources/Macie2/InvitationAccepter.md), [Member](./resources/Macie2/Member.md), [OrganizationAdminAccount](./resources/Macie2/OrganizationAdminAccount.md)
 * MediaConnect: 
@@ -190,12 +204,16 @@ List of 623 resources in 145 services for provider aws:
 [Channel](./resources/MediaPackage/Channel.md), [OriginEndpoint](./resources/MediaPackage/OriginEndpoint.md)
 * MediaStore: 
 [Container](./resources/MediaStore/Container.md)
+* MediaTailor: 
+[PlaybackConfiguration](./resources/MediaTailor/PlaybackConfiguration.md)
 * MemoryDB: 
 [ACL](./resources/MemoryDB/ACL.md), [Cluster](./resources/MemoryDB/Cluster.md), [ParameterGroup](./resources/MemoryDB/ParameterGroup.md), [SubnetGroup](./resources/MemoryDB/SubnetGroup.md), [User](./resources/MemoryDB/User.md)
 * MQ: 
 [Broker](./resources/MQ/Broker.md), [Configuration](./resources/MQ/Configuration.md)
 * MSK: 
 [Configuration](./resources/MSK/Configuration.md), [ClusterV2](./resources/MSK/ClusterV2.md)
+* MWAA: 
+[Environment](./resources/MWAA/Environment.md)
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md)
 * NetworkManager: 
@@ -286,6 +304,8 @@ List of 623 resources in 145 services for provider aws:
 [Database](./resources/TimestreamWrite/Database.md), [Table](./resources/TimestreamWrite/Table.md)
 * Transfer: 
 [Access](./resources/Transfer/Access.md), [Server](./resources/Transfer/Server.md), [User](./resources/Transfer/User.md), [Workflow](./resources/Transfer/Workflow.md)
+* VpcLattice: 
+[AccessLogSubscription](./resources/VpcLattice/AccessLogSubscription.md), [AuthPolicy](./resources/VpcLattice/AuthPolicy.md), [Listener](./resources/VpcLattice/Listener.md), [Rule](./resources/VpcLattice/Rule.md), [ResourcePolicy](./resources/VpcLattice/ResourcePolicy.md), [Service](./resources/VpcLattice/Service.md), [ServiceNetwork](./resources/VpcLattice/ServiceNetwork.md), [ServiceNetworkServiceAssociation](./resources/VpcLattice/ServiceNetworkServiceAssociation.md), [ServiceNetworkVpcAssociation](./resources/VpcLattice/ServiceNetworkVpcAssociation.md), [TargetGroup](./resources/VpcLattice/TargetGroup.md)
 * WAFv2: 
 [RegexPatternSet](./resources/WAFv2/RegexPatternSet.md), [WebACL](./resources/WAFv2/WebACL.md), [WebACLCloudFront](./resources/WAFv2/WebACLCloudFront.md), [WebACLAssociation](./resources/WAFv2/WebACLAssociation.md)
 * WorkSpaces: 

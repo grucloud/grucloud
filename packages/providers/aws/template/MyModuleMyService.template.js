@@ -124,6 +124,15 @@ const decorate = ({ endpoint, config }) =>
 //     get("managedByOther"),
 //   ])();
 
+// const managedByOther = ({ config }) =>
+//   pipe([
+//     tap((params) => {
+//       assert(config);
+//       assert(config.accountId());
+//     }),
+//     not(eq(get("VpcEndpointOwner"), config.accountId())),
+//   ]);
+
 ////////////////////
 // cannotBeDeleted
 ////////////////////

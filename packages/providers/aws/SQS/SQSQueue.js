@@ -55,7 +55,7 @@ const findName = () => pipe([queueUrlToName]);
 const assignTags = ({ endpoint }) =>
   pipe([
     assign({
-      Tags: pipe([pickId, endpoint().listQueueTags, get("Tags")]),
+      tags: pipe([pickId, endpoint().listQueueTags, get("Tags")]),
     }),
   ]);
 
@@ -149,13 +149,13 @@ exports.SQSQueue = () => ({
     decorate,
     ignoreErrorCodes,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#listMyResources-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#listQueues-property
   getList: {
     method: "listQueues",
     getParam: "QueueUrls",
     decorate: ({ getById }) => pipe([(QueueUrl) => ({ QueueUrl }), getById]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#createMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#createQueue-property
   create: {
     method: "createQueue",
     shouldRetryOnExceptionCodes: [
@@ -175,7 +175,7 @@ exports.SQSQueue = () => ({
     //config: { retryDelay: 65e3, retryCount: 2 },
     configIsUp: { repeatCount: 1, repeatDelay: 60e3 },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#updateMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#updateQueue-property
   update: {
     pickId,
     filterParams: ({ payload, live }) =>
@@ -189,7 +189,7 @@ exports.SQSQueue = () => ({
       ])(),
     method: "setQueueAttributes",
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#deleteMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#deleteQueue-property
   destroy: {
     pickId,
     method: "deleteQueue",

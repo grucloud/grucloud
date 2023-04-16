@@ -110,6 +110,7 @@ const GROUPS = [
   ["FSx", "fsx"],
   ["Glacier", "glacier"],
   ["Imagebuilder", "imagebuilder"],
+  ["Iot", "iot"],
   ["IVS", "ivs"],
   ["Ivschat", "ivschat"],
   ["GuardDuty", "guardduty"],
@@ -118,6 +119,7 @@ const GROUPS = [
   ["IdentityStore", "identitystore"],
   ["Inspector2", "inspector2"],
   ["InternetMonitor", "internetmonitor"],
+  ["Kendra", "kendra"],
   ["Keyspaces", "keyspaces"],
   ["Kinesis", "kinesis"],
   ["KinesisAnalyticsV2", "kinesisanalytics"],
@@ -125,6 +127,7 @@ const GROUPS = [
   ["KMS", "kms"],
   ["LakeFormation", "lakeformation"],
   ["Lambda", "lambda"],
+  ["LexModelsV2", "lexv2-models"],
   ["LicenseManager", "license-manager"],
   ["Lightsail", "lightsail"],
   ["Location", "amazonlocationservice"],
@@ -194,6 +197,7 @@ const mapRegionService = {
     "OpenSearch",
     "DirectoryService",
     "Keyspaces",
+    "VpcLattice",
   ],
 };
 

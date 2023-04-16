@@ -52,11 +52,13 @@ describe("DirectoryService", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Trust", () =>
+  it("Trust", () =>
     pipe([
       () => ({
         groupType: "DirectoryService::Trust",
-        livesNotFound: ({ config }) => [{ DirectoryId: "d-1234567890" }],
+        livesNotFound: ({ config }) => [
+          { TrustId: "t-1234567890", DirectoryId: "d-1234567890" },
+        ],
       }),
       awsResourceTest,
     ])());

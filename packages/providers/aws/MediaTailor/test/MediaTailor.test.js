@@ -6,11 +6,11 @@ const { awsResourceTest } = require("../../AwsResourceTester");
 const config = () => ({ includeGroups: ["MediaTailor"] });
 
 describe("MediaTailor", async function () {
-  it.skip("Configuration", () =>
+  it("PlaybackConfiguration", () =>
     pipe([
       () => ({
         config,
-        groupType: "MediaTailor::Configuration",
+        groupType: "MediaTailor::PlaybackConfiguration",
         livesNotFound: ({ config }) => [{ Name: "n123" }],
       }),
       awsResourceTest,

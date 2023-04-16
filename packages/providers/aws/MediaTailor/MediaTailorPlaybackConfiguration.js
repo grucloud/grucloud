@@ -1,13 +1,29 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, tryCatch } = require("rubico");
-const { defaultsDeep, first, identity } = require("rubico/x");
+const { pipe, tap, get, pick, assign } = require("rubico");
+const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
-const { Tagger, assignTags } = require("./MediaTailorCommon");
+const { Tagger } = require("./MediaTailorCommon");
 
-const cannotBeDeleted = () => pipe([eq(get("Name"), "Default")]);
+const assignArn = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    assign({
+      Arn: pipe([
+        tap(({ Name }) => {
+          assert(Name);
+        }),
+        ({ Name }) =>
+          `arn:aws:mediatailor:${
+            config.region
+          }:${config.accountId()}:playbackConfiguration/${Name}`,
+      ]),
+    }),
+  ]);
 
 const buildArn = () =>
   pipe([
@@ -30,15 +46,15 @@ const decorate = ({ endpoint, config, endpointConfig }) =>
       assert(endpointConfig);
       assert(endpoint);
     }),
-    assignTags({ buildArn: buildArn(config), endpoint, endpointConfig }),
+    assignArn({ config }),
     tap((params) => {
       assert(true);
     }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html
-exports.MediaTailorConfiguration = () => ({
-  type: "Configuration",
+exports.MediaTailorPlaybackConfiguration = () => ({
+  type: "PlaybackConfiguration",
   package: "mediatailor",
   client: "MediaTailor",
   propertiesDefault: {},
@@ -72,37 +88,36 @@ exports.MediaTailorConfiguration = () => ({
         assert(id);
       }),
     ]),
-  cannotBeDeleted,
-  managedByOther: cannotBeDeleted,
+  // cannotBeDeleted,
+  // managedByOther: cannotBeDeleted,
   ignoreErrorCodes: ["NotFoundException"],
   getEndpointConfig: identity,
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html#getConfiguration-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html#getPlaybackConfiguration-property
   getById: {
-    method: "getConfiguration",
-    getField: "Configuration",
+    method: "getPlaybackConfiguration",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html#listConfigurations-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html#listPlaybackConfigurations-property
   getList: {
-    method: "listConfigurations",
-    getParam: "Configurations",
+    method: "listPlaybackConfigurations",
+    getParam: "Items",
     decorate: ({ getById }) => pipe([getById]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html#createConfiguration-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html#putPlaybackConfiguration-property
   create: {
-    method: "createConfiguration",
-    pickCreated: ({ payload }) => pipe([get("Configuration")]),
+    method: "putPlaybackConfiguration",
+    pickCreated: ({ payload }) => pipe([() => payload]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html#updateConfiguration-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html#updatePlaybackConfiguration-property
   update: {
-    method: "updateConfiguration",
+    method: "putPlaybackConfiguration",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html#deleteConfiguration-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaTailor.html#deletePlaybackConfiguration-property
   destroy: {
-    method: "deleteConfiguration",
+    method: "deletePlaybackConfiguration",
     pickId,
   },
   getByName: getByNameCore,

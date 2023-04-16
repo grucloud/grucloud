@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, switchCase } = require("rubico");
+const { pipe, tap, get, eq, switchCase, assign } = require("rubico");
 const { defaultsDeep, first, when, isEmpty } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -16,12 +16,28 @@ const buildArn = () =>
     }),
   ]);
 
+const assignArn = ({ config }) =>
+  pipe([
+    assign({
+      Arn: pipe([
+        tap(({ WorkspaceId }) => {
+          assert(WorkspaceId);
+        }),
+        ({ WorkspaceId }) =>
+          `arn:aws:workspaces:${
+            config.region
+          }:${config.accountId()}:workspace/${WorkspaceId}`,
+      ]),
+    }),
+  ]);
+
 const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
     assignTags({ buildArn: buildArn(config), endpoint }),
+    assignArn({ config }),
   ]);
 
 const filterPayload = (payload) => ({ Workspaces: [payload] });
@@ -33,6 +49,7 @@ exports.WorkSpacesWorkspace = () => ({
   client: "WorkSpaces",
   propertiesDefault: {},
   omitProperties: [
+    "Arn",
     "DirectoryId",
     "WorkspaceId",
     "VolumeEncryptionKey",
@@ -62,7 +79,7 @@ exports.WorkSpacesWorkspace = () => ({
     ]),
   findId: () =>
     pipe([
-      get("WorkspaceId"),
+      get("Arn"),
       tap((id) => {
         assert(id);
       }),
