@@ -20,6 +20,8 @@ const {
 } = require("./DirectoryServiceSharedDirectory");
 //const { DirectoryServiceSharedDirectoryAccepter } = require("./DirectoryServiceSharedDirectoryAccepter");
 
+const { DirectoryServiceTrust } = require("./DirectoryServiceTrust");
+
 const GROUP = "DirectoryService";
 
 const compare = compareAws({});
@@ -31,6 +33,7 @@ module.exports = pipe([
     // DirectoryServiceLogSubscription({})
     DirectoryServiceRegion({}),
     DirectoryServiceSharedDirectory({}),
+    DirectoryServiceTrust({}),
     // DirectoryServiceSharedDirectoryAccepter({})
   ],
   map(

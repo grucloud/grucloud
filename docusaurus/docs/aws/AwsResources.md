@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 659 resources in 155 services for provider aws:
+List of 660 resources in 155 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -109,7 +109,7 @@ List of 659 resources in 155 services for provider aws:
 * DirectConnect: 
 [BGPPeer](./resources/DirectConnect/BGPPeer.md), [Connection](./resources/DirectConnect/Connection.md), [ConnectionAssociation](./resources/DirectConnect/ConnectionAssociation.md), [Gateway](./resources/DirectConnect/Gateway.md), [Lag](./resources/DirectConnect/Lag.md), [MacSecKeyAssociation](./resources/DirectConnect/MacSecKeyAssociation.md), [VirtualInterface](./resources/DirectConnect/VirtualInterface.md)
 * DirectoryService: 
-[ConditionalForwarder](./resources/DirectoryService/ConditionalForwarder.md), [Directory](./resources/DirectoryService/Directory.md), [Region](./resources/DirectoryService/Region.md), [SharedDirectory](./resources/DirectoryService/SharedDirectory.md)
+[ConditionalForwarder](./resources/DirectoryService/ConditionalForwarder.md), [Directory](./resources/DirectoryService/Directory.md), [Region](./resources/DirectoryService/Region.md), [SharedDirectory](./resources/DirectoryService/SharedDirectory.md), [Trust](./resources/DirectoryService/Trust.md)
 * DMS: 
 [Certificate](./resources/DMS/Certificate.md), [Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
 * DynamoDB: 
