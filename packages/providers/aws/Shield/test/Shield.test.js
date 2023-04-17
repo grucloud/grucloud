@@ -22,11 +22,17 @@ describe("Shield", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ProtectionHealthCheckAssociation", () =>
+  it("ProtectionHealthCheckAssociation", () =>
     pipe([
       () => ({
-        groupType: "ProtectionHealthCheckAssociation",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "Shield::ProtectionHealthCheckAssociation",
+        livesNotFound: ({ config }) => [
+          {
+            ProtectionId: "p123456789p123456789p123456789p12345",
+            HealthCheckArn:
+              "arn:aws:route53:::healthcheck/75ffecf6-0290-49f7-9e76-ee33c82a5b1a",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

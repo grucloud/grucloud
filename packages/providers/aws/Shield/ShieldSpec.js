@@ -9,7 +9,9 @@ const { createAwsService } = require("../AwsService");
 
 const { ShieldProtection } = require("./ShieldProtection");
 const { ShieldProtectionGroup } = require("./ShieldProtectionGroup");
-//const { ShieldProtectionHealthCheckAssociation } = require("./ShieldProtectionHealthCheckAssociation");
+const {
+  ShieldProtectionHealthCheckAssociation,
+} = require("./ShieldProtectionHealthCheckAssociation");
 
 const GROUP = "Shield";
 
@@ -19,13 +21,15 @@ module.exports = pipe([
   () => [
     ShieldProtection({}),
     ShieldProtectionGroup({}),
-    // ShieldProtectionHealthCheckAssociation({})
+    ShieldProtectionHealthCheckAssociation({}),
   ],
-  map(createAwsService),
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);
