@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
+const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
 
 const { buildTags } = require("../AwsCommon");
 
@@ -24,11 +25,37 @@ const decorate = ({ endpoint, live }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
+      assert(live.EmailIdentity);
     }),
     defaultsDeep({ EmailIdentity: live.EmailIdentity }),
-    //({ name, ...other }) => ({ loadBalancerName: name, ...other }),
-    //assign({ MyJSON: pipe([get("MyJSON", JSON.parse)]) }),
-    //assignTags({ endpoint }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#putEmailIdentityFeedbackAttributes-property
+const putEmailIdentityFeedbackAttributes = ({ endpoint }) =>
+  pipe([
+    tap(({ EmailIdentity }) => {
+      assert(endpoint);
+      assert(EmailIdentity);
+    }),
+    ({ EmailIdentity, FeedbackForwardingStatus = false }) => ({
+      EmailIdentity,
+      EmailForwardingEnabled: FeedbackForwardingStatus,
+    }),
+    endpoint().putEmailIdentityFeedbackAttributes,
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#putEmailIdentityMailFromAttributes-property
+const putEmailIdentityMailFromAttributes = ({ endpoint }) =>
+  pipe([
+    tap(({ EmailIdentity }) => {
+      assert(endpoint);
+      assert(EmailIdentity);
+    }),
+    ({ EmailIdentity, MailFromAttributes }) => ({
+      EmailIdentity,
+      ...MailFromAttributes,
+    }),
+    endpoint().putEmailIdentityMailFromAttributes,
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html
@@ -41,6 +68,7 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
     "VerificationStatus",
     "ConfigurationSetName",
     "DkimAttributes.Status",
+    "MailFromAttributes.MailFromDomainStatus",
   ],
   inferName: () =>
     pipe([
@@ -58,9 +86,6 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
     ]),
   findId: () =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       get("EmailIdentity"),
       tap((id) => {
         assert(id);
@@ -70,7 +95,13 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
     configurationSet: {
       type: "ConfigurationSet",
       group: "SESV2",
-      dependencyId: ({ lives, config }) => pipe([get("ConfigurationSetName")]),
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("ConfigurationSetName"),
+          tap((ConfigurationSetName) => {
+            assert(ConfigurationSetName);
+          }),
+        ]),
     },
   },
   ignoreErrorCodes: ["NotFoundException"],
@@ -80,7 +111,7 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#listEmailIdentitys-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#listEmailIdentities-property
   getList: {
     method: "listEmailIdentities",
     getParam: "EmailIdentities",
@@ -97,37 +128,34 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
   create: {
     method: "createEmailIdentity",
     pickCreated: ({ payload }) => pipe([() => payload]),
-    // isInstanceUp: pipe([eq(get("Status"), "OPERATIONAL")]),
-    // isInstanceError: pipe([eq(get("Status"), "ACTION_NEEDED")]),
-    // getErrorMessage: get("StatusMessage", "error"),
-
-    // shouldRetryOnExceptionCodes: [],
-    // shouldRetryOnExceptionMessages: [],
+    postCreate:
+      ({ endpoint, payload, created }) =>
+      (live) =>
+        pipe([
+          () => payload,
+          putEmailIdentityFeedbackAttributes({ endpoint }),
+          putEmailIdentityMailFromAttributes({ endpoint }),
+        ])(),
   },
+  update:
+    ({ endpoint, getById }) =>
+    ({ payload, live, diff }) =>
+      pipe([
+        () => ({ payload, live, diff, endpoint }),
+        updateResourceObject({
+          path: "FeedbackForwardingStatus",
+          onDeleted: putEmailIdentityFeedbackAttributes({ endpoint }),
+          onAdded: putEmailIdentityFeedbackAttributes({ endpoint }),
+          onUpdated: putEmailIdentityFeedbackAttributes({ endpoint }),
+        }),
+        updateResourceObject({
+          path: "MailFromAttributes",
+          onDeleted: putEmailIdentityFeedbackAttributes({ endpoint }),
+          onAdded: putEmailIdentityFeedbackAttributes({ endpoint }),
+          onUpdated: putEmailIdentityFeedbackAttributes({ endpoint }),
+        }),
+      ])(),
 
-  // Custom update
-  // update:
-  //   ({ endpoint, getById }) =>
-  //   async ({ payload, live, diff }) =>
-  //     pipe([
-  //       () => diff,
-  //       tap.if(
-  //         or([get("liveDiff.deleted.resourceTypes")]),
-  //         pipe([
-  //           () => payload.resourceTypes,
-  //           differenceWith(isDeepEqual, resourceTypesAll),
-  //           (resourceTypes) => ({
-  //             accountIds: payload.accountIds,
-  //             resourceTypes,
-  //           }),
-  //           endpoint().disable,
-  //         ])
-  //       ),
-  //       tap.if(
-  //         or([get("liveDiff.added.resourceTypes")]),
-  //         pipe([() => payload, endpoint().enable])
-  //       ),
-  //     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html#deleteEmailIdentity-property
   destroy: {
     method: "deleteEmailIdentity",
@@ -147,6 +175,9 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
     config,
   }) =>
     pipe([
+      tap(() => {
+        assert(configurationSet);
+      }),
       () => otherProps,
       defaultsDeep({
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),

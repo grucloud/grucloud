@@ -40,12 +40,19 @@ const pickId = pipe([
   pick(["ProtectionId"]),
 ]);
 
+const toProtectionId = pipe([
+  tap(({ Id }) => {
+    assert(Id);
+  }),
+  ({ Id, ...other }) => ({ ProtectionId: Id, ...other }),
+]);
+
 const decorate = ({ endpoint }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
-    ({ Id, ...other }) => ({ ProtectionId: Id, ...other }),
+    toProtectionId,
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Shield.html
@@ -57,6 +64,7 @@ exports.ShieldProtection = pipe([
     propertiesDefault: {},
     omitProperties: [
       "ProtectionId",
+      "ProtectionArn",
       "ApplicationLayerAutomaticResponseConfiguration",
       "ResourceArn",
       "HealthCheckIds",
@@ -83,12 +91,6 @@ exports.ShieldProtection = pipe([
         }),
       ]),
     dependencies: {
-      route53HealthChecks: {
-        type: "HealthCheck",
-        group: "Route53",
-        list: true,
-        dependencyIds: ({ lives, config }) => pipe([get("HealthCheckIds")]),
-      },
       ...buildShieldDependencies(),
     },
     ignoreErrorCodes: ["ResourceNotFoundException"],
@@ -103,8 +105,7 @@ exports.ShieldProtection = pipe([
     getList: {
       method: "listProtections",
       getParam: "Protections",
-      decorate: ({ getById }) =>
-        pipe([({ Id }) => ({ ProtectionId: Id }), getById]),
+      decorate: ({ getById }) => pipe([toProtectionId, getById]),
     },
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Shield.html#createProtection-property
     create: {
@@ -125,7 +126,7 @@ exports.ShieldProtection = pipe([
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { route53HealthChecks, ...otherDependencies },
+      dependencies: { ...otherDependencies },
       config,
     }) =>
       pipe([
@@ -133,15 +134,6 @@ exports.ShieldProtection = pipe([
         defaultsDeep({
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
-        when(
-          () => route53HealthChecks,
-          assign({
-            HealthCheckIds: pipe([
-              () => route53HealthChecks,
-              map((healthCheck) => getField(healthCheck, "Id")),
-            ]),
-          })
-        ),
         assign({
           ResourceArn: pipe([
             tap((params) => {

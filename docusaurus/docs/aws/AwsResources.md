@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 660 resources in 155 services for provider aws:
+List of 663 resources in 155 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -267,7 +267,7 @@ List of 660 resources in 155 services for provider aws:
 * S3: 
 [Bucket](./resources/S3/Bucket.md), [Object](./resources/S3/Object.md)
 * S3Control: 
-[AccessPoint](./resources/S3Control/AccessPoint.md), [MultiRegionAccessPoint](./resources/S3Control/MultiRegionAccessPoint.md), [ObjectLambdaAccessPoint](./resources/S3Control/ObjectLambdaAccessPoint.md)
+[AccessPoint](./resources/S3Control/AccessPoint.md), [MultiRegionAccessPoint](./resources/S3Control/MultiRegionAccessPoint.md), [ObjectLambdaAccessPoint](./resources/S3Control/ObjectLambdaAccessPoint.md), [StorageLensConfiguration](./resources/S3Control/StorageLensConfiguration.md)
 * Scheduler: 
 [Schedule](./resources/Scheduler/Schedule.md), [ScheduleGroup](./resources/Scheduler/ScheduleGroup.md)
 * EventSchemas: 
@@ -283,9 +283,9 @@ List of 660 resources in 155 services for provider aws:
 * ServiceQuotas: 
 [ServiceQuota](./resources/ServiceQuotas/ServiceQuota.md)
 * SESV2: 
-[ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [ConfigurationSetEventDestination](./resources/SESV2/ConfigurationSetEventDestination.md), [ContactList](./resources/SESV2/ContactList.md), [DedicatedIpPool](./resources/SESV2/DedicatedIpPool.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md), [EmailTemplate](./resources/SESV2/EmailTemplate.md)
+[ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [ConfigurationSetEventDestination](./resources/SESV2/ConfigurationSetEventDestination.md), [ContactList](./resources/SESV2/ContactList.md), [DedicatedIpPool](./resources/SESV2/DedicatedIpPool.md), [DedicatedIp](./resources/SESV2/DedicatedIp.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md), [EmailTemplate](./resources/SESV2/EmailTemplate.md)
 * Shield: 
-[Protection](./resources/Shield/Protection.md), [ProtectionGroup](./resources/Shield/ProtectionGroup.md)
+[Protection](./resources/Shield/Protection.md), [ProtectionGroup](./resources/Shield/ProtectionGroup.md), [ProtectionHealthCheckAssociation](./resources/Shield/ProtectionHealthCheckAssociation.md)
 * SNS: 
 [PlatformApplication](./resources/SNS/PlatformApplication.md), [Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 
