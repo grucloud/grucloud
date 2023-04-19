@@ -165,6 +165,7 @@ const GROUPS = [
   ["RUM", "rum"],
   ["S3", "s3"],
   ["S3Control", "s3control"],
+  ["SageMaker", "sagemaker"],
   ["Scheduler", "scheduler"],
   ["Schemas", "schemas"],
   ["SecretsManager", "secretsmanager"],

@@ -6,6 +6,10 @@ const { createAwsService } = require("../AwsService");
 const { compareAws } = require("../AwsCommon");
 
 const {
+  CognitoIdentityServiceProviderGroup,
+} = require("./CognitoIdentityServiceProviderGroup");
+
+const {
   CognitoIdentityServiceProviderUserPool,
 } = require("./CognitoIdentityServiceProviderUserPool");
 
@@ -37,6 +41,7 @@ const compareCognitoIdentityServiceProvider = compareAws({
 
 module.exports = pipe([
   () => [
+    CognitoIdentityServiceProviderGroup(),
     CognitoIdentityServiceProviderIdentityProvider(),
     CognitoIdentityServiceProviderResourceServer({}),
     CognitoIdentityServiceProviderRiskConfiguration({}),

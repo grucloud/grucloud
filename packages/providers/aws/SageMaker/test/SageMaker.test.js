@@ -4,17 +4,22 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("SageMaker", async function () {
-  it.skip("App", () =>
+  it("App", () =>
     pipe([
       () => ({
         groupType: "SageMaker::App",
         livesNotFound: ({ config }) => [
-          { AppName: "app", AppType: "JupyterServer", DomainId: "d123" },
+          {
+            AppName: "app",
+            AppType: "JupyterServer",
+            DomainId: "d-123456789",
+            UserProfileName: "u1234",
+          },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("AppImageConfig", () =>
+  it("AppImageConfig", () =>
     pipe([
       () => ({
         groupType: "SageMaker::AppImageConfig",
@@ -22,7 +27,7 @@ describe("SageMaker", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("CodeRepository", () =>
+  it("CodeRepository", () =>
     pipe([
       () => ({
         groupType: "SageMaker::CodeRepository",
@@ -30,15 +35,26 @@ describe("SageMaker", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Device", () =>
+  it("DataQualityJobDefinition", () =>
     pipe([
       () => ({
-        groupType: "SageMaker::Device",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "SageMaker::DataQualityJobDefinition",
+        livesNotFound: ({ config }) => [{ JobDefinitionName: "j123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("DeviceFleet", () =>
+  it("Device", () =>
+    pipe([
+      () => ({
+        groupType: "SageMaker::Device",
+        livesNotFound: ({ config }) => [
+          { DeviceFleetName: "dfn", DeviceName: "d123" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+
+  it("DeviceFleet", () =>
     pipe([
       () => ({
         groupType: "SageMaker::DeviceFleet",
@@ -46,15 +62,15 @@ describe("SageMaker", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Domain", () =>
+  it("Domain", () =>
     pipe([
       () => ({
         groupType: "SageMaker::Domain",
-        livesNotFound: ({ config }) => [{ DomainId: "d123" }],
+        livesNotFound: ({ config }) => [{ DomainId: "d-123456789" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Endpoint", () =>
+  it("Endpoint", () =>
     pipe([
       () => ({
         groupType: "SageMaker::Endpoint",
@@ -62,7 +78,7 @@ describe("SageMaker", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("EndpointConfig", () =>
+  it("EndpointConfig", () =>
     pipe([
       () => ({
         groupType: "SageMaker::EndpointConfig",
@@ -70,7 +86,7 @@ describe("SageMaker", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("FeatureGroup", () =>
+  it("FeatureGroup", () =>
     pipe([
       () => ({
         groupType: "SageMaker::FeatureGroup",
@@ -78,7 +94,7 @@ describe("SageMaker", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("FlowDefinition", () =>
+  it("FlowDefinition", () =>
     pipe([
       () => ({
         groupType: "SageMaker::FlowDefinition",
@@ -86,7 +102,7 @@ describe("SageMaker", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("HumanTaskUi", () =>
+  it("HumanTaskUi", () =>
     pipe([
       () => ({
         groupType: "SageMaker::HumanTaskUi",
@@ -94,7 +110,7 @@ describe("SageMaker", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Image", () =>
+  it("Image", () =>
     pipe([
       () => ({
         groupType: "SageMaker::Image",
@@ -102,107 +118,123 @@ describe("SageMaker", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ImageVersion", () =>
+  it("ImageVersion", () =>
     pipe([
       () => ({
         groupType: "SageMaker::ImageVersion",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ImageName: "i123", Version: 1 }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Model", () =>
+  it("Model", () =>
     pipe([
       () => ({
         groupType: "SageMaker::Model",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ModelName: "m123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("ModelPackageGroup", () =>
+  it("ModelPackageGroup", () =>
     pipe([
       () => ({
         groupType: "SageMaker::ModelPackageGroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ModelPackageGroupName: "m123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("ModelPackageGroupPolicy", () =>
+  it("ModelPackageGroupPolicy", () =>
     pipe([
       () => ({
         groupType: "SageMaker::ModelPackageGroupPolicy",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ModelPackageGroupName: "m123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("NotebookInstance", () =>
+  it("MonitoringSchedule", () =>
+    pipe([
+      () => ({
+        groupType: "SageMaker::MonitoringSchedule",
+        livesNotFound: ({ config }) => [{ MonitoringScheduleName: "m123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("NotebookInstance", () =>
     pipe([
       () => ({
         groupType: "SageMaker::NotebookInstance",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ NotebookInstanceName: "n123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("NotebookInstanceLifecycleConfig", () =>
+  it("NotebookInstanceLifecycleConfig", () =>
     pipe([
       () => ({
         groupType: "SageMaker::NotebookInstanceLifecycleConfig",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { NotebookInstanceLifecycleConfigName: "n123" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Project", () =>
+  it("Project", () =>
     pipe([
       () => ({
         groupType: "SageMaker::Project",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ProjectName: "p123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("ServiceCatalogPortfolioStatus", () =>
+  it("ServiceCatalogPortfolio", () =>
     pipe([
       () => ({
-        groupType: "SageMaker::ServiceCatalogPortfolioStatus",
+        groupType: "SageMaker::ServiceCatalogPortfolio",
         livesNotFound: ({ config }) => [{}],
+        skipGetById: true,
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
-  it.skip("Space", () =>
+  it("Space", () =>
     pipe([
       () => ({
         groupType: "SageMaker::Space",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { SpaceName: "s123", DomainId: "d-123456789" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("StudioLifeCycleConfig", () =>
+  it("StudioLifecycleConfig", () =>
     pipe([
       () => ({
-        groupType: "SageMaker::StudioLifeCycleConfig",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "SageMaker::StudioLifecycleConfig",
+        livesNotFound: ({ config }) => [{ StudioLifecycleConfigName: "d123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("UserProfile", () =>
+  it("UserProfile", () =>
     pipe([
       () => ({
         groupType: "SageMaker::UserProfile",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { UserProfileName: "s123", DomainId: "d-123456789" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Workforce", () =>
+  it("Workforce", () =>
     pipe([
       () => ({
         groupType: "SageMaker::Workforce",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ WorkforceName: "w123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("WorkTeam", () =>
+  it("Workteam", () =>
     pipe([
       () => ({
-        groupType: "SageMaker::WorkTeam",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "SageMaker::Workteam",
+        livesNotFound: ({ config }) => [{ WorkteamName: "q123" }],
       }),
       awsResourceTest,
     ])());
