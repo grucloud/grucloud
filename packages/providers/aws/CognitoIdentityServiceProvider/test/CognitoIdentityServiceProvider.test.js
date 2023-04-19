@@ -14,6 +14,16 @@ describe("CognitoIdentityServiceProvider", async function () {
       }),
       awsResourceTest,
     ])());
+  it("Group", () =>
+    pipe([
+      () => ({
+        groupType: "CognitoIdentityServiceProvider::Group",
+        livesNotFound: ({ config }) => [
+          { UserPoolId: "up_12345", GroupName: "g123" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("ResourceServer", () =>
     pipe([
       () => ({

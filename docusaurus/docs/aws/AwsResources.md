@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 663 resources in 155 services for provider aws:
+List of 691 resources in 156 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -89,7 +89,7 @@ List of 663 resources in 155 services for provider aws:
 * Cognito: 
 [IdentityPool](./resources/Cognito/IdentityPool.md), [IdentityPoolProviderPrincipalTag](./resources/Cognito/IdentityPoolProviderPrincipalTag.md), [IdentityPoolRolesAttachments](./resources/Cognito/IdentityPoolRolesAttachments.md)
 * CognitoIdentityServiceProvider: 
-[IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [ResourceServer](./resources/CognitoIdentityServiceProvider/ResourceServer.md), [RiskConfiguration](./resources/CognitoIdentityServiceProvider/RiskConfiguration.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
+[Group](./resources/CognitoIdentityServiceProvider/Group.md), [IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [ResourceServer](./resources/CognitoIdentityServiceProvider/ResourceServer.md), [RiskConfiguration](./resources/CognitoIdentityServiceProvider/RiskConfiguration.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
 * Comprehend: 
 [DocumentClassifier](./resources/Comprehend/DocumentClassifier.md), [EntityRecognizer](./resources/Comprehend/EntityRecognizer.md)
 * Config: 
@@ -268,6 +268,8 @@ List of 663 resources in 155 services for provider aws:
 [Bucket](./resources/S3/Bucket.md), [Object](./resources/S3/Object.md)
 * S3Control: 
 [AccessPoint](./resources/S3Control/AccessPoint.md), [MultiRegionAccessPoint](./resources/S3Control/MultiRegionAccessPoint.md), [ObjectLambdaAccessPoint](./resources/S3Control/ObjectLambdaAccessPoint.md), [StorageLensConfiguration](./resources/S3Control/StorageLensConfiguration.md)
+* SageMaker: 
+[App](./resources/SageMaker/App.md), [AppImageConfig](./resources/SageMaker/AppImageConfig.md), [CodeRepository](./resources/SageMaker/CodeRepository.md), [Device](./resources/SageMaker/Device.md), [DeviceFleet](./resources/SageMaker/DeviceFleet.md), [DataQualityJobDefinition](./resources/SageMaker/DataQualityJobDefinition.md), [Domain](./resources/SageMaker/Domain.md), [Endpoint](./resources/SageMaker/Endpoint.md), [EndpointConfig](./resources/SageMaker/EndpointConfig.md), [FeatureGroup](./resources/SageMaker/FeatureGroup.md), [FlowDefinition](./resources/SageMaker/FlowDefinition.md), [HumanTaskUi](./resources/SageMaker/HumanTaskUi.md), [Image](./resources/SageMaker/Image.md), [ImageVersion](./resources/SageMaker/ImageVersion.md), [Model](./resources/SageMaker/Model.md), [ModelPackageGroup](./resources/SageMaker/ModelPackageGroup.md), [ModelPackageGroupPolicy](./resources/SageMaker/ModelPackageGroupPolicy.md), [MonitoringSchedule](./resources/SageMaker/MonitoringSchedule.md), [NotebookInstance](./resources/SageMaker/NotebookInstance.md), [NotebookInstanceLifecycleConfig](./resources/SageMaker/NotebookInstanceLifecycleConfig.md), [Project](./resources/SageMaker/Project.md), [ServiceCatalogPortfolio](./resources/SageMaker/ServiceCatalogPortfolio.md), [Space](./resources/SageMaker/Space.md), [StudioLifecycleConfig](./resources/SageMaker/StudioLifecycleConfig.md), [UserProfile](./resources/SageMaker/UserProfile.md), [Workforce](./resources/SageMaker/Workforce.md), [Workteam](./resources/SageMaker/Workteam.md)
 * Scheduler: 
 [Schedule](./resources/Scheduler/Schedule.md), [ScheduleGroup](./resources/Scheduler/ScheduleGroup.md)
 * EventSchemas: 

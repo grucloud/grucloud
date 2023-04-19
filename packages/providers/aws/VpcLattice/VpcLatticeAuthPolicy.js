@@ -30,6 +30,10 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    tap(({ policy }) => {
+      assert(policy);
+    }),
+    assign({ policy: pipe([get("policy"), JSON.parse]) }),
   ]);
 
 const filterPayload = pipe([

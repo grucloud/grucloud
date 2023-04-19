@@ -257,7 +257,6 @@ exports.AppflowConnectorProfile = ({ compare }) => ({
   }) =>
     pipe([
       () => otherProps,
-      defaultsDeep({}),
       when(
         () => kmsKey,
         defaultsDeep({
