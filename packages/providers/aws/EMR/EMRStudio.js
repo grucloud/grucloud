@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, identity, callProp } = require("rubico/x");
+const { pipe, tap, get, pick, map } = require("rubico");
+const { defaultsDeep, identity, callProp, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -153,7 +153,6 @@ exports.EMRStudio = () => ({
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: {
-      //TODO
       serviceRole,
       userRole,
       vpc,
@@ -171,13 +170,13 @@ exports.EMRStudio = () => ({
       when(
         () => serviceRole,
         defaultsDeep({
-          ServiceRole: getField(role, "Arn"),
+          ServiceRole: getField(serviceRole, "Arn"),
         })
       ),
       when(
         () => userRole,
         defaultsDeep({
-          UserRole: getField(role, "Arn"),
+          UserRole: getField(userRole, "Arn"),
         })
       ),
       when(
@@ -204,7 +203,7 @@ exports.EMRStudio = () => ({
       when(
         () => vpc,
         defaultsDeep({
-          VpcId: getField(vpcs, "VpcId"),
+          VpcId: getField(vpc, "VpcId"),
         })
       ),
     ])(),

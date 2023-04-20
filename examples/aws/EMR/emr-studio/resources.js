@@ -3,15 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "lattice-ec2-testing-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.192.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
   { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Subnet",

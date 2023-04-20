@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 694 resources in 156 services for provider aws:
+List of 696 resources in 156 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -131,7 +131,7 @@ List of 694 resources in 156 services for provider aws:
 * ElasticLoadBalancingV2: 
 [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [TargetGroupAttachments](./resources/ElasticLoadBalancingV2/TargetGroupAttachments.md)
 * EMR: 
-[Cluster](./resources/EMR/Cluster.md), [Studio](./resources/EMR/Studio.md)
+[BlockPublicAccessConfiguration](./resources/EMR/BlockPublicAccessConfiguration.md), [Cluster](./resources/EMR/Cluster.md), [Studio](./resources/EMR/Studio.md), [StudioSessionMapping](./resources/EMR/StudioSessionMapping.md)
 * EMRContainers: 
 [VirtualCluster](./resources/EMRContainers/VirtualCluster.md)
 * EMRServerless: 
