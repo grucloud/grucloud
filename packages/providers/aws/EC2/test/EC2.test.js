@@ -45,18 +45,16 @@ describe("EC2", async function () {
       () => ({
         groupType: "EC2::CoipCidr",
         livesNotFound: ({ config }) => [
-          { Cidr: "10.1.0.0/28", CoipPoolId: "coip-032cb2c8350925850" },
+          { Cidr: "10.1.0.0/28", PoolId: "coip-032cb2c8350925850" },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("CoipPool", () =>
+  it("CoipPool", () =>
     pipe([
       () => ({
         groupType: "EC2::CoipPool",
-        livesNotFound: ({ config }) => [
-          { CoipPoolId: "coip-032cb2c8350925850" },
-        ],
+        livesNotFound: ({ config }) => [{ PoolId: "coip-032cb2c8350925850" }],
       }),
       awsResourceTest,
     ])());
@@ -252,6 +250,18 @@ describe("EC2", async function () {
             DestinationCidrBlock: "",
             LocalGatewayRouteTableId: "lt-12345",
             DestinationPrefixListId: "d",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("LocalGatewayRouteTable", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::LocalGatewayRouteTable",
+        livesNotFound: ({ config }) => [
+          {
+            LocalGatewayRouteTableId: "lt-12345",
           },
         ],
       }),

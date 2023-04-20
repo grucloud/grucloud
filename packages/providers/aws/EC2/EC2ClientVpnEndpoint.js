@@ -165,6 +165,9 @@ exports.EC2ClientVpnEndpoint = ({ compare }) => ({
     method: "describeClientVpnEndpoints",
     getField: "ClientVpnEndpoints",
     pickId: pipe([
+      tap(({ ClientVpnEndpointId }) => {
+        assert(ClientVpnEndpointId);
+      }),
       ({ ClientVpnEndpointId }) => ({
         ClientVpnEndpointIds: [ClientVpnEndpointId],
       }),
@@ -187,7 +190,6 @@ exports.EC2ClientVpnEndpoint = ({ compare }) => ({
   },
   getByName: getByNameCore,
   tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
-
   configDefault: ({
     name,
     namespace,
@@ -202,9 +204,6 @@ exports.EC2ClientVpnEndpoint = ({ compare }) => ({
     config,
   }) =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       () => otherProps,
       defaultsDeep({
         TagSpecifications: [
@@ -248,8 +247,5 @@ exports.EC2ClientVpnEndpoint = ({ compare }) => ({
           ServerCertificateArn: getField(serverCertificate, "CertificateArn"),
         })
       ),
-      tap((params) => {
-        assert(true);
-      }),
     ])(),
 });

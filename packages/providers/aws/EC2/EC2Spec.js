@@ -9,19 +9,29 @@ const { createAwsService } = require("../AwsService");
 const { EC2Instance } = require("./EC2Instance");
 const { compareEC2 } = require("./EC2Common");
 
-const { EC2LaunchTemplate } = require("./EC2LaunchTemplate");
-
+const { EC2ClientVpnEndpoint } = require("./EC2ClientVpnEndpoint");
+const { EC2ClientVpnTargetNetwork } = require("./EC2ClientVpnTargetNetwork");
+const {
+  EC2ClientVpnAuthorizationRule,
+} = require("./EC2ClientVpnAuthorizationRule");
+const { EC2CoipPool } = require("./EC2CoipPool");
+const { EC2CustomerGateway } = require("./EC2CustomerGateway");
+const { EC2DhcpOptions } = require("./EC2DhcpOptions");
+const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
+const {
+  EC2EgressOnlyInternetGateway,
+} = require("./EC2EgressOnlyInternetGateway");
 const { EC2KeyPair } = require("./EC2KeyPair");
-const { EC2Vpc } = require("./EC2Vpc");
 const { EC2InternetGateway } = require("./EC2InternetGateway");
 const {
   EC2InternetGatewayAttachment,
 } = require("./EC2InternetGatewayAttachment");
-const {
-  EC2EgressOnlyInternetGateway,
-} = require("./EC2EgressOnlyInternetGateway");
+
+const { EC2LaunchTemplate } = require("./EC2LaunchTemplate");
+//const { EC2LocalGatewayRoute } = require("./EC2LocalGatewayRoute");
+
+const { EC2LocalGatewayRouteTable } = require("./EC2LocalGatewayRouteTable");
 const { EC2NatGateway } = require("./EC2NatGateway");
-const { EC2DhcpOptions } = require("./EC2DhcpOptions");
 const { EC2Ipam } = require("./EC2Ipam");
 const { EC2IpamScope } = require("./EC2IpamScope");
 const { EC2IpamPool } = require("./EC2IpamPool");
@@ -31,7 +41,6 @@ const {
   EC2IpamResourceDiscoveryAssociation,
 } = require("./EC2IpamResourceDiscoveryAssociation");
 
-const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const { EC2RouteTable } = require("./EC2RouteTable");
 const { EC2RouteTableAssociation } = require("./EC2RouteTableAssociation");
 const { EC2Route } = require("./EC2Route");
@@ -46,23 +55,13 @@ const {
   EC2ElasticIpAddressAssociation,
 } = require("./EC2ElasticIpAddressAssociation");
 const { EC2FlowLogs } = require("./EC2FlowLogs");
-const { EC2Volume } = require("./EC2Volume");
-const { EC2CustomerGateway } = require("./EC2CustomerGateway");
-const { EC2ClientVpnEndpoint } = require("./EC2ClientVpnEndpoint");
-const { EC2ClientVpnTargetNetwork } = require("./EC2ClientVpnTargetNetwork");
-const {
-  EC2ClientVpnAuthorizationRule,
-} = require("./EC2ClientVpnAuthorizationRule");
 
 const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
-const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { EC2NetworkInterface } = require("./EC2NetworkInterface");
 const { EC2NetworkAcl } = require("./EC2NetworkAcl");
-
 const {
   EC2VpcIpv4CidrBlockAssociation,
 } = require("./EC2VpcIpv4CidrBlockAssociation");
-
 const { EC2VpcPeeringConnection } = require("./EC2VpcPeeringConnection");
 const { EC2PlacementGroup } = require("./EC2PlacementGroup");
 const {
@@ -88,6 +87,9 @@ const {
 const {
   EC2TransitGatewayRouteTablePropagation,
 } = require("./EC2TransitGatewayRouteTablePropagation");
+const { EC2Volume } = require("./EC2Volume");
+const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
+const { EC2Vpc } = require("./EC2Vpc");
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
 const { EC2VpnGateway } = require("./EC2VpnGateway");
 const { EC2VpnGatewayAttachment } = require("./EC2VpnGatewayAttachment");
@@ -101,10 +103,11 @@ const GROUP = "EC2";
 
 module.exports = pipe([
   () => [
-    createAwsService(EC2CustomerGateway({ compare: compareEC2 })),
     createAwsService(EC2ClientVpnAuthorizationRule({ compare: compareEC2 })),
     createAwsService(EC2ClientVpnEndpoint({ compare: compareEC2 })),
     createAwsService(EC2ClientVpnTargetNetwork({ compare: compareEC2 })),
+    createAwsService(EC2CoipPool({ compare: compareEC2 })),
+    createAwsService(EC2CustomerGateway({ compare: compareEC2 })),
     createAwsService(EC2DhcpOptions({ compare: compareEC2 })),
     createAwsService(EC2DhcpOptionsAssociation({ compare: compareEC2 })),
     createAwsService(EC2FlowLogs({ compare: compareEC2 })),
@@ -117,6 +120,8 @@ module.exports = pipe([
       EC2IpamResourceDiscoveryAssociation({ compare: compareEC2 })
     ),
     createAwsService(EC2KeyPair({ compare: compareEC2 })),
+    //createAwsService(EC2LocalGatewayRoute({ compare: compareEC2 })),
+    createAwsService(EC2LocalGatewayRouteTable({ compare: compareEC2 })),
     createAwsService(EC2NetworkInterface({ compare: compareEC2 })),
     createAwsService(EC2Volume({ compare: compareEC2 })),
     createAwsService(EC2VolumeAttachment({ compare: compareEC2 })),
