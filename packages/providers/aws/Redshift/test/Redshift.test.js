@@ -46,11 +46,18 @@ describe("Redshift", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Partner", () =>
+  it("Partner", () =>
     pipe([
       () => ({
         groupType: "Redshift::Partner",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            AccountId: config.accountId(),
+            ClusterIdentifier: "1234",
+            DatabaseName: "d123",
+            PartnerName: "p123",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

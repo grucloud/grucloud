@@ -21,6 +21,8 @@ const { RedshiftEndpointAccess } = require("./RedshiftEndpointAccess");
 const {
   RedshiftEndpointAuthorization,
 } = require("./RedshiftEndpointAuthorization");
+const { RedshiftPartner } = require("./RedshiftPartner");
+
 const { RedshiftUsageLimit } = require("./RedshiftUsageLimit");
 
 //
@@ -31,6 +33,7 @@ module.exports = pipe([
     RedshiftClusterSubnetGroup({ compare }),
     RedshiftEndpointAccess({}),
     RedshiftEndpointAuthorization({}),
+    RedshiftPartner({}),
     RedshiftUsageLimit({}),
   ],
   map(
