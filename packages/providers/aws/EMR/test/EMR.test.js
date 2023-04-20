@@ -27,11 +27,11 @@ describe("EMR", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Studio", () =>
+  it("Studio", () =>
     pipe([
       () => ({
         groupType: "EMR::Studio",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ StudioId: "s1234" }],
       }),
       awsResourceTest,
     ])());

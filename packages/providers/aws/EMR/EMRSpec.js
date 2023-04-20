@@ -6,6 +6,7 @@ const { createAwsService } = require("../AwsService");
 const { compareAws } = require("../AwsCommon");
 
 const { EMRCluster } = require("./EMRCluster");
+const { EMRStudio } = require("./EMRStudio");
 
 const GROUP = "EMR";
 const tagsKey = "Tags";
@@ -15,6 +16,7 @@ module.exports = pipe([
   () => [
     //
     EMRCluster({}),
+    EMRStudio({}),
   ],
   map(
     pipe([

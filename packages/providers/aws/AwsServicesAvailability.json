@@ -2205,6 +2205,7 @@
             "events",
             "fargate",
             "firehose",
+            "guardduty",
             "iam",
             "kinesis",
             "kms",
