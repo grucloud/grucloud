@@ -57,6 +57,14 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("MonitoringSubscription", () =>
+    pipe([
+      () => ({
+        groupType: "CloudFront::MonitoringSubscription",
+        livesNotFound: ({ config }) => [{}],
+        skipGetById: true,
+      }),
+    ])());
   it("OriginAccessIdentity", () =>
     pipe([
       () => ({

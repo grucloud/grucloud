@@ -95,7 +95,6 @@ exports.createResources = () => [
     type: "ReplicationGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      ReplicationGroupDescription: " ",
       ReplicationGroupId: "my-simple-redis-cluster-3",
       SnapshotWindow: "06:30-07:30",
       ClusterEnabled: false,
