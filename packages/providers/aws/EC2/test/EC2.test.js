@@ -287,27 +287,31 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("NetworkInsightsAccessScope", () =>
+  it("NetworkInsightsAccessScope", () =>
     pipe([
       () => ({
         groupType: "EC2::NetworkInsightsAccessScope",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { NetworkInsightsAccessScopeId: "i12345" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("NetworkInsightsAnalysis", () =>
+  it("NetworkInsightsAnalysis", () =>
     pipe([
       () => ({
         groupType: "EC2::NetworkInsightsAnalysis",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { NetworkInsightsAnalysisId: "a12345" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("NetworkInsightsPath", () =>
+  it("NetworkInsightsPath", () =>
     pipe([
       () => ({
         groupType: "EC2::NetworkInsightsPath",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ NetworkInsightsPathId: "p123" }],
       }),
       awsResourceTest,
     ])());
@@ -320,6 +324,21 @@ describe("EC2", async function () {
         skipDelete: true,
         skipGetById: true,
         skipGetByName: true,
+      }),
+      awsResourceTest,
+    ])());
+  it("NetworkPerformanceMetricSubscription", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::NetworkPerformanceMetricSubscription",
+        livesNotFound: ({ config }) => [
+          {
+            Destination: "us-east-1",
+            Metric: "aggregate-latency",
+            Source: "us-east-2",
+            Statistic: "p50",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -577,21 +596,7 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("VpcNetworkPerformanceMetricSubscription", () =>
-    pipe([
-      () => ({
-        groupType: "EC2::VpcNetworkPerformanceMetricSubscription",
-        livesNotFound: ({ config }) => [
-          {
-            Destination: "us-east-1",
-            Metric: "aggregate-latency",
-            Source: "us-east-2",
-            Statistic: "p50",
-          },
-        ],
-      }),
-      awsResourceTest,
-    ])());
+
   it("VpcPeeringConnection", () =>
     pipe([
       () => ({

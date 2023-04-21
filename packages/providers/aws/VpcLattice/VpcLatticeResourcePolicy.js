@@ -42,7 +42,7 @@ const filterPayload = pipe([
   }),
 ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html
 exports.VpcLatticeResourcePolicy = () => ({
   type: "ResourcePolicy",
   package: "vpc-lattice",
@@ -112,13 +112,13 @@ exports.VpcLatticeResourcePolicy = () => ({
       dependencyId: ({ lives, config }) => pipe([get("resourceArn")]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#getResourcePolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#getResourcePolicy-property
   getById: {
     method: "getResourcePolicy",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#listResourcePolicys-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#listResourcePolicys-property
   getList:
     ({ endpoint }) =>
     ({ lives, config }) =>
@@ -165,19 +165,19 @@ exports.VpcLatticeResourcePolicy = () => ({
         }),
         filter(not(isEmpty)),
       ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#putResourcePolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#putResourcePolicy-property
   create: {
     filterPayload,
     method: "putResourcePolicy",
     pickCreated: ({ payload }) => pipe([() => payload]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#putResourcePolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#putResourcePolicy-property
   update: {
     method: "putResourcePolicy",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, filterPayload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#deleteResourcePolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#deleteResourcePolicy-property
   destroy: {
     method: "deleteResourcePolicy",
     pickId,
