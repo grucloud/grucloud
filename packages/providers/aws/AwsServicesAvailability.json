@@ -4601,6 +4601,7 @@
             "imagebuilder",
             "iot",
             "iot-data",
+            "iotdevicedefender",
             "iotdevicemanagement",
             "iotsecuretunneling",
             "kafka",

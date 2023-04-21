@@ -9,6 +9,7 @@ const { createAwsService } = require("../AwsService");
 
 const { XRayEncryptionConfig } = require("./XRayEncryptionConfig");
 const { XRayGroup } = require("./XRayGroup");
+const { XRayResourcePolicy } = require("./XRayResourcePolicy");
 const { XRaySamplingRule } = require("./XRaySamplingRule");
 
 const GROUP = "XRay";
@@ -19,6 +20,7 @@ module.exports = pipe([
   () => [
     XRayEncryptionConfig({ compare }),
     XRayGroup({ compare }),
+    XRayResourcePolicy({ compare }),
     XRaySamplingRule({ compare }),
   ],
   map(

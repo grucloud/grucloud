@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 698 resources in 156 services for provider aws:
+List of 699 resources in 156 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -315,4 +315,4 @@ List of 698 resources in 156 services for provider aws:
 * WorkSpacesWeb: 
 [BrowserSettings](./resources/WorkSpacesWeb/BrowserSettings.md), [IdentityProvider](./resources/WorkSpacesWeb/IdentityProvider.md), [NetworkSettings](./resources/WorkSpacesWeb/NetworkSettings.md), [Portal](./resources/WorkSpacesWeb/Portal.md), [TrustStore](./resources/WorkSpacesWeb/TrustStore.md), [UserAccessLoggingSettings](./resources/WorkSpacesWeb/UserAccessLoggingSettings.md), [UserSettings](./resources/WorkSpacesWeb/UserSettings.md)
 * XRay: 
-[EncryptionConfig](./resources/XRay/EncryptionConfig.md), [Group](./resources/XRay/Group.md), [SamplingRule](./resources/XRay/SamplingRule.md)
+[EncryptionConfig](./resources/XRay/EncryptionConfig.md), [Group](./resources/XRay/Group.md), [ResourcePolicy](./resources/XRay/ResourcePolicy.md), [SamplingRule](./resources/XRay/SamplingRule.md)
