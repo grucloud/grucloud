@@ -539,7 +539,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         VersioningConfiguration,
       }),
       putPublicAccessBlockConfiguration({
-        endpoint,
+        endpoint: s3,
         Bucket,
         PublicAccessBlockConfiguration,
       }),

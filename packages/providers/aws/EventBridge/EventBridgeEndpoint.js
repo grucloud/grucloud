@@ -85,9 +85,6 @@ exports.EventBridgeEndpoint = () => ({
                 type: "HealthCheck",
                 group: "Route53",
               }),
-              tap((id) => {
-                assert(id);
-              }),
               find(eq(get("live.Arn"), HealthCheck)),
               get("id"),
             ])(),
@@ -163,8 +160,5 @@ exports.EventBridgeEndpoint = () => ({
           },
         })
       ),
-      tap((params) => {
-        assert(params);
-      }),
     ])(),
 });

@@ -81,6 +81,28 @@ describe("Route53Resolver", async function () {
       }),
       awsResourceTest,
     ])());
+  it("QueryLogConfig", () =>
+    pipe([
+      () => ({
+        groupType: "Route53Resolver::QueryLogConfig",
+        livesNotFound: ({ config }) => [{ ResolverQueryLogConfigId: "i123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("QueryLogConfigAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "Route53Resolver::QueryLogConfigAssociation",
+        livesNotFound: ({ config }) => [
+          {
+            ResolverQueryLogConfigId: "i123",
+            ResourceId: "vpc-12345678",
+            ResolverQueryLogConfigAssociationId: "i12345678",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Rule", () =>
     pipe([
       () => ({

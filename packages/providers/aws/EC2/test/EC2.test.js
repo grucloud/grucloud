@@ -369,15 +369,16 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("PublicIpv4Pool", () =>
+  it("PublicIpv4Pool", () =>
     pipe([
       () => ({
         groupType: "EC2::PublicIpv4Pool",
-        livesNotFound: ({ config }) => [{ PoolId: "a-123" }],
+        livesNotFound: ({ config }) => [
+          { PoolId: "ipv4pool-ec2-000df99cff0c1ec10" },
+        ],
       }),
       awsResourceTest,
     ])());
-
   it("RouteTable", () =>
     pipe([
       () => ({

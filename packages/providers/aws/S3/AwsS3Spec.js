@@ -121,7 +121,7 @@ module.exports = pipe([
               ApplyServerSideEncryptionByDefault: {
                 SSEAlgorithm: "AES256",
               },
-              BucketKeyEnabled: true,
+              //BucketKeyEnabled: true,
             },
           ],
         },

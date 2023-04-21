@@ -27,6 +27,13 @@ const {
 const {
   Route53ResolverFirewallRuleGroupAssociation,
 } = require("./Route53ResolverFirewallRuleGroupAssociation");
+const {
+  Route53ResolverQueryLogConfig,
+} = require("./Route53ResolverQueryLogConfig");
+const {
+  Route53ResolverQueryLogConfigAssociation,
+} = require("./Route53ResolverQueryLogConfigAssociation");
+
 const { Route53ResolverRule } = require("./Route53ResolverRule");
 const {
   Route53ResolverRuleAssociation,
@@ -46,6 +53,8 @@ module.exports = pipe([
     Route53ResolverFirewallRule({}),
     Route53ResolverFirewallRuleGroup({}),
     Route53ResolverFirewallRuleGroupAssociation({}),
+    Route53ResolverQueryLogConfig({}),
+    Route53ResolverQueryLogConfigAssociation({}),
     Route53ResolverRule({}),
     Route53ResolverRuleAssociation({}),
   ],
