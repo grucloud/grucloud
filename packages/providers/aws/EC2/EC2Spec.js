@@ -55,10 +55,17 @@ const {
   EC2ElasticIpAddressAssociation,
 } = require("./EC2ElasticIpAddressAssociation");
 const { EC2FlowLogs } = require("./EC2FlowLogs");
-
 const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
 const { EC2NetworkInterface } = require("./EC2NetworkInterface");
+const {
+  EC2NetworkPerformanceMetricSubscription,
+} = require("./EC2NetworkPerformanceMetricSubscription");
 const { EC2NetworkAcl } = require("./EC2NetworkAcl");
+const {
+  EC2NetworkInsightsAccessScope,
+} = require("./EC2NetworkInsightsAccessScope");
+const { EC2NetworkInsightsAnalysis } = require("./EC2NetworkInsightsAnalysis");
+const { EC2NetworkInsightsPath } = require("./EC2NetworkInsightsPath");
 const {
   EC2VpcIpv4CidrBlockAssociation,
 } = require("./EC2VpcIpv4CidrBlockAssociation");
@@ -110,7 +117,10 @@ module.exports = pipe([
     createAwsService(EC2CustomerGateway({ compare: compareEC2 })),
     createAwsService(EC2DhcpOptions({ compare: compareEC2 })),
     createAwsService(EC2DhcpOptionsAssociation({ compare: compareEC2 })),
+    createAwsService(EC2ElasticIpAddress({ compare: compareEC2 })),
+    createAwsService(EC2ElasticIpAddressAssociation({ compare: compareEC2 })),
     createAwsService(EC2FlowLogs({ compare: compareEC2 })),
+    createAwsService(EC2Instance({ compare: compareEC2 })),
     createAwsService(EC2Ipam({ compare: compareEC2 })),
     createAwsService(EC2IpamScope({ compare: compareEC2 })),
     createAwsService(EC2IpamPool({ compare: compareEC2 })),
@@ -122,24 +132,6 @@ module.exports = pipe([
     createAwsService(EC2KeyPair({ compare: compareEC2 })),
     //createAwsService(EC2LocalGatewayRoute({ compare: compareEC2 })),
     createAwsService(EC2LocalGatewayRouteTable({ compare: compareEC2 })),
-    createAwsService(EC2NetworkInterface({ compare: compareEC2 })),
-    createAwsService(EC2Volume({ compare: compareEC2 })),
-    createAwsService(EC2VolumeAttachment({ compare: compareEC2 })),
-    createAwsService(EC2Vpc({ compare: compareEC2 })),
-    createAwsService(EC2InternetGateway({ compare: compareEC2 })),
-    createAwsService(EC2InternetGatewayAttachment({})),
-    createAwsService(EC2EgressOnlyInternetGateway({})),
-    createAwsService(EC2NatGateway({})),
-    createAwsService(EC2Subnet({ compare: compareEC2 })),
-    createAwsService(EC2RouteTable({ compare: compareEC2 })),
-    createAwsService(EC2RouteTableAssociation({ compare: compareEC2 })),
-    createAwsService(EC2Route({ compare: compareEC2 })),
-    createAwsService(EC2SecurityGroup({ compare: compareEC2 })),
-    createAwsService(EC2SecurityGroupRuleIngress({ compare: compareEC2 })),
-    createAwsService(EC2SecurityGroupRuleEgress({ compare: compareEC2 })),
-    createAwsService(EC2ElasticIpAddress({ compare: compareEC2 })),
-    createAwsService(EC2ElasticIpAddressAssociation({ compare: compareEC2 })),
-    createAwsService(EC2Instance({ compare: compareEC2 })),
     {
       type: "LaunchTemplate",
       Client: EC2LaunchTemplate,
@@ -305,6 +297,7 @@ module.exports = pipe([
         },
       },
     },
+    createAwsService(EC2ManagedPrefixList({ compare: compareEC2 })),
     {
       type: "NetworkAcl",
       Client: EC2NetworkAcl,
@@ -320,7 +313,28 @@ module.exports = pipe([
         },
       },
     },
-    createAwsService(EC2ManagedPrefixList({ compare: compareEC2 })),
+    createAwsService(EC2NetworkInsightsAccessScope({ compare: compareEC2 })),
+    createAwsService(EC2NetworkInsightsAnalysis({ compare: compareEC2 })),
+    createAwsService(EC2NetworkInsightsPath({ compare: compareEC2 })),
+    createAwsService(EC2NetworkInterface({ compare: compareEC2 })),
+    createAwsService(
+      EC2NetworkPerformanceMetricSubscription({ compare: compareEC2 })
+    ),
+    createAwsService(EC2Volume({ compare: compareEC2 })),
+    createAwsService(EC2VolumeAttachment({ compare: compareEC2 })),
+    createAwsService(EC2Vpc({ compare: compareEC2 })),
+    createAwsService(EC2InternetGateway({ compare: compareEC2 })),
+    createAwsService(EC2InternetGatewayAttachment({})),
+    createAwsService(EC2EgressOnlyInternetGateway({})),
+    createAwsService(EC2NatGateway({})),
+    createAwsService(EC2Subnet({ compare: compareEC2 })),
+    createAwsService(EC2RouteTable({ compare: compareEC2 })),
+    createAwsService(EC2RouteTableAssociation({ compare: compareEC2 })),
+    createAwsService(EC2Route({ compare: compareEC2 })),
+    createAwsService(EC2SecurityGroup({ compare: compareEC2 })),
+    createAwsService(EC2SecurityGroupRuleIngress({ compare: compareEC2 })),
+    createAwsService(EC2SecurityGroupRuleEgress({ compare: compareEC2 })),
+
     createAwsService(EC2PlacementGroup({ compare: compareEC2 })),
     createAwsService(EC2VpcEndpoint({ compare: compareEC2 })),
     createAwsService(EC2VpcIpv4CidrBlockAssociation({ compare: compareEC2 })),

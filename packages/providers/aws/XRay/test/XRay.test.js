@@ -28,11 +28,13 @@ describe("XRay", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ResourcePolicy", () =>
+  it("ResourcePolicy", () =>
     pipe([
       () => ({
         groupType: "XRay::ResourcePolicy",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { PolicyName: "p123", PolicyRevisionId: "4" },
+        ],
       }),
       awsResourceTest,
     ])());

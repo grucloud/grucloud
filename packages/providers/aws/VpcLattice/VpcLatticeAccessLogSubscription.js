@@ -56,7 +56,7 @@ const decorate = ({ endpoint, config }) =>
     assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html
 exports.VpcLatticeAccessLogSubscription = () => ({
   type: "AccessLogSubscription",
   package: "vpc-lattice",
@@ -149,13 +149,13 @@ exports.VpcLatticeAccessLogSubscription = () => ({
         pipe([get("destinationArn"), callProp("replace", "s3://", "")]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#getAccessLogSubscription-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#getAccessLogSubscription-property
   getById: {
     method: "getAccessLogSubscription",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#listAccessLogSubscriptions-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#listAccessLogSubscriptions-property
   getList:
     ({ endpoint }) =>
     ({ lives, config }) =>
@@ -205,12 +205,12 @@ exports.VpcLatticeAccessLogSubscription = () => ({
         }),
         filter(not(isEmpty)),
       ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#createAccessLogSubscription-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#createAccessLogSubscription-property
   create: {
     method: "createAccessLogSubscription",
     pickCreated: ({ payload }) => pipe([toAccessLogSubscriptionId]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#updateAccessLogSubscription-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#updateAccessLogSubscription-property
   update: {
     method: "updateAccessLogSubscription",
     filterParams: ({ payload, diff, live }) =>
@@ -220,7 +220,7 @@ exports.VpcLatticeAccessLogSubscription = () => ({
         defaultsDeep(pickId(live)),
       ])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#deleteAccessLogSubscription-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#deleteAccessLogSubscription-property
   destroy: {
     method: "deleteAccessLogSubscription",
     pickId,

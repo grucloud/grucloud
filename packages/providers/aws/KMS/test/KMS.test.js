@@ -40,4 +40,16 @@ describe("KMS", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("ReplicaKey", () =>
+    pipe([
+      () => ({
+        groupType: "KMS::ReplicaKey",
+        livesNotFound: ({ config }) => [
+          {
+            KeyId: "12345",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });

@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project emr-studio
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (1)
+++++ SecurityGroupRuleEgress (2)
++++ EMR
+++++ Studio (1)
++++ IAM
+++++ Role (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

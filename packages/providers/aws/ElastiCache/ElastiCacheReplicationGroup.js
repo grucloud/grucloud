@@ -1,5 +1,16 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick, assign, map, omit } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  eq,
+  pick,
+  assign,
+  map,
+  omit,
+  not,
+  tryCatch,
+} = require("rubico");
 const { defaultsDeep, when, first, pluck, size } = require("rubico/x");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -13,6 +24,8 @@ const {
   cloudWatchLogGroupsDeps,
   firehoseDeliveryStreamsDeps,
 } = require("./ElastiCacheCommon");
+
+const omitIfFalse = (prop) => when(eq(get(prop), false), omit([prop]));
 
 const pickId = pipe([
   pick(["ReplicationGroupId"]),
@@ -57,17 +70,22 @@ const decorate =
               get("NotificationConfiguration.TopicArn"),
             ]),
           }),
-          omitIfEmpty([
-            "GlobalReplicationGroupInfo.GlobalReplicationGroupId",
-            "GlobalReplicationGroupInfo.GlobalReplicationGroupMemberRole",
-            "LogDeliveryConfigurations",
-          ]),
-          omitIfEmpty(["GlobalReplicationGroupInfo", "NotificationTopicArn"]),
-          ({ Description, ...other }) => ({
-            ReplicationGroupDescription: Description,
+          ({ Description, GlobalReplicationGroupInfo, ...other }) => ({
+            ReplicationGroupDescription: Description.trim(),
+            ...GlobalReplicationGroupInfo,
             ...other,
           }),
+          omitIfEmpty(["NotificationTopicArn"]),
+          omitIfEmpty([
+            "ReplicationGroupDescription",
+            "GlobalReplicationGroupId",
+            "GlobalReplicationGroupMemberRole",
+            "LogDeliveryConfigurations",
+          ]),
           assignTags({ endpoint, buildArn: buildArn() }),
+          omitIfFalse("AtRestEncryptionEnabled"),
+          omitIfFalse("AuthTokenEnabled"),
+          omitIfFalse("TransitEncryptionEnabled"),
         ])(),
     ])();
 
@@ -79,14 +97,9 @@ exports.ElastiCacheReplicationGroup = () => ({
   findName: () => pipe([get("ReplicationGroupId")]),
   findId: () => pipe([get("ReplicationGroupId")]),
   propertiesDefault: {
-    Engine: "redis",
-    AuthTokenEnabled: false,
-    TransitEncryptionEnabled: false,
-    AtRestEncryptionEnabled: false,
     DataTiering: "disabled",
     IpDiscovery: "ipv4",
     NetworkType: "ipv4",
-    AutoMinorVersionUpgrade: true,
   },
   omitProperties: [
     "ARN",
@@ -106,12 +119,25 @@ exports.ElastiCacheReplicationGroup = () => ({
     "NotificationTopicArn",
     "MultiAZ",
     "SnapshotRetentionLimit",
+    "GlobalReplicationGroupId",
+    "GlobalReplicationGroupMemberRole",
   ],
   inferName: () => get("ReplicationGroupId"),
   //TODO check all deps
   dependencies: {
     ...cloudWatchLogGroupsDeps,
     ...firehoseDeliveryStreamsDeps,
+    globalReplicationGroup: {
+      type: "GlobalReplicationGroup",
+      group: "ElastiCache",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          when(
+            eq(get("GlobalReplicationGroupMemberRole"), "SECONDARY"),
+            get("GlobalReplicationGroupId")
+          ),
+        ]),
+    },
     kmsKey: {
       type: "Key",
       group: "KMS",
@@ -122,7 +148,12 @@ exports.ElastiCacheReplicationGroup = () => ({
       group: "ElastiCache",
       excludeDefaultDependencies: true,
       dependencyId: ({ lives, config }) =>
-        pipe([get("CacheParameterGroupName")]),
+        pipe([
+          when(
+            not(eq(get("GlobalReplicationGroupMemberRole"), "SECONDARY")),
+            get("CacheParameterGroupName")
+          ),
+        ]),
     },
     securityGroups: {
       type: "SecurityGroup",
@@ -155,6 +186,16 @@ exports.ElastiCacheReplicationGroup = () => ({
       when(
         eq(get("SnapshotRetentionLimit"), 0),
         omit(["SnapshotRetentionLimit"])
+      ),
+      when(
+        eq(get("GlobalReplicationGroupMemberRole"), "SECONDARY"),
+        omit([
+          "CacheParameterGroupName",
+          "Engine",
+          "CacheNodeType",
+          "AutoMinorVersionUpgrade",
+          //"ClusterEnabled",
+        ])
       ),
       assign({ NumCacheClusters: pipe([get("MemberClusters"), size]) }),
     ]),
@@ -204,9 +245,33 @@ exports.ElastiCacheReplicationGroup = () => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#deleteReplicationGroup-property
   destroy: {
+    preDestroy: ({ endpoint, config }) =>
+      tap(
+        pipe([
+          when(
+            eq(get("GlobalReplicationGroupMemberRole"), "SECONDARY"),
+            pipe([
+              pick(["ReplicationGroupId", "GlobalReplicationGroupId"]),
+              defaultsDeep({
+                ReplicationGroupRegion: config.region,
+              }),
+              tryCatch(
+                endpoint().disassociateGlobalReplicationGroup,
+                (error) => {
+                  assert(true);
+                }
+              ),
+            ])
+          ),
+        ])
+      ),
     method: "deleteReplicationGroup",
     pickId,
     shouldRetryOnExceptionCodes: ["InvalidReplicationGroupStateFault"],
+    shouldRetryOnExceptionMessages: [
+      "is part of a global cluster",
+      "Global Replication Group is not in a valid state to perform this operation",
+    ],
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>
@@ -217,7 +282,7 @@ exports.ElastiCacheReplicationGroup = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { kmsKey, securityGroups, snsTopic },
+    dependencies: { globalReplicationGroup, kmsKey, securityGroups, snsTopic },
     config,
   }) =>
     pipe([
@@ -233,6 +298,14 @@ exports.ElastiCacheReplicationGroup = () => ({
           UserTags: Tags,
         }),
       }),
+      when(
+        () => globalReplicationGroup,
+        assign({
+          GlobalReplicationGroupId: pipe([
+            () => getField(globalReplicationGroup, "GlobalReplicationGroupId"),
+          ]),
+        })
+      ),
       when(
         () => kmsKey,
         assign({

@@ -17,6 +17,11 @@ const {
 
 const { ElastiCacheUser } = require("./ElastiCacheUser");
 const { ElastiCacheUserGroup } = require("./ElastiCacheUserGroup");
+
+const {
+  ElastiCacheGlobalReplicationGroup,
+} = require("./ElastiCacheGlobalReplicationGroup");
+
 const {
   ElastiCacheReplicationGroup,
 } = require("./ElastiCacheReplicationGroup");
@@ -28,6 +33,7 @@ module.exports = pipe([
     ElastiCacheCacheCluster({}),
     ElastiCacheCacheParameterGroup({}),
     ElastiCacheCacheSubnetGroup({}),
+    ElastiCacheGlobalReplicationGroup({}),
     ElastiCacheReplicationGroup({}),
     ElastiCacheUser({}),
     ElastiCacheUserGroup({}),

@@ -45,7 +45,7 @@ const filterPayload = pipe([
   }),
 ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html
 exports.VpcLatticeAuthPolicy = () => ({
   type: "AuthPolicy",
   package: "vpc-lattice",
@@ -115,13 +115,13 @@ exports.VpcLatticeAuthPolicy = () => ({
       dependencyId: ({ lives, config }) => pipe([get("resourceArn")]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#getAuthPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#getAuthPolicy-property
   getById: {
     method: "getAuthPolicy",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#listAuthPolicys-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#listAuthPolicys-property
   getList:
     ({ endpoint }) =>
     ({ lives, config }) =>
@@ -168,19 +168,19 @@ exports.VpcLatticeAuthPolicy = () => ({
         }),
         filter(not(isEmpty)),
       ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#putAuthPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#putAuthPolicy-property
   create: {
     filterPayload,
     method: "putAuthPolicy",
     pickCreated: ({ payload }) => pipe([() => payload]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#putAuthPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#putAuthPolicy-property
   update: {
     method: "putAuthPolicy",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, filterPayload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VpcLattice.html#deleteAuthPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#deleteAuthPolicy-property
   destroy: {
     method: "deleteAuthPolicy",
     pickId,

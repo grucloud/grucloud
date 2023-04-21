@@ -1,0 +1,1 @@
+# Aws Global Replication Group
