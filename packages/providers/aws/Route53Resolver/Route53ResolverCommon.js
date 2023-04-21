@@ -35,6 +35,9 @@ exports.untagResource =
 exports.assignTags = ({ endpoint }) =>
   assign({
     Tags: pipe([
+      tap(({ Arn }) => {
+        assert(Arn);
+      }),
       ({ Arn }) => ({ ResourceArn: Arn }),
       endpoint().listTagsForResource,
       get("Tags"),

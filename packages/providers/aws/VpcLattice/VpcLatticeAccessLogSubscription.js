@@ -11,8 +11,9 @@ const {
   switchCase,
   tryCatch,
   fork,
+  omit,
 } = require("rubico");
-const { defaultsDeep, isEmpty, identity, callProp } = require("rubico/x");
+const { defaultsDeep, isEmpty, unless, callProp, first } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -65,7 +66,6 @@ exports.VpcLatticeAccessLogSubscription = () => ({
   omitProperties: [
     "arn",
     "createdAt",
-    "destinationArn",
     "lastUpdatedAt",
     "resourceArn",
     "resourceId",
@@ -146,9 +146,21 @@ exports.VpcLatticeAccessLogSubscription = () => ({
       type: "Bucket",
       group: "S3",
       dependencyId: ({ lives, config }) =>
-        pipe([get("destinationArn"), callProp("replace", "s3://", "")]),
+        pipe([
+          get("destinationArn", ""),
+          callProp("replace", "arn:aws:s3:::", ""),
+          callProp("split", "/"),
+          first,
+        ]),
     },
   },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      unless(
+        pipe([get("destinationArn"), callProp("startsWith", "arn:aws:s3:::")]),
+        omit(["destinationArn"])
+      ),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/VPCLattice.html#getAccessLogSubscription-property
   getById: {
     method: "getAccessLogSubscription",
@@ -271,16 +283,10 @@ exports.VpcLatticeAccessLogSubscription = () => ({
         }),
         () => firehoseDeliveryStream,
         defaultsDeep({
-          destinationArn: getField(
-            firehoseDeliveryStream,
-            "DeliveryStreamName"
-          ),
+          destinationArn: getField(firehoseDeliveryStream, "DeliveryStreamARN"),
         }),
-        //TODO
         () => s3Bucket,
-        defaultsDeep({
-          destinationArn: getField(s3Bucket, "id"),
-        }),
+        defaultsDeep({}),
         () => {
           assert(
             false,

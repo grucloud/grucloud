@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project route53-resolver-query-log-config
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ Vpc (1)
++++ Route53Resolver
+++++ QueryLogConfig (2)
+++++ QueryLogConfigAssociation (2)
++++ S3
+++++ Bucket (1)
+@endmindmap
