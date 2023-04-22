@@ -47,7 +47,7 @@ describe("IAM", async function () {
         groupType: "IAM::OpenIDConnectProvider",
         livesNotFound: ({ config }) => [
           {
-            Arn: `arn:aws:iam::${config.accountId()}:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2`,
+            OpenIDConnectProviderArn: `arn:aws:iam::${config.accountId()}:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2`,
           },
         ],
       }),

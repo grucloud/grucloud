@@ -4,6 +4,30 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "policy-allow-ec2",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["sqs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -30,30 +54,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       policies: ["policy-allow-ec2"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "policy-allow-ec2",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-          {
-            Action: ["sqs:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow ec2:Describe",
     }),
   },
 ];

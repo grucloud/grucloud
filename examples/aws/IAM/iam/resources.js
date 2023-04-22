@@ -22,35 +22,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "role-allow-assume-role",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "ec2.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      AttachedPolicies: [
-        {
-          PolicyName: "AmazonEKSWorkerNodePolicy",
-          PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      policies: ["myPolicy-to-role"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -105,6 +76,35 @@ exports.createResources = () => [
       },
       Path: "/",
       Description: "Allow ec2:Describe",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "role-allow-assume-role",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEKSWorkerNodePolicy",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      policies: ["myPolicy-to-role"],
     }),
   },
   {
