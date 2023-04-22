@@ -125,18 +125,6 @@ describe("IAM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("VirtualMFADevice", () =>
-    pipe([
-      () => ({
-        groupType: "IAM::VirtualMFADevice",
-        livesNotFound: ({ config }) => [
-          {
-            SerialNumber: `arn:aws:iam::${config.accountId()}:mfa/ExampleName`,
-          },
-        ],
-      }),
-      awsResourceTest,
-    ])());
   it("User", () =>
     pipe([
       () => ({
@@ -157,6 +145,18 @@ describe("IAM", async function () {
           {
             UserName: "username",
             PolicyName: "p123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("VirtualMFADevice", () =>
+    pipe([
+      () => ({
+        groupType: "IAM::VirtualMFADevice",
+        livesNotFound: ({ config }) => [
+          {
+            SerialNumber: `arn:aws:iam::${config.accountId()}:mfa/ExampleName`,
           },
         ],
       }),

@@ -12,7 +12,6 @@ const {
   eq,
   not,
   filter,
-  any,
 } = require("rubico");
 const {
   forEach,
@@ -45,6 +44,8 @@ const { IAMUserPolicy } = require("./IAMUserPolicy");
 const {
   AwsIamOpenIDConnectProvider,
 } = require("./AwsIamOpenIDConnectProvider");
+
+const { IAMVirtualMFADevice } = require("./IAMVirtualMFADevice");
 
 const {
   buildDependenciesPolicy,
@@ -323,6 +324,7 @@ module.exports = pipe([
     },
     createAwsService(IAMUser({ compare })),
     createAwsService(IAMUserPolicy({ compare })),
+    createAwsService(IAMVirtualMFADevice({ compare })),
   ],
   map(defaultsDeep({ group: GROUP, isOurMinion, compare: compare({}) })),
 ]);
