@@ -4,13 +4,11 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
+    type: "EgressOnlyInternetGateway",
     group: "EC2",
-    name: "eoigw-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-      AmazonProvidedIpv6CidrBlock: true,
+    name: "my-eigw",
+    dependencies: ({}) => ({
+      vpc: "eoigw-vpc",
     }),
   },
   { type: "InternetGateway", group: "EC2", name: "eoigw-igw" },
@@ -23,37 +21,36 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "EgressOnlyInternetGateway",
+    type: "Route",
     group: "EC2",
-    name: "my-eigw",
-    dependencies: ({}) => ({
-      vpc: "eoigw-vpc",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "my-eigw",
+      routeTable: `eoigw-vpc::eoigw-rtb-private1-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `eoigw-subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
-      vpc: "eoigw-vpc",
+      ig: "eoigw-igw",
+      routeTable: "eoigw-vpc::eoigw-rtb-public",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `eoigw-subnet-public1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "eoigw-vpc",
+      ig: "eoigw-igw",
+      routeTable: "eoigw-vpc::eoigw-rtb-public",
     }),
   },
   {
@@ -89,36 +86,39 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
+    name: ({ config }) => `eoigw-subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
     }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "my-eigw",
-      routeTable: `eoigw-vpc::eoigw-rtb-private1-${config.region}a`,
+    dependencies: ({}) => ({
+      vpc: "eoigw-vpc",
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
+    name: ({ config }) => `eoigw-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
-      ig: "eoigw-igw",
-      routeTable: "eoigw-vpc::eoigw-rtb-public",
+      vpc: "eoigw-vpc",
     }),
   },
   {
-    type: "Route",
+    type: "Vpc",
     group: "EC2",
+    name: "eoigw-vpc",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "eoigw-igw",
-      routeTable: "eoigw-vpc::eoigw-rtb-public",
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+      AmazonProvidedIpv6CidrBlock: true,
     }),
   },
 ];

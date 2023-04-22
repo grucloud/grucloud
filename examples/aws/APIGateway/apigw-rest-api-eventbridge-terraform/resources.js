@@ -173,6 +173,26 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "EBPutEvents",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "events:PutEvents",
+            Effect: "Allow",
+            Resource: `arn:aws:events:${
+              config.region
+            }:${config.accountId()}:event-bus/MyIntegrationCustomBus`,
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -193,26 +213,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       policies: ["EBPutEvents"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "EBPutEvents",
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "events:PutEvents",
-            Effect: "Allow",
-            Resource: `arn:aws:events:${
-              config.region
-            }:${config.accountId()}:event-bus/MyIntegrationCustomBus`,
-          },
-        ],
-        Version: "2012-10-17",
-      },
-      Path: "/",
     }),
   },
 ];

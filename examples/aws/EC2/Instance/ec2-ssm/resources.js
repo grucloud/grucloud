@@ -4,25 +4,40 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
+    type: "Instance",
     group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
+    name: "my-machine",
+    properties: ({ config, getId }) => ({
+      InstanceType: "t2.micro",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc::ssm",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `vpc::subnet-private1-${config.region}a`,
+          })}`,
+        },
+      ],
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220805.0 x86_64 HVM gp2",
+      },
     }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
+    dependencies: ({ config }) => ({
+      subnets: [`vpc::subnet-private1-${config.region}a`],
+      iamInstanceProfile: "role-ec2-ssm",
+      securityGroups: ["sg::vpc::ssm"],
     }),
   },
   {
@@ -85,40 +100,25 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "my-machine",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc::ssm",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: `vpc::subnet-private1-${config.region}a`,
-          })}`,
-        },
-      ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220805.0 x86_64 HVM gp2",
-      },
+    name: ({ config }) => `subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
     }),
-    dependencies: ({ config }) => ({
-      subnets: [`vpc::subnet-private1-${config.region}a`],
-      iamInstanceProfile: "role-ec2-ssm",
-      securityGroups: ["sg::vpc::ssm"],
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

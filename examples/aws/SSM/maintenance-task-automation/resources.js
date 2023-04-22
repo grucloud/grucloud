@@ -4,30 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "my-maintenance-window-role",
-      Description: "Allows SSM to call AWS services on your behalf",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "ssm.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["my-maintenance-window-role-policy"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -89,6 +65,30 @@ exports.createResources = () => [
         ],
       },
       Path: "/",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "my-maintenance-window-role",
+      Description: "Allows SSM to call AWS services on your behalf",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "ssm.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["my-maintenance-window-role-policy"],
     }),
   },
   {

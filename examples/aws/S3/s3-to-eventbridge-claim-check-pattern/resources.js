@@ -403,15 +403,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "s3toeventbridgeautomaticclai-claimsbucket658066ed-3i3cbs1ekbkq",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       NotificationConfiguration: {
         EventBridgeConfiguration: {},
       },

@@ -112,15 +112,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "sam-app-sourcebucket-16jz3ieh0d3d7",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       NotificationConfiguration: {
         EventBridgeConfiguration: {},
       },

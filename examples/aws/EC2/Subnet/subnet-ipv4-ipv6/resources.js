@@ -4,15 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc-dual",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      AmazonProvidedIpv6CidrBlock: true,
-    }),
-  },
-  {
     type: "Subnet",
     group: "EC2",
     name: "subnet-dual",
@@ -26,6 +17,15 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "vpc-dual",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-dual",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      AmazonProvidedIpv6CidrBlock: true,
     }),
   },
 ];

@@ -123,6 +123,24 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "SSMCloudWatchAlarmDiscoveryPolicy",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: ["cloudwatch:DescribeAlarms"],
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -143,24 +161,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       policies: ["SSMCloudWatchAlarmDiscoveryPolicy"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "SSMCloudWatchAlarmDiscoveryPolicy",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["cloudwatch:DescribeAlarms"],
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
     }),
   },
   { type: "Topic", group: "SNS", name: "5xx_Errors_SNS_Topic" },

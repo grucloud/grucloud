@@ -4,6 +4,60 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName:
+        "Amazon-EventBridge-Scheduler-Execution-Policy-3a54c973-3820-47e3-a9f5-01148ae3aa27",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: ["lambda:InvokeFunction"],
+            Resource: [
+              `arn:aws:lambda:${
+                config.region
+              }:${config.accountId()}:function:mylambda:*`,
+              `arn:aws:lambda:${
+                config.region
+              }:${config.accountId()}:function:mylambda`,
+            ],
+          },
+        ],
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName:
+        "AWSLambdaBasicExecutionRole-2c60bc7b-a716-4df4-8688-f7237aa45ae7",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: "logs:CreateLogGroup",
+            Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
+          },
+          {
+            Effect: "Allow",
+            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/lambda/mylambda:*`,
+            ],
+          },
+        ],
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
@@ -59,60 +113,6 @@ exports.createResources = () => [
       policies: [
         "AWSLambdaBasicExecutionRole-2c60bc7b-a716-4df4-8688-f7237aa45ae7",
       ],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName:
-        "Amazon-EventBridge-Scheduler-Execution-Policy-3a54c973-3820-47e3-a9f5-01148ae3aa27",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["lambda:InvokeFunction"],
-            Resource: [
-              `arn:aws:lambda:${
-                config.region
-              }:${config.accountId()}:function:mylambda:*`,
-              `arn:aws:lambda:${
-                config.region
-              }:${config.accountId()}:function:mylambda`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName:
-        "AWSLambdaBasicExecutionRole-2c60bc7b-a716-4df4-8688-f7237aa45ae7",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: "logs:CreateLogGroup",
-            Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
-          },
-          {
-            Effect: "Allow",
-            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-            Resource: [
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:/aws/lambda/mylambda:*`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
     }),
   },
   {

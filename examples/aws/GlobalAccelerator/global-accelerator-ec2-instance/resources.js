@@ -3,44 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-d",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "launch-wizard-1",
-      Description: "launch-wizard created 2022-10-24T21:50:15.364Z",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 443,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 443,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::launch-wizard-1",
-    }),
-  },
   {
     type: "Instance",
     group: "EC2",
@@ -77,6 +39,44 @@ exports.createResources = () => [
       securityGroups: ["sg::vpc-default::launch-wizard-1"],
     }),
   },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "launch-wizard-1",
+      Description: "launch-wizard created 2022-10-24T21:50:15.364Z",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 443,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-default::launch-wizard-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-d",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Accelerator",
     group: "GlobalAccelerator",
@@ -139,15 +139,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "grucloud-global-accelarator",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2012-10-17",
         Id: "AWSLogDeliveryWrite20150319",

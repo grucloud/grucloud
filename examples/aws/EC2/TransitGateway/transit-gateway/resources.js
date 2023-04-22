@@ -4,15 +4,57 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
+    type: "Route",
     group: "EC2",
-    name: "spoke-A-vpc",
     properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "vpc-default::rt-default",
+      transitGateway: "transit-gateway",
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `rtb-private1-${config.region}a`,
+    dependencies: ({}) => ({
+      vpc: "spoke-A-vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `rtb-private2-${config.region}b`,
+    dependencies: ({}) => ({
+      vpc: "spoke-A-vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "rt-default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `spoke-A-vpc::rtb-private1-${config.region}a`,
+      subnet: `spoke-A-vpc::subnet-private1-${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `spoke-A-vpc::rtb-private2-${config.region}b`,
+      subnet: `spoke-A-vpc::subnet-private2-${config.region}b`,
+    }),
+  },
   {
     type: "Subnet",
     group: "EC2",
@@ -58,58 +100,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `rtb-private1-${config.region}a`,
-    dependencies: ({}) => ({
-      vpc: "spoke-A-vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `rtb-private2-${config.region}b`,
-    dependencies: ({}) => ({
-      vpc: "spoke-A-vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "rt-default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `spoke-A-vpc::rtb-private1-${config.region}a`,
-      subnet: `spoke-A-vpc::subnet-private1-${config.region}a`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `spoke-A-vpc::rtb-private2-${config.region}b`,
-      subnet: `spoke-A-vpc::subnet-private2-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "vpc-default::rt-default",
-      transitGateway: "transit-gateway",
-    }),
-  },
-  {
     type: "TransitGateway",
     group: "EC2",
     name: "transit-gateway",
@@ -148,6 +138,40 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       transitGateway: "transit-gateway",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment: "tgw-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::transit-gateway::spoke-A-vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment: "tgw-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::transit-gateway::spoke-A-vpc",
     }),
   },
   {
@@ -191,37 +215,13 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGatewayRouteTableAssociation",
+    type: "Vpc",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
-      transitGatewayVpcAttachment: "tgw-attachment",
+    name: "spoke-A-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
-  {
-    type: "TransitGatewayRouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::transit-gateway::spoke-A-vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
-      transitGatewayVpcAttachment: "tgw-attachment",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::transit-gateway::spoke-A-vpc",
-    }),
-  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
 ];

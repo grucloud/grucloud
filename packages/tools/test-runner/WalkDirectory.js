@@ -34,9 +34,23 @@ const ExcludeDirsDefault = [
   "node_modules",
   "artifacts",
   "empty",
+  "appintegration-simple",
+  "application-autoscaling-simple",
+  "ta-eventbridge-lambda-s3",
+  "databrew-simple",
+  "elastictranscoder-simple",
+  "mediaconvert-simple",
+  "media-tailor",
+  "resiliencehub-simple",
+  "route53-recovery-control-config",
+  "route53-recovery-readiness",
+  "s3-storage-lens",
+  "sagemaker-simple",
+  "terraform-backend-s3-dynamodb",
   "kops", // TODO update
   "docker", // TODO move docker dir out of the example
   "Batch",
+  "Workspaces", // $$$
   "FSx", // "much expensive $$$"
   "DirectoryService", // "much expensive $$$"
   "datasync-fsxwindows", // "much expensive $$$"
@@ -93,7 +107,6 @@ const ExcludeDirsDefault = [
   "Ivschat", // 'Your account is pending verification. Until the verification process is complete, you may not be able to carry out requests with this account. If you have questions, contact AWS Support.',
   "IVS", // 'Your account is pending verification. Until the verification process is complete, you may not be able to carry out requests with this account. If you have questions, contact AWS Support.',
   "lake-formation", // "Insufficient Lake Formation permission(s): Required Create Tag on Catalog",
-
   "cost-explorer-simple",
   "appconfig-feature-flag-sam",
   "apprunner-github",

@@ -4,13 +4,19 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
+    type: "RouteTable",
     group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/24",
-      DnsHostnames: true,
-      AmazonProvidedIpv6CidrBlock: true,
+    name: ({ config }) => `rtb-private1-${config.region}a`,
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `vpc::rtb-private1-${config.region}a`,
+      subnet: `vpc::subnet-private1-${config.region}a`,
     }),
   },
   {
@@ -27,19 +33,13 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: ({ config }) => `rtb-private1-${config.region}a`,
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `vpc::rtb-private1-${config.region}a`,
-      subnet: `vpc::subnet-private1-${config.region}a`,
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/24",
+      DnsHostnames: true,
+      AmazonProvidedIpv6CidrBlock: true,
     }),
   },
   {

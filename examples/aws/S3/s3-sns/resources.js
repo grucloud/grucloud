@@ -8,15 +8,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "grucloud-s3-sns-test",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       NotificationConfiguration: {
         TopicConfigurations: [
           {
@@ -60,13 +51,6 @@ exports.createResources = () => [
               },
             },
           ],
-        },
-        DeliveryPolicy: {
-          http: {
-            defaultRequestPolicy: {
-              headerContentType: "text/plain; charset=UTF-8",
-            },
-          },
         },
       },
     }),

@@ -39,6 +39,26 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "RUMPutBatchMetrics-8918708312761",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: "rum:PutRumEvents",
+            Resource: `arn:aws:rum:${
+              config.region
+            }:${config.accountId()}:appmonitor/my-monitor`,
+          },
+        ],
+      },
+      Path: "/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({ config, getId }) => ({
@@ -77,26 +97,6 @@ exports.createResources = () => [
       cognitoIdentityPools: [
         `RUM-Monitor-${config.region}-${config.accountId()}-8918708312761`,
       ],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "RUMPutBatchMetrics-8918708312761",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: "rum:PutRumEvents",
-            Resource: `arn:aws:rum:${
-              config.region
-            }:${config.accountId()}:appmonitor/my-monitor`,
-          },
-        ],
-      },
-      Path: "/",
     }),
   },
   {

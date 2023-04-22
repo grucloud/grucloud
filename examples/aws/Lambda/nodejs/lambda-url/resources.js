@@ -4,31 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "my-function-url-role-t2xxsa8e",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "lambda.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: [
-        "AWSLambdaBasicExecutionRole-9c3ecdb3-2e09-4c84-b290-82222512354a",
-      ],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({ config }) => ({
@@ -54,6 +29,31 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "my-function-url-role-t2xxsa8e",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: [
+        "AWSLambdaBasicExecutionRole-9c3ecdb3-2e09-4c84-b290-82222512354a",
+      ],
     }),
   },
   {

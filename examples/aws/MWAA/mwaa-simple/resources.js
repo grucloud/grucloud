@@ -10,15 +10,8 @@ exports.createResources = () => [
       logGroupName: "airflow-MyAirflowEnvironment-Task",
     }),
   },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "MWAAEnvironment",
-    properties: ({}) => ({
-      CidrBlock: "10.192.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
+  { type: "ElasticIpAddress", group: "EC2", name: "NatGateway1EIP" },
+  { type: "ElasticIpAddress", group: "EC2", name: "NatGateway2EIP" },
   { type: "InternetGateway", group: "EC2", name: "MWAAEnvironment" },
   {
     type: "InternetGatewayAttachment",
@@ -53,57 +46,36 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "MWAAEnvironment Private Subnet (AZ1)",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 20,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "MWAAEnvironment",
+      natGateway: "NatGateway1",
+      routeTable: "MWAAEnvironment::MWAAEnvironment Private Routes (AZ1)",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "MWAAEnvironment Private Subnet (AZ2)",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 21,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "MWAAEnvironment",
+      natGateway: "NatGateway2",
+      routeTable: "MWAAEnvironment::MWAAEnvironment Private Routes (AZ2)",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "MWAAEnvironment Public Subnet (AZ1)",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 10,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "MWAAEnvironment",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "MWAAEnvironment Public Subnet (AZ2)",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 11,
-    }),
-    dependencies: ({}) => ({
-      vpc: "MWAAEnvironment",
+      ig: "MWAAEnvironment",
+      routeTable: "MWAAEnvironment::MWAAEnvironment Public Routes",
     }),
   },
   {
@@ -163,43 +135,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "NatGateway1",
-      routeTable: "MWAAEnvironment::MWAAEnvironment Private Routes (AZ1)",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "NatGateway2",
-      routeTable: "MWAAEnvironment::MWAAEnvironment Private Routes (AZ2)",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "MWAAEnvironment",
-      routeTable: "MWAAEnvironment::MWAAEnvironment Public Routes",
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
-      GroupName: "airflow-security-group-MyAirflowEnvironment-v6BSDR",
+      GroupName: "airflow-security-group-MyAirflowEnvironment-tdqCRx",
       Description:
         "Security Group for Amazon MWAA Environment MyAirflowEnvironment",
     }),
@@ -210,8 +149,11 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "sg::MWAAEnvironment::default",
-    isDefault: true,
+    properties: ({}) => ({
+      GroupName: "airflow-security-group-MyAirflowEnvironment-v6BSDR",
+      Description:
+        "Security Group for Amazon MWAA Environment MyAirflowEnvironment",
+    }),
     dependencies: ({}) => ({
       vpc: "MWAAEnvironment",
     }),
@@ -235,35 +177,177 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
+        "sg::MWAAEnvironment::airflow-security-group-MyAirflowEnvironment-tdqCRx",
+      securityGroupFrom: [
+        "sg::MWAAEnvironment::airflow-security-group-MyAirflowEnvironment-tdqCRx",
+      ],
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpProtocol: "-1",
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
         "sg::MWAAEnvironment::airflow-security-group-MyAirflowEnvironment-v6BSDR",
       securityGroupFrom: [
         "sg::MWAAEnvironment::airflow-security-group-MyAirflowEnvironment-v6BSDR",
       ],
     }),
   },
-  { type: "ElasticIpAddress", group: "EC2", name: "NatGateway1EIP" },
-  { type: "ElasticIpAddress", group: "EC2", name: "NatGateway2EIP" },
   {
-    type: "Role",
-    group: "IAM",
+    type: "Subnet",
+    group: "EC2",
+    name: "MWAAEnvironment Private Subnet (AZ1)",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 20,
+    }),
+    dependencies: ({}) => ({
+      vpc: "MWAAEnvironment",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "MWAAEnvironment Private Subnet (AZ2)",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 21,
+    }),
+    dependencies: ({}) => ({
+      vpc: "MWAAEnvironment",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "MWAAEnvironment Public Subnet (AZ1)",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 10,
+    }),
+    dependencies: ({}) => ({
+      vpc: "MWAAEnvironment",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "MWAAEnvironment Public Subnet (AZ2)",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 11,
+    }),
+    dependencies: ({}) => ({
+      vpc: "MWAAEnvironment",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "MWAAEnvironment",
     properties: ({}) => ({
-      RoleName: "AmazonMWAA-MyAirflowEnvironment-RAZcH1",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
+      CidrBlock: "10.192.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "MWAA-Execution-Policy-ee2af493-8f0a-46f4-a71e-610b2ff9ec6c",
+      PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
-            Principal: {
-              Service: ["airflow-env.amazonaws.com", "airflow.amazonaws.com"],
+            Action: "airflow:PublishMetrics",
+            Resource: `arn:aws:airflow:${
+              config.region
+            }:${config.accountId()}:environment/MyAirflowEnvironment`,
+          },
+          {
+            Effect: "Deny",
+            Action: "s3:ListAllMyBuckets",
+            Resource: [
+              "arn:aws:s3:::gc-mwaa-test",
+              "arn:aws:s3:::gc-mwaa-test/*",
+            ],
+          },
+          {
+            Effect: "Allow",
+            Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
+            Resource: [
+              "arn:aws:s3:::gc-mwaa-test",
+              "arn:aws:s3:::gc-mwaa-test/*",
+            ],
+          },
+          {
+            Effect: "Allow",
+            Action: [
+              "logs:CreateLogStream",
+              "logs:CreateLogGroup",
+              "logs:PutLogEvents",
+              "logs:GetLogEvents",
+              "logs:GetLogRecord",
+              "logs:GetLogGroupFields",
+              "logs:GetQueryResults",
+            ],
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:airflow-MyAirflowEnvironment-*`,
+            ],
+          },
+          {
+            Effect: "Allow",
+            Action: ["logs:DescribeLogGroups"],
+            Resource: ["*"],
+          },
+          {
+            Effect: "Allow",
+            Action: "cloudwatch:PutMetricData",
+            Resource: "*",
+          },
+          {
+            Effect: "Allow",
+            Action: [
+              "sqs:ChangeMessageVisibility",
+              "sqs:DeleteMessage",
+              "sqs:GetQueueAttributes",
+              "sqs:GetQueueUrl",
+              "sqs:ReceiveMessage",
+              "sqs:SendMessage",
+            ],
+            Resource: `arn:aws:sqs:${config.region}:*:airflow-celery-*`,
+          },
+          {
+            Effect: "Allow",
+            Action: [
+              "kms:Decrypt",
+              "kms:DescribeKey",
+              "kms:GenerateDataKey*",
+              "kms:Encrypt",
+            ],
+            NotResource: `arn:aws:kms:*:${config.accountId()}:key/*`,
+            Condition: {
+              StringLike: {
+                "kms:ViaService": [`sqs.${config.region}.amazonaws.com`],
+              },
             },
-            Action: "sts:AssumeRole",
           },
         ],
       },
-    }),
-    dependencies: ({}) => ({
-      policies: ["MWAA-Execution-Policy-f814ac39-34db-48c4-9cbb-cc4bf056cdd0"],
+      Path: "/service-role/",
     }),
   },
   {
@@ -357,54 +441,49 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Environment",
-    group: "MWAA",
-    properties: ({ config }) => ({
-      AirflowConfigurationOptions: {},
-      AirflowVersion: "2.4.3",
-      DagS3Path: "dags/",
-      EnvironmentClass: "mw1.small",
-      LoggingConfiguration: {
-        DagProcessingLogs: {
-          Enabled: false,
-          LogLevel: "WARNING",
-        },
-        SchedulerLogs: {
-          Enabled: false,
-          LogLevel: "WARNING",
-        },
-        TaskLogs: {
-          Enabled: true,
-          LogLevel: "INFO",
-        },
-        WebserverLogs: {
-          Enabled: false,
-          LogLevel: "WARNING",
-        },
-        WorkerLogs: {
-          Enabled: false,
-          LogLevel: "WARNING",
-        },
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "AmazonMWAA-MyAirflowEnvironment-5mqrsR",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: ["airflow-env.amazonaws.com", "airflow.amazonaws.com"],
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
       },
-      MaxWorkers: 10,
-      MinWorkers: 1,
-      Name: "MyAirflowEnvironment",
-      Schedulers: 2,
-      ServiceRoleArn: `arn:aws:iam::${config.accountId()}:role/aws-service-role/airflow.amazonaws.com/AWSServiceRoleForAmazonMWAA`,
-      SourceBucketArn: "arn:aws:s3:::gc-mwaa-test",
-      WebserverAccessMode: "PUBLIC_ONLY",
     }),
     dependencies: ({}) => ({
-      iamRoleExecution: "AmazonMWAA-MyAirflowEnvironment-RAZcH1",
-      securityGroups: [
-        "sg::MWAAEnvironment::airflow-security-group-MyAirflowEnvironment-v6BSDR",
-        "sg::MWAAEnvironment::default",
-      ],
-      subnets: [
-        "MWAAEnvironment::MWAAEnvironment Private Subnet (AZ1)",
-        "MWAAEnvironment::MWAAEnvironment Private Subnet (AZ2)",
-      ],
-      s3BucketSource: "gc-mwaa-test",
+      policies: ["MWAA-Execution-Policy-ee2af493-8f0a-46f4-a71e-610b2ff9ec6c"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "AmazonMWAA-MyAirflowEnvironment-RAZcH1",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: ["airflow-env.amazonaws.com", "airflow.amazonaws.com"],
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["MWAA-Execution-Policy-f814ac39-34db-48c4-9cbb-cc4bf056cdd0"],
     }),
   },
   {
@@ -412,6 +491,23 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-mwaa-test",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+            BucketKeyEnabled: true,
+          },
+        ],
+      },
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "gc-mwaa-test-1",
       ServerSideEncryptionConfiguration: {
         Rules: [
           {

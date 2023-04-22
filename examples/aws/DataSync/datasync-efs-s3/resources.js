@@ -51,16 +51,6 @@ exports.createResources = () => [
       sourceEfs: "my-fs",
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-a",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
   {
     type: "SecurityGroup",
     group: "EC2",
@@ -70,6 +60,16 @@ exports.createResources = () => [
       vpc: "vpc-default",
     }),
   },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-a",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "FileSystem",
     group: "EFS",
@@ -88,39 +88,6 @@ exports.createResources = () => [
       fileSystem: "my-fs",
       subnet: "vpc-default::subnet-default-a",
       securityGroups: ["sg::vpc-default::default"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: "AWSDataSyncS3BucketAccess-gc-datasync-destination",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "datasync.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-            Condition: {
-              StringEquals: {
-                "aws:SourceAccount": `${config.accountId()}`,
-              },
-              ArnLike: {
-                "aws:SourceArn": `arn:aws:datasync:${
-                  config.region
-                }:${config.accountId()}:*`,
-              },
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["AWSDataSyncS3BucketAccess-gc-datasync-destination"],
     }),
   },
   {
@@ -156,6 +123,39 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: "AWSDataSyncS3BucketAccess-gc-datasync-destination",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "datasync.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+            Condition: {
+              StringEquals: {
+                "aws:SourceAccount": `${config.accountId()}`,
+              },
+              ArnLike: {
+                "aws:SourceArn": `arn:aws:datasync:${
+                  config.region
+                }:${config.accountId()}:*`,
+              },
+            },
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["AWSDataSyncS3BucketAccess-gc-datasync-destination"],
     }),
   },
   {

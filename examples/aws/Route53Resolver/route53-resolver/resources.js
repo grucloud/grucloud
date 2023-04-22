@@ -4,11 +4,31 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
+    type: "SecurityGroup",
     group: "EC2",
-    name: "vpc-resolver-endpoint",
     properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
+      GroupName: "dns",
+      Description: "dns",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-resolver-endpoint",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 53,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 53,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-resolver-endpoint::dns",
     }),
   },
   {
@@ -38,31 +58,11 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "SecurityGroup",
+    type: "Vpc",
     group: "EC2",
+    name: "vpc-resolver-endpoint",
     properties: ({}) => ({
-      GroupName: "dns",
-      Description: "dns",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-resolver-endpoint",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 53,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 53,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-resolver-endpoint::dns",
+      CidrBlock: "10.0.0.0/16",
     }),
   },
   {

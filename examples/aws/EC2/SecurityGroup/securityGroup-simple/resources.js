@@ -4,14 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc-test-sg",
-    properties: ({}) => ({
-      CidrBlock: "10.1.0.0/16",
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -98,6 +90,14 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-test-sg::security-group-cluster-test",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-test-sg",
+    properties: ({}) => ({
+      CidrBlock: "10.1.0.0/16",
     }),
   },
 ];

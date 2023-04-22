@@ -38,52 +38,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "fifo-sns-sqs-lambda-firehose-s3-firehose-role-5d62e6b5",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "firehose.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["fifo-sns-sqs-lambda-firehose-s3-firehose-policy-5d62e6b5"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "fifo-sns-sqs-lambda-firehose-s3-lambda-role-5d62e6b5",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "lambda.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["fifo-sns-sqs-lambda-firehose-s3-lambda-policy-5d62e6b5"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -158,6 +112,52 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "fifo-sns-sqs-lambda-firehose-s3-firehose-role-5d62e6b5",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "firehose.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["fifo-sns-sqs-lambda-firehose-s3-firehose-policy-5d62e6b5"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "fifo-sns-sqs-lambda-firehose-s3-lambda-role-5d62e6b5",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["fifo-sns-sqs-lambda-firehose-s3-lambda-policy-5d62e6b5"],
+    }),
+  },
+  {
     type: "EventSourceMapping",
     group: "Lambda",
     dependencies: ({}) => ({
@@ -190,15 +190,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "fifo-sns-sqs-lambda-firehose-s3-bucket-5d62e6b5",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
   {

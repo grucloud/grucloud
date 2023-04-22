@@ -80,15 +80,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-destination-example",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

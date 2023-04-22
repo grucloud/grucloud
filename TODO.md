@@ -4,11 +4,18 @@
 
 ## Aws
 
-= CodeCommit
+cdk-vpc-lamba-sfn
+kinesusanalyticsv2-simple
+rattitmq-lambda
+emr studio
+kerndra-simple
+SSM Association
+requestMACSec
+iamRoleCrossAccount
+waf-appsync-cdk
 
 - MQ user for RabbitMQ
 - API Gateway: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
-- AwsConfig
 - CodeStarConnections Host
   aws_networkmanager_attachment_accepter
 - EC2 instance, sort groups
@@ -26,7 +33,6 @@
 - PrincipalAssociation replace associatedEntity from config
 - ipamPoolIpv6
 - HostedZone name with vpc
-- omit AWSLogs S3 Objects
 - apprunner example npm test
 
 - RDS DBCluster AvailabilityZones

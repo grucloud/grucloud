@@ -53,19 +53,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGatewayRouteTable",
-    group: "EC2",
-    name: "tgw-rtb-tgw-default",
-    readOnly: true,
-    properties: ({}) => ({
-      DefaultAssociationRouteTable: true,
-      DefaultPropagationRouteTable: true,
-    }),
-    dependencies: ({}) => ({
-      transitGateway: "tgw",
-    }),
-  },
-  {
     type: "TransitGatewayAttachment",
     group: "EC2",
     name: "tgw-attach::tgw::vpn::vpn-connection",
@@ -76,6 +63,19 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       transitGateway: "tgw",
       vpnConnection: "vpn-connection",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTable",
+    group: "EC2",
+    name: "tgw-rtb-tgw-default",
+    readOnly: true,
+    properties: ({}) => ({
+      DefaultAssociationRouteTable: true,
+      DefaultPropagationRouteTable: true,
+    }),
+    dependencies: ({}) => ({
+      transitGateway: "tgw",
     }),
   },
   {

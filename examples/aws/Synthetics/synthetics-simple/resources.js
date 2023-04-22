@@ -4,31 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
-      Description:
-        "CloudWatch Synthetics lambda execution role for running canaries",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "lambda.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["CloudWatchSyntheticsPolicy-my-canary-874-b96ae8dcb649"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({ config }) => ({
@@ -85,6 +60,31 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
+      Description:
+        "CloudWatch Synthetics lambda execution role for running canaries",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["CloudWatchSyntheticsPolicy-my-canary-874-b96ae8dcb649"],
     }),
   },
   {

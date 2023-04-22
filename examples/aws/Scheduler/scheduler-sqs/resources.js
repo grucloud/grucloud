@@ -4,6 +4,29 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName:
+        "Amazon-EventBridge-Scheduler-Execution-Policy-4a8e3a39-7d15-4aa8-82c5-b07d299fea48",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: ["sqs:SendMessage"],
+            Resource: [
+              `arn:aws:sqs:${
+                config.region
+              }:${config.accountId()}:queue-scheduler`,
+            ],
+          },
+        ],
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
@@ -34,29 +57,6 @@ exports.createResources = () => [
       policies: [
         "Amazon-EventBridge-Scheduler-Execution-Policy-4a8e3a39-7d15-4aa8-82c5-b07d299fea48",
       ],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName:
-        "Amazon-EventBridge-Scheduler-Execution-Policy-4a8e3a39-7d15-4aa8-82c5-b07d299fea48",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["sqs:SendMessage"],
-            Resource: [
-              `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:queue-scheduler`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
     }),
   },
   {

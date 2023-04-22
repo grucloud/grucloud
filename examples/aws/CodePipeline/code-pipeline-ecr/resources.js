@@ -163,75 +163,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "AWSCodePipelineServiceRole-my-pipeline",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "codepipeline.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ config }) => ({
-      policies: [`AWSCodePipelineServiceRole-${config.region}-my-pipeline`],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "codebuild-my-project-service-role",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "codebuild.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ config }) => ({
-      policies: [`CodeBuildBasePolicy-my-project-${config.region}`],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: `cwe-role-${config.region}-my-pipeline`,
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "events.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ config }) => ({
-      policies: [`start-pipeline-execution-${config.region}-my-pipeline`],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({ config }) => ({
@@ -483,19 +414,79 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Bucket",
-    group: "S3",
-    properties: ({ config }) => ({
-      Name: `codepipeline-${config.region}-${config.accountId()}`,
-      ServerSideEncryptionConfiguration: {
-        Rules: [
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "AWSCodePipelineServiceRole-my-pipeline",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
           {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
+            Effect: "Allow",
+            Principal: {
+              Service: "codepipeline.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
       },
+    }),
+    dependencies: ({ config }) => ({
+      policies: [`AWSCodePipelineServiceRole-${config.region}-my-pipeline`],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "codebuild-my-project-service-role",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "codebuild.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ config }) => ({
+      policies: [`CodeBuildBasePolicy-my-project-${config.region}`],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: `cwe-role-${config.region}-my-pipeline`,
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "events.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ config }) => ({
+      policies: [`start-pipeline-execution-${config.region}-my-pipeline`],
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({ config }) => ({
+      Name: `codepipeline-${config.region}-986503088613`,
       Policy: {
         Version: "2012-10-17",
         Id: "SSEAndSSLPolicy",

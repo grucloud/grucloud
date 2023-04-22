@@ -15,109 +15,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "crucial-bass-lambda",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "lambda.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      Tags: [
-        {
-          Key: "Module",
-          Value: "lambda_function",
-        },
-        {
-          Key: "Pattern",
-          Value: "terraform-s3-object-lambda",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      policies: ["crucial-bass-lambda-inline", "crucial-bass-lambda-logs"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: "robust-gelding",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: `states.${config.region}.amazonaws.com`,
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      Tags: [
-        {
-          Key: "Module",
-          Value: "step_function",
-        },
-        {
-          Key: "Pattern",
-          Value: "terraform-lambda-sfn",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      policies: [
-        "robust-gelding-lambda",
-        "robust-gelding-logs",
-        "robust-gelding-xray",
-      ],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "robust-gelding-lambda",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "lambda.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      Tags: [
-        {
-          Key: "Module",
-          Value: "lambda_function",
-        },
-        {
-          Key: "Pattern",
-          Value: "terraform-lambda-sfn",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      policies: ["robust-gelding-lambda-inline", "robust-gelding-lambda-logs"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -373,6 +270,109 @@ exports.createResources = () => [
           Value: "terraform-lambda-sfn",
         },
       ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "crucial-bass-lambda",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      Tags: [
+        {
+          Key: "Module",
+          Value: "lambda_function",
+        },
+        {
+          Key: "Pattern",
+          Value: "terraform-s3-object-lambda",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      policies: ["crucial-bass-lambda-inline", "crucial-bass-lambda-logs"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: "robust-gelding",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: `states.${config.region}.amazonaws.com`,
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      Tags: [
+        {
+          Key: "Module",
+          Value: "step_function",
+        },
+        {
+          Key: "Pattern",
+          Value: "terraform-lambda-sfn",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      policies: [
+        "robust-gelding-lambda",
+        "robust-gelding-logs",
+        "robust-gelding-xray",
+      ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "robust-gelding-lambda",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      Tags: [
+        {
+          Key: "Module",
+          Value: "lambda_function",
+        },
+        {
+          Key: "Pattern",
+          Value: "terraform-lambda-sfn",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      policies: ["robust-gelding-lambda-inline", "robust-gelding-lambda-logs"],
     }),
   },
   {

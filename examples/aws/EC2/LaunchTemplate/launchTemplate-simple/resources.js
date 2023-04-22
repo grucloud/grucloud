@@ -3,57 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "KeyPair", group: "EC2", name: "kp-ecs" },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "Vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-public",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "Vpc",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "EcsSecurityGroup",
-      Description: "Managed By GruCloud",
-    }),
-    dependencies: ({}) => ({
-      vpc: "Vpc",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 80,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 80,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::Vpc::EcsSecurityGroup",
-    }),
-  },
   {
     type: "Instance",
     group: "EC2",
@@ -96,6 +45,7 @@ exports.createResources = () => [
       launchTemplate: "lt-ec2-micro",
     }),
   },
+  { type: "KeyPair", group: "EC2", name: "kp-ecs" },
   {
     type: "LaunchTemplate",
     group: "EC2",
@@ -136,6 +86,56 @@ chkconfig docker on`,
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
       securityGroups: ["sg::Vpc::EcsSecurityGroup"],
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "EcsSecurityGroup",
+      Description: "Managed By GruCloud",
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::Vpc::EcsSecurityGroup",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-public",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "Vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

@@ -32,13 +32,7 @@ exports.CURReportDefinition = ({}) => ({
     s3Bucket: {
       type: "Bucket",
       group: "S3",
-      dependencyId: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          get("S3Bucket"),
-        ]),
+      dependencyId: () => pipe([get("S3Bucket")]),
     },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CUR.html#describeCUR-property

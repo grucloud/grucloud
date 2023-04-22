@@ -126,15 +126,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "sam-app-videoinput-1m6aten2xp1ko",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       NotificationConfiguration: {
         LambdaFunctionConfigurations: [
           {
@@ -152,15 +143,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "sam-app-videooutput-1de7ubqosy7ld",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

@@ -56,6 +56,31 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "sample-glue-s3-access-policy",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "s3:ListBucket",
+            Effect: "Allow",
+            Resource: `arn:aws:s3:::sample-bucket-glue-scripts-terraform-${config.accountId()}`,
+            Sid: "",
+          },
+          {
+            Action: ["s3:PutObject", "s3:GetObject"],
+            Effect: "Allow",
+            Resource: `arn:aws:s3:::sample-bucket-glue-scripts-terraform-${config.accountId()}/*`,
+            Sid: "",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
@@ -165,44 +190,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "sample-glue-s3-access-policy",
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "s3:ListBucket",
-            Effect: "Allow",
-            Resource: `arn:aws:s3:::sample-bucket-glue-scripts-terraform-${config.accountId()}`,
-            Sid: "",
-          },
-          {
-            Action: ["s3:PutObject", "s3:GetObject"],
-            Effect: "Allow",
-            Resource: `arn:aws:s3:::sample-bucket-glue-scripts-terraform-${config.accountId()}/*`,
-            Sid: "",
-          },
-        ],
-        Version: "2012-10-17",
-      },
-      Path: "/",
-    }),
-  },
-  {
     type: "Bucket",
     group: "S3",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       Name: `sample-bucket-glue-scripts-terraform-${config.accountId()}`,
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
   {

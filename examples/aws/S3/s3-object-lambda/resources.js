@@ -86,17 +86,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       Name: "sam-app-s3bucket-uoktptsszrdd",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2012-10-17",
         Statement: [

@@ -18,41 +18,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 9,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
     type: "RouteTable",
     group: "EC2",
     name: ({ config }) => `rtb-private1-${config.region}a`,
@@ -91,6 +56,41 @@ exports.createResources = () => [
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -236,31 +236,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "firehose.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ config }) => ({
-      policies: [
-        `KinesisFirehoseServicePolicy-delivery-stream-s3-${config.region}`,
-      ],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({ config }) => ({
@@ -384,19 +359,35 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "firehose.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ config }) => ({
+      policies: [
+        `KinesisFirehoseServicePolicy-delivery-stream-s3-${config.region}`,
+      ],
+    }),
+  },
+  {
     type: "Bucket",
     group: "S3",
     properties: ({ config }) => ({
       Name: `gc-firehose-destination-${config.accountId()}`,
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
   {

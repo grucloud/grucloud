@@ -4,15 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc-4-record-vpc-endpoint",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
     type: "Subnet",
     group: "EC2",
     name: "subnet-public",
@@ -23,6 +14,15 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "vpc-4-record-vpc-endpoint",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-4-record-vpc-endpoint",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

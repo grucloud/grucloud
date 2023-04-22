@@ -3,15 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "project1-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
   { type: "InternetGateway", group: "EC2", name: "ig" },
   {
     type: "InternetGatewayAttachment",
@@ -22,29 +13,25 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `project1-subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "project1-vpc",
+    dependencies: ({ config }) => ({
+      ig: "ig",
+      routeTable: `project1-vpc::project1-rtb-private1-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `project1-subnet-private2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 9,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "project1-vpc",
+    dependencies: ({ config }) => ({
+      ig: "ig",
+      routeTable: `project1-vpc::project1-rtb-private2-${config.region}b`,
     }),
   },
   {
@@ -80,34 +67,47 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "ig",
-      routeTable: `project1-vpc::project1-rtb-private1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "ig",
-      routeTable: `project1-vpc::project1-rtb-private2-${config.region}b`,
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     name: "sg::project1-vpc::default",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "project1-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `project1-subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
+    }),
+    dependencies: ({}) => ({
+      vpc: "project1-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `project1-subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
+    }),
+    dependencies: ({}) => ({
+      vpc: "project1-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "project1-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

@@ -4,41 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc-rds-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `vpc-rds-subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-rds-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `vpc-rds-subnet-private2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 9,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-rds-vpc",
-    }),
-  },
-  {
     type: "RouteTable",
     group: "EC2",
     name: ({ config }) => `vpc-rds-rtb-private1-${config.region}a`,
@@ -71,12 +36,38 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "SecurityGroup",
+    type: "Subnet",
     group: "EC2",
-    name: "sg::vpc-rds-vpc::default",
-    isDefault: true,
+    name: ({ config }) => `vpc-rds-subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
+    }),
     dependencies: ({}) => ({
       vpc: "vpc-rds-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `vpc-rds-subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-rds-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-rds-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

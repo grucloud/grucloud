@@ -4,54 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "sam-app-vpc",
-    properties: ({}) => ({
-      CidrBlock: "172.31.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "sam-app-prv-sub-1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "sam-app-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "sam-app-prv-sub-2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "sam-app-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "sam-app-prv-sub-3",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 2,
-    }),
-    dependencies: ({}) => ({
-      vpc: "sam-app-vpc",
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -129,6 +81,54 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::sam-app-vpc::lambda-sg",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "sam-app-prv-sub-1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "sam-app-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "sam-app-prv-sub-2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "sam-app-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "sam-app-prv-sub-3",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "sam-app-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "sam-app-vpc",
+    properties: ({}) => ({
+      CidrBlock: "172.31.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

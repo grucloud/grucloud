@@ -4,12 +4,9 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "project-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-    }),
+    name: ({ config }) => `project-eip-${config.region}a`,
   },
   { type: "InternetGateway", group: "EC2", name: "project-igw" },
   {
@@ -33,55 +30,36 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `project-subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "project-vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `project-nat-public1-${config.region}a`,
+      routeTable: `project-vpc::project-rtb-private1-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `project-subnet-private2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 9,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "project-vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `project-nat-public1-${config.region}a`,
+      routeTable: `project-vpc::project-rtb-private2-${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `project-subnet-public1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "project-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `project-subnet-public2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "project-vpc",
+      ig: "project-igw",
+      routeTable: "project-vpc::project-rtb-public",
     }),
   },
   {
@@ -141,41 +119,63 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `project-nat-public1-${config.region}a`,
-      routeTable: `project-vpc::project-rtb-private1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `project-nat-public1-${config.region}a`,
-      routeTable: `project-vpc::project-rtb-private2-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+    name: ({ config }) => `project-subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
     }),
     dependencies: ({}) => ({
-      ig: "project-igw",
-      routeTable: "project-vpc::project-rtb-public",
+      vpc: "project-vpc",
     }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `project-eip-${config.region}a`,
+    name: ({ config }) => `project-subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
+    }),
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `project-subnet-public2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "project-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+    }),
   },
 ];

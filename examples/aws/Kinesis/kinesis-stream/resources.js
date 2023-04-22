@@ -4,6 +4,34 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName:
+        "AWSLambdaBasicExecutionRole-a76cddca-78ae-48ce-9719-4222f782af1b",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: "logs:CreateLogGroup",
+            Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
+          },
+          {
+            Effect: "Allow",
+            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/lambda/read-kinesis-stream:*`,
+            ],
+          },
+        ],
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -32,34 +60,6 @@ exports.createResources = () => [
       policies: [
         "AWSLambdaBasicExecutionRole-a76cddca-78ae-48ce-9719-4222f782af1b",
       ],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName:
-        "AWSLambdaBasicExecutionRole-a76cddca-78ae-48ce-9719-4222f782af1b",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: "logs:CreateLogGroup",
-            Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
-          },
-          {
-            Effect: "Allow",
-            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-            Resource: [
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:/aws/lambda/read-kinesis-stream:*`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
     }),
   },
   {

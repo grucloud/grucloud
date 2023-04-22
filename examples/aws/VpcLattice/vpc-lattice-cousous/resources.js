@@ -3,22 +3,50 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
+  { type: "ElasticIpAddress", group: "EC2", name: "EIP-EC2" },
+  { type: "ElasticIpAddress", group: "EC2", name: "EIP-ECS" },
   {
-    type: "Vpc",
+    type: "Instance",
     group: "EC2",
-    name: "lattice-ec2-testing-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.192.0.0/16",
-      DnsHostnames: true,
+    name: "lattice-ec2-testing-ec2",
+    properties: ({ config, getId }) => ({
+      InstanceType: "t2.micro",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::lattice-ec2-testing-vpc::lattice-ec2-EC2SecurityGroup-196YZ14EGHL0E",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "lattice-ec2-testing-vpc::lattice-ec2-testing-private-subnet",
+          })}`,
+        },
+      ],
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20230404.1 x86_64 HVM gp2",
+      },
+      UserData: `#!/bin/bash -xe
+yum update -y
+sudo amazon-linux-extras install nginx1
+systemctl enable nginx
+systemctl start nginx
+`,
     }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "lattice-ecs-testing-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.193.0.0/16",
-      DnsHostnames: true,
+    dependencies: ({}) => ({
+      subnets: ["lattice-ec2-testing-vpc::lattice-ec2-testing-private-subnet"],
+      iamInstanceProfile: "lattice-ec2-SSMProfile-1hvtN88JWOj3",
+      securityGroups: [
+        "sg::lattice-ec2-testing-vpc::lattice-ec2-EC2SecurityGroup-196YZ14EGHL0E",
+      ],
     }),
   },
   { type: "InternetGateway", group: "EC2", name: "lattice-ec2-testing-ig" },
@@ -64,71 +92,47 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "lattice-ec2-testing-private-subnet",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 20,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "lattice-ec2-testing-vpc",
+      natGateway: "lattice-ec2-testing-NATgw",
+      routeTable: "lattice-ec2-testing-vpc::lattice-ec2-testing-private-rt",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "lattice-ec2-testing-public-subnet",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 10,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "lattice-ec2-testing-vpc",
+      ig: "lattice-ec2-testing-ig",
+      routeTable: "lattice-ec2-testing-vpc::lattice-ec2-testing-public-rt",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "lattice-ecs-testing-private-subnet",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 20,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "lattice-ecs-testing-vpc",
+      natGateway: "lattice-ecs-testing-NATgw",
+      routeTable: "lattice-ecs-testing-vpc::lattice-ecs-testing-private-rt",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "lattice-ecs-testing-public-subnet1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 10,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "lattice-ecs-testing-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "lattice-ecs-testing-public-subnet2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 11,
-    }),
-    dependencies: ({}) => ({
-      vpc: "lattice-ecs-testing-vpc",
+      ig: "lattice-ecs-testing-ig",
+      routeTable: "lattice-ecs-testing-vpc::lattice-ecs-testing-public-rt",
     }),
   },
   {
@@ -201,50 +205,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       routeTable: "lattice-ecs-testing-vpc::lattice-ecs-testing-public-rt",
       subnet: "lattice-ecs-testing-vpc::lattice-ecs-testing-public-subnet2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "lattice-ec2-testing-NATgw",
-      routeTable: "lattice-ec2-testing-vpc::lattice-ec2-testing-private-rt",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "lattice-ec2-testing-ig",
-      routeTable: "lattice-ec2-testing-vpc::lattice-ec2-testing-public-rt",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "lattice-ecs-testing-NATgw",
-      routeTable: "lattice-ecs-testing-vpc::lattice-ecs-testing-private-rt",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "lattice-ecs-testing-ig",
-      routeTable: "lattice-ecs-testing-vpc::lattice-ecs-testing-public-rt",
     }),
   },
   {
@@ -444,50 +404,90 @@ exports.createResources = () => [
         "sg::lattice-ec2-testing-vpc::lattice-ec2-EC2SecurityGroup-196YZ14EGHL0E",
     }),
   },
-  { type: "ElasticIpAddress", group: "EC2", name: "EIP-EC2" },
-  { type: "ElasticIpAddress", group: "EC2", name: "EIP-ECS" },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "lattice-ec2-testing-ec2",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::lattice-ec2-testing-vpc::lattice-ec2-EC2SecurityGroup-196YZ14EGHL0E",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "lattice-ec2-testing-vpc::lattice-ec2-testing-private-subnet",
-          })}`,
-        },
-      ],
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20230404.1 x86_64 HVM gp2",
-      },
-      UserData: `#!/bin/bash -xe
-yum update -y
-sudo amazon-linux-extras install nginx1
-systemctl enable nginx
-systemctl start nginx
-`,
+    name: "lattice-ec2-testing-private-subnet",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 20,
     }),
     dependencies: ({}) => ({
-      subnets: ["lattice-ec2-testing-vpc::lattice-ec2-testing-private-subnet"],
-      iamInstanceProfile: "lattice-ec2-SSMProfile-1hvtN88JWOj3",
-      securityGroups: [
-        "sg::lattice-ec2-testing-vpc::lattice-ec2-EC2SecurityGroup-196YZ14EGHL0E",
-      ],
+      vpc: "lattice-ec2-testing-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "lattice-ec2-testing-public-subnet",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 10,
+    }),
+    dependencies: ({}) => ({
+      vpc: "lattice-ec2-testing-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "lattice-ecs-testing-private-subnet",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 20,
+    }),
+    dependencies: ({}) => ({
+      vpc: "lattice-ecs-testing-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "lattice-ecs-testing-public-subnet1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 10,
+    }),
+    dependencies: ({}) => ({
+      vpc: "lattice-ecs-testing-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "lattice-ecs-testing-public-subnet2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 11,
+    }),
+    dependencies: ({}) => ({
+      vpc: "lattice-ecs-testing-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "lattice-ec2-testing-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.192.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "lattice-ecs-testing-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.193.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -637,19 +637,19 @@ systemctl start nginx
     }),
   },
   {
-    type: "OpenIDConnectProvider",
-    group: "IAM",
-    properties: ({}) => ({
-      ClientIDList: ["sts.amazonaws.com"],
-      Url: "token.actions.githubusercontent.com",
-    }),
-  },
-  {
     type: "InstanceProfile",
     group: "IAM",
     name: "lattice-ec2-SSMProfile-1hvtN88JWOj3",
     dependencies: ({}) => ({
       roles: ["lattice-ec2-testing-role"],
+    }),
+  },
+  {
+    type: "OpenIDConnectProvider",
+    group: "IAM",
+    properties: ({}) => ({
+      ClientIDList: ["sts.amazonaws.com"],
+      Url: "token.actions.githubusercontent.com",
     }),
   },
   {

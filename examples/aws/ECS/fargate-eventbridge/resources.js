@@ -19,13 +19,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "Vpc8378EB38",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
+    name: "VpcPublicSubnet1EIPD7E02669",
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: "VpcPublicSubnet2EIP3C605A87",
   },
   { type: "InternetGateway", group: "EC2", name: "VpcIGWD7BA715C" },
   {
@@ -61,57 +62,47 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "VpcPrivateSubnet1Subnet536B997A",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 2,
-      NetworkNumber: 2,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "Vpc8378EB38",
+      natGateway: "VpcPublicSubnet1NATGateway4D7517AA",
+      routeTable: "Vpc8378EB38::VpcPrivateSubnet1RouteTableB2C5B500",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "VpcPrivateSubnet2Subnet3788AAA1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 2,
-      NetworkNumber: 3,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "Vpc8378EB38",
+      natGateway: "VpcPublicSubnet2NATGateway9182C01D",
+      routeTable: "Vpc8378EB38::VpcPrivateSubnet2RouteTableA678073B",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "VpcPublicSubnet1Subnet5C2D37C4",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 2,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "Vpc8378EB38",
+      ig: "VpcIGWD7BA715C",
+      routeTable: "Vpc8378EB38::VpcPublicSubnet1RouteTable6C95E38E",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "VpcPublicSubnet2Subnet691E08A3",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 2,
-      NetworkNumber: 1,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "Vpc8378EB38",
+      ig: "VpcIGWD7BA715C",
+      routeTable: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
     }),
   },
   {
@@ -176,50 +167,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       routeTable: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
       subnet: "Vpc8378EB38::VpcPublicSubnet2Subnet691E08A3",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "VpcPublicSubnet1NATGateway4D7517AA",
-      routeTable: "Vpc8378EB38::VpcPrivateSubnet1RouteTableB2C5B500",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "VpcPublicSubnet2NATGateway9182C01D",
-      routeTable: "Vpc8378EB38::VpcPrivateSubnet2RouteTableA678073B",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "VpcIGWD7BA715C",
-      routeTable: "Vpc8378EB38::VpcPublicSubnet1RouteTable6C95E38E",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "VpcIGWD7BA715C",
-      routeTable: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
     }),
   },
   {
@@ -326,14 +273,67 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: "VpcPublicSubnet1EIPD7E02669",
+    name: "VpcPrivateSubnet1Subnet536B997A",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 2,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc8378EB38",
+    }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: "VpcPublicSubnet2EIP3C605A87",
+    name: "VpcPrivateSubnet2Subnet3788AAA1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 2,
+      NetworkNumber: 3,
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc8378EB38",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "VpcPublicSubnet1Subnet5C2D37C4",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc8378EB38",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "VpcPublicSubnet2Subnet691E08A3",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc8378EB38",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "Vpc8378EB38",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
   },
   {
     type: "VpcEndpoint",

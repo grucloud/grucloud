@@ -131,15 +131,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "sam-app-ingestionbucket-bs6srdysvd8l",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       NotificationConfiguration: {
         EventBridgeConfiguration: {},
       },

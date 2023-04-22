@@ -26,85 +26,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "NetworkInterface",
-    group: "EC2",
-    name: "eni::machine",
-    readOnly: true,
-    properties: ({}) => ({
-      Description: "",
-    }),
-    dependencies: ({}) => ({
-      instance: "machine",
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "project-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  { type: "InternetGateway", group: "EC2", name: "project-igw" },
-  {
-    type: "InternetGatewayAttachment",
-    group: "EC2",
-    dependencies: ({}) => ({
-      vpc: "project-vpc",
-      internetGateway: "project-igw",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `project-subnet-public1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "project-vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "project-rtb-public",
-    dependencies: ({}) => ({
-      vpc: "project-vpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "project-vpc::project-rtb-public",
-      subnet: `project-vpc::project-subnet-public1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "project-igw",
-      routeTable: "project-vpc::project-rtb-public",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::project-vpc::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "project-vpc",
-    }),
-  },
-  {
     type: "Instance",
     group: "EC2",
     name: "machine",
@@ -138,6 +59,85 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       subnets: [`project-vpc::project-subnet-public1-${config.region}a`],
       securityGroups: ["sg::project-vpc::default"],
+    }),
+  },
+  { type: "InternetGateway", group: "EC2", name: "project-igw" },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+      internetGateway: "project-igw",
+    }),
+  },
+  {
+    type: "NetworkInterface",
+    group: "EC2",
+    name: "eni::machine",
+    readOnly: true,
+    properties: ({}) => ({
+      Description: "",
+    }),
+    dependencies: ({}) => ({
+      instance: "machine",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "project-igw",
+      routeTable: "project-vpc::project-rtb-public",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "project-rtb-public",
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "project-vpc::project-rtb-public",
+      subnet: `project-vpc::project-subnet-public1-${config.region}a`,
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::project-vpc::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "project-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

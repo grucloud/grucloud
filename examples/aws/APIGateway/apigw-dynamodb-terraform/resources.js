@@ -245,6 +245,31 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "terraform-20220714213245320000000005",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["dynamodb:PutItem", "dynamodb:Query"],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/Pets`,
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/Pets/index/*`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -307,31 +332,6 @@ exports.createResources = () => [
           PolicyName: "terraform-20220714213229394700000004",
         },
       ],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "terraform-20220714213245320000000005",
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: ["dynamodb:PutItem", "dynamodb:Query"],
-            Effect: "Allow",
-            Resource: [
-              `arn:aws:dynamodb:${
-                config.region
-              }:${config.accountId()}:table/Pets`,
-              `arn:aws:dynamodb:${
-                config.region
-              }:${config.accountId()}:table/Pets/index/*`,
-            ],
-          },
-        ],
-        Version: "2012-10-17",
-      },
-      Path: "/",
     }),
   },
 ];

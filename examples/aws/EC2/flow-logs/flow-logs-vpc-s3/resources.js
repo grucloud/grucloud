@@ -34,15 +34,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "gc-flowlogs-my-vpc",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2012-10-17",
         Id: "AWSLogDeliveryWrite20150319",
@@ -77,12 +68,10 @@ exports.createResources = () => [
             Resource: "arn:aws:s3:::gc-flowlogs-my-vpc",
             Condition: {
               StringEquals: {
-                "aws:SourceAccount": `${config.accountId()}`,
+                "aws:SourceAccount": "591447126935",
               },
               ArnLike: {
-                "aws:SourceArn": `arn:aws:logs:${
-                  config.region
-                }:${config.accountId()}:*`,
+                "aws:SourceArn": `arn:aws:logs:${config.region}:591447126935:*`,
               },
             },
           },

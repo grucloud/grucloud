@@ -29,54 +29,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "my-maintenance-window-role",
-      Description: "Allows SSM to call AWS services on your behalf",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "ssm.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["my-maintenance-window-role-policy"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "my-sns-role",
-      Description: "Allows SSM to call AWS services on your behalf",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "ssm.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["my-sns-publish-permissions"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -161,19 +113,58 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "my-maintenance-window-role",
+      Description: "Allows SSM to call AWS services on your behalf",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "ssm.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["my-maintenance-window-role-policy"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "my-sns-role",
+      Description: "Allows SSM to call AWS services on your behalf",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "ssm.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["my-sns-publish-permissions"],
+    }),
+  },
+  {
     type: "Bucket",
     group: "S3",
     properties: ({}) => ({
       Name: "gc-maintenance-window-run-command",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
   { type: "Topic", group: "SNS", name: "Default_CloudWatch_Alarms_Topic" },

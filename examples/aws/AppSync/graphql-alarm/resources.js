@@ -282,30 +282,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
-      Description: "Allows the AWS AppSync service to access your data source.",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "appsync.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["appsync-ds-ddb-f7ekj4-MyModelTypeTable"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({ config }) => ({
@@ -335,6 +311,30 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
+      Description: "Allows the AWS AppSync service to access your data source.",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "appsync.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["appsync-ds-ddb-f7ekj4-MyModelTypeTable"],
     }),
   },
   { type: "Topic", group: "SNS", name: "Default_CloudWatch_Alarms_Topic" },

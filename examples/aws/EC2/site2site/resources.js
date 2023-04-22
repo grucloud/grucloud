@@ -12,14 +12,6 @@ exports.createResources = () => [
       IpAddress: "1.1.1.1",
     }),
   },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc-vpn",
-    properties: ({}) => ({
-      CidrBlock: "172.16.0.0/16",
-    }),
-  },
   { type: "InternetGateway", group: "EC2", name: "my-ig" },
   {
     type: "InternetGatewayAttachment",
@@ -30,16 +22,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "subnet-1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "192.168.0.0/16",
     }),
     dependencies: ({}) => ({
-      vpc: "vpc-vpn",
+      routeTable: "vpc-vpn::my-rt",
+      vpnGateway: "vpw",
     }),
   },
   {
@@ -59,13 +49,35 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "192.168.0.0/16",
+    name: "subnet-1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
-      routeTable: "vpc-vpn::my-rt",
+      vpc: "vpc-vpn",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-vpn",
+    properties: ({}) => ({
+      CidrBlock: "172.16.0.0/16",
+    }),
+  },
+  {
+    type: "VpnConnection",
+    group: "EC2",
+    name: "vpn-connection",
+    properties: ({}) => ({
+      Category: "VPN",
+    }),
+    dependencies: ({}) => ({
+      customerGateway: "cgw",
       vpnGateway: "vpw",
     }),
   },
@@ -90,18 +102,6 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({}) => ({
       routeTable: "vpc-vpn::my-rt",
-      vpnGateway: "vpw",
-    }),
-  },
-  {
-    type: "VpnConnection",
-    group: "EC2",
-    name: "vpn-connection",
-    properties: ({}) => ({
-      Category: "VPN",
-    }),
-    dependencies: ({}) => ({
-      customerGateway: "cgw",
       vpnGateway: "vpw",
     }),
   },

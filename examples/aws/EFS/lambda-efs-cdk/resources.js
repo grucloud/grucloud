@@ -61,13 +61,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "LambdaEfsCdkStack/theVpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
+    name: "LambdaEfsCdkStack/theVpc/PublicSubnet1",
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: "LambdaEfsCdkStack/theVpc/PublicSubnet2",
   },
   { type: "InternetGateway", group: "EC2", name: "LambdaEfsCdkStack/theVpc" },
   {
@@ -102,6 +103,167 @@ exports.createResources = () => [
       subnet:
         "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet2",
       eip: "LambdaEfsCdkStack/theVpc/PublicSubnet2",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      natGateway: "LambdaEfsCdkStack/theVpc/PublicSubnet1",
+      routeTable:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet1",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      natGateway: "LambdaEfsCdkStack/theVpc/PublicSubnet2",
+      routeTable:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet2",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "LambdaEfsCdkStack/theVpc",
+      routeTable:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet1",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "LambdaEfsCdkStack/theVpc",
+      routeTable:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet2",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "LambdaEfsCdkStack/theVpc/PrivateSubnet1",
+    dependencies: ({}) => ({
+      vpc: "LambdaEfsCdkStack/theVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "LambdaEfsCdkStack/theVpc/PrivateSubnet2",
+    dependencies: ({}) => ({
+      vpc: "LambdaEfsCdkStack/theVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "LambdaEfsCdkStack/theVpc/PublicSubnet1",
+    dependencies: ({}) => ({
+      vpc: "LambdaEfsCdkStack/theVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "LambdaEfsCdkStack/theVpc/PublicSubnet2",
+    dependencies: ({}) => ({
+      vpc: "LambdaEfsCdkStack/theVpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet1",
+      subnet:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet1",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet2",
+      subnet:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet2",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet1",
+      subnet:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet1",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet2",
+      subnet:
+        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet2",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName:
+        "LambdaEfsCdkStack-lambdaEfsHandlerSecurityGroup32CE0F81-1VVQUCNXTK3GD",
+      Description:
+        "Automatic security group for Lambda Function LambdaEfsCdkStacklambdaEfsHandlerB00F09C4",
+    }),
+    dependencies: ({}) => ({
+      vpc: "LambdaEfsCdkStack/theVpc",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName:
+        "LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-VZYS8FSPIGKI",
+      Description: "LambdaEfsCdkStack/theFileSystem/EfsSecurityGroup",
+    }),
+    dependencies: ({}) => ({
+      vpc: "LambdaEfsCdkStack/theVpc",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 2049,
+      IpProtocol: "tcp",
+      ToPort: 2049,
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-VZYS8FSPIGKI",
+      securityGroupFrom: [
+        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-lambdaEfsHandlerSecurityGroup32CE0F81-1VVQUCNXTK3GD",
+      ],
     }),
   },
   {
@@ -159,175 +321,13 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: "LambdaEfsCdkStack/theVpc/PrivateSubnet1",
-    dependencies: ({}) => ({
-      vpc: "LambdaEfsCdkStack/theVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "LambdaEfsCdkStack/theVpc/PrivateSubnet2",
-    dependencies: ({}) => ({
-      vpc: "LambdaEfsCdkStack/theVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "LambdaEfsCdkStack/theVpc/PublicSubnet1",
-    dependencies: ({}) => ({
-      vpc: "LambdaEfsCdkStack/theVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "LambdaEfsCdkStack/theVpc/PublicSubnet2",
-    dependencies: ({}) => ({
-      vpc: "LambdaEfsCdkStack/theVpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet1",
-      subnet:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet1",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet2",
-      subnet:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet2",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet1",
-      subnet:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet1",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet2",
-      subnet:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
+    name: "LambdaEfsCdkStack/theVpc",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
-    dependencies: ({}) => ({
-      natGateway: "LambdaEfsCdkStack/theVpc/PublicSubnet1",
-      routeTable:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet1",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "LambdaEfsCdkStack/theVpc/PublicSubnet2",
-      routeTable:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PrivateSubnet2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "LambdaEfsCdkStack/theVpc",
-      routeTable:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet1",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "LambdaEfsCdkStack/theVpc",
-      routeTable:
-        "LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack/theVpc/PublicSubnet2",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName:
-        "LambdaEfsCdkStack-lambdaEfsHandlerSecurityGroup32CE0F81-1VVQUCNXTK3GD",
-      Description:
-        "Automatic security group for Lambda Function LambdaEfsCdkStacklambdaEfsHandlerB00F09C4",
-    }),
-    dependencies: ({}) => ({
-      vpc: "LambdaEfsCdkStack/theVpc",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName:
-        "LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-VZYS8FSPIGKI",
-      Description: "LambdaEfsCdkStack/theFileSystem/EfsSecurityGroup",
-    }),
-    dependencies: ({}) => ({
-      vpc: "LambdaEfsCdkStack/theVpc",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 2049,
-      IpProtocol: "tcp",
-      ToPort: 2049,
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-theFileSystemEfsSecurityGroupF0AB1967-VZYS8FSPIGKI",
-      securityGroupFrom: [
-        "sg::LambdaEfsCdkStack/theVpc::LambdaEfsCdkStack-lambdaEfsHandlerSecurityGroup32CE0F81-1VVQUCNXTK3GD",
-      ],
-    }),
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: "LambdaEfsCdkStack/theVpc/PublicSubnet1",
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: "LambdaEfsCdkStack/theVpc/PublicSubnet2",
   },
   { type: "FileSystem", group: "EFS", name: "LambdaEfsCdkStack/theFileSystem" },
   {

@@ -3,45 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-d",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "rt-default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ec2Instance: "my-instance",
-      routeTable: "vpc-default::rt-default",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-default::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
   {
     type: "Instance",
     group: "EC2",
@@ -61,4 +22,43 @@ exports.createResources = () => [
       securityGroups: ["sg::vpc-default::default"],
     }),
   },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ec2Instance: "my-instance",
+      routeTable: "vpc-default::rt-default",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "rt-default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-d",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
 ];

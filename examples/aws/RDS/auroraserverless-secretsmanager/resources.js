@@ -4,41 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "Vpc8378EB38",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "VpcauroraisolatedSubnet1Subnet5370B90B",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 1,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "Vpc8378EB38",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "VpcauroraisolatedSubnet2SubnetCB56E2A8",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 1,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "Vpc8378EB38",
-    }),
-  },
-  {
     type: "RouteTable",
     group: "EC2",
     name: "VpcauroraisolatedSubnet1RouteTableA8F6E99C",
@@ -68,6 +33,41 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       routeTable: "Vpc8378EB38::VpcauroraisolatedSubnet2RouteTableBF363B67",
       subnet: "Vpc8378EB38::VpcauroraisolatedSubnet2SubnetCB56E2A8",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "VpcauroraisolatedSubnet1Subnet5370B90B",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 1,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc8378EB38",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "VpcauroraisolatedSubnet2SubnetCB56E2A8",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 1,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc8378EB38",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "Vpc8378EB38",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

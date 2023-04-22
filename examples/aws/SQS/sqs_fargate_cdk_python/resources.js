@@ -135,12 +135,48 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "Instance",
     group: "EC2",
-    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
+    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1/NatInstance",
+    properties: ({ config, getId }) => ({
+      InstanceType: "t3.small",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python-SqsFargateCdkPythonVpcNatSecurityGroup8DFF1130-1GHN542U38JNH",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
+          })}`,
+        },
+      ],
+      Image: {
+        Description: "Amazon Linux AMI 2018.03.0.20230124.1 x86_64 VPC HVM ebs",
+      },
+      UserData: "#!/bin/bash",
+      CreditSpecification: {
+        CpuCredits: "unlimited",
+      },
+    }),
+    dependencies: ({}) => ({
+      subnets: [
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
+      ],
+      iamInstanceProfile:
+        "sqs-fargate-cdk-python-SqsFargateCdkPythonVpcPublicSubnet1NatInstanceInstanceProfileC78D317B-uBsBtxy6qVAp",
+      securityGroups: [
+        "sg::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python-SqsFargateCdkPythonVpcNatSecurityGroup8DFF1130-1GHN542U38JNH",
+      ],
     }),
   },
   {
@@ -154,6 +190,231 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
       internetGateway: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ec2Instance:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1/NatInstance",
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet1",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ec2Instance:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1/NatInstance",
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet2",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ec2Instance:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1/NatInstance",
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet3",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet2",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet3",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet1",
+    dependencies: ({}) => ({
+      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet2",
+    dependencies: ({}) => ({
+      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet3",
+    dependencies: ({}) => ({
+      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
+    dependencies: ({}) => ({
+      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet2",
+    dependencies: ({}) => ({
+      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet3",
+    dependencies: ({}) => ({
+      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet1",
+      subnet:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet1",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet2",
+      subnet:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet2",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet3",
+      subnet:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet3",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
+      subnet:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet2",
+      subnet:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet2",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet3",
+      subnet:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet3",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName:
+        "sqs-fargate-cdk-python-SqsFargateCdkPythonFargateServiceSecurityGroupDA46299D-11BGIJGBPHDGF",
+      Description:
+        "sqs-fargate-cdk-python/SqsFargateCdkPythonFargateService/SecurityGroup",
+    }),
+    dependencies: ({}) => ({
+      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName:
+        "sqs-fargate-cdk-python-SqsFargateCdkPythonVpcNatSecurityGroup8DFF1130-1GHN542U38JNH",
+      Description: "Security Group for NAT instances",
+    }),
+    dependencies: ({}) => ({
+      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "from 0.0.0.0/0:ALL TRAFFIC",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python-SqsFargateCdkPythonVpcNatSecurityGroup8DFF1130-1GHN542U38JNH",
     }),
   },
   {
@@ -238,273 +499,12 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet1",
-    dependencies: ({}) => ({
-      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet2",
-    dependencies: ({}) => ({
-      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet3",
-    dependencies: ({}) => ({
-      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
-    dependencies: ({}) => ({
-      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet2",
-    dependencies: ({}) => ({
-      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet3",
-    dependencies: ({}) => ({
-      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet1",
-      subnet:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet1",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet2",
-      subnet:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet2",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet3",
-      subnet:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet3",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
-      subnet:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet2",
-      subnet:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet2",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet3",
-      subnet:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet3",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
+    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ec2Instance:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1/NatInstance",
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet1",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ec2Instance:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1/NatInstance",
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ec2Instance:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1/NatInstance",
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PrivateSubnet3",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-      routeTable:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet3",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName:
-        "sqs-fargate-cdk-python-SqsFargateCdkPythonFargateServiceSecurityGroupDA46299D-11BGIJGBPHDGF",
-      Description:
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonFargateService/SecurityGroup",
-    }),
-    dependencies: ({}) => ({
-      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName:
-        "sqs-fargate-cdk-python-SqsFargateCdkPythonVpcNatSecurityGroup8DFF1130-1GHN542U38JNH",
-      Description: "Security Group for NAT instances",
-    }),
-    dependencies: ({}) => ({
-      vpc: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpProtocol: "-1",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-          Description: "from 0.0.0.0/0:ALL TRAFFIC",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python-SqsFargateCdkPythonVpcNatSecurityGroup8DFF1130-1GHN542U38JNH",
-    }),
-  },
-  {
-    type: "Instance",
-    group: "EC2",
-    name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1/NatInstance",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t3.small",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python-SqsFargateCdkPythonVpcNatSecurityGroup8DFF1130-1GHN542U38JNH",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
-          })}`,
-        },
-      ],
-      Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20230124.1 x86_64 VPC HVM ebs",
-      },
-      UserData: "#!/bin/bash",
-      // CreditSpecification: {
-      //   CpuCredits: "unlimited",
-      // },
-    }),
-    dependencies: ({}) => ({
-      subnets: [
-        "sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc/PublicSubnet1",
-      ],
-      iamInstanceProfile:
-        "sqs-fargate-cdk-python-SqsFargateCdkPythonVpcPublicSubnet1NatInstanceInstanceProfileC78D317B-uBsBtxy6qVAp",
-      securityGroups: [
-        "sg::sqs-fargate-cdk-python/SqsFargateCdkPythonVpc::sqs-fargate-cdk-python-SqsFargateCdkPythonVpcNatSecurityGroup8DFF1130-1GHN542U38JNH",
-      ],
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -603,6 +603,16 @@ exports.createResources = () => [
         "sqs-fargate-cdk-python-SqsFargateCdkPythonRoleD7D9-1TQTTWWOKSKV0",
       executionRole:
         "sqs-fargate-cdk-python-SqsFargateCdkPythonFargateT-129UBR2VHOXQL",
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "sqs-fargate-cdk-python-SqsFargateCdkPythonVpcPublicSubnet1NatInstanceInstanceProfileC78D317B-uBsBtxy6qVAp",
+    dependencies: ({}) => ({
+      roles: [
+        "sqs-fargate-cdk-python-SqsFargateCdkPythonVpcNatRo-IO9BTFUJWQDQ",
+      ],
     }),
   },
   {
@@ -722,16 +732,6 @@ exports.createResources = () => [
           },
         ],
       },
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "sqs-fargate-cdk-python-SqsFargateCdkPythonVpcPublicSubnet1NatInstanceInstanceProfileC78D317B-uBsBtxy6qVAp",
-    dependencies: ({}) => ({
-      roles: [
-        "sqs-fargate-cdk-python-SqsFargateCdkPythonVpcNatRo-IO9BTFUJWQDQ",
-      ],
     }),
   },
   {

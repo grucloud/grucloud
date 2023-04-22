@@ -4,53 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "my-maintenance-window-role",
-      Description: "Allows SSM to call AWS services on your behalf",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "ssm.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["my-maintenance-window-role-policy"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "StepFunctions-maintenance-window-state-machine-role-9a8fad86",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "states.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["XRayAccessPolicy-0c77fa64-1fe0-4888-b058-990040cb421a"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -137,6 +90,53 @@ exports.createResources = () => [
       Path: "/service-role/",
       Description:
         "Allow AWS Step Functions to call X-Ray daemon on your behalf",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "my-maintenance-window-role",
+      Description: "Allows SSM to call AWS services on your behalf",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "ssm.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["my-maintenance-window-role-policy"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "StepFunctions-maintenance-window-state-machine-role-9a8fad86",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "states.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["XRayAccessPolicy-0c77fa64-1fe0-4888-b058-990040cb421a"],
     }),
   },
   {

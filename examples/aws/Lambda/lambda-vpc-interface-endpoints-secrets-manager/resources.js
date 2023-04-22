@@ -4,41 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "PrivateLambdaVPC",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "AwsLambdaPrivSubnetStack/PrivateLambdaVPC/IsolatedSubnet1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 1,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "PrivateLambdaVPC",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "AwsLambdaPrivSubnetStack/PrivateLambdaVPC/IsolatedSubnet2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 1,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "PrivateLambdaVPC",
-    }),
-  },
-  {
     type: "RouteTable",
     group: "EC2",
     name: "AwsLambdaPrivSubnetStack/PrivateLambdaVPC/IsolatedSubnet1",
@@ -112,6 +77,41 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::PrivateLambdaVPC::PrivateLambdaSG",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "AwsLambdaPrivSubnetStack/PrivateLambdaVPC/IsolatedSubnet1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 1,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "PrivateLambdaVPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "AwsLambdaPrivSubnetStack/PrivateLambdaVPC/IsolatedSubnet2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 1,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "PrivateLambdaVPC",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "PrivateLambdaVPC",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

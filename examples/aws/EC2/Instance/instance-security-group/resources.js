@@ -3,45 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "KeyPair", group: "EC2", name: "kp-ec2" },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-a",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "launch-wizard-1",
-      Description: "launch-wizard created 2022-05-09T22:35:52.892Z",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 22,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 22,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::launch-wizard-1",
-    }),
-  },
   {
     type: "Instance",
     group: "EC2",
@@ -79,4 +40,43 @@ exports.createResources = () => [
       securityGroups: ["sg::vpc-default::launch-wizard-1"],
     }),
   },
+  { type: "KeyPair", group: "EC2", name: "kp-ec2" },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "launch-wizard-1",
+      Description: "launch-wizard created 2022-05-09T22:35:52.892Z",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 22,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-default::launch-wizard-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-a",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
 ];

@@ -50,14 +50,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "my-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/24",
-    }),
-  },
-  {
     type: "Subnet",
     group: "EC2",
     name: "subnet-1",
@@ -101,6 +93,22 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-my-tgw-default",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::my-tgw::my-vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-my-tgw-default",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::my-tgw::my-vpc",
+    }),
+  },
+  {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
     name: "tgw-vpc-attach::my-tgw::my-vpc",
@@ -118,19 +126,11 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGatewayRouteTableAssociation",
+    type: "Vpc",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "tgw-rtb-my-tgw-default",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::my-tgw::my-vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "tgw-rtb-my-tgw-default",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::my-tgw::my-vpc",
+    name: "my-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/24",
     }),
   },
 ];

@@ -3,7 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Subnet",
     group: "EC2",
@@ -17,4 +16,5 @@ exports.createResources = () => [
       vpc: "vpc-default",
     }),
   },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
 ];

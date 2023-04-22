@@ -3,15 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "AlbLambdaCdkStack/MyVPC",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
   { type: "InternetGateway", group: "EC2", name: "AlbLambdaCdkStack/MyVPC" },
   {
     type: "InternetGatewayAttachment",
@@ -22,31 +13,27 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "AlbLambdaCdkStack/MyVPC/VpcSubnetGroupSubnet1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 1,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "AlbLambdaCdkStack/MyVPC",
+      ig: "AlbLambdaCdkStack/MyVPC",
+      routeTable:
+        "AlbLambdaCdkStack/MyVPC::AlbLambdaCdkStack/MyVPC/VpcSubnetGroupSubnet1",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "AlbLambdaCdkStack/MyVPC/VpcSubnetGroupSubnet2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 1,
-      NetworkNumber: 1,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "AlbLambdaCdkStack/MyVPC",
+      ig: "AlbLambdaCdkStack/MyVPC",
+      routeTable:
+        "AlbLambdaCdkStack/MyVPC::AlbLambdaCdkStack/MyVPC/VpcSubnetGroupSubnet2",
     }),
   },
   {
@@ -82,30 +69,6 @@ exports.createResources = () => [
       routeTable:
         "AlbLambdaCdkStack/MyVPC::AlbLambdaCdkStack/MyVPC/VpcSubnetGroupSubnet2",
       subnet:
-        "AlbLambdaCdkStack/MyVPC::AlbLambdaCdkStack/MyVPC/VpcSubnetGroupSubnet2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "AlbLambdaCdkStack/MyVPC",
-      routeTable:
-        "AlbLambdaCdkStack/MyVPC::AlbLambdaCdkStack/MyVPC/VpcSubnetGroupSubnet1",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "AlbLambdaCdkStack/MyVPC",
-      routeTable:
         "AlbLambdaCdkStack/MyVPC::AlbLambdaCdkStack/MyVPC/VpcSubnetGroupSubnet2",
     }),
   },
@@ -137,6 +100,43 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       securityGroup:
         "sg::AlbLambdaCdkStack/MyVPC::AlbLambdaCdkStack-MyLoadBalancerSG5F91329E-1E80CKYEVNK4Z",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "AlbLambdaCdkStack/MyVPC/VpcSubnetGroupSubnet1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 1,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "AlbLambdaCdkStack/MyVPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "AlbLambdaCdkStack/MyVPC/VpcSubnetGroupSubnet2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 1,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "AlbLambdaCdkStack/MyVPC",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "AlbLambdaCdkStack/MyVPC",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

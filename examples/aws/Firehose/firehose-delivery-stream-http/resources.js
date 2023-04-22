@@ -82,56 +82,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "firehose.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ config }) => ({
-      policies: [
-        `KinesisFirehoseServicePolicy-delivery-stream-s3-${config.region}`,
-      ],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667080185649`,
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "firehose.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ config }) => ({
-      policies: [
-        `KinesisFirehoseServicePolicy-delivery-stream-http-${config.region}`,
-      ],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({ config }) => ({
@@ -378,19 +328,60 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "firehose.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ config }) => ({
+      policies: [
+        `KinesisFirehoseServicePolicy-delivery-stream-s3-${config.region}`,
+      ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667080185649`,
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "firehose.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ config }) => ({
+      policies: [
+        `KinesisFirehoseServicePolicy-delivery-stream-http-${config.region}`,
+      ],
+    }),
+  },
+  {
     type: "Bucket",
     group: "S3",
     properties: ({}) => ({
       Name: "gc-delivery-stream-backup",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
   {
@@ -398,15 +389,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-firehose-destination",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

@@ -148,6 +148,29 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "EgressOnlyInternetGateway",
+    group: "EC2",
+    name: "inspection_eigw",
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: ({ config }) => `internet_vpc_nat-${config.region}a`,
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: ({ config }) => `internet_vpc_nat-${config.region}b`,
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: ({ config }) => `internet_vpc_nat-${config.region}c`,
+  },
+  {
     type: "FlowLogs",
     group: "EC2",
     name: "flowlog::dns_vpc",
@@ -189,6 +212,15 @@ exports.createResources = () => [
       cloudWatchLogGroup: "inspection_vpc",
     }),
   },
+  { type: "InternetGateway", group: "EC2", name: "inspection_igw" },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+      internetGateway: "inspection_igw",
+    }),
+  },
   {
     type: "Ipam",
     group: "EC2",
@@ -200,20 +232,6 @@ exports.createResources = () => [
           RegionName: `${config.region}`,
         },
       ],
-    }),
-  },
-  {
-    type: "IpamScope",
-    group: "EC2",
-    name: "private_org_ipam_scope",
-    properties: ({ config }) => ({
-      IpamRegion: `${config.region}`,
-      IpamScopeType: "private",
-      IsDefault: false,
-      Description: "Org Scope",
-    }),
-    dependencies: ({}) => ({
-      ipam: "org_ipam",
     }),
   },
   {
@@ -242,59 +260,17 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "IpamScope",
     group: "EC2",
-    name: "dns_vpc",
-    properties: ({}) => ({
-      DnsHostnames: true,
-      Ipv4NetmaskLength: "22",
-      AmazonProvidedIpv6CidrBlock: true,
+    name: "private_org_ipam_scope",
+    properties: ({ config }) => ({
+      IpamRegion: `${config.region}`,
+      IpamScopeType: "private",
+      IsDefault: false,
+      Description: "Org Scope",
     }),
     dependencies: ({}) => ({
-      ipamPoolIpv4: "private_org_ipam_scope",
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "endpoint_vpc",
-    properties: ({}) => ({
-      DnsHostnames: true,
-      Ipv4NetmaskLength: "22",
-      AmazonProvidedIpv6CidrBlock: true,
-    }),
-    dependencies: ({}) => ({
-      ipamPoolIpv4: "private_org_ipam_scope",
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "inspection_vpc",
-    properties: ({}) => ({
-      DnsHostnames: true,
-      Ipv4NetmaskLength: "22",
-      AmazonProvidedIpv6CidrBlock: true,
-    }),
-    dependencies: ({}) => ({
-      ipamPoolIpv4: "private_org_ipam_scope",
-    }),
-  },
-  { type: "InternetGateway", group: "EC2", name: "inspection_igw" },
-  {
-    type: "InternetGatewayAttachment",
-    group: "EC2",
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-      internetGateway: "inspection_igw",
-    }),
-  },
-  {
-    type: "EgressOnlyInternetGateway",
-    group: "EC2",
-    name: "inspection_eigw",
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+      ipam: "org_ipam",
     }),
   },
   {
@@ -361,6 +337,799 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       subnet: `inspection_vpc::inspection_internet_${config.region}c`,
       eip: `internet_vpc_nat-${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "dns_vpc::dns_route_table",
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "dns_vpc::dns_route_table",
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "64:ff9b::/96",
+    }),
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "64:ff9b::/96",
+    }),
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "64:ff9b::/96",
+    }),
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      ig: "inspection_igw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      ig: "inspection_igw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      ig: "inspection_igw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "dns_route_table",
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "dns",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "dns_vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "endpoint_route_table",
+    dependencies: ({}) => ({
+      vpc: "endpoint_vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `inspection_attachment_${config.region}a`,
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `inspection_attachment_${config.region}b`,
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `inspection_attachment_${config.region}c`,
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `inspection_inspection_${config.region}a`,
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "inspection",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `inspection_inspection_${config.region}b`,
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "inspection",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `inspection_inspection_${config.region}c`,
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "inspection",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `inspection_internet_${config.region}a`,
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Network",
+          Value: "public",
+        },
+        {
+          Key: "Type",
+          Value: "internet",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `inspection_internet_${config.region}b`,
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Network",
+          Value: "public",
+        },
+        {
+          Key: "Type",
+          Value: "internet",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `inspection_internet_${config.region}c`,
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Network",
+          Value: "public",
+        },
+        {
+          Key: "Type",
+          Value: "internet",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_attachment_${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_attachment_${config.region}b`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_attachment_${config.region}c`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_endpoint_${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_endpoint_${config.region}b`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_endpoint_${config.region}c`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_attachment_${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_attachment_${config.region}b`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_attachment_${config.region}c`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
+      subnet: `inspection_vpc::inspection_attachment_${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
+      subnet: `inspection_vpc::inspection_attachment_${config.region}b`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
+      subnet: `inspection_vpc::inspection_attachment_${config.region}c`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
+      subnet: `inspection_vpc::inspection_inspection_${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
+      subnet: `inspection_vpc::inspection_inspection_${config.region}b`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
+      subnet: `inspection_vpc::inspection_inspection_${config.region}c`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
+      subnet: `inspection_vpc::inspection_internet_${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
+      subnet: `inspection_vpc::inspection_internet_${config.region}b`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
+      subnet: `inspection_vpc::inspection_internet_${config.region}c`,
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "Network-DNS-Traffic-SG",
+      Description: "Allow traffic across org to dns endpoints",
+    }),
+    dependencies: ({}) => ({
+      vpc: "dns_vpc",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "MGMT-VPC-Endpoints-Traffic-SG",
+      Description: "Allow traffic across org to vpc endpoints",
+    }),
+    dependencies: ({}) => ({
+      vpc: "endpoint_vpc",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 53,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/10",
+          Description: "Allow 53 traffic across org to dns endpoints",
+        },
+      ],
+      ToPort: 53,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::dns_vpc::Network-DNS-Traffic-SG",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 53,
+      IpProtocol: "udp",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/10",
+          Description: "Allow 53 traffic across org to dns endpoints",
+        },
+      ],
+      ToPort: 53,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::dns_vpc::Network-DNS-Traffic-SG",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/10",
+          Description: "Allow 443 traffic across org to vpc endpoints",
+        },
+      ],
+      ToPort: 443,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::endpoint_vpc::MGMT-VPC-Endpoints-Traffic-SG",
     }),
   },
   {
@@ -910,812 +1679,332 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "TransitGateway",
     group: "EC2",
-    name: "dns_route_table",
+    name: "Org_TGW_dev",
     properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "dns",
-        },
-      ],
+      Description:
+        "Org TGW with auto accept shared for prod, dev and shared environments",
+      Options: {
+        AmazonSideAsn: 64512,
+        AutoAcceptSharedAttachments: "enable",
+        DefaultRouteTableAssociation: "disable",
+        DefaultRouteTablePropagation: "disable",
+        VpnEcmpSupport: "enable",
+        DnsSupport: "enable",
+        MulticastSupport: "disable",
+      },
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "::/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "::/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTable",
+    group: "EC2",
+    name: "dev",
+    properties: ({}) => ({
+      DefaultAssociationRouteTable: false,
+      DefaultPropagationRouteTable: false,
+    }),
+    dependencies: ({}) => ({
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTable",
+    group: "EC2",
+    name: "prod",
+    properties: ({}) => ({
+      DefaultAssociationRouteTable: false,
+      DefaultPropagationRouteTable: false,
+    }),
+    dependencies: ({}) => ({
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTable",
+    group: "EC2",
+    name: "shared",
+    properties: ({}) => ({
+      DefaultAssociationRouteTable: false,
+      DefaultPropagationRouteTable: false,
+    }),
+    dependencies: ({}) => ({
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayVpcAttachment",
+    group: "EC2",
+    name: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
+    properties: ({}) => ({
+      Options: {
+        DnsSupport: "enable",
+        Ipv6Support: "enable",
+        ApplianceModeSupport: "disable",
+      },
+    }),
+    dependencies: ({ config }) => ({
+      transitGateway: "Org_TGW_dev",
       vpc: "dns_vpc",
+      subnets: [
+        `dns_vpc::dns_attachment_${config.region}a`,
+        `dns_vpc::dns_attachment_${config.region}b`,
+        `dns_vpc::dns_attachment_${config.region}c`,
+      ],
     }),
   },
   {
-    type: "RouteTable",
+    type: "TransitGatewayVpcAttachment",
     group: "EC2",
-    name: "endpoint_route_table",
-    dependencies: ({}) => ({
+    name: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
+    properties: ({}) => ({
+      Options: {
+        DnsSupport: "enable",
+        Ipv6Support: "enable",
+        ApplianceModeSupport: "disable",
+      },
+    }),
+    dependencies: ({ config }) => ({
+      transitGateway: "Org_TGW_dev",
       vpc: "endpoint_vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}a`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
+      subnets: [
+        `endpoint_vpc::endpoint_attachment_${config.region}a`,
+        `endpoint_vpc::endpoint_attachment_${config.region}b`,
+        `endpoint_vpc::endpoint_attachment_${config.region}c`,
       ],
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-    }),
   },
   {
-    type: "RouteTable",
+    type: "TransitGatewayVpcAttachment",
     group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}b`,
+    name: "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
     properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
+      Options: {
+        DnsSupport: "enable",
+        Ipv6Support: "enable",
+        ApplianceModeSupport: "enable",
+      },
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}c`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}a`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "inspection",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}b`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "inspection",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}c`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "inspection",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}a`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Network",
-          Value: "public",
-        },
-        {
-          Key: "Type",
-          Value: "internet",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}b`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Network",
-          Value: "public",
-        },
-        {
-          Key: "Type",
-          Value: "internet",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}c`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Network",
-          Value: "public",
-        },
-        {
-          Key: "Type",
-          Value: "internet",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "dns_vpc::dns_route_table",
-      subnet: `dns_vpc::dns_attachment_${config.region}a`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "dns_vpc::dns_route_table",
-      subnet: `dns_vpc::dns_attachment_${config.region}b`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "dns_vpc::dns_route_table",
-      subnet: `dns_vpc::dns_attachment_${config.region}c`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "dns_vpc::dns_route_table",
-      subnet: `dns_vpc::dns_endpoint_${config.region}a`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "dns_vpc::dns_route_table",
-      subnet: `dns_vpc::dns_endpoint_${config.region}b`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "dns_vpc::dns_route_table",
-      subnet: `dns_vpc::dns_endpoint_${config.region}c`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "endpoint_vpc::endpoint_route_table",
-      subnet: `endpoint_vpc::endpoint_attachment_${config.region}a`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "endpoint_vpc::endpoint_route_table",
-      subnet: `endpoint_vpc::endpoint_attachment_${config.region}b`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "endpoint_vpc::endpoint_route_table",
-      subnet: `endpoint_vpc::endpoint_attachment_${config.region}c`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "endpoint_vpc::endpoint_route_table",
-      subnet: `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "endpoint_vpc::endpoint_route_table",
-      subnet: `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "endpoint_vpc::endpoint_route_table",
-      subnet: `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
-      subnet: `inspection_vpc::inspection_attachment_${config.region}a`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
-      subnet: `inspection_vpc::inspection_attachment_${config.region}b`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
-      subnet: `inspection_vpc::inspection_attachment_${config.region}c`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
-      subnet: `inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
-      subnet: `inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
-      subnet: `inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
-      subnet: `inspection_vpc::inspection_internet_${config.region}a`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
-      subnet: `inspection_vpc::inspection_internet_${config.region}b`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
-      subnet: `inspection_vpc::inspection_internet_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "dns_vpc::dns_route_table",
       transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "dns_vpc::dns_route_table",
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "endpoint_vpc::endpoint_route_table",
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "endpoint_vpc::endpoint_route_table",
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}a`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "64:ff9b::/96",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}a`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}b`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "64:ff9b::/96",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}b`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}c`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "64:ff9b::/96",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}c`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "inspection_igw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "inspection_igw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "inspection_igw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "Network-DNS-Traffic-SG",
-      Description: "Allow traffic across org to dns endpoints",
-    }),
-    dependencies: ({}) => ({
-      vpc: "dns_vpc",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "MGMT-VPC-Endpoints-Traffic-SG",
-      Description: "Allow traffic across org to vpc endpoints",
-    }),
-    dependencies: ({}) => ({
-      vpc: "endpoint_vpc",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 53,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "10.0.0.0/10",
-          Description: "Allow 53 traffic across org to dns endpoints",
-        },
+      vpc: "inspection_vpc",
+      subnets: [
+        `inspection_vpc::inspection_attachment_${config.region}a`,
+        `inspection_vpc::inspection_attachment_${config.region}b`,
+        `inspection_vpc::inspection_attachment_${config.region}c`,
       ],
-      ToPort: 53,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::dns_vpc::Network-DNS-Traffic-SG",
     }),
   },
   {
-    type: "SecurityGroupRuleIngress",
+    type: "Vpc",
     group: "EC2",
+    name: "dns_vpc",
     properties: ({}) => ({
-      FromPort: 53,
-      IpProtocol: "udp",
-      IpRanges: [
-        {
-          CidrIp: "10.0.0.0/10",
-          Description: "Allow 53 traffic across org to dns endpoints",
-        },
-      ],
-      ToPort: 53,
+      DnsHostnames: true,
+      Ipv4NetmaskLength: "22",
+      AmazonProvidedIpv6CidrBlock: true,
     }),
     dependencies: ({}) => ({
-      securityGroup: "sg::dns_vpc::Network-DNS-Traffic-SG",
+      ipamPoolIpv4: "private_org_ipam_scope",
     }),
   },
   {
-    type: "SecurityGroupRuleIngress",
+    type: "Vpc",
     group: "EC2",
+    name: "endpoint_vpc",
     properties: ({}) => ({
-      FromPort: 443,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "10.0.0.0/10",
-          Description: "Allow 443 traffic across org to vpc endpoints",
-        },
-      ],
-      ToPort: 443,
+      DnsHostnames: true,
+      Ipv4NetmaskLength: "22",
+      AmazonProvidedIpv6CidrBlock: true,
     }),
     dependencies: ({}) => ({
-      securityGroup: "sg::endpoint_vpc::MGMT-VPC-Endpoints-Traffic-SG",
+      ipamPoolIpv4: "private_org_ipam_scope",
     }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Vpc",
     group: "EC2",
-    name: ({ config }) => `internet_vpc_nat-${config.region}a`,
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: ({ config }) => `internet_vpc_nat-${config.region}b`,
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: ({ config }) => `internet_vpc_nat-${config.region}c`,
+    name: "inspection_vpc",
+    properties: ({}) => ({
+      DnsHostnames: true,
+      Ipv4NetmaskLength: "22",
+      AmazonProvidedIpv6CidrBlock: true,
+    }),
+    dependencies: ({}) => ({
+      ipamPoolIpv4: "private_org_ipam_scope",
+    }),
   },
   {
     type: "VpcEndpoint",
@@ -1990,292 +2279,58 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGateway",
-    group: "EC2",
-    name: "Org_TGW_dev",
+    type: "Policy",
+    group: "IAM",
     properties: ({}) => ({
+      PolicyName: "dev_central_network_automation_policy",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "ec2:DescribeTransitGateway*",
+              "ec2:GetTransitGateway*",
+              "ec2:SearchTransitGateway*",
+              "ec2:AssociateTransitGatewayRouteTable",
+              "ec2:DisassociateTransitGatewayRouteTable",
+              "ec2:EnableTransitGatewayRouteTablePropagation",
+              "ec2:ModifyTransitGateway",
+              "ec2:DescribeVpcs",
+              "ec2:DescribeVpcAttribute",
+              "ec2:ReplaceTransitGatewayRoute",
+              "ec2:DisableTransitGatewayRouteTablePropagation",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["ssm:GetParameters", "ssm:GetParameter", "kms:Decrypt"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "route53:GetHostedZone",
+              "route53:ListHostedZonesByVPC",
+              "route53:DisassociateVPCFromHostedZone",
+              "route53:AssociateVPCWithHostedZone",
+              "route53:CreateVPCAssociationAuthorization",
+              "route53:ChangeResourceRecordSets",
+              "route53:ListResourceRecordSets",
+              "route53:DeleteVPCAssociationAuthorization",
+              "route53:ListHostedZones",
+              "route53:ListTagsForResource",
+              "route53:ListVPCAssociationAuthorizations",
+              "route53:GetChange",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
       Description:
-        "Org TGW with auto accept shared for prod, dev and shared environments",
-      Options: {
-        AmazonSideAsn: 64512,
-        AutoAcceptSharedAttachments: "enable",
-        DefaultRouteTableAssociation: "disable",
-        DefaultRouteTablePropagation: "disable",
-        VpnEcmpSupport: "enable",
-        DnsSupport: "enable",
-        MulticastSupport: "disable",
-      },
-    }),
-  },
-  {
-    type: "TransitGatewayRoute",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "::/0",
-    }),
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "dev",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRoute",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "dev",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRoute",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "::/0",
-    }),
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "prod",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRoute",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "prod",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRoute",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "::/0",
-    }),
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRoute",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTable",
-    group: "EC2",
-    name: "dev",
-    properties: ({}) => ({
-      DefaultAssociationRouteTable: false,
-      DefaultPropagationRouteTable: false,
-    }),
-    dependencies: ({}) => ({
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTable",
-    group: "EC2",
-    name: "prod",
-    properties: ({}) => ({
-      DefaultAssociationRouteTable: false,
-      DefaultPropagationRouteTable: false,
-    }),
-    dependencies: ({}) => ({
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTable",
-    group: "EC2",
-    name: "shared",
-    properties: ({}) => ({
-      DefaultAssociationRouteTable: false,
-      DefaultPropagationRouteTable: false,
-    }),
-    dependencies: ({}) => ({
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "TransitGatewayVpcAttachment",
-    group: "EC2",
-    name: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
-    properties: ({}) => ({
-      Options: {
-        DnsSupport: "enable",
-        Ipv6Support: "enable",
-        ApplianceModeSupport: "disable",
-      },
-    }),
-    dependencies: ({ config }) => ({
-      transitGateway: "Org_TGW_dev",
-      vpc: "dns_vpc",
-      subnets: [
-        `dns_vpc::dns_attachment_${config.region}a`,
-        `dns_vpc::dns_attachment_${config.region}b`,
-        `dns_vpc::dns_attachment_${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "TransitGatewayVpcAttachment",
-    group: "EC2",
-    name: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
-    properties: ({}) => ({
-      Options: {
-        DnsSupport: "enable",
-        Ipv6Support: "enable",
-        ApplianceModeSupport: "disable",
-      },
-    }),
-    dependencies: ({ config }) => ({
-      transitGateway: "Org_TGW_dev",
-      vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_attachment_${config.region}a`,
-        `endpoint_vpc::endpoint_attachment_${config.region}b`,
-        `endpoint_vpc::endpoint_attachment_${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "TransitGatewayVpcAttachment",
-    group: "EC2",
-    name: "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    properties: ({}) => ({
-      Options: {
-        DnsSupport: "enable",
-        Ipv6Support: "enable",
-        ApplianceModeSupport: "enable",
-      },
-    }),
-    dependencies: ({ config }) => ({
-      transitGateway: "Org_TGW_dev",
-      vpc: "inspection_vpc",
-      subnets: [
-        `inspection_vpc::inspection_attachment_${config.region}a`,
-        `inspection_vpc::inspection_attachment_${config.region}b`,
-        `inspection_vpc::inspection_attachment_${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "dev",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "prod",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "dev",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "prod",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "dev",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "prod",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+        "dev Central network automation policy to allow TGW association, propagation and route53 private hosted zone association",
     }),
   },
   {
@@ -2352,61 +2407,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       policies: ["dev_central_network_automation_policy"],
       organisations: ["frederic.heem@gmail.com"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "dev_central_network_automation_policy",
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              "ec2:DescribeTransitGateway*",
-              "ec2:GetTransitGateway*",
-              "ec2:SearchTransitGateway*",
-              "ec2:AssociateTransitGatewayRouteTable",
-              "ec2:DisassociateTransitGatewayRouteTable",
-              "ec2:EnableTransitGatewayRouteTablePropagation",
-              "ec2:ModifyTransitGateway",
-              "ec2:DescribeVpcs",
-              "ec2:DescribeVpcAttribute",
-              "ec2:ReplaceTransitGatewayRoute",
-              "ec2:DisableTransitGatewayRouteTablePropagation",
-            ],
-            Effect: "Allow",
-            Resource: "*",
-          },
-          {
-            Action: ["ssm:GetParameters", "ssm:GetParameter", "kms:Decrypt"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-          {
-            Action: [
-              "route53:GetHostedZone",
-              "route53:ListHostedZonesByVPC",
-              "route53:DisassociateVPCFromHostedZone",
-              "route53:AssociateVPCWithHostedZone",
-              "route53:CreateVPCAssociationAuthorization",
-              "route53:ChangeResourceRecordSets",
-              "route53:ListResourceRecordSets",
-              "route53:DeleteVPCAssociationAuthorization",
-              "route53:ListHostedZones",
-              "route53:ListTagsForResource",
-              "route53:ListVPCAssociationAuthorizations",
-              "route53:GetChange",
-            ],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-        Version: "2012-10-17",
-      },
-      Path: "/",
-      Description:
-        "dev Central network automation policy to allow TGW association, propagation and route53 private hosted zone association",
     }),
   },
   {

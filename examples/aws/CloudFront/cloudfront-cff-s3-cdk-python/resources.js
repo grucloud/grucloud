@@ -6,60 +6,27 @@ exports.createResources = () => [
   {
     type: "Distribution",
     group: "CloudFront",
-    properties: ({ config, getId }) => ({
-      PriceClass: "PriceClass_All",
+    properties: ({ config }) => ({
       DefaultRootObject: "",
-      DefaultCacheBehavior: {
-        TargetOriginId:
-          "CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
-        TrustedSigners: {
-          Enabled: false,
-        },
-        TrustedKeyGroups: {
-          Enabled: false,
-        },
-        ViewerProtocolPolicy: "allow-all",
-        AllowedMethods: {
-          Quantity: 2,
-          Items: ["HEAD", "GET"],
-          CachedMethods: {
-            Quantity: 2,
-            Items: ["HEAD", "GET"],
-          },
-        },
-        SmoothStreaming: false,
-        Compress: true,
-        FunctionAssociations: {
-          Quantity: 1,
-          Items: [
-            {
-              FunctionARN: `arn:aws:cloudfront::${config.accountId()}:function/${
-                config.region
-              }CloudfronS3CdkPythonStackFunction980062BC`,
-              EventType: "viewer-request",
-            },
-          ],
-        },
-        FieldLevelEncryptionId: "",
-        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
-      },
       Origins: {
-        Quantity: 1,
         Items: [
           {
-            Id: "CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
-            DomainName:
-              "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d.s3.us-east-1.amazonaws.com",
+            Id: "CloudfrontLeApigwCdkStackmyDistributionOrigin1ACBD3C2F",
+            DomainName: `dl6n2iazdf.execute-api.${config.region}.amazonaws.com`,
             OriginPath: "",
             CustomHeaders: {
               Quantity: 0,
             },
-            S3OriginConfig: {
-              OriginAccessIdentity: `origin-access-identity/cloudfront/${getId({
-                type: "OriginAccessIdentity",
-                group: "CloudFront",
-                name: "Identity for CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
-              })}`,
+            CustomOriginConfig: {
+              HTTPPort: 80,
+              HTTPSPort: 443,
+              OriginProtocolPolicy: "https-only",
+              OriginSslProtocols: {
+                Quantity: 1,
+                Items: ["TLSv1.2"],
+              },
+              OriginReadTimeout: 30,
+              OriginKeepaliveTimeout: 5,
             },
             ConnectionAttempts: 3,
             ConnectionTimeout: 10,
@@ -70,18 +37,42 @@ exports.createResources = () => [
           },
         ],
       },
-      Restrictions: {
-        GeoRestriction: {
-          RestrictionType: "none",
+      DefaultCacheBehavior: {
+        TargetOriginId:
+          "CloudfrontLeApigwCdkStackmyDistributionOrigin1ACBD3C2F",
+        TrustedSigners: {
+          Enabled: false,
         },
+        TrustedKeyGroups: {
+          Enabled: false,
+        },
+        ViewerProtocolPolicy: "redirect-to-https",
+        AllowedMethods: {
+          Quantity: 2,
+          Items: ["HEAD", "GET"],
+          CachedMethods: {
+            Quantity: 2,
+            Items: ["HEAD", "GET"],
+          },
+        },
+        SmoothStreaming: false,
+        Compress: true,
+        LambdaFunctionAssociations: {
+          Items: [
+            {
+              LambdaFunctionARN: `arn:aws:lambda:${
+                config.region
+              }:${config.accountId()}:function:CloudfrontLeApigwCdkStack-LambdaEdge6A7A1843-sWx5QByO0zMJ:1`,
+              EventType: "origin-request",
+              IncludeBody: false,
+            },
+          ],
+        },
+        FieldLevelEncryptionId: "",
+        CachePolicyId: "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
       },
-      Comment: "",
-      Logging: {
-        Enabled: false,
-        IncludeCookies: false,
-        Bucket: "",
-        Prefix: "",
-      },
+      Comment: "Test sig4 signature",
+      PriceClass: "PriceClass_All",
       ViewerCertificate: {
         CloudFrontDefaultCertificate: true,
         SSLSupportMethod: "vip",
@@ -89,53 +80,18 @@ exports.createResources = () => [
         CertificateSource: "cloudfront",
       },
     }),
-    dependencies: ({ config }) => ({
-      buckets: [
-        "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d",
-      ],
-      functions: [`${config.region}CloudfronS3CdkPythonStackFunction980062BC`],
-      originAccessIdentities: [
-        "Identity for CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
+    dependencies: ({}) => ({
+      lambdaFunctions: [
+        "CloudfrontLeApigwCdkStack-LambdaEdge6A7A1843-sWx5QByO0zMJ",
       ],
     }),
-  },
-  {
-    type: "Function",
-    group: "CloudFront",
-    properties: ({}) => ({
-      FunctionCode: `//A version of the homepage
-var X_Experiment_A = 'index.html';
-//B version of the homepage
-var X_Experiment_B = 'index_b.html';
-
-function handler(event) {
-    var request = event.request;
-    if (Math.random() < 0.8) {
-        request.uri = '/' + X_Experiment_A;
-    } else {
-        request.uri = '/' + X_Experiment_B;
-    }
-    //log which version is displayed
-    console.log('X_Experiment_V ' + (request.uri == '/index.html' ? 'A_VERSION' : 'B_VERSION'));
-    return request;
-}`,
-      Name: "us-east-1CloudfronS3CdkPythonStackFunction980062BC",
-      FunctionConfig: {
-        Runtime: "cloudfront-js-1.0",
-      },
-    }),
-  },
-  {
-    type: "OriginAccessIdentity",
-    group: "CloudFront",
-    name: "Identity for CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
   },
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       RoleName:
-        "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-KMS6QWJCA4L1",
+        "CloudfrontLeApigwCdkStack-HelloWorldServiceRoleF3F-1FADEMKTLFN51",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -148,42 +104,53 @@ function handler(event) {
           },
         ],
       },
+      AttachedPolicies: [
+        {
+          PolicyName: "AWSLambdaBasicExecutionRole",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName:
+        "CloudfrontLeApigwCdkStack-LambdaEdgeServiceRole9A3-9JSSALELXYXY",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "edgelambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
       Policies: [
         {
           PolicyDocument: {
             Version: "2012-10-17",
             Statement: [
               {
-                Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
-                Resource: [
-                  `arn:aws:s3:::cdk-hnb659fds-assets-${config.accountId()}-${
-                    config.region
-                  }`,
-                  `arn:aws:s3:::cdk-hnb659fds-assets-${config.accountId()}-${
-                    config.region
-                  }/*`,
-                ],
-                Effect: "Allow",
-              },
-              {
-                Action: [
-                  "s3:GetObject*",
-                  "s3:GetBucket*",
-                  "s3:List*",
-                  "s3:DeleteObject*",
-                  "s3:PutObject",
-                  "s3:Abort*",
-                ],
-                Resource: [
-                  "arn:aws:s3:::cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d",
-                  "arn:aws:s3:::cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d/*",
-                ],
+                Action: "execute-api:Invoke",
+                Resource: `arn:aws:execute-api:${config.region}:*:dl6n2iazdf/*`,
                 Effect: "Allow",
               },
             ],
           },
-          PolicyName:
-            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+          PolicyName: "invokehttpapipolicy7AEBB0BF",
         },
       ],
       AttachedPolicies: [
@@ -196,11 +163,18 @@ function handler(event) {
     }),
   },
   {
-    type: "Layer",
+    type: "Function",
     group: "Lambda",
     properties: ({}) => ({
-      LayerName: "myDeploymentAwsCliLayerEF6B12EC",
-      Description: "/opt/awscli/aws",
+      Configuration: {
+        FunctionName:
+          "CloudfrontLeApigwCdkStack-HelloWorld7964D1E8-Fyz9ID6qaZtf",
+        Handler: "index.handler",
+        Runtime: "python3.7",
+      },
+    }),
+    dependencies: ({}) => ({
+      role: "CloudfrontLeApigwCdkStack-HelloWorldServiceRoleF3F-1FADEMKTLFN51",
     }),
   },
   {
@@ -209,54 +183,36 @@ function handler(event) {
     properties: ({}) => ({
       Configuration: {
         FunctionName:
-          "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-BZsaOKxXpJhr",
+          "CloudfrontLeApigwCdkStack-LambdaEdge6A7A1843-sWx5QByO0zMJ",
         Handler: "index.handler",
-        Runtime: "python3.7",
-        Timeout: 900,
+        Runtime: "nodejs12.x",
       },
     }),
     dependencies: ({}) => ({
-      layers: ["myDeploymentAwsCliLayerEF6B12EC"],
-      role: "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-KMS6QWJCA4L1",
+      role: "CloudfrontLeApigwCdkStack-LambdaEdgeServiceRole9A3-9JSSALELXYXY",
     }),
   },
   {
-    type: "Bucket",
-    group: "S3",
-    properties: ({ getId }) => ({
-      Name: "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d",
-      Policy: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              AWS: `arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${getId(
-                {
-                  type: "OriginAccessIdentity",
-                  group: "CloudFront",
-                  name: "Identity for CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
-                }
-              )}`,
-            },
-            Action: "s3:GetObject",
-            Resource:
-              "arn:aws:s3:::cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-2m3f6ulft41d/*",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      originAccessIdentities: [
-        "Identity for CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
+    type: "Permission",
+    group: "Lambda",
+    properties: ({ config }) => ({
+      Permissions: [
+        {
+          Action: "lambda:InvokeFunction",
+          FunctionName:
+            "CloudfrontLeApigwCdkStack-HelloWorld7964D1E8-Fyz9ID6qaZtf",
+          Principal: "apigateway.amazonaws.com",
+          StatementId:
+            "CloudfrontLeApigwCdkStack-HttpApiGETHelloWorldIntegrationPermissionFFD73C74-1420S8U6BYEFN",
+          SourceArn: `arn:aws:execute-api:${
+            config.region
+          }:${config.accountId()}:dl6n2iazdf/*/*/`,
+        },
       ],
     }),
-  },
-  {
-    type: "Bucket",
-    group: "S3",
-    properties: ({}) => ({
-      Name: "cloudwatchlogssubscriptionfi-mylogsbucket57652dd1-5m0kw1cg40sd",
+    dependencies: ({}) => ({
+      lambdaFunction:
+        "CloudfrontLeApigwCdkStack-HelloWorld7964D1E8-Fyz9ID6qaZtf",
     }),
   },
 ];

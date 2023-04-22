@@ -24,12 +24,19 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "RouteTable",
     group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
+    name: ({ config }) => `rtb-private1-${config.region}a`,
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `vpc::rtb-private1-${config.region}a`,
+      subnet: `vpc::subnet-private1-${config.region}a`,
     }),
   },
   {
@@ -46,19 +53,12 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: ({ config }) => `rtb-private1-${config.region}a`,
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `vpc::rtb-private1-${config.region}a`,
-      subnet: `vpc::subnet-private1-${config.region}a`,
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -105,31 +105,6 @@ exports.createResources = () => [
       s3BucketDestination: "gc-flowlogs-firehose-destination",
       roles: [
         `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
-      ],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "firehose.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ config }) => ({
-      policies: [
-        `KinesisFirehoseServicePolicy-delivery-stream-s3-${config.region}`,
       ],
     }),
   },
@@ -257,19 +232,35 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "firehose.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ config }) => ({
+      policies: [
+        `KinesisFirehoseServicePolicy-delivery-stream-s3-${config.region}`,
+      ],
+    }),
+  },
+  {
     type: "Bucket",
     group: "S3",
     properties: ({}) => ({
       Name: "gc-flowlogs-firehose-destination",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

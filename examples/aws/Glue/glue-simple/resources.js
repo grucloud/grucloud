@@ -68,6 +68,26 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "AWSGlueServiceRole-my-EZCRC-s3Policy",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: ["s3:GetObject", "s3:PutObject"],
+            Resource: ["arn:aws:s3:::gc-glue-database*"],
+          },
+        ],
+      },
+      Path: "/service-role/",
+      Description:
+        "This policy will be used for Glue Crawler and Job execution. Please do NOT delete!",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -97,39 +117,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "AWSGlueServiceRole-my-EZCRC-s3Policy",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["s3:GetObject", "s3:PutObject"],
-            Resource: ["arn:aws:s3:::gc-glue-database*"],
-          },
-        ],
-      },
-      Path: "/service-role/",
-      Description:
-        "This policy will be used for Glue Crawler and Job execution. Please do NOT delete!",
-    }),
-  },
-  {
     type: "Bucket",
     group: "S3",
     properties: ({}) => ({
       Name: "gc-glue-database",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

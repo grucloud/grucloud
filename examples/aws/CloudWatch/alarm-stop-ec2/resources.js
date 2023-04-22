@@ -41,44 +41,6 @@ exports.createResources = () => [
       ec2Instance: "ec2-for-alarm",
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-d",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "launch-wizard-1",
-      Description: "launch-wizard created 2022-07-05T08:27:57.051Z",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 22,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 22,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::launch-wizard-1",
-    }),
-  },
   {
     type: "Instance",
     group: "EC2",
@@ -115,5 +77,43 @@ exports.createResources = () => [
       securityGroups: ["sg::vpc-default::launch-wizard-1"],
     }),
   },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "launch-wizard-1",
+      Description: "launch-wizard created 2022-07-05T08:27:57.051Z",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 22,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-default::launch-wizard-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-d",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   { type: "Topic", group: "SNS", name: "Default_CloudWatch_Alarms_Topic" },
 ];

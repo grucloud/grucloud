@@ -21,14 +21,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc-06cc49a0ebe143d3d",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-    }),
-  },
-  {
     type: "Subnet",
     group: "EC2",
     name: "subnet-095d96b3a2968f739",
@@ -52,6 +44,14 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "vpc-06cc49a0ebe143d3d",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-06cc49a0ebe143d3d",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
     }),
   },
   {

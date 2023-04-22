@@ -199,15 +199,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "s3lambdadynamodbcdkstack-s3lambdaddbcdkc208e71f-1halzsydjpaor",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       NotificationConfiguration: {
         LambdaFunctionConfigurations: [
           {

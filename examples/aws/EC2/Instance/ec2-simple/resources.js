@@ -9,8 +9,8 @@ exports.createResources = () => [
     name: "web-server-ec2-simple",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
       },
       Tags: [
         {
@@ -18,9 +18,32 @@ exports.createResources = () => [
           Value: "myvalue",
         },
       ],
-      Placement: {
-        AvailabilityZone: `${config.region}d`,
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },
     }),
+    dependencies: ({}) => ({
+      subnets: ["vpc-default::subnet-default-d"],
+      securityGroups: ["sg::vpc-default::default"],
+    }),
   },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-d",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
 ];

@@ -165,6 +165,7 @@ exports.EC2FlowLogs = ({ compare }) => ({
       group: "IAM",
       dependencyId: ({ lives, config }) => get("DeliverLogsPermissionArn"),
     },
+    // TODO only when DeliverLogsPermissionArn != DeliverCrossAccountRole
     iamRoleCrossAccount: {
       type: "Role",
       group: "IAM",

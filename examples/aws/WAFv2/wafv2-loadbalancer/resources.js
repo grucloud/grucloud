@@ -3,15 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "wafv2-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
   { type: "InternetGateway", group: "EC2", name: "wafv2-igw" },
   {
     type: "InternetGatewayAttachment",
@@ -19,6 +10,50 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       vpc: "wafv2-vpc",
       internetGateway: "wafv2-igw",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "wafv2-igw",
+      routeTable: "wafv2-vpc::wafv2-rtb-public",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "wafv2-rtb-public",
+    dependencies: ({}) => ({
+      vpc: "wafv2-vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "wafv2-vpc::wafv2-rtb-public",
+      subnet: `wafv2-vpc::wafv2-subnet-public1-${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "wafv2-vpc::wafv2-rtb-public",
+      subnet: `wafv2-vpc::wafv2-subnet-public2-${config.region}b`,
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::wafv2-vpc::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "wafv2-vpc",
     }),
   },
   {
@@ -48,47 +83,12 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: "wafv2-rtb-public",
-    dependencies: ({}) => ({
-      vpc: "wafv2-vpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "wafv2-vpc::wafv2-rtb-public",
-      subnet: `wafv2-vpc::wafv2-subnet-public1-${config.region}a`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: "wafv2-vpc::wafv2-rtb-public",
-      subnet: `wafv2-vpc::wafv2-subnet-public2-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
+    name: "wafv2-vpc",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "wafv2-igw",
-      routeTable: "wafv2-vpc::wafv2-rtb-public",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::wafv2-vpc::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "wafv2-vpc",
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

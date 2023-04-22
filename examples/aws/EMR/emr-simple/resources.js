@@ -4,16 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   { type: "KeyPair", group: "EC2", name: "my-kp" },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-d",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
   {
     type: "SecurityGroup",
     group: "EC2",
@@ -23,117 +13,72 @@ exports.createResources = () => [
       vpc: "vpc-default",
     }),
   },
-  // {
-  //   type: "Cluster",
-  //   group: "EMR",
-  //   properties: ({}) => ({
-  //     Applications: [
-  //       {
-  //         Name: "Spark",
-  //         Version: "3.3.1",
-  //       },
-  //       {
-  //         Name: "Zeppelin",
-  //         Version: "0.10.1",
-  //       },
-  //     ],
-  //     AutoTerminate: false,
-  //     Configurations: [],
-  //     Ec2InstanceAttributes: {
-  //       AdditionalMasterSecurityGroups: [],
-  //       AdditionalSlaveSecurityGroups: [],
-  //       Ec2KeyName: "my-kp",
-  //       Ec2SubnetId: "subnet-41e85860",
-  //       EmrManagedMasterSecurityGroup: "sg-4e82a670",
-  //       EmrManagedSlaveSecurityGroup: "sg-4e82a670",
-  //       IamInstanceProfile: "AmazonEMR-InstanceProfile-20230317T183519",
-  //       RequestedEc2AvailabilityZones: [],
-  //       RequestedEc2SubnetIds: ["subnet-41e85860"],
-  //     },
-  //     InstanceCollectionType: "INSTANCE_GROUP",
-  //     KerberosAttributes: {},
-  //     Name: "My cluster",
-  //     OSReleaseLabel: "2.0.20230207.0",
-  //     PlacementGroups: [],
-  //     ReleaseLabel: "emr-6.10.0",
-  //     ScaleDownBehavior: "TERMINATE_AT_TASK_COMPLETION",
-  //     ServiceRole:
-  //       "arn:aws:iam::840541460064:role/service-role/AmazonEMR-ServiceRole-20230317T183530",
-  //     StepConcurrencyLevel: 1,
-  //     Tags: [
-  //       {
-  //         Key: "for-use-with-amazon-emr-managed-policies",
-  //         Value: "true",
-  //       },
-  //     ],
-  //     TerminationProtected: false,
-  //     VisibleToAllUsers: true,
-  //   }),
-  //   dependencies: ({}) => ({
-  //     securityGroupMaster: "sg::vpc-default::default",
-  //     securityGroupServiceAccess: "sg::vpc-default::default",
-  //     subnet: "vpc-default::subnet-default-d",
-  //   }),
-  // },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-d",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "Cluster",
+    group: "EMR",
+    properties: ({}) => ({
+      Applications: [
+        {
+          Name: "Spark",
+          Version: "3.3.1",
+        },
+        {
+          Name: "Zeppelin",
+          Version: "0.10.1",
+        },
+      ],
+      AutoTerminate: false,
+      Configurations: [],
+      Ec2InstanceAttributes: {
+        AdditionalMasterSecurityGroups: [],
+        AdditionalSlaveSecurityGroups: [],
+        Ec2KeyName: "my-kp",
+        Ec2SubnetId: "subnet-41e85860",
+        EmrManagedMasterSecurityGroup: "sg-4e82a670",
+        EmrManagedSlaveSecurityGroup: "sg-4e82a670",
+        IamInstanceProfile: "AmazonEMR-InstanceProfile-20230317T183519",
+        RequestedEc2AvailabilityZones: [],
+        RequestedEc2SubnetIds: ["subnet-41e85860"],
+      },
+      InstanceCollectionType: "INSTANCE_GROUP",
+      KerberosAttributes: {},
+      Name: "My cluster",
+      OSReleaseLabel: "2.0.20230207.0",
+      PlacementGroups: [],
+      ReleaseLabel: "emr-6.10.0",
+      ScaleDownBehavior: "TERMINATE_AT_TASK_COMPLETION",
+      StepConcurrencyLevel: 1,
+      Tags: [
+        {
+          Key: "for-use-with-amazon-emr-managed-policies",
+          Value: "true",
+        },
+      ],
+      TerminationProtected: false,
+      VisibleToAllUsers: true,
+    }),
+    dependencies: ({}) => ({
+      securityGroupMaster: "sg::vpc-default::default",
+      securityGroupServiceAccess: "sg::vpc-default::default",
+      subnet: "vpc-default::subnet-default-d",
+    }),
+  },
   {
     type: "InstanceProfile",
     group: "IAM",
     name: "AmazonEMR-InstanceProfile-20230317T183519",
     dependencies: ({}) => ({
       roles: ["AmazonEMR-InstanceProfile-20230317T183519"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "AmazonEMR-InstanceProfile-20230317T183519",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "ec2.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["AmazonEMR-InstanceProfile-Policy-20230317T183519"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "AmazonEMR-ServiceRole-20230317T183530",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "elasticmapreduce.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      AttachedPolicies: [
-        {
-          PolicyName: "AmazonEMRServicePolicy_v2",
-          PolicyArn:
-            "arn:aws:iam::aws:policy/service-role/AmazonEMRServicePolicy_v2",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      policies: ["AmazonEMR-ServiceRole-Policy-20230317T183530"],
     }),
   },
   {
@@ -221,6 +166,59 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "AmazonEMR-InstanceProfile-20230317T183519",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["AmazonEMR-InstanceProfile-Policy-20230317T183519"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "AmazonEMR-ServiceRole-20230317T183530",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "elasticmapreduce.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEMRServicePolicy_v2",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AmazonEMRServicePolicy_v2",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      policies: ["AmazonEMR-ServiceRole-Policy-20230317T183530"],
     }),
   },
 ];

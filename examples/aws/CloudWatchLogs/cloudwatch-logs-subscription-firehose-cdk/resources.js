@@ -150,15 +150,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "cloudwatchlogssubscriptionfi-mylogsbucket57652dd1-5m0kw1cg40sd",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

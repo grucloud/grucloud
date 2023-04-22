@@ -91,15 +91,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "staticsitestack-staticbucket49ce0992-13kb3z9m9fklx",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       LifecycleConfiguration: {
         Rules: [
           {
@@ -131,15 +122,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "staticsitestack-staticbucket49ce0992-1u7h0phacigqf",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       LifecycleConfiguration: {
         Rules: [
           {

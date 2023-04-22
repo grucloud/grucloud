@@ -77,15 +77,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "gc-appflow-destination",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2008-10-17",
         Statement: [
@@ -120,17 +111,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       Name: "gc-appflow-source",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2008-10-17",
         Statement: [

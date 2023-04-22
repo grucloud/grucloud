@@ -11,39 +11,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: `kinesis-analytics-my-app-${config.region}`,
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "kinesisanalytics.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-            Condition: {
-              StringEquals: {
-                "aws:SourceAccount": `${config.accountId()}`,
-              },
-              ArnEquals: {
-                "aws:SourceArn": `arn:aws:kinesisanalytics:${
-                  config.region
-                }:${config.accountId()}:application/my-app`,
-              },
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({ config }) => ({
-      policies: [`kinesis-analytics-service-my-app-${config.region}`],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({ config }) => ({
@@ -90,6 +57,39 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: `kinesis-analytics-my-app-${config.region}`,
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "kinesisanalytics.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+            Condition: {
+              StringEquals: {
+                "aws:SourceAccount": `${config.accountId()}`,
+              },
+              ArnEquals: {
+                "aws:SourceArn": `arn:aws:kinesisanalytics:${
+                  config.region
+                }:${config.accountId()}:application/my-app`,
+              },
+            },
+          },
+        ],
+      },
+    }),
+    dependencies: ({ config }) => ({
+      policies: [`kinesis-analytics-service-my-app-${config.region}`],
     }),
   },
   {

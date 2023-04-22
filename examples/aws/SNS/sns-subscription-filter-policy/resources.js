@@ -75,70 +75,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: `KinesisFirehoseServiceRole-PUT-HTP-4G0uP-${config.region}-1669418375212`,
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "firehose.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ config }) => ({
-      policies: [`KinesisFirehoseServicePolicy-PUT-HTP-4G0uP-${config.region}`],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "role-sns-to-firehose",
-      Description: "Allows SNS to call CloudWatch Logs on your behalf.",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "sns.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      Policies: [
-        {
-          PolicyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Action: [
-                  "firehose:DescribeDeliveryStream",
-                  "firehose:ListDeliveryStreams",
-                  "firehose:ListTagsForDeliveryStream",
-                  "firehose:PutRecord",
-                  "firehose:PutRecordBatch",
-                ],
-                Resource: ["*"],
-                Effect: "Allow",
-              },
-            ],
-          },
-          PolicyName: "firehose",
-        },
-      ],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({ config }) => ({
@@ -155,13 +91,9 @@ exports.createResources = () => [
               "glue:GetTableVersions",
             ],
             Resource: [
-              `arn:aws:glue:${config.region}:${config.accountId()}:catalog`,
-              `arn:aws:glue:${
-                config.region
-              }:${config.accountId()}:database/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
-              `arn:aws:glue:${
-                config.region
-              }:${config.accountId()}:table/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+              `arn:aws:glue:${config.region}:909198221043:catalog`,
+              `arn:aws:glue:${config.region}:909198221043:database/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+              `arn:aws:glue:${config.region}:909198221043:table/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
             ],
           },
           {
@@ -310,19 +242,74 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: `KinesisFirehoseServiceRole-PUT-HTP-4G0uP-${config.region}-1669418375212`,
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "firehose.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ config }) => ({
+      policies: [`KinesisFirehoseServicePolicy-PUT-HTP-4G0uP-${config.region}`],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "role-sns-to-firehose",
+      Description: "Allows SNS to call CloudWatch Logs on your behalf.",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "sns.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      Policies: [
+        {
+          PolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Action: [
+                  "firehose:DescribeDeliveryStream",
+                  "firehose:ListDeliveryStreams",
+                  "firehose:ListTagsForDeliveryStream",
+                  "firehose:PutRecord",
+                  "firehose:PutRecordBatch",
+                ],
+                Resource: ["*"],
+                Effect: "Allow",
+              },
+            ],
+          },
+          PolicyName: "firehose",
+        },
+      ],
+    }),
+  },
+  {
     type: "Bucket",
     group: "S3",
     properties: ({}) => ({
       Name: "gc-deliverystream-sns",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
   { type: "Topic", group: "SNS", name: "my-topic" },

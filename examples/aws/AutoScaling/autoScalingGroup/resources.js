@@ -25,38 +25,26 @@ exports.createResources = () => [
   },
   { type: "KeyPair", group: "EC2", name: "kp-ecs" },
   {
-    type: "Vpc",
+    type: "LaunchTemplate",
     group: "EC2",
-    name: "Vpc",
+    name: "lt-ec2-micro",
     properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "PubSubnetAz1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "Vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "PubSubnetAz2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 1,
+      LaunchTemplateData: {
+        InstanceType: "t2.micro",
+        Image: {
+          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+        },
+      },
+      Tags: [
+        {
+          Key: "mykey1",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: ({}) => ({
-      vpc: "Vpc",
+      keyPair: "kp-ecs",
+      iamInstanceProfile: "role-ecs",
     }),
   },
   {
@@ -88,26 +76,38 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LaunchTemplate",
+    type: "Subnet",
     group: "EC2",
-    name: "lt-ec2-micro",
-    properties: ({}) => ({
-      LaunchTemplateData: {
-        InstanceType: "t2.micro",
-        Image: {
-          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
-        },
-      },
-      Tags: [
-        {
-          Key: "mykey1",
-          Value: "myvalue",
-        },
-      ],
+    name: "PubSubnetAz1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
-      keyPair: "kp-ecs",
-      iamInstanceProfile: "role-ecs",
+      vpc: "Vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "PubSubnetAz2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "Vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

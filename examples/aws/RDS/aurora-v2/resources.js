@@ -4,12 +4,9 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "pg-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-    }),
+    name: ({ config }) => `pg-eip-${config.region}a`,
   },
   { type: "InternetGateway", group: "EC2", name: "pg-igw" },
   {
@@ -33,55 +30,36 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `pg-subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "pg-vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `pg-nat-public1-${config.region}a`,
+      routeTable: `pg-vpc::pg-rtb-private1-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `pg-subnet-private2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 9,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "pg-vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `pg-nat-public1-${config.region}a`,
+      routeTable: `pg-vpc::pg-rtb-private2-${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `pg-subnet-public1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "pg-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `pg-subnet-public2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "pg-vpc",
+      ig: "pg-igw",
+      routeTable: "pg-vpc::pg-rtb-public",
     }),
   },
   {
@@ -141,39 +119,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `pg-nat-public1-${config.region}a`,
-      routeTable: `pg-vpc::pg-rtb-private1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `pg-nat-public1-${config.region}a`,
-      routeTable: `pg-vpc::pg-rtb-private2-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "pg-igw",
-      routeTable: "pg-vpc::pg-rtb-public",
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -202,9 +147,64 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `pg-eip-${config.region}a`,
+    name: ({ config }) => `pg-subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
+    }),
+    dependencies: ({}) => ({
+      vpc: "pg-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `pg-subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
+    }),
+    dependencies: ({}) => ({
+      vpc: "pg-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `pg-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "pg-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `pg-subnet-public2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "pg-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "pg-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+    }),
   },
   {
     type: "Role",

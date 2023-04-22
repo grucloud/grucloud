@@ -541,7 +541,18 @@ exports.CloudFrontDistribution = ({ compare }) => ({
     webAcl: {
       type: "WebACLCloudFront",
       group: "WAFv2",
-      dependencyId: ({ lives, config }) => get("WebACLId"),
+      dependencyId:
+        ({ lives, config }) =>
+        ({ WebACLId }) =>
+          pipe([
+            lives.getByType({
+              type: "WebACLCloudFront",
+              group: "WAFv2",
+              providerName: config.providerName,
+            }),
+            find(eq(get("live.Id"), WebACLId)),
+            get("id"),
+          ])(),
     },
   },
   propertiesDefault: {

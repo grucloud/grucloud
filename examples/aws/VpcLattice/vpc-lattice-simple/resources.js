@@ -4,41 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "VPC",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "Private Subnet (Destination Subnet)",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "Private Subnet (Source Subnet)",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC",
-    }),
-  },
-  {
     type: "RouteTable",
     group: "EC2",
     name: "Private Route Table (Destination Subnet)",
@@ -152,6 +117,41 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::VPC::demo-outboundsg",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "Private Subnet (Destination Subnet)",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "Private Subnet (Source Subnet)",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "VPC",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

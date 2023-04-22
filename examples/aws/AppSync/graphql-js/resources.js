@@ -145,29 +145,6 @@ export function response(ctx) {
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "appsync-ds-ddb-xoaizl-MyModelTypeTable",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "appsync.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["appsync-ds-ddb-xoaizl-MyModelTypeTable"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({ config }) => ({
@@ -198,6 +175,29 @@ export function response(ctx) {
       },
       Path: "/service-role/",
       Description: "Allows the AWS AppSync service to access your data source.",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "appsync-ds-ddb-xoaizl-MyModelTypeTable",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "appsync.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["appsync-ds-ddb-xoaizl-MyModelTypeTable"],
     }),
   },
 ];

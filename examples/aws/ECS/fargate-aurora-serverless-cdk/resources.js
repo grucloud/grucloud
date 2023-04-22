@@ -12,13 +12,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "CdkStack/Vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
+    name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
   },
   { type: "InternetGateway", group: "EC2", name: "CdkStack/Vpc" },
   {
@@ -54,57 +55,47 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "CdkStack/Vpc/PrivateSubnet1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 2,
-      NetworkNumber: 2,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "CdkStack/Vpc",
+      natGateway: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
+      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "CdkStack/Vpc/PrivateSubnet2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 2,
-      NetworkNumber: 3,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "CdkStack/Vpc",
+      natGateway: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
+      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "CdkStack/Vpc/PublicSubnet1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 2,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "CdkStack/Vpc",
+      ig: "CdkStack/Vpc",
+      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "CdkStack/Vpc/PublicSubnet2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 2,
-      NetworkNumber: 1,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "CdkStack/Vpc",
+      ig: "CdkStack/Vpc",
+      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
     }),
   },
   {
@@ -169,50 +160,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
       subnet: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
-      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
-      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "CdkStack/Vpc",
-      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "CdkStack/Vpc",
-      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
     }),
   },
   {
@@ -302,14 +249,67 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
+    name: "CdkStack/Vpc/PrivateSubnet1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 2,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "CdkStack/Vpc",
+    }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
+    name: "CdkStack/Vpc/PrivateSubnet2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 2,
+      NetworkNumber: 3,
+    }),
+    dependencies: ({}) => ({
+      vpc: "CdkStack/Vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "CdkStack/Vpc/PublicSubnet1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "CdkStack/Vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "CdkStack/Vpc/PublicSubnet2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "CdkStack/Vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "CdkStack/Vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
   },
   {
     type: "Cluster",

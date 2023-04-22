@@ -85,7 +85,7 @@ exports.CodeStarConnectionsConnection = ({}) => ({
   configDefault: ({
     name,
     namespace,
-    properties: { tags, ...otherProps },
+    properties: { Tags, ...otherProps },
     dependencies: { host },
     config,
   }) =>
@@ -96,7 +96,7 @@ exports.CodeStarConnectionsConnection = ({}) => ({
           name,
           config,
           namespace,
-          UserTags: tags,
+          UserTags: Tags,
         }),
       }),
       //TODO

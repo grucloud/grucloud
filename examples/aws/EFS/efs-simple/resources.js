@@ -4,40 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "EfsLambdaVpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "EfsLambdaSubnetA",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "EfsLambdaVpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "EfsLambdaSubnetB",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "EfsLambdaVpc",
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -82,6 +48,40 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       securityGroup:
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "EfsLambdaSubnetA",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "EfsLambdaVpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "EfsLambdaSubnetB",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "EfsLambdaVpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "EfsLambdaVpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
     }),
   },
   {

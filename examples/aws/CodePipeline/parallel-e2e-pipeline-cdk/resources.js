@@ -714,15 +714,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "parallele2epipelinecdk-serverlesslandpipelinearti-ndaqlnfwca20",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2012-10-17",
         Statement: [
