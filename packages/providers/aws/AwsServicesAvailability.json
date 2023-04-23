@@ -2236,6 +2236,7 @@
             "resourcegroupstaggingapi",
             "route53",
             "s3",
+            "sagemaker-metrics",
             "scheduler",
             "secretsmanager",
             "service-quotas",

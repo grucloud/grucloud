@@ -9,7 +9,15 @@ const {
   eq,
   omit,
 } = require("rubico");
-const { defaultsDeep, identity, pluck, isEmpty, unless } = require("rubico/x");
+const {
+  defaultsDeep,
+  identity,
+  pluck,
+  isEmpty,
+  unless,
+  filterOut,
+  isIn,
+} = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
@@ -48,8 +56,8 @@ const assignArn = ({ config }) =>
 const statusToEnable = pipe([
   switchCase([
     eq(get("Status"), "ENABLED"),
-    () => ({ Enable: true }),
-    () => ({ Enable: false }),
+    defaultsDeep({ Enable: true }),
+    defaultsDeep({ Enable: false }),
   ]),
 ]);
 
@@ -60,41 +68,16 @@ const decorate = ({ endpoint, config, live }) =>
       assert(live);
     }),
     defaultsDeep(live),
+    statusToEnable,
+    omit(["Status"]),
     assignArn({ config }),
+    // Remove read only features
     assign({
-      DataSources: pipe([
-        get("DataSources"),
-        assign({
-          CloudTrail: pipe([get("CloudTrail"), statusToEnable]),
-          DNSLogs: pipe([get("DNSLogs"), statusToEnable]),
-          FlowLogs: pipe([get("FlowLogs"), statusToEnable]),
-          Kubernetes: pipe([
-            get("Kubernetes"),
-            assign({
-              AuditLogs: pipe([get("AuditLogs"), statusToEnable]),
-            }),
-          ]),
-          MalwareProtection: pipe([
-            get("MalwareProtection"),
-            assign({
-              ScanEc2InstanceWithFindings: pipe([
-                get("ScanEc2InstanceWithFindings"),
-                assign({
-                  EbsVolumes: pipe([
-                    get("EbsVolumes"),
-                    switchCase([
-                      eq(get("Status"), "ENABLED"),
-                      () => true,
-                      () => false,
-                    ]),
-                  ]),
-                }),
-              ]),
-            }),
-            omit(["ServiceRole"]),
-          ]),
-          S3Logs: pipe([get("S3Logs"), statusToEnable]),
-        }),
+      Features: pipe([
+        get("Features"),
+        filterOut(
+          pipe([get("Name"), isIn(["CLOUD_TRAIL", "DNS_LOGS", "FLOW_LOGS"])])
+        ),
       ]),
     }),
   ]);
@@ -104,13 +87,14 @@ exports.GuardDutyDetector = () => ({
   type: "Detector",
   package: "guardduty",
   client: "GuardDuty",
-  propertiesDefault: {},
+  propertiesDefault: { Enable: true },
   omitProperties: [
     "DetectorId",
     "CreatedAt",
     "ServiceRole",
     "UpdatedAt",
     "Arn",
+    "DataSources",
   ],
   inferName: () =>
     pipe([

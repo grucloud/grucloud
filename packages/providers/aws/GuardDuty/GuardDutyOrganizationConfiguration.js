@@ -28,8 +28,8 @@ exports.GuardDutyOrganizationConfiguration = () => ({
   type: "OrganizationConfiguration",
   package: "guardduty",
   client: "GuardDuty",
-  propertiesDefault: {},
-  omitProperties: ["DetectorId", "MemberAccountLimitReached"],
+  propertiesDefault: { AutoEnableOrganizationMembers: "NONE" },
+  omitProperties: ["DetectorId", "MemberAccountLimitReached", "DataSources"],
   cannotBeDeleted,
   inferName:
     ({ dependenciesSpec: { detector } }) =>
@@ -94,9 +94,6 @@ exports.GuardDutyOrganizationConfiguration = () => ({
                 assert(parent.DetectorId);
               }),
               defaultsDeep({ DetectorId: parent.DetectorId }),
-              tap((params) => {
-                assert(true);
-              }),
             ]),
         }),
     ])(),
