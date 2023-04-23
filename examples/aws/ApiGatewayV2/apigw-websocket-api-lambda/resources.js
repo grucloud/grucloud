@@ -348,16 +348,16 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-onconnect-function",
+        Runtime: "nodejs14.x",
+        MemorySize: 256,
+        Timeout: 15,
+        Handler: "onconnect.handler",
         Environment: {
           Variables: {
             TABLE_NAME: "sam-app-websocket_connections",
           },
         },
-        FunctionName: "sam-app-onconnect-function",
-        Handler: "onconnect.handler",
-        MemorySize: 256,
-        Runtime: "nodejs14.x",
-        Timeout: 15,
       },
     }),
     dependencies: ({}) => ({
@@ -369,16 +369,16 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-ondisconnect-function",
+        Runtime: "nodejs14.x",
+        MemorySize: 256,
+        Timeout: 15,
+        Handler: "ondisconnect.handler",
         Environment: {
           Variables: {
             TABLE_NAME: "sam-app-websocket_connections",
           },
         },
-        FunctionName: "sam-app-ondisconnect-function",
-        Handler: "ondisconnect.handler",
-        MemorySize: 256,
-        Runtime: "nodejs14.x",
-        Timeout: 15,
       },
     }),
     dependencies: ({}) => ({
@@ -390,16 +390,16 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-post-function",
+        Runtime: "nodejs14.x",
+        MemorySize: 256,
+        Timeout: 15,
+        Handler: "post.handler",
         Environment: {
           Variables: {
             TABLE_NAME: "sam-app-websocket_connections",
           },
         },
-        FunctionName: "sam-app-post-function",
-        Handler: "post.handler",
-        MemorySize: 256,
-        Runtime: "nodejs14.x",
-        Timeout: 15,
       },
     }),
     dependencies: ({}) => ({

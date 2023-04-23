@@ -311,8 +311,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-DefaultRouteFunction-7n6DEEQGucp4",
-        Handler: "index.handler",
         Runtime: "nodejs14.x",
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({

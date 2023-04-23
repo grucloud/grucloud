@@ -398,17 +398,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         Description: "Sample handler for all API operations",
+        TracingConfig: {
+          Mode: "Active",
+        },
+        FunctionName: "sam-app-SampleFunction-7LguHNIijNN9",
+        Runtime: "nodejs14.x",
+        Timeout: 100,
+        Handler: "src/app.handler",
         Environment: {
           Variables: {
             AWS_EMF_NAMESPACE: "sam-app",
           },
-        },
-        FunctionName: "sam-app-SampleFunction-7LguHNIijNN9",
-        Handler: "src/app.handler",
-        Runtime: "nodejs14.x",
-        Timeout: 100,
-        TracingConfig: {
-          Mode: "Active",
         },
       },
       Tags: {

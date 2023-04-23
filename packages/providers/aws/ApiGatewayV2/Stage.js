@@ -52,11 +52,12 @@ const pickId = pipe([
   pick(["ApiId", "StageName"]),
 ]);
 
-const decorate = ({ endpoint, config }) =>
+const decorate = ({ endpoint, config, live }) =>
   pipe([
     tap((params) => {
-      assert(endpoint);
+      assert(live.ApiId);
     }),
+    defaultsDeep({ ApiId: live.ApiId }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
@@ -116,7 +117,7 @@ exports.ApiGatewayV2Stage = () => ({
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#listStages-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getStages-property
   getList: ({ client, endpoint, getById, config }) =>
     pipe([
       () =>
@@ -126,7 +127,8 @@ exports.ApiGatewayV2Stage = () => ({
           method: "getStages",
           getParam: "Items",
           config,
-          decorate: ({ parent: { ApiId } }) => pipe([defaultsDeep({ ApiId })]),
+          decorate: ({ parent: { ApiId } }) =>
+            pipe([defaultsDeep({ ApiId }), getById({})]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createStage-property
