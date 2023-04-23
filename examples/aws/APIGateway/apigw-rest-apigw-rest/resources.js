@@ -363,14 +363,14 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-ReportingFunction-uWuM1bJCNVIn",
+        Runtime: "nodejs14.x",
+        Handler: "app.handler",
         Environment: {
           Variables: {
             LOCATION: "Response from reporting application",
           },
         },
-        FunctionName: "sam-app-ReportingFunction-uWuM1bJCNVIn",
-        Handler: "app.handler",
-        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
@@ -382,14 +382,14 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-UserManagementFunction-So5CQsnlAZWO",
+        Runtime: "nodejs14.x",
+        Handler: "app.handler",
         Environment: {
           Variables: {
             LOCATION: "Response from user management application",
           },
         },
-        FunctionName: "sam-app-UserManagementFunction-So5CQsnlAZWO",
-        Handler: "app.handler",
-        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

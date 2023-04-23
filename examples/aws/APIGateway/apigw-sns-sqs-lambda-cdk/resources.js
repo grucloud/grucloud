@@ -309,8 +309,8 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "CdkApigwSnsSqsLambdaStack-workerLambdaTypeOneHandl-xcfkwdjaVe3q",
-        Handler: "app.handler",
         Runtime: "nodejs14.x",
+        Handler: "app.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -324,8 +324,8 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "CdkApigwSnsSqsLambdaStack-workerLambdaTypeTwoHandl-GW4XepS4cqU6",
-        Handler: "app.handler",
         Runtime: "nodejs14.x",
+        Handler: "app.handler",
       },
     }),
     dependencies: ({}) => ({

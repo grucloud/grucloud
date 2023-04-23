@@ -117,8 +117,8 @@ $input.json("$")`,
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-APIFunction-2STg887QFKzr",
-        Handler: "lambda_function4.lambda_handler",
         Runtime: "python3.9",
+        Handler: "lambda_function4.lambda_handler",
       },
     }),
     dependencies: ({}) => ({

@@ -195,12 +195,12 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         Description: "Lambda to be invoked by the API Gateway",
-        FunctionName: "MyLambdaFunction",
-        Handler: "app.handler",
-        Runtime: "nodejs18.x",
         TracingConfig: {
           Mode: "Active",
         },
+        FunctionName: "MyLambdaFunction",
+        Runtime: "nodejs18.x",
+        Handler: "app.handler",
       },
     }),
     dependencies: ({}) => ({

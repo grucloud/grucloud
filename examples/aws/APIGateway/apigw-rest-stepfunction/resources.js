@@ -254,7 +254,13 @@ exports.createResources = () => [
           },
         },
       },
+      loggingConfiguration: {
+        __type: "com.amazonaws.swf.base.model#LoggingConfiguration",
+      },
       name: "WaitableStateMachine-ouygzTBZ7yWu",
+      tracingConfiguration: {
+        __type: "com.amazonaws.swf.base.model#TracingConfiguration",
+      },
     }),
     dependencies: ({}) => ({
       role: "sam-app-WaitableStateMachineRole-OWUCFZYWKOXA",

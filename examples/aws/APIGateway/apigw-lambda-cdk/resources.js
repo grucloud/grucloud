@@ -190,10 +190,10 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        Architectures: ["arm64"],
         FunctionName: "ServerlessLand-handlerE1533BD5-zl2CyOxo8mTL",
-        Handler: "index.ApiLambda",
         Runtime: "nodejs16.x",
+        Handler: "index.ApiLambda",
+        Architectures: ["arm64"],
       },
       Tags: {
         Project: "ServerlessLand",

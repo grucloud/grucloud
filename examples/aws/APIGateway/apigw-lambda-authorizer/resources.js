@@ -172,8 +172,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-AppFunction-GCg7wu2MTQor",
-        Handler: "app.handler",
         Runtime: "nodejs14.x",
+        Handler: "app.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -186,8 +186,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-TokenAuthorizerFunction-gI6jKEKAM1f5",
-        Handler: "tokenauthorizer.handler",
         Runtime: "nodejs14.x",
+        Handler: "tokenauthorizer.handler",
       },
     }),
     dependencies: ({}) => ({

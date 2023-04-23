@@ -170,8 +170,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-AppFunction-pbGEvm3zPzpv",
-        Handler: "app.handler",
         Runtime: "nodejs14.x",
+        Handler: "app.handler",
       },
     }),
     dependencies: ({}) => ({
