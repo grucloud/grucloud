@@ -4,13 +4,13 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
+++++ Instance (1)
 ++++ KeyPair (1)
-++++ Vpc (1)
-++++ Subnet (1)
+++++ LaunchTemplate (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (1)
-++++ Instance (1)
-++++ LaunchTemplate (1)
+++++ Subnet (1)
+++++ Vpc (1)
 +++ IAM
 ++++ InstanceProfile (1)
 ++++ Role (1)

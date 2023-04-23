@@ -68,10 +68,12 @@ exports.createResources = () => [
             Resource: "arn:aws:s3:::gc-flowlogs-my-vpc",
             Condition: {
               StringEquals: {
-                "aws:SourceAccount": "591447126935",
+                "aws:SourceAccount": `${config.accountId()}`,
               },
               ArnLike: {
-                "aws:SourceArn": `arn:aws:logs:${config.region}:591447126935:*`,
+                "aws:SourceArn": `arn:aws:logs:${
+                  config.region
+                }:${config.accountId()}:*`,
               },
             },
           },

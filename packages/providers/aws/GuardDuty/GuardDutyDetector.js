@@ -35,9 +35,6 @@ const pickId = pipe([
 
 const assignArn = ({ config }) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
     assign({
       Arn: pipe([
         ({ DetectorId }) =>
@@ -131,9 +128,6 @@ exports.GuardDutyDetector = () => ({
     ]),
   findId: () =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       get("DetectorId"),
       tap((id) => {
         assert(id);

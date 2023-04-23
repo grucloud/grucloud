@@ -74,6 +74,10 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ getId }) => ({
       Configuration: {
+        FunctionName: "aurora-test-cluster-function",
+        Runtime: "nodejs14.x",
+        Timeout: 30,
+        Handler: "app.handler",
         Environment: {
           Variables: {
             SecretArn: `${getId({
@@ -91,10 +95,6 @@ exports.createResources = () => [
             DBName: "aurora_test_db",
           },
         },
-        FunctionName: "aurora-test-cluster-function",
-        Handler: "app.handler",
-        Runtime: "nodejs14.x",
-        Timeout: 30,
       },
     }),
     dependencies: ({}) => ({
