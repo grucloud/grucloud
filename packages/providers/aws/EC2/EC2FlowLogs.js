@@ -19,7 +19,6 @@ const {
   when,
   values,
   keys,
-  unless,
   callProp,
 } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -74,27 +73,36 @@ const FlowLogsDependencies = {
   },
 };
 
+const makeDependenciesFlow = pipe([
+  () => FlowLogsDependencies,
+  map(
+    assign({
+      dependencyId:
+        ({ type, group }) =>
+        ({ lives, config }) =>
+          pipe([
+            tap(() => {
+              assert(type);
+              assert(group);
+            }),
+            get("ResourceId"),
+            tap((ResourceId) => {
+              assert(ResourceId);
+            }),
+            lives.getById({
+              type,
+              group,
+              providerName: config.providerName,
+            }),
+            get("id"),
+          ]),
+    })
+  ),
+]);
+
 exports.FlowLogsDependencies = FlowLogsDependencies;
 
 const findId = () => pipe([get("FlowLogId")]);
-
-const findDependencyFlowLog =
-  ({ live, lives, config }) =>
-  ({ type, group }) =>
-    pipe([
-      tap(() => {
-        assert(live.ResourceId);
-      }),
-      () => live,
-      get("ResourceId"),
-      lives.getById({
-        type,
-        group,
-        providerName: config.providerName,
-      }),
-      get("id"),
-      unless(isEmpty, (id) => ({ type, group, ids: [id] })),
-    ])();
 
 const findNameInDependency =
   ({ live, lives, config }) =>
@@ -131,25 +139,6 @@ const findNameInDependencies =
       prepend("flowlog::"),
     ])();
 
-const findDependenciesFlowLog = ({ live, lives, config }) =>
-  pipe([
-    tap((params) => {
-      assert(config);
-      assert(live);
-      assert(lives);
-    }),
-    () => FlowLogsDependencies,
-    values,
-    map(
-      findDependencyFlowLog({
-        live,
-        lives,
-        config,
-      })
-    ),
-    find(not(isEmpty)),
-  ])();
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2FlowLogs = ({ compare }) => ({
   type: "FlowLogs",
@@ -159,13 +148,12 @@ exports.EC2FlowLogs = ({ compare }) => ({
   findName: pipe([findNameInTagsOrId({ findId: findNameInDependencies })]),
   findId,
   dependencies: {
-    ...FlowLogsDependencies,
+    ...makeDependenciesFlow(),
     iamRole: {
       type: "Role",
       group: "IAM",
       dependencyId: ({ lives, config }) => get("DeliverLogsPermissionArn"),
     },
-    // TODO only when DeliverLogsPermissionArn != DeliverCrossAccountRole
     iamRoleCrossAccount: {
       type: "Role",
       group: "IAM",
@@ -174,58 +162,34 @@ exports.EC2FlowLogs = ({ compare }) => ({
     cloudWatchLogGroup: {
       type: "LogGroup",
       group: "CloudWatchLogs",
-    },
-    firehoseDeliveryStream: {
-      type: "DeliveryStream",
-      group: "Firehose",
-    },
-    s3Bucket: {
-      type: "Bucket",
-      group: "S3",
-    },
-  },
-  findDependencies: ({ live, lives, config }) => [
-    findDependenciesFlowLog({ live, lives, config }),
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [pipe([() => live.DeliverLogsPermissionArn])()],
-    },
-    {
-      type: "LogGroup",
-      group: "CloudWatchLogs",
-      ids: [
+      dependencyId: ({ lives, config }) =>
         pipe([
-          () => live.LogGroupName,
+          get("LogGroupName"),
           lives.getByName({
             type: "LogGroup",
             group: "CloudWatchLogs",
             providerName: config.providerName,
           }),
           get("id"),
-        ])(),
-      ],
+        ]),
     },
-    {
+    firehoseDeliveryStream: {
       type: "DeliveryStream",
       group: "Firehose",
-      ids: [
+      dependencyId: ({ lives, config }) =>
         pipe([
-          () => live,
           switchCase([
             eq(get("LogDestinationType"), "kinesis-data-firehose"),
             pipe([get("LogDestination")]),
             () => undefined,
           ]),
-        ])(),
-      ],
+        ]),
     },
-    {
+    s3Bucket: {
       type: "Bucket",
       group: "S3",
-      ids: [
+      dependencyId: ({ lives, config }) =>
         pipe([
-          () => live,
           switchCase([
             eq(get("LogDestinationType"), "s3"),
             pipe([
@@ -234,10 +198,9 @@ exports.EC2FlowLogs = ({ compare }) => ({
             ]),
             () => undefined,
           ]),
-        ])(),
-      ],
+        ]),
     },
-  ],
+  },
   propertiesDefault: {
     LogFormat:
       "${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}",
