@@ -55,8 +55,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "CloudWatchScheduledEventFunction",
-        Handler: "app.lambda_handler",
         Runtime: "python3.8",
+        Handler: "app.lambda_handler",
       },
     }),
     dependencies: ({}) => ({

@@ -152,9 +152,9 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "NotifyConsumersOfSchemaCh-AWS679f53fac002430cb0da5-l01Fhmp6GKn0",
-        Handler: "index.handler",
         Runtime: "nodejs14.x",
         Timeout: 120,
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -166,6 +166,12 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "NotifyConsumersOfSchemaCh-TeamXSchemaNotifications-T6ZnRQpt1cSj",
+        Runtime: "nodejs16.x",
+        MemorySize: 1024,
+        Timeout: 5,
+        Handler: "index.handler",
         Environment: {
           Variables: {
             CHANNEL_ID: "1233",
@@ -173,12 +179,6 @@ exports.createResources = () => [
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
-        FunctionName:
-          "NotifyConsumersOfSchemaCh-TeamXSchemaNotifications-T6ZnRQpt1cSj",
-        Handler: "index.handler",
-        MemorySize: 1024,
-        Runtime: "nodejs16.x",
-        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({

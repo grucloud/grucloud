@@ -198,17 +198,17 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "SingleBusEnrichmentWithLa-consumerFunctionF99F4064-VTlh1DpXeH5q",
+        Runtime: "nodejs16.x",
+        MemorySize: 1024,
+        Timeout: 5,
+        Handler: "index.handler",
         Environment: {
           Variables: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
-        FunctionName:
-          "SingleBusEnrichmentWithLa-consumerFunctionF99F4064-VTlh1DpXeH5q",
-        Handler: "index.handler",
-        MemorySize: 1024,
-        Runtime: "nodejs16.x",
-        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({
@@ -220,18 +220,18 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "SingleBusEnrichmentWithLamb-enrichFunctionB1243B0F-GTuWbXCFlOsV",
+        Runtime: "nodejs16.x",
+        MemorySize: 1024,
+        Timeout: 5,
+        Handler: "index.handler",
         Environment: {
           Variables: {
             EVENT_BUS_NAME: "MyMainBus",
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
-        FunctionName:
-          "SingleBusEnrichmentWithLamb-enrichFunctionB1243B0F-GTuWbXCFlOsV",
-        Handler: "index.handler",
-        MemorySize: 1024,
-        Runtime: "nodejs16.x",
-        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({
@@ -243,18 +243,18 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "SingleBusEnrichmentWithLambda-producerD5545B1E-OwvA6E1JlNjY",
+        Runtime: "nodejs16.x",
+        MemorySize: 1024,
+        Timeout: 5,
+        Handler: "index.handler",
         Environment: {
           Variables: {
             EVENT_BUS_NAME: "MyMainBus",
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
-        FunctionName:
-          "SingleBusEnrichmentWithLambda-producerD5545B1E-OwvA6E1JlNjY",
-        Handler: "index.handler",
-        MemorySize: 1024,
-        Runtime: "nodejs16.x",
-        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({

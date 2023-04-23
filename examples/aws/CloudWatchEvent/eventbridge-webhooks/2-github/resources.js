@@ -96,6 +96,11 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ getId }) => ({
       Configuration: {
+        FunctionName:
+          "InboundWebhook-Lambda-cb9166b0-ac6d-11ed-9aac-0a4580dc23a9",
+        Runtime: "python3.7",
+        Timeout: 100,
+        Handler: "app.lambda_handler",
         Environment: {
           Variables: {
             EVENT_BUS_NAME: "default",
@@ -107,14 +112,10 @@ exports.createResources = () => [
             })}`,
           },
         },
-        FunctionName:
-          "InboundWebhook-Lambda-cb9166b0-ac6d-11ed-9aac-0a4580dc23a9",
-        Handler: "app.lambda_handler",
-        Runtime: "python3.7",
-        Timeout: 100,
       },
       FunctionUrlConfig: {
         AuthType: "NONE",
+        InvokeMode: "BUFFERED",
       },
     }),
     dependencies: ({}) => ({
