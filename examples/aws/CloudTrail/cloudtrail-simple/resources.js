@@ -20,7 +20,7 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       Name: "grucloud-s3-event-bridge-logs",
       Policy: {
         Version: "2012-10-17",

@@ -229,13 +229,11 @@ exports.EMRCluster = ({}) => ({
   }) =>
     pipe([
       tap(() => {
-        assert(iamJobFlowRole);
         assert(iamServiceRole);
       }),
       () => otherProps,
       defaultsDeep({
         ServiceRole: getField(iamServiceRole, "Arn"),
-        JobFlowRole: getField(iamJobFlowRole, "Arn"),
         Tags: buildTags({
           name,
           config,
@@ -243,6 +241,12 @@ exports.EMRCluster = ({}) => ({
           UserTags: Tags,
         }),
       }),
+      when(
+        () => iamJobFlowRole,
+        defaultsDeep({
+          JobFlowRole: getField(iamJobFlowRole, "Arn"),
+        })
+      ),
       when(
         () => iamAutoScalingRole,
         defaultsDeep({

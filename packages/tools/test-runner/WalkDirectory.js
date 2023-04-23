@@ -68,10 +68,12 @@ const ExcludeDirsDefault = [
   "hub-and-spoke-with-inspection-vpc",
   "hub-and-spoke-with-shared-services-vpc-terraform",
   "cloud-wan",
+  "emr-simple",
   "servicediscovery", // TODO
   "resource-share",
   "hub-and-spoke-with-inspection-vpc",
   "eks-workshop",
+  "mq-simple", // Cannot even delete MQ Configuration
   //
   "auditmanager-simple",
   "directory-service-microsoft-ad",

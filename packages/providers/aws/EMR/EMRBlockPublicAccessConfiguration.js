@@ -41,6 +41,7 @@ exports.EMRBlockPublicAccessConfiguration = () => ({
   findName,
   findId: findName,
   cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMR.html#getBlockPublicAccessConfiguration-property
   getById: {

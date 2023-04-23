@@ -192,7 +192,7 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       Name: `sample-bucket-glue-scripts-terraform-${config.accountId()}`,
     }),
   },

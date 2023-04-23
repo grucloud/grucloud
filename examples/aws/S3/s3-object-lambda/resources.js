@@ -86,7 +86,7 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       Name: "sam-app-s3bucket-uoktptsszrdd",
       Policy: {
         Version: "2012-10-17",

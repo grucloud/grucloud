@@ -111,7 +111,7 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       Name: "gc-appflow-source",
       Policy: {
         Version: "2008-10-17",
