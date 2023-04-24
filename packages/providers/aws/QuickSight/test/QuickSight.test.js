@@ -76,12 +76,17 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("FolderMembership", () =>
+  it("FolderMembership", () =>
     pipe([
       () => ({
         groupType: "QuickSight::FolderMembership",
         livesNotFound: ({ config }) => [
-          { FolderId: "i13455", AwsAccountId: config.accountId() },
+          {
+            FolderId: "i13455",
+            AwsAccountId: config.accountId(),
+            MemberId: "m123",
+            MemberType: "DASHBOARD",
+          },
         ],
       }),
       awsResourceTest,

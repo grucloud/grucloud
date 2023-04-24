@@ -14,7 +14,7 @@ const { QuickSightDashboard } = require("./QuickSightDashboard");
 const { QuickSightDataSet } = require("./QuickSightDataSet");
 const { QuickSightDataSource } = require("./QuickSightDataSource");
 const { QuickSightFolder } = require("./QuickSightFolder");
-//const { QuickSightFolderMembership } = require("./QuickSightFolderMembership");
+const { QuickSightFolderMembership } = require("./QuickSightFolderMembership");
 const {
   QuickSightIAMPolicyAssignment,
 } = require("./QuickSightIAMPolicyAssignment");
@@ -40,7 +40,7 @@ module.exports = pipe([
     QuickSightDataSet({}),
     QuickSightDataSource({}),
     QuickSightFolder({}),
-    //QuickSightFolderMembership({}),
+    QuickSightFolderMembership({}),
     QuickSightIAMPolicyAssignment({}),
     QuickSightIngestion({}),
     QuickSightGroup({}),

@@ -3,8 +3,6 @@ title Resources for project internetmonitor-simple
 skinparam monochrome true
 + Infra
 ++ aws
-+++ CloudWatchLogs
-++++ LogGroup (4)
 +++ EC2
 ++++ Vpc (1)
 +++ InternetMonitor
