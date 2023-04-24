@@ -29,6 +29,7 @@ exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 
 exports.LogGroupNameManagedByOther = [
   "airflow-",
+  "/aws/internet-monitor/",
   "/aws/amazonmq/broker/",
   "/aws/codebuild/",
   "aws/kendra/",
