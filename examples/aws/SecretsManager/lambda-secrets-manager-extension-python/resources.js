@@ -56,15 +56,15 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-HelloWorldFunction-xplIxoZGZhdc",
+        Runtime: "python3.9",
+        Handler: "app.lambda_handler",
         Environment: {
           Variables: {
             SECRET_NAME: "MySecret",
             PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: "2773",
           },
         },
-        FunctionName: "sam-app-HelloWorldFunction-xplIxoZGZhdc",
-        Handler: "app.lambda_handler",
-        Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({

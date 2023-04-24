@@ -67,17 +67,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         Description: "Lambda function to retrieve Secrets Manager secret",
+        TracingConfig: {
+          Mode: "Active",
+        },
+        FunctionName: "sam-app-GetSecretFunction-kteTLisAJ3QO",
+        Runtime: "nodejs16.x",
+        Timeout: 15,
+        Handler: "app.handler",
         Environment: {
           Variables: {
             SECRET_NAME: "mysecretsam",
           },
-        },
-        FunctionName: "sam-app-GetSecretFunction-kteTLisAJ3QO",
-        Handler: "app.handler",
-        Runtime: "nodejs16.x",
-        Timeout: 15,
-        TracingConfig: {
-          Mode: "Active",
         },
       },
       Tags: {

@@ -68,8 +68,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "secret-rotation",
-        Handler: "index.handler",
         Runtime: "nodejs18.x",
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({

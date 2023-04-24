@@ -110,6 +110,9 @@ exports.SecretsManagerSecretRotation = ({ compare }) => ({
   create: {
     method: "rotateSecret",
     pickCreated: ({ payload }) => pipe([() => payload]),
+    shouldRetryOnExceptionMessages: [
+      "Secrets Manager cannot invoke the specified Lambda function. Ensure that the function policy grants access to the principal secretsmanager.amazonaws.com.",
+    ],
   },
   update: {
     method: "rotateSecret",
