@@ -7,7 +7,10 @@ exports.createResources = () => [
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
+      name: "sqs",
+      type: "HTTP",
       httpConfig: {
+        endpoint: `https://sqs.${config.region}.amazonaws.com`,
         authorizationConfig: {
           authorizationType: "AWS_IAM",
           awsIamConfig: {
@@ -15,10 +18,7 @@ exports.createResources = () => [
             signingServiceName: "sqs",
           },
         },
-        endpoint: `https://sqs.${config.region}.amazonaws.com`,
       },
-      name: "sqs",
-      type: "HTTP",
     }),
     dependencies: ({}) => ({
       graphqlApi: "ToSqSApi",
@@ -40,8 +40,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
+      typeName: "Query",
       fieldName: "sendMessage",
-      kind: "UNIT",
       requestMappingTemplate: `
 #set ($body = "Action=SendMessage&Version=2012-11-05")
 #set ($messageBody = $util.urlEncode($util.toJson($ctx.args)))
@@ -72,7 +72,7 @@ exports.createResources = () => [
     null
 #end
 `,
-      typeName: "Query",
+      kind: "UNIT",
     }),
     dependencies: ({}) => ({
       dataSource: "sqs",

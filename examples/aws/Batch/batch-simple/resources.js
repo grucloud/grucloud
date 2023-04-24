@@ -8,13 +8,13 @@ exports.createResources = () => [
     group: "Batch",
     properties: ({ config }) => ({
       computeEnvironmentName: "compute-environment",
-      computeResources: {
-        maxvCpus: 128,
-        type: "FARGATE",
-      },
-      containerOrchestrationType: "ECS",
-      serviceRole: `arn:aws:iam::${config.accountId()}:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch`,
       type: "MANAGED",
+      computeResources: {
+        type: "FARGATE",
+        maxvCpus: 128,
+      },
+      serviceRole: `arn:aws:iam::${config.accountId()}:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch`,
+      containerOrchestrationType: "ECS",
     }),
     dependencies: ({}) => ({
       securityGroups: ["sg::vpc-default::default"],
@@ -28,26 +28,26 @@ exports.createResources = () => [
     type: "JobDefinition",
     group: "Batch",
     properties: ({}) => ({
+      jobDefinitionName: "job-definition",
+      type: "container",
       containerProperties: {
+        image: "public.ecr.aws/amazonlinux/amazonlinux:latest",
         command: ["echo", "hello grucloud"],
+        resourceRequirements: [
+          {
+            value: "1",
+            type: "VCPU",
+          },
+          {
+            value: "2048",
+            type: "MEMORY",
+          },
+        ],
         fargatePlatformConfiguration: {
           platformVersion: "1.4.0",
         },
-        image: "public.ecr.aws/amazonlinux/amazonlinux:latest",
-        resourceRequirements: [
-          {
-            type: "VCPU",
-            value: "1",
-          },
-          {
-            type: "MEMORY",
-            value: "2048",
-          },
-        ],
       },
-      jobDefinitionName: "job-definition",
       platformCapabilities: ["FARGATE"],
-      type: "container",
     }),
     dependencies: ({}) => ({
       roleExecution: "role-execution-batch",
@@ -57,18 +57,18 @@ exports.createResources = () => [
     type: "JobQueue",
     group: "Batch",
     properties: ({ getId }) => ({
+      jobQueueName: "my-job-queue",
+      priority: 1,
       computeEnvironmentOrder: [
         {
+          order: 1,
           computeEnvironment: `${getId({
             type: "ComputeEnvironment",
             group: "Batch",
             name: "compute-environment",
           })}`,
-          order: 1,
         },
       ],
-      jobQueueName: "my-job-queue",
-      priority: 1,
     }),
     dependencies: ({}) => ({
       computeEnvironments: ["compute-environment"],
@@ -87,7 +87,15 @@ exports.createResources = () => [
       name: "my-scheduling-policy",
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
   {
     type: "Subnet",
     group: "EC2",
@@ -106,15 +114,7 @@ exports.createResources = () => [
       vpc: "vpc-default",
     }),
   },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-default::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "InstanceProfile",
     group: "IAM",

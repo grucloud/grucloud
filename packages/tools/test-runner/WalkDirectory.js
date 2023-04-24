@@ -75,6 +75,7 @@ const ExcludeDirsDefault = [
   "eks-workshop",
   "mq-simple", // Cannot even delete MQ Configuration
   //
+  "internetmonitor-simple",
   "auditmanager-simple",
   "directory-service-microsoft-ad",
   "inspector2-simple",

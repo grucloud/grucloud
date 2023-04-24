@@ -7,7 +7,10 @@ exports.createResources = () => [
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
+      name: "events",
+      type: "HTTP",
       httpConfig: {
+        endpoint: `https://events.${config.region}.amazonaws.com/`,
         authorizationConfig: {
           authorizationType: "AWS_IAM",
           awsIamConfig: {
@@ -15,10 +18,7 @@ exports.createResources = () => [
             signingServiceName: "events",
           },
         },
-        endpoint: `https://events.${config.region}.amazonaws.com/`,
       },
-      name: "events",
-      type: "HTTP",
     }),
     dependencies: ({}) => ({
       graphqlApi: "AppSyncEventBridgeAPI",
@@ -34,8 +34,8 @@ exports.createResources = () => [
       authenticationType: "API_KEY",
       xrayEnabled: true,
       logConfig: {
-        excludeVerboseContent: false,
         fieldLogLevel: "ALL",
+        excludeVerboseContent: false,
       },
       apiKeys: [{}],
       schemaFile: "AppSyncEventBridgeAPI.graphql",
@@ -49,8 +49,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
+      typeName: "Mutation",
       fieldName: "putEvent",
-      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2018-05-29",
   "method": "POST",
@@ -86,7 +86,7 @@ exports.createResources = () => [
     $utils.appendError($ctx.result.body, $ctx.result.statusCode)
 #end
 `,
-      typeName: "Mutation",
+      kind: "UNIT",
     }),
     dependencies: ({}) => ({
       dataSource: "events",

@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, pick, eq } = require("rubico");
 const { defaultsDeep, find, append } = require("rubico/x");
 
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { findDependenciesGraphqlId } = require("./AppSyncCommon");
 
@@ -30,6 +30,14 @@ const decorate = ({ endpoint, config, live }) =>
       assert(live.apiId);
     }),
     defaultsDeep({ apiId: live.apiId }),
+    omitIfEmpty([
+      "description",
+      "requestMappingTemplate",
+      "responseMappingTemplate",
+      "cachingConfig",
+      "functionVersion",
+      "syncConfig",
+    ]),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html

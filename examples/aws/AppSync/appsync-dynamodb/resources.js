@@ -7,15 +7,16 @@ exports.createResources = () => [
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
+      name: "NotesDataSource",
       description: "The Notes Table AppSync Data Source",
+      type: "AMAZON_DYNAMODB",
       dynamodbConfig: {
-        awsRegion: `${config.region}`,
         tableName: "sam-app-DynamoDBNotesTable-8JRUXR2K56WX",
+        awsRegion: `${config.region}`,
         useCallerCredentials: false,
+        deltaSyncConfig: null,
         versioned: false,
       },
-      name: "NotesDataSource",
-      type: "AMAZON_DYNAMODB",
     }),
     dependencies: ({}) => ({
       graphqlApi: "NotesApi",
@@ -38,8 +39,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
+      typeName: "Mutation",
       fieldName: "deleteNote",
-      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2018-05-29",
   "operation": "DeleteItem",
@@ -49,7 +50,7 @@ exports.createResources = () => [
 }
 `,
       responseMappingTemplate: "$util.toJson($ctx.result)",
-      typeName: "Mutation",
+      kind: "UNIT",
     }),
     dependencies: ({}) => ({
       dataSource: "NotesDataSource",
@@ -60,8 +61,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
+      typeName: "Mutation",
       fieldName: "saveNote",
-      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2018-05-29",
   "operation": "PutItem",
@@ -75,7 +76,7 @@ exports.createResources = () => [
 }
 `,
       responseMappingTemplate: "$util.toJson($ctx.result)",
-      typeName: "Mutation",
+      kind: "UNIT",
     }),
     dependencies: ({}) => ({
       dataSource: "NotesDataSource",
@@ -86,8 +87,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({ multiline }) => ({
+      typeName: "Query",
       fieldName: "allNotes",
-      kind: "UNIT",
       requestMappingTemplate: multiline(() => {
         /*
 {
@@ -108,7 +109,7 @@ exports.createResources = () => [
 
 */
       }),
-      typeName: "Query",
+      kind: "UNIT",
     }),
     dependencies: ({}) => ({
       dataSource: "NotesDataSource",
@@ -119,8 +120,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
+      typeName: "Query",
       fieldName: "getNote",
-      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2018-05-29",
   "operation": "GetItem",
@@ -130,7 +131,7 @@ exports.createResources = () => [
 }
 `,
       responseMappingTemplate: "$util.toJson($ctx.result)",
-      typeName: "Query",
+      kind: "UNIT",
     }),
     dependencies: ({}) => ({
       dataSource: "NotesDataSource",
