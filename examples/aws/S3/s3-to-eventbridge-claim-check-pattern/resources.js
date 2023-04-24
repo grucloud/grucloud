@@ -253,9 +253,9 @@ exports.createResources = () => [
           'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
         FunctionName:
           "S3ToEventbridgeAutomaticC-BucketNotificationsHandl-gXmghdI0jBas",
-        Handler: "index.handler",
         Runtime: "python3.7",
         Timeout: 300,
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -267,17 +267,17 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "S3ToEventbridgeAutomaticC-claimCreatedConsumerF249-zzvbLLb9J5Jc",
+        Runtime: "nodejs16.x",
+        MemorySize: 1024,
+        Timeout: 5,
+        Handler: "index.handler",
         Environment: {
           Variables: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
-        FunctionName:
-          "S3ToEventbridgeAutomaticC-claimCreatedConsumerF249-zzvbLLb9J5Jc",
-        Handler: "index.handler",
-        MemorySize: 1024,
-        Runtime: "nodejs16.x",
-        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({
@@ -289,17 +289,17 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "S3ToEventbridgeAutomaticC-claimProcessedConsumer93-mbjgNObJbZRW",
+        Runtime: "nodejs16.x",
+        MemorySize: 1024,
+        Timeout: 5,
+        Handler: "index.handler",
         Environment: {
           Variables: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
-        FunctionName:
-          "S3ToEventbridgeAutomaticC-claimProcessedConsumer93-mbjgNObJbZRW",
-        Handler: "index.handler",
-        MemorySize: 1024,
-        Runtime: "nodejs16.x",
-        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({
@@ -311,18 +311,18 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "S3ToEventbridgeAutomaticC-transformerFunction62C75-RE6hsRaDaXFG",
+        Runtime: "nodejs16.x",
+        MemorySize: 1024,
+        Timeout: 5,
+        Handler: "index.handler",
         Environment: {
           Variables: {
             EVENT_BUS_NAME: "InsuranceBus",
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
-        FunctionName:
-          "S3ToEventbridgeAutomaticC-transformerFunction62C75-RE6hsRaDaXFG",
-        Handler: "index.handler",
-        MemorySize: 1024,
-        Runtime: "nodejs16.x",
-        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({

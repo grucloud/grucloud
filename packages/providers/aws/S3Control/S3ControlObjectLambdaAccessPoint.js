@@ -37,7 +37,12 @@ exports.S3ControlObjectLambdaAccessPoint = () => ({
   package: "s3-control",
   client: "S3Control",
   propertiesDefault: {},
-  omitProperties: ["ObjectLambdaAccessPointArn", "CreationDate", "AccountId"],
+  omitProperties: [
+    "ObjectLambdaAccessPointArn",
+    "CreationDate",
+    "AccountId",
+    "Alias",
+  ],
   inferName: () =>
     pipe([
       get("Name"),

@@ -1,10 +1,10 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, eq } = require("rubico");
+const { pipe, tap, get, pick, assign, eq, map } = require("rubico");
 const { defaultsDeep, prepend, pluck } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { arnFromId } = require("../AwsCommon");
+const { arnFromId, replaceAccountAndRegion } = require("../AwsCommon");
 
 const assignArn = ({ config }) =>
   pipe([
@@ -44,6 +44,7 @@ exports.S3ControlMultiRegionAccessPoint = () => ({
     "MultiRegionAccessPointArn",
     "Status",
     "Alias",
+    "Regions[].Region",
   ],
   inferName: () =>
     pipe([
@@ -67,6 +68,26 @@ exports.S3ControlMultiRegionAccessPoint = () => ({
       }),
     ]),
   ignoreErrorCodes: ["PermanentRedirect", "NoSuchMultiRegionAccessPoint"],
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        Regions: pipe([
+          get("Regions"),
+          map(
+            assign({
+              Bucket: pipe([
+                get("Bucket"),
+                replaceAccountAndRegion({ lives, providerConfig }),
+              ]),
+              BucketAccountId: pipe([
+                get("BucketAccountId"),
+                replaceAccountAndRegion({ lives, providerConfig }),
+              ]),
+            })
+          ),
+        ]),
+      }),
+    ]),
   dependencies: {
     s3Bucket: {
       type: "Bucket",

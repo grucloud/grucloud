@@ -91,9 +91,13 @@ exports.createResources = () => [
               "glue:GetTableVersions",
             ],
             Resource: [
-              `arn:aws:glue:${config.region}:909198221043:catalog`,
-              `arn:aws:glue:${config.region}:909198221043:database/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
-              `arn:aws:glue:${config.region}:909198221043:table/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+              `arn:aws:glue:${config.region}:${config.accountId()}:catalog`,
+              `arn:aws:glue:${
+                config.region
+              }:${config.accountId()}:database/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+              `arn:aws:glue:${
+                config.region
+              }:${config.accountId()}:table/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
             ],
           },
           {

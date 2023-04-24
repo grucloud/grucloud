@@ -88,16 +88,16 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
+        FunctionName: "sam-app-LambdaFunction-5x7IftvddoxF",
+        Runtime: "python3.9",
+        Timeout: 120,
+        Handler: "index.handler",
         Environment: {
           Variables: {
             DestinationBucket: "sam-app-videooutput-1de7ubqosy7ld",
             MediaConvertRole: `arn:aws:iam::${config.accountId()}:role/sam-app-MediaConvertRole-1GZUZLY1QYHQ9`,
           },
         },
-        FunctionName: "sam-app-LambdaFunction-5x7IftvddoxF",
-        Handler: "index.handler",
-        Runtime: "python3.9",
-        Timeout: 120,
       },
     }),
     dependencies: ({}) => ({

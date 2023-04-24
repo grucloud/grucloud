@@ -74,9 +74,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-ResizeFunction-NiODFBqJDB40",
-        Handler: "app.handler",
-        MemorySize: 2048,
         Runtime: "nodejs12.x",
+        MemorySize: 2048,
+        Handler: "app.handler",
       },
     }),
     dependencies: ({}) => ({

@@ -8,6 +8,16 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-s3-simple",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+            BucketKeyEnabled: true,
+          },
+        ],
+      },
     }),
   },
 ];

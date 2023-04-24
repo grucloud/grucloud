@@ -76,14 +76,14 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sqs-lambda-demo",
+        Runtime: "python3.9",
+        Handler: "app.lambda_handler",
         Environment: {
           Variables: {
             POWERTOOLS_SERVICE_NAME: "sqs-lambda-demo",
           },
         },
-        FunctionName: "sqs-lambda-demo",
-        Handler: "app.lambda_handler",
-        Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({
