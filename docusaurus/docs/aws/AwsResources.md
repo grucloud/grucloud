@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 707 resources in 156 services for provider aws:
+List of 708 resources in 156 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -233,7 +233,7 @@ List of 707 resources in 156 services for provider aws:
 * QLDB: 
 [Ledger](./resources/QLDB/Ledger.md), [Stream](./resources/QLDB/Stream.md)
 * QuickSight: 
-[AccountSubscription](./resources/QuickSight/AccountSubscription.md), [Analysis](./resources/QuickSight/Analysis.md), [Dashboard](./resources/QuickSight/Dashboard.md), [DataSet](./resources/QuickSight/DataSet.md), [DataSource](./resources/QuickSight/DataSource.md), [Folder](./resources/QuickSight/Folder.md), [IAMPolicyAssignment](./resources/QuickSight/IAMPolicyAssignment.md), [Ingestion](./resources/QuickSight/Ingestion.md), [Group](./resources/QuickSight/Group.md), [GroupMembership](./resources/QuickSight/GroupMembership.md), [Template](./resources/QuickSight/Template.md), [Theme](./resources/QuickSight/Theme.md), [User](./resources/QuickSight/User.md)
+[AccountSubscription](./resources/QuickSight/AccountSubscription.md), [Analysis](./resources/QuickSight/Analysis.md), [Dashboard](./resources/QuickSight/Dashboard.md), [DataSet](./resources/QuickSight/DataSet.md), [DataSource](./resources/QuickSight/DataSource.md), [Folder](./resources/QuickSight/Folder.md), [IAMPolicyAssignment](./resources/QuickSight/IAMPolicyAssignment.md), [Ingestion](./resources/QuickSight/Ingestion.md), [Group](./resources/QuickSight/Group.md), [GroupMembership](./resources/QuickSight/GroupMembership.md), [RefreshSchedule](./resources/QuickSight/RefreshSchedule.md), [Template](./resources/QuickSight/Template.md), [Theme](./resources/QuickSight/Theme.md), [User](./resources/QuickSight/User.md)
 * RAM: 
 [ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * Rbin: 

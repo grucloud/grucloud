@@ -76,6 +76,16 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("FolderMembership", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::FolderMembership",
+        livesNotFound: ({ config }) => [
+          { FolderId: "i13455", AwsAccountId: config.accountId() },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Group", () =>
     pipe([
       () => ({
@@ -128,11 +138,17 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("RefreshSchedule", () =>
+  it("RefreshSchedule", () =>
     pipe([
       () => ({
         groupType: "QuickSight::RefreshSchedule",
-        livesNotFound: ({ config }) => [{ AwsAccountId: config.accountId() }],
+        livesNotFound: ({ config }) => [
+          {
+            DataSetId: "i1234567890",
+            ScheduleId: "s123456789",
+            AwsAccountId: config.accountId(),
+          },
+        ],
       }),
       awsResourceTest,
     ])());
