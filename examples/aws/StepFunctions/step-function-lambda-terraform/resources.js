@@ -130,15 +130,15 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "aws_lambda_example",
+        Runtime: "python3.7",
+        Handler: "lambda.lambda_handler",
         Environment: {
           Variables: {
             application_name: "aws_lambda_example",
             env: "dev",
           },
         },
-        FunctionName: "aws_lambda_example",
-        Handler: "lambda.lambda_handler",
-        Runtime: "python3.7",
       },
     }),
     dependencies: ({}) => ({

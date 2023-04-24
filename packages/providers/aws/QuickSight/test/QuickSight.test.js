@@ -128,6 +128,14 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("RefreshSchedule", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::RefreshSchedule",
+        livesNotFound: ({ config }) => [{ AwsAccountId: config.accountId() }],
+      }),
+      awsResourceTest,
+    ])());
   it("Theme", () =>
     pipe([
       () => ({

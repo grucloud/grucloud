@@ -21,6 +21,7 @@ const {
 const { QuickSightIngestion } = require("./QuickSightIngestion");
 const { QuickSightGroup } = require("./QuickSightGroup");
 const { QuickSightGroupMembership } = require("./QuickSightGroupMembership");
+//const { QuickSightRefreshSchedule } = require("./QuickSightRefreshSchedule");
 const { QuickSightTemplate } = require("./QuickSightTemplate");
 //const { QuickSightTemplateAlias } = require("./QuickSightTemplateAlias");
 const { QuickSightTheme } = require("./QuickSightTheme");
@@ -44,6 +45,7 @@ module.exports = pipe([
     QuickSightIngestion({}),
     QuickSightGroup({}),
     QuickSightGroupMembership({}),
+    //QuickSightRefreshSchedule({}),
     QuickSightTemplate({}),
     //QuickSightTemplateAlias({}),
     QuickSightTheme({}),

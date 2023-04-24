@@ -227,15 +227,15 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-AddFooterFunction-Sj4FdUksNsgI",
+        Runtime: "nodejs12.x",
+        Timeout: 10,
+        Handler: "app.handler",
         Environment: {
           Variables: {
             UPLOADS_BUCKET: "gc-lambda-s3-sfn-uploads",
           },
         },
-        FunctionName: "sam-app-AddFooterFunction-Sj4FdUksNsgI",
-        Handler: "app.handler",
-        Runtime: "nodejs12.x",
-        Timeout: 10,
       },
     }),
     dependencies: ({}) => ({
@@ -247,15 +247,15 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-ProcessFileFunction-BW0cLGmLpTil",
+        Runtime: "nodejs12.x",
+        Timeout: 10,
+        Handler: "app.handler",
         Environment: {
           Variables: {
             UPLOADS_BUCKET: "gc-lambda-s3-sfn-uploads",
           },
         },
-        FunctionName: "sam-app-ProcessFileFunction-BW0cLGmLpTil",
-        Handler: "app.handler",
-        Runtime: "nodejs12.x",
-        Timeout: 10,
       },
     }),
     dependencies: ({}) => ({
@@ -267,6 +267,11 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
+        FunctionName:
+          "sam-app-SavePayloadAndStartStateMachineFunction-ylizpGuEZPin",
+        Runtime: "nodejs12.x",
+        Timeout: 10,
+        Handler: "app.handler",
         Environment: {
           Variables: {
             PROCESS_FILE_STATE_MACHINE_ARN: `arn:aws:states:${
@@ -275,11 +280,6 @@ exports.createResources = () => [
             UPLOADS_BUCKET: "gc-lambda-s3-sfn-uploads",
           },
         },
-        FunctionName:
-          "sam-app-SavePayloadAndStartStateMachineFunction-ylizpGuEZPin",
-        Handler: "app.handler",
-        Runtime: "nodejs12.x",
-        Timeout: 10,
       },
     }),
     dependencies: ({}) => ({

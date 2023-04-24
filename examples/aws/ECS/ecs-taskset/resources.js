@@ -1445,9 +1445,9 @@ nohup ./startup.sh &
     properties: ({}) => ({
       Configuration: {
         FunctionName: "appmesh-workshop-KeyPairHelperLambda-LhMHddWOuSgf",
-        Handler: "index.handler",
         Runtime: "python3.7",
         Timeout: 30,
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({

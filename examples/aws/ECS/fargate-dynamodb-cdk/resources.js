@@ -355,7 +355,7 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       VpcEndpointType: "Gateway",
       ServiceName: `com.amazonaws.${config.region}.dynamodb`,
       PolicyDocument: {

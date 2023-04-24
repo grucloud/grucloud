@@ -190,9 +190,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-target-lambda",
-        Handler: "index.handler",
         Runtime: "nodejs16.x",
         Timeout: 15,
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({

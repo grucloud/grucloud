@@ -244,7 +244,7 @@ exports.EKSNodeGroup = ({ compare }) => ({
           //"taints", //TODO
           "updateConfig",
         ]),
-        eks().updateNodegroupConfig,
+        endpoint().updateNodegroupConfig,
         get("update"),
         tap((result) => {
           logger.info(`updateNodegroupConfig: ${tos({ result })}`);

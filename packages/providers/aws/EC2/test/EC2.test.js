@@ -585,6 +585,14 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("VpcEndpointService", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::VpcEndpointService",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("VpcIpv4CidrBlockAssociation", () =>
     pipe([
       () => ({

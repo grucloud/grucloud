@@ -91,6 +91,9 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
+        FunctionName: "sam-app-LambdaProxy-3WUHNeLsP7OO",
+        Runtime: "nodejs12.x",
+        Handler: "app.handler",
         Environment: {
           Variables: {
             StateMachineArn: `arn:aws:states:${
@@ -98,9 +101,6 @@ exports.createResources = () => [
             }:${config.accountId()}:stateMachine:StateMachine-QcjYVBBtLAi1`,
           },
         },
-        FunctionName: "sam-app-LambdaProxy-3WUHNeLsP7OO",
-        Handler: "app.handler",
-        Runtime: "nodejs12.x",
       },
     }),
     dependencies: ({}) => ({

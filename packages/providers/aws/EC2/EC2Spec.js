@@ -99,6 +99,7 @@ const { EC2Volume } = require("./EC2Volume");
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { EC2Vpc } = require("./EC2Vpc");
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
+//const { VpcEndpointService } = require("./VpcEndpointService");
 const { EC2VpnGateway } = require("./EC2VpnGateway");
 const { EC2VpnGatewayAttachment } = require("./EC2VpnGatewayAttachment");
 const {
@@ -301,7 +302,6 @@ module.exports = pipe([
       },
     },
     createAwsService(EC2LocalGatewayRouteTable({ compare: compareEC2 })),
-
     createAwsService(EC2ManagedPrefixList({ compare: compareEC2 })),
     createAwsService(EC2NatGateway({})),
     {
@@ -353,6 +353,7 @@ module.exports = pipe([
     createAwsService(EC2VolumeAttachment({ compare: compareEC2 })),
     createAwsService(EC2Vpc({ compare: compareEC2 })),
     createAwsService(EC2VpcEndpoint({ compare: compareEC2 })),
+    createAwsService(VpcEndpointService({ compare: compareEC2 })),
     createAwsService(EC2VpcIpv4CidrBlockAssociation({ compare: compareEC2 })),
     createAwsService(EC2VpcPeeringConnection({ compare: compareEC2 })),
     createAwsService(EC2VpcPeeringConnectionAccepter({ compare: compareEC2 })),
