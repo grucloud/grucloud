@@ -121,8 +121,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "mylambda",
-        Handler: "index.handler",
         Runtime: "nodejs16.x",
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({

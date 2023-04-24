@@ -14,6 +14,17 @@ describe("S3Control", async function () {
       }),
       awsResourceTest,
     ])());
+  // TODO only for Outpost
+  // it.skip("BucketReplication", () =>
+  //   pipe([
+  //     () => ({
+  //       groupType: "S3Control::BucketReplication",
+  //       livesNotFound: ({ config }) => [
+  //         { AccountId: config.accountId(), Name: "gc-n123" },
+  //       ],
+  //     }),
+  //     awsResourceTest,
+  //   ])());
   it("MultiRegionAccessPoint", () =>
     pipe([
       () => ({

@@ -353,7 +353,7 @@ module.exports = pipe([
     createAwsService(EC2VolumeAttachment({ compare: compareEC2 })),
     createAwsService(EC2Vpc({ compare: compareEC2 })),
     createAwsService(EC2VpcEndpoint({ compare: compareEC2 })),
-    createAwsService(VpcEndpointService({ compare: compareEC2 })),
+    //createAwsService(VpcEndpointService({ compare: compareEC2 })),
     createAwsService(EC2VpcIpv4CidrBlockAssociation({ compare: compareEC2 })),
     createAwsService(EC2VpcPeeringConnection({ compare: compareEC2 })),
     createAwsService(EC2VpcPeeringConnectionAccepter({ compare: compareEC2 })),

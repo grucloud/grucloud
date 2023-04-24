@@ -159,6 +159,10 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
+        FunctionName: "sam-app-FindSchedules-OfzThGtSLZxQ",
+        Runtime: "nodejs16.x",
+        Timeout: 300,
+        Handler: "find-schedules.handler",
         Environment: {
           Variables: {
             QUEUE_URL: `https://sqs.${
@@ -166,10 +170,6 @@ exports.createResources = () => [
             }.amazonaws.com/${config.accountId()}/sam-app-removal-queue`,
           },
         },
-        FunctionName: "sam-app-FindSchedules-OfzThGtSLZxQ",
-        Handler: "find-schedules.handler",
-        Runtime: "nodejs16.x",
-        Timeout: 300,
       },
     }),
     dependencies: ({}) => ({
@@ -182,9 +182,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-ProcessSchedules-36SgkAOF1r92",
-        Handler: "process-schedule-batch.handler",
         Runtime: "nodejs16.x",
         Timeout: 300,
+        Handler: "process-schedule-batch.handler",
       },
     }),
     dependencies: ({}) => ({

@@ -124,9 +124,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-LambdaFunction-SzMn1A4Jbksd",
-        Handler: "app.handler",
         Runtime: "python3.7",
         Timeout: 60,
+        Handler: "app.handler",
       },
     }),
     dependencies: ({}) => ({

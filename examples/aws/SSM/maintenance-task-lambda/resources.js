@@ -150,8 +150,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "maintenance-window",
-        Handler: "index.handler",
         Runtime: "nodejs18.x",
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({

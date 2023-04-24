@@ -73,8 +73,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-ScheduledLambdaFunction-yYv0pABTDhLS",
-        Handler: "app.lambdaHandler",
         Runtime: "nodejs16.x",
+        Handler: "app.lambdaHandler",
       },
     }),
     dependencies: ({}) => ({
