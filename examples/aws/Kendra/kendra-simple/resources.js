@@ -11,130 +11,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "AmazonKendra-block",
-      Description: "AmazonKendra-block",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "kendra.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["AmazonKendra-block"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "AmazonKendra-experience",
-      Description: "AmazonKendra-experience",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "kendra.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["AmazonKendra-experience"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "AmazonKendra-faq",
-      Description: "AmazonKendra-faq",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "kendra.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["AmazonKendra-faq"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName:
-        "AmazonKendra-sample-s3-role-bd173dde-6547-4fa4-9497-e1263c47ac9c",
-      Description:
-        "AmazonKendra-sample-s3-role-bd173dde-6547-4fa4-9497-e1263c47ac9c",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "kendra.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: [
-        "AmazonKendra-sample-s3-role-bd173dde-6547-4fa4-9497-e1263c47ac9c",
-      ],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: `AmazonKendra-${config.region}-my-index`,
-      Description: "AmazonKendra-us-east-1-my-index",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "kendra.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ config }) => ({
-      policies: [`AmazonKendra-${config.region}-my-index`],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -316,6 +192,130 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "AmazonKendra-block",
+      Description: "AmazonKendra-block",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "kendra.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["AmazonKendra-block"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "AmazonKendra-experience",
+      Description: "AmazonKendra-experience",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "kendra.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["AmazonKendra-experience"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "AmazonKendra-faq",
+      Description: "AmazonKendra-faq",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "kendra.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["AmazonKendra-faq"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName:
+        "AmazonKendra-sample-s3-role-bd173dde-6547-4fa4-9497-e1263c47ac9c",
+      Description:
+        "AmazonKendra-sample-s3-role-bd173dde-6547-4fa4-9497-e1263c47ac9c",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "kendra.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: [
+        "AmazonKendra-sample-s3-role-bd173dde-6547-4fa4-9497-e1263c47ac9c",
+      ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: `AmazonKendra-${config.region}-my-index`,
+      Description: "AmazonKendra-us-east-1-my-index",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "kendra.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ config }) => ({
+      policies: [`AmazonKendra-${config.region}-my-index`],
+    }),
+  },
+  {
     type: "DataSource",
     group: "Kendra",
     properties: ({}) => ({
@@ -414,32 +414,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-kendra-test",
-    }),
-  },
-  {
-    type: "Object",
-    group: "S3",
-    properties: ({}) => ({
-      Key: "blockList.txt",
-      ContentType: "text/plain",
-      ServerSideEncryption: "AES256",
-      source: "s3/gc-kendra-test/blockList.txt",
-    }),
-    dependencies: ({}) => ({
-      bucket: "gc-kendra-test",
-    }),
-  },
-  {
-    type: "Object",
-    group: "S3",
-    properties: ({}) => ({
-      Key: "data.json",
-      ContentType: "application/json",
-      ServerSideEncryption: "AES256",
-      source: "s3/gc-kendra-test/data.json",
-    }),
-    dependencies: ({}) => ({
-      bucket: "gc-kendra-test",
     }),
   },
 ];

@@ -1,5 +1,11 @@
 {
-  "packages": ["packages/**/*", "examples/**/*"],
+  "packages": [
+    "packages/core",
+    "packages/libs/**/*",
+    "packages/providers/**/*",
+    "packages/tools/**/*",
+    "examples/**/*"
+  ],
   "version": "11.1.0",
   "command": {
     "publish": {

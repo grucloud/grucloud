@@ -231,14 +231,14 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "AlbLambdaCdkStack-LambdaFunctionBF21E41F-VSCEutUH57C2",
+        Runtime: "nodejs14.x",
+        Handler: "index.handler",
         Environment: {
           Variables: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
-        FunctionName: "AlbLambdaCdkStack-LambdaFunctionBF21E41F-VSCEutUH57C2",
-        Handler: "index.handler",
-        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

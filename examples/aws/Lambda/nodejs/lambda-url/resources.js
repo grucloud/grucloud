@@ -62,14 +62,15 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "my-function-url",
-        Handler: "index.handler",
         Runtime: "nodejs14.x",
+        Handler: "index.handler",
       },
       FunctionUrlConfig: {
         AuthType: "NONE",
         Cors: {
           AllowOrigins: ["*"],
         },
+        InvokeMode: "BUFFERED",
       },
     }),
     dependencies: ({}) => ({

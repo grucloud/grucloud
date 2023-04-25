@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^11.1.0",
-    "@grucloud/provider-mock": "^11.1.0",
+    "@grucloud/provider-mock": "1.10.22",
     "bluebird": "^3.7.2",
     "ping": "^0.4.1",
     "rubico": "^1.6.27",

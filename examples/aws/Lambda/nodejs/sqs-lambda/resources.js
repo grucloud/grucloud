@@ -64,8 +64,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "lambda-hello-world",
-        Handler: "helloworld.handler",
         Runtime: "nodejs14.x",
+        Handler: "helloworld.handler",
       },
     }),
     dependencies: ({}) => ({

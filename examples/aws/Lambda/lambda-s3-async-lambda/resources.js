@@ -119,8 +119,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "MyAsynchronousFunction",
-        Handler: "app.lambda_handler",
         Runtime: "python3.9",
+        Handler: "app.lambda_handler",
       },
     }),
     dependencies: ({}) => ({
@@ -132,6 +132,9 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "SendPayloadFunction",
+        Runtime: "python3.9",
+        Handler: "app.lambda_handler",
         Environment: {
           Variables: {
             AsyncLambdaFunctionName: "MyAsynchronousFunction",
@@ -139,9 +142,6 @@ exports.createResources = () => [
             PayloadBucketName: "gc-lambda-s3-async-lambda",
           },
         },
-        FunctionName: "SendPayloadFunction",
-        Handler: "app.lambda_handler",
-        Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({

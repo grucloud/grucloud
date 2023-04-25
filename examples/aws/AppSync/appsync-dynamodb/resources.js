@@ -14,7 +14,6 @@ exports.createResources = () => [
         tableName: "sam-app-DynamoDBNotesTable-8JRUXR2K56WX",
         awsRegion: `${config.region}`,
         useCallerCredentials: false,
-        deltaSyncConfig: null,
         versioned: false,
       },
     }),

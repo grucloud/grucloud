@@ -35,28 +35,29 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "LambdaAdapterCdkStack-lambdaAdapterFunction6BCDA39-EKYUs9AiFOqv",
+        Runtime: "nodejs16.x",
+        Layers: [
+          "arn:aws:lambda:us-east-1:753240598075:layer:LambdaAdapterLayerX86:3",
+        ],
+        MemorySize: 1024,
+        Timeout: 60,
+        Handler: "run.sh",
         Environment: {
           Variables: {
             AWS_LAMBDA_EXEC_WRAPPER: "/opt/bootstrap",
             RUST_LOG: "info",
           },
         },
-        FunctionName:
-          "LambdaAdapterCdkStack-lambdaAdapterFunction6BCDA39-EKYUs9AiFOqv",
-        Handler: "run.sh",
-        Layers: [
-          "arn:aws:lambda:us-east-1:753240598075:layer:LambdaAdapterLayerX86:3",
-        ],
-        MemorySize: 1024,
-        Runtime: "nodejs16.x",
-        Timeout: 60,
       },
       FunctionUrlConfig: {
         AuthType: "NONE",
         Cors: {
-          AllowMethods: ["*"],
           AllowOrigins: ["*"],
+          AllowMethods: ["*"],
         },
+        InvokeMode: "BUFFERED",
       },
     }),
     dependencies: ({}) => ({

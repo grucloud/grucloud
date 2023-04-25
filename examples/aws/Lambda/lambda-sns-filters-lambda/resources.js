@@ -108,8 +108,8 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "LambdaSNSFiltersLambdaSta-ConsumerAllFunctionE7B9A-OCRphOAW6tVQ",
-        Handler: "consumer.handler",
         Runtime: "nodejs16.x",
+        Handler: "consumer.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -123,8 +123,8 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "LambdaSNSFiltersLambdaSta-ConsumerRedFunction02912-5MU7iT8MlodZ",
-        Handler: "consumerRed.handler",
         Runtime: "nodejs16.x",
+        Handler: "consumerRed.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -136,6 +136,10 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
+        FunctionName:
+          "LambdaSNSFiltersLambdaStack-SenderFunction5DD1AB71-WGFXHhVyVLi7",
+        Runtime: "nodejs16.x",
+        Handler: "senderFilter.handler",
         Environment: {
           Variables: {
             TOPIC_ARN: `arn:aws:sns:${
@@ -143,10 +147,6 @@ exports.createResources = () => [
             }:${config.accountId()}:LambdaSNSFiltersLambdaStack-SNSTopicBCCC5DD8-UaEWb1UkFPpL`,
           },
         },
-        FunctionName:
-          "LambdaSNSFiltersLambdaStack-SenderFunction5DD1AB71-WGFXHhVyVLi7",
-        Handler: "senderFilter.handler",
-        Runtime: "nodejs16.x",
       },
     }),
     dependencies: ({}) => ({

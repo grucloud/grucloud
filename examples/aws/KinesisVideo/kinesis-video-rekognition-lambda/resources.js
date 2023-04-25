@@ -99,8 +99,8 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "KVSRekognitionStack-processinglambda6F2FFA55-kdeJoOnyx0zM",
-        Handler: "index.lambda_handler",
         Runtime: "python3.9",
+        Handler: "index.lambda_handler",
       },
     }),
     dependencies: ({}) => ({

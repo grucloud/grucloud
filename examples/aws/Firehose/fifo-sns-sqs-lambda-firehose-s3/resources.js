@@ -170,15 +170,15 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "fifo-sns-sqs-lambda-firehose-s3-lambda-5d62e6b5",
+        Runtime: "python3.8",
+        Handler: "lambdaFirehoseLogger.lambdaFirehoseLogger",
         Environment: {
           Variables: {
             FIREHOSE_STREAM_NAME:
               "fifo-sns-sqs-lambda-firehose-s3-stream-5d62e6b5",
           },
         },
-        FunctionName: "fifo-sns-sqs-lambda-firehose-s3-lambda-5d62e6b5",
-        Handler: "lambdaFirehoseLogger.lambdaFirehoseLogger",
-        Runtime: "python3.8",
       },
     }),
     dependencies: ({}) => ({

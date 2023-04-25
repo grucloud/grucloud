@@ -50,6 +50,9 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
+        FunctionName: "sam-app-TopicPublisherFunction-3UFzSVBp2h7r",
+        Runtime: "nodejs12.x",
+        Handler: "app.handler",
         Environment: {
           Variables: {
             SNStopic: `arn:aws:sns:${
@@ -57,9 +60,6 @@ exports.createResources = () => [
             }:${config.accountId()}:sam-app-MySnsTopic-7dvkJx2kzjiv`,
           },
         },
-        FunctionName: "sam-app-TopicPublisherFunction-3UFzSVBp2h7r",
-        Handler: "app.handler",
-        Runtime: "nodejs12.x",
       },
     }),
     dependencies: ({}) => ({

@@ -28,6 +28,159 @@ const { readdir } = require("fs").promises;
 const path = require("path");
 const fs = require("fs").promises;
 
+const IncludeList = [
+  "ACM",
+  "APIGateway",
+  "AccessAnalyzer",
+  "Account",
+  "Amplify",
+  "ApiGatewayV2",
+  "AppConfig",
+  "AppIntegrations",
+  "AppMesh",
+  "AppRunner",
+  "AppStream",
+  "AppSync",
+  "Appflow",
+  "ApplicationAutoScaling",
+  "ApplicationInsights",
+  "Aps",
+  "Athena",
+  "AuditManager",
+  "AutoScaling",
+  "Backup",
+  "Batch",
+  "Budgets",
+  "CUR",
+  "Cloud9",
+  // "CloudFront"
+  //"CloudHSMv2"
+  "CloudTrail",
+  "CloudWatch",
+  "CloudWatchEvent",
+  "CloudWatchLogs",
+  "CodeArtifact",
+  "CodeBuild",
+  "CodeCommit",
+  "CodeDeploy",
+  "CodeGuruReviewer",
+  "CodePipeline",
+  "CognitoIdentity",
+  "CognitoIdentityServiceProvider",
+  "Comprehend",
+  "Config",
+  // "ControlTower"
+  "CostExplorer",
+  // "DAX"
+  // "DMS"
+  // "DataBrew"
+  // "DataPipeline"
+  // "DataSync"
+  "Detective",
+  "DeviceFarm",
+  // "DirectConnect"
+  // "DirectoryService"
+  "DynamoDb",
+  // "EC2",
+  "ECR",
+  "ECS",
+  // "EFS",
+  "EKS",
+  // "EMR"
+  // "EMRServerless"
+  // "ElastiCache"
+  // "ElasticBeanstalk"
+  "ElasticLoadBalancingV2",
+  // "ElasticTranscoder"
+  "Elemental",
+  "Evidently",
+  //"FSx",
+  "Firehose",
+  "Glacier",
+  "GlobalAccelerator",
+  "Glue",
+  "Grafana",
+  // "GuardDuty"
+  "IAM",
+  // "IVS",
+  "IdentityStore",
+  "Imagebuilder",
+  //  "Inspector2",
+  // "InternetMonitor",
+  //  "Ivschat"
+  "KMS",
+  "Kendra",
+  "KeySpaces",
+  "Kinesis",
+  "KinesisAnalyticsV2",
+  "KinesisVideo",
+  "LakeFormation",
+  "Lambda",
+  "Lex",
+  "LicenseManager",
+  "Lightsail",
+  "Location",
+  //"MQ",
+  //"MSK",
+  // "MWAA",
+  // "Macie"
+  "MediaConnect",
+  "MediaConvert",
+  "MediaLive",
+  "MediaPackage",
+  "MediaTailor",
+  // "MemoryDB",
+  //"Neptune",
+  //"NetworkFirewall"
+  // "NetworkManager"
+  // "OpenSearch"
+  //  "OpenSearchServerless"
+  "Organisation",
+  //  "Pinpoint"
+  "Pipes",
+  "QLDB",
+  // "QuickSight",
+  "RAM",
+  // "RDS",
+  "RUM",
+  "Rbin",
+  // "Redshift",
+  // "RedshiftServerless"
+  // "ResilienceHub"
+  "ResourceExplorer2",
+  "ResourceGroups",
+  // "RoleEverywhere"
+  "Route53",
+  //  "Route53RecoveryControlConfig"
+  //  "Route53RecoveryReadiness"
+  "Route53Resolver",
+  "S3",
+  "S3Control",
+  "SESV2",
+  "SNS",
+  "SQS",
+  "SSM",
+  "SSOAdmin",
+  // "SageMaker",
+  "Scheduler",
+  "Schema",
+  "SecretsManager",
+  // "SecurityHub",
+  //"ServiceCatalog",
+  "ServiceDiscovery",
+  "ServiceQuotas",
+  "Signer",
+  "StepFunctions",
+  "Synthetics",
+  "TimestreamWrite",
+  // "Transfer",
+  // "VpcLattice",
+  //  "WAFv2"
+  // "WorkSpaces",
+  // "WorkSpacesWeb",
+  "XRay",
+  "website-https",
+];
 const ExcludeDirsDefault = [
   //
   ".DS_Store",
@@ -75,6 +228,7 @@ const ExcludeDirsDefault = [
   "eks-workshop",
   "mq-simple", // Cannot even delete MQ Configuration
   //
+  "licensemanager-simple",
   "internetmonitor-simple",
   "auditmanager-simple",
   "directory-service-microsoft-ad",
@@ -147,6 +301,7 @@ const ExcludeDirsDefault = [
   //"elasticache-redis-full",
   "elasticbeanstalk-simple",
   "fsx-openzfs", // Volume "1 validation error detected: Value null at 'openZFSConfiguration.parentVolumeId' failed to satisfy constraint: Member must not be null",
+  "ssm-association",
 ];
 
 const fileExist = pipe([
@@ -168,15 +323,21 @@ const fileExist = pipe([
 ]);
 
 const filterExcludeFiles = ({ excludeDirs }) =>
-  filterOut(
-    pipe([
-      get("name"),
-      tap((content) => {
-        assert(content);
-      }),
-      isIn([excludeDirs, ...ExcludeDirsDefault]),
-    ])
-  );
+  pipe([
+    filterOut(
+      pipe([
+        get("name"),
+        tap((content) => {
+          assert(content);
+        }),
+        isIn([excludeDirs, ...ExcludeDirsDefault]),
+      ])
+    ),
+  ]);
+
+const filterIncludeDir = ({ IncludeList }) =>
+  pipe([filter(({ name }) => pipe([() => IncludeList, includes(name)])())]);
+//
 
 const isGruCloudExample = ({ directory, name }) =>
   pipe([
@@ -206,6 +367,7 @@ const walkDirectoryUnit =
       }),
       () => readdir(path.resolve(directory, name), { withFileTypes: true }),
       filterExcludeFiles({ excludeDirs }),
+
       tap((params) => {
         assert(true);
       }),
@@ -248,7 +410,7 @@ exports.walkDirectory =
       () => readdir(directory, { withFileTypes: true }),
       filter(callProp("isDirectory")),
       filterExcludeFiles({ excludeDirs }),
-
+      filterIncludeDir({ IncludeList }),
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])
       ),

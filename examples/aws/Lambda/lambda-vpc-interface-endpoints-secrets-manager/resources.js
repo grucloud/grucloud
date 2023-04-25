@@ -189,9 +189,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "LambdaFunctionPrivate",
-        Handler: "handler.lambda_handler",
         Runtime: "python3.9",
         Timeout: 60,
+        Handler: "handler.lambda_handler",
       },
     }),
     dependencies: ({}) => ({

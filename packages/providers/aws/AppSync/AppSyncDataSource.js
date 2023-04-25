@@ -57,6 +57,7 @@ const decorate = ({ endpoint, config, live }) =>
       "httpConfig",
       "relationalDatabaseConfig",
       "eventBridgeConfig",
+      "dynamodbConfig.deltaSyncConfig",
     ]),
     JSON.stringify,
     JSON.parse,

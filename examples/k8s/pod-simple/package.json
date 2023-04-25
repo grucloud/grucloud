@@ -18,7 +18,7 @@
     "rubico": "^1.8.3"
   },
   "devDependencies": {
-    "@grucloud/k8s-manifest2code": "^11.0.2",
+    "@grucloud/k8s-manifest2code": "^11.0.0",
     "mocha": "^9.1.3",
     "mocha-junit-reporter": "^2.0.2"
   }

@@ -93,7 +93,7 @@ exports.createResources = () => [
     properties: ({ getId }) => ({
       Configuration: {
         FunctionName: "cwsyn-my-canary-2bf3df82-6b6a-4cf0-983a-b489fc267051",
-        Handler: "index.handler",
+        Runtime: "nodejs14.x",
         Layers: [
           "arn:aws:lambda:us-east-1:378653112637:layer:Synthetics:30",
           `${getId({
@@ -104,8 +104,8 @@ exports.createResources = () => [
           })}`,
         ],
         MemorySize: 1000,
-        Runtime: "nodejs14.x",
         Timeout: 300,
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -119,7 +119,7 @@ exports.createResources = () => [
     properties: ({ getId }) => ({
       Configuration: {
         FunctionName: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
-        Handler: "index.handler",
+        Runtime: "nodejs14.x",
         Layers: [
           "arn:aws:lambda:us-east-1:378653112637:layer:Synthetics:30",
           `${getId({
@@ -130,8 +130,8 @@ exports.createResources = () => [
           })}`,
         ],
         MemorySize: 1000,
-        Runtime: "nodejs14.x",
         Timeout: 300,
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -144,8 +144,34 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ getId }) => ({
       Configuration: {
-        FunctionName: "cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3",
+        FunctionName: "cwsyn-my-canary-71c68c24-99bd-4cfb-aa97-7f5a86896f75",
+        Runtime: "nodejs14.x",
+        Layers: [
+          "arn:aws:lambda:us-east-1:378653112637:layer:Synthetics:30",
+          `${getId({
+            type: "Layer",
+            group: "Lambda",
+            name: "cwsyn-my-canary-71c68c24-99bd-4cfb-aa97-7f5a86896f75",
+            path: "live.LayerVersionArn",
+          })}`,
+        ],
+        MemorySize: 1000,
+        Timeout: 300,
         Handler: "index.handler",
+      },
+    }),
+    dependencies: ({}) => ({
+      layers: ["cwsyn-my-canary-71c68c24-99bd-4cfb-aa97-7f5a86896f75"],
+      role: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
+    }),
+  },
+  {
+    type: "Function",
+    group: "Lambda",
+    properties: ({ getId }) => ({
+      Configuration: {
+        FunctionName: "cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3",
+        Runtime: "nodejs14.x",
         Layers: [
           "arn:aws:lambda:us-east-1:378653112637:layer:Synthetics:30",
           `${getId({
@@ -156,8 +182,8 @@ exports.createResources = () => [
           })}`,
         ],
         MemorySize: 1000,
-        Runtime: "nodejs14.x",
         Timeout: 300,
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -190,6 +216,16 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       LayerName: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
+      Description:
+        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
+      CompatibleRuntimes: ["nodejs14.x"],
+    }),
+  },
+  {
+    type: "Layer",
+    group: "Lambda",
+    properties: ({}) => ({
+      LayerName: "cwsyn-my-canary-71c68c24-99bd-4cfb-aa97-7f5a86896f75",
       Description:
         "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
       CompatibleRuntimes: ["nodejs14.x"],
@@ -250,8 +286,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       iamRole: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
-      lambdaFunction: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
-      lambdaLayer: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
+      lambdaFunction: "cwsyn-my-canary-71c68c24-99bd-4cfb-aa97-7f5a86896f75",
+      lambdaLayer: "cwsyn-my-canary-71c68c24-99bd-4cfb-aa97-7f5a86896f75",
     }),
   },
 ];

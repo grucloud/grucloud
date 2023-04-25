@@ -123,9 +123,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-AthenaQueryFunction-2up4aj6n2l4M",
-        Handler: "athenaquerymaker.lambda_handler",
         Runtime: "python3.9",
         Timeout: 10,
+        Handler: "athenaquerymaker.lambda_handler",
       },
     }),
     dependencies: ({}) => ({

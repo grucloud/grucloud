@@ -95,8 +95,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "read-kinesis-stream",
-        Handler: "index.handler",
         Runtime: "nodejs16.x",
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({

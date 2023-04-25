@@ -314,9 +314,9 @@ exports.createResources = () => [
       nodegroupName: "ng-1",
       capacityType: "ON_DEMAND",
       scalingConfig: {
-        minSize: 1,
-        maxSize: 1,
         desiredSize: 1,
+        maxSize: 1,
+        minSize: 1,
       },
       labels: {
         "alpha.eksctl.io/cluster-name": "my-cluster",

@@ -381,6 +381,9 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Configuration: {
         Description: "My awesome lambda function",
+        FunctionName: "robust-gelding-lambda",
+        Runtime: "python3.8",
+        Handler: "LambdaFunction.lambda_handler",
         Environment: {
           Variables: {
             SFN_ARN: `arn:aws:states:${
@@ -388,9 +391,6 @@ exports.createResources = () => [
             }:${config.accountId()}:stateMachine:robust-gelding`,
           },
         },
-        FunctionName: "robust-gelding-lambda",
-        Handler: "LambdaFunction.lambda_handler",
-        Runtime: "python3.8",
       },
       Tags: {
         Pattern: "terraform-lambda-sfn",

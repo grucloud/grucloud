@@ -14,6 +14,10 @@ const pickId = pipe([
 
 const findName = () =>
   pipe([
+    tap(({ ResourceId, ScalableDimension }) => {
+      assert(ResourceId);
+      assert(ScalableDimension);
+    }),
     ({ ResourceId, ScalableDimension }) =>
       `${ResourceId}::${ScalableDimension}`,
   ]);
@@ -43,15 +47,16 @@ exports.ApplicationAutoScalingTarget = ({}) => ({
   type: "Target",
   package: "application-auto-scaling",
   client: "ApplicationAutoScaling",
-  inferName: () =>
-    pipe([
-      ({ ResourceId, ScalableDimension }) =>
-        `${ResourceId}::${ScalableDimension}`,
-    ]),
+  inferName: findName,
   findName,
   findId: findName,
   propertiesDefault: {},
-  omitProperties: ["RoleARN", "CreationTime", "SuspendedState"],
+  omitProperties: [
+    "RoleARN",
+    "CreationTime",
+    "SuspendedState",
+    "ScalableTargetARN",
+  ],
   dependencies: {
     role: {
       type: "Role",

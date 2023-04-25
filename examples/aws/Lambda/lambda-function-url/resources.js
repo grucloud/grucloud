@@ -35,14 +35,15 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-FURLFunction-Bz8T4iC79I5S",
-        Handler: "app.handler",
         Runtime: "nodejs14.x",
+        Handler: "app.handler",
       },
       FunctionUrlConfig: {
         AuthType: "AWS_IAM",
         Cors: {
           AllowOrigins: ["*"],
         },
+        InvokeMode: "BUFFERED",
       },
     }),
     dependencies: ({}) => ({

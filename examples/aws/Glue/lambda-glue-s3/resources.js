@@ -10,7 +10,7 @@ exports.createResources = () => [
       Command: {
         Name: "glueetl",
         PythonVersion: "2",
-        ScriptLocation: "s3://my-glue-job-bucket/glue-python-assets/script.py",
+        ScriptLocation: "s3://gc-glue-job-bucket/glue-python-assets/script.py",
       },
       ExecutionProperty: {
         MaxConcurrentRuns: 1,
@@ -73,8 +73,8 @@ exports.createResources = () => [
                   "s3:Abort*",
                 ],
                 Resource: [
-                  "arn:aws:s3:::my-glue-job-bucket",
-                  "arn:aws:s3:::my-glue-job-bucket/*",
+                  "arn:aws:s3:::gc-glue-job-bucket",
+                  "arn:aws:s3:::gc-glue-job-bucket/*",
                 ],
                 Effect: "Allow",
               },
@@ -200,8 +200,8 @@ exports.createResources = () => [
                   "s3:Abort*",
                 ],
                 Resource: [
-                  "arn:aws:s3:::my-glue-job-bucket",
-                  "arn:aws:s3:::my-glue-job-bucket/*",
+                  "arn:aws:s3:::gc-glue-job-bucket",
+                  "arn:aws:s3:::gc-glue-job-bucket/*",
                 ],
                 Effect: "Allow",
               },
@@ -225,9 +225,9 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "CdkLambdaGlueS3Stack-CustomCDKBucketDeployment8693-mhVJN0MvgnZ0",
-        Handler: "index.handler",
         Runtime: "python3.7",
         Timeout: 900,
+        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -240,12 +240,12 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         Description:
-          "Lambda function for auto-deleting objects in my-glue-job-bucket S3 bucket.",
+          "Lambda function for auto-deleting objects in gc-glue-job-bucket S3 bucket.",
         FunctionName:
           "CdkLambdaGlueS3Stack-CustomS3AutoDeleteObjectsCust-wGB7tRJC8sgA",
-        Handler: "__entrypoint__.handler",
         Runtime: "nodejs12.x",
         Timeout: 900,
+        Handler: "__entrypoint__.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -257,14 +257,14 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "MyGlueHandler",
+        Runtime: "python3.7",
+        Handler: "glue.handler",
         Environment: {
           Variables: {
             JOB_NAME: "cdk-glue-etl-job",
           },
         },
-        FunctionName: "MyGlueHandler",
-        Handler: "glue.handler",
-        Runtime: "python3.7",
       },
     }),
     dependencies: ({}) => ({
@@ -275,7 +275,7 @@ exports.createResources = () => [
     type: "Bucket",
     group: "S3",
     properties: ({ config }) => ({
-      Name: "my-glue-job-bucket",
+      Name: "gc-glue-job-bucket",
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -286,8 +286,8 @@ exports.createResources = () => [
             },
             Action: ["s3:GetBucket*", "s3:List*", "s3:DeleteObject*"],
             Resource: [
-              "arn:aws:s3:::my-glue-job-bucket",
-              "arn:aws:s3:::my-glue-job-bucket/*",
+              "arn:aws:s3:::gc-glue-job-bucket",
+              "arn:aws:s3:::gc-glue-job-bucket/*",
             ],
           },
         ],

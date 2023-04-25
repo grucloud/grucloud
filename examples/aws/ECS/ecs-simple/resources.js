@@ -200,7 +200,6 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
           instanceWarmupPeriod: 300,
           maximumScalingStepSize: 10000,
           minimumScalingStepSize: 1,
-          scalingApproach: "SCALING_POLICY",
           status: "ENABLED",
           targetCapacity: 95,
         },

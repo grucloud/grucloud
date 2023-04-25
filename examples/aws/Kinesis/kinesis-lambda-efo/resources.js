@@ -79,12 +79,12 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-ApplicationFunction-LL5g6gqeQgsc",
-        Handler: "app.lambdaHandler",
-        Runtime: "nodejs12.x",
         TracingConfig: {
           Mode: "Active",
         },
+        FunctionName: "sam-app-ApplicationFunction-LL5g6gqeQgsc",
+        Runtime: "nodejs12.x",
+        Handler: "app.lambdaHandler",
       },
     }),
     dependencies: ({}) => ({
