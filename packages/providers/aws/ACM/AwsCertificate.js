@@ -19,6 +19,7 @@ const {
   last,
   size,
   isEmpty,
+  isString,
   identity,
 } = require("rubico/x");
 const fs = require("fs");
@@ -34,21 +35,40 @@ const { tagResource, untagResource } = require("./ACMCommon");
 
 //const buildArn = () => get("CertificateArn");
 
-const pickId = pick(["CertificateArn"]);
+const pickId = pipe([
+  pick(["CertificateArn"]),
+  tap(({ CertificateArn }) => {
+    assert(CertificateArn);
+  }),
+]);
 
 const getCommonNameFromCertificate = pipe([
   (certificatePem) => new crypto.X509Certificate(certificatePem),
   callProp("toLegacyObject"),
   get("subject"),
-  callProp("split", "\n"),
-  find(callProp("startsWith", "CN")),
-  tap((CN) => {
-    assert(CN);
-  }),
-  callProp("split", "="),
-  last,
-  tap((CN) => {
-    assert(CN);
+  switchCase([
+    isString,
+    pipe([
+      callProp("split", "\n"),
+      find(callProp("startsWith", "CN")),
+      tap((CN) => {
+        assert(CN);
+      }),
+      callProp("split", "="),
+      last,
+      tap((CN) => {
+        assert(CN);
+      }),
+    ]),
+    pipe([
+      get("CN"),
+      tap((CN) => {
+        assert(CN);
+      }),
+    ]),
+  ]),
+  tap((subject) => {
+    assert(subject);
   }),
 ]);
 
