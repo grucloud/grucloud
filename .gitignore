@@ -14,3 +14,4 @@ mochawesome-report
 .clinic
 *.bkp
 *.dtmp
+bun.lockb
