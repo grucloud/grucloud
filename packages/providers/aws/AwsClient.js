@@ -30,6 +30,8 @@ const {
 const util = require("util");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
+const { deepReject } = require("@grucloud/core/deepReject");
+
 const { retryCall } = require("@grucloud/core/Retry");
 const { assignTagsSort, createEndpoint } = require("./AwsCommon");
 
@@ -132,6 +134,7 @@ const AwsClient =
                     config,
                     endpointConfig: getEndpointConfig(getContext()),
                   }),
+                  deepReject(([key, value]) => isEmpty(value)),
                   assignTagsSort,
                 ])
               ),
