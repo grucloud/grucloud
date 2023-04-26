@@ -19,10 +19,10 @@
     "@grucloud/provider-aws": "^11.1.0",
     "@grucloud/provider-k8s": "^11.1.0",
     "axios": "^0.21.1",
-    "rubico": "^1.6.27"
+    "rubico": "1.9.6"
   },
   "devDependencies": {
-    "mocha": "^9.0.3",
-    "mocha-junit-reporter": "^2.0.2"
+    "mocha": "10.2.0",
+    "mocha-junit-reporter": "2.2.0"
   }
 }

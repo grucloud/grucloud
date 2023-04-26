@@ -12,17 +12,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^11.1.0",
-    "deep-object-diff": "^1.1.0",
-    "diff": "^5.0.0",
-    "js-yaml": "^4.1.0",
-    "rubico": "^1.7.3",
-    "shelljs": "^0.8.4",
-    "url-join": "^4.0.1"
+    "@grucloud/core": "11.1.0",
+    "deep-object-diff": "1.1.9",
+    "diff": "5.1.0",
+    "js-yaml": "4.1.0",
+    "rubico": "1.9.6",
+    "shelljs": "0.8.5",
+    "url-join": "5.0.0"
   },
   "devDependencies": {
-    "mocha": "^8.3.2",
-    "nyc": "^15.1.0"
+    "mocha": "10.2.0",
+    "nyc": "15.1.0"
   },
   "repository": {
     "type": "git",

@@ -10,12 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
-    "rubico": "^1.6.27"
+    "axios": "0.21.1",
+    "rubico": "1.9.6"
   },
   "devDependencies": {
-    "mocha": "^8.3.2",
-    "uuid": "^8.3.2"
+    "mocha": "10.2.0",
+    "uuid": "8.3.2"
   },
   "repository": {
     "type": "git",

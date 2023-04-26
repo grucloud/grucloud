@@ -16,9 +16,9 @@
     "@grucloud/core": "^11.1.0",
     "@grucloud/module-k8s-redis": "^11.1.0",
     "@grucloud/provider-k8s": "^11.1.0",
-    "rubico": "^1.6.21"
+    "rubico": "1.9.6"
   },
   "devDependencies": {
-    "mocha": "^8.3.2"
+    "mocha": "10.2.0"
   }
 }
