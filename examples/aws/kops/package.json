@@ -25,7 +25,7 @@
     "@grucloud/core": "^11.1.0",
     "@grucloud/provider-aws": "^11.1.0",
     "rubico": "1.9.6",
-    "shelljs": "^0.8.4"
+    "shelljs": "0.8.5"
   },
   "devDependencies": {
     "mocha": "10.2.0",

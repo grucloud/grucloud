@@ -13,7 +13,7 @@
   "dependencies": {
     "@grucloud/core": "^11.1.0",
     "@grucloud/provider-mock": "^1.10.22",
-    "url-join": "^4.0.1"
+    "url-join": "5.0.0"
   },
   "devDependencies": {
     "mocha": "10.2.0",

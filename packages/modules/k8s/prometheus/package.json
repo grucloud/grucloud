@@ -16,7 +16,7 @@
     "@grucloud/k8s-manifest2code": "^11.0.0",
     "@grucloud/provider-k8s": "^11.1.0",
     "js-yaml": "4.1.0",
-    "rubico": "*"
+    "rubico": "1.9.6"
   },
   "keywords": [
     "kubernetes",
