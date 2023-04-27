@@ -14,6 +14,7 @@ const {
   switchCase,
   and,
   filter,
+  or,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -112,19 +113,27 @@ exports.buildEventInvokeConfigDependencies = buildEventInvokeConfigDependencies;
 const managedByOther =
   ({ lives, config }) =>
   (live) =>
-    pipe([
-      lives.getByType({
-        type: "Stack",
-        group: "CloudFormation",
-        providerName: config.providerName,
-      }),
-      any(
-        pipe([
-          get("name"),
-          append("-AWS"),
-          (stackName) => live.Configuration.FunctionName.includes(stackName),
-        ])
-      ),
+    or([
+      //CloudWatch Synthetics
+      pipe([
+        () => live,
+        get("Configuration.FunctionName"),
+        callProp("startsWith", "cwsyn"),
+      ]),
+      pipe([
+        lives.getByType({
+          type: "Stack",
+          group: "CloudFormation",
+          providerName: config.providerName,
+        }),
+        any(
+          pipe([
+            get("name"),
+            append("-AWS"),
+            (stackName) => live.Configuration.FunctionName.includes(stackName),
+          ])
+        ),
+      ]),
     ])();
 
 const decorate = ({ endpoint }) =>
@@ -176,7 +185,7 @@ const decorate = ({ endpoint }) =>
       Code: pipe([
         get("Code"),
         assign({
-          Data: pipe([fetchZip()]),
+          Data: pipe([get("Location"), fetchZip()]),
         }),
       ]),
       //TODO

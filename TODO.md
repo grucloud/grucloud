@@ -2,6 +2,9 @@
 
 ## Aws
 
+FIS
+Verified Access
+
 s3-s3-replication-cdk retry
 SecurityHub consolidated finding
 GraphqlApi substitute region in additionalAuthenticationProviders

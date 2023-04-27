@@ -1,7 +1,28 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, map, tryCatch } = require("rubico");
-const { defaultsDeep, when, find, isIn, prepend } = require("rubico/x");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  eq,
+  assign,
+  map,
+  tryCatch,
+  set,
+  omit,
+} = require("rubico");
+const {
+  defaultsDeep,
+  when,
+  prepend,
+  callProp,
+  first,
+  isIn,
+  find,
+} = require("rubico/x");
 const path = require("path");
+
+const AdmZip = require("adm-zip");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -41,15 +62,35 @@ const pickId = pipe([
   pick(["Name"]),
 ]);
 
-const decorate = ({ endpoint, config }) =>
+const decorate = ({ endpoint, lives, config }) =>
   pipe([
     tap((params) => {
-      assert(endpoint);
+      assert(config);
     }),
     assignArn({ config }),
     assign({
       ArtifactS3Location: pipe([get("ArtifactS3Location"), prepend("s3://")]),
     }),
+    when(
+      get("EngineArn"),
+      set("Code.Data", ({ EngineArn }) =>
+        pipe([
+          tap(() => {
+            assert(EngineArn);
+          }),
+          lives.getByType({
+            type: "Function",
+            group: "Lambda",
+            providerName: config.providerName,
+          }),
+          find(pipe([get("live.Configuration.FunctionArn"), isIn(EngineArn)])),
+          get("live.Code.Data"),
+          tap((Data) => {
+            // assert(Data);
+          }),
+        ])()
+      )
+    ),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Synthetics.html
@@ -57,6 +98,7 @@ exports.SyntheticsCanary = () => ({
   type: "Canary",
   package: "synthetics",
   client: "Synthetics",
+  displayResource: () => pipe([omit(["Code.ZipFile", "Code.Data"])]),
   propertiesDefault: {},
   omitProperties: [
     "Arn",
@@ -67,6 +109,7 @@ exports.SyntheticsCanary = () => ({
     "EngineArn",
     "Code.SourceLocationArn",
     "Code.ZipFile",
+    "Code.Data",
   ],
   inferName: () =>
     pipe([
@@ -112,28 +155,24 @@ exports.SyntheticsCanary = () => ({
     lambdaFunction: {
       type: "Function",
       group: "Lambda",
-      dependencyId:
-        ({ lives, config }) =>
-        ({ EngineArn }) =>
-          pipe([
-            tap((params) => {
-              assert(EngineArn);
-            }),
-            lives.getByType({
-              type: "Function",
-              group: "Lambda",
-              providerName: config.providerName,
-            }),
-            find(
-              pipe([get("live.Configuration.FunctionArn"), isIn(EngineArn)])
-            ),
-            get("id"),
-          ])(),
-    },
-    lambdaLayer: {
-      type: "Layer",
-      group: "Lambda",
-      dependencyId: ({ lives, config }) => get("Code.SourceLocationArn"),
+      parent: true,
+      // dependencyId:
+      //   ({ lives, config }) =>
+      //   ({ EngineArn }) =>
+      //     pipe([
+      //       tap((params) => {
+      //         assert(EngineArn);
+      //       }),
+      //       lives.getByType({
+      //         type: "Function",
+      //         group: "Lambda",
+      //         providerName: config.providerName,
+      //       }),
+      //       find(
+      //         pipe([get("live.Configuration.FunctionArn"), isIn(EngineArn)])
+      //       ),
+      //       get("id"),
+      //     ])(),
     },
     securityGroups: {
       type: "SecurityGroup",
@@ -153,20 +192,36 @@ exports.SyntheticsCanary = () => ({
       dependencyId: ({ lives, config }) =>
         pipe([
           get("ArtifactS3Location"),
+          callProp("replace", "s3://", ""),
+          callProp("split", "/"),
+          first,
           tap((ArtifactS3Location) => {
             assert(ArtifactS3Location);
           }),
         ]),
     },
   },
-  filterLive: ({ lives, providerConfig }) =>
+  filterLive: ({ lives, providerConfig, programOptions }) =>
     pipe([
+      tap((params) => {
+        assert(programOptions);
+      }),
       assign({
         ArtifactS3Location: pipe([
           get("ArtifactS3Location"),
           replaceAccountAndRegion({ lives, providerConfig }),
         ]),
       }),
+      tap(({ Code, Name }) =>
+        pipe([
+          () => new AdmZip(Buffer.from(Code.Data, "base64")),
+          (zip) =>
+            zip.extractAllTo(
+              path.resolve(programOptions.workingDirectory, Name),
+              true
+            ),
+        ])()
+      ),
     ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Synthetics.html#getCanary-property
   getById: {
@@ -179,7 +234,7 @@ exports.SyntheticsCanary = () => ({
   getList: {
     method: "describeCanaries",
     getParam: "Canaries",
-    decorate,
+    decorate: ({ getById }) => pipe([getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Synthetics.html#createCanary-property
   create: {
@@ -214,26 +269,16 @@ exports.SyntheticsCanary = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {
-      iamRole,
-      kmsKey,
-      lambdaFunction,
-      lambdaLayer,
-      securityGroups,
-      subnets,
-    },
+    dependencies: { iamRole, kmsKey, securityGroups, subnets },
     config,
     programOptions,
   }) =>
     pipe([
       tap((params) => {
-        assert(lambdaFunction);
+        assert(true);
       }),
       () => ({
-        localPath: path.resolve(
-          programOptions.workingDirectory,
-          lambdaFunction.config.Configuration.FunctionName
-        ),
+        localPath: path.resolve(programOptions.workingDirectory, name),
       }),
       createZipBuffer,
       (ZipFile) =>
@@ -281,9 +326,6 @@ exports.SyntheticsCanary = () => ({
               },
             })
           ),
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
     ])(),
 });

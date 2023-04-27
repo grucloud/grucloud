@@ -40,7 +40,7 @@ const decorate = ({ endpoint }) =>
         endpoint().getLayerVersionByArn,
         get("Content"),
         assign({
-          Data: fetchZip(),
+          Data: pipe([get("Location"), fetchZip()]),
         }),
       ])(),
     Policy: tryCatch(
