@@ -127,7 +127,7 @@ const isDefault = () =>
   pipe([
     or([
       pipe([get("Alias", ""), callProp("startsWith", "alias/aws/")]),
-      pipe([get("Description"), callProp("startsWith", "Default ")]),
+      pipe([get("Description", ""), callProp("startsWith", "Default ")]),
     ]),
   ]);
 

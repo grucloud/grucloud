@@ -225,9 +225,9 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "CdkLambdaGlueS3Stack-CustomCDKBucketDeployment8693-mhVJN0MvgnZ0",
+        Handler: "index.handler",
         Runtime: "python3.7",
         Timeout: 900,
-        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -243,9 +243,9 @@ exports.createResources = () => [
           "Lambda function for auto-deleting objects in gc-glue-job-bucket S3 bucket.",
         FunctionName:
           "CdkLambdaGlueS3Stack-CustomS3AutoDeleteObjectsCust-wGB7tRJC8sgA",
+        Handler: "__entrypoint__.handler",
         Runtime: "nodejs12.x",
         Timeout: 900,
-        Handler: "__entrypoint__.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -257,14 +257,14 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "MyGlueHandler",
-        Runtime: "python3.7",
-        Handler: "glue.handler",
         Environment: {
           Variables: {
             JOB_NAME: "cdk-glue-etl-job",
           },
         },
+        FunctionName: "MyGlueHandler",
+        Handler: "glue.handler",
+        Runtime: "python3.7",
       },
     }),
     dependencies: ({}) => ({

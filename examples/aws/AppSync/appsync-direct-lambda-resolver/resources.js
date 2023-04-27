@@ -26,8 +26,8 @@ exports.createResources = () => [
       authenticationType: "API_KEY",
       xrayEnabled: true,
       logConfig: {
-        fieldLogLevel: "ALL",
         excludeVerboseContent: false,
+        fieldLogLevel: "ALL",
       },
       apiKeys: [{}],
       schemaFile: "AppsyncWithLambdaResolverApi.graphql",
@@ -41,9 +41,9 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "createTodo",
       kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "directLambda",
@@ -54,9 +54,9 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "deleteTodo",
       kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "directLambda",
@@ -67,9 +67,9 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "updateTodo",
       kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "directLambda",
@@ -80,9 +80,9 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "getTodo",
       kind: "UNIT",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
       dataSource: "directLambda",
@@ -93,9 +93,9 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "listTodos",
       kind: "UNIT",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
       dataSource: "directLambda",
@@ -203,15 +203,15 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName:
-          "AppSyncWithDirectLambdaResolverSt-resolver24166D79-mxxbxixLZunp",
-        Runtime: "nodejs14.x",
-        Handler: "index.handler",
         Environment: {
           Variables: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
+        FunctionName:
+          "AppSyncWithDirectLambdaResolverSt-resolver24166D79-mxxbxixLZunp",
+        Handler: "index.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

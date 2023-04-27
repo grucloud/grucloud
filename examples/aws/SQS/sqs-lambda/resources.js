@@ -48,8 +48,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-QueueConsumerFunction-iSlzL49MinOi",
-        Runtime: "nodejs12.x",
         Handler: "app.handler",
+        Runtime: "nodejs12.x",
       },
     }),
     dependencies: ({}) => ({

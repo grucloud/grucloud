@@ -29,8 +29,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "createTodo",
+      kind: "UNIT",
       requestMappingTemplate: `
 $util.qr($ctx.args.put("id", $util.defaultIfNull($ctx.args.id, $util.autoId())))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -41,7 +41,7 @@ $util.qr($context.args.put("updatedAt", $createdAt))
   "payload": $util.toJson($ctx.args)
 }`,
       responseMappingTemplate: "$util.toJson($context.result)",
-      kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "NONE",
@@ -97,9 +97,6 @@ $util.qr($context.args.put("updatedAt", $createdAt))
     group: "Lambda",
     properties: ({ getId }) => ({
       Configuration: {
-        FunctionName: "CdkLambdaCallAppSyncStack-trigger73DC69F8-Fn5wBU5v76VC",
-        Runtime: "nodejs14.x",
-        Handler: "index.handler",
         Environment: {
           Variables: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
@@ -111,6 +108,9 @@ $util.qr($context.args.put("updatedAt", $createdAt))
             })}`,
           },
         },
+        FunctionName: "CdkLambdaCallAppSyncStack-trigger73DC69F8-Fn5wBU5v76VC",
+        Handler: "index.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

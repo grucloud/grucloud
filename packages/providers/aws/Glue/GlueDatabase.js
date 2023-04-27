@@ -111,7 +111,7 @@ exports.GlueDatabase = () => ({
   getList: {
     method: "getDatabases",
     getParam: "DatabaseList",
-    decorate,
+    decorate: ({ getById }) => getById,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#createDatabase-property
   create: {

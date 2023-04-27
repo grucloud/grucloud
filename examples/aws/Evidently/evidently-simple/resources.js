@@ -42,18 +42,6 @@ exports.createResources = () => [
         },
       ],
       name: "my-experiment",
-      treatments: [
-        {
-          feature: "my-feature",
-          variation: "Variation1",
-          name: "Variation1",
-        },
-        {
-          feature: "my-feature",
-          variation: "Variation2",
-          name: "Variation2",
-        },
-      ],
       onlineAbConfig: {
         controlTreatmentName: "Variation1",
         treatmentWeights: {
@@ -61,6 +49,18 @@ exports.createResources = () => [
           Variation2: 50000,
         },
       },
+      treatments: [
+        {
+          feature: "my-feature",
+          name: "Variation1",
+          variation: "Variation1",
+        },
+        {
+          feature: "my-feature",
+          name: "Variation2",
+          variation: "Variation2",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       project: "my-project",
@@ -99,13 +99,13 @@ exports.createResources = () => [
       groups: [
         {
           feature: "my-feature",
-          variation: "Variation1",
           name: "V2",
+          variation: "Variation1",
         },
         {
           feature: "my-feature",
-          variation: "Variation2",
           name: "V1",
+          variation: "Variation2",
         },
       ],
       name: "my-launch",

@@ -79,14 +79,14 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
-        Runtime: "nodejs12.x",
-        Handler: "app.handler",
         Environment: {
           Variables: {
             DatabaseTable: "sam-app-DynamoTable-1TM3ILOZ1A36J",
           },
         },
+        FunctionName: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
+        Handler: "app.handler",
+        Runtime: "nodejs12.x",
       },
     }),
     dependencies: ({}) => ({

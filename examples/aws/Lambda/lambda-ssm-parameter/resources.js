@@ -50,15 +50,15 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-LambdaFunction-X4hNZs6zzhip",
-        Runtime: "nodejs14.x",
-        Timeout: 15,
-        Handler: "app.handler",
         Environment: {
           Variables: {
             SSMParameterName: "ExampleParameterName",
           },
         },
+        FunctionName: "sam-app-LambdaFunction-X4hNZs6zzhip",
+        Handler: "app.handler",
+        Runtime: "nodejs14.x",
+        Timeout: 15,
       },
     }),
     dependencies: ({}) => ({

@@ -170,15 +170,15 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "fifo-sns-sqs-lambda-firehose-s3-lambda-5d62e6b5",
-        Runtime: "python3.8",
-        Handler: "lambdaFirehoseLogger.lambdaFirehoseLogger",
         Environment: {
           Variables: {
             FIREHOSE_STREAM_NAME:
               "fifo-sns-sqs-lambda-firehose-s3-stream-5d62e6b5",
           },
         },
+        FunctionName: "fifo-sns-sqs-lambda-firehose-s3-lambda-5d62e6b5",
+        Handler: "lambdaFirehoseLogger.lambdaFirehoseLogger",
+        Runtime: "python3.8",
       },
     }),
     dependencies: ({}) => ({
@@ -198,15 +198,12 @@ exports.createResources = () => [
     name: "fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo",
     properties: ({ config }) => ({
       Attributes: {
+        ContentBasedDeduplication: "false",
+        DisplayName: "fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5",
+        FifoTopic: "true",
         Policy: {
-          Version: "2012-10-17",
           Statement: [
             {
-              Sid: "",
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
               Action: [
                 "SNS:Subscribe",
                 "SNS:SetTopicAttributes",
@@ -217,20 +214,23 @@ exports.createResources = () => [
                 "SNS:DeleteTopic",
                 "SNS:AddPermission",
               ],
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,
                 },
               },
+              Effect: "Allow",
+              Principal: {
+                AWS: "*",
+              },
+              Resource: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo`,
+              Sid: "",
             },
           ],
+          Version: "2012-10-17",
         },
-        FifoTopic: "true",
-        DisplayName: "fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5",
-        ContentBasedDeduplication: "false",
       },
     }),
   },
@@ -250,30 +250,25 @@ exports.createResources = () => [
     group: "SQS",
     properties: ({ config }) => ({
       Attributes: {
+        ContentBasedDeduplication: "false",
+        DeduplicationScope: "queue",
+        FifoQueue: "true",
+        FifoThroughputLimit: "perQueue",
         Policy: {
-          Version: "2012-10-17",
           Statement: [
             {
-              Sid: "",
+              Action: "sqs:*",
               Effect: "Allow",
               Principal: {
                 AWS: `arn:aws:iam::${config.accountId()}:root`,
               },
-              Action: "sqs:*",
               Resource: `arn:aws:sqs:${
                 config.region
               }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo`,
+              Sid: "",
             },
             {
-              Sid: "",
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
               Action: "sqs:SendMessage",
-              Resource: `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo`,
               Condition: {
                 ArnEquals: {
                   "aws:SourceArn": `arn:aws:sns:${
@@ -281,13 +276,18 @@ exports.createResources = () => [
                   }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo`,
                 },
               },
+              Effect: "Allow",
+              Principal: {
+                AWS: "*",
+              },
+              Resource: `arn:aws:sqs:${
+                config.region
+              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo`,
+              Sid: "",
             },
           ],
+          Version: "2012-10-17",
         },
-        FifoQueue: "true",
-        DeduplicationScope: "queue",
-        FifoThroughputLimit: "perQueue",
-        ContentBasedDeduplication: "false",
       },
       QueueName: "fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo",
     }),

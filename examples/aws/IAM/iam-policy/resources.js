@@ -9,7 +9,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "policy-allow-ec2",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
             Action: ["s3:*"],
@@ -22,6 +21,7 @@ exports.createResources = () => [
             Resource: "*",
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/",
       Description: "Allow ec2:Describe",

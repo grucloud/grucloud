@@ -2,7 +2,7 @@ const assert = require("assert");
 const { map, pipe, tap } = require("rubico");
 
 const region = "us-east-1";
-
+const includeGroups = ["ECR", "S3", "S3Control"];
 const profiles = [
   //
   "default",
@@ -34,6 +34,7 @@ exports.createStack = pipe([
       region,
       projectName: "empty-multi",
       credentials: { profile },
+      //includeGroups,
     }),
   })),
   (stacks) => ({

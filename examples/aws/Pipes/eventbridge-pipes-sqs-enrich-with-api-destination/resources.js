@@ -20,13 +20,13 @@ exports.createResources = () => [
     type: "Connection",
     group: "CloudWatchEvents",
     properties: ({}) => ({
+      AuthorizationType: "API_KEY",
       AuthParameters: {
         ApiKeyAuthParameters: {
           ApiKeyName: "MyWebhook",
           ApiKeyValue: process.env.MY_CONNECTION_V2T_EYU29_RU_DM_API_KEY_VALUE,
         },
       },
-      AuthorizationType: "API_KEY",
       Description: "My connection with an API key",
       Name: "MyConnection-v2tEYU29RuDM",
     }),

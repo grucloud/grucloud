@@ -40,8 +40,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "sendMessage",
+      kind: "UNIT",
       requestMappingTemplate: `
 #set ($body = "Action=SendMessage&Version=2012-11-05")
 #set ($messageBody = $util.urlEncode($util.toJson($ctx.args)))
@@ -72,7 +72,7 @@ exports.createResources = () => [
     null
 #end
 `,
-      kind: "UNIT",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
       dataSource: "sqs",

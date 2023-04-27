@@ -168,21 +168,21 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
-        FunctionName:
-          "DelayedEventbridgeEventsS-processusercreated8BB7C4-W6EX7D6aEebC",
-        Runtime: "nodejs16.x",
-        MemorySize: 1024,
-        Timeout: 5,
-        Handler: "index.handler",
         Environment: {
           Variables: {
+            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
             EVENTBUS_ARN: `arn:aws:events:${
               config.region
             }:${config.accountId()}:event-bus/MyCustomBus`,
-            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
             SCHEDULE_ROLE_ARN: `arn:aws:iam::${config.accountId()}:role/DelayedEventbridgeEventsStac-schedulerrole9B80A9F3-11LTFZQSM80PO`,
           },
         },
+        FunctionName:
+          "DelayedEventbridgeEventsS-processusercreated8BB7C4-W6EX7D6aEebC",
+        Handler: "index.handler",
+        MemorySize: 1024,
+        Runtime: "nodejs16.x",
+        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({
@@ -194,17 +194,17 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName:
-          "DelayedEventbridgeEventsStac-emailcustomer9320FC53-43H2krKUIYGt",
-        Runtime: "nodejs16.x",
-        MemorySize: 1024,
-        Timeout: 5,
-        Handler: "index.handler",
         Environment: {
           Variables: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
+        FunctionName:
+          "DelayedEventbridgeEventsStac-emailcustomer9320FC53-43H2krKUIYGt",
+        Handler: "index.handler",
+        MemorySize: 1024,
+        Runtime: "nodejs16.x",
+        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({

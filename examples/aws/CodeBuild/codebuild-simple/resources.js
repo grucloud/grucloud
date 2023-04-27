@@ -52,9 +52,13 @@ phases:
     properties: ({ config }) => ({
       PolicyName: `CodeBuildBasePolicy-my-project-${config.region}`,
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: [
+              "logs:CreateLogGroup",
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+            ],
             Effect: "Allow",
             Resource: [
               `arn:aws:logs:${
@@ -64,15 +68,8 @@ phases:
                 config.region
               }:${config.accountId()}:log-group:/aws/codebuild/my-project:*`,
             ],
-            Action: [
-              "logs:CreateLogGroup",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents",
-            ],
           },
           {
-            Effect: "Allow",
-            Resource: [`arn:aws:s3:::codepipeline-${config.region}-*`],
             Action: [
               "s3:PutObject",
               "s3:GetObject",
@@ -80,9 +77,10 @@ phases:
               "s3:GetBucketAcl",
               "s3:GetBucketLocation",
             ],
+            Effect: "Allow",
+            Resource: [`arn:aws:s3:::codepipeline-${config.region}-*`],
           },
           {
-            Effect: "Allow",
             Action: [
               "codebuild:CreateReportGroup",
               "codebuild:CreateReport",
@@ -90,6 +88,7 @@ phases:
               "codebuild:BatchPutTestCases",
               "codebuild:BatchPutCodeCoverages",
             ],
+            Effect: "Allow",
             Resource: [
               `arn:aws:codebuild:${
                 config.region
@@ -97,6 +96,7 @@ phases:
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
       Description: "Policy used in trust relationship with CodeBuild",

@@ -189,17 +189,17 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
-        FunctionName:
-          "ApigwHttpApiSqsLambdaStac-SqsMessageHandlerE373F75-y85OnXm16stq",
-        Runtime: "python3.8",
-        Timeout: 180,
-        Handler: "app.handler",
         Environment: {
           Variables: {
             ACCOUNT_ID: `${config.accountId()}`,
             REGION: `${config.region}`,
           },
         },
+        FunctionName:
+          "ApigwHttpApiSqsLambdaStac-SqsMessageHandlerE373F75-y85OnXm16stq",
+        Handler: "app.handler",
+        Runtime: "python3.8",
+        Timeout: 180,
       },
     }),
     dependencies: ({}) => ({

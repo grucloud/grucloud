@@ -24,7 +24,6 @@ exports.createResources = () => [
         EncryptionConfiguration: {
           NoEncryptionConfig: "NoEncryption",
         },
-        Prefix: "",
         ProcessingConfiguration: {
           Enabled: true,
           Processors: [
@@ -211,9 +210,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "TransformationFunction",
+        Handler: "index.handler",
         Runtime: "nodejs14.x",
         Timeout: 90,
-        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({

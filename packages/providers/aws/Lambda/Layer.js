@@ -9,7 +9,7 @@ const {
   pick,
   fork,
 } = require("rubico");
-const { defaultsDeep, size } = require("rubico/x");
+const { defaultsDeep, size, callProp } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
@@ -61,12 +61,17 @@ const decorate = ({ endpoint }) =>
     ),
   });
 
+//CloudWatch Synthetics
+const managedByOther = ({ lives, config }) =>
+  pipe([get("LayerName"), callProp("startsWith", "cwsyn")]);
+
 exports.LambdaLayer = () => ({
   type: "Layer",
   package: "lambda",
   client: "Lambda",
   propertiesDefault: {},
   omitProperties: [],
+  managedByOther,
   inferName: () =>
     pipe([
       get("LayerName"),

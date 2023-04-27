@@ -132,26 +132,20 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
-          Version: "2008-10-17",
           Id: "__default_policy_ID",
           Statement: [
             {
-              Sid: "AWSBudgets-notification-1",
+              Action: "SNS:Publish",
               Effect: "Allow",
               Principal: {
                 Service: "budgets.amazonaws.com",
               },
-              Action: "SNS:Publish",
               Resource: `arn:aws:sns:${
                 config.region
               }:${config.accountId()}:topic-budget`,
+              Sid: "AWSBudgets-notification-1",
             },
             {
-              Sid: "__default_statement_ID",
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
               Action: [
                 "SNS:GetTopicAttributes",
                 "SNS:SetTopicAttributes",
@@ -162,16 +156,22 @@ exports.createResources = () => [
                 "SNS:ListSubscriptionsByTopic",
                 "SNS:Publish",
               ],
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:topic-budget`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,
                 },
               },
+              Effect: "Allow",
+              Principal: {
+                AWS: "*",
+              },
+              Resource: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:topic-budget`,
+              Sid: "__default_statement_ID",
             },
           ],
+          Version: "2008-10-17",
         },
       },
     }),

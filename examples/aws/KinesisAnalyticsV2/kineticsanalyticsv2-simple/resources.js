@@ -16,45 +16,45 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       PolicyName: `kinesis-analytics-service-my-app-${config.region}`,
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "ReadCode",
-            Effect: "Allow",
             Action: ["s3:GetObject", "s3:GetObjectVersion"],
+            Effect: "Allow",
             Resource: [
               "arn:aws:s3:::kinesis-analytics-placeholder-s3-bucket/kinesis-analytics-placeholder-s3-object",
             ],
+            Sid: "ReadCode",
           },
           {
-            Sid: "ListCloudwatchLogGroups",
-            Effect: "Allow",
             Action: ["logs:DescribeLogGroups"],
+            Effect: "Allow",
             Resource: [
               `arn:aws:logs:${config.region}:${config.accountId()}:log-group:*`,
             ],
+            Sid: "ListCloudwatchLogGroups",
           },
           {
-            Sid: "ListCloudwatchLogStreams",
-            Effect: "Allow",
             Action: ["logs:DescribeLogStreams"],
+            Effect: "Allow",
             Resource: [
               `arn:aws:logs:${
                 config.region
               }:${config.accountId()}:log-group:/aws/kinesis-analytics/my-app:log-stream:*`,
             ],
+            Sid: "ListCloudwatchLogStreams",
           },
           {
-            Sid: "PutCloudwatchLogs",
-            Effect: "Allow",
             Action: ["logs:PutLogEvents"],
+            Effect: "Allow",
             Resource: [
               `arn:aws:logs:${
                 config.region
               }:${config.accountId()}:log-group:/aws/kinesis-analytics/my-app:log-stream:kinesis-analytics-log-stream`,
             ],
+            Sid: "PutCloudwatchLogs",
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
     }),
@@ -98,23 +98,23 @@ exports.createResources = () => [
     properties: ({}) => ({
       ApplicationConfigurationDescription: {
         ApplicationSnapshotConfigurationDescription: {
-          SnapshotsEnabled: false,
+          SnapshotsEnabled: true,
         },
         FlinkApplicationConfigurationDescription: {
           CheckpointConfigurationDescription: {
-            CheckpointInterval: 60000,
             CheckpointingEnabled: true,
+            CheckpointInterval: 60000,
             ConfigurationType: "DEFAULT",
             MinPauseBetweenCheckpoints: 5000,
           },
           MonitoringConfigurationDescription: {
-            ConfigurationType: "CUSTOM",
+            ConfigurationType: "DEFAULT",
             LogLevel: "INFO",
             MetricsLevel: "APPLICATION",
           },
           ParallelismConfigurationDescription: {
             AutoScalingEnabled: true,
-            ConfigurationType: "CUSTOM",
+            ConfigurationType: "DEFAULT",
             CurrentParallelism: 1,
             Parallelism: 1,
             ParallelismPerKPU: 1,

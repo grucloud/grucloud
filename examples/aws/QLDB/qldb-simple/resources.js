@@ -1490,17 +1490,17 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName:
-          "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
-        Runtime: "nodejs14.x",
-        Timeout: 10,
-        Handler: "index.main",
         Environment: {
           Variables: {
-            TABLE_NAME: "invoices",
             LEDGER_NAME: "ledger1",
+            TABLE_NAME: "invoices",
           },
         },
+        FunctionName:
+          "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
+        Handler: "index.main",
+        Runtime: "nodejs14.x",
+        Timeout: 10,
       },
     }),
     dependencies: ({}) => ({

@@ -161,6 +161,7 @@ exports.KendraQuerySuggestionsBlockList = () => ({
     isInstanceUp: pipe([get("Status"), isIn(["ACTIVE"])]),
     isInstanceError: pipe([get("Status"), isIn(["FAILED"])]),
     getErrorMessage: pipe([get("ErrorMessage", "FAILED")]),
+    // "Couldn't access the source file in the specified S3 bucket. The IAM role used to access the file doesn't have access. Update the IAM role policy to grant Amazon Kendra access to the file and try the request again."
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kendra.html#updateQuerySuggestionsBlockList-property
   update: {

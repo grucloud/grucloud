@@ -10,8 +10,8 @@ exports.createResources = () => [
       UserName: "my-user",
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ReadOnlyAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
+          PolicyName: "AmazonEC2ReadOnlyAccess",
         },
       ],
       Tags: [

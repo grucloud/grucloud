@@ -104,8 +104,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "vsam-to-dynamo-SQSToDynamoFunction17164FFE-9HwjnbSRjKQt",
-        Runtime: "python3.9",
         Handler: "insertRecord.handler",
+        Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({

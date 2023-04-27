@@ -9,10 +9,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "my-maintenance-window-role-policy",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: [
               "ssm:SendCommand",
               "ssm:CancelCommand",
@@ -24,45 +22,47 @@ exports.createResources = () => [
               "ssm:ListTagsForResource",
               "ssm:GetParameters",
             ],
+            Effect: "Allow",
             Resource: "*",
           },
           {
-            Effect: "Allow",
             Action: ["states:DescribeExecution", "states:StartExecution"],
+            Effect: "Allow",
             Resource: [
               "arn:aws:states:*:*:execution:*:*",
               "arn:aws:states:*:*:stateMachine:*",
             ],
           },
           {
-            Effect: "Allow",
             Action: ["lambda:InvokeFunction"],
+            Effect: "Allow",
             Resource: ["arn:aws:lambda:*:*:function:*"],
           },
           {
-            Effect: "Allow",
             Action: [
               "resource-groups:ListGroups",
               "resource-groups:ListGroupResources",
             ],
+            Effect: "Allow",
             Resource: ["*"],
           },
           {
-            Effect: "Allow",
             Action: ["tag:GetResources"],
+            Effect: "Allow",
             Resource: ["*"],
           },
           {
-            Effect: "Allow",
             Action: "iam:PassRole",
-            Resource: "*",
             Condition: {
               StringEquals: {
                 "iam:PassedToService": ["ssm.amazonaws.com"],
               },
             },
+            Effect: "Allow",
+            Resource: "*",
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/",
     }),
@@ -73,19 +73,19 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "XRayAccessPolicy-0c77fa64-1fe0-4888-b058-990040cb421a",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: [
               "xray:PutTraceSegments",
               "xray:PutTelemetryRecords",
               "xray:GetSamplingRules",
               "xray:GetSamplingTargets",
             ],
+            Effect: "Allow",
             Resource: ["*"],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
       Description:
@@ -171,7 +171,6 @@ exports.createResources = () => [
     type: "MaintenanceWindowTask",
     group: "SSM",
     properties: ({}) => ({
-      TaskType: "STEP_FUNCTIONS",
       Name: "my-step-function-task",
       Priority: 1,
       TaskInvocationParameters: {
@@ -182,6 +181,7 @@ exports.createResources = () => [
         },
       },
       TaskParameters: {},
+      TaskType: "STEP_FUNCTIONS",
     }),
     dependencies: ({}) => ({
       iamRoleService: "my-maintenance-window-role",

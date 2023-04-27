@@ -77,8 +77,8 @@ exports.createResources = () => [
     type: "HostedConfigurationVersion",
     group: "AppConfig",
     properties: ({}) => ({
-      ContentType: "text/plain",
       Content: "yolo=3",
+      ContentType: "text/plain",
     }),
     dependencies: ({}) => ({
       configurationProfile: "my-appconfig::profile-freeform",
@@ -128,14 +128,14 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "SSMCloudWatchAlarmDiscoveryPolicy",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: ["cloudwatch:DescribeAlarms"],
+            Effect: "Allow",
             Resource: "*",
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/",
     }),

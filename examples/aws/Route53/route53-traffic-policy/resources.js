@@ -14,19 +14,19 @@ exports.createResources = () => [
     type: "TrafficPolicy",
     group: "Route53",
     properties: ({}) => ({
-      Name: "my-policy",
-      Type: "A",
       Document: {
         AWSPolicyFormatVersion: "2015-10-01",
-        RecordType: "A",
         Endpoints: {
           "endpoint-start-OlMP": {
             Type: "value",
             Value: "192.168.0.3",
           },
         },
+        RecordType: "A",
         StartEndpoint: "endpoint-start-OlMP",
       },
+      Name: "my-policy",
+      Type: "A",
     }),
   },
 ];

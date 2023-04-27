@@ -7,6 +7,7 @@ exports.createResources = () => [
     type: "DocumentClassifier",
     group: "Comprehend",
     properties: ({}) => ({
+      DocumentClassifierName: "my-model",
       InputDataConfig: {
         DataFormat: "COMPREHEND_CSV",
         S3Uri: "s3://gc-comprehend-dataset",
@@ -14,7 +15,6 @@ exports.createResources = () => [
       LanguageCode: "en",
       Mode: "MULTI_CLASS",
       OutputDataConfig: {},
-      DocumentClassifierName: "my-model",
     }),
     dependencies: ({}) => ({
       iamRole: "AmazonComprehendServiceRole-comprehend",
@@ -55,19 +55,19 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "AmazonComprehendServicePolicy-comprehend",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
             Action: "s3:GetObject",
-            Resource: ["arn:aws:s3:::gc-comprehend-dataset/*"],
             Effect: "Allow",
+            Resource: ["arn:aws:s3:::gc-comprehend-dataset/*"],
           },
           {
             Action: "s3:ListBucket",
-            Resource: ["arn:aws:s3:::gc-comprehend-dataset"],
             Effect: "Allow",
+            Resource: ["arn:aws:s3:::gc-comprehend-dataset"],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
     }),
@@ -78,19 +78,19 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "AmazonComprehendServicePolicy-entity-recognizer",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
             Action: "s3:GetObject",
-            Resource: ["arn:aws:s3:::gc-comprehend-dataset/*"],
             Effect: "Allow",
+            Resource: ["arn:aws:s3:::gc-comprehend-dataset/*"],
           },
           {
             Action: "s3:ListBucket",
-            Resource: ["arn:aws:s3:::gc-comprehend-dataset"],
             Effect: "Allow",
+            Resource: ["arn:aws:s3:::gc-comprehend-dataset"],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
     }),

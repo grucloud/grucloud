@@ -24,8 +24,8 @@ exports.createResources = () => [
       authenticationType: "API_KEY",
       xrayEnabled: true,
       logConfig: {
-        fieldLogLevel: "ALL",
         excludeVerboseContent: false,
+        fieldLogLevel: "ALL",
       },
       apiKeys: [{}],
       schemaFile: "SamStepFunctionsApi.graphql",
@@ -38,9 +38,9 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "addStepFunctionExecution",
       kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "SamStepFunctionsLambdaDirectResolver",
@@ -358,9 +358,6 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
-        FunctionName: "sam-app-SamStepFunctionFunction-Xw0k7kc6dwJe",
-        Runtime: "python3.8",
-        Handler: "app.lambda_handler",
         Environment: {
           Variables: {
             STATE_MACHINE_ARN: `arn:aws:states:${
@@ -368,6 +365,9 @@ exports.createResources = () => [
             }:${config.accountId()}:stateMachine:SamStepFunctionStateMachine-lfaxL8lndjSb`,
           },
         },
+        FunctionName: "sam-app-SamStepFunctionFunction-Xw0k7kc6dwJe",
+        Handler: "app.lambda_handler",
+        Runtime: "python3.8",
       },
     }),
     dependencies: ({}) => ({

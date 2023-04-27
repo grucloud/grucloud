@@ -11,10 +11,10 @@ exports.createResources = () => [
       ApplicationStatus: "ENABLED",
       AutoConfigEnabled: true,
       CWEMonitorEnabled: true,
+      GroupingType: "ACCOUNT_BASED",
       OpsCenterEnabled: true,
       ReplaceCloudWatchConfig: true,
       ResourceGroupName: "ApplicationInsights-my-app",
-      GroupingType: "ACCOUNT_BASED",
     }),
   },
 ];

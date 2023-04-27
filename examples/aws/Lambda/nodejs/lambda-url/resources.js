@@ -10,16 +10,15 @@ exports.createResources = () => [
       PolicyName:
         "AWSLambdaBasicExecutionRole-9c3ecdb3-2e09-4c84-b290-82222512354a",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: "logs:CreateLogGroup",
+            Effect: "Allow",
             Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
           },
           {
-            Effect: "Allow",
             Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Effect: "Allow",
             Resource: [
               `arn:aws:logs:${
                 config.region
@@ -27,6 +26,7 @@ exports.createResources = () => [
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
     }),
@@ -62,8 +62,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "my-function-url",
-        Runtime: "nodejs14.x",
         Handler: "index.handler",
+        Runtime: "nodejs14.x",
       },
       FunctionUrlConfig: {
         AuthType: "NONE",

@@ -695,17 +695,17 @@ exports.createResources = () => [
     name: "alias/codepipeline-parallele2epipelinecdkserverlesslandpipelineedfc43a9",
     properties: ({ config }) => ({
       Policy: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "kms:*",
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
-            Action: "kms:*",
             Resource: "*",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
   },

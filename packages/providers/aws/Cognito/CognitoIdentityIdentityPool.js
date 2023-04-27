@@ -78,7 +78,13 @@ exports.CognitoIdentityIdentityPool = ({ compare }) => ({
   package: "cognito-identity",
   client: "CognitoIdentity",
   propertiesDefault: {},
-  omitProperties: ["IdentityPoolId", "Arn"],
+  omitProperties: [
+    "IdentityPoolId",
+    "Arn",
+    "CreationDate",
+    "IdentityPoolArn",
+    "LastModifiedDate",
+  ],
   inferName: () =>
     pipe([
       get("IdentityPoolName"),

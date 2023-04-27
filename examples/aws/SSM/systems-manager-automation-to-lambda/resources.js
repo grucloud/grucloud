@@ -124,9 +124,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-LambdaFunction-SzMn1A4Jbksd",
+        Handler: "app.handler",
         Runtime: "python3.7",
         Timeout: 60,
-        Handler: "app.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -138,22 +138,11 @@ exports.createResources = () => [
     group: "SSM",
     properties: ({}) => ({
       Content: {
-        schemaVersion: "0.3",
         description:
           "Automation document for the invoking a lambda function v3",
-        parameters: {
-          SortKeyInput: {
-            type: "String",
-          },
-          PartitonKeyInput: {
-            type: "String",
-          },
-          DocumentInputTableName: {
-            type: "String",
-          },
-        },
         mainSteps: [
           {
+            action: "aws:invokeLambdaFunction",
             inputs: {
               FunctionName: "sam-app-LambdaFunction-SzMn1A4Jbksd",
               Payload: `{
@@ -167,10 +156,21 @@ exports.createResources = () => [
 `,
             },
             name: "lambda_invoke",
-            action: "aws:invokeLambdaFunction",
             onFailure: "Abort",
           },
         ],
+        parameters: {
+          DocumentInputTableName: {
+            type: "String",
+          },
+          PartitonKeyInput: {
+            type: "String",
+          },
+          SortKeyInput: {
+            type: "String",
+          },
+        },
+        schemaVersion: "0.3",
       },
       DocumentType: "Automation",
       Name: "sam-app-SsmAutomationDocument-tWpS8MDWk4RI",

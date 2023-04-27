@@ -82,7 +82,6 @@ exports.createResources = () => [
     type: "ImageRecipe",
     group: "Imagebuilder",
     properties: ({}) => ({
-      semanticVersion: "1.0.0",
       additionalInstanceConfiguration: {
         systemsManagerAgent: {
           uninstallAfterBuild: false,
@@ -109,6 +108,7 @@ exports.createResources = () => [
       parentImage:
         "arn:aws:imagebuilder:us-east-1:aws:image/amazon-linux-2-x86/x.x.x",
       platform: "Linux",
+      semanticVersion: "1.0.0",
       workingDirectory: "/tmp",
     }),
   },

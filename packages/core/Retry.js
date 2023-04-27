@@ -140,6 +140,7 @@ const shouldRetryOnExceptionDefault = ({ error }) =>
     "ENOTFOUND",
     "ENETDOWN",
     "EHOSTUNREACH",
+    "ERR_BAD_RESPONSE", //"maxContentLength size of -1 exceeded "
   ].includes(error.code);
 
 exports.retryCallOnError = ({

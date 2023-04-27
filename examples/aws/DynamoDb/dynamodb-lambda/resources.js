@@ -86,8 +86,8 @@ exports.createResources = () => [
         Description:
           "An Amazon DynamoDB trigger that logs the updates made to a table.",
         FunctionName: "sam-app-DynamoDBProcessStreamFunction-Rjtb7LWZGPCE",
-        Runtime: "nodejs14.x",
         Handler: "app.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

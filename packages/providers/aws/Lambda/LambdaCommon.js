@@ -1,13 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, eq, get, tryCatch, not } = require("rubico");
-const { callProp, last } = require("rubico/x");
-const Axios = require("axios");
+const { callProp } = require("rubico/x");
 const fs = require("fs").promises;
 const AdmZip = require("adm-zip");
 
 const crypto = require("crypto");
 const { createEndpoint } = require("../AwsCommon");
 const { createTagger } = require("../AwsTagger");
+const AxiosMaker = require("@grucloud/core/AxiosMaker");
 
 exports.createLambda = createEndpoint("lambda", "Lambda");
 
@@ -18,7 +18,8 @@ exports.fetchZip =
       tap(() => {
         assert(Location);
       }),
-      () => Axios.create({}),
+      () => ({}),
+      AxiosMaker,
       callProp("get", Location, { responseType: "arraybuffer" }),
       get("data"),
       callProp("toString", "base64"),

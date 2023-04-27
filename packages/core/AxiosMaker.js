@@ -5,12 +5,11 @@ const { tos } = require("./tos");
 const { convertError } = require("./Common");
 const { assign, pipe, tap } = require("rubico");
 const { retryCallOnError } = require("./Retry");
-const util = require("util");
 
 module.exports = AxiosMaker = ({
   baseURL,
   httpsAgent,
-  onHeaders = noop,
+  onHeaders = () => ({}),
   contentType = "application/json",
   timeout = 30e3,
 }) => {

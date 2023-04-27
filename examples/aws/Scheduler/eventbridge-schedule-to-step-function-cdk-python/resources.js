@@ -76,12 +76,12 @@ exports.createResources = () => [
           config.region
         }:${config.accountId()}:stateMachine:statemachine3BB5DA23-yz112W0tNPvb`,
         Input: {
-          metadata: {
-            eventId: "MY_SCHEDULED_EVENT",
-          },
           data: {
             firstName: "Pubudu",
             lastName: "Jayawardana",
+          },
+          metadata: {
+            eventId: "MY_SCHEDULED_EVENT",
           },
         },
         RetryPolicy: {

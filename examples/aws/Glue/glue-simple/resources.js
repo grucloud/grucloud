@@ -37,6 +37,14 @@ exports.createResources = () => [
     type: "Database",
     group: "Glue",
     properties: ({}) => ({
+      CreateTableDefaultPermissions: [
+        {
+          Permissions: ["ALL"],
+          Principal: {
+            DataLakePrincipalIdentifier: "IAM_ALLOWED_PRINCIPALS",
+          },
+        },
+      ],
       Name: "my-database",
     }),
   },
@@ -73,14 +81,14 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "AWSGlueServiceRole-my-EZCRC-s3Policy",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: ["s3:GetObject", "s3:PutObject"],
+            Effect: "Allow",
             Resource: ["arn:aws:s3:::gc-glue-database*"],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
       Description:

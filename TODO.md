@@ -1,17 +1,16 @@
 ## Bugs
 
-- check stage for all providers
-
 ## Aws
 
+s3-s3-replication-cdk retry
+SecurityHub consolidated finding
+GraphqlApi substitute region in additionalAuthenticationProviders
 cdk-vpc-lamba-sfn
-kinesusanalyticsv2-simple
 rattitmq-lambda
 emr studio
 kerndra-simple
 SSM Association
 requestMACSec
-iamRoleCrossAccount
 waf-appsync-cdk
 
 - MQ user for RabbitMQ
@@ -23,27 +22,23 @@ waf-appsync-cdk
 - route to core network
 - fix gc l -t
 - Example with non default DB Proxy Target Group,
-- AutoScalingGroup: example with serviceLinkedRole
-- VpcEndpoint: example with serviceLinkedRole
 - Firewall deps
 - ECSTask dependency check
 - CodeDeployDeploymentGroup configDefault with other dependencies
 - RAMPrincipalAssociation findName
-- SNSSubscription deps sqs queue
 - PrincipalAssociation replace associatedEntity from config
 - ipamPoolIpv6
-- HostedZone name with vpc
-- apprunner example npm test
 
 - RDS DBCluster AvailabilityZones
 - Nat gateway handle deleting
 - resource schema
 - document create key pair
 - s3 analytics configuration
-- s3 object gencode is missing ACL:public-read
 - route to NetworkInterfaceId
 
 ## Common:
+
+- check stage for all providers
 
 - https://stackshare.io/terraform/alternatives
 

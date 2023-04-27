@@ -26,12 +26,13 @@ const {
   first,
   when,
   unless,
+  callProp,
 } = require("rubico/x");
 const util = require("util");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { deepReject } = require("@grucloud/core/deepReject");
-
+const { deepSortKey } = require("@grucloud/core/deepSortKey");
 const { retryCall } = require("@grucloud/core/Retry");
 const { assignTagsSort, createEndpoint } = require("./AwsCommon");
 
@@ -97,6 +98,7 @@ const AwsClient =
         decorate = () => identity,
         ignoreErrorCodes = [],
         ignoreErrorMessages = [],
+        noSortKey = false,
       }) =>
       ({ lives }) =>
       (live) =>
@@ -134,8 +136,20 @@ const AwsClient =
                     config,
                     endpointConfig: getEndpointConfig(getContext()),
                   }),
-                  deepReject(([key, value]) => isEmpty(value)),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  deepReject(
+                    ([key, value]) =>
+                      value == undefined ||
+                      value == null ||
+                      key.startsWith("__")
+                  ),
+                  unless(() => noSortKey, deepSortKey),
                   assignTagsSort,
+                  tap((params) => {
+                    assert(true);
+                  }),
                 ])
               ),
             ]),
@@ -174,7 +188,7 @@ const AwsClient =
             // logger.debug(
             //   `getById ${type} result: ${JSON.stringify(result, null, 4)}`
             // );
-            logger.debug(`getById ${groupType} done`);
+            logger.debug(`getById ${groupType} has ${!!result}`);
           }),
         ])();
 
@@ -267,12 +281,12 @@ const AwsClient =
               map(assignTagsSort),
               tap((items) => {
                 assert(Array.isArray(items));
-                logger.info(`getList ${groupType} #items ${size(items)}`);
+                //logger.info(`getList ${groupType} #items ${size(items)}`);
               }),
               filter(not(isEmpty)),
               tap((items) => {
                 assert(Array.isArray(items));
-                logger.info(`getList ${groupType} final #items ${size(items)}`);
+                //logger.info(`getList ${groupType} final #items ${size(items)}`);
               }),
             ]),
             pipe([

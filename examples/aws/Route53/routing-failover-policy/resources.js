@@ -165,13 +165,13 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({}) => ({
-      Name: "grucloud.org.",
-      Type: "A",
-      SetIdentifier: "us-east-1",
-      Failover: "PRIMARY",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Failover: "PRIMARY",
+      Name: "grucloud.org.",
+      SetIdentifier: "us-east-1",
+      Type: "A",
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",

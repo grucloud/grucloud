@@ -192,8 +192,8 @@ exports.createResources = () => [
       Configuration: {
         Description: "Lambda to be invoked by the SQS Queue",
         FunctionName: "MyLambdaFunction",
-        Runtime: "nodejs14.x",
         Handler: "app.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

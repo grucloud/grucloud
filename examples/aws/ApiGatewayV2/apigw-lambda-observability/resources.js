@@ -9,8 +9,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Name: "sam-app",
       Tags: {
-        Stack: "sam-app",
         "httpapi:createdBy": "SAM",
+        Stack: "sam-app",
       },
     }),
   },
@@ -63,8 +63,8 @@ exports.createResources = () => [
       AutoDeploy: true,
       StageName: "$default",
       Tags: {
-        Stack: "sam-app",
         "httpapi:createdBy": "SAM",
+        Stack: "sam-app",
       },
     }),
     dependencies: ({}) => ({
@@ -80,10 +80,6 @@ exports.createResources = () => [
         widgets: [
           {
             height: 6,
-            width: 6,
-            y: 6,
-            x: 6,
-            type: "metric",
             properties: {
               metrics: [
                 [
@@ -113,20 +109,20 @@ exports.createResources = () => [
                   },
                 ],
               ],
-              view: "timeSeries",
+              period: 60,
               region: "us-east-1",
               stacked: false,
-              title: "Lambda",
-              period: 60,
               stat: "Sum",
+              title: "Lambda",
+              view: "timeSeries",
             },
+            type: "metric",
+            width: 6,
+            x: 6,
+            y: 6,
           },
           {
             height: 6,
-            width: 6,
-            y: 6,
-            x: 0,
-            type: "metric",
             properties: {
               metrics: [
                 [
@@ -185,20 +181,20 @@ exports.createResources = () => [
                   },
                 ],
               ],
-              view: "timeSeries",
-              stacked: false,
-              region: "us-east-1",
               period: 60,
+              region: "us-east-1",
+              stacked: false,
               stat: "Sum",
               title: "API Gateway",
+              view: "timeSeries",
             },
+            type: "metric",
+            width: 6,
+            x: 0,
+            y: 6,
           },
           {
             height: 6,
-            width: 12,
-            y: 0,
-            x: 0,
-            type: "metric",
             properties: {
               metrics: [
                 [
@@ -217,33 +213,33 @@ exports.createResources = () => [
                   },
                 ],
               ],
-              view: "timeSeries",
-              stacked: false,
-              title: "Business Metrics",
-              region: "us-east-1",
               period: 60,
+              region: "us-east-1",
+              stacked: false,
               stat: "Sum",
+              title: "Business Metrics",
+              view: "timeSeries",
             },
+            type: "metric",
+            width: 12,
+            x: 0,
+            y: 0,
           },
           {
-            type: "alarm",
-            x: 0,
-            y: 12,
-            width: 12,
             height: 2,
             properties: {
-              title: "Application Alarms",
               alarms: [
                 "arn:aws:cloudwatch:us-east-1:840541460064:alarm:sam-app-SampleFunctionErrorsAlarm-152VK254LOXW2",
                 "arn:aws:cloudwatch:us-east-1:840541460064:alarm:sam-app-HttpApiErrorsAlarm-1FCVNCGFY7X81",
               ],
+              title: "Application Alarms",
             },
+            type: "alarm",
+            width: 12,
+            x: 0,
+            y: 12,
           },
           {
-            type: "log",
-            x: 0,
-            y: 14,
-            width: 12,
             height: 6,
             properties: {
               query: `SOURCE '/aws/lambda/sam-app-SampleFunction-7LguHNIijNN9' | fields @message, ispresent(errorMessage) as errorPresent
@@ -257,6 +253,10 @@ exports.createResources = () => [
               title: "Lambda Errors",
               view: "table",
             },
+            type: "log",
+            width: 12,
+            x: 0,
+            y: 14,
           },
         ],
       },
@@ -370,25 +370,25 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Description: "CMK for SNS alarms topic",
       Policy: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: ["kms:GenerateDataKey*", "kms:Decrypt"],
             Effect: "Allow",
             Principal: {
               Service: ["cloudwatch.amazonaws.com", "sns.amazonaws.com"],
             },
-            Action: ["kms:GenerateDataKey*", "kms:Decrypt"],
             Resource: "*",
           },
           {
+            Action: "kms:*",
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
-            Action: "kms:*",
             Resource: "*",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
   },
@@ -398,17 +398,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         Description: "Sample handler for all API operations",
-        TracingConfig: {
-          Mode: "Active",
-        },
-        FunctionName: "sam-app-SampleFunction-7LguHNIijNN9",
-        Runtime: "nodejs14.x",
-        Timeout: 100,
-        Handler: "src/app.handler",
         Environment: {
           Variables: {
             AWS_EMF_NAMESPACE: "sam-app",
           },
+        },
+        FunctionName: "sam-app-SampleFunction-7LguHNIijNN9",
+        Handler: "src/app.handler",
+        Runtime: "nodejs14.x",
+        Timeout: 100,
+        TracingConfig: {
+          Mode: "Active",
         },
       },
       Tags: {

@@ -38,8 +38,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "deleteNote",
+      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2018-05-29",
   "operation": "DeleteItem",
@@ -49,7 +49,7 @@ exports.createResources = () => [
 }
 `,
       responseMappingTemplate: "$util.toJson($ctx.result)",
-      kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "NotesDataSource",
@@ -60,8 +60,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "saveNote",
+      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2018-05-29",
   "operation": "PutItem",
@@ -75,7 +75,7 @@ exports.createResources = () => [
 }
 `,
       responseMappingTemplate: "$util.toJson($ctx.result)",
-      kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "NotesDataSource",
@@ -86,8 +86,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({ multiline }) => ({
-      typeName: "Query",
       fieldName: "allNotes",
+      kind: "UNIT",
       requestMappingTemplate: multiline(() => {
         /*
 {
@@ -108,7 +108,7 @@ exports.createResources = () => [
 
 */
       }),
-      kind: "UNIT",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
       dataSource: "NotesDataSource",
@@ -119,8 +119,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "getNote",
+      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2018-05-29",
   "operation": "GetItem",
@@ -130,7 +130,7 @@ exports.createResources = () => [
 }
 `,
       responseMappingTemplate: "$util.toJson($ctx.result)",
-      kind: "UNIT",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
       dataSource: "NotesDataSource",

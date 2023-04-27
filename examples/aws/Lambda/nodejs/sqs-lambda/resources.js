@@ -9,7 +9,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "lambda-policy",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
             Action: ["logs:*"],
@@ -22,6 +21,7 @@ exports.createResources = () => [
             Resource: "*",
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/",
       Description: "Allow logs",
@@ -64,8 +64,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "lambda-hello-world",
-        Runtime: "nodejs14.x",
         Handler: "helloworld.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

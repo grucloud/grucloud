@@ -651,15 +651,15 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     properties: ({ generatePassword }) => ({
+      Description: "RDS database auto-generated user password",
       Name: "aurora-user-secret",
       SecretString: {
-        password: generatePassword({ length: 30 }),
         dbname: "aurora_db",
         engine: "mysql",
+        password: generatePassword({ length: 30 }),
         port: 3306,
         username: "admin",
       },
-      Description: "RDS database auto-generated user password",
     }),
   },
 ];

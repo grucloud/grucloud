@@ -34,10 +34,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "my-maintenance-window-role-policy",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: [
               "ssm:SendCommand",
               "ssm:CancelCommand",
@@ -49,45 +47,47 @@ exports.createResources = () => [
               "ssm:ListTagsForResource",
               "ssm:GetParameters",
             ],
+            Effect: "Allow",
             Resource: "*",
           },
           {
-            Effect: "Allow",
             Action: ["states:DescribeExecution", "states:StartExecution"],
+            Effect: "Allow",
             Resource: [
               "arn:aws:states:*:*:execution:*:*",
               "arn:aws:states:*:*:stateMachine:*",
             ],
           },
           {
-            Effect: "Allow",
             Action: ["lambda:InvokeFunction"],
+            Effect: "Allow",
             Resource: ["arn:aws:lambda:*:*:function:*"],
           },
           {
-            Effect: "Allow",
             Action: [
               "resource-groups:ListGroups",
               "resource-groups:ListGroupResources",
             ],
+            Effect: "Allow",
             Resource: ["*"],
           },
           {
-            Effect: "Allow",
             Action: ["tag:GetResources"],
+            Effect: "Allow",
             Resource: ["*"],
           },
           {
-            Effect: "Allow",
             Action: "iam:PassRole",
-            Resource: "*",
             Condition: {
               StringEquals: {
                 "iam:PassedToService": ["ssm.amazonaws.com"],
               },
             },
+            Effect: "Allow",
+            Resource: "*",
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/",
     }),
@@ -98,16 +98,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       PolicyName: "my-sns-publish-permissions",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: ["sns:Publish"],
+            Effect: "Allow",
             Resource: `arn:aws:sns:${
               config.region
             }:${config.accountId()}:maintenance-window-topic`,
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/",
     }),
@@ -201,7 +201,6 @@ exports.createResources = () => [
     type: "MaintenanceWindowTask",
     group: "SSM",
     properties: ({ getId }) => ({
-      TaskType: "RUN_COMMAND",
       AlarmConfiguration: {
         Alarms: [
           {
@@ -244,6 +243,7 @@ exports.createResources = () => [
         },
       },
       TaskParameters: {},
+      TaskType: "RUN_COMMAND",
     }),
     dependencies: ({}) => ({
       alarms: ["maintenance-window-alarm"],

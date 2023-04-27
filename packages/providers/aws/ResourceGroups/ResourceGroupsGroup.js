@@ -68,7 +68,7 @@ exports.ResourceGroupsGroup = () => ({
   package: "resource-groups",
   client: "ResourceGroups",
   propertiesDefault: {},
-  omitProperties: ["GroupArn"],
+  omitProperties: ["GroupArn", "OwnerId"],
   inferName: () =>
     pipe([
       get("Name"),

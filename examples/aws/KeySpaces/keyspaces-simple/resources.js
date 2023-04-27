@@ -8,6 +8,7 @@ exports.createResources = () => [
     group: "Keyspaces",
     properties: ({}) => ({
       keyspaceName: "tutorialkeyspace",
+      replicationStrategy: "SINGLE_REGION",
     }),
   },
   {

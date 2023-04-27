@@ -309,8 +309,8 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "CdkApigwSnsSqsLambdaStack-workerLambdaTypeOneHandl-xcfkwdjaVe3q",
-        Runtime: "nodejs14.x",
         Handler: "app.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
@@ -324,8 +324,8 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "CdkApigwSnsSqsLambdaStack-workerLambdaTypeTwoHandl-GW4XepS4cqU6",
-        Runtime: "nodejs14.x",
         Handler: "app.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
@@ -367,17 +367,9 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
-          Version: "2012-10-17",
           Statement: [
             {
-              Effect: "Allow",
-              Principal: {
-                Service: "sns.amazonaws.com",
-              },
               Action: "sqs:SendMessage",
-              Resource: `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-SubscriberQueueOne2F3DD46E-6C5ZXYtstbZx`,
               Condition: {
                 ArnEquals: {
                   "aws:SourceArn": `arn:aws:sns:${
@@ -385,8 +377,16 @@ exports.createResources = () => [
                   }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-topic69831491-vgMzreNVdE37`,
                 },
               },
+              Effect: "Allow",
+              Principal: {
+                Service: "sns.amazonaws.com",
+              },
+              Resource: `arn:aws:sqs:${
+                config.region
+              }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-SubscriberQueueOne2F3DD46E-6C5ZXYtstbZx`,
             },
           ],
+          Version: "2012-10-17",
         },
       },
       QueueName:
@@ -402,17 +402,9 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
-          Version: "2012-10-17",
           Statement: [
             {
-              Effect: "Allow",
-              Principal: {
-                Service: "sns.amazonaws.com",
-              },
               Action: "sqs:SendMessage",
-              Resource: `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-SubscriberQueueTwo43B9D9F1-KiJCjrQeHx5a`,
               Condition: {
                 ArnEquals: {
                   "aws:SourceArn": `arn:aws:sns:${
@@ -420,8 +412,16 @@ exports.createResources = () => [
                   }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-topic69831491-vgMzreNVdE37`,
                 },
               },
+              Effect: "Allow",
+              Principal: {
+                Service: "sns.amazonaws.com",
+              },
+              Resource: `arn:aws:sqs:${
+                config.region
+              }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-SubscriberQueueTwo43B9D9F1-KiJCjrQeHx5a`,
             },
           ],
+          Version: "2012-10-17",
         },
       },
       QueueName:

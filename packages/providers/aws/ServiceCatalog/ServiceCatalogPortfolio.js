@@ -1,10 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, omit } = require("rubico");
+const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 const { assignDiffTags } = require("./ServiceCatalogCommon");
+
 const pickId = pipe([
   tap(({ Id }) => {
     assert(Id);
@@ -22,9 +23,6 @@ const decorate = ({ endpoint, config }) =>
       Tags,
       TagsOptions,
       // Budgets, TODO
-    }),
-    tap((params) => {
-      assert(endpoint);
     }),
   ]);
 

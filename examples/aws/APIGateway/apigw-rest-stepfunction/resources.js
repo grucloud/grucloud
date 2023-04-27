@@ -211,7 +211,6 @@ exports.createResources = () => [
               },
             ],
             Next: "WaitUntil",
-            ResultPath: null,
             OutputPath: "$",
           },
           WaitUntil: {
@@ -249,7 +248,6 @@ exports.createResources = () => [
                 BackoffRate: 10,
               },
             ],
-            ResultPath: null,
             End: true,
           },
         },

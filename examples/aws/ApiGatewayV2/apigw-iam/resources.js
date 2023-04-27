@@ -113,29 +113,29 @@ exports.createResources = () => [
     type: "UserPolicy",
     group: "IAM",
     properties: ({ config, getId }) => ({
-      PolicyName: "root",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
             Action: "execute-api:Invoke",
+            Effect: "Allow",
             Resource: `${getId({
               type: "RestApi",
               group: "APIGateway",
               name: "sam-app",
               path: "live.arnv2",
             })}/Prod/*`,
-            Effect: "Allow",
           },
           {
             Action: "lambda:InvokeFunction",
+            Effect: "Allow",
             Resource: `arn:aws:lambda:${
               config.region
             }:${config.accountId()}:function:sam-app-AppFunction-pbGEvm3zPzpv`,
-            Effect: "Allow",
           },
         ],
+        Version: "2012-10-17",
       },
+      PolicyName: "root",
     }),
     dependencies: ({}) => ({
       user: "sam-app-AuthorizedUser-ZJS5JEEB6MXE",
@@ -146,19 +146,19 @@ exports.createResources = () => [
     type: "UserPolicy",
     group: "IAM",
     properties: ({ config }) => ({
-      PolicyName: "root",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
             Action: "execute-api:Invoke",
+            Effect: "Allow",
             Resource: `arn:aws:execute-api:${
               config.region
             }:${config.accountId()}:*/*/*`,
-            Effect: "Allow",
           },
         ],
+        Version: "2012-10-17",
       },
+      PolicyName: "root",
     }),
     dependencies: ({}) => ({
       user: "sam-app-UnauthorizedUser-1N19UG1LXDUIB",
@@ -170,8 +170,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-AppFunction-pbGEvm3zPzpv",
-        Runtime: "nodejs14.x",
         Handler: "app.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

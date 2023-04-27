@@ -10,11 +10,10 @@ exports.createResources = () => [
       PolicyName:
         "Amazon-EventBridge-Scheduler-Execution-Policy-3a54c973-3820-47e3-a9f5-01148ae3aa27",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: ["lambda:InvokeFunction"],
+            Effect: "Allow",
             Resource: [
               `arn:aws:lambda:${
                 config.region
@@ -25,6 +24,7 @@ exports.createResources = () => [
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
     }),
@@ -36,16 +36,15 @@ exports.createResources = () => [
       PolicyName:
         "AWSLambdaBasicExecutionRole-2c60bc7b-a716-4df4-8688-f7237aa45ae7",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: "logs:CreateLogGroup",
+            Effect: "Allow",
             Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
           },
           {
-            Effect: "Allow",
             Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Effect: "Allow",
             Resource: [
               `arn:aws:logs:${
                 config.region
@@ -53,6 +52,7 @@ exports.createResources = () => [
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
     }),
@@ -121,8 +121,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "mylambda",
-        Runtime: "nodejs16.x",
         Handler: "index.handler",
+        Runtime: "nodejs16.x",
       },
     }),
     dependencies: ({}) => ({

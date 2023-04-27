@@ -171,8 +171,6 @@ exports.createResources = () => [
         Statement: [
           {
             Action: ["iam:PassRole"],
-            Resource: "*",
-            Effect: "Allow",
             Condition: {
               StringEqualsIfExists: {
                 "iam:PassedToService": [
@@ -183,6 +181,8 @@ exports.createResources = () => [
                 ],
               },
             },
+            Effect: "Allow",
+            Resource: "*",
           },
           {
             Action: [
@@ -193,8 +193,8 @@ exports.createResources = () => [
               "codecommit:GetUploadArchiveStatus",
               "codecommit:UploadArchive",
             ],
-            Resource: "*",
             Effect: "Allow",
+            Resource: "*",
           },
           {
             Action: [
@@ -205,13 +205,13 @@ exports.createResources = () => [
               "codedeploy:GetDeploymentConfig",
               "codedeploy:RegisterApplicationRevision",
             ],
-            Resource: "*",
             Effect: "Allow",
+            Resource: "*",
           },
           {
             Action: ["codestar-connections:UseConnection"],
-            Resource: "*",
             Effect: "Allow",
+            Resource: "*",
           },
           {
             Action: [
@@ -227,13 +227,13 @@ exports.createResources = () => [
               "sqs:*",
               "ecs:*",
             ],
-            Resource: "*",
             Effect: "Allow",
+            Resource: "*",
           },
           {
             Action: ["lambda:InvokeFunction", "lambda:ListFunctions"],
-            Resource: "*",
             Effect: "Allow",
+            Resource: "*",
           },
           {
             Action: [
@@ -246,8 +246,8 @@ exports.createResources = () => [
               "opsworks:UpdateApp",
               "opsworks:UpdateStack",
             ],
-            Resource: "*",
             Effect: "Allow",
+            Resource: "*",
           },
           {
             Action: [
@@ -262,8 +262,8 @@ exports.createResources = () => [
               "cloudformation:SetStackPolicy",
               "cloudformation:ValidateTemplate",
             ],
-            Resource: "*",
             Effect: "Allow",
+            Resource: "*",
           },
           {
             Action: [
@@ -272,11 +272,10 @@ exports.createResources = () => [
               "codebuild:BatchGetBuildBatches",
               "codebuild:StartBuildBatch",
             ],
-            Resource: "*",
             Effect: "Allow",
+            Resource: "*",
           },
           {
-            Effect: "Allow",
             Action: [
               "devicefarm:ListProjects",
               "devicefarm:ListDevicePools",
@@ -285,10 +284,10 @@ exports.createResources = () => [
               "devicefarm:CreateUpload",
               "devicefarm:ScheduleRun",
             ],
+            Effect: "Allow",
             Resource: "*",
           },
           {
-            Effect: "Allow",
             Action: [
               "servicecatalog:ListProvisioningArtifacts",
               "servicecatalog:CreateProvisioningArtifact",
@@ -296,34 +295,35 @@ exports.createResources = () => [
               "servicecatalog:DeleteProvisioningArtifact",
               "servicecatalog:UpdateProduct",
             ],
+            Effect: "Allow",
             Resource: "*",
           },
           {
-            Effect: "Allow",
             Action: ["cloudformation:ValidateTemplate"],
+            Effect: "Allow",
             Resource: "*",
           },
           {
-            Effect: "Allow",
             Action: ["ecr:DescribeImages"],
+            Effect: "Allow",
             Resource: "*",
           },
           {
-            Effect: "Allow",
             Action: [
               "states:DescribeExecution",
               "states:DescribeStateMachine",
               "states:StartExecution",
             ],
+            Effect: "Allow",
             Resource: "*",
           },
           {
-            Effect: "Allow",
             Action: [
               "appconfig:StartDeployment",
               "appconfig:StopDeployment",
               "appconfig:GetDeployment",
             ],
+            Effect: "Allow",
             Resource: "*",
           },
         ],
@@ -339,9 +339,13 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       PolicyName: `CodeBuildBasePolicy-my-project-${config.region}`,
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: [
+              "logs:CreateLogGroup",
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+            ],
             Effect: "Allow",
             Resource: [
               `arn:aws:logs:${
@@ -351,15 +355,8 @@ exports.createResources = () => [
                 config.region
               }:${config.accountId()}:log-group:/aws/codebuild/my-project:*`,
             ],
-            Action: [
-              "logs:CreateLogGroup",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents",
-            ],
           },
           {
-            Effect: "Allow",
-            Resource: [`arn:aws:s3:::codepipeline-${config.region}-*`],
             Action: [
               "s3:PutObject",
               "s3:GetObject",
@@ -367,9 +364,10 @@ exports.createResources = () => [
               "s3:GetBucketAcl",
               "s3:GetBucketLocation",
             ],
+            Effect: "Allow",
+            Resource: [`arn:aws:s3:::codepipeline-${config.region}-*`],
           },
           {
-            Effect: "Allow",
             Action: [
               "codebuild:CreateReportGroup",
               "codebuild:CreateReport",
@@ -377,6 +375,7 @@ exports.createResources = () => [
               "codebuild:BatchPutTestCases",
               "codebuild:BatchPutCodeCoverages",
             ],
+            Effect: "Allow",
             Resource: [
               `arn:aws:codebuild:${
                 config.region
@@ -384,6 +383,7 @@ exports.createResources = () => [
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
       Description: "Policy used in trust relationship with CodeBuild",
@@ -395,11 +395,10 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       PolicyName: `start-pipeline-execution-${config.region}-my-pipeline`,
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: ["codepipeline:StartPipelineExecution"],
+            Effect: "Allow",
             Resource: [
               `arn:aws:codepipeline:${
                 config.region
@@ -407,6 +406,7 @@ exports.createResources = () => [
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
       Description:
@@ -486,7 +486,7 @@ exports.createResources = () => [
     type: "Bucket",
     group: "S3",
     properties: ({ config }) => ({
-      Name: `codepipeline-${config.region}-986503088613`,
+      Name: `codepipeline-${config.region}-${config.accountId()}`,
       Policy: {
         Version: "2012-10-17",
         Id: "SSEAndSSLPolicy",

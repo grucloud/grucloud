@@ -61,14 +61,14 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-PutObjectFunction-UHg0AjQBqco2",
-        Runtime: "python3.8",
-        Handler: "app.lambda_handler",
         Environment: {
           Variables: {
             DestinationBucketName: "gc-destination-example",
           },
         },
+        FunctionName: "sam-app-PutObjectFunction-UHg0AjQBqco2",
+        Handler: "app.lambda_handler",
+        Runtime: "python3.8",
       },
     }),
     dependencies: ({}) => ({

@@ -154,19 +154,19 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
-          Version: "2008-10-17",
           Statement: [
             {
+              Action: "SQS:SendMessage",
               Effect: "Allow",
               Principal: {
                 Service: "events.amazonaws.com",
               },
-              Action: "SQS:SendMessage",
               Resource: `arn:aws:sqs:${
                 config.region
               }:${config.accountId()}:sam-app-MySqsQueue-IF2Nnb8apLcN`,
             },
           ],
+          Version: "2008-10-17",
         },
       },
       QueueName: "sam-app-MySqsQueue-IF2Nnb8apLcN",

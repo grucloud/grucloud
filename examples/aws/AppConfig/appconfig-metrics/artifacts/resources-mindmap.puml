@@ -13,9 +13,9 @@ skinparam monochrome true
 +++ CloudWatch
 ++++ MetricAlarm (1)
 +++ IAM
-++++ Role (1)
-++++ Policy (1)
 ++++ InstanceProfile (1)
+++++ Policy (1)
+++++ Role (1)
 +++ SNS
 ++++ Topic (1)
 @endmindmap

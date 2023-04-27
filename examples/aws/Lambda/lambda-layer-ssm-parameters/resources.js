@@ -50,8 +50,14 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ getId }) => ({
       Configuration: {
+        Architectures: ["arm64"],
+        Environment: {
+          Variables: {
+            ParameterPath: "/Config",
+          },
+        },
         FunctionName: "config-example-function",
-        Runtime: "nodejs14.x",
+        Handler: "app.handler",
         Layers: [
           `${getId({
             type: "Layer",
@@ -60,13 +66,7 @@ exports.createResources = () => [
             path: "live.LayerVersionArn",
           })}`,
         ],
-        Handler: "app.handler",
-        Environment: {
-          Variables: {
-            ParameterPath: "/Config",
-          },
-        },
-        Architectures: ["arm64"],
+        Runtime: "nodejs14.x",
       },
       FunctionUrlConfig: {
         AuthType: "NONE",

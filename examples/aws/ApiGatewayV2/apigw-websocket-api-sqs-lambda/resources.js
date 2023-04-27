@@ -196,10 +196,6 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ getId }) => ({
       Configuration: {
-        FunctionName: "sam-app-SQSWebsocketResponse-xvCVTmGEZ2xx",
-        Runtime: "nodejs14.x",
-        Timeout: 15,
-        Handler: "SQSWebsocketResponse.handler",
         Environment: {
           Variables: {
             ApiGatewayEndpoint: `${getId({
@@ -210,6 +206,10 @@ exports.createResources = () => [
             })}/production`,
           },
         },
+        FunctionName: "sam-app-SQSWebsocketResponse-xvCVTmGEZ2xx",
+        Handler: "SQSWebsocketResponse.handler",
+        Runtime: "nodejs14.x",
+        Timeout: 15,
       },
     }),
     dependencies: ({}) => ({
@@ -222,10 +222,10 @@ exports.createResources = () => [
     group: "SQS",
     properties: ({}) => ({
       Attributes: {
-        FifoQueue: "true",
-        DeduplicationScope: "queue",
-        FifoThroughputLimit: "perQueue",
         ContentBasedDeduplication: "false",
+        DeduplicationScope: "queue",
+        FifoQueue: "true",
+        FifoThroughputLimit: "perQueue",
       },
       QueueName: "APIGWWebsocketQueue.fifo",
     }),

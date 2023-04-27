@@ -4,7 +4,7 @@ const { isDeepEqual, isEmpty } = require("rubico/x");
 const { deepReject } = require("../deepReject");
 
 describe("deepReject", function () {
-  it.only("deepReject simple", async function () {
+  it("deepReject simple", async function () {
     const obj = {
       a: 1,
       b: null,

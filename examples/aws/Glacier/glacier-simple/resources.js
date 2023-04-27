@@ -7,25 +7,25 @@ exports.createResources = () => [
     type: "Vault",
     group: "Glacier",
     properties: ({ config }) => ({
-      vaultName: "my-vault",
-      vaultNotificationConfig: {
-        Events: ["ArchiveRetrievalCompleted", "InventoryRetrievalCompleted"],
-      },
       policy: {
         Policy: {
-          Version: "2012-10-17",
           Statement: [
             {
-              Sid: "add-read-only-perm",
+              Action: ["glacier:InitiateJob", "glacier:GetJobOutput"],
               Effect: "Allow",
               Principal: "*",
-              Action: ["glacier:InitiateJob", "glacier:GetJobOutput"],
               Resource: `arn:aws:glacier:${
                 config.region
               }:${config.accountId()}:vaults/my-vault`,
+              Sid: "add-read-only-perm",
             },
           ],
+          Version: "2012-10-17",
         },
+      },
+      vaultName: "my-vault",
+      vaultNotificationConfig: {
+        Events: ["ArchiveRetrievalCompleted", "InventoryRetrievalCompleted"],
       },
     }),
     dependencies: ({}) => ({

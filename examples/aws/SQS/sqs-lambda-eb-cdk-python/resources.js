@@ -79,10 +79,6 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
-        FunctionName:
-          "SqsLambdaEbCdkStack-MyLambdaFunction67CCA873-0GgdD060fFho",
-        Runtime: "python3.9",
-        Handler: "submit_job.handler",
         Environment: {
           Variables: {
             QUEUE_URL: `https://sqs.${
@@ -90,6 +86,10 @@ exports.createResources = () => [
             }.amazonaws.com/${config.accountId()}/SqsLambdaEbCdkStack-MyQueueE6CA6235-ifxHSq6AozrT`,
           },
         },
+        FunctionName:
+          "SqsLambdaEbCdkStack-MyLambdaFunction67CCA873-0GgdD060fFho",
+        Handler: "submit_job.handler",
+        Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({

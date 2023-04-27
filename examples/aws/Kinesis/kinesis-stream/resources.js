@@ -10,16 +10,15 @@ exports.createResources = () => [
       PolicyName:
         "AWSLambdaBasicExecutionRole-a76cddca-78ae-48ce-9719-4222f782af1b",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: "logs:CreateLogGroup",
+            Effect: "Allow",
             Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
           },
           {
-            Effect: "Allow",
             Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Effect: "Allow",
             Resource: [
               `arn:aws:logs:${
                 config.region
@@ -27,6 +26,7 @@ exports.createResources = () => [
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
     }),
@@ -95,8 +95,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "read-kinesis-stream",
-        Runtime: "nodejs16.x",
         Handler: "index.handler",
+        Runtime: "nodejs16.x",
       },
     }),
     dependencies: ({}) => ({

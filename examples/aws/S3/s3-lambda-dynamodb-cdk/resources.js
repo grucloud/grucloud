@@ -131,9 +131,9 @@ exports.createResources = () => [
           'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
         FunctionName:
           "S3LambdaDynamodbCdkStack-BucketNotificationsHandle-aXy3EfjTqVMi",
+        Handler: "index.handler",
         Runtime: "python3.7",
         Timeout: 300,
-        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -145,10 +145,6 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "S3LambdaDynamodbCdkStack-dataloadD006E5C2-gtXcpb19cPHr",
-        Runtime: "python3.7",
-        Timeout: 300,
-        Handler: "data-load.handler",
         Environment: {
           Variables: {
             bucket:
@@ -157,6 +153,10 @@ exports.createResources = () => [
             table: "object",
           },
         },
+        FunctionName: "S3LambdaDynamodbCdkStack-dataloadD006E5C2-gtXcpb19cPHr",
+        Handler: "data-load.handler",
+        Runtime: "python3.7",
+        Timeout: 300,
       },
     }),
     dependencies: ({}) => ({

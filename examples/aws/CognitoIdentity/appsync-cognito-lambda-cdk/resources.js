@@ -67,10 +67,10 @@ exports.createResources = () => [
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
     properties: ({}) => ({
-      PoolName: "CognitoUserPool53E37E69-yJSfyZcumKYw",
       EmailVerificationMessage:
         "The verification code to your new account is {####}",
       EmailVerificationSubject: "Verify your new account",
+      PoolName: "CognitoUserPool53E37E69-yJSfyZcumKYw",
       SmsVerificationMessage:
         "The verification code to your new account is {####}",
       VerificationMessageTemplate: {

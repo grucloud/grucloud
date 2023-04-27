@@ -291,6 +291,7 @@ exports.StepFunctionsStateMachine = () => ({
     method: "describeStateMachine",
     pickId,
     decorate,
+    noSortKey: true,
   },
   getList: {
     method: "listStateMachines",

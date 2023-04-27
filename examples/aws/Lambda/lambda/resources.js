@@ -35,9 +35,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-SimpleFunction-Ts3MqUXuWKqN",
-        Runtime: "nodejs14.x",
-        MemorySize: 512,
         Handler: "app.handler",
+        MemorySize: 512,
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

@@ -118,8 +118,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "process-usersids-records",
-        Runtime: "nodejs14.x",
         Handler: "index.handler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

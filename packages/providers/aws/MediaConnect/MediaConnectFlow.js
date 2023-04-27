@@ -1,33 +1,9 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  pick,
-  eq,
-  assign,
-  map,
-  and,
-  or,
-  not,
-  filter,
-  fork,
-} = require("rubico");
-const {
-  defaultsDeep,
-  first,
-  pluck,
-  callProp,
-  when,
-  isEmpty,
-  unless,
-  identity,
-} = require("rubico/x");
+const { pipe, tap, get, pick, assign } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { replaceWithName } = require("@grucloud/core/Common");
 
 const { Tagger, assignTags } = require("./MediaConnectCommon");
 const { replaceAccountAndRegion } = require("../AwsCommon");
@@ -54,12 +30,18 @@ const decorate = ({ endpoint, config }) =>
     }),
     assignTags({ buildArn: buildArn(config), endpoint }),
     omitIfEmpty(["Entitlements", "MediaStreams"]),
-    assign({
-      Source: pipe([
-        get("Source"),
-        ({ Transport, ...other }) => ({ ...other, ...Transport }),
-      ]),
-    }),
+    when(
+      get("Source"),
+      assign({
+        Source: pipe([
+          get("Source"),
+          ({ Transport, ...other }) => ({
+            ...other,
+            ...Transport,
+          }),
+        ]),
+      })
+    ),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MediaConnect.html

@@ -14,7 +14,6 @@ exports.createResources = () => [
         tableName: "MyModelTypeTable",
         awsRegion: `${config.region}`,
         useCallerCredentials: false,
-        deltaSyncConfig: null,
         versioned: false,
       },
     }),
@@ -81,13 +80,6 @@ export function response(ctx) {
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "MyModelType",
-      fieldName: "id",
-      kind: "PIPELINE",
-      runtime: {
-        name: "APPSYNC_JS",
-        runtimeVersion: "1.0.0",
-      },
       code: `/**
  *   Available AppSync utilities that you can use in your request and response handler
  */
@@ -119,6 +111,13 @@ export function request(ctx) {
 export function response(ctx) {
     return ctx.prev.result;
 }`,
+      fieldName: "id",
+      kind: "PIPELINE",
+      runtime: {
+        name: "APPSYNC_JS",
+        runtimeVersion: "1.0.0",
+      },
+      typeName: "MyModelType",
     }),
     dependencies: ({}) => ({
       graphqlApi: "My AppSync App",
@@ -151,10 +150,8 @@ export function response(ctx) {
     properties: ({ config }) => ({
       PolicyName: "appsync-ds-ddb-xoaizl-MyModelTypeTable",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: [
               "dynamodb:DeleteItem",
               "dynamodb:GetItem",
@@ -163,6 +160,7 @@ export function response(ctx) {
               "dynamodb:Scan",
               "dynamodb:UpdateItem",
             ],
+            Effect: "Allow",
             Resource: [
               `arn:aws:dynamodb:${
                 config.region
@@ -173,6 +171,7 @@ export function response(ctx) {
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
       Description: "Allows the AWS AppSync service to access your data source.",

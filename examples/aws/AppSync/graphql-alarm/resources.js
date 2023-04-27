@@ -14,7 +14,6 @@ exports.createResources = () => [
         tableName: "MyModelTypeTable",
         awsRegion: `${config.region}`,
         useCallerCredentials: false,
-        deltaSyncConfig: null,
         versioned: false,
       },
     }),
@@ -39,8 +38,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "createMyModelType",
+      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2017-02-28",
   "operation": "PutItem",
@@ -56,7 +55,7 @@ exports.createResources = () => [
   },
 }`,
       responseMappingTemplate: "$util.toJson($context.result)",
-      kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "MyModelTypeTable",
@@ -67,8 +66,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "deleteMyModelType",
+      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2017-02-28",
   "operation": "DeleteItem",
@@ -77,7 +76,7 @@ exports.createResources = () => [
   },
 }`,
       responseMappingTemplate: "$util.toJson($context.result)",
-      kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "MyModelTypeTable",
@@ -88,8 +87,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({ multiline }) => ({
-      typeName: "Mutation",
       fieldName: "updateMyModelType",
+      kind: "UNIT",
       requestMappingTemplate: multiline(() => {
         /*
 {
@@ -178,7 +177,7 @@ exports.createResources = () => [
 */
       }),
       responseMappingTemplate: "$util.toJson($context.result)",
-      kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "MyModelTypeTable",
@@ -189,8 +188,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "getMyModelType",
+      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2017-02-28",
   "operation": "GetItem",
@@ -199,7 +198,7 @@ exports.createResources = () => [
   },
 }`,
       responseMappingTemplate: "$util.toJson($context.result)",
-      kind: "UNIT",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
       dataSource: "MyModelTypeTable",
@@ -210,8 +209,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Query",
       fieldName: "listMyModelTypes",
+      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2017-02-28",
   "operation": "Scan",
@@ -220,7 +219,7 @@ exports.createResources = () => [
   "nextToken": $util.toJson($util.defaultIfNullOrEmpty($ctx.args.nextToken, null)),
 }`,
       responseMappingTemplate: "$util.toJson($context.result)",
-      kind: "UNIT",
+      typeName: "Query",
     }),
     dependencies: ({}) => ({
       dataSource: "MyModelTypeTable",
@@ -288,10 +287,8 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       PolicyName: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: [
               "dynamodb:DeleteItem",
               "dynamodb:GetItem",
@@ -300,6 +297,7 @@ exports.createResources = () => [
               "dynamodb:Scan",
               "dynamodb:UpdateItem",
             ],
+            Effect: "Allow",
             Resource: [
               `arn:aws:dynamodb:${
                 config.region
@@ -310,6 +308,7 @@ exports.createResources = () => [
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
     }),

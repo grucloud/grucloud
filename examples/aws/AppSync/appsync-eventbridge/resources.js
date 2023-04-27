@@ -34,8 +34,8 @@ exports.createResources = () => [
       authenticationType: "API_KEY",
       xrayEnabled: true,
       logConfig: {
-        fieldLogLevel: "ALL",
         excludeVerboseContent: false,
+        fieldLogLevel: "ALL",
       },
       apiKeys: [{}],
       schemaFile: "AppSyncEventBridgeAPI.graphql",
@@ -49,8 +49,8 @@ exports.createResources = () => [
     type: "Resolver",
     group: "AppSync",
     properties: ({}) => ({
-      typeName: "Mutation",
       fieldName: "putEvent",
+      kind: "UNIT",
       requestMappingTemplate: `{
   "version": "2018-05-29",
   "method": "POST",
@@ -86,7 +86,7 @@ exports.createResources = () => [
     $utils.appendError($ctx.result.body, $ctx.result.statusCode)
 #end
 `,
-      kind: "UNIT",
+      typeName: "Mutation",
     }),
     dependencies: ({}) => ({
       dataSource: "events",

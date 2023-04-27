@@ -196,11 +196,11 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
+        Architectures: ["arm64"],
         FunctionName: "sam-app-target-lambda",
+        Handler: "lambda_function.lambda_handler",
         Runtime: "python3.9",
         Timeout: 15,
-        Handler: "lambda_function.lambda_handler",
-        Architectures: ["arm64"],
       },
     }),
     dependencies: ({}) => ({
@@ -227,7 +227,6 @@ exports.createResources = () => [
           Filters: [
             {
               Pattern: {
-                eventName: ["INSERT"],
                 dynamodb: {
                   NewImage: {
                     messageId: {
@@ -253,6 +252,7 @@ exports.createResources = () => [
                     },
                   },
                 },
+                eventName: ["INSERT"],
               },
             },
           ],

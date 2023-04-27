@@ -50,9 +50,6 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
-        FunctionName: "sam-app-QueuePublisherFunction-3oAO6gZ7WBN5",
-        Runtime: "nodejs12.x",
-        Handler: "app.handler",
         Environment: {
           Variables: {
             SQSqueueName: `https://sqs.${
@@ -60,6 +57,9 @@ exports.createResources = () => [
             }.amazonaws.com/${config.accountId()}/sam-app-MySqsQueue-pJgAHKB84btk`,
           },
         },
+        FunctionName: "sam-app-QueuePublisherFunction-3oAO6gZ7WBN5",
+        Handler: "app.handler",
+        Runtime: "nodejs12.x",
       },
     }),
     dependencies: ({}) => ({

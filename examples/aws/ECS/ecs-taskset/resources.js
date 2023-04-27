@@ -1393,15 +1393,9 @@ nohup ./startup.sh &
     name: "alias/appmeshworkshop",
     properties: ({ config }) => ({
       Policy: {
-        Version: "2012-10-17",
         Id: "master-key",
         Statement: [
           {
-            Sid: "Enable IAM User Permissions",
-            Effect: "Allow",
-            Principal: {
-              AWS: `arn:aws:iam::${config.accountId()}:root`,
-            },
             Action: [
               "kms:Create*",
               "kms:Describe*",
@@ -1418,14 +1412,14 @@ nohup ./startup.sh &
               "kms:ScheduleKeyDeletion",
               "kms:CancelKeyDeletion",
             ],
-            Resource: "*",
-          },
-          {
-            Sid: "Allow Use of the Key",
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
+            Resource: "*",
+            Sid: "Enable IAM User Permissions",
+          },
+          {
             Action: [
               "kms:Encrypt",
               "kms:Decrypt",
@@ -1433,9 +1427,15 @@ nohup ./startup.sh &
               "kms:GenerateDataKey*",
               "kms:DescribeKey",
             ],
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:root`,
+            },
             Resource: "*",
+            Sid: "Allow Use of the Key",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
   },
@@ -1445,9 +1445,9 @@ nohup ./startup.sh &
     properties: ({}) => ({
       Configuration: {
         FunctionName: "appmesh-workshop-KeyPairHelperLambda-LhMHddWOuSgf",
+        Handler: "index.handler",
         Runtime: "python3.7",
         Timeout: 30,
-        Handler: "index.handler",
       },
     }),
     dependencies: ({}) => ({
@@ -1471,11 +1471,11 @@ nohup ./startup.sh &
     type: "Record",
     group: "Route53",
     properties: ({}) => ({
-      Name: "crystal.appmeshworkshop.hosted.local.",
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: false,
       },
+      Name: "crystal.appmeshworkshop.hosted.local.",
+      Type: "A",
     }),
     dependencies: ({}) => ({
       hostedZone: "appmeshworkshop.hosted.local.",

@@ -26,6 +26,14 @@ const deepReject = (predicate) =>
                     [key]: result,
                   }),
                 ]),
+                () => value instanceof Date,
+                pipe([
+                  switchCase([
+                    () => predicate([key, value]),
+                    () => acc,
+                    () => ({ ...acc, [key]: value.toUTCString() }),
+                  ]),
+                ]),
                 isObject,
                 pipe([
                   () => deepReject(predicate)(value),

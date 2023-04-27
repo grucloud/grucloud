@@ -206,18 +206,18 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        TracingConfig: {
-          Mode: "Active",
-        },
-        FunctionName:
-          "ApigwLambdaDynamodbCdkTsSta-lambdaFunction940E68AD-7fPOd66txEZp",
-        Runtime: "nodejs14.x",
-        Handler: "index.handler",
         Environment: {
           Variables: {
             DYNAMODB:
               "ApigwLambdaDynamodbCdkTsStack-TableCD117FA1-26TB2N6F0U9N",
           },
+        },
+        FunctionName:
+          "ApigwLambdaDynamodbCdkTsSta-lambdaFunction940E68AD-7fPOd66txEZp",
+        Handler: "index.handler",
+        Runtime: "nodejs14.x",
+        TracingConfig: {
+          Mode: "Active",
         },
       },
     }),

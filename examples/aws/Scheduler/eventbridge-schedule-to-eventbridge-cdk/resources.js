@@ -61,13 +61,13 @@ exports.createResources = () => [
           Source: "scheduled.events",
         },
         Input: {
-          metadata: {
-            id: "1ba0fdcc-fe5f-4bfc-9a7e-a0bdfb1da95e",
-            domain: "SCHEDULED_EVENT",
-          },
           data: {
             firstName: "David",
             lastName: "Boyne",
+          },
+          metadata: {
+            domain: "SCHEDULED_EVENT",
+            id: "1ba0fdcc-fe5f-4bfc-9a7e-a0bdfb1da95e",
           },
         },
         RetryPolicy: {

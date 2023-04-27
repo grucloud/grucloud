@@ -31,14 +31,14 @@ exports.createResources = () => [
     type: "Repository",
     group: "CodeArtifact",
     properties: ({}) => ({
-      domain: "my-domain",
-      repository: "npm-store",
       description: "Provides npm artifacts from npm, Inc.",
+      domain: "my-domain",
       externalConnections: [
         {
           externalConnectionName: "public:npmjs",
         },
       ],
+      repository: "npm-store",
     }),
     dependencies: ({}) => ({
       domain: "my-domain",

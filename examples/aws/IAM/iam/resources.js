@@ -27,7 +27,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "myPolicy-to-group",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
             Action: ["s3:*"],
@@ -35,6 +34,7 @@ exports.createResources = () => [
             Resource: "*",
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/",
       Description: "Allow ec2:Describe",
@@ -46,7 +46,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "myPolicy-to-role",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
             Action: ["s3:*"],
@@ -54,6 +53,7 @@ exports.createResources = () => [
             Resource: "*",
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/",
       Description: "Allow ec2:Describe",
@@ -65,7 +65,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "myPolicy-to-user",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
             Action: ["s3:*"],
@@ -73,6 +72,7 @@ exports.createResources = () => [
             Resource: "*",
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/",
       Description: "Allow ec2:Describe",

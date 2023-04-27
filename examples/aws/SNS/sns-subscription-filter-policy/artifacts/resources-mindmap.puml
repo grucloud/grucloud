@@ -8,8 +8,8 @@ skinparam monochrome true
 +++ Firehose
 ++++ DeliveryStream (1)
 +++ IAM
-++++ Role (2)
 ++++ Policy (1)
+++++ Role (2)
 +++ S3
 ++++ Bucket (1)
 +++ SNS

@@ -147,8 +147,8 @@ exports.createResources = () => [
       Configuration: {
         FunctionName:
           "MyServerlessApplicationStack-MyFunction3BAA72D1-EXv7XTdWy2mX",
-        Runtime: "python3.9",
         Handler: "index.handler",
+        Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({

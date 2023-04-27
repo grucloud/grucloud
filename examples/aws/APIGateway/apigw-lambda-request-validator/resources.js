@@ -153,9 +153,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "apigw-validator-lambda-function",
+        Handler: "app.handler",
         Runtime: "nodejs14.x",
         Timeout: 15,
-        Handler: "app.handler",
       },
     }),
     dependencies: ({}) => ({

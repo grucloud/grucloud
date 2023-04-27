@@ -109,7 +109,7 @@ const IncludeList = [
   // "InternetMonitor",
   //  "Ivschat"
   "KMS",
-  "Kendra",
+  //"Kendra",
   "KeySpaces",
   "Kinesis",
   "KinesisAnalyticsV2",
@@ -197,7 +197,7 @@ const ExcludeDirsDefault = [
   "resiliencehub-simple",
   "route53-recovery-control-config",
   "route53-recovery-readiness",
-  "s3-storage-lens",
+  "s3-storage-lens", // Bug in the aws sdk js
   "sagemaker-simple",
   "terraform-backend-s3-dynamodb",
   "kops", // TODO update
@@ -227,7 +227,7 @@ const ExcludeDirsDefault = [
   "hub-and-spoke-with-inspection-vpc",
   "eks-workshop",
   "mq-simple", // Cannot even delete MQ Configuration
-  //
+  "lex-simple", // problem with role seen as read only
   "licensemanager-simple",
   "internetmonitor-simple",
   "auditmanager-simple",
@@ -272,6 +272,10 @@ const ExcludeDirsDefault = [
   "apprunner-ngnix",
   "apprunner-secrets-manager",
   "cloudfront-distribution",
+  "medialive-simple",
+  "elemental-mediaconnect-medialive-mediapackage",
+  "elemental-medialive-mediapackage-cdk-ts",
+  "elemental-mediapackage-cloudfront-cdk-ts",
   "cloudfront-lambda-edge-cdk-python", // TODO
   "cloudfront-le-apigw-cdk", // TODO
   "xray-lambdalayers-cdk-python",

@@ -53,11 +53,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({}) => ({
-      Name: "ec2.vpce.grucloud.org.",
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: "ec2.vpce.grucloud.org.",
+      Type: "A",
     }),
     dependencies: ({}) => ({
       hostedZone: "vpce.grucloud.org.",

@@ -96,16 +96,16 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "apigw-http-api-lambda-function",
-        Runtime: "nodejs14.x",
-        Timeout: 15,
-        Handler: "app.handler",
         Environment: {
           Variables: {
-            Variable2: "ABCD",
             Variable1: "1234",
+            Variable2: "ABCD",
           },
         },
+        FunctionName: "apigw-http-api-lambda-function",
+        Handler: "app.handler",
+        Runtime: "nodejs14.x",
+        Timeout: 15,
       },
     }),
     dependencies: ({}) => ({

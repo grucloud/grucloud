@@ -232,20 +232,20 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName:
-          "EventbridgeOutboxPatternW-streamToEventBridge9009D-bkO55bAwkWvq",
-        Runtime: "nodejs16.x",
-        MemorySize: 1024,
-        Timeout: 5,
-        Handler: "index.handler",
         Environment: {
           Variables: {
+            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
+            EVENT_BUS_NAME: "MyMainBus",
             TABLE_NAME:
               "EventbridgeOutboxPatternWithDdbStack-UsersTable9725E9C8-1UH1H2LCW1XB3",
-            EVENT_BUS_NAME: "MyMainBus",
-            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
+        FunctionName:
+          "EventbridgeOutboxPatternW-streamToEventBridge9009D-bkO55bAwkWvq",
+        Handler: "index.handler",
+        MemorySize: 1024,
+        Runtime: "nodejs16.x",
+        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({
@@ -257,17 +257,17 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName:
-          "EventbridgeOutboxPatternW-userCreatedConsumerF491D-XEDOXNubBDQT",
-        Runtime: "nodejs16.x",
-        MemorySize: 1024,
-        Timeout: 5,
-        Handler: "index.handler",
         Environment: {
           Variables: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
+        FunctionName:
+          "EventbridgeOutboxPatternW-userCreatedConsumerF491D-XEDOXNubBDQT",
+        Handler: "index.handler",
+        MemorySize: 1024,
+        Runtime: "nodejs16.x",
+        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({
@@ -279,19 +279,19 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName:
-          "EventbridgeOutboxPatternWithDdb-writetoddb919FDC32-ioOLsOxtWWua",
-        Runtime: "nodejs16.x",
-        MemorySize: 1024,
-        Timeout: 5,
-        Handler: "index.handler",
         Environment: {
           Variables: {
+            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
             TABLE_NAME:
               "EventbridgeOutboxPatternWithDdbStack-UsersTable9725E9C8-1UH1H2LCW1XB3",
-            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
+        FunctionName:
+          "EventbridgeOutboxPatternWithDdb-writetoddb919FDC32-ioOLsOxtWWua",
+        Handler: "index.handler",
+        MemorySize: 1024,
+        Runtime: "nodejs16.x",
+        Timeout: 5,
       },
     }),
     dependencies: ({}) => ({

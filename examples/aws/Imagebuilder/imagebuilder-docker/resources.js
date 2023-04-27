@@ -64,7 +64,6 @@ exports.createResources = () => [
     type: "ContainerRecipe",
     group: "Imagebuilder",
     properties: ({}) => ({
-      semanticVersion: "1.0.0",
       components: [
         {
           componentArn:
@@ -84,6 +83,7 @@ exports.createResources = () => [
       parentImage:
         "arn:aws:imagebuilder:us-east-1:aws:image/amazon-linux-x86-2/x.x.x",
       platform: "Linux",
+      semanticVersion: "1.0.0",
       targetRepository: {
         repositoryName: "my-repo",
         service: "ECR",

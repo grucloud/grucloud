@@ -10,16 +10,15 @@ exports.createResources = () => [
       PolicyName:
         "AWSLambdaBasicExecutionRole-9901686a-c6a3-4b1f-a9b8-fb18725a91ae",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: "logs:CreateLogGroup",
+            Effect: "Allow",
             Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
           },
           {
-            Effect: "Allow",
             Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Effect: "Allow",
             Resource: [
               `arn:aws:logs:${
                 config.region
@@ -27,6 +26,7 @@ exports.createResources = () => [
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
     }),
@@ -68,8 +68,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "secret-rotation",
-        Runtime: "nodejs18.x",
         Handler: "index.handler",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({
@@ -97,12 +97,12 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     properties: ({ generatePassword }) => ({
+      Description: "access postgres",
       Name: "prod/myapp/db",
       SecretString: {
         password: generatePassword({ length: 32 }),
         username: "demousername",
       },
-      Description: "access postgres",
       Tags: [
         {
           Key: "mykey",

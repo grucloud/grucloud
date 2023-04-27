@@ -49,8 +49,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-PutMetricFunction-IRljDZikgnoj",
-        Runtime: "nodejs14.x",
         Handler: "app.lambdaHandler",
+        Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({

@@ -56,15 +56,15 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-HelloWorldFunction-xplIxoZGZhdc",
-        Runtime: "python3.9",
-        Handler: "app.lambda_handler",
         Environment: {
           Variables: {
-            SECRET_NAME: "MySecret",
             PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: "2773",
+            SECRET_NAME: "MySecret",
           },
         },
+        FunctionName: "sam-app-HelloWorldFunction-xplIxoZGZhdc",
+        Handler: "app.lambda_handler",
+        Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({
@@ -75,11 +75,11 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     properties: ({ generatePassword }) => ({
+      Description: "Secret with dynamically generated secret password.",
       Name: "MySecret",
       SecretString: {
         SecretString: generatePassword({ length: 30 }),
       },
-      Description: "Secret with dynamically generated secret password.",
     }),
   },
 ];

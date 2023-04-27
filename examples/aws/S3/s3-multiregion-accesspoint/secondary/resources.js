@@ -27,8 +27,8 @@ exports.createResources = () => [
       Name: "my-multiaccesspoint",
       PublicAccessBlock: {
         BlockPublicAcls: true,
-        IgnorePublicAcls: true,
         BlockPublicPolicy: true,
+        IgnorePublicAcls: true,
         RestrictPublicBuckets: true,
       },
       Regions: [

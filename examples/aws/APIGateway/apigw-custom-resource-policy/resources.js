@@ -127,10 +127,10 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-HelloWorldFunction-mNxHkrOxjPyE",
-        Runtime: "python3.9",
-        Handler: "app.lambda_handler",
         Architectures: ["arm64"],
+        FunctionName: "sam-app-HelloWorldFunction-mNxHkrOxjPyE",
+        Handler: "app.lambda_handler",
+        Runtime: "python3.9",
       },
     }),
     dependencies: ({}) => ({

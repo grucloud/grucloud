@@ -10,11 +10,10 @@ exports.createResources = () => [
       PolicyName:
         "Amazon-EventBridge-Scheduler-Execution-Policy-4a8e3a39-7d15-4aa8-82c5-b07d299fea48",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
             Action: ["sqs:SendMessage"],
+            Effect: "Allow",
             Resource: [
               `arn:aws:sqs:${
                 config.region
@@ -22,6 +21,7 @@ exports.createResources = () => [
             ],
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/service-role/",
     }),

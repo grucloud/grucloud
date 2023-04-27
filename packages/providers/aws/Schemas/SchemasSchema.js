@@ -9,7 +9,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { Tagger, ignoreErrorCodes } = require("./SchemasCommon");
 
 const cannotBeDeleted = () =>
-  pipe([get("SchemaName"), callProp("startsWith", "aws")]);
+  pipe([get("SchemaName", ""), callProp("startsWith", "aws")]);
 
 const buildArn = () =>
   pipe([
@@ -103,6 +103,7 @@ exports.SchemasSchema = () => ({
     method: "describeSchema",
     pickId,
     decorate,
+    noSortKey: true,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#listSchemas-property
   getList: ({ client, endpoint, getById, config }) =>

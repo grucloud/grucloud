@@ -16,8 +16,8 @@ exports.createResources = () => [
         AuthType: "NONE",
         Cors: {
           AllowOrigins: ["*"],
-          MaxAge: 65000,
         },
+        InvokeMode: "BUFFERED",
       },
     }),
     dependencies: () => ({
