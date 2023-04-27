@@ -12,7 +12,6 @@ cdk-vpc-lamba-sfn
 rattitmq-lambda
 emr studio
 kerndra-simple
-SSM Association
 requestMACSec
 waf-appsync-cdk
 
