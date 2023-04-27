@@ -70,6 +70,7 @@ const FlowLogsDependencies = {
     group: "EC2",
     ResourceType: "TransitGatewayAttachment",
     ResourceId: "TransitGatewayAttachmentId",
+    excludeDefaultDependencies: true,
   },
 };
 

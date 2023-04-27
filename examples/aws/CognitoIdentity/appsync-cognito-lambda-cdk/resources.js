@@ -33,7 +33,7 @@ exports.createResources = () => [
         {
           authenticationType: "AMAZON_COGNITO_USER_POOLS",
           userPoolConfig: {
-            awsRegion: "us-east-2",
+            awsRegion: "us-east-1",
             userPoolId: `${getId({
               type: "UserPool",
               group: "CognitoIdentityServiceProvider",

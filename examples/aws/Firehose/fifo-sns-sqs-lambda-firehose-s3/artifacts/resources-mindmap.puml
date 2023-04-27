@@ -6,8 +6,8 @@ skinparam monochrome true
 +++ Firehose
 ++++ DeliveryStream (1)
 +++ IAM
-++++ Role (2)
 ++++ Policy (2)
+++++ Role (2)
 +++ Lambda
 ++++ EventSourceMapping (1)
 ++++ Function (1)
