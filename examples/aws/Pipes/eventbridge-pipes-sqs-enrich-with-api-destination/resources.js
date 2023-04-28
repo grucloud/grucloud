@@ -45,21 +45,20 @@ exports.createResources = () => [
     properties: ({ config, getId }) => ({
       RoleName: "sam-app-EventBridgePipesRole-11Q90EJXBH31D",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "pipes.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -67,36 +66,36 @@ exports.createResources = () => [
                   "logs:CreateLogStream",
                   "logs:PutLogEvents",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:logs:${
                   config.region
                 }:${config.accountId()}:log-group:sqs-pipes-api-logs:*`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "CloudWatchLogs",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["events:InvokeApiDestination"],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "ApiDestination",
                   group: "CloudWatchEvents",
                   name: "MyWebhookTest",
                   path: "live.ApiDestinationArn",
                 })}`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "InvokeApiDest",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -104,12 +103,13 @@ exports.createResources = () => [
                   "sqs:DeleteMessage",
                   "sqs:GetQueueAttributes",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:sam-app-SourceQueue-ncHASMZwgjNq`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "ReadSQS",
         },

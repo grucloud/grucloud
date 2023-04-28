@@ -195,11 +195,12 @@ const ExcludeDirsDefault = [
   "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
   "private-apigw-lambda-cdk", //  Too slow"
   "ta-eventbridge-lambda-s3",
+  "cloud9-simple", // reason: 'Instance profile AWSCloud9SSMInstanceProfile does not exist in this account. Please create an instance profile and role as described here https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html',
   "datasync-fsxwindows", // "much expensive $$$"
   "datasync-fsxlustre", // "much expensive $$$"
   "datasync-fsxlustre-s3", // "much expensive $$$"
   "datasync-fsxopenzfs",
-  "s3-storage-lens", // Bug in the aws sdk js
+  "directory-service-microsoft-ad", // multi account
   "globalcluster", // Too slow
   "msk-lambda-cdk", //  Too slow
   "transfer-ftps-s3", //TODO  create Transfer::Server Certificate type not supported
@@ -214,6 +215,7 @@ const ExcludeDirsDefault = [
   "eks-load-balancer",
   "lightsail-wordpress",
   "route53-delegation-set",
+  "lambda-vpc-interface-endpoints-secrets-manager", // slow
   // Bugs
   //"codedeploy-ecs", // CodeDeploy::DeploymentGroup 0/1  AWS CodeDeploy does not have the permissions required to assume the role arn:aws:iam::840541460064:role/roleECSCodeDeploy.
   "memorydb-parameter-group-default", // "Subnets: [subnet-08ff91f6dbe67999c] are not in a supported availability zone. Supported availability zones are [us-east-1c, us-east-1d, us-east-1b]."
@@ -239,7 +241,7 @@ const ExcludeDirsDefault = [
   "appstream-simple", // need to create an S3 object
   "cognito-restapi-vpclink",
   "apigw-http-eventbridge-terraform",
-  "cloud9-simple", // reason: 'Instance profile AWSCloud9SSMInstanceProfile does not exist in this account. Please create an instance profile and role as described here https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html',
+  "s3-storage-lens", // Bug in the aws sdk js
   "eventbridge-codebuild-sns", // S3 "AccessDenied: Access Denied"
   "eventbridge-sfn-terraform",
   "cloudwatch-logs-subscription-lambda-cdk", //SubscriptionFilter: "Could not execute the lambda function. Make sure you have given CloudWatch Logs permission to execute your function.",

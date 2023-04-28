@@ -43,21 +43,20 @@ exports.createResources = () => [
     properties: ({ config, getId }) => ({
       RoleName: "sam-app-PipeRole-W0IDLUZJUHHT",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "pipes.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -66,30 +65,31 @@ exports.createResources = () => [
                   "dynamodb:GetShardIterator",
                   "dynamodb:ListStreams",
                 ],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "Table",
                   group: "DynamoDB",
                   name: "Users",
                   path: "live.LatestStreamArn",
                 })}`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SourcePolicy",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["events:PutEvents"],
+                Effect: "Allow",
                 Resource: `arn:aws:events:${
                   config.region
                 }:${config.accountId()}:event-bus/MyPipesEventBus`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "TargetPolicy",
         },

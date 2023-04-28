@@ -9,21 +9,20 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-PipeRole-1AM1EBAGJ996A",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "pipes.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -34,21 +33,22 @@ exports.createResources = () => [
                   "kinesis:ListStreams",
                   "kinesis:ListShards",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:kinesis:${
                   config.region
                 }:${config.accountId()}:stream/sam-app-source`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "sam-app-source-policy",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["kinesis:PutRecord", "kinesis:PutRecords"],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:kinesis:${
                     config.region
@@ -57,9 +57,9 @@ exports.createResources = () => [
                     config.region
                   }:${config.accountId()}:stream/sam-app-existing-customers-target`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "sam-app-target-policy",
         },

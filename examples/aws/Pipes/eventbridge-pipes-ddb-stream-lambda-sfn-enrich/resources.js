@@ -51,21 +51,20 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-EnrichmentStateMachineRole-1CSLFSVO8ZHVT",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "states.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -78,10 +77,11 @@ exports.createResources = () => [
                   "logs:DescribeResourcePolicies",
                   "logs:DescribeLogGroups",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "CloudWatchLogs",
         },
@@ -94,36 +94,35 @@ exports.createResources = () => [
     properties: ({ config, getId }) => ({
       RoleName: "sam-app-PipeRole-3TWYQY17M651",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "pipes.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["states:StartExecution", "states:StartSyncExecution"],
+                Effect: "Allow",
                 Resource: `arn:aws:states:${
                   config.region
                 }:${config.accountId()}:stateMachine:EnrichmentStateMachine-uACOjGX6Zbhn`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "EnrichmentPolicy",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -132,30 +131,31 @@ exports.createResources = () => [
                   "dynamodb:GetShardIterator",
                   "dynamodb:ListStreams",
                 ],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "Table",
                   group: "DynamoDB",
                   name: "SampleTable",
                   path: "live.LatestStreamArn",
                 })}`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SourcePolicy",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["lambda:InvokeFunction"],
+                Effect: "Allow",
                 Resource: `arn:aws:lambda:${
                   config.region
                 }:${config.accountId()}:function:sam-app-target-lambda`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "TargetPolicy",
         },
@@ -171,22 +171,22 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-TargetRole-PV9BQWKMZUCP",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
