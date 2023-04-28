@@ -82,7 +82,6 @@ exports.GlueJob = () => ({
     pickId,
     getField: "Job",
     decorate,
-    noSortKey: true,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#listJobs-property
   getList: {
@@ -96,6 +95,7 @@ exports.GlueJob = () => ({
         (name) => ({ Name: name }),
         getById,
       ]),
+    noSortKey: true,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#createJob-property
   create: {

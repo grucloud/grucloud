@@ -781,6 +781,7 @@ exports.RestApi = ({ compare }) => ({
     method: "getRestApis",
     getParam: "items",
     decorate,
+    noSortKey: true,
   },
   create: {
     filterPayload: pipe([omit(["schemaFile", "schema", "deployment"])]),

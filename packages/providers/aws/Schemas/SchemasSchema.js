@@ -103,7 +103,6 @@ exports.SchemasSchema = () => ({
     method: "describeSchema",
     pickId,
     decorate,
-    noSortKey: true,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Schemas.html#listSchemas-property
   getList: ({ client, endpoint, getById, config }) =>
@@ -120,6 +119,7 @@ exports.SchemasSchema = () => ({
           method: "listSchemas",
           getParam: "Schemas",
           config,
+          noSortKey: true,
           decorate: ({ parent }) =>
             pipe([
               tap((params) => {

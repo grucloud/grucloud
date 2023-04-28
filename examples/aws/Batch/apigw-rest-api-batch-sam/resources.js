@@ -157,14 +157,6 @@ exports.createResources = () => [
       computeEnvironments: ["ComputeEnvironment-YTEATQ99CNmz8gKV"],
     }),
   },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "VPC",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-    }),
-  },
   { type: "InternetGateway", group: "EC2", name: "InternetGateway" },
   {
     type: "InternetGatewayAttachment",
@@ -175,17 +167,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "Subnet",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}e`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "VPC",
+      ig: "InternetGateway",
+      routeTable: "VPC::RouteTable",
     }),
   },
   {
@@ -205,17 +194,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "InternetGateway",
-      routeTable: "VPC::RouteTable",
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -228,31 +206,61 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: "Subnet",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}e`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "VPC",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "sam-app-IamInstanceProfile-d8ccX1kbQaec",
+    dependencies: ({}) => ({
+      roles: ["sam-app-EcsInstanceRole-1HOBBJD9ZPIRW"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
       RoleName: "sam-app-ApiGatewayBatchRole-WWSNJKBXNX4",
       Path: "/sam-app/",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "AllowApiGatewayServiceToAssumeRole",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "AllowApiGatewayServiceToAssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["batch:SubmitJob"],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:batch:${
                     config.region
@@ -261,9 +269,9 @@ exports.createResources = () => [
                     config.region
                   }:${config.accountId()}:job-definition/JobDefinition-7bde177a2de1a66`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "AWSBatchSubmitJob",
         },
@@ -276,21 +284,21 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-BatchServiceRole-1NEHP2HZWO2GS",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "batch.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSBatchServiceRole",
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole",
+          PolicyName: "AWSBatchServiceRole",
         },
       ],
     }),
@@ -301,33 +309,25 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-EcsInstanceRole-1HOBBJD9ZPIRW",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2008-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "sam-app-IamInstanceProfile-d8ccX1kbQaec",
-    dependencies: ({}) => ({
-      roles: ["sam-app-EcsInstanceRole-1HOBBJD9ZPIRW"],
     }),
   },
 ];

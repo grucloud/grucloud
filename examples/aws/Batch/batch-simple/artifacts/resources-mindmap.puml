@@ -9,10 +9,10 @@ skinparam monochrome true
 ++++ JobQueue (1)
 ++++ SchedulingPolicy (1)
 +++ EC2
-++++ Vpc (1)
-++++ Subnet (2)
 ++++ SecurityGroup (1)
+++++ Subnet (2)
+++++ Vpc (1)
 +++ IAM
-++++ Role (1)
 ++++ InstanceProfile (1)
+++++ Role (1)
 @endmindmap

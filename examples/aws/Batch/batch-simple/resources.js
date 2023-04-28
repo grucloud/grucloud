@@ -8,13 +8,13 @@ exports.createResources = () => [
     group: "Batch",
     properties: ({ config }) => ({
       computeEnvironmentName: "compute-environment",
-      type: "MANAGED",
       computeResources: {
-        type: "FARGATE",
         maxvCpus: 128,
+        type: "FARGATE",
       },
-      serviceRole: `arn:aws:iam::${config.accountId()}:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch`,
       containerOrchestrationType: "ECS",
+      serviceRole: `arn:aws:iam::${config.accountId()}:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch`,
+      type: "MANAGED",
     }),
     dependencies: ({}) => ({
       securityGroups: ["sg::vpc-default::default"],
@@ -28,26 +28,26 @@ exports.createResources = () => [
     type: "JobDefinition",
     group: "Batch",
     properties: ({}) => ({
-      jobDefinitionName: "job-definition",
-      type: "container",
       containerProperties: {
-        image: "public.ecr.aws/amazonlinux/amazonlinux:latest",
         command: ["echo", "hello grucloud"],
-        resourceRequirements: [
-          {
-            value: "1",
-            type: "VCPU",
-          },
-          {
-            value: "2048",
-            type: "MEMORY",
-          },
-        ],
         fargatePlatformConfiguration: {
           platformVersion: "1.4.0",
         },
+        image: "public.ecr.aws/amazonlinux/amazonlinux:latest",
+        resourceRequirements: [
+          {
+            type: "VCPU",
+            value: "1",
+          },
+          {
+            type: "MEMORY",
+            value: "2048",
+          },
+        ],
       },
+      jobDefinitionName: "job-definition",
       platformCapabilities: ["FARGATE"],
+      type: "container",
     }),
     dependencies: ({}) => ({
       roleExecution: "role-execution-batch",
@@ -57,18 +57,18 @@ exports.createResources = () => [
     type: "JobQueue",
     group: "Batch",
     properties: ({ getId }) => ({
-      jobQueueName: "my-job-queue",
-      priority: 1,
       computeEnvironmentOrder: [
         {
-          order: 1,
           computeEnvironment: `${getId({
             type: "ComputeEnvironment",
             group: "Batch",
             name: "compute-environment",
           })}`,
+          order: 1,
         },
       ],
+      jobQueueName: "my-job-queue",
+      priority: 1,
     }),
     dependencies: ({}) => ({
       computeEnvironments: ["compute-environment"],
@@ -130,16 +130,16 @@ exports.createResources = () => [
       RoleName: "role-execution-batch",
       Description: "Allows ECS to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
   },

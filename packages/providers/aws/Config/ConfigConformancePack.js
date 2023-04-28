@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, fork, assign } = require("rubico");
 const { defaultsDeep, when, first } = require("rubico/x");
+const Json2yaml = require("@grucloud/core/cli/json2yaml");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -51,6 +52,18 @@ const decorate =
       }),
       defaultsDeep(live),
     ])();
+
+const filterPayload = pipe([
+  assign({
+    TemplateBody: pipe([
+      get("TemplateBody"),
+      tap((TemplateBody) => {
+        assert(TemplateBody);
+      }),
+      Json2yaml.stringify,
+    ]),
+  }),
+]);
 
 exports.ConfigConformancePack = ({}) => ({
   type: "ConformancePack",
@@ -117,6 +130,7 @@ exports.ConfigConformancePack = ({}) => ({
     decorate,
   },
   create: {
+    filterPayload,
     method: "putConformancePack",
     pickCreated: ({ payload }) => pipe([() => payload]),
     // TODO ConformancePackState: CREATE_COMPLETE

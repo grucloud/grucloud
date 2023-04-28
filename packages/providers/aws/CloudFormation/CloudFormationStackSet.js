@@ -1,10 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, map } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { defaultsDeep, when, callProp } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
+
+const managedByOther = () =>
+  pipe([get("StackSetName"), callProp("startsWith", "AWS-")]);
 
 const pickId = pipe([
   tap(({ StackSetName }) => {
@@ -34,6 +37,8 @@ exports.CloudFormationStackSet = () => ({
     "StackSetDriftDetectionDetails",
     "OrganizationalUnitIds",
   ],
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   inferName: () =>
     pipe([
       get("StackSetName"),

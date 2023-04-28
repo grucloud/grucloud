@@ -98,7 +98,6 @@ const AwsClient =
         decorate = () => identity,
         ignoreErrorCodes = [],
         ignoreErrorMessages = [],
-        noSortKey = false,
       }) =>
       ({ lives }) =>
       (live) =>
@@ -145,7 +144,6 @@ const AwsClient =
                       value == null ||
                       key.startsWith("__")
                   ),
-                  unless(() => noSortKey, deepSortKey),
                   assignTagsSort,
                   tap((params) => {
                     assert(true);
@@ -212,6 +210,7 @@ const AwsClient =
           "BadRequest",
         ],
         getById,
+        noSortKey = false,
       }) =>
       ({ lives, params = {} } = {}) =>
         pipe([
@@ -266,13 +265,17 @@ const AwsClient =
                 assert(true);
               }),
               map.withIndex((item, index) =>
-                decorate({
-                  lives,
-                  index,
-                  endpoint,
-                  getById: getById ? getById({ lives, config }) : undefined,
-                  config,
-                })(item)
+                pipe([
+                  () => item,
+                  decorate({
+                    lives,
+                    index,
+                    endpoint,
+                    getById: getById ? getById({ lives, config }) : undefined,
+                    config,
+                  }),
+                  unless(() => noSortKey, deepSortKey),
+                ])()
               ),
               transformListPost({ lives, endpoint }),
               tap((params) => {
@@ -316,6 +319,7 @@ const AwsClient =
         decorate = () => identity,
         filterParent = () => true,
         transformListPost = () => identity,
+        noSortKey = false,
       }) =>
       ({ lives, config }) =>
         pipe([
@@ -419,6 +423,7 @@ const AwsClient =
             ])()
           ),
           filter(not(isEmpty)),
+          unless(() => noSortKey, map(deepSortKey)),
           tap((items) => {
             logger.info(`getListWithParent ${type} #items ${size(items)}`);
           }),

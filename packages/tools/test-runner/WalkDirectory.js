@@ -288,7 +288,6 @@ const ExcludeDirsDefault = [
   "aws-route53-recovery-control-config",
   "amplify-nextjs",
   "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
-  "apigw-rest-api-batch-sam",
   "cloud9-simple", // reason: 'Instance profile AWSCloud9SSMInstanceProfile does not exist in this account. Please create an instance profile and role as described here https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html',
   "graphql", //
   "eventbridge-codebuild-sns", // S3 "AccessDenied: Access Denied"
