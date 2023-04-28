@@ -252,7 +252,6 @@ const ExcludeDirsDefault = [
   "load-balancer",
   "lightsail-wordpress",
   "route53-delegation-set",
-  "website-https",
   // Bugs
   //"codedeploy-ecs", // CodeDeploy::DeploymentGroup 0/1  AWS CodeDeploy does not have the permissions required to assume the role arn:aws:iam::840541460064:role/roleECSCodeDeploy.
   "memorydb-parameter-group-default", // "Subnets: [subnet-08ff91f6dbe67999c] are not in a supported availability zone. Supported availability zones are [us-east-1c, us-east-1d, us-east-1b]."
@@ -289,7 +288,6 @@ const ExcludeDirsDefault = [
   "aws-route53-recovery-control-config",
   "amplify-nextjs",
   "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
-  "backup-simple",
   "apigw-rest-api-batch-sam",
   "cloud9-simple", // reason: 'Instance profile AWSCloud9SSMInstanceProfile does not exist in this account. Please create an instance profile and role as described here https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html',
   "graphql", //

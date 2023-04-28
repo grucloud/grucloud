@@ -11,9 +11,13 @@ skinparam monochrome true
 ++++ BackupVaultPolicy (1)
 ++++ Framework (1)
 ++++ GlobalSettings (1)
-++++ ReportPlan (2)
+++++ ReportPlan (1)
++++ Config
+++++ ConfigurationRecorder (1)
+++++ ConfigurationRecorderStatus (1)
+++++ DeliveryChannel (1)
 +++ IAM
 ++++ Role (1)
 +++ S3
-++++ Bucket (2)
+++++ Bucket (3)
 @endmindmap

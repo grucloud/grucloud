@@ -31,6 +31,13 @@ exports.BackupFramework = ({}) => ({
   ],
   getByName: getByNameCore,
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  dependencies: {
+    configurationRecorder: {
+      type: "ConfigurationRecorder",
+      group: "Config",
+      dependencyId: ({ lives, config }) => pipe([() => "default"]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#describeFramework-property
   getById: {
     method: "describeFramework",
