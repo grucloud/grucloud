@@ -276,7 +276,7 @@ exports.createResources = () => [
           apiId: `${getId({
             type: "RestApi",
             group: "APIGateway",
-            name: "User Management API",
+            name: "Reporting API",
           })}`,
           stage: "Prod",
         },
@@ -284,7 +284,7 @@ exports.createResources = () => [
           apiId: `${getId({
             type: "RestApi",
             group: "APIGateway",
-            name: "Reporting API",
+            name: "User Management API",
           })}`,
           stage: "Prod",
         },
@@ -312,22 +312,22 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-ReportingFunctionRole-O4OB63LJ7IYA",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -338,22 +338,22 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-UserManagementFunctionRole-PCG3JRRLN8CI",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -405,14 +405,14 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-ReportingFunction-uWuM1bJCNVIn",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "sam-app-ReportingFunctionRestApiPermissionProd-12HUD73KN7MJO",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Reporting API",
             path: "live.arnv2",
           })}/*/GET/`,
+          StatementId:
+            "sam-app-ReportingFunctionRestApiPermissionProd-12HUD73KN7MJO",
         },
       ],
     }),
@@ -430,14 +430,14 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-UserManagementFunction-So5CQsnlAZWO",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "sam-app-UserManagementFunctionRestApiPermissionProd-UYYYNDDKZ8QY",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "User Management API",
             path: "live.arnv2",
           })}/*/GET/`,
+          StatementId:
+            "sam-app-UserManagementFunctionRestApiPermissionProd-UYYYNDDKZ8QY",
         },
       ],
     }),

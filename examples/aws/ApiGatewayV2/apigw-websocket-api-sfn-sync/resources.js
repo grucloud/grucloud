@@ -101,30 +101,30 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-StepFunctionsSyncExecutionRole-196375L2OVLO7",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["states:StartSyncExecution"],
+                Effect: "Allow",
                 Resource: `arn:aws:states:${
                   config.region
                 }:${config.accountId()}:stateMachine:SyncSFn-pN3JqWwqQJ60`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "StepFunctionsSyncExecution",
         },
@@ -137,16 +137,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-SyncSFnRole-1QD6CF0EHAZNE",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "states.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
   },

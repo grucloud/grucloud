@@ -100,33 +100,33 @@ exports.createResources = () => [
       RoleName: "sam-app-ApiGatewayStepFunctionsRole-1N0DEXSEOPMRW",
       Path: "/sam-app/",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "AllowApiGatewayServiceToAssumeRole",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "AllowApiGatewayServiceToAssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["states:StartExecution"],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:states:${
                     config.region
                   }:${config.accountId()}:stateMachine:WaitableStateMachine-ouygzTBZ7yWu`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "CallStepFunctions",
         },
@@ -139,16 +139,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-WaitableStateMachineRole-OWUCFZYWKOXA",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "states.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -160,6 +160,7 @@ exports.createResources = () => [
                   "dynamodb:UpdateItem",
                   "dynamodb:BatchWriteItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
@@ -168,7 +169,6 @@ exports.createResources = () => [
                     config.region
                   }:${config.accountId()}:table/sam-app-StatusTable-1KWUO9MA1C77T/index/*`,
                 ],
-                Effect: "Allow",
               },
             ],
           },

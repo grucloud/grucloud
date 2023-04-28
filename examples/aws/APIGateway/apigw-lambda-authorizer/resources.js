@@ -9,12 +9,12 @@ exports.createResources = () => [
     name: "LambdaAuthorizerToken",
     readOnly: true,
     properties: ({ config }) => ({
-      authType: "custom",
       authorizerUri: `arn:aws:apigateway:${
         config.region
       }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
         config.region
       }:${config.accountId()}:function:sam-app-TokenAuthorizerFunction-gI6jKEKAM1f5/invocations`,
+      authType: "custom",
       identitySource: "method.request.header.Authorization",
       name: "LambdaAuthorizerToken",
       type: "TOKEN",
@@ -120,22 +120,22 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-AppFunctionRole-1X1Q8LI42XT4E",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -146,22 +146,22 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-TokenAuthorizerFunctionRole-1C4MB81Y5P9AI",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -203,13 +203,13 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-AppFunction-GCg7wu2MTQor",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-AppFunctionPermission-1T1OTJVCQINVH",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "apigw-lambda-authorizer",
             path: "live.arnv2",
           })}/*/GET/`,
+          StatementId: "sam-app-AppFunctionPermission-1T1OTJVCQINVH",
         },
       ],
     }),
@@ -227,14 +227,14 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-TokenAuthorizerFunction-gI6jKEKAM1f5",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "sam-app-TokenAuthorizerFunctionPermission-1ST3GRY9FYCGC",
           SourceArn: `${getId({
             type: "Authorizer",
             group: "APIGateway",
             name: "LambdaAuthorizerToken",
             path: "live.arn",
           })}`,
+          StatementId:
+            "sam-app-TokenAuthorizerFunctionPermission-1ST3GRY9FYCGC",
         },
       ],
     }),

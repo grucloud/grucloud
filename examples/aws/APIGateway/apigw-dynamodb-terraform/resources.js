@@ -275,16 +275,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "terraform-20220714213227147500000002",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
@@ -297,25 +297,23 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "terraform-20220714213227147700000003",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
-                Effect: "Allow",
                 Action: [
                   "logs:CreateLogGroup",
                   "logs:CreateLogStream",
@@ -325,9 +323,11 @@ exports.createResources = () => [
                   "logs:GetLogEvents",
                   "logs:FilterLogEvents",
                 ],
+                Effect: "Allow",
                 Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "terraform-20220714213229394700000004",
         },

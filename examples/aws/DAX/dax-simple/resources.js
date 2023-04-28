@@ -7,14 +7,14 @@ exports.createResources = () => [
     type: "Cluster",
     group: "DAX",
     properties: ({}) => ({
-      SSESpecification: {
-        Enabled: true,
-      },
-      ReplicationFactor: 2,
       ClusterEndpointEncryptionType: "TLS",
       ClusterName: "my-dax-cluster",
       NodeType: "dax.t2.small",
       PreferredMaintenanceWindow: "mon:06:30-mon:07:30",
+      ReplicationFactor: 2,
+      SSESpecification: {
+        Enabled: true,
+      },
     }),
     dependencies: ({}) => ({
       subnetGroup: "my-subnetgroup",
@@ -53,7 +53,15 @@ exports.createResources = () => [
       ],
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
   {
     type: "Subnet",
     group: "EC2",
@@ -72,38 +80,7 @@ exports.createResources = () => [
       vpc: "vpc-default",
     }),
   },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-default::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "daxdynamodb",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "dax.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["DAXFullAccess-daxdynamodb"],
-    }),
-  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Policy",
     group: "IAM",
@@ -135,6 +112,29 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "daxdynamodb",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Effect: "Allow",
+            Principal: {
+              Service: "dax.amazonaws.com",
+            },
+          },
+        ],
+        Version: "2012-10-17",
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["DAXFullAccess-daxdynamodb"],
     }),
   },
 ];

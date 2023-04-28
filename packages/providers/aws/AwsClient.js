@@ -82,6 +82,10 @@ const shouldRetryOnExceptionDefault = ({
     ]),
   ]);
 
+const myDeepReject = deepReject(
+  ([key, value]) => value == undefined || value == null || key.startsWith("__")
+);
+
 const AwsClient =
   ({ spec, config, getContext = () => ({}), getEndpointConfig = () => ({}) }) =>
   (endpoint) => {
@@ -138,12 +142,7 @@ const AwsClient =
                   tap((params) => {
                     assert(true);
                   }),
-                  deepReject(
-                    ([key, value]) =>
-                      value == undefined ||
-                      value == null ||
-                      key.startsWith("__")
-                  ),
+                  myDeepReject,
                   assignTagsSort,
                   tap((params) => {
                     assert(true);
@@ -275,6 +274,7 @@ const AwsClient =
                     config,
                   }),
                   unless(() => noSortKey, deepSortKey),
+                  myDeepReject,
                 ])()
               ),
               transformListPost({ lives, endpoint }),
@@ -424,6 +424,7 @@ const AwsClient =
           ),
           filter(not(isEmpty)),
           unless(() => noSortKey, map(deepSortKey)),
+          map(myDeepReject),
           tap((items) => {
             logger.info(`getListWithParent ${type} #items ${size(items)}`);
           }),

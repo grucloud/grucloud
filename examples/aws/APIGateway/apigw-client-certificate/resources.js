@@ -83,22 +83,22 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-AppFunctionRole-1R897IN6DS3LE",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -126,13 +126,13 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-AppFunction-ATIRrjj178tb",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-AppFunctionPermission-LZQYVV783R5N",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "apigw-client-certificate",
             path: "live.arnv2",
           })}/*/GET/`,
+          StatementId: "sam-app-AppFunctionPermission-LZQYVV783R5N",
         },
       ],
     }),

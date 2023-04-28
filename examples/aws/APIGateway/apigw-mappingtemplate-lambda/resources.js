@@ -91,22 +91,22 @@ $input.json("$")`,
     properties: ({}) => ({
       RoleName: "sam-app-APIFunctionRole-1CR0X6ERT3PFJ",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -134,13 +134,13 @@ $input.json("$")`,
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-APIFunction-2STg887QFKzr",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-APIFunctionApiEventPermissiondev-1GV695BU5N439",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "testquery",
             path: "live.arnv2",
           })}/*/*/`,
+          StatementId: "sam-app-APIFunctionApiEventPermissiondev-1GV695BU5N439",
         },
       ],
     }),

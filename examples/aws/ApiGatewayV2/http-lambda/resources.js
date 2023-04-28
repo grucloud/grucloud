@@ -113,29 +113,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "lambda-role",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "lambda.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["lambda-policy"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -152,6 +129,29 @@ exports.createResources = () => [
       },
       Path: "/",
       Description: "Allow logs",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "lambda-role",
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Sid: "",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["lambda-policy"],
     }),
   },
   {
@@ -177,13 +177,13 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "my-function",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "lambda-f9a2e0dc-5300-469d-8bc9-25daea82056c",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "my-api",
             path: "live.ArnV2",
           })}/*/*/my-function`,
+          StatementId: "lambda-f9a2e0dc-5300-469d-8bc9-25daea82056c",
         },
       ],
     }),

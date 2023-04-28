@@ -91,30 +91,30 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-ApiGatewayWebsocketSQSRole-1V39NB449HWBY",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "sqs:SendMessage",
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:APIGWWebsocketQueue.fifo`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "APIGatewaySQSSendMessagePolicy",
         },
@@ -127,31 +127,30 @@ exports.createResources = () => [
     properties: ({ config, getId }) => ({
       RoleName: "sam-app-SQSWebsocketResponseServiceRole-13ZF133MLHMTF",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "execute-api:ManageConnections",
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "Api",
                   group: "ApiGatewayV2",
                   name: "APIGWWebsocketSQSLambda",
                   path: "live.ArnV2",
                 })}/production/POST/*`,
-                Effect: "Allow",
               },
               {
                 Action: [
@@ -161,21 +160,22 @@ exports.createResources = () => [
                   "sqs:DeleteMessage",
                   "sqs:GetQueueAttributes",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:APIGWWebsocketQueue.fifo`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SQSWebsocketResponseServiceRoleDefaultPolicy",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

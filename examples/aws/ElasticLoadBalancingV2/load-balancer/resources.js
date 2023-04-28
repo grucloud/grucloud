@@ -41,14 +41,6 @@ exports.createResources = () => [
       targetGroup: "target-group-web",
     }),
   },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "192.168.0.0/16",
-    }),
-  },
   { type: "InternetGateway", group: "EC2", name: "internet-gateway" },
   {
     type: "InternetGatewayAttachment",
@@ -56,6 +48,64 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       vpc: "vpc",
       internetGateway: "internet-gateway",
+    }),
+  },
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
+    name: "my-template",
+    properties: ({}) => ({
+      LaunchTemplateData: {
+        Image: {
+          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+        },
+        InstanceType: "t2.micro",
+      },
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "internet-gateway",
+      routeTable: "vpc::rt-default",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "rt-default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "vpc::rt-default",
+      subnet: "vpc::subnet-a",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "vpc::rt-default",
+      subnet: "vpc::subnet-b",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc",
     }),
   },
   {
@@ -85,61 +135,11 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: "rt-default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "vpc::rt-default",
-      subnet: "vpc::subnet-a",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "vpc::rt-default",
-      subnet: "vpc::subnet-b",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
+    name: "vpc",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "internet-gateway",
-      routeTable: "vpc::rt-default",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "LaunchTemplate",
-    group: "EC2",
-    name: "my-template",
-    properties: ({}) => ({
-      LaunchTemplateData: {
-        InstanceType: "t2.micro",
-        Image: {
-          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
-        },
-      },
+      CidrBlock: "192.168.0.0/16",
     }),
   },
   {
@@ -206,16 +206,16 @@ exports.createResources = () => [
       ],
       Actions: [
         {
-          Type: "redirect",
           Order: 1,
           RedirectConfig: {
-            Protocol: "HTTPS",
-            Port: "443",
             Host: "#{host}",
             Path: "/#{path}",
+            Port: "443",
+            Protocol: "HTTPS",
             Query: "#{query}",
             StatusCode: "HTTP_301",
           },
+          Type: "redirect",
         },
       ],
       Tags: [
@@ -311,11 +311,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({}) => ({
-      Name: "grucloud.org.",
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: "grucloud.org.",
+      Type: "A",
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",

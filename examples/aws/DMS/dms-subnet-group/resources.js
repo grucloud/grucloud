@@ -7,6 +7,8 @@ exports.createResources = () => [
     type: "ReplicationSubnetGroup",
     group: "DMS",
     properties: ({}) => ({
+      ReplicationSubnetGroupArn:
+        "arn:aws:dms:us-east-1:728713477404:subgrp:my-subnet-group",
       ReplicationSubnetGroupDescription: "Subnet Group",
       ReplicationSubnetGroupIdentifier: "my-subnet-group",
       SupportedNetworkTypes: ["IPV4"],
@@ -91,23 +93,23 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "dms-vpc-role",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "dms.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonDMSVPCManagementRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonDMSVPCManagementRole",
+          PolicyName: "AmazonDMSVPCManagementRole",
         },
       ],
     }),

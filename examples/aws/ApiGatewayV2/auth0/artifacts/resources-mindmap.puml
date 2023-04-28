@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project auth0
+title Resources for project ApiGateway Auth0 Autorizer
 skinparam monochrome true
 + Infra
 ++ aws
@@ -17,8 +17,8 @@ skinparam monochrome true
 +++ CloudWatchLogs
 ++++ LogGroup (1)
 +++ IAM
-++++ Role (1)
 ++++ Policy (1)
+++++ Role (1)
 +++ Lambda
 ++++ Function (1)
 ++++ Permission (1)

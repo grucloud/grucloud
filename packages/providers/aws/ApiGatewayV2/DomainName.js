@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, omit, assign, map } = require("rubico");
-const { defaultsDeep, pluck, when } = require("rubico/x");
+const { pipe, tap, get, pick, eq, omit, assign, map, and } = require("rubico");
+const { defaultsDeep, pluck, when, first } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -92,7 +92,7 @@ exports.ApiGatewayV2DomainName = () => ({
   getList: {
     method: "getDomainNames",
     getParam: "Items",
-    decorate,
+    decorate: ({ getById }) => getById,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDomainName-property
   create: {
@@ -101,6 +101,11 @@ exports.ApiGatewayV2DomainName = () => ({
       "UnsupportedCertificate",
       "BadRequestException",
     ],
+    isInstanceUp: pipe([
+      get("DomainNameConfigurations"),
+      first,
+      and([get("HostedZoneId"), get("ApiGatewayDomainName")]),
+    ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateDomainName-property
   // update: {

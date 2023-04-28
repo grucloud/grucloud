@@ -21,7 +21,6 @@ exports.createResources = () => [
         EnableStatistics: true,
         ExternalTableDefinition: '{"key":"a"}',
       },
-      SslMode: "none",
     }),
     dependencies: ({}) => ({
       iamRoleServiceAccess: "role-s3-rw",
@@ -35,22 +34,22 @@ exports.createResources = () => [
       Description:
         "Allows Database Migration Service to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "dms.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonS3FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
         },
       ],
     }),

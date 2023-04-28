@@ -118,22 +118,22 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "ServerlessLand-handlerServiceRole187D5A5A-1QKSYX4MFFNOR",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
       Tags: [
@@ -155,22 +155,22 @@ exports.createResources = () => [
       RoleName:
         "ServerlessLand-ServerlessLandCloudWatchRole836732A-W72RXN6FCTVP",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
         },
       ],
       Tags: [
@@ -213,53 +213,53 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "ServerlessLand-handlerE1533BD5-zl2CyOxo8mTL",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "ServerlessLand-ServerlessLandANYApiPermissionServerlessLand218F49ADANYCCE6DDD3-194C9WW38PGN1",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "ServerlessLand",
             path: "live.arnv2",
           })}/prod/*/`,
+          StatementId:
+            "ServerlessLand-ServerlessLandANYApiPermissionServerlessLand218F49ADANYCCE6DDD3-194C9WW38PGN1",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName: "ServerlessLand-handlerE1533BD5-zl2CyOxo8mTL",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "ServerlessLand-ServerlessLandANYApiPermissionTestServerlessLand218F49ADANY2068D9E3-1N6GVS0XJDM9F",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "ServerlessLand",
             path: "live.arnv2",
           })}/test-invoke-stage/*/`,
+          StatementId:
+            "ServerlessLand-ServerlessLandANYApiPermissionTestServerlessLand218F49ADANY2068D9E3-1N6GVS0XJDM9F",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName: "ServerlessLand-handlerE1533BD5-zl2CyOxo8mTL",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "ServerlessLand-ServerlessLandproxyANYApiPermissionServerlessLand218F49ADANYproxyEB71D2-WI6TYU0FL8KH",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "ServerlessLand",
             path: "live.arnv2",
           })}/prod/*/*`,
+          StatementId:
+            "ServerlessLand-ServerlessLandproxyANYApiPermissionServerlessLand218F49ADANYproxyEB71D2-WI6TYU0FL8KH",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName: "ServerlessLand-handlerE1533BD5-zl2CyOxo8mTL",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "ServerlessLand-ServerlessLandproxyANYApiPermissionTestServerlessLand218F49ADANYproxyB6-S8FAQ9HDQB50",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "ServerlessLand",
             path: "live.arnv2",
           })}/test-invoke-stage/*/*`,
+          StatementId:
+            "ServerlessLand-ServerlessLandproxyANYApiPermissionTestServerlessLand218F49ADANYproxyB6-S8FAQ9HDQB50",
         },
       ],
     }),

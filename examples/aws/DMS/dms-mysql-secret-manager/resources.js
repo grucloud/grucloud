@@ -12,7 +12,6 @@ exports.createResources = () => [
       EngineDisplayName: "MySQL",
       EngineName: "mysql",
       MySQLSettings: {},
-      SslMode: "none",
     }),
     dependencies: ({}) => ({
       iamRoleSecretsManagerMySQL: "role-secretsmanager",
@@ -27,22 +26,22 @@ exports.createResources = () => [
       Description:
         "Allows Database Migration Service to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: `dms.${config.region}.amazonaws.com`,
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "SecretsManagerReadWrite",
           PolicyArn: "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+          PolicyName: "SecretsManagerReadWrite",
         },
       ],
     }),
@@ -53,11 +52,11 @@ exports.createResources = () => [
     properties: ({ generatePassword }) => ({
       Name: "prod/db",
       SecretString: {
-        username: "dbuser",
-        password: generatePassword({ length: 9 }),
-        engine: "mysql",
-        port: "3306",
         dbname: "db",
+        engine: "mysql",
+        password: generatePassword({ length: 9 }),
+        port: "3306",
+        username: "dbuser",
       },
     }),
   },

@@ -198,17 +198,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "ApiGatewayEventBridgeRole",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({

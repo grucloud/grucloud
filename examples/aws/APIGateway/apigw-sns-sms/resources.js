@@ -99,33 +99,33 @@ Action=Publish&PhoneNumber=$util.urlEncode($util.parseJson($input.json('$.PhoneN
     properties: ({}) => ({
       RoleName: "API-SNSSMS",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["sns:Publish"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: ["sns:Publish"],
-                Resource: "arn:aws:sns:*:*",
                 Effect: "Deny",
+                Resource: "arn:aws:sns:*:*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SNS_SMS",
         },

@@ -101,24 +101,24 @@ exports.createResources = () => [
     properties: ({ getId }) => ({
       RoleName: "sam-app-AsyncSFnRole-DJEA1WIA8X0T",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "states.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["execute-api:ManageConnections"],
+                Effect: "Allow",
                 Resource: [
                   `${getId({
                     type: "Api",
@@ -127,9 +127,9 @@ exports.createResources = () => [
                     path: "live.ArnV2",
                   })}/api/POST/@connections/{connectionId}`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "APIGWConnectionsAccess",
         },
@@ -145,30 +145,30 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-StepFunctionsAsyncExecutionRole-6RGKCARYYWG",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["states:StartExecution"],
+                Effect: "Allow",
                 Resource: `arn:aws:states:${
                   config.region
                 }:${config.accountId()}:stateMachine:AsyncSFn-srNK33QLTR0R`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "StepFunctionsAsyncExecution",
         },

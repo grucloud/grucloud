@@ -9,7 +9,7 @@ const { Tagger, listTagsForResource } = require("./DMSCommon");
 
 const buildArn = () =>
   pipe([
-    get("Arn"),
+    get("EventSubscriptionArn"),
     tap((arn) => {
       assert(arn);
     }),
@@ -31,14 +31,6 @@ const decorate = ({ endpoint, config }) =>
       SubscriptionName: CustSubscriptionId,
       ...other,
     }),
-    assign({
-      Arn: pipe([
-        ({ SubscriptionName }) =>
-          `arn:aws:dms:${
-            config.region
-          }:${config.accountId()}:es:${SubscriptionName}`,
-      ]),
-    }),
     listTagsForResource({ endpoint, buildArn: buildArn() }),
   ]);
 
@@ -49,7 +41,7 @@ exports.DMSEventSubscription = ({ compare }) => ({
   client: "DatabaseMigrationService",
   propertiesDefault: {},
   omitProperties: [
-    "Arn",
+    "EventSubscriptionArn",
     "SnsTopicArn",
     "CustomerAwsId",
     "CustSubscriptionId",

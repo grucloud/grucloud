@@ -35,8 +35,8 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "1.0",
       RequestParameters: {
-        DetailType: "MyDetailType",
         Detail: "$request.body.Detail",
+        DetailType: "MyDetailType",
         Source: "WebApp",
       },
     }),
@@ -98,30 +98,30 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-MyHttpApiRole-KV1DOMSBSRDO",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: {
               Action: ["events:PutEvents"],
+              Effect: "Allow",
               Resource: [
                 `arn:aws:events:${
                   config.region
                 }:${config.accountId()}:event-bus/default`,
               ],
-              Effect: "Allow",
             },
+            Version: "2012-10-17",
           },
           PolicyName: "ApiDirectWriteEventBridge",
         },
@@ -134,22 +134,22 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-MyTriggeredLambdaRole-PFCAXLPPKQG8",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

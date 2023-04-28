@@ -91,10 +91,9 @@ const IncludeList = [
   // "ElastiCache"
   // "ElasticBeanstalk"
   "ElasticLoadBalancingV2",
-  // "ElasticTranscoder"
   "Elemental",
   "Evidently",
-  //"FSx",
+  //"FSx", $$$
   "Firehose",
   "Glacier",
   "GlobalAccelerator",
@@ -122,7 +121,7 @@ const IncludeList = [
   "Location",
   //"MQ",
   //"MSK",
-  // "MWAA",
+  // "MWAA", $$$
   // "Macie"
   "MediaConnect",
   "MediaConvert",
@@ -141,18 +140,18 @@ const IncludeList = [
   "QLDB",
   // "QuickSight",
   "RAM",
-  // "RDS",
+  // "RDS", $$
   "RUM",
   "Rbin",
-  // "Redshift",
+  // "Redshift", $$
   // "RedshiftServerless"
   // "ResilienceHub"
   "ResourceExplorer2",
   "ResourceGroups",
   // "RoleEverywhere"
   "Route53",
-  //  "Route53RecoveryControlConfig"
-  //  "Route53RecoveryReadiness"
+  //  "Route53RecoveryControlConfig" $$$
+  //  "Route53RecoveryReadiness" $$$
   "Route53Resolver",
   "S3",
   "S3Control",
@@ -161,7 +160,7 @@ const IncludeList = [
   "SQS",
   "SSM",
   "SSOAdmin",
-  // "SageMaker",
+  // "SageMaker",$$$
   "Scheduler",
   "Schema",
   "SecretsManager",
@@ -173,13 +172,17 @@ const IncludeList = [
   "StepFunctions",
   "Synthetics",
   "TimestreamWrite",
-  // "Transfer",
+  // "Transfer", $$
   // "VpcLattice",
-  //  "WAFv2"
-  // "WorkSpaces",
+  //  "WAFv2" $
+  // "WorkSpaces", $$$
   // "WorkSpacesWeb",
   "XRay",
-  "website-https",
+  "docker", // TODO move docker dir out of the example
+  "kops",
+  "aws-samples",
+  "aws-cdk-examples",
+  "terraform-backend-s3-dynamodb",
 ];
 const ExcludeDirsDefault = [
   //
@@ -187,120 +190,62 @@ const ExcludeDirsDefault = [
   "node_modules",
   "artifacts",
   "empty",
-  "appintegration-simple",
-  "application-autoscaling-simple",
+  "certificate",
+  "amplify-nextjs",
+  "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
+  "private-apigw-lambda-cdk", //  Too slow"
   "ta-eventbridge-lambda-s3",
-  "databrew-simple",
-  "mediaconvert-simple",
-  "media-tailor",
-  "resiliencehub-simple",
-  "route53-recovery-control-config",
-  "route53-recovery-readiness",
-  "s3-storage-lens", // Bug in the aws sdk js
-  "sagemaker-simple",
-  "terraform-backend-s3-dynamodb",
-  "kops", // TODO update
-  "docker", // TODO move docker dir out of the example
-  "Batch",
-  "Workspaces", // $$$
-  "FSx", // "much expensive $$$"
-  "DirectoryService", // "much expensive $$$"
   "datasync-fsxwindows", // "much expensive $$$"
   "datasync-fsxlustre", // "much expensive $$$"
   "datasync-fsxlustre-s3", // "much expensive $$$"
   "datasync-fsxopenzfs",
+  "s3-storage-lens", // Bug in the aws sdk js
   "globalcluster", // Too slow
   "msk-lambda-cdk", //  Too slow
-  "private-apigw-lambda-cdk", //  Too slow
-
-  "direct-connect-simple",
-  "repository", // TODO
   "transfer-ftps-s3", //TODO  create Transfer::Server Certificate type not supported
-  "xray-simple", // TODO
-  "hub-and-spoke-with-inspection-vpc",
-  "hub-and-spoke-with-shared-services-vpc-terraform",
-  "cloud-wan",
-  "emr-simple",
-  "servicediscovery", // TODO
-  "resource-share",
-  "hub-and-spoke-with-inspection-vpc",
   "eks-workshop",
-  "mq-simple", // Cannot even delete MQ Configuration
-  "lex-simple", // problem with role seen as read only
-  "licensemanager-simple",
-  "internetmonitor-simple",
-  "auditmanager-simple",
-  "directory-service-microsoft-ad",
-  "inspector2-simple",
-  "guardduty-simple",
-  "securityhub-simple",
-  "identity-store-simple",
+  //"directory-service-microsoft-ad", // slow
   "organisations-policy",
   "account-bulk",
-  "macie-simple",
-  "ssoadmin-simple",
-  "securityhub-simple/",
   //"redshiftserverless-simple",
   // Route53Domain only on main account
-  "certificate",
   "identity-provider",
-  "control-tower-simple",
   "apigw-mutualtls-lambda",
-  "http-lambda",
-  "auth0",
   "eks-load-balancer",
-  "load-balancer",
   "lightsail-wordpress",
   "route53-delegation-set",
   // Bugs
   //"codedeploy-ecs", // CodeDeploy::DeploymentGroup 0/1  AWS CodeDeploy does not have the permissions required to assume the role arn:aws:iam::840541460064:role/roleECSCodeDeploy.
   "memorydb-parameter-group-default", // "Subnets: [subnet-08ff91f6dbe67999c] are not in a supported availability zone. Supported availability zones are [us-east-1c, us-east-1d, us-east-1b]."
-  "memorydb-simple",
   "subscription-filter", // Could not execute the lambda function. Make sure you have given CloudWatch Logs permission to execute your function.
-  "cloudhsmv2", // CloudHSM is not currently available in us-east-1a
-  "Ivschat", // 'Your account is pending verification. Until the verification process is complete, you may not be able to carry out requests with this account. If you have questions, contact AWS Support.',
-  "IVS", // 'Your account is pending verification. Until the verification process is complete, you may not be able to carry out requests with this account. If you have questions, contact AWS Support.',
   "lake-formation", // "Insufficient Lake Formation permission(s): Required Create Tag on Catalog",
-  "cost-explorer-simple",
-  "appconfig-feature-flag-sam",
   "apprunner-github",
   "apprunner-leaderboard",
   "apprunner-simple",
   "apprunner-ngnix",
   "apprunner-secrets-manager",
+  "retail-store-sample-app",
   "cloudfront-lambda-edge-cdk-python", // TODO
   "cloudfront-le-apigw-cdk", // TODO
   "cloudfront-lambda-url-java", //  Too slow
-  "medialive-simple",
   "elemental-mediaconnect-medialive-mediapackage",
   "elemental-medialive-mediapackage-cdk-ts",
   "elemental-mediapackage-cloudfront-cdk-ts",
   "xray-lambdalayers-cdk-python",
   "stepfunctions-eventbridge-lambda-sam-java",
-  "role-everywhere",
   "lambda-layer-terraform",
-  "retail-store-sample-app",
   "appflow-redshift",
   "appstream-stack",
   "appstream-simple", // need to create an S3 object
   "cognito-restapi-vpclink",
   "apigw-http-eventbridge-terraform",
-  "aws-route53-recovery-control-config",
-  "amplify-nextjs",
-  "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
   "cloud9-simple", // reason: 'Instance profile AWSCloud9SSMInstanceProfile does not exist in this account. Please create an instance profile and role as described here https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html',
-  "graphql", //
   "eventbridge-codebuild-sns", // S3 "AccessDenied: Access Denied"
   "eventbridge-sfn-terraform",
   "cloudwatch-logs-subscription-lambda-cdk", //SubscriptionFilter: "Could not execute the lambda function. Make sure you have given CloudWatch Logs permission to execute your function.",
-  "config-simple", // issue with the cloud formation format
-  "dax-simple", //  "No permission to assume role: arn:aws:iam::729329093404:role/service-role/daxdynamodb",
   "dynamodb-kinesis", // Table is not in a valid state to enable Kinesis Streaming Destination: KinesisStreamingDestination must be ACTIVE to perform DISABLE operation.
   "ec2-credit", // "This account cannot launch T2 instances with Unlimited enabled. Please contact AWS Support to enable this feature.",
-  //"elasticache-redis-full",
-  "elasticbeanstalk-simple",
   "fsx-openzfs", // Volume "1 validation error detected: Value null at 'openZFSConfiguration.parentVolumeId' failed to satisfy constraint: Member must not be null",
-  "ssm-association",
 ];
 
 const fileExist = pipe([

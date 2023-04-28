@@ -121,21 +121,20 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-MyApiRole-1RYJ13NKW98YP",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -147,12 +146,13 @@ exports.createResources = () => [
                   "logs:GetLogEvents",
                   "logs:FilterLogEvents",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:logs:${
                   config.region
                 }:${config.accountId()}:log-group:MyApi-Access-Logs:*`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "Logs",
         },
@@ -165,26 +165,26 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-MyLambdaFunctionRole-D038JJQN1V0Z",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSXrayWriteOnlyAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess",
+          PolicyName: "AWSXrayWriteOnlyAccess",
         },
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -216,14 +216,14 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "MyLambdaFunction",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "sam-app-MyLambdaFunctionPetStorePermissionProd-8F0GNYFDNAO1",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "MyApi",
             path: "live.arnv2",
           })}/*/GET/details`,
+          StatementId:
+            "sam-app-MyLambdaFunctionPetStorePermissionProd-8F0GNYFDNAO1",
         },
       ],
     }),

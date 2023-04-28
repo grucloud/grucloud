@@ -97,21 +97,20 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-MyHttpApiRole-IAG13XOOCKHW",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -119,10 +118,10 @@ exports.createResources = () => [
                   "sqs:GetQueueUrl",
                   "sqs:SendMessageBatch",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:MySqsQueue`,
-                Effect: "Allow",
               },
               {
                 Action: [
@@ -134,12 +133,13 @@ exports.createResources = () => [
                   "logs:GetLogEvents",
                   "logs:FilterLogEvents",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:logs:${
                   config.region
                 }:${config.accountId()}:log-group:MyHttpApi-Access-Logs:*`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "AllowSqsIntegration",
         },
@@ -152,27 +152,27 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-MyLambdaFunctionRole-MQLVXO5LF3G",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaSQSQueueExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole",
+          PolicyName: "AWSLambdaSQSQueueExecutionRole",
         },
       ],
     }),

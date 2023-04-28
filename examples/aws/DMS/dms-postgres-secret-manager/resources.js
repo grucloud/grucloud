@@ -15,7 +15,6 @@ exports.createResources = () => [
       PostgreSQLSettings: {
         DatabaseName: "db",
       },
-      SslMode: "none",
     }),
     dependencies: ({}) => ({
       iamRoleSecretsManagerPostgres: "role-secretsmanager",
@@ -30,22 +29,22 @@ exports.createResources = () => [
       Description:
         "Allows Database Migration Service to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: `dms.${config.region}.amazonaws.com`,
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "SecretsManagerReadWrite",
           PolicyArn: "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+          PolicyName: "SecretsManagerReadWrite",
         },
       ],
     }),
@@ -56,11 +55,11 @@ exports.createResources = () => [
     properties: ({ generatePassword }) => ({
       Name: "prod/db",
       SecretString: {
-        username: "dbuser",
-        password: generatePassword({ length: 7 }),
-        engine: "postgres",
-        port: "5432",
         dbname: "db",
+        engine: "postgres",
+        password: generatePassword({ length: 7 }),
+        port: "5432",
+        username: "dbuser",
       },
     }),
   },

@@ -17,11 +17,13 @@ const findId = () => get("AuthorizerId");
 const findName = () => get("Name");
 const pickId = pick(["ApiId", "AuthorizerId"]);
 
-const decorate = ({ endpoint, config }) =>
+const decorate = ({ endpoint, live }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
+      assert(live.ApiId);
     }),
+    defaultsDeep({ ApiId: live.ApiId, ApiName: live.ApiName }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
@@ -105,7 +107,7 @@ exports.ApiGatewayV2Authorizer = () => ({
           getParam: "Items",
           config,
           decorate: ({ parent: { ApiId, Name: ApiName, Tags } }) =>
-            pipe([defaultsDeep({ ApiId, ApiName /*, Tags*/ })]),
+            pipe([defaultsDeep({ ApiId, ApiName }), getById({})]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createAuthorizer-property

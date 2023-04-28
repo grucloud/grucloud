@@ -93,22 +93,22 @@ exports.createResources = () => [
       RoleName:
         "MyServerlessApplicationSt-MyFunctionServiceRole3C3-1HCKXNRK6G7IA",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -120,22 +120,22 @@ exports.createResources = () => [
       RoleName:
         "MyServerlessApplicationSt-RestApiCloudWatchRoleE3E-GC7YEQUWF6JE",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
         },
       ],
     }),
@@ -165,14 +165,14 @@ exports.createResources = () => [
           FunctionName:
             "MyServerlessApplicationStack-MyFunction3BAA72D1-EXv7XTdWy2mX",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "MyServerlessApplicationStack-MyFunctionlambdaPermission88C73777-VIU4K2K8PDSV",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "RestApi",
             path: "live.arnv2",
           })}/*/GET/`,
+          StatementId:
+            "MyServerlessApplicationStack-MyFunctionlambdaPermission88C73777-VIU4K2K8PDSV",
         },
       ],
     }),
