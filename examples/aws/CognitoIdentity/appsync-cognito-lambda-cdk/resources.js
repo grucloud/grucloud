@@ -20,7 +20,7 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       name: "SampleAppSyncApi",
       authenticationType: "API_KEY",
       xrayEnabled: true,
@@ -33,7 +33,7 @@ exports.createResources = () => [
         {
           authenticationType: "AMAZON_COGNITO_USER_POOLS",
           userPoolConfig: {
-            awsRegion: "us-east-1",
+            awsRegion: config.region,
             userPoolId: `${getId({
               type: "UserPool",
               group: "CognitoIdentityServiceProvider",

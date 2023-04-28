@@ -1,5 +1,12 @@
 const pkg = require("./package.json");
 module.exports = () => ({
   projectName: pkg.name,
-  includeGroups: ["AppSync", "CognitoIdentityServiceProvider", "IAM", "Lambda"],
+  includeGroups: [
+    "AppSync",
+    "Cognito",
+    "CognitoIdentityServiceProvider",
+    "IAM",
+    "Lambda",
+    "Signer",
+  ],
 });
