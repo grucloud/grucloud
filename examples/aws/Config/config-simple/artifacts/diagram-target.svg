@@ -49,12 +49,12 @@
 <path fill="none" stroke="#707070" d="M332.2,-176C340.42,-176 348.61,-176 356.67,-176"/>
 <polygon fill="#707070" stroke="#707070" points="356.57,-179.5 366.57,-176 356.57,-172.5 356.57,-179.5"/>
 </g>
-<!-- ConformancePack::pack&#45;api&#45;gateway -->
+<!-- ConformancePack::lambda&#45;pack -->
 <g id="node3" class="node">
-<title>ConformancePack::pack&#45;api&#45;gateway</title>
+<title>ConformancePack::lambda&#45;pack</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="291,-129 65,-129 65,-71 291,-71 291,-129"/>
 <text text-anchor="start" x="77" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Config::ConformancePack</text>
-<text text-anchor="start" x="77" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">pack&#45;api&#45;gateway</text>
+<text text-anchor="start" x="77" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">lambda&#45;pack</text>
 </g>
 <!-- DeliveryChannel::default&#45;&gt;ConfigurationRecorder::default -->
 <g id="edge2" class="edge">

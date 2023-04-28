@@ -1,9 +1,10 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, fork, assign } = require("rubico");
 const { defaultsDeep, when, first } = require("rubico/x");
-const Json2yaml = require("@grucloud/core/cli/json2yaml");
 
+const Json2yaml = require("@grucloud/core/cli/json2yaml");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { deepMap } = require("@grucloud/core/deepMap");
 
 const pickId = pipe([
   tap(({ ConformancePackName }) => {
@@ -17,9 +18,8 @@ const decorate =
   (live) =>
     pipe([
       tap((params) => {
-        //assert(lives);
+        assert(lives);
       }),
-
       () => live,
       fork({
         TemplateBody: pipe([
@@ -31,6 +31,17 @@ const decorate =
             providerName: config.providerName,
           }),
           get("live.TemplateBody"),
+          // When creating the conformance pack, the resulting ConfigRuleName property value is suffixed the the ConformancePackId
+          // This code the suffix from the response
+          deepMap(
+            when(
+              ([key, value]) => key == "ConfigRuleName",
+              ([key, value]) => [
+                key,
+                value.replace(`-${live.ConformancePackId}`, ""),
+              ]
+            )
+          ),
         ]),
         Details: pipe([
           ({ ConformancePackName }) => ({
