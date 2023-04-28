@@ -146,6 +146,7 @@ exports.DAXCluster = ({ compare }) => ({
     isInstanceUp: pipe([eq(get("Status"), "available")]),
     // TODO check
     isInstanceError: pipe([eq(get("Status"), "failed")]),
+    shouldRetryOnExceptionMessages: ["No permission to assume role"],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DAX.html#updateCluster-property
   update: {
