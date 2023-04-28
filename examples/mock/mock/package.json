@@ -16,7 +16,7 @@
     "bluebird": "3.7.2",
     "ping": "0.4.1",
     "rubico": "1.9.6",
-    "url-join": "5.0.0"
+    "url-join": "4.0.1"
   },
   "devDependencies": {
     "mocha": "10.2.0",

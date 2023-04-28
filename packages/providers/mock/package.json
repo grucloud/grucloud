@@ -17,7 +17,7 @@
     "bluebird": "3.7.2",
     "rubico": "1.9.6",
     "shelljs": "0.8.5",
-    "url-join": "5.0.0",
+    "url-join": "4.0.1",
     "uuid": "9.0.0"
   },
   "devDependencies": {

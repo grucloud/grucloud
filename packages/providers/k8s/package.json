@@ -18,7 +18,7 @@
     "js-yaml": "4.1.0",
     "rubico": "1.9.6",
     "shelljs": "0.8.5",
-    "url-join": "5.0.0"
+    "url-join": "4.0.1"
   },
   "devDependencies": {
     "mocha": "10.2.0",
