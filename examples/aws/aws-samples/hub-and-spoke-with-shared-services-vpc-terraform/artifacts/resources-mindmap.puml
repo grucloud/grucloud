@@ -22,9 +22,9 @@ skinparam monochrome true
 ++++ TransitGatewayRouteTableAssociation (3)
 ++++ TransitGatewayRouteTablePropagation (3)
 +++ IAM
+++++ InstanceProfile (1)
 ++++ Role (5)
 ++++ Policy (3)
-++++ InstanceProfile (1)
 +++ KMS
 ++++ Key (1)
 +++ Route53
