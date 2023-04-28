@@ -98,8 +98,8 @@ const requestCertificate = ({ endpoint, getById }) =>
     (params) =>
       retryCall({
         name: `requestCertificate`,
-        fn: pipe([() => params, getById, isInstanceUp]),
-        //config: configIsUp,
+        fn: pipe([() => params, getById({}), isInstanceUp]),
+        config: { retryCount: 40 * 12, retryDelay: 5e3 },
       }),
   ]);
 

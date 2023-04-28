@@ -9,18 +9,18 @@ exports.createResources = () => [
     properties: ({}) => ({
       CachePolicyConfig: {
         Comment: "",
-        Name: "my-cache-policy",
         DefaultTTL: 86400,
         MaxTTL: 31536000,
         MinTTL: 1,
+        Name: "my-cache-policy",
         ParametersInCacheKeyAndForwardedToOrigin: {
-          EnableAcceptEncodingGzip: true,
-          EnableAcceptEncodingBrotli: true,
-          HeadersConfig: {
-            HeaderBehavior: "none",
-          },
           CookiesConfig: {
             CookieBehavior: "none",
+          },
+          EnableAcceptEncodingBrotli: true,
+          EnableAcceptEncodingGzip: true,
+          HeadersConfig: {
+            HeaderBehavior: "none",
           },
           QueryStringsConfig: {
             QueryStringBehavior: "none",

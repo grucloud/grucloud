@@ -141,7 +141,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "cloudfront.aws.test.grucloud.org",
-      ACL: "public-read",
       WebsiteConfiguration: {
         ErrorDocument: {
           Key: "error.html",

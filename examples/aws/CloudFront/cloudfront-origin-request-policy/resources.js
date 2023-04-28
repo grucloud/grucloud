@@ -8,13 +8,13 @@ exports.createResources = () => [
     group: "CloudFront",
     properties: ({}) => ({
       OriginRequestPolicyConfig: {
-        Name: "my-origin-request-policy",
-        HeadersConfig: {
-          HeaderBehavior: "none",
-        },
         CookiesConfig: {
           CookieBehavior: "none",
         },
+        HeadersConfig: {
+          HeaderBehavior: "none",
+        },
+        Name: "my-origin-request-policy",
         QueryStringsConfig: {
           QueryStringBehavior: "all",
         },

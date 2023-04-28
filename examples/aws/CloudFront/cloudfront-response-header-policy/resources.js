@@ -11,10 +11,10 @@ exports.createResources = () => [
         Name: "my-response-headers-policy",
         SecurityHeadersConfig: {
           StrictTransportSecurity: {
-            Override: false,
-            IncludeSubdomains: false,
-            Preload: false,
             AccessControlMaxAgeSec: 31536000,
+            IncludeSubdomains: false,
+            Override: false,
+            Preload: false,
           },
         },
       },

@@ -19,7 +19,6 @@ exports.createResourcesS3Object = async ({ provider }) => {
       dependencies: () => ({ bucket: bucketName }),
       properties: () => ({
         Key: file,
-        ACL: "public-read",
         ContentType: mime.lookup(file) || "text/plain",
         source: path.join(websiteDir, file),
       }),

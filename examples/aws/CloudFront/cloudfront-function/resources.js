@@ -19,10 +19,10 @@ exports.createResources = () => [
     };
     return response;
 }`,
-      Name: "my-function",
       FunctionConfig: {
         Runtime: "cloudfront-js-1.0",
       },
+      Name: "my-function",
     }),
   },
 ];
