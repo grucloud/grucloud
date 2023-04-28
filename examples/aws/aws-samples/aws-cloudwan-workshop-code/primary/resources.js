@@ -13,56 +13,29 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: ({ config }) => `inspection-${config.region}`,
+    name: ({ config }) => `nat-public-${config.region}a`,
     properties: ({}) => ({
-      CidrBlock: "100.64.0.0/16",
       Tags: [
         {
           Key: "Environment",
           Value: "inspection",
         },
       ],
-      DnsHostnames: true,
     }),
   },
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "non-prod",
+    name: ({ config }) => `nat-public-${config.region}b`,
     properties: ({}) => ({
-      CidrBlock: "10.11.0.0/16",
       Tags: [
         {
           Key: "Environment",
-          Value: "nonprod",
+          Value: "inspection",
         },
       ],
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "prod",
-    properties: ({}) => ({
-      CidrBlock: "10.10.0.0/16",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "prod",
-        },
-      ],
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc-vpn",
-    properties: ({}) => ({
-      CidrBlock: "172.16.0.0/16",
     }),
   },
   {
@@ -100,13 +73,13 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `nat-public-${config.region}a`,
     properties: ({}) => ({
+      PrivateIpAddressIndex: 26,
       Tags: [
         {
           Key: "Environment",
           Value: "inspection",
         },
       ],
-      PrivateIpAddressIndex: 26,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection-${config.region}::public-${config.region}a`,
@@ -118,13 +91,13 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `nat-public-${config.region}b`,
     properties: ({}) => ({
+      PrivateIpAddressIndex: 91,
       Tags: [
         {
           Key: "Environment",
           Value: "inspection",
         },
       ],
-      PrivateIpAddressIndex: 91,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection-${config.region}::public-${config.region}b`,
@@ -132,168 +105,58 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "inspection",
-        },
-      ],
-      NewBits: 8,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      vpc: `inspection-${config.region}`,
+      natGateway: `nat-public-${config.region}a`,
+      routeTable: `inspection-${config.region}::inspection-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "inspection",
-        },
-      ],
-      NewBits: 8,
-      NetworkNumber: 2,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      vpc: `inspection-${config.region}`,
+      natGateway: `nat-public-${config.region}b`,
+      routeTable: `inspection-${config.region}::inspection-${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `public-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "inspection",
-        },
-      ],
-      NewBits: 8,
-      NetworkNumber: 1,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      vpc: `inspection-${config.region}`,
+      ig: `inspection-${config.region}`,
+      routeTable: `inspection-${config.region}::public-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `public-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "inspection",
-        },
-      ],
-      NewBits: 8,
-      NetworkNumber: 3,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      vpc: `inspection-${config.region}`,
+      ig: `inspection-${config.region}`,
+      routeTable: `inspection-${config.region}::public-${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `private-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "nonprod",
-        },
-      ],
-      NewBits: 8,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "192.168.0.0/16",
     }),
     dependencies: ({}) => ({
-      vpc: "non-prod",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `private-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "nonprod",
-        },
-      ],
-      NewBits: 8,
-      NetworkNumber: 2,
-    }),
-    dependencies: ({}) => ({
-      vpc: "non-prod",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `private-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "prod",
-        },
-      ],
-      NewBits: 8,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "prod",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `private-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "prod",
-        },
-      ],
-      NewBits: 8,
-      NetworkNumber: 2,
-    }),
-    dependencies: ({}) => ({
-      vpc: "prod",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-vpn",
+      routeTable: "vpc-vpn::my-rt",
+      vpnGateway: "vpw",
     }),
   },
   {
@@ -505,84 +368,233 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+    name: ({ config }) => `inspection-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "inspection",
+        },
+      ],
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({ config }) => ({
-      natGateway: `nat-public-${config.region}a`,
-      routeTable: `inspection-${config.region}::inspection-${config.region}a`,
+      vpc: `inspection-${config.region}`,
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+    name: ({ config }) => `inspection-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "inspection",
+        },
+      ],
+      NewBits: 8,
+      NetworkNumber: 2,
     }),
     dependencies: ({ config }) => ({
-      natGateway: `nat-public-${config.region}b`,
-      routeTable: `inspection-${config.region}::inspection-${config.region}b`,
+      vpc: `inspection-${config.region}`,
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+    name: ({ config }) => `public-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "inspection",
+        },
+      ],
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
     dependencies: ({ config }) => ({
-      ig: `inspection-${config.region}`,
-      routeTable: `inspection-${config.region}::public-${config.region}a`,
+      vpc: `inspection-${config.region}`,
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+    name: ({ config }) => `public-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "inspection",
+        },
+      ],
+      NewBits: 8,
+      NetworkNumber: 3,
     }),
     dependencies: ({ config }) => ({
-      ig: `inspection-${config.region}`,
-      routeTable: `inspection-${config.region}::public-${config.region}b`,
+      vpc: `inspection-${config.region}`,
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "192.168.0.0/16",
+    name: ({ config }) => `private-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "nonprod",
+        },
+      ],
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
-      routeTable: "vpc-vpn::my-rt",
+      vpc: "non-prod",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `private-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "nonprod",
+        },
+      ],
+      NewBits: 8,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "non-prod",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `private-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "prod",
+        },
+      ],
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "prod",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `private-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "prod",
+        },
+      ],
+      NewBits: 8,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "prod",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-vpn",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: ({ config }) => `inspection-${config.region}`,
+    properties: ({}) => ({
+      CidrBlock: "100.64.0.0/16",
+      DnsHostnames: true,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "inspection",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "non-prod",
+    properties: ({}) => ({
+      CidrBlock: "10.11.0.0/16",
+      DnsHostnames: true,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "nonprod",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "prod",
+    properties: ({}) => ({
+      CidrBlock: "10.10.0.0/16",
+      DnsHostnames: true,
+      Tags: [
+        {
+          Key: "Environment",
+          Value: "prod",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-vpn",
+    properties: ({}) => ({
+      CidrBlock: "172.16.0.0/16",
+    }),
+  },
+  {
+    type: "VpnConnection",
+    group: "EC2",
+    name: "vpn-connection",
+    properties: ({}) => ({
+      Category: "VPN",
+    }),
+    dependencies: ({}) => ({
+      customerGateway: "cgw",
       vpnGateway: "vpw",
-    }),
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: ({ config }) => `nat-public-${config.region}a`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "inspection",
-        },
-      ],
-    }),
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: ({ config }) => `nat-public-${config.region}b`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "inspection",
-        },
-      ],
     }),
   },
   {
@@ -606,18 +618,6 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({}) => ({
       routeTable: "vpc-vpn::my-rt",
-      vpnGateway: "vpw",
-    }),
-  },
-  {
-    type: "VpnConnection",
-    group: "EC2",
-    name: "vpn-connection",
-    properties: ({}) => ({
-      Category: "VPN",
-    }),
-    dependencies: ({}) => ({
-      customerGateway: "cgw",
       vpnGateway: "vpw",
     }),
   },

@@ -9,16 +9,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-TopicPublisherFunctionRole-12ZGFF8O8M7GH",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -26,10 +26,10 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["sns:Publish"],
+                Effect: "Allow",
                 Resource: `arn:aws:sns:${
                   config.region
                 }:${config.accountId()}:sam-app-MySnsTopic-7dvkJx2kzjiv`,
-                Effect: "Allow",
               },
             ],
           },
@@ -38,9 +38,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

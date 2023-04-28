@@ -252,16 +252,16 @@ exports.createResources = () => [
       RoleName: `KinesisFirehoseServiceRole-PUT-HTP-4G0uP-${config.region}-1669418375212`,
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "firehose.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({ config }) => ({
@@ -275,21 +275,20 @@ exports.createResources = () => [
       RoleName: "role-sns-to-firehose",
       Description: "Allows SNS to call CloudWatch Logs on your behalf.",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "sns.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -299,10 +298,11 @@ exports.createResources = () => [
                   "firehose:PutRecord",
                   "firehose:PutRecordBatch",
                 ],
-                Resource: ["*"],
                 Effect: "Allow",
+                Resource: ["*"],
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "firehose",
         },

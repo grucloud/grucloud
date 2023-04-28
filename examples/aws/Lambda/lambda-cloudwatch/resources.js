@@ -9,16 +9,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-PutMetricFunctionRole-1KQOW6MUXF48I",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -26,8 +26,8 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["cloudwatch:PutMetricData"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -36,9 +36,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

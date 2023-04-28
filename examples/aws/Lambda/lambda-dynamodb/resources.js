@@ -29,16 +29,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -50,6 +50,7 @@ exports.createResources = () => [
                   "dynamodb:UpdateItem",
                   "dynamodb:BatchWriteItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
@@ -58,7 +59,6 @@ exports.createResources = () => [
                     config.region
                   }:${config.accountId()}:table/sam-app-DynamoTable-1TM3ILOZ1A36J/index/*`,
                 ],
-                Effect: "Allow",
               },
             ],
           },
@@ -67,9 +67,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

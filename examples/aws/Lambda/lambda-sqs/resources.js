@@ -9,16 +9,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-QueuePublisherFunctionRole-144E5ZEVAZOKL",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -26,10 +26,10 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["sqs:SendMessage*"],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:sam-app-MySqsQueue-pJgAHKB84btk`,
-                Effect: "Allow",
               },
             ],
           },
@@ -38,9 +38,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

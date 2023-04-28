@@ -33,21 +33,20 @@ exports.createResources = () => [
       RoleName:
         "vsam-to-dynamo-SQSToDynamoFunctionServiceRole574AE-1UJ4RMVYBA5KC",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -56,12 +55,12 @@ exports.createResources = () => [
                   "dynamodb:UpdateItem",
                   "dynamodb:DeleteItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
                   }:${config.accountId()}:table/CLIENT`,
                 ],
-                Effect: "Allow",
               },
               {
                 Action: [
@@ -71,21 +70,22 @@ exports.createResources = () => [
                   "sqs:DeleteMessage",
                   "sqs:GetQueueAttributes",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:VsamToDynamoQueue`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SQSToDynamoFunctionServiceRoleDefaultPolicy5FF3E785",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

@@ -9,27 +9,27 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-QueueConsumerFunctionRole-171YRTH8TJ509",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaSQSQueueExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole",
+          PolicyName: "AWSLambdaSQSQueueExecutionRole",
         },
       ],
     }),

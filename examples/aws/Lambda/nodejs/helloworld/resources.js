@@ -28,17 +28,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "lambda-role",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({

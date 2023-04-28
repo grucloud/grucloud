@@ -9,16 +9,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-PutObjectFunctionRole-TFR4FTCB12K2",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -36,11 +36,11 @@ exports.createResources = () => [
                   "s3:PutLifecycleConfiguration",
                   "s3:DeleteObject",
                 ],
+                Effect: "Allow",
                 Resource: [
                   "arn:aws:s3:::gc-destination-example",
                   "arn:aws:s3:::gc-destination-example/*",
                 ],
-                Effect: "Allow",
               },
             ],
           },
@@ -49,9 +49,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

@@ -10,22 +10,22 @@ exports.createResources = () => [
       RoleName:
         "LambdaSNSFiltersLambdaSta-ConsumerAllFunctionServi-BFMF3HZQSVS4",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -37,22 +37,22 @@ exports.createResources = () => [
       RoleName:
         "LambdaSNSFiltersLambdaSta-ConsumerRedFunctionServi-1XWOHDWSDOTBO",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -64,39 +64,39 @@ exports.createResources = () => [
       RoleName:
         "LambdaSNSFiltersLambdaSta-SenderFunctionServiceRol-4MUE5FV98RX",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "sns:Publish",
+                Effect: "Allow",
                 Resource: `arn:aws:sns:${
                   config.region
                 }:${config.accountId()}:LambdaSNSFiltersLambdaStack-SNSTopicBCCC5DD8-UaEWb1UkFPpL`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SenderFunctionServiceRoleDefaultPolicy06C14206",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -163,11 +163,11 @@ exports.createResources = () => [
           FunctionName:
             "LambdaSNSFiltersLambdaSta-ConsumerAllFunctionE7B9A-OCRphOAW6tVQ",
           Principal: "sns.amazonaws.com",
-          StatementId:
-            "LambdaSNSFiltersLambdaStack-ConsumerAllFunctionAllowInvokeLambdaSNSFiltersLambdaStackS-ZUN0SBMZP1TA",
           SourceArn: `arn:aws:sns:${
             config.region
           }:${config.accountId()}:LambdaSNSFiltersLambdaStack-SNSTopicBCCC5DD8-UaEWb1UkFPpL`,
+          StatementId:
+            "LambdaSNSFiltersLambdaStack-ConsumerAllFunctionAllowInvokeLambdaSNSFiltersLambdaStackS-ZUN0SBMZP1TA",
         },
       ],
     }),
@@ -186,11 +186,11 @@ exports.createResources = () => [
           FunctionName:
             "LambdaSNSFiltersLambdaSta-ConsumerRedFunction02912-5MU7iT8MlodZ",
           Principal: "sns.amazonaws.com",
-          StatementId:
-            "LambdaSNSFiltersLambdaStack-ConsumerRedFunctionAllowInvokeLambdaSNSFiltersLambdaStackS-114DRKOGP9U8Y",
           SourceArn: `arn:aws:sns:${
             config.region
           }:${config.accountId()}:LambdaSNSFiltersLambdaStack-SNSTopicBCCC5DD8-UaEWb1UkFPpL`,
+          StatementId:
+            "LambdaSNSFiltersLambdaStack-ConsumerRedFunctionAllowInvokeLambdaSNSFiltersLambdaStackS-114DRKOGP9U8Y",
         },
       ],
     }),

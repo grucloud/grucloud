@@ -56,6 +56,7 @@ exports.NetworkManagerVpcAttachment = () => ({
     "Arn",
     "SubnetArns",
     "VpcArn",
+    "OwnerAccountId",
   ],
   inferName: ({ dependenciesSpec: { coreNetwork, vpc } }) =>
     pipe([
@@ -183,6 +184,8 @@ exports.NetworkManagerVpcAttachment = () => ({
         get("Attachments"),
         find(eq(get("ResourceArn"), VpcArn)),
       ]),
+    isInstanceUp: pipe([eq(get("State"), "AVAILABLE")]),
+    isInstanceError: pipe([eq(get("State"), "FAILED")]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#updateVpcAttachment-property
   // TODO updateVpcAttachment
