@@ -14,9 +14,7 @@ exports.createResources = () => [
     type: "Distribution",
     group: "CloudFront",
     properties: ({ getId }) => ({
-      PriceClass: "PriceClass_100",
       Aliases: {
-        Quantity: 1,
         Items: [
           getId({
             type: "Certificate",
@@ -25,78 +23,73 @@ exports.createResources = () => [
             path: "name",
           }),
         ],
+        Quantity: 1,
       },
-      DefaultRootObject: "index.html",
+      Comment: "cloudfront.aws.test.grucloud.org.s3.amazonaws.com",
       DefaultCacheBehavior: {
-        TargetOriginId: "S3-cloudfront.aws.test.grucloud.org",
-        TrustedSigners: {
-          Enabled: false,
-        },
-        TrustedKeyGroups: {
-          Enabled: false,
-        },
-        ViewerProtocolPolicy: "redirect-to-https",
         AllowedMethods: {
-          Quantity: 2,
-          Items: ["HEAD", "GET"],
           CachedMethods: {
-            Quantity: 2,
             Items: ["HEAD", "GET"],
+            Quantity: 2,
           },
+          Items: ["HEAD", "GET"],
+          Quantity: 2,
         },
-        SmoothStreaming: false,
         Compress: false,
+        DefaultTTL: 86400,
         FieldLevelEncryptionId: "",
         ForwardedValues: {
-          QueryString: false,
           Cookies: {
             Forward: "none",
           },
           Headers: {
             Quantity: 0,
           },
+          QueryString: false,
           QueryStringCacheKeys: {
             Quantity: 0,
           },
         },
-        MinTTL: 600,
-        DefaultTTL: 86400,
         MaxTTL: 31536000,
+        MinTTL: 600,
+        SmoothStreaming: false,
+        TargetOriginId: "S3-cloudfront.aws.test.grucloud.org",
+        TrustedKeyGroups: {
+          Enabled: false,
+        },
+        TrustedSigners: {
+          Enabled: false,
+        },
+        ViewerProtocolPolicy: "redirect-to-https",
       },
+      DefaultRootObject: "index.html",
       Origins: {
-        Quantity: 1,
         Items: [
           {
-            Id: "S3-cloudfront.aws.test.grucloud.org",
-            DomainName: "cloudfront.aws.test.grucloud.org.s3.amazonaws.com",
-            OriginPath: "",
+            ConnectionAttempts: 3,
+            ConnectionTimeout: 10,
             CustomHeaders: {
               Quantity: 0,
+            },
+            DomainName: "cloudfront.aws.test.grucloud.org.s3.amazonaws.com",
+            Id: "S3-cloudfront.aws.test.grucloud.org",
+            OriginAccessControlId: "",
+            OriginPath: "",
+            OriginShield: {
+              Enabled: false,
             },
             S3OriginConfig: {
               OriginAccessIdentity: "",
             },
-            ConnectionAttempts: 3,
-            ConnectionTimeout: 10,
-            OriginShield: {
-              Enabled: false,
-            },
-            OriginAccessControlId: "",
           },
         ],
       },
-      Comment: "cloudfront.aws.test.grucloud.org.s3.amazonaws.com",
-      Logging: {
-        Enabled: false,
-        IncludeCookies: false,
-        Bucket: "",
-        Prefix: "",
-      },
+      PriceClass: "PriceClass_100",
       ViewerCertificate: {
-        CloudFrontDefaultCertificate: false,
-        SSLSupportMethod: "sni-only",
-        MinimumProtocolVersion: "TLSv1.2_2019",
         CertificateSource: "acm",
+        CloudFrontDefaultCertificate: false,
+        MinimumProtocolVersion: "TLSv1.2_2019",
+        SSLSupportMethod: "sni-only",
       },
     }),
     dependencies: ({}) => ({
