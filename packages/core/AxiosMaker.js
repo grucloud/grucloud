@@ -29,7 +29,8 @@ module.exports = AxiosMaker = ({
         ...config,
         headers: {
           ...config.headers,
-          common: { ...onHeaders(), "Content-Type": contentType },
+          ...onHeaders(),
+          "Content-Type": contentType,
         },
       };
     },
