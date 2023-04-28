@@ -8,38 +8,45 @@ exports.createResources = () => [
     group: "SSM",
     properties: ({}) => ({
       Content: {
-        schemaVersion: "0.3",
         description:
-          "Automation document for the invoking a lambda function v2",
+          "Automation document for the invoking a lambda function v3 updated",
+        mainSteps: [
+          {
+            action: "aws:invokeLambdaFunction",
+            inputs: {
+              FunctionName: "sam-app-LambdaFunction-SzMn1A4Jbksd",
+              Payload: `{
+ "ssm_automation_parameters":
+   {
+     "table_name": "{{DocumentInputTableName}}",
+     "partition_key_input": "{{PartitonKeyInput}}",
+     "sort_key_input":"{{SortKeyInput}}"
+   }
+}
+`,
+            },
+            name: "lambda_invoke",
+            onFailure: "Abort",
+          },
+        ],
         parameters: {
-          SortKeyInput: {
+          DocumentInputTableName: {
             type: "String",
           },
           PartitonKeyInput: {
             type: "String",
           },
-          DocumentInputTableName: {
+          SortKeyInput: {
             type: "String",
           },
         },
-        mainSteps: [
-          {
-            inputs: {
-              FunctionName: "sam-app-LambdaFunction-SzMn1A4Jbksd",
-              Payload:
-                '{"ssm_automation_parameters":\n   {\n     "table_name": "{{DocumentInputTableName}}",\n     "partition_key_input": "{{PartitonKeyInput}}",\n     "sort_key_input":"{{SortKeyInput}}"\n   }\n}\n',
-            },
-            name: "lambda_invoke",
-            action: "aws:invokeLambdaFunction",
-            onFailure: "Abort",
-          },
-        ],
+        schemaVersion: "0.3",
       },
       DocumentType: "Automation",
       Name: "sam-app-SsmAutomationDocument-tWpS8MDWk4RI",
       Parameters: [
         {
-          Name: "SortKeyInput",
+          Name: "DocumentInputTableName",
           Type: "String",
         },
         {
@@ -47,7 +54,7 @@ exports.createResources = () => [
           Type: "String",
         },
         {
-          Name: "DocumentInputTableName",
+          Name: "SortKeyInput",
           Type: "String",
         },
       ],

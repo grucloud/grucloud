@@ -14,6 +14,14 @@ describe("Lambda", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("CodeSigningConfig", () =>
+    pipe([
+      () => ({
+        groupType: "Lambda::CodeSigningConfig",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("EventSourceMapping", () =>
     pipe([
       () => ({

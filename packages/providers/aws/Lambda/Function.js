@@ -189,16 +189,16 @@ const decorate = ({ endpoint }) =>
         }),
       ]),
       //TODO
-      // CodeSigningConfigArn: pipe([
-      //   get("Configuration"),
-      //   pick(["FunctionName"]),
-      //   lambda().getFunctionCodeSigningConfig,
-      //   get("CodeSigningConfigArn"),
-      // ]),
+      CodeSigningConfig: pipe([
+        get("Configuration"),
+        pick(["FunctionName"]),
+        endpoint().getFunctionCodeSigningConfig,
+        get("CodeSigningConfigArn"),
+      ]),
       // ReservedConcurrentExecutions: pipe([
       //   get("Configuration"),
       //   pick(["FunctionName"]),
-      //   lambda().getFunctionConcurrency,
+      //   endpoint().getFunctionConcurrency,
       //   get("ReservedConcurrentExecutions"),
       // ]),
     }),
@@ -280,6 +280,7 @@ exports.LambdaFunction = () => ({
     "FunctionUrlConfig.FunctionArn",
     "FunctionUrlConfig.FunctionUrl",
     "FunctionUrlConfig.DomainName",
+    "CodeSigningConfigArn",
   ],
   propertiesDefault: {
     Publish: true,

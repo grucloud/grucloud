@@ -5,6 +5,7 @@
 FIS
 Verified Access
 
+appsync-cognito-lambda-cdk lambda signing
 s3-s3-replication-cdk retry
 SecurityHub consolidated finding
 GraphqlApi substitute region in additionalAuthenticationProviders
@@ -16,24 +17,17 @@ requestMACSec
 waf-appsync-cdk
 
 - MQ user for RabbitMQ
-- API Gateway: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
 - CodeStarConnections Host
   aws_networkmanager_attachment_accepter
 - EC2 instance, sort groups
 - cloudwan vpc attachment
 - route to core network
 - fix gc l -t
-- Example with non default DB Proxy Target Group,
-- Firewall deps
-- ECSTask dependency check
 - CodeDeployDeploymentGroup configDefault with other dependencies
 - RAMPrincipalAssociation findName
 - PrincipalAssociation replace associatedEntity from config
 - ipamPoolIpv6
-
 - RDS DBCluster AvailabilityZones
-- Nat gateway handle deleting
-- resource schema
 - document create key pair
 - s3 analytics configuration
 - route to NetworkInterfaceId

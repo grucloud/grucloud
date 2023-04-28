@@ -82,6 +82,16 @@ exports.testEnd2End = ({
               commandOptions: { our: true, canBeDeleted: true },
             }),
           () =>
+            cli.genCode({
+              commandOptions: {
+                inventory: "artifacts/inventory.json",
+                outputDir,
+                outputEnv: "default.template.env",
+                prompt: false,
+                ...commandOptions,
+              },
+            }),
+          () =>
             retryCall({
               name: `planQuery`,
               fn: pipe([() => ({}), cli.planQuery]),
@@ -98,16 +108,7 @@ exports.testEnd2End = ({
                 ...listOptions,
               },
             }),
-          () =>
-            cli.genCode({
-              commandOptions: {
-                inventory: "artifacts/inventory.json",
-                outputDir,
-                outputEnv: "default.template.env",
-                prompt: false,
-                ...commandOptions,
-              },
-            }),
+
           // () =>
           //   cli.list({
           //     programOptions: {

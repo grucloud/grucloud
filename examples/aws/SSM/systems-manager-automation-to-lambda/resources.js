@@ -176,7 +176,7 @@ exports.createResources = () => [
       Name: "sam-app-SsmAutomationDocument-tWpS8MDWk4RI",
       Parameters: [
         {
-          Name: "SortKeyInput",
+          Name: "DocumentInputTableName",
           Type: "String",
         },
         {
@@ -184,7 +184,7 @@ exports.createResources = () => [
           Type: "String",
         },
         {
-          Name: "DocumentInputTableName",
+          Name: "SortKeyInput",
           Type: "String",
         },
       ],
