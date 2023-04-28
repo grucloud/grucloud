@@ -191,7 +191,6 @@ const ExcludeDirsDefault = [
   "application-autoscaling-simple",
   "ta-eventbridge-lambda-s3",
   "databrew-simple",
-  "elastictranscoder-simple",
   "mediaconvert-simple",
   "media-tailor",
   "resiliencehub-simple",
@@ -213,7 +212,7 @@ const ExcludeDirsDefault = [
   "globalcluster", // Too slow
   "msk-lambda-cdk", //  Too slow
   "private-apigw-lambda-cdk", //  Too slow
-  "cloudfront-lambda-url-java", //  Too slow
+
   "direct-connect-simple",
   "repository", // TODO
   "transfer-ftps-s3", //TODO  create Transfer::Server Certificate type not supported
@@ -244,7 +243,6 @@ const ExcludeDirsDefault = [
   //"redshiftserverless-simple",
   // Route53Domain only on main account
   "certificate",
-  "cloudfront-distribution",
   "identity-provider",
   "control-tower-simple",
   "apigw-mutualtls-lambda",
@@ -271,13 +269,13 @@ const ExcludeDirsDefault = [
   "apprunner-simple",
   "apprunner-ngnix",
   "apprunner-secrets-manager",
-  "cloudfront-distribution",
+  "cloudfront-lambda-edge-cdk-python", // TODO
+  "cloudfront-le-apigw-cdk", // TODO
+  "cloudfront-lambda-url-java", //  Too slow
   "medialive-simple",
   "elemental-mediaconnect-medialive-mediapackage",
   "elemental-medialive-mediapackage-cdk-ts",
   "elemental-mediapackage-cloudfront-cdk-ts",
-  "cloudfront-lambda-edge-cdk-python", // TODO
-  "cloudfront-le-apigw-cdk", // TODO
   "xray-lambdalayers-cdk-python",
   "stepfunctions-eventbridge-lambda-sam-java",
   "role-everywhere",
@@ -414,7 +412,7 @@ exports.walkDirectory =
       () => readdir(directory, { withFileTypes: true }),
       filter(callProp("isDirectory")),
       filterExcludeFiles({ excludeDirs }),
-      filterIncludeDir({ IncludeList }),
+      //filterIncludeDir({ IncludeList }),
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])
       ),

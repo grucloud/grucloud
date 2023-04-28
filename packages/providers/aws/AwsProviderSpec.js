@@ -97,7 +97,6 @@ const GROUPS = [
   ["EFS", "efs"],
   ["EKS", "eks"],
   ["ElasticBeanstalk", "elasticbeanstalk"],
-  ["ElasticTranscoder", "elastictranscoder"],
   ["ElastiCache", "elasticache"],
   ["EMR", "emr"],
   ["EMRContainers", "emr-containers"],

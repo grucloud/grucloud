@@ -196,7 +196,6 @@
     "@aws-sdk/client-eks": "3.319.0",
     "@aws-sdk/client-elastic-beanstalk": "3.319.0",
     "@aws-sdk/client-elastic-load-balancing-v2": "3.319.0",
-    "@aws-sdk/client-elastic-transcoder": "3.319.0",
     "@aws-sdk/client-elasticache": "3.319.0",
     "@aws-sdk/client-emr": "3.319.0",
     "@aws-sdk/client-emr-containers": "3.319.0",
