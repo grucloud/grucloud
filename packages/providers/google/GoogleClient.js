@@ -289,7 +289,7 @@ const cannotBeDeletedDefault =
       isDefaultDefault({ config }),
     ]);
 
-const findDependenciesFromCreate = ({ spec, live, lives }) =>
+const findDependenciesFromCreate = ({ spec, live, lives, config }) =>
   pipe([
     () => spec,
     get("dependencies"),
@@ -326,12 +326,12 @@ const findDependenciesFromCreate = ({ spec, live, lives }) =>
 
 const findDependenciesDefault =
   ({ spec }) =>
-  ({ live, lives }) =>
+  ({ live, lives, config }) =>
     pipe([
       () => [
         // TODO
         //...findDependenciesFromList({ live, lives }),
-        ...findDependenciesFromCreate({ spec, live, lives }),
+        ...findDependenciesFromCreate({ spec, live, lives, config }),
       ],
       filter(not(isEmpty)),
     ])();
