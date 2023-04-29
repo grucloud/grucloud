@@ -7,13 +7,13 @@ exports.createResources = () => [
     type: "User",
     group: "ElastiCache",
     properties: ({}) => ({
-      UserId: "my-user",
-      UserName: "my-user",
-      Engine: "redis",
       AccessString: "on ~* +@all",
       AuthenticationMode: {
         Type: "iam",
       },
+      Engine: "redis",
+      UserId: "my-user",
+      UserName: "my-user",
     }),
   },
 ];

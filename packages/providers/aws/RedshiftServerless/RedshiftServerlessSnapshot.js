@@ -122,6 +122,8 @@ exports.RedshiftServerlessSnapshot = () => ({
   destroy: {
     method: "deleteSnapshot",
     pickId,
+    shouldRetryOnExceptionMessages: ["Cannot delete the snapshot"],
+    configIsDown: { retryCount: 90 * 12, retryDelay: 5e3 },
   },
   getByName: ({ getById }) =>
     pipe([({ name }) => ({ snapshotName: name }), getById({})]),

@@ -44,6 +44,7 @@ exports.createResources = () => [
     type: "Configuration",
     group: "MSK",
     properties: ({}) => ({
+      Name: "my-configuration",
       ServerProperties: `auto.create.topics.enable=false
 default.replication.factor=3
 min.insync.replicas=2
@@ -58,7 +59,6 @@ socket.send.buffer.bytes=102400
 unclean.leader.election.enable=true
 zookeeper.session.timeout.ms=18000
 `,
-      Name: "my-configuration",
     }),
   },
   {

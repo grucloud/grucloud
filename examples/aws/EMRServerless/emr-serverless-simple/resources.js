@@ -8,6 +8,25 @@ exports.createResources = () => [
     group: "EMRServerless",
     properties: ({}) => ({
       architecture: "X86_64",
+      autoStopConfiguration: {
+        idleTimeout: 15,
+      },
+      initialCapacity: {
+        Driver: {
+          resourceConfiguration: {
+            cpu: "4 vCPU",
+            disk: "20 GB",
+            memory: "16 GB",
+          },
+        },
+        Executor: {
+          resourceConfiguration: {
+            cpu: "4 vCPU",
+            disk: "20 GB",
+            memory: "16 GB",
+          },
+        },
+      },
       name: "My_First_Application",
       releaseLabel: "emr-6.8.0",
       type: "Spark",

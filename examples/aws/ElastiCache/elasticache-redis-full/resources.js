@@ -97,8 +97,8 @@ exports.createResources = () => [
     type: "CacheParameterGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      CacheParameterGroupName: "my-parameter-group",
       CacheParameterGroupFamily: "redis7",
+      CacheParameterGroupName: "my-parameter-group",
       Description: "My Parameter Group",
       Tags: [
         {
@@ -112,8 +112,8 @@ exports.createResources = () => [
     type: "CacheSubnetGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      CacheSubnetGroupName: "my-subnet-group",
       CacheSubnetGroupDescription: " ",
+      CacheSubnetGroupName: "my-subnet-group",
       Tags: [
         {
           Key: "mykey",
@@ -132,26 +132,27 @@ exports.createResources = () => [
     type: "ReplicationGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      ReplicationGroupDescription: " my description",
-      ReplicationGroupId: "my-redis-cluster",
-      SnapshotWindow: "05:00-06:00",
-      ClusterEnabled: false,
-      CacheNodeType: "cache.t3.micro",
       AtRestEncryptionEnabled: true,
+      AutoMinorVersionUpgrade: true,
+      CacheNodeType: "cache.t3.micro",
+      CacheParameterGroupName: "my-parameter-group",
+      CacheSubnetGroupName: "my-subnet-group",
+      ClusterEnabled: false,
       LogDeliveryConfigurations: [
         {
-          LogType: "slow-log",
-          DestinationType: "kinesis-firehose",
           DestinationDetails: {
             KinesisFirehoseDetails: {
               DeliveryStream: "delivery-stream-s3",
             },
           },
+          DestinationType: "kinesis-firehose",
           LogFormat: "json",
+          LogType: "slow-log",
         },
       ],
-      CacheParameterGroupName: "my-parameter-group",
-      CacheSubnetGroupName: "my-subnet-group",
+      ReplicationGroupDescription: "my description",
+      ReplicationGroupId: "my-redis-cluster",
+      SnapshotWindow: "05:00-06:00",
       NumCacheClusters: 3,
     }),
     dependencies: ({}) => ({
@@ -166,13 +167,13 @@ exports.createResources = () => [
     type: "User",
     group: "ElastiCache",
     properties: ({}) => ({
-      UserId: "myuser",
-      UserName: "myuser",
-      Engine: "redis",
       AccessString: "on ~* +@all",
       AuthenticationMode: {
         Type: "password",
       },
+      Engine: "redis",
+      UserId: "myuser",
+      UserName: "myuser",
       Passwords: JSON.parse(process.env.MYUSER_ELASTICACHE_USER_PASSWORDS),
     }),
   },
@@ -180,8 +181,8 @@ exports.createResources = () => [
     type: "UserGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      UserGroupId: "mygroup",
       Engine: "redis",
+      UserGroupId: "mygroup",
       UserIds: ["default", "myuser"],
     }),
     dependencies: ({}) => ({
@@ -195,7 +196,7 @@ exports.createResources = () => [
       DeliveryStreamName: "delivery-stream-s3",
       DeliveryStreamType: "DirectPut",
       ExtendedS3DestinationConfiguration: {
-        BucketARN: `arn:aws:s3:::gc-firehose-destination-${config.accountId()}`,
+        BucketARN: "arn:aws:s3:::gc-firehose-destination-840541460064",
         BufferingHints: {
           IntervalInSeconds: 300,
           SizeInMBs: 5,
@@ -365,16 +366,16 @@ exports.createResources = () => [
       RoleName: `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "firehose.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({ config }) => ({
@@ -396,8 +397,8 @@ exports.createResources = () => [
     name: "topic-elasticache-redis.fifo",
     properties: ({}) => ({
       Attributes: {
-        FifoTopic: "true",
         ContentBasedDeduplication: "false",
+        FifoTopic: "true",
       },
     }),
   },

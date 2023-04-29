@@ -160,16 +160,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "vpclatticedemo-InboundLambdaFunctionRole-MOK9FMSJUYDM",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -186,8 +186,8 @@ exports.createResources = () => [
                   "ec2:DescribeNetworkInterfaces",
                   "ec2:DeleteNetworkInterface",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -202,16 +202,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "vpclatticedemo-OutboundLambdaFunctionRole-4HOJL6ADS26",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -228,8 +228,8 @@ exports.createResources = () => [
                   "ec2:DescribeNetworkInterfaces",
                   "ec2:DeleteNetworkInterface",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -287,42 +287,6 @@ exports.createResources = () => [
       subnets: ["VPC::Private Subnet (Source Subnet)"],
       securityGroups: ["sg::VPC::demo-outboundsg"],
       vpcLatticeService: ["demo-service"],
-    }),
-  },
-  {
-    type: "Permission",
-    group: "Lambda",
-    properties: ({ getId }) => ({
-      Permissions: [
-        {
-          Action: "lambda:InvokeFunction",
-          FunctionName: "vpclatticedemo-InboundLambdaFunction-yfe1VEdAiTP6",
-          Principal: "vpc-lattice.amazonaws.com",
-          StatementId: "vpc-lattice-access-for-tg-0079eb3ea7f2b645e",
-          SourceArn: `${getId({
-            type: "TargetGroup",
-            group: "VpcLattice",
-            name: "demo-targetgroup",
-            path: "live.arn",
-          })}`,
-        },
-        {
-          Action: "lambda:InvokeFunction",
-          FunctionName: "vpclatticedemo-InboundLambdaFunction-yfe1VEdAiTP6",
-          Principal: "vpc-lattice.amazonaws.com",
-          StatementId: "vpc-lattice-access-for-tg-0c9a4659a73a58f2e",
-          SourceArn: `${getId({
-            type: "TargetGroup",
-            group: "VpcLattice",
-            name: "demo-targetgroup",
-            path: "live.arn",
-          })}`,
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      lambdaFunction: "vpclatticedemo-InboundLambdaFunction-yfe1VEdAiTP6",
-      vpcLatticeTargetGroups: ["demo-targetgroup"],
     }),
   },
   {
@@ -389,7 +353,6 @@ exports.createResources = () => [
     group: "VpcLattice",
     properties: ({ getId }) => ({
       name: "demo-targetgroup",
-      type: "LAMBDA",
       targets: [
         {
           id: `${getId({
@@ -399,6 +362,7 @@ exports.createResources = () => [
           })}`,
         },
       ],
+      type: "LAMBDA",
     }),
     dependencies: ({}) => ({
       lambdaFunctions: ["vpclatticedemo-InboundLambdaFunction-yfe1VEdAiTP6"],

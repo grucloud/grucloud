@@ -10,10 +10,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "lattice-ec2-testing-ec2",
     properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20230404.1 x86_64 HVM gp2",
       },
+      InstanceType: "t2.micro",
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -31,8 +31,8 @@ exports.createResources = () => [
           })}`,
         },
       ],
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20230404.1 x86_64 HVM gp2",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
       },
       UserData: `#!/bin/bash -xe
 yum update -y
@@ -658,21 +658,21 @@ systemctl start nginx
     properties: ({}) => ({
       RoleName: "lattice-ec2-testing-role",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2008-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
       ],
     }),
@@ -683,17 +683,8 @@ systemctl start nginx
     properties: ({ getId }) => ({
       RoleName: "lattice-ecs-GitHub-to-fastapi-role",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
-            Principal: {
-              Federated: `${getId({
-                type: "OpenIDConnectProvider",
-                group: "IAM",
-                name: "oidp::token.actions.githubusercontent.com",
-              })}`,
-            },
             Action: "sts:AssumeRoleWithWebIdentity",
             Condition: {
               "ForAnyValue:StringEquals": {
@@ -704,14 +695,23 @@ systemctl start nginx
                 ],
               },
             },
+            Effect: "Allow",
+            Principal: {
+              Federated: `${getId({
+                type: "OpenIDConnectProvider",
+                group: "IAM",
+                name: "oidp::token.actions.githubusercontent.com",
+              })}`,
+            },
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ContainerRegistryPowerUser",
           PolicyArn:
             "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser",
+          PolicyName: "AmazonEC2ContainerRegistryPowerUser",
         },
       ],
     }),
@@ -725,22 +725,22 @@ systemctl start nginx
     properties: ({}) => ({
       RoleName: "lattice-ecs-testing-auto-scaling-role",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2008-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ContainerServiceAutoscaleRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole",
+          PolicyName: "AmazonEC2ContainerServiceAutoscaleRole",
         },
       ],
     }),
@@ -751,22 +751,22 @@ systemctl start nginx
     properties: ({}) => ({
       RoleName: "lattice-ecs-testing-execution-role",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2008-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonECSTaskExecutionRolePolicy",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+          PolicyName: "AmazonECSTaskExecutionRolePolicy",
         },
       ],
     }),
@@ -777,16 +777,16 @@ systemctl start nginx
     properties: ({}) => ({
       RoleName: "lattice-ecs-testing-task-role",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2008-10-17",
       },
     }),
   },
@@ -889,7 +889,6 @@ systemctl start nginx
         protocolVersion: "HTTP1",
       },
       name: "ec2-lattice-tg",
-      type: "INSTANCE",
       targets: [
         {
           id: `${getId({
@@ -900,6 +899,7 @@ systemctl start nginx
           port: 80,
         },
       ],
+      type: "INSTANCE",
     }),
     dependencies: ({}) => ({
       ec2Instances: ["lattice-ec2-testing-ec2"],
@@ -916,7 +916,6 @@ systemctl start nginx
         protocolVersion: "HTTP1",
       },
       name: "ecs-lattice-tg",
-      type: "ALB",
       targets: [
         {
           id: `${getId({
@@ -927,6 +926,7 @@ systemctl start nginx
           port: 80,
         },
       ],
+      type: "ALB",
     }),
     dependencies: ({}) => ({
       elbLoadBalancers: ["lattice-ecs-testing-loadbalancer"],

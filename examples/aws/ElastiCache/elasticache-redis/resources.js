@@ -81,8 +81,8 @@ exports.createResources = () => [
     type: "CacheSubnetGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      CacheSubnetGroupName: "my-sutnet-group",
       CacheSubnetGroupDescription: " ",
+      CacheSubnetGroupName: "my-sutnet-group",
     }),
     dependencies: ({ config }) => ({
       subnets: [
@@ -95,12 +95,13 @@ exports.createResources = () => [
     type: "ReplicationGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      ReplicationGroupId: "my-simple-redis-cluster-3",
-      SnapshotWindow: "06:30-07:30",
-      ClusterEnabled: false,
+      AutoMinorVersionUpgrade: true,
       CacheNodeType: "cache.t2.micro",
       CacheParameterGroupName: "default.redis7",
       CacheSubnetGroupName: "my-sutnet-group",
+      ClusterEnabled: false,
+      ReplicationGroupId: "my-simple-redis-cluster-3",
+      SnapshotWindow: "06:30-07:30",
       NumCacheClusters: 2,
     }),
     dependencies: ({}) => ({

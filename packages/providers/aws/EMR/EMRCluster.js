@@ -93,6 +93,8 @@ exports.EMRCluster = ({}) => ({
     "Instances.EmrManagedSlaveSecurityGroup",
     "Instances.Ec2SubnetId",
     "Instances.ServiceAccessSecurityGroup",
+    "Instances.RequestedEc2SubnetIds",
+    "Instances.RequestedEc2AvailabilityZones",
   ],
   propertiesDefault: {},
   dependencies: {
@@ -228,12 +230,8 @@ exports.EMRCluster = ({}) => ({
     config,
   }) =>
     pipe([
-      tap(() => {
-        assert(iamServiceRole);
-      }),
       () => otherProps,
       defaultsDeep({
-        ServiceRole: getField(iamServiceRole, "Arn"),
         Tags: buildTags({
           name,
           config,
@@ -241,6 +239,12 @@ exports.EMRCluster = ({}) => ({
           UserTags: Tags,
         }),
       }),
+      when(
+        () => iamServiceRole,
+        defaultsDeep({
+          ServiceRole: getField(iamServiceRole, "Arn"),
+        })
+      ),
       when(
         () => iamJobFlowRole,
         defaultsDeep({

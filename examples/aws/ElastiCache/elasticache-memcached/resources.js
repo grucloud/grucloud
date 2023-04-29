@@ -87,12 +87,12 @@ exports.createResources = () => [
     properties: ({}) => ({
       CacheClusterId: "my-memcached",
       CacheNodeType: "cache.t2.micro",
+      CacheSubnetGroupName: "my-memcached",
       Engine: "memcached",
       EngineVersion: "1.6.12",
       NumCacheNodes: 1,
       PreferredAvailabilityZone: "us-east-1a",
       PreferredMaintenanceWindow: "sun:03:30-sun:04:30",
-      CacheSubnetGroupName: "my-memcached",
     }),
     dependencies: ({}) => ({
       subnetGroup: "my-memcached",
@@ -102,8 +102,8 @@ exports.createResources = () => [
     type: "CacheParameterGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      CacheParameterGroupName: "my-param-group-memcached",
       CacheParameterGroupFamily: "memcached1.6",
+      CacheParameterGroupName: "my-param-group-memcached",
       Description: "My Memcached Param group",
     }),
   },
@@ -111,8 +111,8 @@ exports.createResources = () => [
     type: "CacheSubnetGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      CacheSubnetGroupName: "my-memcached",
       CacheSubnetGroupDescription: "my subnet group",
+      CacheSubnetGroupName: "my-memcached",
     }),
     dependencies: ({ config }) => ({
       subnets: [

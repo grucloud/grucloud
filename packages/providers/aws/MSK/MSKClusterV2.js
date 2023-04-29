@@ -23,14 +23,17 @@ const { Tagger } = require("./MSKCommon");
 const buildArn = () => get("ClusterArn");
 
 const pickId = pipe([
-  tap((params) => {
-    assert(true);
+  tap(({ ClusterArn }) => {
+    assert(ClusterArn);
   }),
   pick(["ClusterArn"]),
 ]);
 
 const decorate = () =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     when(
       get("Provisioned.CurrentBrokerSoftwareInfo.KafkaVersion"),
       pipe([
@@ -212,7 +215,7 @@ exports.MSKClusterV2 = ({}) => ({
   getList: {
     method: "listClustersV2",
     getParam: "ClusterInfoList",
-    decorate,
+    decorate: ({ getById }) => pipe([getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kafka.html#createClusterV2-property
   create: {

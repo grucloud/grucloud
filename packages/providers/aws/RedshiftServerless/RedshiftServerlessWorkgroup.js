@@ -146,6 +146,10 @@ exports.RedshiftServerlessWorkgroup = () => ({
   destroy: {
     method: "deleteWorkgroup",
     pickId,
+    shouldRetryOnExceptionMessages: [
+      "There is an operation running on the workgroup",
+    ],
+    configIsDown: { retryCount: 90 * 12, retryDelay: 5e3 },
   },
   getByName: ({ getById }) =>
     pipe([({ name }) => ({ workgroupName: name }), getById({})]),

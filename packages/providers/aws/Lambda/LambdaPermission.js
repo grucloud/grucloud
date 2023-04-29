@@ -11,13 +11,20 @@ const {
   eq,
   filter,
 } = require("rubico");
-const { defaultsDeep, when, find, callProp } = require("rubico/x");
+const { defaultsDeep, when, find, callProp, first } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
   replacePolicy,
   dependenciesFromPolicies,
 } = require("../IAM/AwsIamCommon");
+
+const managedByOther = () =>
+  pipe([
+    get("Permissions"),
+    first,
+    eq(get("Principal"), "vpc-lattice.amazonaws.com"),
+  ]);
 
 const pickId = pipe([
   tap(({ FunctionName }) => {
@@ -125,6 +132,7 @@ exports.LambdaPermission = () => ({
   client: "Lambda",
   propertiesDefault: {},
   omitProperties: ["FunctionName"],
+  managedByOther,
   inferName: ({ dependenciesSpec: { lambdaFunction } }) =>
     pipe([
       () => lambdaFunction,

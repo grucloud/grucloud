@@ -10,22 +10,22 @@ exports.createResources = () => [
       RoleName: "AWSTransferLoggingAccess",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "transfer.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSTransferLoggingAccess",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSTransferLoggingAccess",
+          PolicyName: "AWSTransferLoggingAccess",
         },
       ],
     }),
@@ -37,22 +37,22 @@ exports.createResources = () => [
       RoleName: "role-transfer",
       Description: "Allow AWS Transfer to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "transfer.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonS3FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
         },
       ],
     }),

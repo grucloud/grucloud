@@ -28,6 +28,26 @@ const { readdir } = require("fs").promises;
 const path = require("path");
 const fs = require("fs").promises;
 
+const IncludeListExpensive = [
+  //"EMR", //TODO
+  "EMRServerless",
+  "ElastiCache",
+  "FSx",
+  "MQ",
+  "MSK",
+  "MWAA",
+  "MemoryDB",
+  //"Neptune",
+  // "NetworkFirewall",
+  // "NetworkManager",
+  "OpenSearch",
+  "OpenSearchServerless",
+  "Redshift",
+  "RedshiftServerless",
+  "Transfer",
+  "VpcLattice",
+  "WAFv2",
+];
 const IncludeList = [
   "ACM",
   "APIGateway",
@@ -236,7 +256,7 @@ const ExcludeDirsDefault = [
   "xray-lambdalayers-cdk-python",
   "stepfunctions-eventbridge-lambda-sam-java",
   "lambda-layer-terraform",
-
+  "redshift-simple", // uses Organisation, use the default profile
   "cognito-restapi-vpclink",
   "apigw-http-eventbridge-terraform",
   "s3-storage-lens", // Bug in the aws sdk js
@@ -283,22 +303,22 @@ const filterIncludeDir = ({ IncludeList }) =>
   pipe([filter(({ name }) => pipe([() => IncludeList, includes(name)])())]);
 //
 
-const isGruCloudExample = ({ directory, name }) =>
-  pipe([
-    get("name"),
-    (fileName) => path.resolve(directory, name, fileName),
-    (filename) => fs.readFile(filename, "utf-8"),
-    tap((content) => {
-      assert(content);
-    }),
-    JSON.parse,
-    tap((content) => {
-      assert(content);
-    }),
-    get("dependencies"),
-    keys,
-    any(includes("@grucloud/core")),
-  ]);
+// const isGruCloudExample = ({ directory, name }) =>
+//   pipe([
+//     get("name"),
+//     (fileName) => path.resolve(directory, name, fileName),
+//     (filename) => fs.readFile(filename, "utf-8"),
+//     tap((content) => {
+//       assert(content);
+//     }),
+//     JSON.parse,
+//     tap((content) => {
+//       assert(content);
+//     }),
+//     get("dependencies"),
+//     keys,
+//     any(includes("@grucloud/core")),
+//   ]);
 
 const walkDirectoryUnit =
   ({ excludeDirs = [], directory }) =>
@@ -355,6 +375,7 @@ exports.walkDirectory =
       filter(callProp("isDirectory")),
       filterExcludeFiles({ excludeDirs }),
       //filterIncludeDir({ IncludeList }),
+      filterIncludeDir({ IncludeList: IncludeListExpensive }),
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])
       ),

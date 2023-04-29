@@ -481,23 +481,23 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "roleApiGatewayCloudWatch",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
         },
       ],
     }),
@@ -531,12 +531,12 @@ exports.createResources = () => [
           },
         },
       ],
+      Scope: "REGIONAL",
       VisibilityConfig: {
         CloudWatchMetricsEnabled: true,
         MetricName: "my-webacl",
         SampledRequestsEnabled: true,
       },
-      Scope: "REGIONAL",
     }),
   },
   {

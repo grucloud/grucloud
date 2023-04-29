@@ -138,17 +138,13 @@ exports.dependenciesFromPolicies = dependenciesFromPolicies;
 const replacePolicy = replaceDependency(dependenciesFromPolicies);
 exports.replacePolicy = replacePolicy;
 
-const assignPolicyResource = ({ providerConfig, lives }) =>
+const replaceResource = ({ key, providerConfig, lives }) =>
   pipe([
-    tap((params) => {
-      assert(lives);
-      assert(providerConfig);
-    }),
     when(
-      get("Resource"),
+      get(key),
       assign({
         Resource: pipe([
-          get("Resource"),
+          get(key),
           switchCase([
             Array.isArray,
             map(replacePolicy({ providerConfig, lives })),
@@ -157,6 +153,16 @@ const assignPolicyResource = ({ providerConfig, lives }) =>
         ]),
       })
     ),
+  ]);
+
+const assignPolicyResource = ({ providerConfig, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(lives);
+      assert(providerConfig);
+    }),
+    replaceResource({ key: "Resource", providerConfig, lives }),
+    replaceResource({ key: "NotResource", providerConfig, lives }),
   ]);
 
 exports.assignPolicyResource = assignPolicyResource;

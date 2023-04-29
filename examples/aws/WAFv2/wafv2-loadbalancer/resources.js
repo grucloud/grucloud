@@ -146,12 +146,12 @@ exports.createResources = () => [
       ManagedByFirewallManager: false,
       Name: "my-webacl",
       Rules: [],
+      Scope: "REGIONAL",
       VisibilityConfig: {
         CloudWatchMetricsEnabled: true,
         MetricName: "my-webacl",
         SampledRequestsEnabled: true,
       },
-      Scope: "REGIONAL",
     }),
   },
   {
