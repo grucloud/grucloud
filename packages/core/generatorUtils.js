@@ -564,12 +564,12 @@ const dependencyValue = ({ key, list, resource, providerConfig }) =>
         switchCase([
           isString,
           pipe([
+            providerConfig.transformResourceName({ resource }),
             replaceRegion({ providerConfig, asFunction: false }),
             unless(includes("`"), pipe([prepend('"'), append('"')])),
           ]),
           pipe([JSON.stringify]),
         ]),
-        providerConfig.transformResourceName({ resource }),
       ])
     ),
     when(() => list, pipe([(values) => `[${values}]`])),
