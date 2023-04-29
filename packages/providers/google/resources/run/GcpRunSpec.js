@@ -54,7 +54,7 @@ module.exports = () =>
           omitIfEmpty(["metadata.labels"]),
           set(
             "spec.template.spec.serviceAccountName",
-            () =>
+            () => () =>
               "`${config.projectNumber()}-compute@developer.gserviceaccount.com`"
           ),
         ]),
@@ -89,7 +89,7 @@ module.exports = () =>
       filterLive: () =>
         pipe([
           omit(["policy.etag", "service"]),
-          set("location", () => "config.region"),
+          set("location", () => () => "config.region"),
         ]),
       compare: compareGoogle({
         filterLive: () => pipe([omit(["policy.etag"])]),
