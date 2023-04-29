@@ -176,6 +176,7 @@ exports.FSxFileSystem = () => ({
       "Cannot delete file system while there is a user initiated backup in progress.",
       "Cannot take backup while",
     ],
+    configIsDown: { retryCount: 45 * 12, retryDelay: 5e3 },
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>
