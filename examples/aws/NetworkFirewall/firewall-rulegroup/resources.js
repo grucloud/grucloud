@@ -7,7 +7,15 @@ exports.createResources = () => [
     type: "RuleGroup",
     group: "NetworkFirewall",
     properties: ({}) => ({
+      Capacity: 100,
       RuleGroup: {
+        RulesSource: {
+          RulesSourceList: {
+            GeneratedRulesType: "DENYLIST",
+            Targets: [".twitter.com", ".facebook.com"],
+            TargetTypes: ["HTTP_HOST", "TLS_SNI"],
+          },
+        },
         RuleVariables: {
           IPSets: {
             HOME_NET: {
@@ -15,15 +23,7 @@ exports.createResources = () => [
             },
           },
         },
-        RulesSource: {
-          RulesSourceList: {
-            GeneratedRulesType: "DENYLIST",
-            TargetTypes: ["HTTP_HOST", "TLS_SNI"],
-            Targets: [".twitter.com", ".facebook.com"],
-          },
-        },
       },
-      Capacity: 100,
       RuleGroupName: "block-domains",
       Type: "STATEFUL",
     }),
