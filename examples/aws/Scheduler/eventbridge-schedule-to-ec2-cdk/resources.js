@@ -10,28 +10,28 @@ exports.createResources = () => [
       RoleName:
         "ScheduleEc2InstancesStartAnd-schedulerrole9B80A9F3-5BUXY937EA95",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "scheduler.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["ec2:startInstances", "ec2:stopInstances"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "ScheduleToStopEC2Instances",
         },

@@ -10,30 +10,30 @@ exports.createResources = () => [
       RoleName:
         "EventbridgeSchedulerIntoEven-schedulerrole9B80A9F3-NWLOGNZQ0P8Z",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "scheduler.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "events:PutEvents",
+                Effect: "Allow",
                 Resource: `arn:aws:events:${
                   config.region
                 }:${config.accountId()}:event-bus/MyCustomBus`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "ScheduleToPutEventsIntoDefaultEventBus",
         },

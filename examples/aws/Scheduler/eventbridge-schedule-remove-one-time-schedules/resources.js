@@ -9,32 +9,32 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-CleanUpOneTimeSchedulesRole-1NZZZMS0AA7R4",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "scheduler.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["lambda:InvokeFunction"],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:lambda:${
                     config.region
                   }:${config.accountId()}:function:sam-app-FindSchedules-OfzThGtSLZxQ`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "InvokeLambda",
         },
@@ -47,44 +47,44 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-FindSchedulesRole-M4O8IEK3GEFO",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["scheduler:ListSchedules", "scheduler:GetSchedule"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: ["sqs:SendMessage", "sqs:SendMessageBatch"],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:sam-app-removal-queue`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "FindSchedulesRolePolicy1",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -95,26 +95,25 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-ProcessSchedulesRole-DA0Y2BACICJC",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["scheduler:GetSchedule", "scheduler:DeleteSchedule"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: [
@@ -122,26 +121,27 @@ exports.createResources = () => [
                   "sqs:DeleteMessage",
                   "sqs:GetQueueAttributes",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:sam-app-removal-queue`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "ProcessSchedulesRolePolicy1",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaSQSQueueExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole",
+          PolicyName: "AWSLambdaSQSQueueExecutionRole",
         },
       ],
     }),

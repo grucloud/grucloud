@@ -33,13 +33,8 @@ exports.createResources = () => [
       RoleName: "Amazon_EventBridge_Scheduler_SNS",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
-            Principal: {
-              Service: "scheduler.amazonaws.com",
-            },
             Action: "sts:AssumeRole",
             Condition: {
               StringEquals: {
@@ -49,8 +44,13 @@ exports.createResources = () => [
                 }:${config.accountId()}:schedule/default/schedule-sns`,
               },
             },
+            Effect: "Allow",
+            Principal: {
+              Service: "scheduler.amazonaws.com",
+            },
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
