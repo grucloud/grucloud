@@ -83,6 +83,9 @@ const {
   EC2TransitGatewayVpcAttachment,
 } = require("./EC2TransitGatewayVpcAttachment");
 const {
+  EC2TransitGatewayVpnAttachment,
+} = require("./EC2TransitGatewayVpnAttachment");
+const {
   EC2TransitGatewayPeeringAttachment,
 } = require("./EC2TransitGatewayPeeringAttachment");
 const { EC2TransitGatewayRoute } = require("./EC2TransitGatewayRoute");
@@ -349,6 +352,7 @@ module.exports = pipe([
       EC2TransitGatewayRouteTablePropagation({ compare: compareEC2 })
     ),
     createAwsService(EC2TransitGatewayVpcAttachment({ compare: compareEC2 })),
+    createAwsService(EC2TransitGatewayVpnAttachment({ compare: compareEC2 })),
     createAwsService(EC2Volume({ compare: compareEC2 })),
     createAwsService(EC2VolumeAttachment({ compare: compareEC2 })),
     createAwsService(EC2Vpc({ compare: compareEC2 })),

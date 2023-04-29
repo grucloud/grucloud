@@ -70,7 +70,6 @@ exports.EC2TransitGatewayRouteTablePropagation = ({ compare }) => ({
       dependencyId: ({ lives, config }) => get("TransitGatewayRouteTableId"),
     },
     ...transitGatewayAttachmentDependencies,
-    // TODO add other attachment type
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getTransitGatewayRouteTablePropagations-property
   getList: ({ client, config }) =>
@@ -103,6 +102,7 @@ exports.EC2TransitGatewayRouteTablePropagation = ({ compare }) => ({
     dependencies: {
       transitGatewayRouteTable,
       transitGatewayVpcAttachment,
+      transitGatewayVpnAttachment,
       transitGatewayAttachment,
     },
     config,
@@ -124,6 +124,13 @@ exports.EC2TransitGatewayRouteTablePropagation = ({ compare }) => ({
         defaultsDeep({
           TransitGatewayAttachmentId: getField(
             transitGatewayVpcAttachment,
+            "TransitGatewayAttachmentId"
+          ),
+        }),
+        () => transitGatewayVpnAttachment,
+        defaultsDeep({
+          TransitGatewayAttachmentId: getField(
+            transitGatewayVpnAttachment,
             "TransitGatewayAttachmentId"
           ),
         }),

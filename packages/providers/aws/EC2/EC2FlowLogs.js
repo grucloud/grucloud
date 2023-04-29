@@ -65,12 +65,11 @@ const FlowLogsDependencies = {
     ResourceType: "TransitGatewayAttachment",
     ResourceId: "TransitGatewayAttachmentId",
   },
-  transitGatewayAttachment: {
-    type: "TransitGatewayAttachment",
+  transitGatewayVpnAttachment: {
+    type: "TransitGatewayVpnAttachment",
     group: "EC2",
     ResourceType: "TransitGatewayAttachment",
     ResourceId: "TransitGatewayAttachmentId",
-    excludeDefaultDependencies: true,
   },
 };
 
@@ -285,7 +284,6 @@ exports.EC2FlowLogs = ({ compare }) => ({
     ]),
   getByName: getByNameCore,
   tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
-
   configDefault: ({
     name,
     namespace,
@@ -359,9 +357,6 @@ exports.EC2FlowLogs = ({ compare }) => ({
             Tags: buildTags({ config, namespace, name, UserTags: Tags }),
           },
         ],
-      }),
-      tap((params) => {
-        assert(true);
       }),
     ])(),
 });
