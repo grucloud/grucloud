@@ -42,53 +42,53 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "iam_for_lambda",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
-                Sid: "AllowLambdaFunctionToCreateLogs",
                 Action: ["logs:*"],
                 Effect: "Allow",
                 Resource: ["arn:aws:logs:*:*:*"],
+                Sid: "AllowLambdaFunctionToCreateLogs",
               },
               {
-                Sid: "AllowLambdaFunctionInvocation",
-                Effect: "Allow",
                 Action: ["lambda:InvokeFunction"],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
                   }:${config.accountId()}:table/UsersIds/stream/*`,
                 ],
+                Sid: "AllowLambdaFunctionInvocation",
               },
               {
-                Sid: "APIAccessForDynamoDBStreams",
-                Effect: "Allow",
                 Action: [
                   "dynamodb:GetRecords",
                   "dynamodb:GetShardIterator",
                   "dynamodb:DescribeStream",
                   "dynamodb:ListStreams",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:dynamodb:${
                   config.region
                 }:${config.accountId()}:table/UsersIds/stream/*`,
+                Sid: "APIAccessForDynamoDBStreams",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "lambda-dynamodb-policy",
         },

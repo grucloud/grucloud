@@ -356,28 +356,28 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Gateway",
-      ServiceName: `com.amazonaws.${config.region}.dynamodb`,
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Effect: "Allow",
-            Principal: {
-              AWS: "*",
-            },
             Action: "dynamodb:PutItem",
-            Resource: `arn:aws:dynamodb:${
-              config.region
-            }:${config.accountId()}:table/CdkStack-DynamoTableB2B22E15-1T1CPCS57NG64`,
             Condition: {
               ArnEquals: {
                 "aws:PrincipalArn": `arn:aws:iam::${config.accountId()}:role/CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-GTVVNX6JAX97`,
               },
             },
+            Effect: "Allow",
+            Principal: {
+              AWS: "*",
+            },
+            Resource: `arn:aws:dynamodb:${
+              config.region
+            }:${config.accountId()}:table/CdkStack-DynamoTableB2B22E15-1T1CPCS57NG64`,
           },
         ],
+        Version: "2012-10-17",
       },
+      ServiceName: `com.amazonaws.${config.region}.dynamodb`,
+      VpcEndpointType: "Gateway",
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
@@ -506,21 +506,20 @@ exports.createResources = () => [
       RoleName:
         "CdkStack-MyFargateServiceTaskDefExecutionRoleD6305-12UZ2O2VLJ5O5",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -528,26 +527,27 @@ exports.createResources = () => [
                   "ecr:GetDownloadUrlForLayer",
                   "ecr:BatchGetImage",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:ecr:${
                   config.region
                 }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${
                   config.region
                 }`,
-                Effect: "Allow",
               },
               {
                 Action: "ecr:GetAuthorizationToken",
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+                Effect: "Allow",
                 Resource: `arn:aws:logs:${
                   config.region
                 }:${config.accountId()}:log-group:CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-gASMJdvFOK38:*`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName:
             "MyFargateServiceTaskDefExecutionRoleDefaultPolicyEC22B20F",
@@ -561,21 +561,20 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-GTVVNX6JAX97",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -585,14 +584,15 @@ exports.createResources = () => [
                   "dynamodb:DeleteItem",
                   "dynamodb:DescribeTable",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
                   }:${config.accountId()}:table/CdkStack-DynamoTableB2B22E15-1T1CPCS57NG64`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "MyFargateServiceTaskDefTaskRoleDefaultPolicy4E7DAAD7",
         },

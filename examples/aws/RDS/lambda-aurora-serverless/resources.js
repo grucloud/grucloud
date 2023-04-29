@@ -9,16 +9,16 @@ exports.createResources = () => [
     properties: ({ getId }) => ({
       RoleName: "sam-app-LambdaFunctionRole-1H8HS58WE9MGP",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -26,13 +26,13 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["secretsmanager:GetSecretValue"],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "Secret",
                   group: "SecretsManager",
                   name: "aurora-test-cluster-AuroraUserSecret",
                   path: "live.ARN",
                 })}`,
-                Effect: "Allow",
               },
             ],
           },
@@ -43,13 +43,13 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "rds-data:ExecuteStatement",
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "DBCluster",
                   group: "RDS",
                   name: "aurora-test-cluster",
                   path: "live.DBClusterArn",
                 })}`,
-                Effect: "Allow",
               },
             ],
           },
@@ -58,9 +58,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -74,18 +74,8 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ getId }) => ({
       Configuration: {
-        FunctionName: "aurora-test-cluster-function",
-        Runtime: "nodejs14.x",
-        Timeout: 30,
-        Handler: "app.handler",
         Environment: {
           Variables: {
-            SecretArn: `${getId({
-              type: "Secret",
-              group: "SecretsManager",
-              name: "aurora-test-cluster-AuroraUserSecret",
-              path: "live.ARN",
-            })}`,
             DBClusterArn: `${getId({
               type: "DBCluster",
               group: "RDS",
@@ -93,8 +83,18 @@ exports.createResources = () => [
               path: "live.DBClusterArn",
             })}`,
             DBName: "aurora_test_db",
+            SecretArn: `${getId({
+              type: "Secret",
+              group: "SecretsManager",
+              name: "aurora-test-cluster-AuroraUserSecret",
+              path: "live.ARN",
+            })}`,
           },
         },
+        FunctionName: "aurora-test-cluster-function",
+        Handler: "app.handler",
+        Runtime: "nodejs14.x",
+        Timeout: 30,
       },
     }),
     dependencies: ({}) => ({
@@ -110,23 +110,23 @@ exports.createResources = () => [
       BackupRetentionPeriod: 1,
       DatabaseName: "aurora_test_db",
       DBClusterIdentifier: "aurora-test-cluster",
+      DeletionProtection: false,
       Engine: "aurora",
+      EngineMode: "serverless",
       EngineVersion: "5.6.mysql_aurora.1.22.3",
-      Port: 3306,
+      HttpEndpointEnabled: false,
+      IAMDatabaseAuthenticationEnabled: false,
       MasterUsername: process.env.AURORA_TEST_CLUSTER_MASTER_USERNAME,
+      Port: 3306,
       PreferredBackupWindow: "08:55-09:25",
       PreferredMaintenanceWindow: "thu:08:21-thu:08:51",
-      IAMDatabaseAuthenticationEnabled: false,
-      EngineMode: "serverless",
-      DeletionProtection: false,
-      HttpEndpointEnabled: false,
       ScalingConfiguration: {
-        MinCapacity: 1,
-        MaxCapacity: 2,
         AutoPause: true,
+        MaxCapacity: 2,
+        MinCapacity: 1,
+        SecondsBeforeTimeout: 300,
         SecondsUntilAutoPause: 3600,
         TimeoutAction: "RollbackCapacityChange",
-        SecondsBeforeTimeout: 300,
       },
       MasterUserPassword: process.env.AURORA_TEST_CLUSTER_MASTER_USER_PASSWORD,
     }),
@@ -138,13 +138,13 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     properties: ({ generatePassword }) => ({
+      Description: "RDS database auto-generated user password",
       Name: "aurora-test-cluster-AuroraUserSecret",
       SecretString: {
         password: generatePassword({ length: 30 }),
-        username: "admin_user",
         port: 3306,
+        username: "admin_user",
       },
-      Description: "RDS database auto-generated user password",
     }),
   },
 ];

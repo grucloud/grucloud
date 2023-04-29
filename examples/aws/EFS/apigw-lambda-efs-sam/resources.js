@@ -212,22 +212,26 @@ exports.createResources = () => [
     properties: ({ getId }) => ({
       RoleName: "sam-app-HelloEfsFunctionRole-FWOZW59G6M1X",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
             Statement: [
               {
+                Action: [
+                  "elasticfilesystem:ClientMount",
+                  "elasticfilesystem:ClientWrite",
+                ],
                 Condition: {
                   StringEquals: {
                     "elasticfilesystem:AccessPointArn": `${getId({
@@ -237,16 +241,12 @@ exports.createResources = () => [
                     })}`,
                   },
                 },
-                Action: [
-                  "elasticfilesystem:ClientMount",
-                  "elasticfilesystem:ClientWrite",
-                ],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "FileSystem",
                   group: "EFS",
                   name: "fs-0ecf7b37ffa6a3610",
                 })}`,
-                Effect: "Allow",
               },
             ],
           },
@@ -255,14 +255,14 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaVPCAccessExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+          PolicyName: "AWSLambdaVPCAccessExecutionRole",
         },
       ],
     }),
@@ -313,13 +313,13 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-HelloEfsFunction-gxX5FJyW51jA",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-HelloEfsFunctionAPIPermission-1VIC94H302OT7",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "sam-app",
             path: "live.ArnV2",
           })}/*/*`,
+          StatementId: "sam-app-HelloEfsFunctionAPIPermission-1VIC94H302OT7",
         },
       ],
     }),

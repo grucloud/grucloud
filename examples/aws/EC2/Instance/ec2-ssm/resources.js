@@ -8,10 +8,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "my-machine",
     properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220805.0 x86_64 HVM gp2",
       },
+      InstanceType: "t2.micro",
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -29,9 +30,8 @@ exports.createResources = () => [
           })}`,
         },
       ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220805.0 x86_64 HVM gp2",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
       },
     }),
     dependencies: ({ config }) => ({
@@ -126,9 +126,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ec2-messages",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({ config }) => ({
       vpc: "vpc",
@@ -141,9 +141,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssm`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({ config }) => ({
       vpc: "vpc",
@@ -156,9 +156,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm-messages",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({ config }) => ({
       vpc: "vpc",
@@ -181,21 +181,21 @@ exports.createResources = () => [
       RoleName: "role-ec2-ssm",
       Description: "Allows EC2 instances to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
       ],
     }),

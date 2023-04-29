@@ -7,8 +7,8 @@ exports.createResources = () => [
     type: "NetworkPerformanceMetricSubscription",
     group: "EC2",
     properties: ({}) => ({
-      Source: "us-east-1",
       Destination: "eu-west-2",
+      Source: "us-east-1",
     }),
   },
 ];

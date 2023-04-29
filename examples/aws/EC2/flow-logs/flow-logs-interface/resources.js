@@ -16,8 +16,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "flowlog-interface",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 60,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       networkInterface: "eni::machine",
@@ -30,10 +30,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "machine",
     properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
       },
+      InstanceType: "t2.micro",
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -51,9 +52,8 @@ exports.createResources = () => [
           })}`,
         },
       ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
       },
     }),
     dependencies: ({ config }) => ({
@@ -146,21 +146,20 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "flow-role",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "vpc-flow-logs.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -174,6 +173,7 @@ exports.createResources = () => [
                 Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "cloudwatchlogs",
         },

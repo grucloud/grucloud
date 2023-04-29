@@ -23,6 +23,16 @@ exports.createResources = () => [
     type: "LaunchConfiguration",
     group: "AutoScaling",
     properties: ({}) => ({
+      AssociatePublicIpAddress: true,
+      BlockDeviceMappings: [],
+      EbsOptimized: false,
+      Image: {
+        Description: "Amazon Linux AMI 2.0.20220209 x86_64 ECS HVM GP2",
+      },
+      InstanceMonitoring: {
+        Enabled: true,
+      },
+      InstanceType: "t2.small",
       LaunchConfigurationName:
         "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-HWVeTO3QcmK1",
       UserData: `Content-Type: multipart/mixed; boundary="9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb"
@@ -37,16 +47,6 @@ Mime-Version: 1.0
 echo ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config
 echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
 --9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb--`,
-      InstanceType: "t2.small",
-      BlockDeviceMappings: [],
-      InstanceMonitoring: {
-        Enabled: true,
-      },
-      EbsOptimized: false,
-      AssociatePublicIpAddress: true,
-      Image: {
-        Description: "Amazon Linux AMI 2.0.20220209 x86_64 ECS HVM GP2",
-      },
     }),
     dependencies: ({}) => ({
       instanceProfile:
@@ -200,13 +200,13 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     name: "Vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
       Tags: [
         {
           Key: "my-tag",
           Value: "my-value",
         },
       ],
-      DnsHostnames: true,
     }),
   },
   {
@@ -230,22 +230,22 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     properties: ({}) => ({
       RoleName: "amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-TERDPQNAO5Q2",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
         },
       ],
       Tags: [

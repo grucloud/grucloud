@@ -149,22 +149,26 @@ exports.createResources = () => [
     properties: ({ getId }) => ({
       RoleName: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
             Statement: [
               {
+                Action: [
+                  "elasticfilesystem:ClientMount",
+                  "elasticfilesystem:ClientWrite",
+                ],
                 Condition: {
                   StringEquals: {
                     "elasticfilesystem:AccessPointArn": `${getId({
@@ -174,16 +178,12 @@ exports.createResources = () => [
                     })}`,
                   },
                 },
-                Action: [
-                  "elasticfilesystem:ClientMount",
-                  "elasticfilesystem:ClientWrite",
-                ],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "FileSystem",
                   group: "EFS",
                   name: "fs-0c95a09faadb73087",
                 })}`,
-                Effect: "Allow",
               },
             ],
           },
@@ -192,14 +192,14 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaVPCAccessExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+          PolicyName: "AWSLambdaVPCAccessExecutionRole",
         },
       ],
     }),

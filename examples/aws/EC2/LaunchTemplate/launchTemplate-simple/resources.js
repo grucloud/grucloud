@@ -8,9 +8,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "ec2-template-subnet",
     properties: ({ config, getId }) => ({
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -28,6 +25,9 @@ exports.createResources = () => [
           })}`,
         },
       ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
       LaunchTemplate: {
         LaunchTemplateId: `${getId({
           type: "LaunchTemplate",
@@ -52,6 +52,10 @@ exports.createResources = () => [
     name: "lt-ec2-micro",
     properties: ({ getId }) => ({
       LaunchTemplateData: {
+        Image: {
+          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+        },
+        InstanceType: "t2.micro",
         NetworkInterfaces: [
           {
             DeviceIndex: 0,
@@ -69,16 +73,12 @@ exports.createResources = () => [
             })}`,
           },
         ],
-        InstanceType: "t2.micro",
         UserData: `#!/bin/sh
 yum update -y
 amazon-linux-extras install docker
 service docker start
 usermod -a -G docker ec2-user
 chkconfig docker on`,
-        Image: {
-          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
-        },
       },
     }),
     dependencies: ({}) => ({
@@ -160,16 +160,16 @@ chkconfig docker on`,
     properties: ({}) => ({
       RoleName: "role-ecs",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
   },

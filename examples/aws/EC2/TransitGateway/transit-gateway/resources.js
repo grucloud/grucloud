@@ -110,9 +110,9 @@ exports.createResources = () => [
         AutoAcceptSharedAttachments: "disable",
         DefaultRouteTableAssociation: "enable",
         DefaultRouteTablePropagation: "enable",
-        VpnEcmpSupport: "enable",
         DnsSupport: "enable",
         MulticastSupport: "disable",
+        VpnEcmpSupport: "enable",
       },
     }),
   },
@@ -180,9 +180,9 @@ exports.createResources = () => [
     name: "tgw-attachment",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "disable",
         DnsSupport: "enable",
         Ipv6Support: "disable",
-        ApplianceModeSupport: "disable",
       },
     }),
     dependencies: ({}) => ({
@@ -200,9 +200,9 @@ exports.createResources = () => [
     name: "tgw-vpc-attach::transit-gateway::spoke-A-vpc",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "disable",
         DnsSupport: "enable",
         Ipv6Support: "disable",
-        ApplianceModeSupport: "disable",
       },
     }),
     dependencies: ({ config }) => ({

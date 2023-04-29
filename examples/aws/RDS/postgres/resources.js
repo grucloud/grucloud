@@ -143,18 +143,18 @@ exports.createResources = () => [
     type: "DBInstance",
     group: "RDS",
     properties: ({}) => ({
-      DBInstanceIdentifier: "db-instance",
-      DBInstanceClass: "db.t3.micro",
-      Engine: "postgres",
-      MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       AllocatedStorage: 20,
-      PreferredBackupWindow: "22:10-22:40",
       BackupRetentionPeriod: 1,
-      PreferredMaintenanceWindow: "fri:23:40-sat:00:10",
-      EngineVersion: "14.2",
-      PubliclyAccessible: true,
+      DBInstanceClass: "db.t3.micro",
+      DBInstanceIdentifier: "db-instance",
       DeletionProtection: false,
+      Engine: "postgres",
+      EngineVersion: "14.2",
+      MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       MaxAllocatedStorage: 50,
+      PreferredBackupWindow: "22:10-22:40",
+      PreferredMaintenanceWindow: "fri:23:40-sat:00:10",
+      PubliclyAccessible: true,
       Tags: [
         {
           Key: "mykey2",
@@ -172,8 +172,8 @@ exports.createResources = () => [
     type: "DBSubnetGroup",
     group: "RDS",
     properties: ({}) => ({
-      DBSubnetGroupName: "subnet-group-postgres",
       DBSubnetGroupDescription: "db subnet group",
+      DBSubnetGroupName: "subnet-group-postgres",
       Tags: [
         {
           Key: "mykey2",

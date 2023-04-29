@@ -24,15 +24,15 @@ exports.createResources = () => [
             DeviceName: "/dev/xvda",
             Ebs: {
               Iops: 3000,
+              Throughput: 125,
               VolumeSize: 80,
               VolumeType: "gp3",
-              Throughput: 125,
             },
           },
         ],
         MetadataOptions: {
-          HttpTokens: "optional",
           HttpPutResponseHopLimit: 2,
+          HttpTokens: "optional",
         },
       },
     }),
@@ -346,34 +346,33 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "eks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["cloudwatch:PutMetricData"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "eksctl-my-cluster-cluster-PolicyCloudWatchMetrics",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -381,22 +380,23 @@ exports.createResources = () => [
                   "ec2:DescribeAddresses",
                   "ec2:DescribeInternetGateways",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "eksctl-my-cluster-cluster-PolicyELBPermissions",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEKSClusterPolicy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+          PolicyName: "AmazonEKSClusterPolicy",
         },
         {
-          PolicyName: "AmazonEKSVPCResourceController",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+          PolicyName: "AmazonEKSVPCResourceController",
         },
       ],
     }),
@@ -408,34 +408,34 @@ exports.createResources = () => [
       RoleName:
         "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ContainerRegistryReadOnly",
           PolicyArn:
             "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+          PolicyName: "AmazonEC2ContainerRegistryReadOnly",
         },
         {
-          PolicyName: "AmazonEKS_CNI_Policy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+          PolicyName: "AmazonEKS_CNI_Policy",
         },
         {
-          PolicyName: "AmazonEKSWorkerNodePolicy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+          PolicyName: "AmazonEKSWorkerNodePolicy",
         },
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
       ],
     }),

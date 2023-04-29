@@ -40,6 +40,7 @@ exports.createResources = () => [
       Name: "task-fsx-windows",
       Options: {
         LogLevel: "BASIC",
+        PreserveNfsAcls: "NONE",
       },
     }),
     dependencies: ({}) => ({
@@ -66,7 +67,17 @@ exports.createResources = () => [
       ],
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "fxs-windows",
+      Description: "Fsx Windows",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
   {
     type: "Subnet",
     group: "EC2",
@@ -85,17 +96,7 @@ exports.createResources = () => [
       vpc: "vpc-default",
     }),
   },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "fxs-windows",
-      Description: "Fsx Windows",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "FileSystem",
     group: "FSx",
@@ -121,39 +122,6 @@ exports.createResources = () => [
       directory: "corp.grucloud.org",
       subnets: ["vpc-default::subnet-default-d"],
       securityGroups: ["sg::vpc-default::fxs-windows"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: "AWSDataSyncS3BucketAccess-gc-datasync-fsx-windows",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "datasync.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-            Condition: {
-              StringEquals: {
-                "aws:SourceAccount": `${config.accountId()}`,
-              },
-              ArnLike: {
-                "aws:SourceArn": `arn:aws:datasync:${
-                  config.region
-                }:${config.accountId()}:*`,
-              },
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["AWSDataSyncS3BucketAccess-gc-datasync-fsx-windows"],
     }),
   },
   {
@@ -189,6 +157,39 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: "AWSDataSyncS3BucketAccess-gc-datasync-fsx-windows",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Condition: {
+              ArnLike: {
+                "aws:SourceArn": `arn:aws:datasync:${
+                  config.region
+                }:${config.accountId()}:*`,
+              },
+              StringEquals: {
+                "aws:SourceAccount": `${config.accountId()}`,
+              },
+            },
+            Effect: "Allow",
+            Principal: {
+              Service: "datasync.amazonaws.com",
+            },
+          },
+        ],
+        Version: "2012-10-17",
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["AWSDataSyncS3BucketAccess-gc-datasync-fsx-windows"],
     }),
   },
   {

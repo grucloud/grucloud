@@ -8,15 +8,15 @@ exports.createResources = () => [
     group: "EC2",
     name: "my-machine",
     properties: ({ config }) => ({
-      InstanceType: "r6i.large",
-      Placement: {
-        AvailabilityZone: `${config.region}f`,
-        GroupName: "my-placementgroup",
-      },
       EbsOptimized: true,
       Image: {
         Description:
           "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220606.1 x86_64 HVM gp2",
+      },
+      InstanceType: "r6i.large",
+      Placement: {
+        AvailabilityZone: `${config.region}f`,
+        GroupName: "my-placementgroup",
       },
     }),
     dependencies: ({}) => ({

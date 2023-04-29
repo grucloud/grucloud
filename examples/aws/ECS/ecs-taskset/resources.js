@@ -37,10 +37,13 @@ exports.createResources = () => [
     group: "EC2",
     name: "External-EC2Instance-appmesh-workshop",
     properties: ({ config, getId }) => ({
-      InstanceType: "t3.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
+      CreditSpecification: {
+        CpuCredits: "unlimited",
       },
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20230119.1 x86_64 HVM gp2",
+      },
+      InstanceType: "t3.micro",
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -58,15 +61,15 @@ exports.createResources = () => [
           })}`,
         },
       ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
       Tags: [
         {
           Key: "Usage",
           Value: "ExternalEC2Instance",
         },
       ],
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20230119.1 x86_64 HVM gp2",
-      },
       UserData: `#!/bin/bash -ex
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
@@ -94,9 +97,6 @@ EOF
 chmod +x /home/ec2-user/install-tools
 /home/ec2-user/install-tools
 `,
-      CreditSpecification: {
-        CpuCredits: "unlimited",
-      },
     }),
     dependencies: ({}) => ({
       subnets: ["VPC-appmesh-workshop::PrivateOne-appmesh-workshop"],
@@ -124,8 +124,11 @@ chmod +x /home/ec2-user/install-tools
     name: "Ruby-EC2Instance-LaunchTemplate-appmesh-workshop",
     properties: ({}) => ({
       LaunchTemplateData: {
-        InstanceType: "t2.medium",
+        Image: {
+          Description: "Amazon Linux 2 AMI 2.0.20230119.1 x86_64 HVM gp2",
+        },
         InstanceInitiatedShutdownBehavior: "terminate",
+        InstanceType: "t2.medium",
         UserData: `#!/bin/bash -ex
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
@@ -166,9 +169,6 @@ sed -i '$ d' startup.sh && echo 'rails s -e production -b 0.0.0.0' >> startup.sh
 nohup ./startup.sh &
 
 `,
-        Image: {
-          Description: "Amazon Linux 2 AMI 2.0.20230119.1 x86_64 HVM gp2",
-        },
       },
     }),
     dependencies: ({}) => ({
@@ -674,9 +674,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.appmesh-envoy-management`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -694,9 +694,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.ec2`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -714,9 +714,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -734,9 +734,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.ecr.api`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -754,9 +754,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.ecr.dkr`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -774,9 +774,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.logs`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -794,9 +794,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.ssm`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -814,9 +814,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -1145,16 +1145,16 @@ nohup ./startup.sh &
     properties: ({}) => ({
       RoleName: "appmesh-workshop-EC2ExternalInstanceRole-7TP1XLCF2830",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -1162,8 +1162,8 @@ nohup ./startup.sh &
             Statement: [
               {
                 Action: ["eks:DescribeCluster"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -1172,8 +1172,8 @@ nohup ./startup.sh &
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2RoleforSSM",
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+          PolicyName: "AmazonEC2RoleforSSM",
         },
       ],
     }),
@@ -1184,16 +1184,16 @@ nohup ./startup.sh &
     properties: ({}) => ({
       RoleName: "appmesh-workshop-EC2InstanceRole-P65NSC5SSWJH",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -1220,8 +1220,8 @@ nohup ./startup.sh &
                   "route53:ChangeResourceRecordSets",
                   "route53:UpdateHealthCheck",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -1230,8 +1230,8 @@ nohup ./startup.sh &
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2RoleforSSM",
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+          PolicyName: "AmazonEC2RoleforSSM",
         },
       ],
     }),
@@ -1242,16 +1242,16 @@ nohup ./startup.sh &
     properties: ({}) => ({
       RoleName: "appmesh-workshop-ECSServiceRole-RIAPE76QVW0Z",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: ["ecs-tasks.amazonaws.com", "ecs.amazonaws.com"],
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -1281,8 +1281,8 @@ nohup ./startup.sh &
                   "logs:CreateLogGroup",
                   "logs:PutLogEvents",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -1297,16 +1297,16 @@ nohup ./startup.sh &
     properties: ({}) => ({
       RoleName: "appmesh-workshop-ECSTaskRole-U9NTCA3G3INQ",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -1328,8 +1328,8 @@ nohup ./startup.sh &
                   "xray:GetSamplingTargets",
                   "xray:GertSamplingStatisticSumaries",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -1344,21 +1344,20 @@ nohup ./startup.sh &
     properties: ({}) => ({
       RoleName: "appmesh-workshop-KeyPairHelperExecutionRole-14336BINEI2BQ",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -1366,8 +1365,8 @@ nohup ./startup.sh &
                   "logs:CreateLogStream",
                   "logs:PutLogEvents",
                 ],
-                Resource: "arn:aws:logs:*:*:*",
                 Effect: "Allow",
+                Resource: "arn:aws:logs:*:*:*",
               },
               {
                 Action: [
@@ -1377,10 +1376,11 @@ nohup ./startup.sh &
                   "ssm:DeleteParameter",
                   "kms:Encrypt",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "KeyPairHelperExecutionPolicy",
         },

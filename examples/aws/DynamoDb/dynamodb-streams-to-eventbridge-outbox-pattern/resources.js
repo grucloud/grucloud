@@ -69,33 +69,32 @@ exports.createResources = () => [
       RoleName:
         "EventbridgeOutboxPatternW-streamToEventBridgeServi-1Q8XE9F7MA3Y3",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "events:PutEvents",
+                Effect: "Allow",
                 Resource: `arn:aws:events:${
                   config.region
                 }:${config.accountId()}:event-bus/MyMainBus`,
-                Effect: "Allow",
               },
               {
                 Action: "dynamodb:ListStreams",
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: [
@@ -103,24 +102,25 @@ exports.createResources = () => [
                   "dynamodb:GetRecords",
                   "dynamodb:GetShardIterator",
                 ],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "Table",
                   group: "DynamoDB",
                   name: "EventbridgeOutboxPatternWithDdbStack-UsersTable9725E9C8-1UH1H2LCW1XB3",
                   path: "live.LatestStreamArn",
                 })}`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "streamToEventBridgeServiceRoleDefaultPolicyEB03D4EF",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -137,22 +137,22 @@ exports.createResources = () => [
       RoleName:
         "EventbridgeOutboxPatternW-userCreatedConsumerServi-ID0RGEAD9FXP",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -164,21 +164,20 @@ exports.createResources = () => [
       RoleName:
         "EventbridgeOutboxPatternW-writetoddbServiceRole08D-1R7G1M1FLQP3T",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -188,23 +187,24 @@ exports.createResources = () => [
                   "dynamodb:PutItem",
                   "dynamodb:UpdateItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
                   }:${config.accountId()}:table/EventbridgeOutboxPatternWithDdbStack-UsersTable9725E9C8-1UH1H2LCW1XB3`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "writetoddbServiceRoleDefaultPolicy2A8D0315",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -308,11 +308,11 @@ exports.createResources = () => [
           FunctionName:
             "EventbridgeOutboxPatternW-userCreatedConsumerF491D-XEDOXNubBDQT",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "EventbridgeOutboxPatternWithDdbStack-UserCreatedRuleAllowEventRuleEventbridgeOutboxPat-I3NSM4LNBVDF",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/MyMainBus/EventbridgeOutboxPatternWi-UserCreatedRuleFC26FD62-5YW7O6FQGB1Q`,
+          StatementId:
+            "EventbridgeOutboxPatternWithDdbStack-UserCreatedRuleAllowEventRuleEventbridgeOutboxPat-I3NSM4LNBVDF",
         },
       ],
     }),

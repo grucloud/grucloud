@@ -75,7 +75,7 @@ const IncludeList = [
   // "DMS"
   // "DataBrew"
   // "DataPipeline"
-  // "DataSync"
+  // "DataSync" $$$
   "Detective",
   "DeviceFarm",
   // "DirectConnect"
@@ -191,15 +191,15 @@ const ExcludeDirsDefault = [
   "artifacts",
   "empty",
   "certificate",
+  "appflow-redshift",
+
   "amplify-nextjs",
   "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
   "private-apigw-lambda-cdk", //  Too slow"
+  "appstream-stack",
+  "appstream-simple", // need to create an S3 object
   "ta-eventbridge-lambda-s3",
   "cloud9-simple", // reason: 'Instance profile AWSCloud9SSMInstanceProfile does not exist in this account. Please create an instance profile and role as described here https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html',
-  "datasync-fsxwindows", // "much expensive $$$"
-  "datasync-fsxlustre", // "much expensive $$$"
-  "datasync-fsxlustre-s3", // "much expensive $$$"
-  "datasync-fsxopenzfs",
   "directory-service-microsoft-ad", // multi account
   "globalcluster", // Too slow
   "msk-lambda-cdk", //  Too slow
@@ -236,9 +236,7 @@ const ExcludeDirsDefault = [
   "xray-lambdalayers-cdk-python",
   "stepfunctions-eventbridge-lambda-sam-java",
   "lambda-layer-terraform",
-  "appflow-redshift",
-  "appstream-stack",
-  "appstream-simple", // need to create an S3 object
+
   "cognito-restapi-vpclink",
   "apigw-http-eventbridge-terraform",
   "s3-storage-lens", // Bug in the aws sdk js

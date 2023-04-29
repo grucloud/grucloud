@@ -17,10 +17,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "web-server-ec2-vpc",
     properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },
+      InstanceType: "t2.micro",
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -38,8 +38,8 @@ exports.createResources = () => [
           })}`,
         },
       ],
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
       },
       UserData: `#!/bin/bash
 echo "Mounting /dev/xvdf"

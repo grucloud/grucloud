@@ -212,23 +212,23 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "rds-monitoring-role",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "monitoring.rds.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonRDSEnhancedMonitoringRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole",
+          PolicyName: "AmazonRDSEnhancedMonitoringRole",
         },
       ],
     }),
@@ -238,21 +238,21 @@ exports.createResources = () => [
     group: "RDS",
     properties: ({}) => ({
       BackupRetentionPeriod: 7,
+      CopyTagsToSnapshot: true,
       DatabaseName: "mydb",
       DBClusterIdentifier: "database-1",
+      DeletionProtection: false,
       Engine: "aurora-postgresql",
+      EngineMode: "provisioned",
       EngineVersion: "13.6",
+      HttpEndpointEnabled: false,
+      IAMDatabaseAuthenticationEnabled: false,
       MasterUsername: process.env.DATABASE_1_MASTER_USERNAME,
       PreferredBackupWindow: "09:29-09:59",
       PreferredMaintenanceWindow: "sun:07:52-sun:08:22",
-      IAMDatabaseAuthenticationEnabled: false,
-      EngineMode: "provisioned",
-      DeletionProtection: false,
-      HttpEndpointEnabled: false,
-      CopyTagsToSnapshot: true,
       ServerlessV2ScalingConfiguration: {
-        MinCapacity: 0.5,
         MaxCapacity: 1,
+        MinCapacity: 0.5,
       },
       MasterUserPassword: process.env.DATABASE_1_MASTER_USER_PASSWORD,
     }),
@@ -265,18 +265,18 @@ exports.createResources = () => [
     type: "DBInstance",
     group: "RDS",
     properties: ({}) => ({
-      DBInstanceIdentifier: "database-1-instance-1",
-      DBInstanceClass: "db.serverless",
-      Engine: "aurora-postgresql",
-      PreferredMaintenanceWindow: "tue:08:06-tue:08:36",
-      EngineVersion: "13.6",
-      PubliclyAccessible: false,
-      StorageType: "aurora",
       DBClusterIdentifier: "database-1",
-      StorageEncrypted: true,
+      DBInstanceClass: "db.serverless",
+      DBInstanceIdentifier: "database-1-instance-1",
+      Engine: "aurora-postgresql",
+      EngineVersion: "13.6",
       MonitoringInterval: 60,
       PerformanceInsightsEnabled: true,
       PerformanceInsightsRetentionPeriod: 7,
+      PreferredMaintenanceWindow: "tue:08:06-tue:08:36",
+      PubliclyAccessible: false,
+      StorageEncrypted: true,
+      StorageType: "aurora",
       EnablePerformanceInsights: true,
     }),
     dependencies: ({}) => ({
@@ -290,8 +290,8 @@ exports.createResources = () => [
     type: "DBSubnetGroup",
     group: "RDS",
     properties: ({}) => ({
-      DBSubnetGroupName: "default-vpc-07c0392e5e3359f2e",
       DBSubnetGroupDescription: "Created from the RDS Management Console",
+      DBSubnetGroupName: "default-vpc-07c0392e5e3359f2e",
     }),
     dependencies: ({ config }) => ({
       subnets: [

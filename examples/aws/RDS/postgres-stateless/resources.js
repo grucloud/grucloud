@@ -18,10 +18,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "bastion",
     properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },
+      InstanceType: "t2.micro",
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -39,8 +39,8 @@ exports.createResources = () => [
           })}`,
         },
       ],
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
       },
     }),
     dependencies: ({}) => ({
@@ -294,29 +294,29 @@ exports.createResources = () => [
       BackupRetentionPeriod: 1,
       DatabaseName: "dev",
       DBClusterIdentifier: "cluster-postgres-stateless",
+      DeletionProtection: false,
       Engine: "aurora-postgresql",
+      EngineMode: "serverless",
       EngineVersion: "10.21",
+      HttpEndpointEnabled: false,
+      IAMDatabaseAuthenticationEnabled: false,
       MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
       PreferredBackupWindow: "01:39-02:09",
       PreferredMaintenanceWindow: "sun:00:47-sun:01:17",
-      IAMDatabaseAuthenticationEnabled: false,
-      EngineMode: "serverless",
-      DeletionProtection: false,
-      HttpEndpointEnabled: false,
+      ScalingConfiguration: {
+        AutoPause: true,
+        MaxCapacity: 4,
+        MinCapacity: 2,
+        SecondsBeforeTimeout: 300,
+        SecondsUntilAutoPause: 300,
+        TimeoutAction: "RollbackCapacityChange",
+      },
       Tags: [
         {
           Key: "mykey1",
           Value: "myvalue",
         },
       ],
-      ScalingConfiguration: {
-        MinCapacity: 2,
-        MaxCapacity: 4,
-        AutoPause: true,
-        SecondsUntilAutoPause: 300,
-        TimeoutAction: "RollbackCapacityChange",
-        SecondsBeforeTimeout: 300,
-      },
       MasterUserPassword:
         process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USER_PASSWORD,
     }),
@@ -329,8 +329,8 @@ exports.createResources = () => [
     type: "DBSubnetGroup",
     group: "RDS",
     properties: ({}) => ({
-      DBSubnetGroupName: "subnet-group-postgres-stateless",
       DBSubnetGroupDescription: "db subnet group",
+      DBSubnetGroupName: "subnet-group-postgres-stateless",
     }),
     dependencies: ({}) => ({
       subnets: ["vpc::subnet-private-a", "vpc::subnet-private-b"],

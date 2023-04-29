@@ -16,8 +16,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "fl4vpc",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 60,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "project-vpc",
@@ -89,21 +89,20 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "flow-role",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "vpc-flow-logs.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -117,6 +116,7 @@ exports.createResources = () => [
                 Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "cloudwatchlogs",
         },

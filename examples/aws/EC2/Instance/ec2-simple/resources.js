@@ -8,6 +8,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "web-server-ec2-simple",
     properties: ({ config }) => ({
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      },
       InstanceType: "t2.micro",
       Placement: {
         AvailabilityZone: `${config.region}d`,
@@ -18,9 +21,6 @@ exports.createResources = () => [
           Value: "myvalue",
         },
       ],
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
-      },
     }),
     dependencies: ({}) => ({
       subnets: ["vpc-default::subnet-default-d"],

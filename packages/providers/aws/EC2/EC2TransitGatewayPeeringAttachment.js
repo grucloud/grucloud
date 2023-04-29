@@ -37,8 +37,6 @@ const managedByOther = ({ lives, config }) =>
     eq(get("providerName"), config.providerName),
   ]);
 
-const createModel = ({ config }) => ({});
-
 const findId = () => pipe([get("TransitGatewayAttachmentId")]);
 
 const findNamePeeringAttachment =

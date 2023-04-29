@@ -8,13 +8,13 @@ exports.createResources = () => [
     group: "EC2",
     name: "my-fl",
     properties: ({}) => ({
-      TrafficType: "ALL",
-      MaxAggregationInterval: 600,
       DestinationOptions: {
         FileFormat: "plain-text",
         HiveCompatiblePartitions: false,
         PerHourPartition: false,
       },
+      MaxAggregationInterval: 600,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "my-vpc",

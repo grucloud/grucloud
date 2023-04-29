@@ -8,8 +8,9 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `dns_attachment_${config.region}b`,
     properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
       AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}b`,
+      EnableDns64: true,
       Tags: [
         {
           Key: "Network",
@@ -20,7 +21,6 @@ exports.createResources = () => [
           Value: "attachment",
         },
       ],
-      EnableDns64: true,
       NewBits: 5,
       NetworkNumber: 1,
       Ipv6SubnetPrefix: "01",

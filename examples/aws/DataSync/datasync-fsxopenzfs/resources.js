@@ -47,6 +47,7 @@ exports.createResources = () => [
         Gid: "INT_VALUE",
         LogLevel: "BASIC",
         PosixPermissions: "PRESERVE",
+        PreserveNfsAcls: "NONE",
         Uid: "INT_VALUE",
       },
     }),
@@ -54,16 +55,6 @@ exports.createResources = () => [
       logGroup: "/aws/datasync",
       destinationS3: "gc-datasync-fsx-openzfs",
       sourceFsxOpenZfs: "my-openzfs",
-    }),
-  },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-f",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
     }),
   },
   {
@@ -121,6 +112,16 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-f",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
     type: "FileSystem",
     group: "FSx",
     name: "my-openzfs",
@@ -144,39 +145,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       subnets: ["vpc-default::subnet-default-f"],
       securityGroups: ["sg::vpc-default::openzfs"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({ config }) => ({
-      RoleName: "AWSDataSyncS3BucketAccess-gc-datasync-fsx-openzfs",
-      Path: "/service-role/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "datasync.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-            Condition: {
-              StringEquals: {
-                "aws:SourceAccount": `${config.accountId()}`,
-              },
-              ArnLike: {
-                "aws:SourceArn": `arn:aws:datasync:${
-                  config.region
-                }:${config.accountId()}:*`,
-              },
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["AWSDataSyncS3BucketAccess-gc-datasync-fsx-openzfs"],
     }),
   },
   {
@@ -212,6 +180,39 @@ exports.createResources = () => [
         ],
       },
       Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ config }) => ({
+      RoleName: "AWSDataSyncS3BucketAccess-gc-datasync-fsx-openzfs",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Condition: {
+              ArnLike: {
+                "aws:SourceArn": `arn:aws:datasync:${
+                  config.region
+                }:${config.accountId()}:*`,
+              },
+              StringEquals: {
+                "aws:SourceAccount": `${config.accountId()}`,
+              },
+            },
+            Effect: "Allow",
+            Principal: {
+              Service: "datasync.amazonaws.com",
+            },
+          },
+        ],
+        Version: "2012-10-17",
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["AWSDataSyncS3BucketAccess-gc-datasync-fsx-openzfs"],
     }),
   },
   {

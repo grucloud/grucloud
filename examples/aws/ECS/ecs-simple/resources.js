@@ -23,6 +23,23 @@ exports.createResources = () => [
     type: "LaunchConfiguration",
     group: "AutoScaling",
     properties: ({}) => ({
+      BlockDeviceMappings: [
+        {
+          DeviceName: "/dev/xvda",
+          Ebs: {
+            VolumeSize: 30,
+            VolumeType: "gp2",
+          },
+        },
+      ],
+      EbsOptimized: false,
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      },
+      InstanceMonitoring: {
+        Enabled: true,
+      },
+      InstanceType: "t2.micro",
       LaunchConfigurationName:
         "EC2ContainerService-cluster-EcsInstanceLc-COYK3CQZ0QRJ",
       UserData: `Content-Type: multipart/mixed; boundary="1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3"
@@ -37,23 +54,6 @@ Mime-Version: 1.0
 echo ECS_CLUSTER=cluster >> /etc/ecs/ecs.config
 echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
 --1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3--`,
-      InstanceType: "t2.micro",
-      BlockDeviceMappings: [
-        {
-          DeviceName: "/dev/xvda",
-          Ebs: {
-            VolumeSize: 30,
-            VolumeType: "gp2",
-          },
-        },
-      ],
-      InstanceMonitoring: {
-        Enabled: true,
-      },
-      EbsOptimized: false,
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
-      },
     }),
     dependencies: ({}) => ({
       instanceProfile: "ecsInstanceRole",
@@ -65,20 +65,20 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     group: "CloudWatch",
     properties: ({}) => ({
       AlarmName: "alarm-ecs-cpu",
-      MetricName: "CPUReservation",
-      Namespace: "AWS/ECS",
-      Statistic: "Average",
+      ComparisonOperator: "GreaterThanThreshold",
+      DatapointsToAlarm: 1,
       Dimensions: [
         {
           Value: "my-cluster",
           Name: "ClusterName",
         },
       ],
-      Period: 300,
       EvaluationPeriods: 1,
-      DatapointsToAlarm: 1,
+      MetricName: "CPUReservation",
+      Namespace: "AWS/ECS",
+      Period: 300,
+      Statistic: "Average",
       Threshold: 80,
-      ComparisonOperator: "GreaterThanThreshold",
       TreatMissingData: "missing",
     }),
   },
@@ -329,23 +329,23 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     properties: ({}) => ({
       RoleName: "ecsInstanceRole",
       AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
         Statement: [
           {
-            Sid: "",
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
+            Sid: "",
           },
         ],
+        Version: "2008-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
         },
       ],
     }),

@@ -339,29 +339,29 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.events`,
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "events:PutEvents",
             Condition: {
               ArnEquals: {
                 "aws:PrincipalArn": `arn:aws:iam::${config.accountId()}:role/CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL`,
               },
             },
-            Action: "events:PutEvents",
-            Resource: `arn:aws:events:${
-              config.region
-            }:${config.accountId()}:event-bus/DemoEventBus`,
             Effect: "Allow",
             Principal: {
               AWS: "*",
             },
+            Resource: `arn:aws:events:${
+              config.region
+            }:${config.accountId()}:event-bus/DemoEventBus`,
           },
         ],
+        Version: "2012-10-17",
       },
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.events`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -537,21 +537,20 @@ exports.createResources = () => [
       RoleName:
         "CdkStack-FargateServiceTaskDefExecutionRole9194820-138OPFQCAE04H",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -559,26 +558,27 @@ exports.createResources = () => [
                   "ecr:GetDownloadUrlForLayer",
                   "ecr:BatchGetImage",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:ecr:${
                   config.region
                 }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${
                   config.region
                 }`,
-                Effect: "Allow",
               },
               {
                 Action: "ecr:GetAuthorizationToken",
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+                Effect: "Allow",
                 Resource: `arn:aws:logs:${
                   config.region
                 }:${config.accountId()}:log-group:CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N:*`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "FargateServiceTaskDefExecutionRoleDefaultPolicy827E7CA2",
         },
@@ -591,30 +591,30 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "events:PutEvents",
+                Effect: "Allow",
                 Resource: `arn:aws:events:${
                   config.region
                 }:${config.accountId()}:event-bus/DemoEventBus`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "FargateServiceTaskDefTaskRoleDefaultPolicy63F83D6F",
         },

@@ -16,8 +16,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "flowlog::vpc-default",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 600,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "vpc-default",
@@ -32,21 +32,20 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "cloudwatchlogs",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "vpc-flow-logs.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -60,6 +59,7 @@ exports.createResources = () => [
                 Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "endpoint_vpc_flow_logs",
         },

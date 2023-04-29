@@ -390,23 +390,23 @@ exports.createResources = () => [
       RoleName:
         "LambdaEfsCdkStack-lambdaEfsHandlerServiceRoleEBA1A-MHK95VUBE4FX",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
+                Action: "elasticfilesystem:ClientMount",
                 Condition: {
                   StringEquals: {
                     "elasticfilesystem:AccessPointArn": `${getId({
@@ -416,34 +416,34 @@ exports.createResources = () => [
                     })}`,
                   },
                 },
-                Action: "elasticfilesystem:ClientMount",
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: "elasticfilesystem:ClientWrite",
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "FileSystem",
                   group: "EFS",
                   name: "LambdaEfsCdkStack/theFileSystem",
                 })}`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "lambdaEfsHandlerServiceRoleDefaultPolicy8712ACC0",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaVPCAccessExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+          PolicyName: "AWSLambdaVPCAccessExecutionRole",
         },
       ],
     }),
@@ -494,14 +494,14 @@ exports.createResources = () => [
           FunctionName:
             "LambdaEfsCdkStack-lambdaEfsHandlerBBFE6EBB-AzvJusy7C1Tt",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "LambdaEfsCdkStack-EFSLAMBDAAPIGATEWAYDefaultRouteLambdaFunctionPermission8726AE76-1T030YUOOHVA4",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "EFS LAMBDA APIGATEWAY",
             path: "live.ArnV2",
           })}/*/*`,
+          StatementId:
+            "LambdaEfsCdkStack-EFSLAMBDAAPIGATEWAYDefaultRouteLambdaFunctionPermission8726AE76-1T030YUOOHVA4",
         },
       ],
     }),

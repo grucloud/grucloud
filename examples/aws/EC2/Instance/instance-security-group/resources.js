@@ -8,10 +8,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "my-ec2-security-group",
     properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
       },
+      InstanceType: "t2.micro",
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -29,9 +30,8 @@ exports.createResources = () => [
           })}`,
         },
       ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
       },
     }),
     dependencies: ({}) => ({

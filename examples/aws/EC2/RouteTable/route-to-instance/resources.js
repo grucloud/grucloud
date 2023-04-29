@@ -8,13 +8,13 @@ exports.createResources = () => [
     group: "EC2",
     name: "my-instance",
     properties: ({ config }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}d`,
-      },
       Image: {
         Description:
           "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220606.1 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
       },
     }),
     dependencies: ({}) => ({

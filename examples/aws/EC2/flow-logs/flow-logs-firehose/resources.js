@@ -15,8 +15,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "flow-log-firehose",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 600,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -238,16 +238,16 @@ exports.createResources = () => [
       RoleName: `KinesisFirehoseServiceRole-delivery-stre-${config.region}-1667077117902`,
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "firehose.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({ config }) => ({

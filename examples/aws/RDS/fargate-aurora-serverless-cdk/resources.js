@@ -487,21 +487,20 @@ exports.createResources = () => [
       RoleName:
         "CdkStack-FargateServiceTaskDefExecutionRole9194820-18VY1XIQQ7L55",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -509,26 +508,27 @@ exports.createResources = () => [
                   "ecr:GetDownloadUrlForLayer",
                   "ecr:BatchGetImage",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:ecr:${
                   config.region
                 }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${
                   config.region
                 }`,
-                Effect: "Allow",
               },
               {
                 Action: "ecr:GetAuthorizationToken",
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+                Effect: "Allow",
                 Resource: `arn:aws:logs:${
                   config.region
                 }:${config.accountId()}:log-group:CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n:*`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "FargateServiceTaskDefExecutionRoleDefaultPolicy827E7CA2",
         },
@@ -541,21 +541,20 @@ exports.createResources = () => [
     properties: ({ getId }) => ({
       RoleName: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1HTR9O8XQQI4P",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -565,23 +564,24 @@ exports.createResources = () => [
                   "rds-data:ExecuteStatement",
                   "rds-data:RollbackTransaction",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: [
                   "secretsmanager:GetSecretValue",
                   "secretsmanager:DescribeSecret",
                 ],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "Secret",
                   group: "SecretsManager",
                   name: "aurora-user-secret",
                   path: "live.ARN",
                 })}`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "FargateServiceTaskDefTaskRoleDefaultPolicy63F83D6F",
         },
@@ -599,25 +599,25 @@ exports.createResources = () => [
       DatabaseName: "aurora_db",
       DBClusterIdentifier:
         "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
+      DeletionProtection: false,
       Engine: "aurora",
+      EngineMode: "serverless",
       EngineVersion: "5.6.mysql_aurora.1.22.3",
-      Port: 3306,
+      HttpEndpointEnabled: false,
+      IAMDatabaseAuthenticationEnabled: false,
       MasterUsername:
         process.env
           .CDKSTACK_AURORASERVERLESSCLUSTERB4A18EF1_APXIDHEWYAZ0_MASTER_USERNAME,
+      Port: 3306,
       PreferredBackupWindow: "07:52-08:22",
       PreferredMaintenanceWindow: "fri:09:30-fri:10:00",
-      IAMDatabaseAuthenticationEnabled: false,
-      EngineMode: "serverless",
-      DeletionProtection: false,
-      HttpEndpointEnabled: false,
       ScalingConfiguration: {
-        MinCapacity: 1,
-        MaxCapacity: 2,
         AutoPause: true,
+        MaxCapacity: 2,
+        MinCapacity: 1,
+        SecondsBeforeTimeout: 300,
         SecondsUntilAutoPause: 600,
         TimeoutAction: "RollbackCapacityChange",
-        SecondsBeforeTimeout: 300,
       },
       MasterUserPassword:
         process.env
@@ -636,9 +636,9 @@ exports.createResources = () => [
     type: "DBSubnetGroup",
     group: "RDS",
     properties: ({}) => ({
+      DBSubnetGroupDescription: "Subnets for AuroraServerlessCluster database",
       DBSubnetGroupName:
         "cdkstack-auroraserverlessclustersubnets734af39a-c9biv9kwphqk",
-      DBSubnetGroupDescription: "Subnets for AuroraServerlessCluster database",
     }),
     dependencies: ({}) => ({
       subnets: [

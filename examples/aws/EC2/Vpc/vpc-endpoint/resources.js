@@ -102,8 +102,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "project-vpce-s3",
     properties: ({ config }) => ({
-      VpcEndpointType: "Gateway",
       ServiceName: `com.amazonaws.${config.region}.s3`,
+      VpcEndpointType: "Gateway",
     }),
     dependencies: ({ config }) => ({
       vpc: "project-vpc",
