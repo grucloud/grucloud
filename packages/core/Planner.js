@@ -77,7 +77,9 @@ exports.mapToGraph = (mapResource) =>
                 map(
                   pipe([
                     tap((dep) => {
-                      assert(dep, `no dependency for ${resource.name}`);
+                      if (!dep) {
+                        assert(dep, `no dependency for ${resource.name}`);
+                      }
                       assert(
                         dep.toJSON,
                         `dependency has no toJSON function: ${util.inspect(

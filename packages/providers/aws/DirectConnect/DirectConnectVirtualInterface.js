@@ -77,6 +77,8 @@ exports.DirectConnectVirtualInterface = ({ compare }) => ({
     "jumboFrameCapable",
     "amazonSideAsn",
     "location",
+    "connectionArn",
+    "virtualInterfaceArn",
   ],
   inferName: () =>
     pipe([

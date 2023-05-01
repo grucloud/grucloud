@@ -8,15 +8,15 @@ exports.createResources = () => [
     group: "CloudWatchEvents",
     properties: ({}) => ({
       EventPattern: {
+        detail: {
+          event: ["referenceCreated", "referenceUpdated"],
+          referenceName: ["mainline"],
+        },
         "detail-type": ["CodeCommit Repository State Change"],
         resources: [
           "arn:aws:codecommit:us-east-1:840541460064:serverless-patterns",
         ],
         source: ["aws.codecommit"],
-        detail: {
-          event: ["referenceCreated", "referenceUpdated"],
-          referenceName: ["mainline"],
-        },
       },
       Name: "ParallelE2EPipelineCDK-ImportedRepoParallelE2EPipe-XMTRRUGDXQDA",
     }),
@@ -379,8 +379,8 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonS3FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
         },
       ],
     }),
@@ -714,15 +714,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "parallele2epipelinecdk-serverlesslandpipelinearti-ndaqlnfwca20",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2012-10-17",
         Statement: [

@@ -30,21 +30,12 @@ exports.assignTags = ({ buildArn, endpoint }) =>
 const findS3FromLocationUri = ({ lives, config }) =>
   pipe([
     get("LocationUri"),
-    callProp("replace", `s3://`, ""),
+    callProp("replace", "s3://", ""),
     callProp("split", "/"),
     first,
     tap((bucketName) => {
       assert(bucketName);
     }),
-    (bucketName) =>
-      pipe([
-        lives.getByType({
-          type: "Bucket",
-          group: "S3",
-          providerName: config.providerName,
-        }),
-        find(eq(get("live.Name"), bucketName)),
-      ])(),
   ]);
 
 exports.findS3FromLocationUri = findS3FromLocationUri;

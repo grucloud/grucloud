@@ -114,7 +114,11 @@ exports.ServiceCatalogPortfolioShare = () => ({
       ({ PortfolioId, OrganizationNode }) =>
         `${PortfolioId}::${OrganizationNode.Value}`,
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException", "InvalidParametersException"],
+  ignoreErrorCodes: [
+    "ResourceNotFoundException",
+    "InvalidParametersException",
+    "AccessDeniedException",
+  ],
   dependencies: {
     account: {
       type: "Account",

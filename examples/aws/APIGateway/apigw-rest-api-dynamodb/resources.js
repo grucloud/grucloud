@@ -180,9 +180,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
         },
       ],
     }),
@@ -207,7 +207,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -223,14 +222,15 @@ exports.createResources = () => [
                   "dynamodb:UpdateItem",
                   "dynamodb:DeleteItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
                   }:${config.accountId()}:table/ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "IntegrationRoleDefaultPolicy99182A66",
         },

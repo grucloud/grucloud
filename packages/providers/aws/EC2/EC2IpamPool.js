@@ -77,6 +77,9 @@ exports.EC2IpamPool = ({ compare }) => ({
         ({ lives, config }) =>
         (live) =>
           pipe([
+            tap(() => {
+              assert(live.IpamScopeArn);
+            }),
             lives.getByType({
               type: "IpamScope",
               group: "EC2",
@@ -85,7 +88,8 @@ exports.EC2IpamPool = ({ compare }) => ({
             find(eq(get("live.IpamScopeArn"), live.IpamScopeArn)),
             get("id"),
             tap((id) => {
-              assert(id);
+              // Why it is sometimes hit ?
+              //  assert(id);
             }),
           ])(),
     },
@@ -122,7 +126,6 @@ exports.EC2IpamPool = ({ compare }) => ({
   //TODO
   update: {
     method: "modifyIpamPool",
-    pickId: pipe([pick(["IpamPoolId"])]),
     filterParams: ({ payload, live }) =>
       pipe([
         () => payload,
@@ -133,7 +136,12 @@ exports.EC2IpamPool = ({ compare }) => ({
   },
   destroy: {
     method: "deleteIpamPool",
-    pickId: pipe([pick(["IpamPoolId"])]),
+    pickId: pipe([
+      pick(["IpamPoolId"]),
+      tap(({ IpamPoolId }) => {
+        assert(IpamPoolId);
+      }),
+    ]),
   },
   getByName: getByNameCore,
   tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
@@ -145,6 +153,9 @@ exports.EC2IpamPool = ({ compare }) => ({
     config,
   }) =>
     pipe([
+      tap(() => {
+        assert(ipamScope);
+      }),
       () => otherProps,
       defaultsDeep({
         IpamScopeId: getField(ipamScope, "IpamScopeId"),

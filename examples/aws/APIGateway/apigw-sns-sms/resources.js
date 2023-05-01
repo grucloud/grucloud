@@ -113,19 +113,19 @@ Action=Publish&PhoneNumber=$util.urlEncode($util.parseJson($input.json('$.PhoneN
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["sns:Publish"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: ["sns:Publish"],
-                Resource: "arn:aws:sns:*:*",
                 Effect: "Deny",
+                Resource: "arn:aws:sns:*:*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SNS_SMS",
         },

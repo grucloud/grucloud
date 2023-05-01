@@ -22,6 +22,63 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "myPolicy-to-group",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "myPolicy-to-role",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "myPolicy-to-user",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -41,70 +98,13 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEKSWorkerNodePolicy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+          PolicyName: "AmazonEKSWorkerNodePolicy",
         },
       ],
     }),
     dependencies: ({}) => ({
       policies: ["myPolicy-to-role"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "myPolicy-to-group",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow ec2:Describe",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "myPolicy-to-role",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow ec2:Describe",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "myPolicy-to-user",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow ec2:Describe",
     }),
   },
   {

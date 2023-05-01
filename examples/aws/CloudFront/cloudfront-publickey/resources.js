@@ -20,7 +20,6 @@ exports.createResources = () => [
     group: "CloudFront",
     properties: ({}) => ({
       PublicKeyConfig: {
-        Name: "my-public-key",
         EncodedKey: `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArprXSQCrjd/SG8ERGmXi
 wnw4I+axRZRTHnWPs+W9PTesEIHwmV4WzUNHqjpKjXoVtq3vY+2WGDfJ3Y5cQalW
@@ -31,6 +30,7 @@ BVXfLiCADx4K2alwbqhk329v5lpjOuKg4yNkN52h+vUc9FJeGG7Ld84Gp3NhaGcz
 pQIDAQAB
 -----END PUBLIC KEY-----
 `,
+        Name: "my-public-key",
       },
     }),
   },

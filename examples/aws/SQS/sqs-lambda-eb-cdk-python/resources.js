@@ -45,7 +45,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -55,21 +54,22 @@ exports.createResources = () => [
                   "sqs:DeleteMessage",
                   "sqs:GetQueueAttributes",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:SqsLambdaEbCdkStack-MyQueueE6CA6235-ifxHSq6AozrT`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "MyLambdaFunctionServiceRoleDefaultPolicy23555F9E",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -106,11 +106,11 @@ exports.createResources = () => [
           FunctionName:
             "SqsLambdaEbCdkStack-MyLambdaFunction67CCA873-0GgdD060fFho",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "SqsLambdaEbCdkStack-RuleAllowEventRuleSqsLambdaEbCdkStackMyLambdaFunction4CED594BB88F9-KT4R213JJUMN",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/SqsLambdaEbCdkStack-Rule4C995B7F-27P7UGLVJOBT`,
+          StatementId:
+            "SqsLambdaEbCdkStack-RuleAllowEventRuleSqsLambdaEbCdkStackMyLambdaFunction4CED594BB88F9-KT4R213JJUMN",
         },
       ],
     }),

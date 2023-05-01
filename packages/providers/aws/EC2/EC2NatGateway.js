@@ -135,6 +135,8 @@ const disassociateAddress = ({ endpoint }) =>
           map(
             tryCatch(
               pipe([pick(["AssociationId"]), endpoint().disassociateAddress]),
+              // AuthFailure
+              // You do not have permission to access the specified resource.
               (error, address) =>
                 pipe([
                   tap(() => {

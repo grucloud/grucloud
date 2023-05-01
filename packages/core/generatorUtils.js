@@ -564,12 +564,12 @@ const dependencyValue = ({ key, list, resource, providerConfig }) =>
         switchCase([
           isString,
           pipe([
+            providerConfig.transformResourceName({ resource }),
             replaceRegion({ providerConfig, asFunction: false }),
             unless(includes("`"), pipe([prepend('"'), append('"')])),
           ]),
           pipe([JSON.stringify]),
         ]),
-        providerConfig.transformResourceName({ resource }),
       ])
     ),
     when(() => list, pipe([(values) => `[${values}]`])),
@@ -1258,11 +1258,10 @@ const readModel = ({
   writersSpec,
   commandOptions,
   programOptions,
-  filterModel,
+  filterModel = identity,
 }) =>
   pipe([
     tap(() => {
-      assert(filterModel);
       assert(writersSpec);
       assert(programOptions);
       assert(programOptions.workingDirectory);
@@ -1711,7 +1710,7 @@ exports.generatorMain = ({
   commandOptions,
   programOptions,
   providerType,
-  filterModel,
+  filterModel = identity,
 }) =>
   tryCatch(
     pipe([

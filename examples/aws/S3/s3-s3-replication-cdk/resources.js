@@ -90,15 +90,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: `my-destination-bucket-1-${config.region}-${config.accountId()}`,
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       VersioningConfiguration: {
         Status: "Enabled",
       },
@@ -109,15 +100,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: `my-destination-bucket-2-${config.region}-${config.accountId()}`,
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       VersioningConfiguration: {
         Status: "Enabled",
       },
@@ -128,15 +110,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: `my-source-bucket-${config.region}-${config.accountId()}`,
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       ReplicationConfiguration: {
         Role: `arn:aws:iam::${config.accountId()}:role/S3S3ReplicationCdkStack-S3ReplicationRole1D0B9EBD-19GAAR1BF3UGM`,
         Rules: [

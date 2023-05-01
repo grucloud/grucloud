@@ -31,7 +31,7 @@ exports.createResources = () => [
       MaxAggregationInterval: 60,
     }),
     dependencies: ({}) => ({
-      transitGatewayAttachment: "tgw-attach::tgw::vpn::vpn-connection",
+      transitGatewayVpnAttachment: "tgw-attach::tgw::vpn::vpn-connection",
       cloudWatchLogGroup: "/aws/flowlogs-vpv-connection",
     }),
   },
@@ -46,9 +46,9 @@ exports.createResources = () => [
         AutoAcceptSharedAttachments: "disable",
         DefaultRouteTableAssociation: "enable",
         DefaultRouteTablePropagation: "enable",
-        VpnEcmpSupport: "enable",
         DnsSupport: "enable",
         MulticastSupport: "disable",
+        VpnEcmpSupport: "enable",
       },
     }),
   },
@@ -66,24 +66,11 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGatewayAttachment",
-    group: "EC2",
-    name: "tgw-attach::tgw::vpn::vpn-connection",
-    readOnly: true,
-    properties: ({}) => ({
-      ResourceType: "vpn",
-    }),
-    dependencies: ({}) => ({
-      transitGateway: "tgw",
-      vpnConnection: "vpn-connection",
-    }),
-  },
-  {
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
       transitGatewayRouteTable: "tgw-rtb-tgw-default",
-      transitGatewayAttachment: "tgw-attach::tgw::vpn::vpn-connection",
+      transitGatewayVpnAttachment: "tgw-attach::tgw::vpn::vpn-connection",
     }),
   },
   {
@@ -91,7 +78,17 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({}) => ({
       transitGatewayRouteTable: "tgw-rtb-tgw-default",
-      transitGatewayAttachment: "tgw-attach::tgw::vpn::vpn-connection",
+      transitGatewayVpnAttachment: "tgw-attach::tgw::vpn::vpn-connection",
+    }),
+  },
+  {
+    type: "TransitGatewayVpnAttachment",
+    group: "EC2",
+    name: "tgw-attach::tgw::vpn::vpn-connection",
+    readOnly: true,
+    dependencies: ({}) => ({
+      transitGateway: "tgw",
+      vpnConnection: "vpn-connection",
     }),
   },
   {

@@ -16,22 +16,13 @@ exports.createResources = () => [
     group: "EC2",
     name: "fl4vpc",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 60,
+      TrafficType: "ALL",
     }),
     dependencies: ({ config }) => ({
       subnet: `project-vpc::project-subnet-public1-${config.region}a`,
       iamRole: "flow-role",
       cloudWatchLogGroup: "flowlog",
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "project-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
     }),
   },
   { type: "InternetGateway", group: "EC2", name: "project-igw" },
@@ -44,16 +35,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `project-subnet-public1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "project-vpc",
+      ig: "project-igw",
+      routeTable: "project-vpc::project-rtb-public",
     }),
   },
   {
@@ -73,14 +62,25 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
-      ig: "project-igw",
-      routeTable: "project-vpc::project-rtb-public",
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "project-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -103,7 +103,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -117,6 +116,7 @@ exports.createResources = () => [
                 Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "cloudwatchlogs",
         },

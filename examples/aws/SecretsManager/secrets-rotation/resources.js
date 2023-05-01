@@ -4,6 +4,34 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName:
+        "AWSLambdaBasicExecutionRole-9901686a-c6a3-4b1f-a9b8-fb18725a91ae",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "logs:CreateLogGroup",
+            Effect: "Allow",
+            Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
+          },
+          {
+            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/lambda/secret-rotation:*`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -23,8 +51,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "SecretsManagerReadWrite",
           PolicyArn: "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+          PolicyName: "SecretsManagerReadWrite",
         },
       ],
     }),
@@ -32,34 +60,6 @@ exports.createResources = () => [
       policies: [
         "AWSLambdaBasicExecutionRole-9901686a-c6a3-4b1f-a9b8-fb18725a91ae",
       ],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName:
-        "AWSLambdaBasicExecutionRole-9901686a-c6a3-4b1f-a9b8-fb18725a91ae",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: "logs:CreateLogGroup",
-            Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
-          },
-          {
-            Effect: "Allow",
-            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-            Resource: [
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:/aws/lambda/secret-rotation:*`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
     }),
   },
   {
@@ -97,12 +97,12 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     properties: ({ generatePassword }) => ({
+      Description: "access postgres",
       Name: "prod/myapp/db",
       SecretString: {
         password: generatePassword({ length: 32 }),
         username: "demousername",
       },
-      Description: "access postgres",
       Tags: [
         {
           Key: "mykey",
@@ -131,18 +131,18 @@ exports.createResources = () => [
     group: "SecretsManager",
     properties: ({}) => ({
       ResourcePolicy: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "EnableAnotherAccountToReadTheSecret",
+            Action: "secretsmanager:GetSecretValue",
             Effect: "Allow",
             Principal: {
               AWS: "arn:aws:iam::548529576214:root",
             },
-            Action: "secretsmanager:GetSecretValue",
             Resource: "*",
+            Sid: "EnableAnotherAccountToReadTheSecret",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({

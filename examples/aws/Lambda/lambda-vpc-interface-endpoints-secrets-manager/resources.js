@@ -4,41 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "PrivateLambdaVPC",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "AwsLambdaPrivSubnetStack/PrivateLambdaVPC/IsolatedSubnet1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 1,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "PrivateLambdaVPC",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "AwsLambdaPrivSubnetStack/PrivateLambdaVPC/IsolatedSubnet2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 1,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "PrivateLambdaVPC",
-    }),
-  },
-  {
     type: "RouteTable",
     group: "EC2",
     name: "AwsLambdaPrivSubnetStack/PrivateLambdaVPC/IsolatedSubnet1",
@@ -115,12 +80,47 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: "AwsLambdaPrivSubnetStack/PrivateLambdaVPC/IsolatedSubnet1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 1,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "PrivateLambdaVPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "AwsLambdaPrivSubnetStack/PrivateLambdaVPC/IsolatedSubnet2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 1,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "PrivateLambdaVPC",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "PrivateLambdaVPC",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  {
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.secretsmanager`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.secretsmanager`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "PrivateLambdaVPC",
@@ -138,21 +138,20 @@ exports.createResources = () => [
       RoleName:
         "AwsLambdaPrivSubnetStack-LambdaFunctionPrivateServ-1PJW75N0R82N7",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -161,24 +160,25 @@ exports.createResources = () => [
                   "ec2:DescribeNetworkInterfaces",
                   "secretsmanager:ListSecrets",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "LambdaFunctionPrivateServiceRoleDefaultPolicy4FFCABF1",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaVPCAccessExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+          PolicyName: "AWSLambdaVPCAccessExecutionRole",
         },
       ],
     }),

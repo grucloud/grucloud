@@ -10,15 +10,15 @@ skinparam monochrome true
 ++++ ComputeEnvironment (1)
 ++++ JobQueue (1)
 +++ EC2
-++++ Vpc (1)
 ++++ InternetGateway (1)
 ++++ InternetGatewayAttachment (1)
-++++ Subnet (1)
+++++ Route (1)
 ++++ RouteTable (1)
 ++++ RouteTableAssociation (1)
-++++ Route (1)
 ++++ SecurityGroup (1)
+++++ Subnet (1)
+++++ Vpc (1)
 +++ IAM
-++++ Role (3)
 ++++ InstanceProfile (1)
+++++ Role (3)
 @endmindmap

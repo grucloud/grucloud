@@ -8,15 +8,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "grucloud-s3-sns-test",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       NotificationConfiguration: {
         TopicConfigurations: [
           {
@@ -39,34 +30,27 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
-          Version: "2012-10-17",
           Statement: [
             {
+              Action: "sns:Publish",
+              Condition: {
+                ArnEquals: {
+                  "aws:SourceArn": "arn:aws:s3:::grucloud-s3-sns-test",
+                },
+                StringEquals: {
+                  "aws:SourceAccount": `${config.accountId()}`,
+                },
+              },
               Effect: "Allow",
               Principal: {
                 Service: "s3.amazonaws.com",
               },
-              Action: "sns:Publish",
               Resource: `arn:aws:sns:${
                 config.region
               }:${config.accountId()}:sam-app-SNSTopic-15XRP2Y8B6PO1`,
-              Condition: {
-                StringEquals: {
-                  "aws:SourceAccount": `${config.accountId()}`,
-                },
-                ArnEquals: {
-                  "aws:SourceArn": "arn:aws:s3:::grucloud-s3-sns-test",
-                },
-              },
             },
           ],
-        },
-        DeliveryPolicy: {
-          http: {
-            defaultRequestPolicy: {
-              headerContentType: "text/plain; charset=UTF-8",
-            },
-          },
+          Version: "2012-10-17",
         },
       },
     }),

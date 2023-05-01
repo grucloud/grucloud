@@ -8,6 +8,16 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-buclet-accesspoint-test",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+            BucketKeyEnabled: true,
+          },
+        ],
+      },
     }),
   },
   {
@@ -17,12 +27,6 @@ exports.createResources = () => [
       Bucket: "gc-buclet-accesspoint-test",
       Name: "my-accesspoint",
       NetworkOrigin: "Internet",
-      PublicAccessBlockConfiguration: {
-        BlockPublicAcls: true,
-        IgnorePublicAcls: true,
-        BlockPublicPolicy: true,
-        RestrictPublicBuckets: true,
-      },
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -37,6 +41,12 @@ exports.createResources = () => [
             }:${config.accountId()}:accesspoint/my-accesspoint/object/Jane/*`,
           },
         ],
+      },
+      PublicAccessBlockConfiguration: {
+        BlockPublicAcls: true,
+        BlockPublicPolicy: true,
+        IgnorePublicAcls: true,
+        RestrictPublicBuckets: true,
       },
     }),
     dependencies: ({}) => ({

@@ -7,13 +7,13 @@ exports.createResources = () => [
     type: "CidrCollection",
     group: "Route53",
     properties: ({}) => ({
-      Name: "my-collection",
       Locations: [
         {
           CidrList: ["200.5.3.0/24", "200.6.3.0/24"],
           LocationName: "office",
         },
       ],
+      Name: "my-collection",
     }),
   },
 ];

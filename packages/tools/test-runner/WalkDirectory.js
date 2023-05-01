@@ -28,108 +28,247 @@ const { readdir } = require("fs").promises;
 const path = require("path");
 const fs = require("fs").promises;
 
+const IncludeListExpensive = [
+  //"EMR", //TODO
+  "EMRServerless",
+  "ElastiCache",
+  "FSx",
+  "MQ",
+  "MSK",
+  "MWAA",
+  "MemoryDB",
+  //"Neptune",
+  // "NetworkFirewall",
+  // "NetworkManager",
+  "OpenSearch",
+  "OpenSearchServerless",
+  "Redshift",
+  "RedshiftServerless",
+  "Transfer",
+  "VpcLattice",
+  "WAFv2",
+];
+
+const IncludeList = [
+  "ACM",
+  "APIGateway",
+  "AccessAnalyzer",
+  "Account",
+  "Amplify",
+  "ApiGatewayV2",
+  "AppConfig",
+  "AppIntegrations",
+  "AppMesh",
+  "AppRunner",
+  "AppStream",
+  "AppSync",
+  "Appflow",
+  "ApplicationAutoScaling",
+  "ApplicationInsights",
+  "Aps",
+  "Athena",
+  //"AuditManager",
+  "AutoScaling",
+  "Backup",
+  "Batch",
+  "Budgets",
+  "CUR",
+  "Cloud9",
+  "CloudFront",
+  //"CloudHSMv2"
+  "CloudTrail",
+  "CloudWatch",
+  "CloudWatchEvent",
+  "CloudWatchLogs",
+  "CodeArtifact",
+  "CodeBuild",
+  "CodeCommit",
+  "CodeDeploy",
+  "CodeGuruReviewer",
+  "CodePipeline",
+  "CognitoIdentity",
+  "CognitoIdentityServiceProvider",
+  "Comprehend",
+  "Config",
+  // "ControlTower"
+  "CostExplorer",
+  // "DAX"
+  // "DMS"
+  // "DataBrew"
+  // "DataPipeline"
+  // "DataSync" $$$
+  "Detective",
+  "DeviceFarm",
+  // "DirectConnect"
+  // "DirectoryService"
+  "DynamoDb",
+  // "EC2",
+  "ECR",
+  "ECS",
+  // "EFS",
+  "EKS",
+  // "EMR"
+  // "EMRServerless"
+  // "ElastiCache"
+  // "ElasticBeanstalk"
+  "ElasticLoadBalancingV2",
+  "Elemental",
+  "Evidently",
+  //"FSx", $$$
+  "Firehose",
+  "Glacier",
+  "GlobalAccelerator",
+  "Glue",
+  "Grafana",
+  // "GuardDuty"
+  "IAM",
+  // "IVS",
+  "IdentityStore",
+  "Imagebuilder",
+  //  "Inspector2",
+  // "InternetMonitor",
+  //  "Ivschat"
+  "KMS",
+  //"Kendra",
+  "KeySpaces",
+  "Kinesis",
+  "KinesisAnalyticsV2",
+  "KinesisVideo",
+  "LakeFormation",
+  "Lambda",
+  //"Lex",
+  "LicenseManager",
+  "Lightsail",
+  "Location",
+  //"MQ",
+  //"MSK",
+  // "MWAA", $$$
+  // "Macie"
+  "MediaConnect",
+  "MediaConvert",
+  "MediaLive",
+  "MediaPackage",
+  "MediaTailor",
+  // "MemoryDB",
+  //"Neptune",
+  //"NetworkFirewall"
+  // "NetworkManager"
+  // "OpenSearch"
+  //  "OpenSearchServerless"
+  //"Organisation",
+  //  "Pinpoint"
+  "Pipes",
+  "QLDB",
+  // "QuickSight",
+  //"RAM",
+  // "RDS", $$
+  "RUM",
+  "Rbin",
+  // "Redshift", $$
+  // "RedshiftServerless"
+  // "ResilienceHub"
+  "ResourceExplorer2",
+  "ResourceGroups",
+  // "RoleEverywhere"
+  "Route53",
+  //  "Route53RecoveryControlConfig" $$$
+  //  "Route53RecoveryReadiness" $$$
+  "Route53Resolver",
+  "S3",
+  "S3Control",
+  "SESV2",
+  "SNS",
+  "SQS",
+  "SSM",
+  "SSOAdmin",
+  // "SageMaker",$$$
+  "Scheduler",
+  "Schema",
+  "SecretsManager",
+  // "SecurityHub",
+  //"ServiceCatalog",
+  "ServiceDiscovery",
+  "ServiceQuotas",
+  "Signer",
+  "StepFunctions",
+  "Synthetics",
+  "TimestreamWrite",
+  // "Transfer", $$
+  // "VpcLattice",
+  //  "WAFv2" $
+  // "WorkSpaces", $$$
+  // "WorkSpacesWeb",
+  "XRay",
+  "docker", // TODO move docker dir out of the example
+  "kops",
+  "aws-samples",
+  "aws-cdk-examples",
+  "terraform-backend-s3-dynamodb",
+];
 const ExcludeDirsDefault = [
   //
   ".DS_Store",
   "node_modules",
   "artifacts",
   "empty",
-  "kops", // TODO update
-  "docker", // TODO move docker dir out of the example
-  "Batch",
-  "FSx", // "much expensive $$$"
-  "DirectoryService", // "much expensive $$$"
-  "datasync-fsxwindows", // "much expensive $$$"
-  "datasync-fsxlustre", // "much expensive $$$"
-  "datasync-fsxlustre-s3", // "much expensive $$$"
-  "datasync-fsxopenzfs",
+  "certificate",
+  "appflow-redshift",
+
+  "amplify-nextjs",
+  "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
+  "private-apigw-lambda-cdk", //  Too slow"
+  "auth0", //run as default profile due to certificate
+  "http-lambda", //run as default profile due to certificate
+  "appstream-stack",
+  "appstream-simple", // need to create an S3 object
+  "backup-simple", //UpdateGlobalSettings AccessDeniedException: Insufficient privileges to perform this action.
+  "ta-eventbridge-lambda-s3",
+  "cloud9-simple", // reason: 'Instance profile AWSCloud9SSMInstanceProfile does not exist in this account. Please create an instance profile and role as described here https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html',
+  "directory-service-microsoft-ad", // multi account
   "globalcluster", // Too slow
   "msk-lambda-cdk", //  Too slow
-  "private-apigw-lambda-cdk", //  Too slow
-  "cloudfront-lambda-url-java", //  Too slow
-  "direct-connect-simple",
-  "repository", // TODO
   "transfer-ftps-s3", //TODO  create Transfer::Server Certificate type not supported
-  "xray-simple", // TODO
-  "hub-and-spoke-with-inspection-vpc",
-  "hub-and-spoke-with-shared-services-vpc-terraform",
-  "cloud-wan",
-  "servicediscovery", // TODO
-  "resource-share",
-  "hub-and-spoke-with-inspection-vpc",
   "eks-workshop",
-  //
-  "auditmanager-simple",
-  "directory-service-microsoft-ad",
-  "inspector2-simple",
-  "guardduty-simple",
-  "securityhub-simple",
-  "identity-store-simple",
+  //"directory-service-microsoft-ad", // slow
   "organisations-policy",
   "account-bulk",
-  "macie-simple",
-  "ssoadmin-simple",
-  "securityhub-simple/",
   //"redshiftserverless-simple",
   // Route53Domain only on main account
-  "certificate",
-  "cloudfront-distribution",
   "identity-provider",
-  "control-tower-simple",
   "apigw-mutualtls-lambda",
-  "http-lambda",
-  "auth0",
   "eks-load-balancer",
-  "load-balancer",
   "lightsail-wordpress",
   "route53-delegation-set",
-  "website-https",
+  "lambda-vpc-interface-endpoints-secrets-manager", // slow
   // Bugs
   //"codedeploy-ecs", // CodeDeploy::DeploymentGroup 0/1  AWS CodeDeploy does not have the permissions required to assume the role arn:aws:iam::840541460064:role/roleECSCodeDeploy.
   "memorydb-parameter-group-default", // "Subnets: [subnet-08ff91f6dbe67999c] are not in a supported availability zone. Supported availability zones are [us-east-1c, us-east-1d, us-east-1b]."
-  "memorydb-simple",
   "subscription-filter", // Could not execute the lambda function. Make sure you have given CloudWatch Logs permission to execute your function.
-  "cloudhsmv2", // CloudHSM is not currently available in us-east-1a
-  "Ivschat", // 'Your account is pending verification. Until the verification process is complete, you may not be able to carry out requests with this account. If you have questions, contact AWS Support.',
-  "IVS", // 'Your account is pending verification. Until the verification process is complete, you may not be able to carry out requests with this account. If you have questions, contact AWS Support.',
   "lake-formation", // "Insufficient Lake Formation permission(s): Required Create Tag on Catalog",
-
-  "cost-explorer-simple",
-  "appconfig-feature-flag-sam",
   "apprunner-github",
   "apprunner-leaderboard",
   "apprunner-simple",
   "apprunner-ngnix",
   "apprunner-secrets-manager",
-  "cloudfront-distribution",
+  "retail-store-sample-app",
   "cloudfront-lambda-edge-cdk-python", // TODO
   "cloudfront-le-apigw-cdk", // TODO
+  "cloudfront-lambda-url-java", //  Too slow
+  "elemental-mediaconnect-medialive-mediapackage",
+  "elemental-medialive-mediapackage-cdk-ts",
+  "elemental-mediapackage-cloudfront-cdk-ts",
   "xray-lambdalayers-cdk-python",
   "stepfunctions-eventbridge-lambda-sam-java",
-  "role-everywhere",
   "lambda-layer-terraform",
-  "retail-store-sample-app",
-  "appflow-redshift",
-  "appstream-stack",
-  "appstream-simple", // need to create an S3 object
+  "redshift-simple", // uses Organisation, use the default profile
   "cognito-restapi-vpclink",
   "apigw-http-eventbridge-terraform",
-  "aws-route53-recovery-control-config",
-  "amplify-nextjs",
-  "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
-  "backup-simple",
-  "apigw-rest-api-batch-sam",
-  "cloud9-simple", // reason: 'Instance profile AWSCloud9SSMInstanceProfile does not exist in this account. Please create an instance profile and role as described here https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html',
-  "graphql", //
+  "s3-storage-lens", // Bug in the aws sdk js
   "eventbridge-codebuild-sns", // S3 "AccessDenied: Access Denied"
   "eventbridge-sfn-terraform",
   "cloudwatch-logs-subscription-lambda-cdk", //SubscriptionFilter: "Could not execute the lambda function. Make sure you have given CloudWatch Logs permission to execute your function.",
-  "config-simple", // issue with the cloud formation format
-  "dax-simple", //  "No permission to assume role: arn:aws:iam::729329093404:role/service-role/daxdynamodb",
   "dynamodb-kinesis", // Table is not in a valid state to enable Kinesis Streaming Destination: KinesisStreamingDestination must be ACTIVE to perform DISABLE operation.
   "ec2-credit", // "This account cannot launch T2 instances with Unlimited enabled. Please contact AWS Support to enable this feature.",
-  //"elasticache-redis-full",
-  "elasticbeanstalk-simple",
   "fsx-openzfs", // Volume "1 validation error detected: Value null at 'openZFSConfiguration.parentVolumeId' failed to satisfy constraint: Member must not be null",
 ];
 
@@ -152,32 +291,38 @@ const fileExist = pipe([
 ]);
 
 const filterExcludeFiles = ({ excludeDirs }) =>
-  filterOut(
-    pipe([
-      get("name"),
-      tap((content) => {
-        assert(content);
-      }),
-      isIn([excludeDirs, ...ExcludeDirsDefault]),
-    ])
-  );
-
-const isGruCloudExample = ({ directory, name }) =>
   pipe([
-    get("name"),
-    (fileName) => path.resolve(directory, name, fileName),
-    (filename) => fs.readFile(filename, "utf-8"),
-    tap((content) => {
-      assert(content);
-    }),
-    JSON.parse,
-    tap((content) => {
-      assert(content);
-    }),
-    get("dependencies"),
-    keys,
-    any(includes("@grucloud/core")),
+    filterOut(
+      pipe([
+        get("name"),
+        tap((content) => {
+          assert(content);
+        }),
+        isIn([excludeDirs, ...ExcludeDirsDefault]),
+      ])
+    ),
   ]);
+
+const filterIncludeDir = ({ IncludeList }) =>
+  pipe([filter(({ name }) => pipe([() => IncludeList, includes(name)])())]);
+//
+
+// const isGruCloudExample = ({ directory, name }) =>
+//   pipe([
+//     get("name"),
+//     (fileName) => path.resolve(directory, name, fileName),
+//     (filename) => fs.readFile(filename, "utf-8"),
+//     tap((content) => {
+//       assert(content);
+//     }),
+//     JSON.parse,
+//     tap((content) => {
+//       assert(content);
+//     }),
+//     get("dependencies"),
+//     keys,
+//     any(includes("@grucloud/core")),
+//   ]);
 
 const walkDirectoryUnit =
   ({ excludeDirs = [], directory }) =>
@@ -190,6 +335,7 @@ const walkDirectoryUnit =
       }),
       () => readdir(path.resolve(directory, name), { withFileTypes: true }),
       filterExcludeFiles({ excludeDirs }),
+
       tap((params) => {
         assert(true);
       }),
@@ -231,8 +377,9 @@ exports.walkDirectory =
       fileExist,
       () => readdir(directory, { withFileTypes: true }),
       filter(callProp("isDirectory")),
-      filterExcludeFiles({ excludeDirs }),
-
+      //filterExcludeFiles({ excludeDirs }),
+      //filterIncludeDir({ IncludeList }),
+      //filterIncludeDir({ IncludeList: IncludeListExpensive }),
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])
       ),

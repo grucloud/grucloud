@@ -172,6 +172,7 @@ exports.NetworkManagerCoreNetwork = () => ({
     method: "listCoreNetworks",
     getParam: "CoreNetworks",
     decorate: ({ endpoint, getById }) => pipe([getById]),
+    noSortKey: true,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#createCoreNetwork-property
   create: {

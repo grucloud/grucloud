@@ -22,10 +22,10 @@
   "dependencies": {
     "@grucloud/core": "^11.0.1",
     "@grucloud/provider-aws": "^11.0.1",
-    "rubico": "1.8.10"
+    "rubico": "1.9.6"
   },
   "devDependencies": {
-    "mocha": "^9.2.2",
-    "mocha-junit-reporter": "^2.0.2"
+    "mocha": "10.2.0",
+    "mocha-junit-reporter": "2.2.0"
   }
 }

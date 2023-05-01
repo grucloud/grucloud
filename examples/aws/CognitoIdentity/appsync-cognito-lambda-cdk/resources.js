@@ -20,7 +20,7 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       name: "SampleAppSyncApi",
       authenticationType: "API_KEY",
       xrayEnabled: true,
@@ -33,7 +33,7 @@ exports.createResources = () => [
         {
           authenticationType: "AMAZON_COGNITO_USER_POOLS",
           userPoolConfig: {
-            awsRegion: "us-east-2",
+            awsRegion: config.region,
             userPoolId: `${getId({
               type: "UserPool",
               group: "CognitoIdentityServiceProvider",
@@ -67,10 +67,10 @@ exports.createResources = () => [
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
     properties: ({}) => ({
-      PoolName: "CognitoUserPool53E37E69-yJSfyZcumKYw",
       EmailVerificationMessage:
         "The verification code to your new account is {####}",
       EmailVerificationSubject: "Verify your new account",
+      PoolName: "CognitoUserPool53E37E69-yJSfyZcumKYw",
       SmsVerificationMessage:
         "The verification code to your new account is {####}",
       VerificationMessageTemplate: {
@@ -121,9 +121,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSAppSyncPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs",
+          PolicyName: "AWSAppSyncPushToCloudWatchLogs",
         },
       ],
     }),
@@ -163,14 +163,14 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSAppSyncPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs",
+          PolicyName: "AWSAppSyncPushToCloudWatchLogs",
         },
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -194,8 +194,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambda_FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AWSLambda_FullAccess",
+          PolicyName: "AWSLambda_FullAccess",
         },
       ],
     }),

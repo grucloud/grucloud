@@ -73,9 +73,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -119,9 +119,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -170,10 +170,10 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
+            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
             EVENTBUS_ARN: `arn:aws:events:${
               config.region
             }:${config.accountId()}:event-bus/MyCustomBus`,
-            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
             SCHEDULE_ROLE_ARN: `arn:aws:iam::${config.accountId()}:role/DelayedEventbridgeEventsStac-schedulerrole9B80A9F3-11LTFZQSM80PO`,
           },
         },

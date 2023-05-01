@@ -39,6 +39,26 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "RUMPutBatchMetrics-8918708312761",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "rum:PutRumEvents",
+            Effect: "Allow",
+            Resource: `arn:aws:rum:${
+              config.region
+            }:${config.accountId()}:appmonitor/my-monitor`,
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({ config, getId }) => ({
@@ -80,35 +100,15 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "RUMPutBatchMetrics-8918708312761",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: "rum:PutRumEvents",
-            Resource: `arn:aws:rum:${
-              config.region
-            }:${config.accountId()}:appmonitor/my-monitor`,
-          },
-        ],
-      },
-      Path: "/",
-    }),
-  },
-  {
     type: "AppMonitor",
     group: "RUM",
     properties: ({}) => ({
+      CwLogEnabled: true,
       Domain: "*.grucloud.org",
       Name: "my-monitor",
       Tags: {
         "my-monitor": "",
       },
-      CwLogEnabled: true,
     }),
     dependencies: ({ config }) => ({
       identityPool: `RUM-Monitor-${

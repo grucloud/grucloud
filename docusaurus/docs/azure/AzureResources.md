@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of resources for provider azure:
+List of 260 resources in 16 services for provider azure:
 
 * App: 
 [Certificate](./resources/App/Certificate.md), [ContainerApp](./resources/App/ContainerApp.md), [ContainerAppsSourceControl](./resources/App/ContainerAppsSourceControl.md), [DaprComponent](./resources/App/DaprComponent.md), [ManagedEnvironment](./resources/App/ManagedEnvironment.md), [ManagedEnvironmentsStorage](./resources/App/ManagedEnvironmentsStorage.md)

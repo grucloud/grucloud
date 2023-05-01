@@ -3,7 +3,15 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
   {
     type: "Subnet",
     group: "EC2",
@@ -22,15 +30,7 @@ exports.createResources = () => [
       vpc: "vpc-default",
     }),
   },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-default::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
@@ -88,6 +88,7 @@ exports.createResources = () => [
     type: "EndpointGroup",
     group: "GlobalAccelerator",
     properties: ({ getId }) => ({
+      AcceleratorName: "my-accelerator",
       EndpointConfigurations: [
         {
           ClientIPPreservationEnabled: true,
@@ -102,7 +103,6 @@ exports.createResources = () => [
       EndpointGroupRegion: "us-east-1",
       HealthCheckPort: 443,
       HealthCheckProtocol: "TCP",
-      AcceleratorName: "my-accelerator",
     }),
     dependencies: ({}) => ({
       listener: "my-accelerator::TCP::443::443",
@@ -113,6 +113,7 @@ exports.createResources = () => [
     type: "Listener",
     group: "GlobalAccelerator",
     properties: ({}) => ({
+      AcceleratorName: "my-accelerator",
       PortRanges: [
         {
           FromPort: 443,
@@ -120,7 +121,6 @@ exports.createResources = () => [
         },
       ],
       Protocol: "TCP",
-      AcceleratorName: "my-accelerator",
     }),
     dependencies: ({}) => ({
       accelerator: "my-accelerator",

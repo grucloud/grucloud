@@ -25,34 +25,40 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "Instance",
     group: "EC2",
-    name: "Default VPC",
-    properties: ({}) => ({
-      CidrBlock: "192.168.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "main",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}e`,
-      NewBits: 4,
-      NetworkNumber: 1,
+    name: "machine-aws",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220805.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::Default VPC::my-security-group",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "Default VPC::main",
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}e`,
+      },
     }),
     dependencies: ({}) => ({
-      vpc: "Default VPC",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "rt-default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "Default VPC",
+      subnets: ["Default VPC::main"],
+      iamInstanceProfile: "role-ec2-ssm",
+      securityGroups: ["sg::Default VPC::my-security-group"],
     }),
   },
   {
@@ -64,6 +70,15 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       routeTable: "Default VPC::rt-default",
       vpnGateway: "main",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "rt-default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "Default VPC",
     }),
   },
   {
@@ -127,40 +142,25 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "machine-aws",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}e`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::Default VPC::my-security-group",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "Default VPC::main",
-          })}`,
-        },
-      ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220805.0 x86_64 HVM gp2",
-      },
+    name: "main",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}e`,
+      NewBits: 4,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
-      subnets: ["Default VPC::main"],
-      iamInstanceProfile: "role-ec2-ssm",
-      securityGroups: ["sg::Default VPC::my-security-group"],
+      vpc: "Default VPC",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "Default VPC",
+    properties: ({}) => ({
+      CidrBlock: "192.168.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -168,9 +168,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ec2-message",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "Default VPC",
@@ -183,9 +183,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssm`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "Default VPC",
@@ -198,30 +198,14 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm-message",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "Default VPC",
       subnets: ["Default VPC::main"],
       securityGroups: ["sg::Default VPC::my-security-group"],
-    }),
-  },
-  {
-    type: "VpnGateway",
-    group: "EC2",
-    name: "main",
-    properties: ({}) => ({
-      AmazonSideAsn: 64512,
-    }),
-  },
-  {
-    type: "VpnGatewayAttachment",
-    group: "EC2",
-    dependencies: ({}) => ({
-      vpc: "Default VPC",
-      vpnGateway: "main",
     }),
   },
   {
@@ -250,6 +234,30 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "VpnGateway",
+    group: "EC2",
+    name: "main",
+    properties: ({}) => ({
+      AmazonSideAsn: 64512,
+    }),
+  },
+  {
+    type: "VpnGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "Default VPC",
+      vpnGateway: "main",
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-ec2-ssm",
+    dependencies: ({}) => ({
+      roles: ["role-ec2-ssm"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -269,18 +277,10 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "role-ec2-ssm",
-    dependencies: ({}) => ({
-      roles: ["role-ec2-ssm"],
     }),
   },
 ];

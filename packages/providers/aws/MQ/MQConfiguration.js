@@ -1,54 +1,87 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, pick, assign, not, any, and } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { defaultsDeep, identity, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
+const { buildTagsObject } = require("@grucloud/core/Common");
 
 const ignoreErrorMessages = ["Configuration ARN does not exist"];
 const ignoreErrorCodes = ["NotFoundException"];
 
+const { Tagger } = require("./MQCommon");
+
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
 const pickId = pipe([
-  tap(({ Id, LatestRevision }) => {
+  tap(({ Id }) => {
     assert(Id);
-    assert(LatestRevision);
   }),
-  ({ Id, LatestRevision }) => ({
+  ({ Id }) => ({
     ConfigurationId: Id,
-    ConfigurationRevision: LatestRevision.Revision,
   }),
 ]);
+
+const dataToBase64 = assign({
+  Data: ({ Data }) => Buffer.from(Data).toString("base64"),
+});
 
 const decorate =
   ({ endpoint }) =>
   (live) =>
     pipe([
       tap((params) => {
-        assert(live.LatestRevision.Revision);
+        assert(live.Id);
       }),
       () => live,
-      assign({
-        Data: pipe([
-          () => ({
-            ConfigurationId: live.Id,
-            ConfigurationRevision: live.LatestRevision.Revision,
-          }),
-          endpoint().describeConfigurationRevision,
-          ({ Data }) => Buffer.from(Data, "base64").toString(),
-        ]),
-      }),
+      when(
+        () => live.LatestRevision,
+        assign({
+          Data: pipe([
+            tap((params) => {
+              assert(live.LatestRevision.Revision);
+            }),
+            () => ({
+              ConfigurationId: live.Id,
+              ConfigurationRevision: live.LatestRevision.Revision,
+            }),
+            endpoint().describeConfigurationRevision,
+            ({ Data }) => Buffer.from(Data, "base64").toString(),
+          ]),
+        })
+      ),
     ])();
-
-const dataToBase64 = assign({
-  Data: ({ Data }) => Buffer.from(Data).toString("base64"),
-});
 
 exports.MQConfiguration = ({}) => ({
   type: "Configuration",
   package: "mq",
   client: "Mq",
-  inferName: () => get("Name"),
-  findName: () => pipe([get("Name")]),
-  findId: () => pipe([get("Id")]),
+  inferName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("Id"),
+      tap((Id) => {
+        assert(Id);
+      }),
+    ]),
   ignoreResource:
     ({ lives }) =>
     ({ live }) =>
@@ -86,7 +119,7 @@ exports.MQConfiguration = ({}) => ({
   getList: {
     method: "listConfigurations",
     getParam: "Configurations",
-    decorate,
+    decorate: ({ getById }) => pipe([getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MQ.html#createConfiguration-property
   create: {
@@ -94,6 +127,18 @@ exports.MQConfiguration = ({}) => ({
     filterPayload: pipe([dataToBase64]),
     pickCreated: ({ payload }) => identity,
     //isInstanceUp: eq(get("State"), "ACTIVE"),
+    postCreate:
+      ({ payload }) =>
+      (live) =>
+        pipe([
+          tap(() => {
+            assert(live.Id);
+          }),
+          () => payload,
+          pick(["Data", "Description"]),
+          dataToBase64,
+          defaultsDeep({ ConfigurationId: live.Id }),
+        ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MQ.html#updateConfiguration-property
   update: {
@@ -107,10 +152,21 @@ exports.MQConfiguration = ({}) => ({
       ])(),
   },
   getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
   configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: {},
-  }) => pipe([() => otherProps, defaultsDeep({})])(),
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      }),
+    ])(),
 });

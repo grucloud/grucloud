@@ -14,6 +14,6 @@
   "dependencies": {
     "@grucloud/core": "^11.1.0",
     "@grucloud/provider-openstack": "^11.1.0",
-    "rubico": "^1.6.29"
+    "rubico": "1.9.6"
   }
 }

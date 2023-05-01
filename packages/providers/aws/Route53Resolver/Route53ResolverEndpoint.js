@@ -86,6 +86,7 @@ exports.Route53ResolverEndpoint = ({}) => ({
         assert(true);
       }),
     ]),
+  propertiesDefault: { ResolverEndpointType: "IPV4" },
   omitProperties: [
     "Id",
     "CreatorRequestId",

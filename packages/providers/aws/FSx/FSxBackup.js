@@ -124,7 +124,8 @@ exports.FSxBackup = () => ({
   destroy: {
     method: "deleteBackup",
     pickId,
-    shouldRetryOnExceptionMessages: [],
+    shouldRetryOnExceptionMessages: ["cannot be deleted while it is in"],
+    configIsDown: { retryCount: 45 * 12, retryDelay: 5e3 },
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

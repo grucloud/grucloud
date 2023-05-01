@@ -10,7 +10,7 @@ exports.createResources = () => [
       Command: {
         Name: "glueetl",
         PythonVersion: "2",
-        ScriptLocation: "s3://my-glue-job-bucket/glue-python-assets/script.py",
+        ScriptLocation: "s3://gc-glue-job-bucket/glue-python-assets/script.py",
       },
       ExecutionProperty: {
         MaxConcurrentRuns: 1,
@@ -73,8 +73,8 @@ exports.createResources = () => [
                   "s3:Abort*",
                 ],
                 Resource: [
-                  "arn:aws:s3:::my-glue-job-bucket",
-                  "arn:aws:s3:::my-glue-job-bucket/*",
+                  "arn:aws:s3:::gc-glue-job-bucket",
+                  "arn:aws:s3:::gc-glue-job-bucket/*",
                 ],
                 Effect: "Allow",
               },
@@ -86,9 +86,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -113,9 +113,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -157,9 +157,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -200,8 +200,8 @@ exports.createResources = () => [
                   "s3:Abort*",
                 ],
                 Resource: [
-                  "arn:aws:s3:::my-glue-job-bucket",
-                  "arn:aws:s3:::my-glue-job-bucket/*",
+                  "arn:aws:s3:::gc-glue-job-bucket",
+                  "arn:aws:s3:::gc-glue-job-bucket/*",
                 ],
                 Effect: "Allow",
               },
@@ -212,8 +212,8 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSGlueServiceRole",
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole",
+          PolicyName: "AWSGlueServiceRole",
         },
       ],
     }),
@@ -240,7 +240,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         Description:
-          "Lambda function for auto-deleting objects in my-glue-job-bucket S3 bucket.",
+          "Lambda function for auto-deleting objects in gc-glue-job-bucket S3 bucket.",
         FunctionName:
           "CdkLambdaGlueS3Stack-CustomS3AutoDeleteObjectsCust-wGB7tRJC8sgA",
         Handler: "__entrypoint__.handler",
@@ -275,16 +275,7 @@ exports.createResources = () => [
     type: "Bucket",
     group: "S3",
     properties: ({ config }) => ({
-      Name: "my-glue-job-bucket",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
+      Name: "gc-glue-job-bucket",
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -295,8 +286,8 @@ exports.createResources = () => [
             },
             Action: ["s3:GetBucket*", "s3:List*", "s3:DeleteObject*"],
             Resource: [
-              "arn:aws:s3:::my-glue-job-bucket",
-              "arn:aws:s3:::my-glue-job-bucket/*",
+              "arn:aws:s3:::gc-glue-job-bucket",
+              "arn:aws:s3:::gc-glue-job-bucket/*",
             ],
           },
         ],

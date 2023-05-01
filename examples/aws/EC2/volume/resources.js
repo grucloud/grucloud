@@ -4,15 +4,52 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Instance",
+    group: "EC2",
+    name: "machine4volume",
+    properties: ({ config }) => ({
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+    }),
+    dependencies: ({}) => ({
+      subnets: ["vpc-default::subnet-default-a"],
+      securityGroups: ["sg::vpc-default::default"],
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-a",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
     type: "Volume",
     group: "EC2",
     name: "my-volume",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      Size: 1,
       Iops: 3000,
-      VolumeType: "gp3",
+      Size: 1,
       Throughput: 125,
+      VolumeType: "gp3",
     }),
   },
   {
@@ -28,41 +65,4 @@ exports.createResources = () => [
     }),
   },
   { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-a",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-default::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "Instance",
-    group: "EC2",
-    name: "machine4volume",
-    properties: ({ config }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
-      },
-    }),
-    dependencies: ({}) => ({
-      subnets: ["vpc-default::subnet-default-a"],
-      securityGroups: ["sg::vpc-default::default"],
-    }),
-  },
 ];

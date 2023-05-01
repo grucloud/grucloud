@@ -146,6 +146,7 @@ exports.NetworkManagerSiteToSiteVpnAttachment = () => ({
     "Arn",
     "CreatedAt",
     "UpdatedAt",
+    "OwnerAccountId",
   ],
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getSiteToSiteAttachment-property

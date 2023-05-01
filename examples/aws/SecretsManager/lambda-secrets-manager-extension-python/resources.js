@@ -41,9 +41,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -58,8 +58,8 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            SECRET_NAME: "MySecret",
             PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: "2773",
+            SECRET_NAME: "MySecret",
           },
         },
         FunctionName: "sam-app-HelloWorldFunction-xplIxoZGZhdc",
@@ -75,11 +75,11 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     properties: ({ generatePassword }) => ({
+      Description: "Secret with dynamically generated secret password.",
       Name: "MySecret",
       SecretString: {
         SecretString: generatePassword({ length: 30 }),
       },
-      Description: "Secret with dynamically generated secret password.",
     }),
   },
 ];

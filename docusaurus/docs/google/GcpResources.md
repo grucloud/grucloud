@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of resources for provider google:
+List of 98 resources in 6 services for provider google:
 
 * cloudresourcemanager: 
 [Organization](./resources/cloudresourcemanager/Organization.md)

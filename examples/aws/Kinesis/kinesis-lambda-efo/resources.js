@@ -22,18 +22,18 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSXrayWriteOnlyAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess",
+          PolicyName: "AWSXrayWriteOnlyAccess",
         },
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaKinesisExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole",
+          PolicyName: "AWSLambdaKinesisExecutionRole",
         },
       ],
     }),

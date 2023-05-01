@@ -7,12 +7,12 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     properties: ({ generatePassword }) => ({
+      Description: "access postgres",
       Name: "prod/myapp/db",
       SecretString: {
         password: generatePassword({ length: 32 }),
         username: "demousername",
       },
-      Description: "access postgres",
       Tags: [
         {
           Key: "mykey",
@@ -26,18 +26,18 @@ exports.createResources = () => [
     group: "SecretsManager",
     properties: ({}) => ({
       ResourcePolicy: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "EnableAnotherAccountToReadTheSecret",
+            Action: "secretsmanager:GetSecretValue",
             Effect: "Allow",
             Principal: {
               AWS: "arn:aws:iam::548529576214:root",
             },
-            Action: "secretsmanager:GetSecretValue",
             Resource: "*",
+            Sid: "EnableAnotherAccountToReadTheSecret",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({

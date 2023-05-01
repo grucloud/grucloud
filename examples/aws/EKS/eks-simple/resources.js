@@ -3,15 +3,7 @@ const { pipe, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "VPC",
-    properties: ({}) => ({
-      CidrBlock: "192.168.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
+  { type: "ElasticIpAddress", group: "EC2", name: "NATIP" },
   { type: "InternetGateway", group: "EC2", name: "InternetGateway" },
   {
     type: "InternetGatewayAttachment",
@@ -19,6 +11,33 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       vpc: "VPC",
       internetGateway: "InternetGateway",
+    }),
+  },
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
+    name: "eksctl-my-cluster-nodegroup-ng-1",
+    properties: ({}) => ({
+      LaunchTemplateData: {
+        BlockDeviceMappings: [
+          {
+            DeviceName: "/dev/xvda",
+            Ebs: {
+              Iops: 3000,
+              Throughput: 125,
+              VolumeSize: 80,
+              VolumeType: "gp3",
+            },
+          },
+        ],
+        MetadataOptions: {
+          HttpPutResponseHopLimit: 2,
+          HttpTokens: "optional",
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroups: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {
@@ -31,6 +50,154 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       subnet: "VPC::SubnetPublicUSEAST1F",
       eip: "NATIP",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      natGateway: "NATGateway",
+      routeTable: "VPC::PrivateRouteTableUSEAST1D",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      natGateway: "NATGateway",
+      routeTable: "VPC::PrivateRouteTableUSEAST1F",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "InternetGateway",
+      routeTable: "VPC::PublicRouteTable",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "PrivateRouteTableUSEAST1D",
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "PrivateRouteTableUSEAST1F",
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "PublicRouteTable",
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "VPC::PrivateRouteTableUSEAST1D",
+      subnet: "VPC::SubnetPrivateUSEAST1D",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "VPC::PrivateRouteTableUSEAST1F",
+      subnet: "VPC::SubnetPrivateUSEAST1F",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "VPC::PublicRouteTable",
+      subnet: "VPC::SubnetPublicUSEAST1D",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "VPC::PublicRouteTable",
+      subnet: "VPC::SubnetPublicUSEAST1F",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "ClusterSharedNodeSecurityGroup",
+      Description: "Communication between all nodes in the cluster",
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "ControlPlaneSecurityGroup",
+      Description:
+        "Communication between the control plane and worker nodegroups",
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::VPC::eks-cluster-sg-my-cluster-1909614887",
+    readOnly: true,
+    filterLives: ({ resources }) =>
+      pipe([
+        () => resources,
+        find(
+          pipe([
+            get("live.Tags"),
+            find(
+              and([
+                eq(get("Key"), "aws:eks:cluster-name"),
+                eq(get("Value"), "my-cluster"),
+              ])
+            ),
+          ])
+        ),
+      ])(),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+      eksCluster: "my-cluster",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpProtocol: "-1",
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::VPC::ClusterSharedNodeSecurityGroup",
+      securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {
@@ -112,179 +279,12 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: "PrivateRouteTableUSEAST1D",
-    dependencies: ({}) => ({
-      vpc: "VPC",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "PrivateRouteTableUSEAST1F",
-    dependencies: ({}) => ({
-      vpc: "VPC",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "PublicRouteTable",
-    dependencies: ({}) => ({
-      vpc: "VPC",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "VPC::PrivateRouteTableUSEAST1D",
-      subnet: "VPC::SubnetPrivateUSEAST1D",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "VPC::PrivateRouteTableUSEAST1F",
-      subnet: "VPC::SubnetPrivateUSEAST1F",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "VPC::PublicRouteTable",
-      subnet: "VPC::SubnetPublicUSEAST1D",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "VPC::PublicRouteTable",
-      subnet: "VPC::SubnetPublicUSEAST1F",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
+    name: "VPC",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "NATGateway",
-      routeTable: "VPC::PrivateRouteTableUSEAST1D",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "NATGateway",
-      routeTable: "VPC::PrivateRouteTableUSEAST1F",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "InternetGateway",
-      routeTable: "VPC::PublicRouteTable",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "ClusterSharedNodeSecurityGroup",
-      Description: "Communication between all nodes in the cluster",
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "ControlPlaneSecurityGroup",
-      Description:
-        "Communication between the control plane and worker nodegroups",
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::VPC::eks-cluster-sg-my-cluster-1909614887",
-    readOnly: true,
-    filterLives: ({ resources }) =>
-      pipe([
-        () => resources,
-        find(
-          pipe([
-            get("live.Tags"),
-            find(
-              and([
-                eq(get("Key"), "aws:eks:cluster-name"),
-                eq(get("Value"), "my-cluster"),
-              ])
-            ),
-          ])
-        ),
-      ])(),
-    dependencies: ({}) => ({
-      vpc: "VPC",
-      eksCluster: "my-cluster",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpProtocol: "-1",
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::VPC::ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
-    }),
-  },
-  { type: "ElasticIpAddress", group: "EC2", name: "NATIP" },
-  {
-    type: "LaunchTemplate",
-    group: "EC2",
-    name: "eksctl-my-cluster-nodegroup-ng-1",
-    properties: ({}) => ({
-      LaunchTemplateData: {
-        BlockDeviceMappings: [
-          {
-            DeviceName: "/dev/xvda",
-            Ebs: {
-              Iops: 3000,
-              VolumeSize: 80,
-              VolumeType: "gp3",
-              Throughput: 125,
-            },
-          },
-        ],
-        MetadataOptions: {
-          HttpTokens: "optional",
-          HttpPutResponseHopLimit: 2,
-        },
-      },
-    }),
-    dependencies: ({}) => ({
-      securityGroups: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
+      CidrBlock: "192.168.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -360,20 +360,19 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["cloudwatch:PutMetricData"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "eksctl-my-cluster-cluster-PolicyCloudWatchMetrics",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -381,22 +380,23 @@ exports.createResources = () => [
                   "ec2:DescribeAddresses",
                   "ec2:DescribeInternetGateways",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "eksctl-my-cluster-cluster-PolicyELBPermissions",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEKSClusterPolicy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+          PolicyName: "AmazonEKSClusterPolicy",
         },
         {
-          PolicyName: "AmazonEKSVPCResourceController",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+          PolicyName: "AmazonEKSVPCResourceController",
         },
       ],
     }),
@@ -421,21 +421,21 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ContainerRegistryReadOnly",
           PolicyArn:
             "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+          PolicyName: "AmazonEC2ContainerRegistryReadOnly",
         },
         {
-          PolicyName: "AmazonEKS_CNI_Policy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+          PolicyName: "AmazonEKS_CNI_Policy",
         },
         {
-          PolicyName: "AmazonEKSWorkerNodePolicy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+          PolicyName: "AmazonEKSWorkerNodePolicy",
         },
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
       ],
     }),

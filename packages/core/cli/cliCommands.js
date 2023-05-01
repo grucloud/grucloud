@@ -1098,6 +1098,9 @@ const planDestroy = ({
           }),
           assign({ error: any(get("error")) }),
           throwIfError,
+          tap((result) => {
+            logger.debug(`destroy done`);
+          }),
         ])(),
     ]),
     DisplayAndThrow({ name: "Plan Destroy" })

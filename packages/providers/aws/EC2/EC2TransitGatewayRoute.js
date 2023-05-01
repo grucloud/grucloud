@@ -146,12 +146,15 @@ exports.EC2TransitGatewayRoute = ({ compare }) => ({
     ]),
   getByName: getByNameCore,
   tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
-
   configDefault: ({
     name,
     namespace,
     properties,
-    dependencies: { transitGatewayRouteTable, transitGatewayVpcAttachment },
+    dependencies: {
+      transitGatewayRouteTable,
+      transitGatewayVpcAttachment,
+      transitGatewayVpnAttachment,
+    },
     config,
   }) =>
     pipe([
@@ -170,6 +173,13 @@ exports.EC2TransitGatewayRoute = ({ compare }) => ({
         defaultsDeep({
           TransitGatewayAttachmentId: getField(
             transitGatewayVpcAttachment,
+            "TransitGatewayAttachmentId"
+          ),
+        }),
+        () => transitGatewayVpnAttachment,
+        defaultsDeep({
+          TransitGatewayAttachmentId: getField(
+            transitGatewayVpnAttachment,
             "TransitGatewayAttachmentId"
           ),
         }),

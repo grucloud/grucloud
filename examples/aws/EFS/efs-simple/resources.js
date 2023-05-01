@@ -4,40 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "EfsLambdaVpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "EfsLambdaSubnetA",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "EfsLambdaVpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "EfsLambdaSubnetB",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "EfsLambdaVpc",
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -82,6 +48,40 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       securityGroup:
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "EfsLambdaSubnetA",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "EfsLambdaVpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "EfsLambdaSubnetB",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "EfsLambdaVpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "EfsLambdaVpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
     }),
   },
   {
@@ -165,6 +165,10 @@ exports.createResources = () => [
           PolicyDocument: {
             Statement: [
               {
+                Action: [
+                  "elasticfilesystem:ClientMount",
+                  "elasticfilesystem:ClientWrite",
+                ],
                 Condition: {
                   StringEquals: {
                     "elasticfilesystem:AccessPointArn": `${getId({
@@ -174,16 +178,12 @@ exports.createResources = () => [
                     })}`,
                   },
                 },
-                Action: [
-                  "elasticfilesystem:ClientMount",
-                  "elasticfilesystem:ClientWrite",
-                ],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "FileSystem",
                   group: "EFS",
                   name: "fs-0c95a09faadb73087",
                 })}`,
-                Effect: "Allow",
               },
             ],
           },
@@ -192,14 +192,14 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaVPCAccessExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+          PolicyName: "AWSLambdaVPCAccessExecutionRole",
         },
       ],
     }),

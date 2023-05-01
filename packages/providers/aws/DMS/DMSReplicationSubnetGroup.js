@@ -10,7 +10,7 @@ const { Tagger, listTagsForResource } = require("./DMSCommon");
 
 const buildArn = () =>
   pipe([
-    get("Arn"),
+    get("ReplicationSubnetGroupArn"),
     tap((arn) => {
       assert(arn);
     }),
@@ -28,14 +28,6 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
-    assign({
-      Arn: pipe([
-        ({ ReplicationSubnetGroupIdentifier }) =>
-          `arn:aws:dms:${
-            config.region
-          }:${config.accountId()}:subgrp:${ReplicationSubnetGroupIdentifier}`,
-      ]),
-    }),
     assign({ SubnetIds: pipe([get("Subnets"), pluck("SubnetIdentifier")]) }),
     omit(["Subnets"]),
     listTagsForResource({ endpoint, buildArn: buildArn() }),
@@ -47,7 +39,12 @@ exports.DMSReplicationSubnetGroup = ({ compare }) => ({
   package: "database-migration-service",
   client: "DatabaseMigrationService",
   propertiesDefault: {},
-  omitProperties: ["Arn", "VpcId", "SubnetGroupStatus", "SubnetIds"],
+  omitProperties: [
+    "ReplicationSubnetGroupArn",
+    "VpcId",
+    "SubnetGroupStatus",
+    "SubnetIds",
+  ],
   inferName: () =>
     pipe([
       get("ReplicationSubnetGroupIdentifier"),

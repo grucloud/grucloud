@@ -15,7 +15,6 @@ exports.createResources = () => [
     group: "CloudWatchEvents",
     properties: ({}) => ({
       EventPattern: {
-        "detail-type": ["OrderCreated"],
         detail: {
           metadata: {
             enrich: [
@@ -25,6 +24,7 @@ exports.createResources = () => [
             ],
           },
         },
+        "detail-type": ["OrderCreated"],
       },
       Name: "SingleBusEnrichmentWithLa-OrderCreatedRule8ABB232A-1PRZBVCLIU2EU",
     }),
@@ -98,9 +98,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -142,9 +142,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -186,9 +186,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -222,8 +222,8 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            EVENT_BUS_NAME: "MyMainBus",
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
+            EVENT_BUS_NAME: "MyMainBus",
           },
         },
         FunctionName:
@@ -245,8 +245,8 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            EVENT_BUS_NAME: "MyMainBus",
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
+            EVENT_BUS_NAME: "MyMainBus",
           },
         },
         FunctionName:
@@ -271,11 +271,11 @@ exports.createResources = () => [
           FunctionName:
             "SingleBusEnrichmentWithLa-consumerFunctionF99F4064-VTlh1DpXeH5q",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "SingleBusEnrichmentWithLambda-OrderCreatedRuleAllowEventRuleSingleBusEnrichmentWithLam-CX0V9XMXWPNC",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/MyMainBus/SingleBusEnrichmentWithLa-OrderCreatedRule8ABB232A-1PRZBVCLIU2EU`,
+          StatementId:
+            "SingleBusEnrichmentWithLambda-OrderCreatedRuleAllowEventRuleSingleBusEnrichmentWithLam-CX0V9XMXWPNC",
         },
       ],
     }),
@@ -294,11 +294,11 @@ exports.createResources = () => [
           FunctionName:
             "SingleBusEnrichmentWithLamb-enrichFunctionB1243B0F-GTuWbXCFlOsV",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "SingleBusEnrichmentWithLambda-EnricherRuleAllowEventRuleSingleBusEnrichmentWithLambdae-PA3W9OBF0YPY",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/MyMainBus/SingleBusEnrichmentWithLambda-EnricherRule47335972-C9OAT25XZOP3`,
+          StatementId:
+            "SingleBusEnrichmentWithLambda-EnricherRuleAllowEventRuleSingleBusEnrichmentWithLambdae-PA3W9OBF0YPY",
         },
       ],
     }),

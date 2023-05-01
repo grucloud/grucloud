@@ -509,9 +509,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
         },
       ],
     }),

@@ -1,7 +1,16 @@
 {
-  "packages": ["packages/**/*", "examples/**/*"],
+  "packages": [
+    "packages/**/*",
+    "examples/**/*",
+    "!examples/aws/website-https/svelte-app"
+  ],
   "version": "11.1.0",
   "command": {
+    "command": {
+      "bootstrap": {
+        "npmClientArgs": ["--no-package-lock", "--no-audit", "--ignore-scripts"]
+      }
+    },
     "publish": {
       "ignoreChanges": ["@grucloud/example-*"],
       "create-release": "github",

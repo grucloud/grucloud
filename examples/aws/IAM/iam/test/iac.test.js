@@ -10,5 +10,5 @@ describe("Iam Test Example", async function () {
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       steps: [{ createStack, configs: [config] }],
     });
-  }).timeout(35 * 60e3);
+  }).timeout(5 * 60e3);
 });

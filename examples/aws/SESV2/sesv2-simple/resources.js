@@ -34,6 +34,7 @@ exports.createResources = () => [
         SigningAttributesOrigin: "AWS_SES",
         SigningEnabled: false,
       },
+      EmailIdentity: "hello@grucloud.com",
       FeedbackForwardingStatus: true,
       IdentityType: "EMAIL_ADDRESS",
       MailFromAttributes: {
@@ -47,7 +48,6 @@ exports.createResources = () => [
         },
       ],
       VerifiedForSendingStatus: false,
-      EmailIdentity: "hello@grucloud.com",
     }),
     dependencies: ({}) => ({
       configurationSet: "my-configuration-set",

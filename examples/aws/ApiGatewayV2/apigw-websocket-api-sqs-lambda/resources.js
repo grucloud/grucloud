@@ -105,16 +105,16 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "sqs:SendMessage",
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:APIGWWebsocketQueue.fifo`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "APIGatewaySQSSendMessagePolicy",
         },
@@ -141,17 +141,16 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "execute-api:ManageConnections",
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "Api",
                   group: "ApiGatewayV2",
                   name: "APIGWWebsocketSQSLambda",
                   path: "live.ArnV2",
                 })}/production/POST/*`,
-                Effect: "Allow",
               },
               {
                 Action: [
@@ -161,21 +160,22 @@ exports.createResources = () => [
                   "sqs:DeleteMessage",
                   "sqs:GetQueueAttributes",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:APIGWWebsocketQueue.fifo`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SQSWebsocketResponseServiceRoleDefaultPolicy",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -222,10 +222,10 @@ exports.createResources = () => [
     group: "SQS",
     properties: ({}) => ({
       Attributes: {
-        FifoQueue: "true",
-        DeduplicationScope: "queue",
-        FifoThroughputLimit: "perQueue",
         ContentBasedDeduplication: "false",
+        DeduplicationScope: "queue",
+        FifoQueue: "true",
+        FifoThroughputLimit: "perQueue",
       },
       QueueName: "APIGWWebsocketQueue.fifo",
     }),

@@ -14,13 +14,13 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({}) => ({
-      Name: "site.grucloud.org.",
-      Type: "A",
       AliasTarget: {
-        HostedZoneId: "Z3AQBSTGFYJSTF",
         DNSName: "s3-website-us-east-1.amazonaws.com.",
         EvaluateTargetHealth: true,
+        HostedZoneId: "Z3AQBSTGFYJSTF",
       },
+      Name: "site.grucloud.org.",
+      Type: "A",
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
@@ -31,15 +31,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "site.grucloud.org",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       WebsiteConfiguration: {
         IndexDocument: {
           Suffix: "index.html",

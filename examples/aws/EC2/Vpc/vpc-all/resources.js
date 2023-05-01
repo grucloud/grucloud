@@ -3,14 +3,7 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "192.168.0.0/16",
-    }),
-  },
+  { type: "ElasticIpAddress", group: "EC2", name: "eip" },
   { type: "InternetGateway", group: "EC2", name: "internet-gateway" },
   {
     type: "InternetGatewayAttachment",
@@ -33,57 +26,36 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "subnet-private-a",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 3,
-      NetworkNumber: 3,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "vpc",
+      natGateway: "nat-gateway",
+      routeTable: "vpc::route-table-private-a",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "subnet-private-b",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 3,
-      NetworkNumber: 4,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "vpc",
+      natGateway: "nat-gateway",
+      routeTable: "vpc::route-table-private-b",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "subnet-public-a",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 3,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-public-b",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 3,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
+      ig: "internet-gateway",
+      routeTable: "vpc::rt-default",
     }),
   },
   {
@@ -144,37 +116,65 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+    name: "subnet-private-a",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 3,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
-      natGateway: "nat-gateway",
-      routeTable: "vpc::route-table-private-a",
+      vpc: "vpc",
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+    name: "subnet-private-b",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 3,
+      NetworkNumber: 4,
     }),
     dependencies: ({}) => ({
-      natGateway: "nat-gateway",
-      routeTable: "vpc::route-table-private-b",
+      vpc: "vpc",
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+    name: "subnet-public-a",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 3,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
-      ig: "internet-gateway",
-      routeTable: "vpc::rt-default",
+      vpc: "vpc",
     }),
   },
-  { type: "ElasticIpAddress", group: "EC2", name: "eip" },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-public-b",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 3,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "192.168.0.0/16",
+    }),
+  },
 ];

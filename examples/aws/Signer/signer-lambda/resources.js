@@ -9,7 +9,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       platformDisplayName: "AWS Lambda",
       platformId: "AWSLambda-SHA384-ECDSA",
-      profileName: "signing_profile",
+      profileName: "my_signing_profile",
     }),
   },
 ];

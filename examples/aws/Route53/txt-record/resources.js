@@ -21,14 +21,14 @@ exports.createResources = () => [
     group: "Route53",
     properties: ({}) => ({
       Name: "gcrun.grucloud.org.",
-      Type: "TXT",
-      TTL: 300,
       ResourceRecords: [
         {
           Value:
             '"google-site-verification=DPVEQ54F8sKTj__itc4iAXA4my_hB-bzUlMYFqx6gCI"',
         },
       ],
+      TTL: 300,
+      Type: "TXT",
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",

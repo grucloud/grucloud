@@ -181,6 +181,7 @@ exports.createResources = () => [
                   "dynamodb:DescribeTable",
                   "dynamodb:ConditionCheckItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
@@ -189,7 +190,6 @@ exports.createResources = () => [
                     config.region
                   }:${config.accountId()}:table/sam-app-websocket_connections/index/*`,
                 ],
-                Effect: "Allow",
               },
             ],
           },
@@ -198,9 +198,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -239,6 +239,7 @@ exports.createResources = () => [
                   "dynamodb:DescribeTable",
                   "dynamodb:ConditionCheckItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
@@ -247,7 +248,6 @@ exports.createResources = () => [
                     config.region
                   }:${config.accountId()}:table/sam-app-websocket_connections/index/*`,
                 ],
-                Effect: "Allow",
               },
             ],
           },
@@ -256,9 +256,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -297,6 +297,7 @@ exports.createResources = () => [
                   "dynamodb:DescribeTable",
                   "dynamodb:ConditionCheckItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
@@ -305,7 +306,6 @@ exports.createResources = () => [
                     config.region
                   }:${config.accountId()}:table/sam-app-websocket_connections/index/*`,
                 ],
-                Effect: "Allow",
               },
             ],
           },
@@ -316,6 +316,7 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["execute-api:ManageConnections"],
+                Effect: "Allow",
                 Resource: [
                   `${getId({
                     type: "Api",
@@ -324,7 +325,6 @@ exports.createResources = () => [
                     path: "live.ArnV2",
                   })}/*`,
                 ],
-                Effect: "Allow",
               },
             ],
           },
@@ -333,9 +333,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -415,14 +415,14 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-onconnect-function",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "sam-app-OnConnectFunctionResourcePermission-R1AMDRNUZVVW",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "sam-app",
             path: "live.ArnV2",
           })}/*`,
+          StatementId:
+            "sam-app-OnConnectFunctionResourcePermission-R1AMDRNUZVVW",
         },
       ],
     }),
@@ -440,14 +440,14 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-ondisconnect-function",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "sam-app-OnDisconnectFunctionResourcePermission-XCAB2M1W299T",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "sam-app",
             path: "live.ArnV2",
           })}/*`,
+          StatementId:
+            "sam-app-OnDisconnectFunctionResourcePermission-XCAB2M1W299T",
         },
       ],
     }),
@@ -465,13 +465,13 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-post-function",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-PostFunctionResourcePermission-NHMFH7IDB7JO",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "sam-app",
             path: "live.ArnV2",
           })}/*`,
+          StatementId: "sam-app-PostFunctionResourcePermission-NHMFH7IDB7JO",
         },
       ],
     }),

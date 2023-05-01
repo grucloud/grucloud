@@ -7,13 +7,13 @@ exports.createResources = () => [
     type: "Connection",
     group: "CloudWatchEvents",
     properties: ({}) => ({
+      AuthorizationType: "BASIC",
       AuthParameters: {
         BasicAuthParameters: {
           Username: "username",
           Password: process.env.MY_ZENDESK_CONNECTION_72_YZ_HUVUNZ_II_PASSWORD,
         },
       },
-      AuthorizationType: "BASIC",
       Description: "My connection with a username and password",
       Name: "MyZendeskConnection-72YzHuvunzIi",
     }),

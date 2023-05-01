@@ -7,26 +7,6 @@ exports.createResources = () => [
     type: "Budget",
     group: "Budgets",
     properties: ({ getId }) => ({
-      BudgetLimit: {
-        Amount: "40.0",
-        Unit: "USD",
-      },
-      BudgetName: "budget",
-      BudgetType: "COST",
-      CostTypes: {
-        IncludeCredit: false,
-        IncludeDiscount: true,
-        IncludeOtherSubscription: true,
-        IncludeRecurring: true,
-        IncludeRefund: false,
-        IncludeSubscription: true,
-        IncludeSupport: true,
-        IncludeTax: true,
-        IncludeUpfront: true,
-        UseAmortized: false,
-        UseBlended: false,
-      },
-      TimeUnit: "MONTHLY",
       Actions: [
         {
           ActionThreshold: {
@@ -64,11 +44,29 @@ exports.createResources = () => [
           ],
         },
       ],
+      BudgetLimit: {
+        Amount: "40.0",
+        Unit: "USD",
+      },
+      BudgetName: "budget",
+      BudgetType: "COST",
+      CostTypes: {
+        IncludeCredit: false,
+        IncludeDiscount: true,
+        IncludeOtherSubscription: true,
+        IncludeRecurring: true,
+        IncludeRefund: false,
+        IncludeSubscription: true,
+        IncludeSupport: true,
+        IncludeTax: true,
+        IncludeUpfront: true,
+        UseAmortized: false,
+        UseBlended: false,
+      },
       Notifications: [
         {
           ComparisonOperator: "GREATER_THAN",
           NotificationType: "ACTUAL",
-          Threshold: 70,
           Subscribers: [
             {
               Address: `${getId({
@@ -83,8 +81,10 @@ exports.createResources = () => [
               SubscriptionType: "EMAIL",
             },
           ],
+          Threshold: 70,
         },
       ],
+      TimeUnit: "MONTHLY",
     }),
     dependencies: ({}) => ({
       iamRolesExecution: ["role-budget-ec2"],
@@ -119,8 +119,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+          PolicyName: "AmazonEC2FullAccess",
         },
       ],
     }),

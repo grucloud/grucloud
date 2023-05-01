@@ -10,14 +10,8 @@ exports.createResources = () => [
       DashboardBody: {
         widgets: [
           {
-            type: "metric",
-            x: 0,
-            y: 15,
-            width: 6,
             height: 6,
             properties: {
-              view: "timeSeries",
-              stacked: false,
               metrics: [
                 [
                   "AWS/Billing",
@@ -31,7 +25,13 @@ exports.createResources = () => [
                 ],
               ],
               region: "us-east-1",
+              stacked: false,
+              view: "timeSeries",
             },
+            type: "metric",
+            width: 6,
+            x: 0,
+            y: 15,
           },
         ],
       },

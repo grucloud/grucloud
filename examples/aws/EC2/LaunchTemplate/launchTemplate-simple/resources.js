@@ -3,27 +3,89 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "KeyPair", group: "EC2", name: "kp-ecs" },
   {
-    type: "Vpc",
+    type: "Instance",
     group: "EC2",
-    name: "Vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-public",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
+    name: "ec2-template-subnet",
+    properties: ({ config, getId }) => ({
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::Vpc::EcsSecurityGroup",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "Vpc::subnet-public",
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+      LaunchTemplate: {
+        LaunchTemplateId: `${getId({
+          type: "LaunchTemplate",
+          group: "EC2",
+          name: "lt-ec2-micro",
+        })}`,
+        Version: "1",
+      },
     }),
     dependencies: ({}) => ({
-      vpc: "Vpc",
+      subnets: ["Vpc::subnet-public"],
+      keyPair: "kp-ecs",
+      iamInstanceProfile: "role-ecs",
+      securityGroups: ["sg::Vpc::EcsSecurityGroup"],
+      launchTemplate: "lt-ec2-micro",
+    }),
+  },
+  { type: "KeyPair", group: "EC2", name: "kp-ecs" },
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
+    name: "lt-ec2-micro",
+    properties: ({ getId }) => ({
+      LaunchTemplateData: {
+        Image: {
+          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+        },
+        InstanceType: "t2.micro",
+        NetworkInterfaces: [
+          {
+            DeviceIndex: 0,
+            Groups: [
+              `${getId({
+                type: "SecurityGroup",
+                group: "EC2",
+                name: "sg::Vpc::EcsSecurityGroup",
+              })}`,
+            ],
+            SubnetId: `${getId({
+              type: "Subnet",
+              group: "EC2",
+              name: "Vpc::subnet-public",
+            })}`,
+          },
+        ],
+        UserData: `#!/bin/sh
+yum update -y
+amazon-linux-extras install docker
+service docker start
+usermod -a -G docker ec2-user
+chkconfig docker on`,
+      },
+    }),
+    dependencies: ({}) => ({
+      subnets: ["Vpc::subnet-public"],
+      keyPair: "kp-ecs",
+      iamInstanceProfile: "role-ecs",
+      securityGroups: ["sg::Vpc::EcsSecurityGroup"],
     }),
   },
   {
@@ -55,87 +117,25 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "ec2-template-subnet",
-    properties: ({ config, getId }) => ({
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::Vpc::EcsSecurityGroup",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "Vpc::subnet-public",
-          })}`,
-        },
-      ],
-      LaunchTemplate: {
-        LaunchTemplateId: `${getId({
-          type: "LaunchTemplate",
-          group: "EC2",
-          name: "lt-ec2-micro",
-        })}`,
-        Version: "1",
-      },
+    name: "subnet-public",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
-      subnets: ["Vpc::subnet-public"],
-      keyPair: "kp-ecs",
-      iamInstanceProfile: "role-ecs",
-      securityGroups: ["sg::Vpc::EcsSecurityGroup"],
-      launchTemplate: "lt-ec2-micro",
+      vpc: "Vpc",
     }),
   },
   {
-    type: "LaunchTemplate",
+    type: "Vpc",
     group: "EC2",
-    name: "lt-ec2-micro",
-    properties: ({ getId }) => ({
-      LaunchTemplateData: {
-        NetworkInterfaces: [
-          {
-            DeviceIndex: 0,
-            Groups: [
-              `${getId({
-                type: "SecurityGroup",
-                group: "EC2",
-                name: "sg::Vpc::EcsSecurityGroup",
-              })}`,
-            ],
-            SubnetId: `${getId({
-              type: "Subnet",
-              group: "EC2",
-              name: "Vpc::subnet-public",
-            })}`,
-          },
-        ],
-        InstanceType: "t2.micro",
-        UserData: `#!/bin/sh
-yum update -y
-amazon-linux-extras install docker
-service docker start
-usermod -a -G docker ec2-user
-chkconfig docker on`,
-        Image: {
-          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
-        },
-      },
-    }),
-    dependencies: ({}) => ({
-      subnets: ["Vpc::subnet-public"],
-      keyPair: "kp-ecs",
-      iamInstanceProfile: "role-ecs",
-      securityGroups: ["sg::Vpc::EcsSecurityGroup"],
+    name: "Vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {

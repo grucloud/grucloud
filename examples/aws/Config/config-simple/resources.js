@@ -30,109 +30,105 @@ exports.createResources = () => [
     type: "ConformancePack",
     group: "Config",
     properties: ({}) => ({
-      ConformancePackName: "pack-api-gateway",
-      TemplateBody: `---
-Description: "DO NOT MODIFY THIS STACK! This stack is managed by Config Conformance\
-  \ Packs."
-Parameters:
-  ApiGwEndpointTypeCheckParamEndpointConfigurationTypes:
-    Type: "String"
-    Default: "REGIONAL, PRIVATE, EDGE"
-Mappings: {}
-Conditions:
-  apiGwEndpointTypeCheckParamEndpointConfigurationTypes:
-    Fn::Not:
-    - Fn::Equals:
-      - ""
-      - Ref: "ApiGwEndpointTypeCheckParamEndpointConfigurationTypes"
-Rules: {}
-Resources:
-  ApiGwAssociatedWithWaf:
-    Type: "AWS::Config::ConfigRule"
-    Properties:
-      ConfigRuleName: "api-gw-associated-with-waf-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0-conformance-pack-eoopeonin"
-      Scope:
-        ComplianceResourceTypes:
-        - "AWS::ApiGateway::Stage"
-      Source:
-        Owner: "AWS"
-        SourceIdentifier: "API_GW_ASSOCIATED_WITH_WAF"
-  ApiGwCacheEnabledAndEncrypted:
-    Type: "AWS::Config::ConfigRule"
-    Properties:
-      ConfigRuleName: "api-gw-cache-enabled-and-encrypted-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance--conformance-pack-eoopeonin"
-      Scope:
-        ComplianceResourceTypes:
-        - "AWS::ApiGateway::Stage"
-      Source:
-        Owner: "AWS"
-        SourceIdentifier: "API_GW_CACHE_ENABLED_AND_ENCRYPTED"
-  ApiGwEndpointTypeCheck:
-    Type: "AWS::Config::ConfigRule"
-    Properties:
-      ConfigRuleName: "api-gw-endpoint-type-check-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0-conformance-pack-eoopeonin"
-      InputParameters:
-        endpointConfigurationTypes:
-          Fn::If:
-          - "apiGwEndpointTypeCheckParamEndpointConfigurationTypes"
-          - Ref: "ApiGwEndpointTypeCheckParamEndpointConfigurationTypes"
-          - Ref: "AWS::NoValue"
-      Scope:
-        ComplianceResourceTypes:
-        - "AWS::ApiGateway::RestApi"
-      Source:
-        Owner: "AWS"
-        SourceIdentifier: "API_GW_ENDPOINT_TYPE_CHECK"
-  ApiGwExecutionLoggingEnabled:
-    Type: "AWS::Config::ConfigRule"
-    Properties:
-      ConfigRuleName: "api-gw-execution-logging-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pa-conformance-pack-eoopeonin"
-      Scope:
-        ComplianceResourceTypes:
-        - "AWS::ApiGateway::Stage"
-        - "AWS::ApiGatewayV2::Stage"
-      Source:
-        Owner: "AWS"
-        SourceIdentifier: "API_GW_EXECUTION_LOGGING_ENABLED"
-  ApiGwSslEnabled:
-    Type: "AWS::Config::ConfigRule"
-    Properties:
-      ConfigRuleName: "api-gw-ssl-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng-conformance-pack-eoopeonin"
-      Scope:
-        ComplianceResourceTypes:
-        - "AWS::ApiGateway::Stage"
-      Source:
-        Owner: "AWS"
-        SourceIdentifier: "API_GW_SSL_ENABLED"
-  ApiGwXrayEnabled:
-    Type: "AWS::Config::ConfigRule"
-    Properties:
-      ConfigRuleName: "api-gw-xray-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng-conformance-pack-eoopeonin"
-      Scope:
-        ComplianceResourceTypes:
-        - "AWS::ApiGateway::Stage"
-      Source:
-        Owner: "AWS"
-        SourceIdentifier: "API_GW_XRAY_ENABLED"
-  CloudTrailCloudWatchLogsEnabled:
-    Type: "AWS::Config::ConfigRule"
-    Properties:
-      ConfigRuleName: "cloud-trail-cloud-watch-logs-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformanc-conformance-pack-eoopeonin"
-      Source:
-        Owner: "AWS"
-        SourceIdentifier: "CLOUD_TRAIL_CLOUD_WATCH_LOGS_ENABLED"
-  CloudTrailEnabled:
-    Type: "AWS::Config::ConfigRule"
-    Properties:
-      ConfigRuleName: "cloudtrail-enabled-conformance-pack-xcb7t6kmi-conformance-pack-zm7lptinf-conformance-pack-jv0iuidng-conformance-pack-eoopeonin"
-      Source:
-        Owner: "AWS"
-        SourceIdentifier: "CLOUD_TRAIL_ENABLED"
-Outputs: {}
-AWSTemplateFormatVersion: "2010-09-09"
-Hooks: {}
-`,
       ConformancePackInputParameters: [],
+      ConformancePackName: "lambda-pack",
+      TemplateBody: {
+        AWSTemplateFormatVersion: "2010-09-09",
+        Conditions: {
+          lambdaFunctionSettingsCheckParamRuntime: {
+            "Fn::Not": [
+              {
+                "Fn::Equals": [
+                  "",
+                  {
+                    Ref: "LambdaFunctionSettingsCheckParamRuntime",
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        Description:
+          "DO NOT MODIFY THIS STACK! This stack is managed by Config Conformance Packs.",
+        Hooks: {},
+        Mappings: {},
+        Outputs: {},
+        Parameters: {
+          LambdaFunctionSettingsCheckParamRuntime: {
+            Default:
+              "nodejs16.x, nodejs14.x, nodejs12.x, python3.9, python3.8, python3.7, python3.6, ruby2.7, java11, java8, java8.al2, go1.x, dotnetcore3.1, dotnet6",
+            Type: "String",
+          },
+        },
+        Resources: {
+          LambdaDlqCheck: {
+            Properties: {
+              ConfigRuleName: "lambda-dlq-check",
+              Scope: {
+                ComplianceResourceTypes: ["AWS::Lambda::Function"],
+              },
+              Source: {
+                Owner: "AWS",
+                SourceIdentifier: "LAMBDA_DLQ_CHECK",
+              },
+            },
+            Type: "AWS::Config::ConfigRule",
+          },
+          LambdaFunctionSettingsCheck: {
+            Properties: {
+              ConfigRuleName: "lambda-function-settings-check",
+              InputParameters: {
+                runtime: {
+                  "Fn::If": [
+                    "lambdaFunctionSettingsCheckParamRuntime",
+                    {
+                      Ref: "LambdaFunctionSettingsCheckParamRuntime",
+                    },
+                    {
+                      Ref: "AWS::NoValue",
+                    },
+                  ],
+                },
+              },
+              Scope: {
+                ComplianceResourceTypes: ["AWS::Lambda::Function"],
+              },
+              Source: {
+                Owner: "AWS",
+                SourceIdentifier: "LAMBDA_FUNCTION_SETTINGS_CHECK",
+              },
+            },
+            Type: "AWS::Config::ConfigRule",
+          },
+          LambdaInsideVpc: {
+            Properties: {
+              ConfigRuleName: "lambda-inside-vpc",
+              Scope: {
+                ComplianceResourceTypes: ["AWS::Lambda::Function"],
+              },
+              Source: {
+                Owner: "AWS",
+                SourceIdentifier: "LAMBDA_INSIDE_VPC",
+              },
+            },
+            Type: "AWS::Config::ConfigRule",
+          },
+          LambdaVpcMultiAzCheck: {
+            Properties: {
+              ConfigRuleName: "lambda-vpc-multi-az-check",
+              Scope: {
+                ComplianceResourceTypes: ["AWS::Lambda::Function"],
+              },
+              Source: {
+                Owner: "AWS",
+                SourceIdentifier: "LAMBDA_VPC_MULTI_AZ_CHECK",
+              },
+            },
+            Type: "AWS::Config::ConfigRule",
+          },
+        },
+        Rules: {},
+      },
     }),
   },
   {

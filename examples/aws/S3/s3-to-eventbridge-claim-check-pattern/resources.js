@@ -44,8 +44,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description: "Transform all s3 events from claims",
       EventPattern: {
-        "detail-type": ["Object Created", "Object Deleted"],
-        source: ["aws.s3"],
         detail: {
           object: {
             key: [
@@ -55,6 +53,8 @@ exports.createResources = () => [
             ],
           },
         },
+        "detail-type": ["Object Created", "Object Deleted"],
+        source: ["aws.s3"],
       },
       Name: "S3ToEventbridgeAutomaticCl-transformerRuleA9C7F670-90MTEUM3NK6N",
     }),
@@ -131,9 +131,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -158,9 +158,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -185,9 +185,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -237,9 +237,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -313,8 +313,8 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            EVENT_BUS_NAME: "InsuranceBus",
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
+            EVENT_BUS_NAME: "InsuranceBus",
           },
         },
         FunctionName:
@@ -339,11 +339,11 @@ exports.createResources = () => [
           FunctionName:
             "S3ToEventbridgeAutomaticC-claimCreatedConsumerF249-zzvbLLb9J5Jc",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "S3ToEventbridgeAutomaticClaimCheckPatternSt-ClaimCreatedRuleAllowEventRuleS3ToEventbri-1EBW31M6A8RXU",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/InsuranceBus/S3ToEventbridgeAutomaticC-ClaimCreatedRule7993777D-1SSTK2RTTBD6D`,
+          StatementId:
+            "S3ToEventbridgeAutomaticClaimCheckPatternSt-ClaimCreatedRuleAllowEventRuleS3ToEventbri-1EBW31M6A8RXU",
         },
       ],
     }),
@@ -362,11 +362,11 @@ exports.createResources = () => [
           FunctionName:
             "S3ToEventbridgeAutomaticC-claimProcessedConsumer93-mbjgNObJbZRW",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "S3ToEventbridgeAutomaticClaimCheckPatternSt-ClaimProcessedRuleAllowEventRuleS3ToEventb-61H4MPRK25HB",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/InsuranceBus/S3ToEventbridgeAutomaticC-ClaimProcessedRule30BA4E-4FIVENW3KGLN`,
+          StatementId:
+            "S3ToEventbridgeAutomaticClaimCheckPatternSt-ClaimProcessedRuleAllowEventRuleS3ToEventb-61H4MPRK25HB",
         },
       ],
     }),
@@ -385,11 +385,11 @@ exports.createResources = () => [
           FunctionName:
             "S3ToEventbridgeAutomaticC-transformerFunction62C75-RE6hsRaDaXFG",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "S3ToEventbridgeAutomaticClaimCheckPatternSt-transformerRuleAllowEventRuleS3ToEventbrid-1AJ0AW7FUBJMJ",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/S3ToEventbridgeAutomaticCl-transformerRuleA9C7F670-90MTEUM3NK6N`,
+          StatementId:
+            "S3ToEventbridgeAutomaticClaimCheckPatternSt-transformerRuleAllowEventRuleS3ToEventbrid-1AJ0AW7FUBJMJ",
         },
       ],
     }),
@@ -403,15 +403,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "s3toeventbridgeautomaticclai-claimsbucket658066ed-3i3cbs1ekbkq",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       NotificationConfiguration: {
         EventBridgeConfiguration: {},
       },

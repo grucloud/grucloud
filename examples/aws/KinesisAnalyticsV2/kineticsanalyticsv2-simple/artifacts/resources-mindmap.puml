@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project kineticsanalyticsv2-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Policy (1)
+++++ Role (1)
++++ KinesisAnalyticsV2
+++++ Application (1)
+@endmindmap

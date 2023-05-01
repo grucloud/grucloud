@@ -11,11 +11,15 @@ exports.createResources = () => [
       PolicyDocument: {
         "core-network-configuration": {
           "vpn-ecmp-support": false,
-          "asn-ranges": ["61516-64556"],
+          "asn-ranges": ["64512-64556"],
           "edge-locations": [
             {
               location: "us-east-1",
               asn: 64512,
+            },
+            {
+              location: "us-west-2",
+              asn: 64514,
             },
           ],
         },

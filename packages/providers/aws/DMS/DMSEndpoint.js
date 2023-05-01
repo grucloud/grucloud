@@ -98,7 +98,11 @@ exports.DMSEndpoint = ({ compare }) => ({
   type: "Endpoint",
   package: "database-migration-service",
   client: "DatabaseMigrationService",
-  propertiesDefault: {},
+  propertiesDefault: {
+    ReceiveTransferredFiles: false,
+    TransferFiles: false,
+    SslMode: "none",
+  },
   omitProperties: [
     "EndpointArn",
     "ServiceAccessRoleArn",

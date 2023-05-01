@@ -148,12 +148,7 @@ exports.createResources = () => [
       },
       PubliclyAccessible: true,
       StorageType: "ebs",
-      Users: [
-        {
-          Password: "QSDFGHJKLMAZERTYUIO12345!",
-          Username: "mquser",
-        },
-      ],
+      Users: [],
     }),
   },
   {

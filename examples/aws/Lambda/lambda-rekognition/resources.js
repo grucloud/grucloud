@@ -10,15 +10,15 @@ exports.createResources = () => [
       Description:
         "This rule will trigger lambda when an image is uploaded into S3",
       EventPattern: {
-        "detail-type": ["AWS API Call via CloudTrail"],
-        source: ["aws.s3", "simulated.aws.s3"],
         detail: {
+          eventName: ["PutObject", "CopyObject", "CompleteMultipartUpload"],
           eventSource: ["s3.amazonaws.com"],
           requestParameters: {
             bucketName: ["gc-lambda-rekognition"],
           },
-          eventName: ["PutObject", "CopyObject", "CompleteMultipartUpload"],
         },
+        "detail-type": ["AWS API Call via CloudTrail"],
+        source: ["aws.s3", "simulated.aws.s3"],
       },
       Name: "sam-app-S3NewImageEvent-HKQCIE79GAXF",
     }),
@@ -54,7 +54,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -64,24 +63,25 @@ exports.createResources = () => [
                   "logs:DescribeLogStreams",
                   "logs:PutLogEvents",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:logs:${
                     config.region
                   }:${config.accountId()}:log-group:*`,
                 ],
-                Effect: "Allow",
               },
               {
                 Action: ["s3:GetObject"],
-                Resource: "arn:aws:s3:::*",
                 Effect: "Allow",
+                Resource: "arn:aws:s3:::*",
               },
               {
                 Action: ["rekognition:DetectText"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "TextRecognitionLambdaPolicy",
         },
@@ -114,11 +114,11 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "TextRecognitionLambdaFunction",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "sam-app-PermissionForEventsToInvokeLambda-12A3WLZFR63JB",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/sam-app-S3NewImageEvent-HKQCIE79GAXF`,
+          StatementId:
+            "sam-app-PermissionForEventsToInvokeLambda-12A3WLZFR63JB",
         },
       ],
     }),

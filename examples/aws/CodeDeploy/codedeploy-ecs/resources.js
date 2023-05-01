@@ -87,21 +87,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "ECS cluster - VPC",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      Tags: [
-        {
-          Key: "Description",
-          Value: "Created for ECS cluster cluster",
-        },
-      ],
-      DnsHostnames: true,
-    }),
-  },
-  {
     type: "InternetGateway",
     group: "EC2",
     name: "ECS cluster - InternetGateway",
@@ -123,41 +108,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "ECS cluster - Public Subnet 1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      Tags: [
-        {
-          Key: "Description",
-          Value: "Created for ECS cluster cluster",
-        },
-      ],
-      NewBits: 8,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "ECS cluster - VPC",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "ECS cluster - Public Subnet 2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      Tags: [
-        {
-          Key: "Description",
-          Value: "Created for ECS cluster cluster",
-        },
-      ],
-      NewBits: 8,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "ECS cluster - VPC",
+      ig: "ECS cluster - InternetGateway",
+      routeTable: "ECS cluster - VPC::ECS cluster - RouteTable",
     }),
   },
   {
@@ -190,17 +148,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       routeTable: "ECS cluster - VPC::ECS cluster - RouteTable",
       subnet: "ECS cluster - VPC::ECS cluster - Public Subnet 2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "ECS cluster - InternetGateway",
-      routeTable: "ECS cluster - VPC::ECS cluster - RouteTable",
     }),
   },
   {
@@ -315,6 +262,59 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       securityGroup:
         "sg::ECS cluster - VPC::EC2ContainerService-cluster-EcsSecurityGroup-8PVOS9BE4BIM",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "ECS cluster - Public Subnet 1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      Tags: [
+        {
+          Key: "Description",
+          Value: "Created for ECS cluster cluster",
+        },
+      ],
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "ECS cluster - VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "ECS cluster - Public Subnet 2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      Tags: [
+        {
+          Key: "Description",
+          Value: "Created for ECS cluster cluster",
+        },
+      ],
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "ECS cluster - VPC",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "ECS cluster - VPC",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+      Tags: [
+        {
+          Key: "Description",
+          Value: "Created for ECS cluster cluster",
+        },
+      ],
     }),
   },
   {
@@ -522,9 +522,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonECSTaskExecutionRolePolicy",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+          PolicyName: "AmazonECSTaskExecutionRolePolicy",
         },
       ],
     }),
@@ -551,8 +551,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSCodeDeployRoleForECS",
           PolicyArn: "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS",
+          PolicyName: "AWSCodeDeployRoleForECS",
         },
       ],
     }),

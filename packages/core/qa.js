@@ -65,39 +65,22 @@ exports.testEnd2End = ({
             cli.planDestroy({
               commandOptions: { force: true, all: destroyAll },
             }),
-          () =>
-            cli.list({
-              commandOptions: {
-                our: true,
-                canBeDeleted: true,
-                json: "artifacts/inventoryAfterDestroy.json",
-              },
-            }),
+          // () =>
+          //   cli.list({
+          //     commandOptions: {
+          //       our: true,
+          //       canBeDeleted: true,
+          //       json: "artifacts/inventoryAfterDestroy.json",
+          //     },
+          //   }),
           () =>
             cli.planApply({
               commandOptions: { force: true },
             }),
-          () =>
-            cli.list({
-              commandOptions: { our: true, canBeDeleted: true },
-            }),
-          () =>
-            retryCall({
-              name: `planQuery`,
-              fn: pipe([() => ({}), cli.planQuery]),
-              config: { retryCount: 2, retryDelay: 5e3 },
-              isExpectedResult: isEmptyPlan,
-            }),
-          () =>
-            cli.list({
-              programOptions: {
-                json: "artifacts/inventory.json",
-                noOpen: true,
-              },
-              commandOptions: {
-                ...listOptions,
-              },
-            }),
+          // () =>
+          //   cli.list({
+          //     commandOptions: { our: true, canBeDeleted: true },
+          //   }),
           () =>
             cli.genCode({
               commandOptions: {
@@ -108,6 +91,24 @@ exports.testEnd2End = ({
                 ...commandOptions,
               },
             }),
+          () =>
+            retryCall({
+              name: `planQuery`,
+              fn: pipe([() => ({}), cli.planQuery]),
+              config: { retryCount: 2, retryDelay: 5e3 },
+              isExpectedResult: isEmptyPlan,
+            }),
+          // () =>
+          //   cli.list({
+          //     programOptions: {
+          //       json: "artifacts/inventory.json",
+          //       noOpen: true,
+          //     },
+          //     commandOptions: {
+          //       ...listOptions,
+          //     },
+          //   }),
+
           // () =>
           //   cli.list({
           //     programOptions: {
@@ -164,11 +165,14 @@ exports.testEnd2End = ({
             cli.planDestroy({
               commandOptions: { force: true },
             }),
-          () =>
-            cli.list({
-              commandOptions: { canBeDeleted: true, defaultExclude: true },
-              json: "artifacts/inventoryAfterDestroy.json",
-            }),
+          // () =>
+          //   cli.list({
+          //     commandOptions: { canBeDeleted: true, defaultExclude: true },
+          //     json: "artifacts/inventoryAfterDestroy.json",
+          //   }),
+          tap((policies) => {
+            logger.debug(` ${title}: done`);
+          }),
         ])(),
     ]),
     (error) => {

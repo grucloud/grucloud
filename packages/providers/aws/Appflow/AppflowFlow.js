@@ -201,6 +201,7 @@ exports.AppflowFlow = () => ({
     isInstanceUp: pipe([eq(get("flowStatus"), "Active")]),
     isInstanceError: pipe([eq(get("flowStatus"), "Errored")]),
     getErrorMessage: get("flowStatusMessage", "error"),
+    // TODO retry "The request was rejected because a specified KMS ARN, or an ARN in a key policy, is either not valid or not found."
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Appflow.html#updateFlow-property
   update: {

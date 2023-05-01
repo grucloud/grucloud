@@ -1,13 +1,13 @@
 @startmindmap
-title Resources for project instance-security-group
+title Resources for project EC2 Instance with Security Group
 skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
+++++ Instance (1)
 ++++ KeyPair (1)
-++++ Vpc (1)
-++++ Subnet (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (1)
-++++ Instance (1)
+++++ Subnet (1)
+++++ Vpc (1)
 @endmindmap

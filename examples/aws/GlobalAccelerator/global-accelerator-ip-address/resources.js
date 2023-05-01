@@ -18,6 +18,7 @@ exports.createResources = () => [
     type: "EndpointGroup",
     group: "GlobalAccelerator",
     properties: ({ getId }) => ({
+      AcceleratorName: "my-accelarator",
       EndpointConfigurations: [
         {
           ClientIPPreservationEnabled: false,
@@ -32,7 +33,6 @@ exports.createResources = () => [
       EndpointGroupRegion: "us-east-1",
       HealthCheckPort: 443,
       HealthCheckProtocol: "TCP",
-      AcceleratorName: "my-accelarator",
     }),
     dependencies: ({}) => ({
       listener: "my-accelarator::TCP::443::443",
@@ -43,6 +43,7 @@ exports.createResources = () => [
     type: "Listener",
     group: "GlobalAccelerator",
     properties: ({}) => ({
+      AcceleratorName: "my-accelarator",
       PortRanges: [
         {
           FromPort: 443,
@@ -50,7 +51,6 @@ exports.createResources = () => [
         },
       ],
       Protocol: "TCP",
-      AcceleratorName: "my-accelarator",
     }),
     dependencies: ({}) => ({
       accelerator: "my-accelarator",

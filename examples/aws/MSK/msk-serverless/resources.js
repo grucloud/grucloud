@@ -3,7 +3,15 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
   {
     type: "Subnet",
     group: "EC2",
@@ -31,19 +39,12 @@ exports.createResources = () => [
       vpc: "vpc-default",
     }),
   },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-default::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Configuration",
     group: "MSK",
     properties: ({}) => ({
+      Name: "my-configuration",
       ServerProperties: `auto.create.topics.enable=false
 default.replication.factor=3
 min.insync.replicas=2
@@ -58,7 +59,6 @@ socket.send.buffer.bytes=102400
 unclean.leader.election.enable=true
 zookeeper.session.timeout.ms=18000
 `,
-      Name: "my-configuration",
     }),
   },
   {

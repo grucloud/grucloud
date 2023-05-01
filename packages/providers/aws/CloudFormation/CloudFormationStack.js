@@ -1,8 +1,12 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, assign, omit, map } = require("rubico");
 const { defaultsDeep, callProp, when, isIn } = require("rubico/x");
+const yaml = require("js-yaml");
+
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+
+const { buildTags } = require("../AwsCommon");
 
 const ignoreErrorMessages = ["does not exist"];
 
@@ -25,7 +29,7 @@ const findId = () =>
   ]);
 
 const managedByOther = () =>
-  pipe([get("StackName"), callProp("startsWith", "awsconfigconforms-pack")]);
+  pipe([get("StackName"), callProp("startsWith", "awsconfigconforms-")]);
 
 const pickId = pipe([
   pick(["StackName"]),
@@ -55,7 +59,15 @@ const assignArn = ({ config }) =>
 const decorate = ({ endpoint, config }) =>
   pipe([
     assign({
-      TemplateBody: pipe([pickId, endpoint().getTemplate, get("TemplateBody")]),
+      TemplateBody: pipe([
+        pickId,
+        endpoint().getTemplate,
+        get("TemplateBody"),
+        tap((TemplateBody) => {
+          assert(TemplateBody);
+        }),
+        (TemplateBody) => yaml.load(TemplateBody, { schema: yaml.JSON_SCHEMA }),
+      ]),
       Resources: pipe([
         pickId,
         endpoint().describeStackResources,

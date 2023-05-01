@@ -11,41 +11,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 9,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
     type: "RouteTable",
     group: "EC2",
     name: ({ config }) => `rtb-private1-${config.region}a`,
@@ -78,11 +43,46 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  {
     type: "CacheSubnetGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      CacheSubnetGroupName: "my-sutnet-group",
       CacheSubnetGroupDescription: " ",
+      CacheSubnetGroupName: "my-sutnet-group",
     }),
     dependencies: ({ config }) => ({
       subnets: [
@@ -95,12 +95,13 @@ exports.createResources = () => [
     type: "ReplicationGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      ReplicationGroupId: "my-simple-redis-cluster-3",
-      SnapshotWindow: "06:30-07:30",
-      ClusterEnabled: false,
+      AutoMinorVersionUpgrade: true,
       CacheNodeType: "cache.t2.micro",
       CacheParameterGroupName: "default.redis7",
       CacheSubnetGroupName: "my-sutnet-group",
+      ClusterEnabled: false,
+      ReplicationGroupId: "my-simple-redis-cluster-3",
+      SnapshotWindow: "06:30-07:30",
       NumCacheClusters: 2,
     }),
     dependencies: ({}) => ({

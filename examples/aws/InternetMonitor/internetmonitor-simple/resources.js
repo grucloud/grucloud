@@ -3,34 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logGroupName: "/aws/internet-monitor/my-monitor/byCity",
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logGroupName: "/aws/internet-monitor/my-monitor/byCountry",
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logGroupName: "/aws/internet-monitor/my-monitor/byMetro",
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logGroupName: "/aws/internet-monitor/my-monitor/bySubdivision",
-    }),
-  },
   { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Monitor",

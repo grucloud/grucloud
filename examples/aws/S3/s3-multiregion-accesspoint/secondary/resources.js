@@ -23,22 +23,22 @@ exports.createResources = () => [
   {
     type: "MultiRegionAccessPoint",
     group: "S3Control",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       Name: "my-multiaccesspoint",
       PublicAccessBlock: {
         BlockPublicAcls: true,
-        IgnorePublicAcls: true,
         BlockPublicPolicy: true,
+        IgnorePublicAcls: true,
         RestrictPublicBuckets: true,
       },
       Regions: [
         {
           Bucket: "gc-mutliaregionaccess",
-          Region: "us-east-1",
+          BucketAccountId: `${config.accountId()}`,
         },
         {
-          Bucket: "gc-mutliaregionaccess-us-west-2",
-          Region: "us-west-2",
+          Bucket: `gc-mutliaregionaccess-${config.region}`,
+          BucketAccountId: `${config.accountId()}`,
         },
       ],
     }),

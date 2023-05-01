@@ -115,16 +115,16 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["states:StartSyncExecution"],
+                Effect: "Allow",
                 Resource: `arn:aws:states:${
                   config.region
                 }:${config.accountId()}:stateMachine:SyncSFn-pN3JqWwqQJ60`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "StepFunctionsSyncExecution",
         },

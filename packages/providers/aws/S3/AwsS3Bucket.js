@@ -744,6 +744,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           }
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketReplication-property
           if (ReplicationConfiguration) {
+            // Retry: "Destination bucket must have versioning enabled"
             await s3().putBucketReplication({
               Bucket,
               ReplicationConfiguration,

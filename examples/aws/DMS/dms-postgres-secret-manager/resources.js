@@ -15,7 +15,6 @@ exports.createResources = () => [
       PostgreSQLSettings: {
         DatabaseName: "db",
       },
-      SslMode: "none",
     }),
     dependencies: ({}) => ({
       iamRoleSecretsManagerPostgres: "role-secretsmanager",
@@ -44,8 +43,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "SecretsManagerReadWrite",
           PolicyArn: "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+          PolicyName: "SecretsManagerReadWrite",
         },
       ],
     }),
@@ -56,11 +55,11 @@ exports.createResources = () => [
     properties: ({ generatePassword }) => ({
       Name: "prod/db",
       SecretString: {
-        username: "dbuser",
-        password: generatePassword({ length: 7 }),
-        engine: "postgres",
-        port: "5432",
         dbname: "db",
+        engine: "postgres",
+        password: generatePassword({ length: 7 }),
+        port: "5432",
+        username: "dbuser",
       },
     }),
   },

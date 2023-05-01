@@ -66,15 +66,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-s3-eventbridge",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2008-10-17",
         Statement: [
@@ -101,15 +92,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "gc-s3-eventbridge-cloudtrail",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -161,19 +143,19 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
-          Version: "2008-10-17",
           Statement: [
             {
+              Action: "SQS:SendMessage",
               Effect: "Allow",
               Principal: {
                 Service: "events.amazonaws.com",
               },
-              Action: "SQS:SendMessage",
               Resource: `arn:aws:sqs:${
                 config.region
               }:${config.accountId()}:sam-app-NewImageEventQueue-xg4G9e9EBenI`,
             },
           ],
+          Version: "2008-10-17",
         },
       },
       QueueName: "sam-app-NewImageEventQueue-xg4G9e9EBenI",

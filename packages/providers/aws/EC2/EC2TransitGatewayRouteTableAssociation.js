@@ -20,8 +20,6 @@ const pickId = pipe([
   pick(["TransitGatewayAttachmentId", "TransitGatewayRouteTableId"]),
 ]);
 
-const createModel = ({ config }) => ({});
-
 const findId = () =>
   pipe([
     tap(({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) => {
@@ -30,9 +28,6 @@ const findId = () =>
     }),
     ({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) =>
       `${TransitGatewayAttachmentId}::${TransitGatewayRouteTableId}`,
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
@@ -104,6 +99,7 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ compare }) => ({
     dependencies: {
       transitGatewayRouteTable,
       transitGatewayVpcAttachment,
+      transitGatewayVpnAttachment,
       transitGatewayAttachment,
     },
     config,
@@ -112,7 +108,11 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ compare }) => ({
       tap((params) => {
         assert(transitGatewayRouteTable);
         //TODO direct connect
-        assert(transitGatewayVpcAttachment || transitGatewayAttachment);
+        assert(
+          transitGatewayVpcAttachment ||
+            transitGatewayVpnAttachment ||
+            transitGatewayAttachment
+        );
       }),
       () => properties,
       defaultsDeep({
@@ -126,6 +126,15 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ compare }) => ({
         defaultsDeep({
           TransitGatewayAttachmentId: getField(
             transitGatewayVpcAttachment,
+            "TransitGatewayAttachmentId"
+          ),
+        })
+      ),
+      when(
+        () => transitGatewayVpnAttachment,
+        defaultsDeep({
+          TransitGatewayAttachmentId: getField(
+            transitGatewayVpnAttachment,
             "TransitGatewayAttachmentId"
           ),
         })

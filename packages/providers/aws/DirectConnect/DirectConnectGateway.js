@@ -31,6 +31,7 @@ exports.DirectConnectGateway = () => ({
     "directConnectGatewayId",
     "directConnectGatewayState",
     "stateChangeError",
+    "directConnectGatewayArn",
   ],
   inferName: () =>
     pipe([

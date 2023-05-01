@@ -12,7 +12,6 @@ const {
   eq,
   not,
   filter,
-  any,
 } = require("rubico");
 const {
   forEach,
@@ -38,13 +37,12 @@ const { createAwsService } = require("../AwsService");
 const { IAMGroup } = require("./AwsIamGroup");
 const { AwsIamRole, findDependenciesRole } = require("./AwsIamRole");
 const { IAMInstanceProfile } = require("./AwsIamInstanceProfile");
+const { IAMOpenIDConnectProvider } = require("./AwsIamOpenIDConnectProvider");
 const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
 const { IAMUser } = require("./AwsIamUser");
 const { IAMUserPolicy } = require("./IAMUserPolicy");
 
-const {
-  AwsIamOpenIDConnectProvider,
-} = require("./AwsIamOpenIDConnectProvider");
+const { IAMVirtualMFADevice } = require("./IAMVirtualMFADevice");
 
 const {
   buildDependenciesPolicy,
@@ -65,67 +63,44 @@ const compare = compareAws({});
 
 module.exports = pipe([
   () => [
-    {
-      type: "OpenIDConnectProvider",
-      Client: AwsIamOpenIDConnectProvider,
-      compare: compare({
-        filterLive: () =>
-          pipe([
-            assign({ Url: pipe([get("Url"), prepend("https://")]) }),
-            omit(["ThumbprintList", "CreateDate", "Arn"]),
-          ]),
-      }),
-      filterLive: () => pick(["ClientIDList", "Url"]),
-      dependencies: {
-        cluster: {
-          type: "Cluster",
-          group: "EKS",
-          dependencyId:
-            ({ lives, config }) =>
-            (live) =>
-              pipe([
-                lives.getByType({
-                  type: "Cluster",
-                  group: "EKS",
-                  providerName: config.providerName,
-                }),
-                find(
-                  eq(get("live.identity.oidc.issuer"), `https://${live.Url}`)
-                ),
-                get("id"),
-              ])(),
-        },
-      },
-      inferName:
-        ({ dependenciesSpec }) =>
-        (properties) =>
-          pipe([
-            () => dependenciesSpec,
-            tap((params) => {
-              assert(true);
-            }),
-            switchCase([
-              get("cluster"),
-              pipe([get("cluster"), prepend("eks-cluster::")]),
-              pipe([
-                () => properties,
-                get("Url"),
-                tap((Url) => {
-                  assert(Url);
-                }),
-                callProp("replace", "https://", ""),
-              ]),
-            ]),
-            prepend("oidp::"),
-          ])(),
-      hasNoProperty: ({ lives, resource }) =>
-        pipe([
-          () => resource,
-          or([hasDependency({ type: "Cluster", group: "EKS" })]),
-        ])(),
-    },
     createAwsService(IAMGroup({ compare })),
     createAwsService(IAMInstanceProfile({ compare })),
+    createAwsService(IAMOpenIDConnectProvider({ compare })),
+    {
+      type: "Policy",
+      Client: AwsIamPolicy,
+      inferName: () =>
+        pipe([
+          get("PolicyName"),
+          tap((PolicyName) => {
+            assert(PolicyName);
+          }),
+        ]),
+      isOurMinion: isOurMinionIamPolicy,
+      compare: compare({
+        filterAll: () =>
+          pipe([
+            //TODO description
+            pick(["PolicyDocument"]),
+          ]),
+      }),
+      filterLive: switchCase([
+        get("resource.cannotBeDeleted"),
+        () => pick(["Arn"]),
+        ({ providerConfig, lives }) =>
+          pipe([
+            pick(["PolicyName", "PolicyDocument", "Path", "Description"]),
+            assign({
+              PolicyName: pipe([
+                get("PolicyName"),
+                replaceRegion({ lives, providerConfig }),
+              ]),
+            }),
+            assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
+          ]),
+      ]),
+      dependencies: buildDependenciesPolicy({ policyKey: "PolicyDocument" }),
+    },
     {
       type: "Role",
       Client: AwsIamRole,
@@ -286,43 +261,9 @@ module.exports = pipe([
         ...findDependenciesRole(),
       },
     },
-    {
-      type: "Policy",
-      Client: AwsIamPolicy,
-      inferName: () =>
-        pipe([
-          get("PolicyName"),
-          tap((PolicyName) => {
-            assert(PolicyName);
-          }),
-        ]),
-      isOurMinion: isOurMinionIamPolicy,
-      compare: compare({
-        filterAll: () =>
-          pipe([
-            //TODO description
-            pick(["PolicyDocument"]),
-          ]),
-      }),
-      filterLive: switchCase([
-        get("resource.cannotBeDeleted"),
-        () => pick(["Arn"]),
-        ({ providerConfig, lives }) =>
-          pipe([
-            pick(["PolicyName", "PolicyDocument", "Path", "Description"]),
-            assign({
-              PolicyName: pipe([
-                get("PolicyName"),
-                replaceRegion({ lives, providerConfig }),
-              ]),
-            }),
-            assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
-          ]),
-      ]),
-      dependencies: buildDependenciesPolicy({ policyKey: "PolicyDocument" }),
-    },
     createAwsService(IAMUser({ compare })),
     createAwsService(IAMUserPolicy({ compare })),
+    createAwsService(IAMVirtualMFADevice({ compare })),
   ],
   map(defaultsDeep({ group: GROUP, isOurMinion, compare: compare({}) })),
 ]);

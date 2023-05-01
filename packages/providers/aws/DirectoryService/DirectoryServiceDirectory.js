@@ -237,7 +237,6 @@ exports.DirectoryServiceDirectory = ({ compare }) => ({
   getList: {
     method: "describeDirectories",
     getParam: "DirectoryDescriptions",
-    decorate: ({ getById }) => pipe([getById]),
     decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectoryService.html#createDirectory-property

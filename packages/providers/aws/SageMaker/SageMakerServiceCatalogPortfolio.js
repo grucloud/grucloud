@@ -20,7 +20,7 @@ const decorate = ({ endpoint, config }) =>
 
 const findName = () => pipe([() => "default"]);
 
-const isDisabled = eq(get("Status"), "DISABLED");
+const isDisabled = eq(get("Status"), "Disabled");
 
 const cannotBeDeleted = () => pipe([isDisabled]);
 

@@ -4,6 +4,98 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName:
+        "AWSLambdaBasicExecutionRole-96bff243-efc9-4017-8fd6-f3df40a6d971",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "logs:CreateLogGroup",
+            Effect: "Allow",
+            Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
+          },
+          {
+            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/lambda/maintenance-window:*`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "my-maintenance-window-role-policy",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "ssm:SendCommand",
+              "ssm:CancelCommand",
+              "ssm:ListCommands",
+              "ssm:ListCommandInvocations",
+              "ssm:GetCommandInvocation",
+              "ssm:GetAutomationExecution",
+              "ssm:StartAutomationExecution",
+              "ssm:ListTagsForResource",
+              "ssm:GetParameters",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["states:DescribeExecution", "states:StartExecution"],
+            Effect: "Allow",
+            Resource: [
+              "arn:aws:states:*:*:execution:*:*",
+              "arn:aws:states:*:*:stateMachine:*",
+            ],
+          },
+          {
+            Action: ["lambda:InvokeFunction"],
+            Effect: "Allow",
+            Resource: ["arn:aws:lambda:*:*:function:*"],
+          },
+          {
+            Action: [
+              "resource-groups:ListGroups",
+              "resource-groups:ListGroupResources",
+            ],
+            Effect: "Allow",
+            Resource: ["*"],
+          },
+          {
+            Action: ["tag:GetResources"],
+            Effect: "Allow",
+            Resource: ["*"],
+          },
+          {
+            Action: "iam:PassRole",
+            Condition: {
+              StringEquals: {
+                "iam:PassedToService": ["ssm.amazonaws.com"],
+              },
+            },
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -53,98 +145,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName:
-        "AWSLambdaBasicExecutionRole-96bff243-efc9-4017-8fd6-f3df40a6d971",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: "logs:CreateLogGroup",
-            Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
-          },
-          {
-            Effect: "Allow",
-            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-            Resource: [
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:/aws/lambda/maintenance-window:*`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "my-maintenance-window-role-policy",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: [
-              "ssm:SendCommand",
-              "ssm:CancelCommand",
-              "ssm:ListCommands",
-              "ssm:ListCommandInvocations",
-              "ssm:GetCommandInvocation",
-              "ssm:GetAutomationExecution",
-              "ssm:StartAutomationExecution",
-              "ssm:ListTagsForResource",
-              "ssm:GetParameters",
-            ],
-            Resource: "*",
-          },
-          {
-            Effect: "Allow",
-            Action: ["states:DescribeExecution", "states:StartExecution"],
-            Resource: [
-              "arn:aws:states:*:*:execution:*:*",
-              "arn:aws:states:*:*:stateMachine:*",
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: ["lambda:InvokeFunction"],
-            Resource: ["arn:aws:lambda:*:*:function:*"],
-          },
-          {
-            Effect: "Allow",
-            Action: [
-              "resource-groups:ListGroups",
-              "resource-groups:ListGroupResources",
-            ],
-            Resource: ["*"],
-          },
-          {
-            Effect: "Allow",
-            Action: ["tag:GetResources"],
-            Resource: ["*"],
-          },
-          {
-            Effect: "Allow",
-            Action: "iam:PassRole",
-            Resource: "*",
-            Condition: {
-              StringEquals: {
-                "iam:PassedToService": ["ssm.amazonaws.com"],
-              },
-            },
-          },
-        ],
-      },
-      Path: "/",
-    }),
-  },
-  {
     type: "Function",
     group: "Lambda",
     properties: ({}) => ({
@@ -190,7 +190,6 @@ exports.createResources = () => [
     type: "MaintenanceWindowTask",
     group: "SSM",
     properties: ({}) => ({
-      TaskType: "LAMBDA",
       Name: "my-lambda",
       Priority: 1,
       TaskInvocationParameters: {
@@ -201,6 +200,7 @@ exports.createResources = () => [
         },
       },
       TaskParameters: {},
+      TaskType: "LAMBDA",
     }),
     dependencies: ({}) => ({
       iamRoleService: "my-maintenance-window-role",

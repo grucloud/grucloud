@@ -115,10 +115,10 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["execute-api:ManageConnections"],
+                Effect: "Allow",
                 Resource: [
                   `${getId({
                     type: "Api",
@@ -127,9 +127,9 @@ exports.createResources = () => [
                     path: "live.ArnV2",
                   })}/api/POST/@connections/{connectionId}`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "APIGWConnectionsAccess",
         },
@@ -159,16 +159,16 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["states:StartExecution"],
+                Effect: "Allow",
                 Resource: `arn:aws:states:${
                   config.region
                 }:${config.accountId()}:stateMachine:AsyncSFn-srNK33QLTR0R`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "StepFunctionsAsyncExecution",
         },

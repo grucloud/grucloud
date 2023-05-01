@@ -49,6 +49,12 @@ exports.createResources = () => [
         storage: {
           storageSizeGB: 32,
         },
+        maintenanceWindow: {
+          customWindow: "Disabled",
+          startHour: 0,
+          startMinute: 0,
+          dayOfWeek: 0,
+        },
         administratorLoginPassword:
           process.env.RG_POSTGRES_GC_SERVER_ADMINISTRATOR_LOGIN_PASSWORD,
       },

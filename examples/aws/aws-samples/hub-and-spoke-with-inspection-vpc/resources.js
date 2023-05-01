@@ -25,32 +25,83 @@ exports.createResources = () => [
       kmsKey: "kms-key-aws-hub-and-spoke-demo",
     }),
   },
-  { type: "KeyPair", group: "EC2", name: "large-badger" },
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "inspection-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.129.0.0/16",
-      DnsHostnames: true,
+    name: ({ config }) => `inspection-vpc-${config.region}a`,
+  },
+  {
+    type: "Instance",
+    group: "EC2",
+    name: "spoke-vpc-1-instance-1",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description: "Amazon Linux AMI 2018.03.0.20220503.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::spoke-vpc-1::public_instance_security_group",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+    }),
+    dependencies: ({ config }) => ({
+      subnets: [`spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`],
+      keyPair: "large-badger",
+      iamInstanceProfile: "terraform-ssm-ec2",
+      securityGroups: ["sg::spoke-vpc-1::public_instance_security_group"],
     }),
   },
   {
-    type: "Vpc",
+    type: "Instance",
     group: "EC2",
-    name: "spoke-vpc-1",
-    properties: ({}) => ({
-      CidrBlock: "10.11.0.0/16",
-      DnsHostnames: true,
+    name: "spoke-vpc-2-instance-1",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description: "Amazon Linux AMI 2018.03.0.20220503.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::spoke-vpc-2::public_instance_security_group",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
     }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "spoke-vpc-2",
-    properties: ({}) => ({
-      CidrBlock: "10.12.0.0/16",
-      DnsHostnames: true,
+    dependencies: ({ config }) => ({
+      subnets: [`spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`],
+      keyPair: "large-badger",
+      iamInstanceProfile: "terraform-ssm-ec2",
+      securityGroups: ["sg::spoke-vpc-2::public_instance_security_group"],
     }),
   },
   { type: "InternetGateway", group: "EC2", name: "inspection-vpc" },
@@ -62,6 +113,7 @@ exports.createResources = () => [
       internetGateway: "inspection-vpc",
     }),
   },
+  { type: "KeyPair", group: "EC2", name: "large-badger" },
   {
     type: "NatGateway",
     group: "EC2",
@@ -75,354 +127,146 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 200,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection-vpc",
+    dependencies: ({ config }) => ({
+      routeTable: "inspection-vpc::inspection-vpc-intra-subnet",
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 201,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection-vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `inspection-vpc-${config.region}a`,
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 202,
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.11.0.0/16",
     }),
     dependencies: ({}) => ({
-      vpc: "inspection-vpc",
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
+      transitGateway: "terraform-transit-gateway",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 1,
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.12.0.0/16",
     }),
     dependencies: ({}) => ({
-      vpc: "inspection-vpc",
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
+      transitGateway: "terraform-transit-gateway",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 2,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "inspection-vpc",
+      ig: "inspection-vpc",
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 3,
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.11.0.0/16",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection-vpc",
+    dependencies: ({ config }) => ({
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 129,
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.12.0.0/16",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection-vpc",
+    dependencies: ({ config }) => ({
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 130,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "inspection-vpc",
+      routeTable: "spoke-vpc-1::spoke-vpc-1-intra-subnet",
+      transitGateway: "terraform-transit-gateway",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 131,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "inspection-vpc",
+      routeTable: "spoke-vpc-1::spoke-vpc-1-private-subnet",
+      transitGateway: "terraform-transit-gateway",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 200,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
+      routeTable: "spoke-vpc-1::spoke-vpc-1-public-subnet",
+      transitGateway: "terraform-transit-gateway",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 201,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
+      routeTable: "spoke-vpc-2::spoke-vpc-1-private-subnet",
+      transitGateway: "terraform-transit-gateway",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 202,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
+      routeTable: "spoke-vpc-2::spoke-vpc-2-intra-subnet",
+      transitGateway: "terraform-transit-gateway",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 1,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 2,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 3,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 129,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 130,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 131,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 200,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 201,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 202,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 2,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 3,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 129,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 130,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 131,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
+      routeTable: "spoke-vpc-2::spoke-vpc-2-public-subnet",
+      transitGateway: "terraform-transit-gateway",
     }),
   },
   {
@@ -711,149 +555,6 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       routeTable: "spoke-vpc-2::spoke-vpc-2-public-subnet",
       subnet: `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc::inspection-vpc-intra-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection-vpc-${config.region}a`,
-      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.11.0.0/16",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
-      transitGateway: "terraform-transit-gateway",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.12.0.0/16",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
-      transitGateway: "terraform-transit-gateway",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "inspection-vpc",
-      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.11.0.0/16",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.12.0.0/16",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "spoke-vpc-1::spoke-vpc-1-intra-subnet",
-      transitGateway: "terraform-transit-gateway",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "spoke-vpc-1::spoke-vpc-1-private-subnet",
-      transitGateway: "terraform-transit-gateway",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "spoke-vpc-1::spoke-vpc-1-public-subnet",
-      transitGateway: "terraform-transit-gateway",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "spoke-vpc-2::spoke-vpc-1-private-subnet",
-      transitGateway: "terraform-transit-gateway",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "spoke-vpc-2::spoke-vpc-2-intra-subnet",
-      transitGateway: "terraform-transit-gateway",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "spoke-vpc-2::spoke-vpc-2-public-subnet",
-      transitGateway: "terraform-transit-gateway",
     }),
   },
   {
@@ -1218,230 +919,354 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-${config.region}a`,
-  },
-  {
-    type: "Instance",
-    group: "EC2",
-    name: "spoke-vpc-1-instance-1",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::spoke-vpc-1::public_instance_security_group",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
-          })}`,
-        },
-      ],
-      Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220503.0 x86_64 HVM gp2",
-      },
-    }),
-    dependencies: ({ config }) => ({
-      subnets: [`spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`],
-      keyPair: "large-badger",
-      iamInstanceProfile: "terraform-ssm-ec2",
-      securityGroups: ["sg::spoke-vpc-1::public_instance_security_group"],
-    }),
-  },
-  {
-    type: "Instance",
-    group: "EC2",
-    name: "spoke-vpc-2-instance-1",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::spoke-vpc-2::public_instance_security_group",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
-          })}`,
-        },
-      ],
-      Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220503.0 x86_64 HVM gp2",
-      },
-    }),
-    dependencies: ({ config }) => ({
-      subnets: [`spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`],
-      keyPair: "large-badger",
-      iamInstanceProfile: "terraform-ssm-ec2",
-      securityGroups: ["sg::spoke-vpc-2::public_instance_security_group"],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
+    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2`,
-      PrivateDnsEnabled: true,
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 200,
     }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-1",
-      subnets: [
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
-      PrivateDnsEnabled: true,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-1",
-      subnets: [
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssm`,
-      PrivateDnsEnabled: true,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-1",
-      subnets: [
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
-      PrivateDnsEnabled: true,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-1",
-      subnets: [
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2`,
-      PrivateDnsEnabled: true,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
-      subnets: [
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
-      PrivateDnsEnabled: true,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
-      subnets: [
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssm`,
-      PrivateDnsEnabled: true,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
-      subnets: [
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
-      PrivateDnsEnabled: true,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
-      subnets: [
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    readOnly: true,
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       vpc: "inspection-vpc",
-      subnets: [
-        `inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
-      ],
-      firewall: "NetworkFirewall",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 201,
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}c`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 202,
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}c`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 3,
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 129,
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 130,
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}c`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 131,
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 200,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 201,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}c`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 202,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}c`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 3,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 129,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 130,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}c`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 131,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 200,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 201,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}c`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 202,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}c`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 3,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 129,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 130,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}c`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 131,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
     }),
   },
   {
@@ -1455,9 +1280,9 @@ exports.createResources = () => [
         AutoAcceptSharedAttachments: "disable",
         DefaultRouteTableAssociation: "disable",
         DefaultRouteTablePropagation: "disable",
-        VpnEcmpSupport: "enable",
         DnsSupport: "enable",
         MulticastSupport: "disable",
+        VpnEcmpSupport: "enable",
       },
     }),
   },
@@ -1497,14 +1322,62 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
+      transitGatewayVpcAttachment: "inspection-vpc-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Spoke_VPC_Route_Table",
+      transitGatewayVpcAttachment: "spoke-vpc-1-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Spoke_VPC_Route_Table",
+      transitGatewayVpcAttachment: "spoke-vpc-2-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Spoke_VPC_Route_Table",
+      transitGatewayVpcAttachment: "inspection-vpc-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
+      transitGatewayVpcAttachment: "spoke-vpc-1-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
+      transitGatewayVpcAttachment: "spoke-vpc-2-attachment",
+    }),
+  },
+  {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
     name: "inspection-vpc-attachment",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "disable",
         DnsSupport: "enable",
         Ipv6Support: "disable",
-        ApplianceModeSupport: "disable",
       },
     }),
     dependencies: ({ config }) => ({
@@ -1523,9 +1396,9 @@ exports.createResources = () => [
     name: "spoke-vpc-1-attachment",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "disable",
         DnsSupport: "enable",
         Ipv6Support: "disable",
-        ApplianceModeSupport: "disable",
       },
     }),
     dependencies: ({ config }) => ({
@@ -1544,9 +1417,9 @@ exports.createResources = () => [
     name: "spoke-vpc-2-attachment",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "disable",
         DnsSupport: "enable",
         Ipv6Support: "disable",
-        ApplianceModeSupport: "disable",
       },
     }),
     dependencies: ({ config }) => ({
@@ -1560,51 +1433,178 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGatewayRouteTableAssociation",
+    type: "Vpc",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
-      transitGatewayVpcAttachment: "inspection-vpc-attachment",
+    name: "inspection-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.129.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
-    type: "TransitGatewayRouteTableAssociation",
+    type: "Vpc",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "Spoke_VPC_Route_Table",
-      transitGatewayVpcAttachment: "spoke-vpc-1-attachment",
+    name: "spoke-vpc-1",
+    properties: ({}) => ({
+      CidrBlock: "10.11.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
-    type: "TransitGatewayRouteTableAssociation",
+    type: "Vpc",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "Spoke_VPC_Route_Table",
-      transitGatewayVpcAttachment: "spoke-vpc-2-attachment",
+    name: "spoke-vpc-2",
+    properties: ({}) => ({
+      CidrBlock: "10.12.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
-    type: "TransitGatewayRouteTablePropagation",
+    type: "VpcEndpoint",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "Spoke_VPC_Route_Table",
-      transitGatewayVpcAttachment: "inspection-vpc-attachment",
+    properties: ({ config }) => ({
+      PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ec2`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-1",
+      subnets: [
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
+      ],
     }),
   },
   {
-    type: "TransitGatewayRouteTablePropagation",
+    type: "VpcEndpoint",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
-      transitGatewayVpcAttachment: "spoke-vpc-1-attachment",
+    properties: ({ config }) => ({
+      PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-1",
+      subnets: [
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
+      ],
     }),
   },
   {
-    type: "TransitGatewayRouteTablePropagation",
+    type: "VpcEndpoint",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
-      transitGatewayVpcAttachment: "spoke-vpc-2-attachment",
+    properties: ({ config }) => ({
+      PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-1",
+      subnets: [
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-1",
+      subnets: [
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ec2`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    readOnly: true,
+    dependencies: ({ config }) => ({
+      vpc: "inspection-vpc",
+      subnets: [
+        `inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
+      ],
+      firewall: "NetworkFirewall",
     }),
   },
   {
@@ -1635,12 +1635,12 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
         {
-          PolicyName: "AmazonEC2RoleforSSM",
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+          PolicyName: "AmazonEC2RoleforSSM",
         },
       ],
     }),
@@ -1705,6 +1705,7 @@ exports.createResources = () => [
     type: "LoggingConfiguration",
     group: "NetworkFirewall",
     properties: ({}) => ({
+      FirewallName: "NetworkFirewall",
       LoggingConfiguration: {
         LogDestinationConfigs: [
           {
@@ -1723,7 +1724,6 @@ exports.createResources = () => [
           },
         ],
       },
-      FirewallName: "NetworkFirewall",
     }),
     dependencies: ({}) => ({
       firewall: "NetworkFirewall",
@@ -1777,7 +1777,15 @@ exports.createResources = () => [
     type: "RuleGroup",
     group: "NetworkFirewall",
     properties: ({}) => ({
+      Capacity: 100,
       RuleGroup: {
+        RulesSource: {
+          RulesSourceList: {
+            GeneratedRulesType: "DENYLIST",
+            Targets: [".twitter.com", ".facebook.com"],
+            TargetTypes: ["HTTP_HOST", "TLS_SNI"],
+          },
+        },
         RuleVariables: {
           IPSets: {
             HOME_NET: {
@@ -1785,15 +1793,7 @@ exports.createResources = () => [
             },
           },
         },
-        RulesSource: {
-          RulesSourceList: {
-            GeneratedRulesType: "DENYLIST",
-            TargetTypes: ["HTTP_HOST", "TLS_SNI"],
-            Targets: [".twitter.com", ".facebook.com"],
-          },
-        },
       },
-      Capacity: 100,
       RuleGroupName: "block-domains",
       Type: "STATEFUL",
     }),
@@ -1802,6 +1802,7 @@ exports.createResources = () => [
     type: "RuleGroup",
     group: "NetworkFirewall",
     properties: ({}) => ({
+      Capacity: 1,
       RuleGroup: {
         RulesSource: {
           StatelessRulesAndCustomActions: {
@@ -1829,7 +1830,6 @@ exports.createResources = () => [
           },
         },
       },
-      Capacity: 1,
       RuleGroupName: "drop-icmp",
       Type: "STATELESS",
     }),
@@ -1838,7 +1838,12 @@ exports.createResources = () => [
     type: "RuleGroup",
     group: "NetworkFirewall",
     properties: ({}) => ({
+      Capacity: 100,
       RuleGroup: {
+        RulesSource: {
+          RulesString: `      drop tcp $SPOKE_VPCS any <> $SPOKE_VPCS 22 (msg:"Blocked SSH attempt"; sid:100; rev:1;)
+`,
+        },
         RuleVariables: {
           IPSets: {
             SPOKE_VPCS: {
@@ -1846,12 +1851,7 @@ exports.createResources = () => [
             },
           },
         },
-        RulesSource: {
-          RulesString: `      drop tcp $SPOKE_VPCS any <> $SPOKE_VPCS 22 (msg:"Blocked SSH attempt"; sid:100; rev:1;)
-`,
-        },
       },
-      Capacity: 100,
       RuleGroupName: "drop-ssh-between-spokes",
       Type: "STATEFUL",
     }),

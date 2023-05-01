@@ -14,13 +14,14 @@ const { QuickSightDashboard } = require("./QuickSightDashboard");
 const { QuickSightDataSet } = require("./QuickSightDataSet");
 const { QuickSightDataSource } = require("./QuickSightDataSource");
 const { QuickSightFolder } = require("./QuickSightFolder");
-//const { QuickSightFolderMembership } = require("./QuickSightFolderMembership");
+const { QuickSightFolderMembership } = require("./QuickSightFolderMembership");
 const {
   QuickSightIAMPolicyAssignment,
 } = require("./QuickSightIAMPolicyAssignment");
 const { QuickSightIngestion } = require("./QuickSightIngestion");
 const { QuickSightGroup } = require("./QuickSightGroup");
 const { QuickSightGroupMembership } = require("./QuickSightGroupMembership");
+const { QuickSightRefreshSchedule } = require("./QuickSightRefreshSchedule");
 const { QuickSightTemplate } = require("./QuickSightTemplate");
 //const { QuickSightTemplateAlias } = require("./QuickSightTemplateAlias");
 const { QuickSightTheme } = require("./QuickSightTheme");
@@ -39,11 +40,12 @@ module.exports = pipe([
     QuickSightDataSet({}),
     QuickSightDataSource({}),
     QuickSightFolder({}),
-    //QuickSightFolderMembership({}),
+    QuickSightFolderMembership({}),
     QuickSightIAMPolicyAssignment({}),
     QuickSightIngestion({}),
     QuickSightGroup({}),
     QuickSightGroupMembership({}),
+    QuickSightRefreshSchedule({}),
     QuickSightTemplate({}),
     //QuickSightTemplateAlias({}),
     QuickSightTheme({}),

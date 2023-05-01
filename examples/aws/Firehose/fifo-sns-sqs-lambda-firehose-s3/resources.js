@@ -38,52 +38,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "fifo-sns-sqs-lambda-firehose-s3-firehose-role-5d62e6b5",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "firehose.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["fifo-sns-sqs-lambda-firehose-s3-firehose-policy-5d62e6b5"],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    properties: ({}) => ({
-      RoleName: "fifo-sns-sqs-lambda-firehose-s3-lambda-role-5d62e6b5",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "lambda.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      policies: ["fifo-sns-sqs-lambda-firehose-s3-lambda-policy-5d62e6b5"],
-    }),
-  },
-  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -158,6 +112,52 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "fifo-sns-sqs-lambda-firehose-s3-firehose-role-5d62e6b5",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "firehose.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["fifo-sns-sqs-lambda-firehose-s3-firehose-policy-5d62e6b5"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "fifo-sns-sqs-lambda-firehose-s3-lambda-role-5d62e6b5",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["fifo-sns-sqs-lambda-firehose-s3-lambda-policy-5d62e6b5"],
+    }),
+  },
+  {
     type: "EventSourceMapping",
     group: "Lambda",
     dependencies: ({}) => ({
@@ -190,15 +190,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "fifo-sns-sqs-lambda-firehose-s3-bucket-5d62e6b5",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
   {
@@ -207,15 +198,12 @@ exports.createResources = () => [
     name: "fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo",
     properties: ({ config }) => ({
       Attributes: {
+        ContentBasedDeduplication: "false",
+        DisplayName: "fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5",
+        FifoTopic: "true",
         Policy: {
-          Version: "2012-10-17",
           Statement: [
             {
-              Sid: "",
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
               Action: [
                 "SNS:Subscribe",
                 "SNS:SetTopicAttributes",
@@ -226,20 +214,23 @@ exports.createResources = () => [
                 "SNS:DeleteTopic",
                 "SNS:AddPermission",
               ],
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,
                 },
               },
+              Effect: "Allow",
+              Principal: {
+                AWS: "*",
+              },
+              Resource: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo`,
+              Sid: "",
             },
           ],
+          Version: "2012-10-17",
         },
-        FifoTopic: "true",
-        DisplayName: "fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5",
-        ContentBasedDeduplication: "false",
       },
     }),
   },
@@ -259,30 +250,25 @@ exports.createResources = () => [
     group: "SQS",
     properties: ({ config }) => ({
       Attributes: {
+        ContentBasedDeduplication: "false",
+        DeduplicationScope: "queue",
+        FifoQueue: "true",
+        FifoThroughputLimit: "perQueue",
         Policy: {
-          Version: "2012-10-17",
           Statement: [
             {
-              Sid: "",
+              Action: "sqs:*",
               Effect: "Allow",
               Principal: {
                 AWS: `arn:aws:iam::${config.accountId()}:root`,
               },
-              Action: "sqs:*",
               Resource: `arn:aws:sqs:${
                 config.region
               }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo`,
+              Sid: "",
             },
             {
-              Sid: "",
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
               Action: "sqs:SendMessage",
-              Resource: `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo`,
               Condition: {
                 ArnEquals: {
                   "aws:SourceArn": `arn:aws:sns:${
@@ -290,13 +276,18 @@ exports.createResources = () => [
                   }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo`,
                 },
               },
+              Effect: "Allow",
+              Principal: {
+                AWS: "*",
+              },
+              Resource: `arn:aws:sqs:${
+                config.region
+              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo`,
+              Sid: "",
             },
           ],
+          Version: "2012-10-17",
         },
-        FifoQueue: "true",
-        DeduplicationScope: "queue",
-        FifoThroughputLimit: "perQueue",
-        ContentBasedDeduplication: "false",
       },
       QueueName: "fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo",
     }),

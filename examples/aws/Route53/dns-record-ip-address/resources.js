@@ -34,8 +34,6 @@ exports.createResources = () => [
     group: "Route53",
     properties: ({ getId }) => ({
       Name: "grucloud.org.",
-      Type: "A",
-      TTL: 300,
       ResourceRecords: [
         {
           Value: `${getId({
@@ -46,6 +44,8 @@ exports.createResources = () => [
           })}`,
         },
       ],
+      TTL: 300,
+      Type: "A",
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",

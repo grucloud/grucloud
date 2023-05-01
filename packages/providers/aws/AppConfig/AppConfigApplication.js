@@ -6,9 +6,13 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { Tagger, assignTags } = require("./AppConfigCommon");
 
-const pickId = pipe([({ Id }) => ({ ApplicationId: Id })]);
+const pickId = pipe([
+  tap(({ Id }) => {
+    assert(Id);
+  }),
+  ({ Id }) => ({ ApplicationId: Id }),
+]);
 
-// https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsappconfig.html
 const buildArn = () =>
   pipe([
     get("Arn"),
@@ -21,6 +25,9 @@ const assignArn = ({ config }) =>
   pipe([
     assign({
       Arn: pipe([
+        tap(({ Id }) => {
+          assert(Id);
+        }),
         ({ Id }) =>
           `arn:aws:appconfig:${
             config.region
@@ -42,17 +49,31 @@ exports.AppConfigApplication = () => ({
   ignoreErrorCodes: ["ResourceNotFoundException"],
   omitProperties: ["Id", "Arn"],
   inferName: () => get("Name"),
-  findName: () => pipe([get("Name")]),
-  findId: () => pipe([get("Id")]),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("Id"),
+      tap((Id) => {
+        assert(Id);
+      }),
+    ]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#getApplication-property
   getById: {
     method: "getApplication",
     pickId,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#listApplications-property
   getList: {
     method: "listApplications",
     getParam: "Items",
-    decorate,
+    decorate: ({ getById }) => getById,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#createApplication-property
   create: {
@@ -69,6 +90,7 @@ exports.AppConfigApplication = () => ({
   destroy: {
     method: "deleteApplication",
     pickId,
+    shouldRetryOnExceptionMessages: ["Cannot delete application"],
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

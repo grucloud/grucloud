@@ -26,10 +26,7 @@ const findName =
             type: "Volume",
             group: "EC2",
           }),
-          get("name"),
-          tap((volume) => {
-            assert(volume);
-          }),
+          get("name", live.VolumeId),
         ]),
         instance: pipe([
           tap(() => {
@@ -41,10 +38,7 @@ const findName =
             type: "Instance",
             group: "EC2",
           }),
-          get("name"),
-          tap((instance) => {
-            assert(instance);
-          }),
+          get("name", live.InstanceId),
         ]),
       }),
       ({ volume, instance }) => `vol-attachment::${volume}::${instance}`,

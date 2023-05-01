@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project emr-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ KeyPair (1)
+++++ SecurityGroup (1)
+++++ Subnet (1)
+++++ Vpc (1)
++++ EMR
+++++ Cluster (1)
++++ IAM
+++++ InstanceProfile (1)
+++++ Policy (2)
+++++ Role (2)
+@endmindmap

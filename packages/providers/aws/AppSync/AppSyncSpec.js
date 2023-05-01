@@ -7,7 +7,11 @@ const fs = require("fs").promises;
 const path = require("path");
 
 const { createAwsService } = require("../AwsService");
-const { compareAws, isOurMinionObject } = require("../AwsCommon");
+const {
+  compareAws,
+  isOurMinionObject,
+  replaceRegionAll,
+} = require("../AwsCommon");
 
 const { AppSyncFunction } = require("./AppSyncFunction");
 
@@ -90,6 +94,8 @@ module.exports = pipe([
           pick([
             "name",
             "authenticationType",
+            "openIDConnectConfig",
+            //"userPoolConfig", no longer returned
             "xrayEnabled",
             "logConfig",
             "apiKeys",
@@ -109,6 +115,10 @@ module.exports = pipe([
                     userPoolConfig: pipe([
                       get("userPoolConfig"),
                       assign({
+                        awsRegion: pipe([
+                          get("awsRegion"),
+                          replaceRegionAll(input),
+                        ]),
                         userPoolId: pipe([
                           get("userPoolId"),
                           replaceWithName({

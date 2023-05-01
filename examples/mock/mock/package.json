@@ -12,14 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^11.1.0",
-    "@grucloud/provider-mock": "^11.1.0",
-    "bluebird": "^3.7.2",
-    "ping": "^0.4.1",
-    "rubico": "^1.6.27",
-    "url-join": "^4.0.1"
+    "@grucloud/provider-mock": "^1.10.22",
+    "bluebird": "3.7.2",
+    "ping": "0.4.1",
+    "rubico": "1.9.6",
+    "url-join": "4.0.1"
   },
   "devDependencies": {
-    "mocha": "^9.0.3",
-    "mocha-junit-reporter": "^2.0.2"
+    "mocha": "10.2.0",
+    "mocha-junit-reporter": "2.2.0"
   }
 }

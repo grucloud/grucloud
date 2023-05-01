@@ -36,18 +36,16 @@
   "author": "Frederic Heem",
   "license": "ISC",
   "devDependencies": {
-    "jscpd": "3.4.5",
-    "lerna": "6.4.1",
-    "mocha": "9.2.1",
-    "mocha-junit-reporter": "2.0.2",
+    "jscpd": "3.5.4",
+    "lerna": "6.6.1",
+    "mocha": "10.2.0",
+    "mocha-junit-reporter": "2.2.0",
     "nyc": "15.1.0",
-    "prettier": "2.3.2"
+    "prettier": "2.8.8"
   },
   "dependencies": {
-    "axios": "0.26.1",
-    "dotenv": "16.0.0",
-    "dotenv-cli": "5.0.0",
-    "rubico": "1.8.9"
+    "dotenv": "16.0.3",
+    "dotenv-cli": "7.2.1"
   },
   "repository": {
     "type": "git",

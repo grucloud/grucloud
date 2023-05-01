@@ -29,14 +29,83 @@ exports.createResources = () => [
       targetGroup: "appmes-RubyT-HRLNYR1HFN6J",
     }),
   },
-  { type: "KeyPair", group: "EC2", name: "id_rsa" },
+  { type: "ElasticIpAddress", group: "EC2", name: "NatGatewayOneAttachment" },
+  { type: "ElasticIpAddress", group: "EC2", name: "NatGatewayThreeAttachment" },
+  { type: "ElasticIpAddress", group: "EC2", name: "NatGatewayTwoAttachment" },
   {
-    type: "Vpc",
+    type: "Instance",
     group: "EC2",
-    name: "VPC-appmesh-workshop",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
+    name: "External-EC2Instance-appmesh-workshop",
+    properties: ({ config, getId }) => ({
+      CreditSpecification: {
+        CpuCredits: "unlimited",
+      },
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20230119.1 x86_64 HVM gp2",
+      },
+      InstanceType: "t3.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "VPC-appmesh-workshop::PrivateOne-appmesh-workshop",
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+      Tags: [
+        {
+          Key: "Usage",
+          Value: "ExternalEC2Instance",
+        },
+      ],
+      UserData: `#!/bin/bash -ex
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+
+# tools script
+cat > /home/ec2-user/install-tools <<-"EOF"
+
+#!/bin/bash -ex
+
+sudo yum install -y jq bash-completion
+
+sudo curl --silent --location -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.16.8/bin/linux/amd64/kubectl
+sudo chmod +x /usr/local/bin/kubectl
+echo 'source <(kubectl completion bash)' >>/home/ec2-user/.bashrc
+#source ~/.bashrc
+
+if ! [ -x "$(command -v jq)" ] || ! [ -x "$(command -v envsubst)" ] || ! [ -x "$(command -v kubectl)" ]; then
+  echo 'ERROR: tools not installed.' >&2
+  exit 1
+fi
+
+pip install awscli --upgrade --user
+
+EOF
+
+chmod +x /home/ec2-user/install-tools
+/home/ec2-user/install-tools
+`,
+    }),
+    dependencies: ({}) => ({
+      subnets: ["VPC-appmesh-workshop::PrivateOne-appmesh-workshop"],
+      keyPair: "id_rsa",
+      iamInstanceProfile:
+        "appmesh-workshop-InstanceProfileExternal-Gyr3M1YtaL0v",
+      securityGroups: [
+        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
+      ],
     }),
   },
   { type: "InternetGateway", group: "EC2", name: "InternetGateway" },
@@ -46,6 +115,68 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
       internetGateway: "InternetGateway",
+    }),
+  },
+  { type: "KeyPair", group: "EC2", name: "id_rsa" },
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
+    name: "Ruby-EC2Instance-LaunchTemplate-appmesh-workshop",
+    properties: ({}) => ({
+      LaunchTemplateData: {
+        Image: {
+          Description: "Amazon Linux 2 AMI 2.0.20230119.1 x86_64 HVM gp2",
+        },
+        InstanceInitiatedShutdownBehavior: "terminate",
+        InstanceType: "t2.medium",
+        UserData: `#!/bin/bash -ex
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+
+# Install required libs
+yum install -y git gcc gcc-c++ make readline-devel openssl-devel sqlite-devel gmp-devel jq
+
+# Install rbenv
+git clone https://github.com/rbenv/rbenv.git /tmp/.rbenv
+echo 'export PATH="/tmp/.rbenv/bin:/usr/local/bin:$PATH"' >> /tmp/.bashrc
+echo 'eval "$(rbenv init -)"' >> /tmp/.bashrc
+source /tmp/.bashrc
+
+# Install ruby-build
+git clone https://github.com/rbenv/ruby-build.git /tmp/ruby-build
+cd /tmp/ruby-build
+./install.sh
+
+rbenv install 2.5.1 && rbenv global 2.5.1
+
+# Install rails and bundler
+gem install --force rails:4.2.10 bundler:1.17.3
+gem update --system
+
+# Clone the repo and build the app
+export RUBY_ROOT=/tmp/ecsdemo-frontend
+git clone https://github.com/ffeijoo/ecsdemo-frontend.git /tmp/ecsdemo-frontend
+cd $RUBY_ROOT
+bundle update --bundler
+bundle install
+
+# Set environment variables for routing
+export MESH_RUN='true'
+export CRYSTAL_URL='http://crystal.appmeshworkshop.hosted.local:3000/crystal'
+export NODEJS_URL='http://nodejs.appmeshworkshop.hosted.local:3000'
+
+# Run at boot
+sed -i '$ d' startup.sh && echo 'rails s -e production -b 0.0.0.0' >> startup.sh
+nohup ./startup.sh &
+
+`,
+      },
+    }),
+    dependencies: ({}) => ({
+      keyPair: "id_rsa",
+      iamInstanceProfile: "appmesh-workshop-InstanceProfile-KMl4m5zQVs1I",
+      securityGroups: [
+        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
+      ],
     }),
   },
   {
@@ -82,6 +213,287 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       subnet: "VPC-appmesh-workshop::PublicTwo-appmesh-workshop",
       eip: "NatGatewayTwoAttachment",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      natGateway: "NatGatewayOne",
+      routeTable: "VPC-appmesh-workshop::PrivateRouteTableOne",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      natGateway: "NatGatewayThree",
+      routeTable: "VPC-appmesh-workshop::PrivateRouteTableThree",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      natGateway: "NatGatewayTwo",
+      routeTable: "VPC-appmesh-workshop::PrivateRouteTableTwo",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "InternetGateway",
+      routeTable: "VPC-appmesh-workshop::PublicRouteTable",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "PrivateRouteTableOne",
+    dependencies: ({}) => ({
+      vpc: "VPC-appmesh-workshop",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "PrivateRouteTableThree",
+    dependencies: ({}) => ({
+      vpc: "VPC-appmesh-workshop",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "PrivateRouteTableTwo",
+    dependencies: ({}) => ({
+      vpc: "VPC-appmesh-workshop",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "PublicRouteTable",
+    dependencies: ({}) => ({
+      vpc: "VPC-appmesh-workshop",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "VPC-appmesh-workshop::PrivateRouteTableOne",
+      subnet: "VPC-appmesh-workshop::PrivateOne-appmesh-workshop",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "VPC-appmesh-workshop::PrivateRouteTableThree",
+      subnet: "VPC-appmesh-workshop::PrivateThree-appmesh-workshop",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "VPC-appmesh-workshop::PrivateRouteTableTwo",
+      subnet: "VPC-appmesh-workshop::PrivateTwo-appmesh-workshop",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "VPC-appmesh-workshop::PublicRouteTable",
+      subnet: "VPC-appmesh-workshop::PublicOne-appmesh-workshop",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "VPC-appmesh-workshop::PublicRouteTable",
+      subnet: "VPC-appmesh-workshop::PublicThree-appmesh-workshop",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "VPC-appmesh-workshop::PublicRouteTable",
+      subnet: "VPC-appmesh-workshop::PublicTwo-appmesh-workshop",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
+      Description: "Access to the instance",
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC-appmesh-workshop",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "SecurityGroup-Container-appmesh-workshop",
+      Description: "Access to the containers",
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC-appmesh-workshop",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "SecurityGroup-ExternalLoadBalancer-appmesh-workshop",
+      Description: "Access to the external load balancer",
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC-appmesh-workshop",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "SecurityGroup-InternalLoadBalancer-appmesh-workshop",
+      Description: "Access to the internal load balancer",
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC-appmesh-workshop",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "SecurityGroup-VPCEndpoint-appmesh-workshop",
+      Description: "Access to the VPC endpoints",
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC-appmesh-workshop",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/16",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 22,
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/16",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::VPC-appmesh-workshop::SecurityGroup-Container-appmesh-workshop",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::VPC-appmesh-workshop::SecurityGroup-ExternalLoadBalancer-appmesh-workshop",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 3000,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/16",
+        },
+      ],
+      ToPort: 3000,
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::VPC-appmesh-workshop::SecurityGroup-InternalLoadBalancer-appmesh-workshop",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/16",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::VPC-appmesh-workshop::SecurityGroup-VPCEndpoint-appmesh-workshop",
     }),
   },
   {
@@ -250,433 +662,21 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: "PrivateRouteTableOne",
-    dependencies: ({}) => ({
-      vpc: "VPC-appmesh-workshop",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "PrivateRouteTableThree",
-    dependencies: ({}) => ({
-      vpc: "VPC-appmesh-workshop",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "PrivateRouteTableTwo",
-    dependencies: ({}) => ({
-      vpc: "VPC-appmesh-workshop",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "PublicRouteTable",
-    dependencies: ({}) => ({
-      vpc: "VPC-appmesh-workshop",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "VPC-appmesh-workshop::PrivateRouteTableOne",
-      subnet: "VPC-appmesh-workshop::PrivateOne-appmesh-workshop",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "VPC-appmesh-workshop::PrivateRouteTableThree",
-      subnet: "VPC-appmesh-workshop::PrivateThree-appmesh-workshop",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "VPC-appmesh-workshop::PrivateRouteTableTwo",
-      subnet: "VPC-appmesh-workshop::PrivateTwo-appmesh-workshop",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "VPC-appmesh-workshop::PublicRouteTable",
-      subnet: "VPC-appmesh-workshop::PublicOne-appmesh-workshop",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "VPC-appmesh-workshop::PublicRouteTable",
-      subnet: "VPC-appmesh-workshop::PublicThree-appmesh-workshop",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "VPC-appmesh-workshop::PublicRouteTable",
-      subnet: "VPC-appmesh-workshop::PublicTwo-appmesh-workshop",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
+    name: "VPC-appmesh-workshop",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "NatGatewayOne",
-      routeTable: "VPC-appmesh-workshop::PrivateRouteTableOne",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "NatGatewayThree",
-      routeTable: "VPC-appmesh-workshop::PrivateRouteTableThree",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "NatGatewayTwo",
-      routeTable: "VPC-appmesh-workshop::PrivateRouteTableTwo",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "InternetGateway",
-      routeTable: "VPC-appmesh-workshop::PublicRouteTable",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
-      Description: "Access to the instance",
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC-appmesh-workshop",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "SecurityGroup-Container-appmesh-workshop",
-      Description: "Access to the containers",
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC-appmesh-workshop",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "SecurityGroup-ExternalLoadBalancer-appmesh-workshop",
-      Description: "Access to the external load balancer",
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC-appmesh-workshop",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "SecurityGroup-InternalLoadBalancer-appmesh-workshop",
-      Description: "Access to the internal load balancer",
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC-appmesh-workshop",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "SecurityGroup-VPCEndpoint-appmesh-workshop",
-      Description: "Access to the VPC endpoints",
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC-appmesh-workshop",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpProtocol: "-1",
-      IpRanges: [
-        {
-          CidrIp: "10.0.0.0/16",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 22,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 22,
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpProtocol: "-1",
-      IpRanges: [
-        {
-          CidrIp: "10.0.0.0/16",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::VPC-appmesh-workshop::SecurityGroup-Container-appmesh-workshop",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 80,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 80,
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::VPC-appmesh-workshop::SecurityGroup-ExternalLoadBalancer-appmesh-workshop",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 3000,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "10.0.0.0/16",
-        },
-      ],
-      ToPort: 3000,
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::VPC-appmesh-workshop::SecurityGroup-InternalLoadBalancer-appmesh-workshop",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpProtocol: "-1",
-      IpRanges: [
-        {
-          CidrIp: "10.0.0.0/16",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::VPC-appmesh-workshop::SecurityGroup-VPCEndpoint-appmesh-workshop",
-    }),
-  },
-  { type: "ElasticIpAddress", group: "EC2", name: "NatGatewayOneAttachment" },
-  { type: "ElasticIpAddress", group: "EC2", name: "NatGatewayThreeAttachment" },
-  { type: "ElasticIpAddress", group: "EC2", name: "NatGatewayTwoAttachment" },
-  {
-    type: "Instance",
-    group: "EC2",
-    name: "External-EC2Instance-appmesh-workshop",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t3.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "VPC-appmesh-workshop::PrivateOne-appmesh-workshop",
-          })}`,
-        },
-      ],
-      Tags: [
-        {
-          Key: "Usage",
-          Value: "ExternalEC2Instance",
-        },
-      ],
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20230119.1 x86_64 HVM gp2",
-      },
-      UserData: `#!/bin/bash -ex
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-
-# tools script
-cat > /home/ec2-user/install-tools <<-"EOF"
-
-#!/bin/bash -ex
-
-sudo yum install -y jq bash-completion
-
-sudo curl --silent --location -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.16.8/bin/linux/amd64/kubectl
-sudo chmod +x /usr/local/bin/kubectl
-echo 'source <(kubectl completion bash)' >>/home/ec2-user/.bashrc
-#source ~/.bashrc
-
-if ! [ -x "$(command -v jq)" ] || ! [ -x "$(command -v envsubst)" ] || ! [ -x "$(command -v kubectl)" ]; then
-  echo 'ERROR: tools not installed.' >&2
-  exit 1
-fi
-
-pip install awscli --upgrade --user
-
-EOF
-
-chmod +x /home/ec2-user/install-tools
-/home/ec2-user/install-tools
-`,
-      CreditSpecification: {
-        CpuCredits: "unlimited",
-      },
-    }),
-    dependencies: ({}) => ({
-      subnets: ["VPC-appmesh-workshop::PrivateOne-appmesh-workshop"],
-      keyPair: "id_rsa",
-      iamInstanceProfile:
-        "appmesh-workshop-InstanceProfileExternal-Gyr3M1YtaL0v",
-      securityGroups: [
-        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
-      ],
-    }),
-  },
-  {
-    type: "LaunchTemplate",
-    group: "EC2",
-    name: "Ruby-EC2Instance-LaunchTemplate-appmesh-workshop",
-    properties: ({}) => ({
-      LaunchTemplateData: {
-        InstanceType: "t2.medium",
-        InstanceInitiatedShutdownBehavior: "terminate",
-        UserData: `#!/bin/bash -ex
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-
-# Install required libs
-yum install -y git gcc gcc-c++ make readline-devel openssl-devel sqlite-devel gmp-devel jq
-
-# Install rbenv
-git clone https://github.com/rbenv/rbenv.git /tmp/.rbenv
-echo 'export PATH="/tmp/.rbenv/bin:/usr/local/bin:$PATH"' >> /tmp/.bashrc
-echo 'eval "$(rbenv init -)"' >> /tmp/.bashrc
-source /tmp/.bashrc
-
-# Install ruby-build
-git clone https://github.com/rbenv/ruby-build.git /tmp/ruby-build
-cd /tmp/ruby-build
-./install.sh
-
-rbenv install 2.5.1 && rbenv global 2.5.1
-
-# Install rails and bundler
-gem install --force rails:4.2.10 bundler:1.17.3
-gem update --system
-
-# Clone the repo and build the app
-export RUBY_ROOT=/tmp/ecsdemo-frontend
-git clone https://github.com/ffeijoo/ecsdemo-frontend.git /tmp/ecsdemo-frontend
-cd $RUBY_ROOT
-bundle update --bundler
-bundle install
-
-# Set environment variables for routing
-export MESH_RUN='true'
-export CRYSTAL_URL='http://crystal.appmeshworkshop.hosted.local:3000/crystal'
-export NODEJS_URL='http://nodejs.appmeshworkshop.hosted.local:3000'
-
-# Run at boot
-sed -i '$ d' startup.sh && echo 'rails s -e production -b 0.0.0.0' >> startup.sh
-nohup ./startup.sh &
-
-`,
-        Image: {
-          Description: "Amazon Linux 2 AMI 2.0.20230119.1 x86_64 HVM gp2",
-        },
-      },
-    }),
-    dependencies: ({}) => ({
-      keyPair: "id_rsa",
-      iamInstanceProfile: "appmesh-workshop-InstanceProfile-KMl4m5zQVs1I",
-      securityGroups: [
-        "sg::VPC-appmesh-workshop::appmesh-workshop-EC2InstanceSecurityGroup-QLIQHPFRMTIC",
-      ],
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.appmesh-envoy-management`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -694,9 +694,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.ec2`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -714,9 +714,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -734,9 +734,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.ecr.api`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -754,9 +754,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.ecr.dkr`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -774,9 +774,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.logs`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -794,9 +794,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
+      PrivateDnsEnabled: true,
       ServiceName: `com.amazonaws.${config.region}.ssm`,
-      PrivateDnsEnabled: true,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -814,9 +814,9 @@ nohup ./startup.sh &
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",
@@ -1162,8 +1162,8 @@ nohup ./startup.sh &
             Statement: [
               {
                 Action: ["eks:DescribeCluster"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -1172,8 +1172,8 @@ nohup ./startup.sh &
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2RoleforSSM",
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+          PolicyName: "AmazonEC2RoleforSSM",
         },
       ],
     }),
@@ -1220,8 +1220,8 @@ nohup ./startup.sh &
                   "route53:ChangeResourceRecordSets",
                   "route53:UpdateHealthCheck",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -1230,8 +1230,8 @@ nohup ./startup.sh &
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2RoleforSSM",
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+          PolicyName: "AmazonEC2RoleforSSM",
         },
       ],
     }),
@@ -1281,8 +1281,8 @@ nohup ./startup.sh &
                   "logs:CreateLogGroup",
                   "logs:PutLogEvents",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -1328,8 +1328,8 @@ nohup ./startup.sh &
                   "xray:GetSamplingTargets",
                   "xray:GertSamplingStatisticSumaries",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
           },
@@ -1358,7 +1358,6 @@ nohup ./startup.sh &
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -1366,8 +1365,8 @@ nohup ./startup.sh &
                   "logs:CreateLogStream",
                   "logs:PutLogEvents",
                 ],
-                Resource: "arn:aws:logs:*:*:*",
                 Effect: "Allow",
+                Resource: "arn:aws:logs:*:*:*",
               },
               {
                 Action: [
@@ -1377,10 +1376,11 @@ nohup ./startup.sh &
                   "ssm:DeleteParameter",
                   "kms:Encrypt",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "KeyPairHelperExecutionPolicy",
         },
@@ -1471,11 +1471,11 @@ nohup ./startup.sh &
     type: "Record",
     group: "Route53",
     properties: ({}) => ({
-      Name: "crystal.appmeshworkshop.hosted.local.",
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: false,
       },
+      Name: "crystal.appmeshworkshop.hosted.local.",
+      Type: "A",
     }),
     dependencies: ({}) => ({
       hostedZone: "appmeshworkshop.hosted.local.",

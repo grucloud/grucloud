@@ -762,7 +762,12 @@ exports.RestApi = ({ compare }) => ({
     "endpointConfiguration.vpcEndpointIds",
     "policy",
   ],
-  propertiesDefault: { disableExecuteApiEndpoint: false },
+  propertiesDefault: {
+    disableExecuteApiEndpoint: false,
+    endpointConfiguration: {
+      ipv6: false,
+    },
+  },
   compare: compare({
     filterTarget: () => pipe([omit(["deployment"])]),
   }),
@@ -776,6 +781,7 @@ exports.RestApi = ({ compare }) => ({
     method: "getRestApis",
     getParam: "items",
     decorate,
+    noSortKey: true,
   },
   create: {
     filterPayload: pipe([omit(["schemaFile", "schema", "deployment"])]),

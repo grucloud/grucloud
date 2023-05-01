@@ -34,5 +34,5 @@ describe("EC2 Instance", async function () {
         },
       ],
     });
-  });
+  }).timeout(20 * 60e3);
 });

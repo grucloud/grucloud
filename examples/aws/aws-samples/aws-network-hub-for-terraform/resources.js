@@ -148,12 +148,35 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "EgressOnlyInternetGateway",
+    group: "EC2",
+    name: "inspection_eigw",
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: ({ config }) => `internet_vpc_nat-${config.region}a`,
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: ({ config }) => `internet_vpc_nat-${config.region}b`,
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: ({ config }) => `internet_vpc_nat-${config.region}c`,
+  },
+  {
     type: "FlowLogs",
     group: "EC2",
     name: "flowlog::dns_vpc",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 600,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "dns_vpc",
@@ -166,8 +189,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "flowlog::endpoint_vpc",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 600,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "endpoint_vpc",
@@ -180,13 +203,22 @@ exports.createResources = () => [
     group: "EC2",
     name: "flowlog::inspection_vpc",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 600,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
       iamRole: "dev_endpoint_vpc_flow_logs",
       cloudWatchLogGroup: "inspection_vpc",
+    }),
+  },
+  { type: "InternetGateway", group: "EC2", name: "inspection_igw" },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+      internetGateway: "inspection_igw",
     }),
   },
   {
@@ -203,29 +235,15 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "IpamScope",
-    group: "EC2",
-    name: "private_org_ipam_scope",
-    properties: ({ config }) => ({
-      IpamRegion: `${config.region}`,
-      IpamScopeType: "private",
-      IsDefault: false,
-      Description: "Org Scope",
-    }),
-    dependencies: ({}) => ({
-      ipam: "org_ipam",
-    }),
-  },
-  {
     type: "IpamPool",
     group: "EC2",
     name: "private_org_ipam_scope",
     properties: ({ config }) => ({
-      IpamScopeType: "private",
-      IpamRegion: `${config.region}`,
-      Locale: `${config.region}`,
-      AutoImport: false,
       AddressFamily: "ipv4",
+      AutoImport: false,
+      IpamRegion: `${config.region}`,
+      IpamScopeType: "private",
+      Locale: `${config.region}`,
     }),
     dependencies: ({}) => ({
       ipamScope: "private_org_ipam_scope",
@@ -242,59 +260,17 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "IpamScope",
     group: "EC2",
-    name: "dns_vpc",
-    properties: ({}) => ({
-      DnsHostnames: true,
-      Ipv4NetmaskLength: "22",
-      AmazonProvidedIpv6CidrBlock: true,
+    name: "private_org_ipam_scope",
+    properties: ({ config }) => ({
+      Description: "Org Scope",
+      IpamRegion: `${config.region}`,
+      IpamScopeType: "private",
+      IsDefault: false,
     }),
     dependencies: ({}) => ({
-      ipamPoolIpv4: "private_org_ipam_scope",
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "endpoint_vpc",
-    properties: ({}) => ({
-      DnsHostnames: true,
-      Ipv4NetmaskLength: "22",
-      AmazonProvidedIpv6CidrBlock: true,
-    }),
-    dependencies: ({}) => ({
-      ipamPoolIpv4: "private_org_ipam_scope",
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "inspection_vpc",
-    properties: ({}) => ({
-      DnsHostnames: true,
-      Ipv4NetmaskLength: "22",
-      AmazonProvidedIpv6CidrBlock: true,
-    }),
-    dependencies: ({}) => ({
-      ipamPoolIpv4: "private_org_ipam_scope",
-    }),
-  },
-  { type: "InternetGateway", group: "EC2", name: "inspection_igw" },
-  {
-    type: "InternetGatewayAttachment",
-    group: "EC2",
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
-      internetGateway: "inspection_igw",
-    }),
-  },
-  {
-    type: "EgressOnlyInternetGateway",
-    group: "EC2",
-    name: "inspection_eigw",
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+      ipam: "org_ipam",
     }),
   },
   {
@@ -302,6 +278,7 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_natgw_${config.region}a`,
     properties: ({}) => ({
+      PrivateIpAddressIndex: 28,
       Tags: [
         {
           Key: "Network",
@@ -312,7 +289,6 @@ exports.createResources = () => [
           Value: "internet",
         },
       ],
-      PrivateIpAddressIndex: 28,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_vpc::inspection_internet_${config.region}a`,
@@ -324,6 +300,7 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_natgw_${config.region}b`,
     properties: ({}) => ({
+      PrivateIpAddressIndex: 19,
       Tags: [
         {
           Key: "Network",
@@ -334,7 +311,6 @@ exports.createResources = () => [
           Value: "internet",
         },
       ],
-      PrivateIpAddressIndex: 19,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_vpc::inspection_internet_${config.region}b`,
@@ -346,6 +322,7 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_natgw_${config.region}c`,
     properties: ({}) => ({
+      PrivateIpAddressIndex: 21,
       Tags: [
         {
           Key: "Network",
@@ -356,7 +333,6 @@ exports.createResources = () => [
           Value: "internet",
         },
       ],
-      PrivateIpAddressIndex: 21,
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_vpc::inspection_internet_${config.region}c`,
@@ -364,549 +340,344 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `dns_attachment_${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 0,
-      Ipv6SubnetPrefix: "00",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
-      vpc: "dns_vpc",
+      routeTable: "dns_vpc::dns_route_table",
+      transitGateway: "Org_TGW_dev",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `dns_attachment_${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 1,
-      Ipv6SubnetPrefix: "01",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "dns_vpc",
+      routeTable: "dns_vpc::dns_route_table",
+      transitGateway: "Org_TGW_dev",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `dns_attachment_${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 2,
-      Ipv6SubnetPrefix: "02",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
-      vpc: "dns_vpc",
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      transitGateway: "Org_TGW_dev",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `dns_endpoint_${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "endpoint",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 4,
-      NetworkNumber: 2,
-      Ipv6SubnetPrefix: "03",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "dns_vpc",
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      transitGateway: "Org_TGW_dev",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `dns_endpoint_${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "endpoint",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 4,
-      NetworkNumber: 3,
-      Ipv6SubnetPrefix: "04",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "dns_vpc",
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `dns_endpoint_${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "endpoint",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 4,
-      NetworkNumber: 4,
-      Ipv6SubnetPrefix: "05",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "dns_vpc",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `endpoint_attachment_${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 0,
-      Ipv6SubnetPrefix: "00",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "endpoint_vpc",
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `endpoint_attachment_${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 1,
-      Ipv6SubnetPrefix: "01",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "endpoint_vpc",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `endpoint_attachment_${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 2,
-      Ipv6SubnetPrefix: "02",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "endpoint_vpc",
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `endpoint_endpoint_${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "endpoint",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 4,
-      NetworkNumber: 2,
-      Ipv6SubnetPrefix: "03",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "endpoint_vpc",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `endpoint_endpoint_${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "endpoint",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 4,
-      NetworkNumber: 3,
-      Ipv6SubnetPrefix: "04",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "endpoint_vpc",
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `endpoint_endpoint_${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "endpoint",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 4,
-      NetworkNumber: 4,
-      Ipv6SubnetPrefix: "05",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "endpoint_vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 0,
-      Ipv6SubnetPrefix: "00",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "64:ff9b::/96",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 1,
-      Ipv6SubnetPrefix: "01",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
+      transitGateway: "Org_TGW_dev",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "attachment",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 2,
-      Ipv6SubnetPrefix: "02",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "inspection",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 4,
-      Ipv6SubnetPrefix: "03",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "inspection",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 5,
-      Ipv6SubnetPrefix: "04",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "64:ff9b::/96",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      AssignIpv6AddressOnCreation: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "private",
-        },
-        {
-          Key: "Type",
-          Value: "inspection",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 6,
-      Ipv6SubnetPrefix: "05",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
+      transitGateway: "Org_TGW_dev",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "public",
-        },
-        {
-          Key: "Type",
-          Value: "internet",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 7,
-      Ipv6SubnetPrefix: "06",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "public",
-        },
-        {
-          Key: "Type",
-          Value: "internet",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 8,
-      Ipv6SubnetPrefix: "07",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}c`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      MapPublicIpOnLaunch: true,
-      Tags: [
-        {
-          Key: "Network",
-          Value: "public",
-        },
-        {
-          Key: "Type",
-          Value: "internet",
-        },
-      ],
-      EnableDns64: true,
-      NewBits: 5,
-      NetworkNumber: 9,
-      Ipv6SubnetPrefix: "08",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "64:ff9b::/96",
     }),
-    dependencies: ({}) => ({
-      vpc: "inspection_vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `inspection_natgw_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      ig: "inspection_igw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      ig: "inspection_igw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      ig: "inspection_igw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.0.0.0/10",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
     }),
   },
   {
@@ -1286,347 +1057,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "dns_vpc::dns_route_table",
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "dns_vpc::dns_route_table",
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "endpoint_vpc::endpoint_route_table",
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "endpoint_vpc::endpoint_route_table",
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}a`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "64:ff9b::/96",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}a`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}b`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "64:ff9b::/96",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}b`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}c`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "64:ff9b::/96",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `inspection_natgw_${config.region}c`,
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "inspection_igw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "inspection_igw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      egressOnlyInternetGateway: "inspection_eigw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "inspection_igw",
-      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "10.0.0.0/10",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -1703,290 +1133,549 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `internet_vpc_nat-${config.region}a`,
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: ({ config }) => `internet_vpc_nat-${config.region}b`,
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: ({ config }) => `internet_vpc_nat-${config.region}c`,
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
+    name: ({ config }) => `dns_attachment_${config.region}a`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.athena`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}a`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `athena.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
         },
       ],
+      NewBits: 5,
+      NetworkNumber: 0,
+      Ipv6SubnetPrefix: "00",
     }),
-    dependencies: ({ config }) => ({
-      vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
+    dependencies: ({}) => ({
+      vpc: "dns_vpc",
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `dns_attachment_${config.region}b`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.autoscaling`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}b`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `autoscaling.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
         },
       ],
+      NewBits: 5,
+      NetworkNumber: 1,
+      Ipv6SubnetPrefix: "01",
     }),
-    dependencies: ({ config }) => ({
-      vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
+    dependencies: ({}) => ({
+      vpc: "dns_vpc",
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `dns_attachment_${config.region}c`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}c`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `ec2.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
         },
       ],
+      NewBits: 5,
+      NetworkNumber: 2,
+      Ipv6SubnetPrefix: "02",
     }),
-    dependencies: ({ config }) => ({
-      vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
+    dependencies: ({}) => ({
+      vpc: "dns_vpc",
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `dns_endpoint_${config.region}a`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}a`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `ec2messages.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "endpoint",
         },
       ],
+      NewBits: 4,
+      NetworkNumber: 2,
+      Ipv6SubnetPrefix: "03",
     }),
-    dependencies: ({ config }) => ({
-      vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
+    dependencies: ({}) => ({
+      vpc: "dns_vpc",
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `dns_endpoint_${config.region}b`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ecs`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}b`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `ecs.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "endpoint",
         },
       ],
+      NewBits: 4,
+      NetworkNumber: 3,
+      Ipv6SubnetPrefix: "04",
     }),
-    dependencies: ({ config }) => ({
-      vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
+    dependencies: ({}) => ({
+      vpc: "dns_vpc",
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `dns_endpoint_${config.region}c`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.logs`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}c`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `logs.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "endpoint",
         },
       ],
+      NewBits: 4,
+      NetworkNumber: 4,
+      Ipv6SubnetPrefix: "05",
     }),
-    dependencies: ({ config }) => ({
-      vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
+    dependencies: ({}) => ({
+      vpc: "dns_vpc",
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `endpoint_attachment_${config.region}a`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.rds`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}a`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `rds.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
         },
       ],
+      NewBits: 5,
+      NetworkNumber: 0,
+      Ipv6SubnetPrefix: "00",
     }),
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `endpoint_attachment_${config.region}b`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.sns`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}b`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `sns.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
         },
       ],
+      NewBits: 5,
+      NetworkNumber: 1,
+      Ipv6SubnetPrefix: "01",
     }),
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `endpoint_attachment_${config.region}c`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.sqs`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}c`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `sqs.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
         },
       ],
+      NewBits: 5,
+      NetworkNumber: 2,
+      Ipv6SubnetPrefix: "02",
     }),
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `endpoint_endpoint_${config.region}a`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssm`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}a`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `ssm.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "endpoint",
         },
       ],
+      NewBits: 4,
+      NetworkNumber: 2,
+      Ipv6SubnetPrefix: "03",
     }),
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `endpoint_endpoint_${config.region}b`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}b`,
+      EnableDns64: true,
       Tags: [
         {
-          Key: "PHZ",
-          Value: `ssmmessages.${config.region}.amazonaws.com`,
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "endpoint",
         },
       ],
+      NewBits: 4,
+      NetworkNumber: 3,
+      Ipv6SubnetPrefix: "04",
     }),
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
-        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
-      ],
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
-    readOnly: true,
-    dependencies: ({ config }) => ({
+    name: ({ config }) => `endpoint_endpoint_${config.region}c`,
+    properties: ({ config }) => ({
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}c`,
+      EnableDns64: true,
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "endpoint",
+        },
+      ],
+      NewBits: 4,
+      NetworkNumber: 4,
+      Ipv6SubnetPrefix: "05",
+    }),
+    dependencies: ({}) => ({
+      vpc: "endpoint_vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection_attachment_${config.region}a`,
+    properties: ({ config }) => ({
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}a`,
+      EnableDns64: true,
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
+        },
+      ],
+      NewBits: 5,
+      NetworkNumber: 0,
+      Ipv6SubnetPrefix: "00",
+    }),
+    dependencies: ({}) => ({
       vpc: "inspection_vpc",
-      subnets: [`inspection_vpc::inspection_inspection_${config.region}a`],
-      firewall: "NetworkFirewall",
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
-    readOnly: true,
-    dependencies: ({ config }) => ({
+    name: ({ config }) => `inspection_attachment_${config.region}b`,
+    properties: ({ config }) => ({
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}b`,
+      EnableDns64: true,
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
+        },
+      ],
+      NewBits: 5,
+      NetworkNumber: 1,
+      Ipv6SubnetPrefix: "01",
+    }),
+    dependencies: ({}) => ({
       vpc: "inspection_vpc",
-      subnets: [`inspection_vpc::inspection_inspection_${config.region}b`],
-      firewall: "NetworkFirewall",
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
-    readOnly: true,
-    dependencies: ({ config }) => ({
+    name: ({ config }) => `inspection_attachment_${config.region}c`,
+    properties: ({ config }) => ({
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}c`,
+      EnableDns64: true,
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "attachment",
+        },
+      ],
+      NewBits: 5,
+      NetworkNumber: 2,
+      Ipv6SubnetPrefix: "02",
+    }),
+    dependencies: ({}) => ({
       vpc: "inspection_vpc",
-      subnets: [`inspection_vpc::inspection_inspection_${config.region}c`],
-      firewall: "NetworkFirewall",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection_inspection_${config.region}a`,
+    properties: ({ config }) => ({
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}a`,
+      EnableDns64: true,
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "inspection",
+        },
+      ],
+      NewBits: 5,
+      NetworkNumber: 4,
+      Ipv6SubnetPrefix: "03",
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection_inspection_${config.region}b`,
+    properties: ({ config }) => ({
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}b`,
+      EnableDns64: true,
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "inspection",
+        },
+      ],
+      NewBits: 5,
+      NetworkNumber: 5,
+      Ipv6SubnetPrefix: "04",
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection_inspection_${config.region}c`,
+    properties: ({ config }) => ({
+      AssignIpv6AddressOnCreation: true,
+      AvailabilityZone: `${config.region}c`,
+      EnableDns64: true,
+      Tags: [
+        {
+          Key: "Network",
+          Value: "private",
+        },
+        {
+          Key: "Type",
+          Value: "inspection",
+        },
+      ],
+      NewBits: 5,
+      NetworkNumber: 6,
+      Ipv6SubnetPrefix: "05",
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection_internet_${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      EnableDns64: true,
+      MapPublicIpOnLaunch: true,
+      Tags: [
+        {
+          Key: "Network",
+          Value: "public",
+        },
+        {
+          Key: "Type",
+          Value: "internet",
+        },
+      ],
+      NewBits: 5,
+      NetworkNumber: 7,
+      Ipv6SubnetPrefix: "06",
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection_internet_${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      EnableDns64: true,
+      MapPublicIpOnLaunch: true,
+      Tags: [
+        {
+          Key: "Network",
+          Value: "public",
+        },
+        {
+          Key: "Type",
+          Value: "internet",
+        },
+      ],
+      NewBits: 5,
+      NetworkNumber: 8,
+      Ipv6SubnetPrefix: "07",
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `inspection_internet_${config.region}c`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      EnableDns64: true,
+      MapPublicIpOnLaunch: true,
+      Tags: [
+        {
+          Key: "Network",
+          Value: "public",
+        },
+        {
+          Key: "Type",
+          Value: "internet",
+        },
+      ],
+      NewBits: 5,
+      NetworkNumber: 9,
+      Ipv6SubnetPrefix: "08",
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
     }),
   },
   {
@@ -2001,9 +1690,9 @@ exports.createResources = () => [
         AutoAcceptSharedAttachments: "enable",
         DefaultRouteTableAssociation: "disable",
         DefaultRouteTablePropagation: "disable",
-        VpnEcmpSupport: "enable",
         DnsSupport: "enable",
         MulticastSupport: "disable",
+        VpnEcmpSupport: "enable",
       },
     }),
   },
@@ -2116,14 +1805,114 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
+    }),
+  },
+  {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
     name: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "disable",
         DnsSupport: "enable",
         Ipv6Support: "enable",
-        ApplianceModeSupport: "disable",
       },
     }),
     dependencies: ({ config }) => ({
@@ -2142,9 +1931,9 @@ exports.createResources = () => [
     name: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "disable",
         DnsSupport: "enable",
         Ipv6Support: "enable",
-        ApplianceModeSupport: "disable",
       },
     }),
     dependencies: ({ config }) => ({
@@ -2163,9 +1952,9 @@ exports.createResources = () => [
     name: "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "enable",
         DnsSupport: "enable",
         Ipv6Support: "enable",
-        ApplianceModeSupport: "enable",
       },
     }),
     dependencies: ({ config }) => ({
@@ -2179,179 +1968,314 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGatewayRouteTableAssociation",
+    type: "Vpc",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "dev",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "prod",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::dns_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "dev",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "prod",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-vpc-attach::Org_TGW_dev::endpoint_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "dev",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "prod",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::Org_TGW_dev::inspection_vpc",
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
+    name: "dns_vpc",
     properties: ({}) => ({
-      RoleName: "dev_endpoint_vpc_flow_logs",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "vpc-flow-logs.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      Policies: [
+      DnsHostnames: true,
+      Ipv4NetmaskLength: "22",
+      AmazonProvidedIpv6CidrBlock: true,
+    }),
+    dependencies: ({}) => ({
+      ipamPoolIpv4: "private_org_ipam_scope",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "endpoint_vpc",
+    properties: ({}) => ({
+      DnsHostnames: true,
+      Ipv4NetmaskLength: "22",
+      AmazonProvidedIpv6CidrBlock: true,
+    }),
+    dependencies: ({}) => ({
+      ipamPoolIpv4: "private_org_ipam_scope",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "inspection_vpc",
+    properties: ({}) => ({
+      DnsHostnames: true,
+      Ipv4NetmaskLength: "22",
+      AmazonProvidedIpv6CidrBlock: true,
+    }),
+    dependencies: ({}) => ({
+      ipamPoolIpv4: "private_org_ipam_scope",
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.athena`,
+      Tags: [
         {
-          PolicyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Action: [
-                  "logs:CreateLogGroup",
-                  "logs:CreateLogStream",
-                  "logs:PutLogEvents",
-                  "logs:DescribeLogGroups",
-                  "logs:DescribeLogStreams",
-                ],
-                Effect: "Allow",
-                Resource: "*",
-              },
-            ],
-          },
-          PolicyName: "endpoint_vpc_flow_logs",
+          Key: "PHZ",
+          Value: `athena.${config.region}.amazonaws.com`,
         },
+      ],
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    properties: ({ getId }) => ({
-      RoleName: "dev_network_automation_role",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              AWS: "*",
-            },
-            Action: "sts:AssumeRole",
-            Condition: {
-              StringEquals: {
-                "aws:PrincipalOrgID": `${getId({
-                  type: "Organisation",
-                  group: "Organisations",
-                  name: "frederic.heem@gmail.com",
-                })}`,
-              },
-              StringNotEqualsIgnoreCase: {
-                "aws:RequestTag/automation": "true",
-              },
-            },
-          },
-        ],
-      },
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.autoscaling`,
+      Tags: [
+        {
+          Key: "PHZ",
+          Value: `autoscaling.${config.region}.amazonaws.com`,
+        },
+      ],
+      VpcEndpointType: "Interface",
     }),
-    dependencies: ({}) => ({
-      policies: ["dev_central_network_automation_policy"],
-      organisations: ["frederic.heem@gmail.com"],
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.ec2`,
+      Tags: [
+        {
+          Key: "PHZ",
+          Value: `ec2.${config.region}.amazonaws.com`,
+        },
+      ],
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      Tags: [
+        {
+          Key: "PHZ",
+          Value: `ec2messages.${config.region}.amazonaws.com`,
+        },
+      ],
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.ecs`,
+      Tags: [
+        {
+          Key: "PHZ",
+          Value: `ecs.${config.region}.amazonaws.com`,
+        },
+      ],
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.logs`,
+      Tags: [
+        {
+          Key: "PHZ",
+          Value: `logs.${config.region}.amazonaws.com`,
+        },
+      ],
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.rds`,
+      Tags: [
+        {
+          Key: "PHZ",
+          Value: `rds.${config.region}.amazonaws.com`,
+        },
+      ],
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.sns`,
+      Tags: [
+        {
+          Key: "PHZ",
+          Value: `sns.${config.region}.amazonaws.com`,
+        },
+      ],
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.sqs`,
+      Tags: [
+        {
+          Key: "PHZ",
+          Value: `sqs.${config.region}.amazonaws.com`,
+        },
+      ],
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+      Tags: [
+        {
+          Key: "PHZ",
+          Value: `ssm.${config.region}.amazonaws.com`,
+        },
+      ],
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      Tags: [
+        {
+          Key: "PHZ",
+          Value: `ssmmessages.${config.region}.amazonaws.com`,
+        },
+      ],
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    readOnly: true,
+    dependencies: ({ config }) => ({
+      vpc: "inspection_vpc",
+      subnets: [`inspection_vpc::inspection_inspection_${config.region}a`],
+      firewall: "NetworkFirewall",
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    readOnly: true,
+    dependencies: ({ config }) => ({
+      vpc: "inspection_vpc",
+      subnets: [`inspection_vpc::inspection_inspection_${config.region}b`],
+      firewall: "NetworkFirewall",
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    readOnly: true,
+    dependencies: ({ config }) => ({
+      vpc: "inspection_vpc",
+      subnets: [`inspection_vpc::inspection_inspection_${config.region}c`],
+      firewall: "NetworkFirewall",
     }),
   },
   {
@@ -2407,6 +2331,82 @@ exports.createResources = () => [
       Path: "/",
       Description:
         "dev Central network automation policy to allow TGW association, propagation and route53 private hosted zone association",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "dev_endpoint_vpc_flow_logs",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "vpc-flow-logs.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      Policies: [
+        {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: [
+                  "logs:CreateLogGroup",
+                  "logs:CreateLogStream",
+                  "logs:PutLogEvents",
+                  "logs:DescribeLogGroups",
+                  "logs:DescribeLogStreams",
+                ],
+                Effect: "Allow",
+                Resource: "*",
+              },
+            ],
+            Version: "2012-10-17",
+          },
+          PolicyName: "endpoint_vpc_flow_logs",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ getId }) => ({
+      RoleName: "dev_network_automation_role",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              AWS: "*",
+            },
+            Action: "sts:AssumeRole",
+            Condition: {
+              StringEquals: {
+                "aws:PrincipalOrgID": `${getId({
+                  type: "Organisation",
+                  group: "Organisations",
+                  name: "frederic.heem@gmail.com",
+                })}`,
+              },
+              StringNotEqualsIgnoreCase: {
+                "aws:RequestTag/automation": "true",
+              },
+            },
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["dev_central_network_automation_policy"],
+      organisations: ["frederic.heem@gmail.com"],
     }),
   },
   {
@@ -2469,6 +2469,7 @@ exports.createResources = () => [
     type: "LoggingConfiguration",
     group: "NetworkFirewall",
     properties: ({}) => ({
+      FirewallName: "NetworkFirewall",
       LoggingConfiguration: {
         LogDestinationConfigs: [
           {
@@ -2487,7 +2488,6 @@ exports.createResources = () => [
           },
         ],
       },
-      FirewallName: "NetworkFirewall",
     }),
     dependencies: ({}) => ({
       firewall: "NetworkFirewall",
@@ -2525,7 +2525,15 @@ exports.createResources = () => [
     type: "RuleGroup",
     group: "NetworkFirewall",
     properties: ({}) => ({
+      Capacity: 100,
       RuleGroup: {
+        RulesSource: {
+          RulesSourceList: {
+            GeneratedRulesType: "DENYLIST",
+            Targets: [".twitter.com", ".facebook.com"],
+            TargetTypes: ["HTTP_HOST", "TLS_SNI"],
+          },
+        },
         RuleVariables: {
           IPSets: {
             HOME_NET: {
@@ -2533,15 +2541,7 @@ exports.createResources = () => [
             },
           },
         },
-        RulesSource: {
-          RulesSourceList: {
-            GeneratedRulesType: "DENYLIST",
-            TargetTypes: ["HTTP_HOST", "TLS_SNI"],
-            Targets: [".twitter.com", ".facebook.com"],
-          },
-        },
       },
-      Capacity: 100,
       RuleGroupName: "block-domains",
       Type: "STATEFUL",
     }),
@@ -2571,6 +2571,7 @@ exports.createResources = () => [
         "securityhub.amazonaws.com",
         "ssm.amazonaws.com",
         "sso.amazonaws.com",
+        "storage-lens.s3.amazonaws.com",
       ],
     }),
   },
@@ -2893,11 +2894,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `athena.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `athena.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `athena.${config.region}.amazonaws.com.`,
@@ -2908,11 +2909,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `autoscaling.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `autoscaling.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `autoscaling.${config.region}.amazonaws.com.`,
@@ -2923,11 +2924,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `ec2.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `ec2.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ec2.${config.region}.amazonaws.com.`,
@@ -2938,11 +2939,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `ec2messages.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `ec2messages.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
@@ -2953,11 +2954,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `ecs.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `ecs.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ecs.${config.region}.amazonaws.com.`,
@@ -2968,11 +2969,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `logs.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `logs.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `logs.${config.region}.amazonaws.com.`,
@@ -2983,11 +2984,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `rds.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `rds.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `rds.${config.region}.amazonaws.com.`,
@@ -2998,11 +2999,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `sns.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `sns.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `sns.${config.region}.amazonaws.com.`,
@@ -3013,11 +3014,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `sqs.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `sqs.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `sqs.${config.region}.amazonaws.com.`,
@@ -3028,11 +3029,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `ssm.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `ssm.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ssm.${config.region}.amazonaws.com.`,
@@ -3043,11 +3044,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `ssmmessages.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `ssmmessages.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
@@ -3059,7 +3060,6 @@ exports.createResources = () => [
     group: "Route53Resolver",
     properties: ({ config, getId }) => ({
       Direction: "INBOUND",
-      Name: "Org-Inbound-Resolver-Endpoint",
       IpAddresses: [
         {
           SubnetId: `${getId({
@@ -3083,6 +3083,7 @@ exports.createResources = () => [
           })}`,
         },
       ],
+      Name: "Org-Inbound-Resolver-Endpoint",
     }),
     dependencies: ({ config }) => ({
       securityGroups: ["sg::dns_vpc::Network-DNS-Traffic-SG"],
@@ -3098,7 +3099,6 @@ exports.createResources = () => [
     group: "Route53Resolver",
     properties: ({ config, getId }) => ({
       Direction: "OUTBOUND",
-      Name: "Org-Outbound-Resolver-Endpoint",
       IpAddresses: [
         {
           SubnetId: `${getId({
@@ -3122,6 +3122,7 @@ exports.createResources = () => [
           })}`,
         },
       ],
+      Name: "Org-Outbound-Resolver-Endpoint",
     }),
     dependencies: ({ config }) => ({
       securityGroups: ["sg::dns_vpc::Network-DNS-Traffic-SG"],

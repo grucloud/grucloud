@@ -9,15 +9,15 @@ exports.createResources = () => [
     properties: ({}) => ({
       PolicyName: "policy-new",
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "VisualEditor0",
-            Effect: "Allow",
             Action: "s3:*",
+            Effect: "Allow",
             Resource: "*",
+            Sid: "VisualEditor0",
           },
         ],
+        Version: "2012-10-17",
       },
       Path: "/",
       Description: "my fancy policy",

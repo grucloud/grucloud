@@ -16,13 +16,58 @@ exports.createResources = () => [
     group: "EC2",
     name: "flowlog-interface",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 60,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       networkInterface: "eni::machine",
       iamRole: "flow-role",
       cloudWatchLogGroup: "flowlog",
+    }),
+  },
+  {
+    type: "Instance",
+    group: "EC2",
+    name: "machine",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::project-vpc::default",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `project-vpc::project-subnet-public1-${config.region}a`,
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+    }),
+    dependencies: ({ config }) => ({
+      subnets: [`project-vpc::project-subnet-public1-${config.region}a`],
+      securityGroups: ["sg::project-vpc::default"],
+    }),
+  },
+  { type: "InternetGateway", group: "EC2", name: "project-igw" },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+      internetGateway: "project-igw",
     }),
   },
   {
@@ -38,34 +83,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "Route",
     group: "EC2",
-    name: "project-vpc",
     properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  { type: "InternetGateway", group: "EC2", name: "project-igw" },
-  {
-    type: "InternetGatewayAttachment",
-    group: "EC2",
-    dependencies: ({}) => ({
-      vpc: "project-vpc",
-      internetGateway: "project-igw",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `project-subnet-public1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 0,
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "project-vpc",
+      ig: "project-igw",
+      routeTable: "project-vpc::project-rtb-public",
     }),
   },
   {
@@ -85,17 +110,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "project-igw",
-      routeTable: "project-vpc::project-rtb-public",
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     name: "sg::project-vpc::default",
@@ -105,39 +119,25 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "machine",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::project-vpc::default",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: `project-vpc::project-subnet-public1-${config.region}a`,
-          })}`,
-        },
-      ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
-      },
+    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
-    dependencies: ({ config }) => ({
-      subnets: [`project-vpc::project-subnet-public1-${config.region}a`],
-      securityGroups: ["sg::project-vpc::default"],
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "project-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -160,7 +160,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -174,6 +173,7 @@ exports.createResources = () => [
                 Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "cloudwatchlogs",
         },

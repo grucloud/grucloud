@@ -134,33 +134,6 @@ exports.createResources = () => [
           },
         },
         {
-          ControlInputParameters: [
-            {
-              ParameterName: "maxRetentionDays",
-              ParameterValue: "36500",
-            },
-            {
-              ParameterName: "minRetentionDays",
-              ParameterValue: "1",
-            },
-          ],
-          ControlName: "BACKUP_RESOURCES_PROTECTED_BY_BACKUP_VAULT_LOCK",
-          ControlScope: {
-            ComplianceResourceTypes: [
-              "RDS",
-              "S3",
-              "Aurora",
-              "EFS",
-              "EC2",
-              "Storage Gateway",
-              "EBS",
-              "DynamoDB",
-              "FSx",
-              "VirtualMachine",
-            ],
-          },
-        },
-        {
           ControlInputParameters: [],
           ControlName: "BACKUP_RECOVERY_POINT_ENCRYPTED",
           ControlScope: {},
@@ -186,6 +159,24 @@ exports.createResources = () => [
         {
           ControlInputParameters: [],
           ControlName: "BACKUP_RESOURCES_PROTECTED_BY_CROSS_ACCOUNT",
+          ControlScope: {
+            ComplianceResourceTypes: [
+              "RDS",
+              "S3",
+              "Aurora",
+              "EFS",
+              "EC2",
+              "Storage Gateway",
+              "EBS",
+              "DynamoDB",
+              "FSx",
+              "VirtualMachine",
+            ],
+          },
+        },
+        {
+          ControlInputParameters: [],
+          ControlName: "BACKUP_RESOURCES_PROTECTED_BY_BACKUP_VAULT_LOCK",
           ControlScope: {
             ComplianceResourceTypes: [
               "RDS",
@@ -246,6 +237,9 @@ exports.createResources = () => [
       FrameworkDescription: "",
       FrameworkName: "myframework",
     }),
+    dependencies: ({}) => ({
+      configurationRecorder: "default",
+    }),
   },
   {
     type: "GlobalSettings",
@@ -278,30 +272,43 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ReportPlan",
-    group: "Backup",
-    properties: ({ getId }) => ({
-      ReportDeliveryChannel: {
-        Formats: ["CSV", "JSON"],
-        S3BucketName: "gc-backup-reportplan-jobs",
-        S3KeyPrefix: "compliance",
-      },
-      ReportPlanDescription: "",
-      ReportPlanName: "control_compliance_report_27_10_2022",
-      ReportSetting: {
-        FrameworkArns: [
-          `${getId({
-            type: "Framework",
-            group: "Backup",
-            name: "myframework",
-          })}`,
+    type: "ConfigurationRecorder",
+    group: "Config",
+    properties: ({ config }) => ({
+      name: "default",
+      recordingGroup: {
+        allSupported: false,
+        includeGlobalResourceTypes: false,
+        resourceTypes: [
+          "AWS::Backup::BackupPlan",
+          "AWS::Backup::BackupSelection",
+          "AWS::Backup::BackupVault",
+          "AWS::Backup::RecoveryPoint",
+          "AWS::Config::ResourceCompliance",
         ],
-        ReportTemplate: "CONTROL_COMPLIANCE_REPORT",
       },
+      roleARN: `arn:aws:iam::${config.accountId()}:role/aws-service-role/config.amazonaws.com/AWSServiceRoleForConfig`,
+    }),
+  },
+  {
+    type: "ConfigurationRecorderStatus",
+    group: "Config",
+    properties: ({}) => ({
+      recording: true,
     }),
     dependencies: ({}) => ({
-      s3Bucket: "gc-backup-reportplan-jobs",
-      frameworks: ["myframework"],
+      deliveryChannel: "default",
+    }),
+  },
+  {
+    type: "DeliveryChannel",
+    group: "Config",
+    properties: ({}) => ({
+      name: "default",
+    }),
+    dependencies: ({}) => ({
+      configurationRecorder: "default",
+      s3Bucket: "gc-config-test",
     }),
   },
   {
@@ -410,6 +417,61 @@ exports.createResources = () => [
             Resource: "arn:aws:s3:::gc-backup-reportplan-jobs/*",
             Condition: {
               StringEquals: {
+                "s3:x-amz-acl": "bucket-owner-full-control",
+              },
+            },
+          },
+        ],
+      },
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({ config }) => ({
+      Name: "gc-config-test",
+      Policy: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "AWSConfigBucketPermissionsCheck",
+            Effect: "Allow",
+            Principal: {
+              Service: "config.amazonaws.com",
+            },
+            Action: "s3:GetBucketAcl",
+            Resource: "arn:aws:s3:::gc-config-test",
+            Condition: {
+              StringEquals: {
+                "AWS:SourceAccount": `${config.accountId()}`,
+              },
+            },
+          },
+          {
+            Sid: "AWSConfigBucketExistenceCheck",
+            Effect: "Allow",
+            Principal: {
+              Service: "config.amazonaws.com",
+            },
+            Action: "s3:ListBucket",
+            Resource: "arn:aws:s3:::gc-config-test",
+            Condition: {
+              StringEquals: {
+                "AWS:SourceAccount": `${config.accountId()}`,
+              },
+            },
+          },
+          {
+            Sid: "AWSConfigBucketDelivery",
+            Effect: "Allow",
+            Principal: {
+              Service: "config.amazonaws.com",
+            },
+            Action: "s3:PutObject",
+            Resource: `arn:aws:s3:::gc-config-test/AWSLogs/${config.accountId()}/Config/*`,
+            Condition: {
+              StringEquals: {
+                "AWS:SourceAccount": `${config.accountId()}`,
                 "s3:x-amz-acl": "bucket-owner-full-control",
               },
             },

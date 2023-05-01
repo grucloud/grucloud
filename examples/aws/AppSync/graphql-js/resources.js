@@ -145,6 +145,39 @@ export function response(ctx) {
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "appsync-ds-ddb-xoaizl-MyModelTypeTable",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "dynamodb:DeleteItem",
+              "dynamodb:GetItem",
+              "dynamodb:PutItem",
+              "dynamodb:Query",
+              "dynamodb:Scan",
+              "dynamodb:UpdateItem",
+            ],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/MyModelTypeTable`,
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/MyModelTypeTable/*`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+      Description: "Allows the AWS AppSync service to access your data source.",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -165,39 +198,6 @@ export function response(ctx) {
     }),
     dependencies: ({}) => ({
       policies: ["appsync-ds-ddb-xoaizl-MyModelTypeTable"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "appsync-ds-ddb-xoaizl-MyModelTypeTable",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: [
-              "dynamodb:DeleteItem",
-              "dynamodb:GetItem",
-              "dynamodb:PutItem",
-              "dynamodb:Query",
-              "dynamodb:Scan",
-              "dynamodb:UpdateItem",
-            ],
-            Resource: [
-              `arn:aws:dynamodb:${
-                config.region
-              }:${config.accountId()}:table/MyModelTypeTable`,
-              `arn:aws:dynamodb:${
-                config.region
-              }:${config.accountId()}:table/MyModelTypeTable/*`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
-      Description: "Allows the AWS AppSync service to access your data source.",
     }),
   },
 ];

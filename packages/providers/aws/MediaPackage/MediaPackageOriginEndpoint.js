@@ -55,6 +55,7 @@ exports.MediaPackageOriginEndpoint = () => ({
     "DomainName",
     "Url",
     "CmafPackage.HlsManifests[].Url",
+    "CreatedAt",
   ],
   inferName: () =>
     pipe([

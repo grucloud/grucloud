@@ -39,6 +39,14 @@ exports.createResources = () => [
                     containerPort: 8080,
                   },
                 ],
+                startupProbe: {
+                  timeoutSeconds: 240,
+                  periodSeconds: 240,
+                  failureThreshold: 1,
+                  tcpSocket: {
+                    port: 8080,
+                  },
+                },
               },
             ],
           },

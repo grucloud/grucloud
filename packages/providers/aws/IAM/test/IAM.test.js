@@ -47,7 +47,7 @@ describe("IAM", async function () {
         groupType: "IAM::OpenIDConnectProvider",
         livesNotFound: ({ config }) => [
           {
-            Arn: `arn:aws:iam::${config.accountId()}:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2`,
+            OpenIDConnectProviderArn: `arn:aws:iam::${config.accountId()}:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2`,
           },
         ],
       }),
@@ -125,18 +125,6 @@ describe("IAM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("VirtualMFADevice", () =>
-    pipe([
-      () => ({
-        groupType: "IAM::VirtualMFADevice",
-        livesNotFound: ({ config }) => [
-          {
-            SerialNumber: `arn:aws:iam::${config.accountId()}:mfa/ExampleName`,
-          },
-        ],
-      }),
-      awsResourceTest,
-    ])());
   it("User", () =>
     pipe([
       () => ({
@@ -157,6 +145,18 @@ describe("IAM", async function () {
           {
             UserName: "username",
             PolicyName: "p123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("VirtualMFADevice", () =>
+    pipe([
+      () => ({
+        groupType: "IAM::VirtualMFADevice",
+        livesNotFound: ({ config }) => [
+          {
+            SerialNumber: `arn:aws:iam::${config.accountId()}:mfa/ExampleName`,
           },
         ],
       }),

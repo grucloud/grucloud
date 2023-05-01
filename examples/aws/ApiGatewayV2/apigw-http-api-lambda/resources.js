@@ -84,9 +84,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -98,8 +98,8 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            Variable2: "ABCD",
             Variable1: "1234",
+            Variable2: "ABCD",
           },
         },
         FunctionName: "apigw-http-api-lambda-function",
@@ -121,13 +121,13 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "apigw-http-api-lambda-function",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-FunctionResourcePermission-1PT8AZUS3H82W",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "apigw-http-api-lambda",
             path: "live.ArnV2",
           })}/*`,
+          StatementId: "sam-app-FunctionResourcePermission-1PT8AZUS3H82W",
         },
       ],
     }),

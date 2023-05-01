@@ -9,8 +9,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Name: "sam-app",
       Tags: {
-        Stack: "sam-app",
         "httpapi:createdBy": "SAM",
+        Stack: "sam-app",
       },
     }),
   },
@@ -63,8 +63,8 @@ exports.createResources = () => [
       AutoDeploy: true,
       StageName: "$default",
       Tags: {
-        Stack: "sam-app",
         "httpapi:createdBy": "SAM",
+        Stack: "sam-app",
       },
     }),
     dependencies: ({}) => ({
@@ -80,10 +80,6 @@ exports.createResources = () => [
         widgets: [
           {
             height: 6,
-            width: 6,
-            y: 6,
-            x: 6,
-            type: "metric",
             properties: {
               metrics: [
                 [
@@ -113,20 +109,20 @@ exports.createResources = () => [
                   },
                 ],
               ],
-              view: "timeSeries",
+              period: 60,
               region: "us-east-1",
               stacked: false,
-              title: "Lambda",
-              period: 60,
               stat: "Sum",
+              title: "Lambda",
+              view: "timeSeries",
             },
+            type: "metric",
+            width: 6,
+            x: 6,
+            y: 6,
           },
           {
             height: 6,
-            width: 6,
-            y: 6,
-            x: 0,
-            type: "metric",
             properties: {
               metrics: [
                 [
@@ -185,20 +181,20 @@ exports.createResources = () => [
                   },
                 ],
               ],
-              view: "timeSeries",
-              stacked: false,
-              region: "us-east-1",
               period: 60,
+              region: "us-east-1",
+              stacked: false,
               stat: "Sum",
               title: "API Gateway",
+              view: "timeSeries",
             },
+            type: "metric",
+            width: 6,
+            x: 0,
+            y: 6,
           },
           {
             height: 6,
-            width: 12,
-            y: 0,
-            x: 0,
-            type: "metric",
             properties: {
               metrics: [
                 [
@@ -217,33 +213,33 @@ exports.createResources = () => [
                   },
                 ],
               ],
-              view: "timeSeries",
-              stacked: false,
-              title: "Business Metrics",
-              region: "us-east-1",
               period: 60,
+              region: "us-east-1",
+              stacked: false,
               stat: "Sum",
+              title: "Business Metrics",
+              view: "timeSeries",
             },
+            type: "metric",
+            width: 12,
+            x: 0,
+            y: 0,
           },
           {
-            type: "alarm",
-            x: 0,
-            y: 12,
-            width: 12,
             height: 2,
             properties: {
-              title: "Application Alarms",
               alarms: [
                 "arn:aws:cloudwatch:us-east-1:840541460064:alarm:sam-app-SampleFunctionErrorsAlarm-152VK254LOXW2",
                 "arn:aws:cloudwatch:us-east-1:840541460064:alarm:sam-app-HttpApiErrorsAlarm-1FCVNCGFY7X81",
               ],
+              title: "Application Alarms",
             },
+            type: "alarm",
+            width: 12,
+            x: 0,
+            y: 12,
           },
           {
-            type: "log",
-            x: 0,
-            y: 14,
-            width: 12,
             height: 6,
             properties: {
               query: `SOURCE '/aws/lambda/sam-app-SampleFunction-7LguHNIijNN9' | fields @message, ispresent(errorMessage) as errorPresent
@@ -257,6 +253,10 @@ exports.createResources = () => [
               title: "Lambda Errors",
               view: "table",
             },
+            type: "log",
+            width: 12,
+            x: 0,
+            y: 14,
           },
         ],
       },
@@ -267,25 +267,25 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config }) => ({
-      AlarmName: "sam-app-HttpApiErrorsAlarm-1FCVNCGFY7X81",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
         }:${config.accountId()}:sam-app-AlarmsTopic-dHb6mAE6WUbZ`,
       ],
-      MetricName: "5XXError",
-      Namespace: "AWS/ApiGateway",
-      Statistic: "Sum",
+      AlarmName: "sam-app-HttpApiErrorsAlarm-1FCVNCGFY7X81",
+      ComparisonOperator: "GreaterThanOrEqualToThreshold",
       Dimensions: [
         {
           Value: "75i8gi7flc",
           Name: "ApiName",
         },
       ],
-      Period: 60,
       EvaluationPeriods: 1,
+      MetricName: "5XXError",
+      Namespace: "AWS/ApiGateway",
+      Period: 60,
+      Statistic: "Sum",
       Threshold: 1,
-      ComparisonOperator: "GreaterThanOrEqualToThreshold",
     }),
     dependencies: ({}) => ({
       snsTopic: "sam-app-AlarmsTopic-dHb6mAE6WUbZ",
@@ -295,25 +295,25 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config }) => ({
-      AlarmName: "sam-app-SampleFunctionErrorsAlarm-152VK254LOXW2",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
         }:${config.accountId()}:sam-app-AlarmsTopic-dHb6mAE6WUbZ`,
       ],
-      MetricName: "Errors",
-      Namespace: "AWS/Lambda",
-      Statistic: "Sum",
+      AlarmName: "sam-app-SampleFunctionErrorsAlarm-152VK254LOXW2",
+      ComparisonOperator: "GreaterThanOrEqualToThreshold",
       Dimensions: [
         {
           Value: "sam-app-SampleFunction-7LguHNIijNN9",
           Name: "FunctionName",
         },
       ],
-      Period: 60,
       EvaluationPeriods: 1,
+      MetricName: "Errors",
+      Namespace: "AWS/Lambda",
+      Period: 60,
+      Statistic: "Sum",
       Threshold: 1,
-      ComparisonOperator: "GreaterThanOrEqualToThreshold",
     }),
     dependencies: ({}) => ({
       snsTopic: "sam-app-AlarmsTopic-dHb6mAE6WUbZ",
@@ -346,13 +346,13 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSXrayWriteOnlyAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess",
+          PolicyName: "AWSXrayWriteOnlyAccess",
         },
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
       Tags: [
@@ -428,13 +428,13 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-SampleFunction-7LguHNIijNN9",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-SampleFunctionAllEventsPermission-9396IP9YG4A4",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "sam-app",
             path: "live.ArnV2",
           })}/*/GET/`,
+          StatementId: "sam-app-SampleFunctionAllEventsPermission-9396IP9YG4A4",
         },
       ],
     }),

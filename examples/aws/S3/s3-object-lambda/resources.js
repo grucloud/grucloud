@@ -61,9 +61,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -88,15 +88,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "sam-app-s3bucket-uoktptsszrdd",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -129,8 +120,8 @@ exports.createResources = () => [
       NetworkOrigin: "Internet",
       PublicAccessBlockConfiguration: {
         BlockPublicAcls: true,
-        IgnorePublicAcls: true,
         BlockPublicPolicy: true,
+        IgnorePublicAcls: true,
         RestrictPublicBuckets: true,
       },
     }),
@@ -142,13 +133,12 @@ exports.createResources = () => [
     type: "ObjectLambdaAccessPoint",
     group: "S3Control",
     properties: ({ config, getId }) => ({
-      Name: "resize-olap",
       Configuration: {
+        AllowedFeatures: [],
+        CloudWatchMetricsEnabled: false,
         SupportingAccessPoint: `arn:aws:s3:${
           config.region
         }:${config.accountId()}:accesspoint/resize-ap`,
-        CloudWatchMetricsEnabled: false,
-        AllowedFeatures: [],
         TransformationConfigurations: [
           {
             Actions: ["GetObject"],
@@ -165,6 +155,7 @@ exports.createResources = () => [
           },
         ],
       },
+      Name: "resize-olap",
     }),
     dependencies: ({}) => ({
       s3AccessPoint: "resize-ap",

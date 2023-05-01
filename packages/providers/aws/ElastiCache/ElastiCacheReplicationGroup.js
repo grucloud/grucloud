@@ -100,6 +100,7 @@ exports.ElastiCacheReplicationGroup = () => ({
     DataTiering: "disabled",
     IpDiscovery: "ipv4",
     NetworkType: "ipv4",
+    Engine: "redis",
   },
   omitProperties: [
     "ARN",
@@ -191,10 +192,8 @@ exports.ElastiCacheReplicationGroup = () => ({
         eq(get("GlobalReplicationGroupMemberRole"), "SECONDARY"),
         omit([
           "CacheParameterGroupName",
-          "Engine",
           "CacheNodeType",
           "AutoMinorVersionUpgrade",
-          //"ClusterEnabled",
         ])
       ),
       assign({ NumCacheClusters: pipe([get("MemberClusters"), size]) }),

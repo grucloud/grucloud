@@ -4,6 +4,95 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "my-maintenance-window-role-policy",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "ssm:SendCommand",
+              "ssm:CancelCommand",
+              "ssm:ListCommands",
+              "ssm:ListCommandInvocations",
+              "ssm:GetCommandInvocation",
+              "ssm:GetAutomationExecution",
+              "ssm:StartAutomationExecution",
+              "ssm:ListTagsForResource",
+              "ssm:GetParameters",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["states:DescribeExecution", "states:StartExecution"],
+            Effect: "Allow",
+            Resource: [
+              "arn:aws:states:*:*:execution:*:*",
+              "arn:aws:states:*:*:stateMachine:*",
+            ],
+          },
+          {
+            Action: ["lambda:InvokeFunction"],
+            Effect: "Allow",
+            Resource: ["arn:aws:lambda:*:*:function:*"],
+          },
+          {
+            Action: [
+              "resource-groups:ListGroups",
+              "resource-groups:ListGroupResources",
+            ],
+            Effect: "Allow",
+            Resource: ["*"],
+          },
+          {
+            Action: ["tag:GetResources"],
+            Effect: "Allow",
+            Resource: ["*"],
+          },
+          {
+            Action: "iam:PassRole",
+            Condition: {
+              StringEquals: {
+                "iam:PassedToService": ["ssm.amazonaws.com"],
+              },
+            },
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "XRayAccessPolicy-0c77fa64-1fe0-4888-b058-990040cb421a",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "xray:PutTraceSegments",
+              "xray:PutTelemetryRecords",
+              "xray:GetSamplingRules",
+              "xray:GetSamplingTargets",
+            ],
+            Effect: "Allow",
+            Resource: ["*"],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+      Description:
+        "Allow AWS Step Functions to call X-Ray daemon on your behalf",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -51,95 +140,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "my-maintenance-window-role-policy",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: [
-              "ssm:SendCommand",
-              "ssm:CancelCommand",
-              "ssm:ListCommands",
-              "ssm:ListCommandInvocations",
-              "ssm:GetCommandInvocation",
-              "ssm:GetAutomationExecution",
-              "ssm:StartAutomationExecution",
-              "ssm:ListTagsForResource",
-              "ssm:GetParameters",
-            ],
-            Resource: "*",
-          },
-          {
-            Effect: "Allow",
-            Action: ["states:DescribeExecution", "states:StartExecution"],
-            Resource: [
-              "arn:aws:states:*:*:execution:*:*",
-              "arn:aws:states:*:*:stateMachine:*",
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: ["lambda:InvokeFunction"],
-            Resource: ["arn:aws:lambda:*:*:function:*"],
-          },
-          {
-            Effect: "Allow",
-            Action: [
-              "resource-groups:ListGroups",
-              "resource-groups:ListGroupResources",
-            ],
-            Resource: ["*"],
-          },
-          {
-            Effect: "Allow",
-            Action: ["tag:GetResources"],
-            Resource: ["*"],
-          },
-          {
-            Effect: "Allow",
-            Action: "iam:PassRole",
-            Resource: "*",
-            Condition: {
-              StringEquals: {
-                "iam:PassedToService": ["ssm.amazonaws.com"],
-              },
-            },
-          },
-        ],
-      },
-      Path: "/",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "XRayAccessPolicy-0c77fa64-1fe0-4888-b058-990040cb421a",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: [
-              "xray:PutTraceSegments",
-              "xray:PutTelemetryRecords",
-              "xray:GetSamplingRules",
-              "xray:GetSamplingTargets",
-            ],
-            Resource: ["*"],
-          },
-        ],
-      },
-      Path: "/service-role/",
-      Description:
-        "Allow AWS Step Functions to call X-Ray daemon on your behalf",
-    }),
-  },
-  {
     type: "MaintenanceWindow",
     group: "SSM",
     properties: ({}) => ({
@@ -171,7 +171,6 @@ exports.createResources = () => [
     type: "MaintenanceWindowTask",
     group: "SSM",
     properties: ({}) => ({
-      TaskType: "STEP_FUNCTIONS",
       Name: "my-step-function-task",
       Priority: 1,
       TaskInvocationParameters: {
@@ -182,6 +181,7 @@ exports.createResources = () => [
         },
       },
       TaskParameters: {},
+      TaskType: "STEP_FUNCTIONS",
     }),
     dependencies: ({}) => ({
       iamRoleService: "my-maintenance-window-role",

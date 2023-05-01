@@ -22,9 +22,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -48,9 +48,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -78,10 +78,10 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "lambda:InvokeFunction",
+                Effect: "Allow",
                 Resource: `arn:aws:lambda:${
                   config.region
                 }:${config.accountId()}:function:sam-app-OnFailureFunction-IFj57VVcPFjr`,
-                Effect: "Allow",
               },
             ],
           },
@@ -92,10 +92,10 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "lambda:InvokeFunction",
+                Effect: "Allow",
                 Resource: `arn:aws:lambda:${
                   config.region
                 }:${config.accountId()}:function:sam-app-OnSuccessFunction-MZzIdxTUTmet`,
-                Effect: "Allow",
               },
             ],
           },
@@ -104,9 +104,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

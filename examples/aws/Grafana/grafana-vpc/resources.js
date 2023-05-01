@@ -4,41 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 9,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
     type: "RouteTable",
     group: "EC2",
     name: ({ config }) => `rtb-private1-${config.region}a`,
@@ -80,16 +45,51 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  {
     type: "Workspace",
     group: "Grafana",
     properties: ({}) => ({
-      workspaceName: "my-workspace",
-      workspaceDescription: "my workspace",
-      authenticationProviders: ["AWS_SSO"],
-      workspaceDataSources: ["CLOUDWATCH"],
-      workspaceNotificationDestinations: ["SNS"],
       accountAccessType: "CURRENT_ACCOUNT",
+      authenticationProviders: ["AWS_SSO"],
       permissionType: "SERVICE_MANAGED",
+      workspaceDataSources: ["CLOUDWATCH"],
+      workspaceDescription: "my workspace",
+      workspaceName: "my-workspace",
+      workspaceNotificationDestinations: ["SNS"],
     }),
     dependencies: ({ config }) => ({
       workspaceRole: "AmazonGrafanaServiceRole-72DdcoDJF",
@@ -98,6 +98,82 @@ exports.createResources = () => [
         `vpc::subnet-private2-${config.region}b`,
       ],
       securityGroups: ["sg::vpc::default"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "AmazonGrafanaCloudWatchPolicy-72DdcoDJF",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "cloudwatch:DescribeAlarmsForMetric",
+              "cloudwatch:DescribeAlarmHistory",
+              "cloudwatch:DescribeAlarms",
+              "cloudwatch:ListMetrics",
+              "cloudwatch:GetMetricStatistics",
+              "cloudwatch:GetMetricData",
+              "cloudwatch:GetInsightRuleReport",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+            Sid: "AllowReadingMetricsFromCloudWatch",
+          },
+          {
+            Action: [
+              "logs:DescribeLogGroups",
+              "logs:GetLogGroupFields",
+              "logs:StartQuery",
+              "logs:StopQuery",
+              "logs:GetQueryResults",
+              "logs:GetLogEvents",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+            Sid: "AllowReadingLogsFromCloudWatch",
+          },
+          {
+            Action: [
+              "ec2:DescribeTags",
+              "ec2:DescribeInstances",
+              "ec2:DescribeRegions",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+            Sid: "AllowReadingTagsInstancesRegionsFromEC2",
+          },
+          {
+            Action: "tag:GetResources",
+            Effect: "Allow",
+            Resource: "*",
+            Sid: "AllowReadingResourcesForTags",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+      Description: "Allows Amazon Grafana to access CloudWatch",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "AmazonGrafanaSNSPolicy-72DdcoDJF",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["sns:Publish"],
+            Effect: "Allow",
+            Resource: [`arn:aws:sns:*:${config.accountId()}:grafana*`],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+      Description: "Allows Amazon Grafana to publish to SNS",
     }),
   },
   {
@@ -135,82 +211,6 @@ exports.createResources = () => [
         "AmazonGrafanaCloudWatchPolicy-72DdcoDJF",
         "AmazonGrafanaSNSPolicy-72DdcoDJF",
       ],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "AmazonGrafanaCloudWatchPolicy-72DdcoDJF",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "AllowReadingMetricsFromCloudWatch",
-            Effect: "Allow",
-            Action: [
-              "cloudwatch:DescribeAlarmsForMetric",
-              "cloudwatch:DescribeAlarmHistory",
-              "cloudwatch:DescribeAlarms",
-              "cloudwatch:ListMetrics",
-              "cloudwatch:GetMetricStatistics",
-              "cloudwatch:GetMetricData",
-              "cloudwatch:GetInsightRuleReport",
-            ],
-            Resource: "*",
-          },
-          {
-            Sid: "AllowReadingLogsFromCloudWatch",
-            Effect: "Allow",
-            Action: [
-              "logs:DescribeLogGroups",
-              "logs:GetLogGroupFields",
-              "logs:StartQuery",
-              "logs:StopQuery",
-              "logs:GetQueryResults",
-              "logs:GetLogEvents",
-            ],
-            Resource: "*",
-          },
-          {
-            Sid: "AllowReadingTagsInstancesRegionsFromEC2",
-            Effect: "Allow",
-            Action: [
-              "ec2:DescribeTags",
-              "ec2:DescribeInstances",
-              "ec2:DescribeRegions",
-            ],
-            Resource: "*",
-          },
-          {
-            Sid: "AllowReadingResourcesForTags",
-            Effect: "Allow",
-            Action: "tag:GetResources",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/service-role/",
-      Description: "Allows Amazon Grafana to access CloudWatch",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "AmazonGrafanaSNSPolicy-72DdcoDJF",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["sns:Publish"],
-            Resource: [`arn:aws:sns:*:${config.accountId()}:grafana*`],
-          },
-        ],
-      },
-      Path: "/service-role/",
-      Description: "Allows Amazon Grafana to publish to SNS",
     }),
   },
 ];

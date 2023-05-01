@@ -429,6 +429,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
                 //TODO common with Retry.js
                 () => [
                   "ECONNRESET",
+                  "ERR_HTTP2_STREAM_CANCEL",
                   "ENETDOWN",
                   "EPROTO",
                   "ENOTFOUND",
@@ -447,6 +448,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
                   "ServiceUnavailable",
                   "RequestLimitExceeded",
                   "SyntaxError", // SDK v3 JSON.parse exception
+                  "InvalidSignatureException",
                 ],
                 includes(error.name),
               ]),

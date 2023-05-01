@@ -50,6 +50,7 @@ exports.createResources = () => [
                   "dynamodb:UpdateItem",
                   "dynamodb:BatchWriteItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
@@ -58,7 +59,6 @@ exports.createResources = () => [
                     config.region
                   }:${config.accountId()}:table/sam-app-DynamoTable-1TM3ILOZ1A36J/index/*`,
                 ],
-                Effect: "Allow",
               },
             ],
           },
@@ -67,9 +67,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

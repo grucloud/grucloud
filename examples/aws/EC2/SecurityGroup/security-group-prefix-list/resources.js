@@ -3,7 +3,23 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "ManagedPrefixList",
+    group: "EC2",
+    properties: ({}) => ({
+      PrefixListName: "my-prefix-list",
+      AddressFamily: "IPv4",
+      MaxEntries: 4,
+      Entries: [
+        {
+          Cidr: "10.0.0.0/16",
+        },
+        {
+          Cidr: "10.1.0.0/16",
+        },
+      ],
+    }),
+  },
   {
     type: "SecurityGroup",
     group: "EC2",
@@ -39,21 +55,5 @@ exports.createResources = () => [
       prefixLists: ["my-prefix-list"],
     }),
   },
-  {
-    type: "ManagedPrefixList",
-    group: "EC2",
-    properties: ({}) => ({
-      PrefixListName: "my-prefix-list",
-      AddressFamily: "IPv4",
-      MaxEntries: 4,
-      Entries: [
-        {
-          Cidr: "10.0.0.0/16",
-        },
-        {
-          Cidr: "10.1.0.0/16",
-        },
-      ],
-    }),
-  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
 ];

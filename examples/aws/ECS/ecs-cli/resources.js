@@ -23,6 +23,16 @@ exports.createResources = () => [
     type: "LaunchConfiguration",
     group: "AutoScaling",
     properties: ({}) => ({
+      AssociatePublicIpAddress: true,
+      BlockDeviceMappings: [],
+      EbsOptimized: false,
+      Image: {
+        Description: "Amazon Linux AMI 2.0.20220209 x86_64 ECS HVM GP2",
+      },
+      InstanceMonitoring: {
+        Enabled: true,
+      },
+      InstanceType: "t2.small",
       LaunchConfigurationName:
         "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-HWVeTO3QcmK1",
       UserData: `Content-Type: multipart/mixed; boundary="9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb"
@@ -37,16 +47,6 @@ Mime-Version: 1.0
 echo ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config
 echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
 --9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb--`,
-      InstanceType: "t2.small",
-      BlockDeviceMappings: [],
-      InstanceMonitoring: {
-        Enabled: true,
-      },
-      EbsOptimized: false,
-      AssociatePublicIpAddress: true,
-      Image: {
-        Description: "Amazon Linux AMI 2.0.20220209 x86_64 ECS HVM GP2",
-      },
     }),
     dependencies: ({}) => ({
       instanceProfile:
@@ -54,21 +54,6 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
       securityGroups: [
         "sg::Vpc::amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
       ],
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "Vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      Tags: [
-        {
-          Key: "my-tag",
-          Value: "my-value",
-        },
-      ],
-      DnsHostnames: true,
     }),
   },
   {
@@ -90,6 +75,85 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     dependencies: ({}) => ({
       vpc: "Vpc",
       internetGateway: "InternetGateway",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "InternetGateway",
+      routeTable: "Vpc::RouteViaIgw",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "RouteViaIgw",
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "my-tag",
+          Value: "my-value",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "Vpc::RouteViaIgw",
+      subnet: "Vpc::PubSubnetAz1",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "Vpc::RouteViaIgw",
+      subnet: "Vpc::PubSubnetAz2",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName:
+        "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
+      Description: "ECS Allowed Ports",
+      Tags: [
+        {
+          Key: "my-tag",
+          Value: "my-value",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "Vpc",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::Vpc::amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
     }),
   },
   {
@@ -131,82 +195,18 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: "RouteViaIgw",
+    name: "Vpc",
     properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
       Tags: [
         {
           Key: "my-tag",
           Value: "my-value",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "Vpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "Vpc::RouteViaIgw",
-      subnet: "Vpc::PubSubnetAz1",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "Vpc::RouteViaIgw",
-      subnet: "Vpc::PubSubnetAz2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "InternetGateway",
-      routeTable: "Vpc::RouteViaIgw",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName:
-        "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
-      Description: "ECS Allowed Ports",
-      Tags: [
-        {
-          Key: "my-tag",
-          Value: "my-value",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "Vpc",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 80,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 80,
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::Vpc::amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
     }),
   },
   {
@@ -243,9 +243,9 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
         },
       ],
       Tags: [

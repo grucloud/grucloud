@@ -34,13 +34,19 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: ({ config }) => `${config.region}-prod-main-vpc`,
-    properties: ({}) => ({
-      CidrBlock: "10.101.0.0/16",
-      DnsHostnames: true,
-    }),
+    name: "eipalloc-07215ec254b042c43",
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: "eipalloc-09cfdc6821b875944",
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: "eipalloc-0d6a81d53afa01aaf",
   },
   {
     type: "InternetGateway",
@@ -89,6 +95,157 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
       eip: "eipalloc-09cfdc6821b875944",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      natGateway: `${config.region}-prod-main-vpc-${config.region}b`,
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
+      vpcEndpoint: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-endpoint-gw`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      natGateway: `${config.region}-prod-main-vpc-${config.region}c`,
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
+      vpcEndpoint: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-endpoint-gw`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      natGateway: `${config.region}-prod-main-vpc-${config.region}d`,
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
+      vpcEndpoint: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-endpoint-gw`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      ig: `${config.region}-prod-main-vpc`,
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) =>
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
+    dependencies: ({ config }) => ({
+      vpc: `${config.region}-prod-main-vpc`,
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) =>
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
+    dependencies: ({ config }) => ({
+      vpc: `${config.region}-prod-main-vpc`,
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) =>
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
+    dependencies: ({ config }) => ({
+      vpc: `${config.region}-prod-main-vpc`,
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `${config.region}-prod-main-vpc-public-subnet`,
+    dependencies: ({ config }) => ({
+      vpc: `${config.region}-prod-main-vpc`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
+      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
+      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
+      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
+      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}b`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
+      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}c`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
+      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
     }),
   },
   {
@@ -179,178 +336,21 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: ({ config }) =>
-      `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
-    dependencies: ({ config }) => ({
-      vpc: `${config.region}-prod-main-vpc`,
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) =>
-      `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
-    dependencies: ({ config }) => ({
-      vpc: `${config.region}-prod-main-vpc`,
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) =>
-      `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
-    dependencies: ({ config }) => ({
-      vpc: `${config.region}-prod-main-vpc`,
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `${config.region}-prod-main-vpc-public-subnet`,
-    dependencies: ({ config }) => ({
-      vpc: `${config.region}-prod-main-vpc`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
-      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
-      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
-      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
-      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}b`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
-      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}c`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
-      subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
+    name: ({ config }) => `${config.region}-prod-main-vpc`,
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+      CidrBlock: "10.101.0.0/16",
+      DnsHostnames: true,
     }),
-    dependencies: ({ config }) => ({
-      natGateway: `${config.region}-prod-main-vpc-${config.region}b`,
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
-      vpcEndpoint: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-endpoint-gw`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `${config.region}-prod-main-vpc-${config.region}c`,
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
-      vpcEndpoint: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-endpoint-gw`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `${config.region}-prod-main-vpc-${config.region}d`,
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
-      vpcEndpoint: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-endpoint-gw`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: `${config.region}-prod-main-vpc`,
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
-    }),
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: "eipalloc-07215ec254b042c43",
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: "eipalloc-09cfdc6821b875944",
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: "eipalloc-0d6a81d53afa01aaf",
   },
   {
     type: "VpcEndpoint",
     group: "EC2",
     name: ({ config }) => `${config.region}-prod-main-vpc-endpoint-gw`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Gateway",
       ServiceName: `com.amazonaws.${config.region}.s3`,
+      VpcEndpointType: "Gateway",
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -366,15 +366,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "grucloud-terraform-globalnetwork-state-file-storage",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

@@ -602,6 +602,9 @@ exports.EC2Instance = () => ({
     MaintenanceOptions: {
       AutoRecovery: "default",
     },
+    //Graviton instance types: UEFI
+    //Intel and AMD instance types: Legacy BIOS
+    CurrentInstanceBootMode: "legacy-bios",
   },
   filterLive:
     ({ lives, providerConfig }) =>

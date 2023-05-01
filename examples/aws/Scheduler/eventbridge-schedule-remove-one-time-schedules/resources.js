@@ -23,18 +23,18 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["lambda:InvokeFunction"],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:lambda:${
                     config.region
                   }:${config.accountId()}:function:sam-app-FindSchedules-OfzThGtSLZxQ`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "InvokeLambda",
         },
@@ -61,30 +61,30 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["scheduler:ListSchedules", "scheduler:GetSchedule"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: ["sqs:SendMessage", "sqs:SendMessageBatch"],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:sam-app-removal-queue`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "FindSchedulesRolePolicy1",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -109,12 +109,11 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["scheduler:GetSchedule", "scheduler:DeleteSchedule"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: [
@@ -122,26 +121,27 @@ exports.createResources = () => [
                   "sqs:DeleteMessage",
                   "sqs:GetQueueAttributes",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:sam-app-removal-queue`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "ProcessSchedulesRolePolicy1",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaSQSQueueExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole",
+          PolicyName: "AWSLambdaSQSQueueExecutionRole",
         },
       ],
     }),

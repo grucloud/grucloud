@@ -65,7 +65,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -78,10 +77,11 @@ exports.createResources = () => [
                   "logs:DescribeResourcePolicies",
                   "logs:DescribeLogGroups",
                 ],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "CloudWatchLogs",
         },
@@ -108,22 +108,21 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["states:StartExecution", "states:StartSyncExecution"],
+                Effect: "Allow",
                 Resource: `arn:aws:states:${
                   config.region
                 }:${config.accountId()}:stateMachine:EnrichmentStateMachine-uACOjGX6Zbhn`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "EnrichmentPolicy",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -132,30 +131,31 @@ exports.createResources = () => [
                   "dynamodb:GetShardIterator",
                   "dynamodb:ListStreams",
                 ],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "Table",
                   group: "DynamoDB",
                   name: "SampleTable",
                   path: "live.LatestStreamArn",
                 })}`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SourcePolicy",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["lambda:InvokeFunction"],
+                Effect: "Allow",
                 Resource: `arn:aws:lambda:${
                   config.region
                 }:${config.accountId()}:function:sam-app-target-lambda`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "TargetPolicy",
         },
@@ -184,9 +184,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -227,7 +227,6 @@ exports.createResources = () => [
           Filters: [
             {
               Pattern: {
-                eventName: ["INSERT"],
                 dynamodb: {
                   NewImage: {
                     messageId: {
@@ -253,6 +252,7 @@ exports.createResources = () => [
                     },
                   },
                 },
+                eventName: ["INSERT"],
               },
             },
           ],

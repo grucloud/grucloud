@@ -11,7 +11,7 @@ const {
   or,
   assign,
 } = require("rubico");
-const { defaultsDeep, when, pluck, first } = require("rubico/x");
+const { defaultsDeep, when, pluck, first, callProp } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTags, createEndpoint } = require("../AwsCommon");
@@ -99,6 +99,10 @@ const assignOptionGroup = pipe([
     ]),
   }),
   omitIfEmpty(["OptionGroupName"]),
+  when(
+    pipe([get("OptionGroupName"), callProp("startsWith", "default:")]),
+    omit(["OptionGroupName"])
+  ),
 ]);
 
 const decorate = ({ endpoint }) =>
@@ -155,6 +159,7 @@ exports.RDSDBInstance = ({ compare }) => ({
     optionGroup: {
       type: "OptionGroup",
       group: "RDS",
+      excludeDefaultDependencies: true,
       dependencyId: ({ lives, config }) => pipe([get("OptionGroupName")]),
     },
     securityGroups: {

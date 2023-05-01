@@ -24,12 +24,12 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSSMDirectoryServiceAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess",
+          PolicyName: "AmazonSSMDirectoryServiceAccess",
         },
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
       ],
     }),

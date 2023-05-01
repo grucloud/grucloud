@@ -57,7 +57,14 @@ exports.StepFunctionsStateMachine = () => ({
   inferName: () => get("name"),
   findName: () => get("name"),
   findId: () => get("stateMachineArn"),
-  omitProperties: ["roleArn", "creationDate", "stateMachineArn", "status"],
+  omitProperties: [
+    "roleArn",
+    "creationDate",
+    "stateMachineArn",
+    "status",
+    "loggingConfiguration.__type",
+    "tracingConfiguration.__type",
+  ],
   propertiesDefault: {
     type: "STANDARD",
     loggingConfiguration: { includeExecutionData: false, level: "OFF" },
@@ -289,6 +296,7 @@ exports.StepFunctionsStateMachine = () => ({
     method: "listStateMachines",
     getParam: "stateMachines",
     decorate: ({ getById }) => getById,
+    noSortKey: true,
   },
   create: {
     method: "createStateMachine",

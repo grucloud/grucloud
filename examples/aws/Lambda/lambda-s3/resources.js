@@ -36,11 +36,11 @@ exports.createResources = () => [
                   "s3:PutLifecycleConfiguration",
                   "s3:DeleteObject",
                 ],
+                Effect: "Allow",
                 Resource: [
                   "arn:aws:s3:::gc-destination-example",
                   "arn:aws:s3:::gc-destination-example/*",
                 ],
-                Effect: "Allow",
               },
             ],
           },
@@ -49,9 +49,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -80,15 +80,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-destination-example",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

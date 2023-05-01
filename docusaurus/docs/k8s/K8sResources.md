@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of resources for provider k8s:
+List of 25 resources in 1 services for provider k8s:
 
 * [APIService](./resources/APIService.md)
 * [ConfigMap](./resources/ConfigMap.md)

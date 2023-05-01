@@ -134,6 +134,7 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
         pipe([
           () => payload,
           putEmailIdentityFeedbackAttributes({ endpoint }),
+          () => payload,
           putEmailIdentityMailFromAttributes({ endpoint }),
         ])(),
   },

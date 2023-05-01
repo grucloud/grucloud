@@ -26,10 +26,10 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["sns:Publish"],
+                Effect: "Allow",
                 Resource: `arn:aws:sns:${
                   config.region
                 }:${config.accountId()}:sam-app-MySnsTopic-7dvkJx2kzjiv`,
-                Effect: "Allow",
               },
             ],
           },
@@ -38,9 +38,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

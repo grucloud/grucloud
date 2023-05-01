@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@grucloud/core": "^11.1.0",
-    "@grucloud/k8s-manifest2code": "^11.0.2",
+    "@grucloud/k8s-manifest2code": "^11.0.0",
     "@grucloud/provider-k8s": "^11.1.0"
   },
   "keywords": [

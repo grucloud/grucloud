@@ -259,9 +259,6 @@ exports.AwsIamRole = ({ spec, config }) => {
     method: "listRoles",
     getParam: "Roles",
     filterResource: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       and([
         ({ CreateDate }) => moment(CreateDate).isAfter("2021-09-11"),
         pipe([
@@ -272,9 +269,6 @@ exports.AwsIamRole = ({ spec, config }) => {
           ]),
         ]),
       ]),
-      tap((params) => {
-        assert(true);
-      }),
     ]),
     decorate,
   });

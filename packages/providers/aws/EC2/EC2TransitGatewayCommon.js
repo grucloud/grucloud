@@ -10,15 +10,13 @@ exports.findDependenciesTransitGateway = ({ live }) => ({
 
 const TgwAttachmentDependencies = [
   "TransitGatewayVpcAttachment",
+  "TransitGatewayVpnAttachment",
   "TransitGatewayPeeringAttachment",
   "TransitGatewayAttachment",
 ];
 
 exports.findDependenciesTgwAttachment = ({ live, lives, config }) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
     () => TgwAttachmentDependencies,
     map((type) =>
       pipe([
@@ -33,13 +31,7 @@ exports.findDependenciesTgwAttachment = ({ live, lives, config }) =>
         unless(isEmpty, (id) => ({ type, group: "EC2", ids: [id] })),
       ])()
     ),
-    tap((params) => {
-      assert(true);
-    }),
     find(not(isEmpty)),
-    tap((params) => {
-      assert(true);
-    }),
   ])();
 
 exports.findNameRouteTableArm =
@@ -48,9 +40,6 @@ exports.findNameRouteTableArm =
   (live) =>
     pipe([
       () => live,
-      tap((params) => {
-        assert(true);
-      }),
       fork({
         transitGatewayPeeringAttachment: pipe([
           get("TransitGatewayAttachmentId"),
@@ -65,6 +54,15 @@ exports.findNameRouteTableArm =
           get("TransitGatewayAttachmentId"),
           lives.getById({
             type: "TransitGatewayVpcAttachment",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
+          get("name"),
+        ]),
+        transitGatewayVpnAttachment: pipe([
+          get("TransitGatewayAttachmentId"),
+          lives.getById({
+            type: "TransitGatewayVpnAttachment",
             group: "EC2",
             providerName: config.providerName,
           }),
@@ -91,6 +89,7 @@ exports.findNameRouteTableArm =
       }),
       ({
         transitGatewayVpcAttachment,
+        transitGatewayVpnAttachment,
         transitGatewayPeeringAttachment,
         transitGatewayAttachment,
         transitGatewayRouteTable,
@@ -99,6 +98,7 @@ exports.findNameRouteTableArm =
           tap((params) => {
             assert(
               transitGatewayVpcAttachment ||
+                transitGatewayVpnAttachment ||
                 transitGatewayPeeringAttachment ||
                 transitGatewayAttachment
             );
@@ -107,6 +107,8 @@ exports.findNameRouteTableArm =
           switchCase([
             () => transitGatewayVpcAttachment,
             () => transitGatewayVpcAttachment,
+            () => transitGatewayVpnAttachment,
+            () => transitGatewayVpnAttachment,
             () => transitGatewayPeeringAttachment,
             () => transitGatewayPeeringAttachment,
             () => transitGatewayAttachment,
@@ -128,6 +130,7 @@ exports.inferNameRouteTableArm =
   ({
     dependenciesSpec: {
       transitGatewayVpcAttachment,
+      transitGatewayVpnAttachment,
       transitGatewayPeeringAttachment,
       transitGatewayAttachment,
       transitGatewayRouteTable,
@@ -138,6 +141,7 @@ exports.inferNameRouteTableArm =
       tap(() => {
         assert(
           transitGatewayVpcAttachment ||
+            transitGatewayVpnAttachment ||
             transitGatewayPeeringAttachment ||
             transitGatewayAttachment
         );
@@ -146,6 +150,8 @@ exports.inferNameRouteTableArm =
       switchCase([
         () => transitGatewayVpcAttachment,
         () => transitGatewayVpcAttachment,
+        () => transitGatewayVpnAttachment,
+        () => transitGatewayVpnAttachment,
         () => transitGatewayPeeringAttachment,
         () => transitGatewayPeeringAttachment,
         () => transitGatewayAttachment,
@@ -158,43 +164,25 @@ exports.inferNameRouteTableArm =
       append(`::${transitGatewayRouteTable}`),
     ])();
 
-// const dependencyIdTgwAttachment =
-//   ({ type }) =>
-//   ({ lives, config }) =>
-//     pipe([
-//       (live) =>
-//         lives.getById({
-//           id: live.TransitGatewayAttachmentId,
-//           type,
-//           group: "EC2",
-//           providerName: config.providerName,
-//         }),
-//       get("id"),
-//     ]);
-
 exports.transitGatewayAttachmentDependencies = {
   transitGatewayVpcAttachment: {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
     parent: true,
-    // dependencyId: dependencyIdTgwAttachment({
-    //   type: "TransitGatewayVpcAttachment",
-    // }),
+  },
+  transitGatewayVpnAttachment: {
+    type: "TransitGatewayVpnAttachment",
+    group: "EC2",
+    parent: true,
   },
   transitGatewayPeeringAttachment: {
     type: "TransitGatewayPeeringAttachment",
     group: "EC2",
     parent: true,
-    // dependencyId: dependencyIdTgwAttachment({
-    //   type: "TransitGatewayPeeringAttachment",
-    // }),
   },
   transitGatewayAttachment: {
     type: "TransitGatewayAttachment",
     group: "EC2",
     parent: true,
-    // dependencyId: dependencyIdTgwAttachment({
-    //   type: "TransitGatewayAttachment",
-    // }),
   },
 };

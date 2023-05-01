@@ -28,8 +28,8 @@ exports.createResources = () => [
     type: "ClientVpnAuthorizationRule",
     group: "EC2",
     properties: ({}) => ({
-      TargetNetworkCidr: "10.0.0.0/16",
       AuthorizeAllGroups: true,
+      TargetNetworkCidr: "10.0.0.0/16",
     }),
     dependencies: ({}) => ({
       clientVpnEndpoint: "client-vpn",
@@ -40,10 +40,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "client-vpn",
     properties: ({ getId }) => ({
-      ClientCidrBlock: "10.20.0.0/22",
       AuthenticationOptions: [
         {
-          Type: "certificate-authentication",
           MutualAuthentication: {
             ClientRootCertificateChainArn: `${getId({
               type: "Certificate",
@@ -51,8 +49,10 @@ exports.createResources = () => [
               name: "client1.domain.tld",
             })}`,
           },
+          Type: "certificate-authentication",
         },
       ],
+      ClientCidrBlock: "10.20.0.0/22",
       ConnectionLogOptions: {
         Enabled: true,
       },
@@ -70,41 +70,6 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       clientVpnEndpoint: "client-vpn",
       subnet: `vpc::subnet-private1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 9,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
     }),
   },
   {
@@ -137,6 +102,41 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       routeTable: `vpc::rtb-private2-${config.region}b`,
       subnet: `vpc::subnet-private2-${config.region}b`,
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
 ];

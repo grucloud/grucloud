@@ -34,7 +34,7 @@ const STATES = {
 };
 
 exports.Lister =
-  ({ onStateChange, name }) =>
+  ({ onStateChange, name, poolSize = 20 }) =>
   (inputs) => {
     assert(Array.isArray(inputs));
     assert(isFunction(onStateChange));
@@ -51,7 +51,7 @@ exports.Lister =
             assert(key);
             assert(executor);
             assert(inputsFiltered);
-            logger.debug(`runItem key: ${key}`);
+            // logger.debug(`runItem key: ${key}`);
           }),
           tryCatch(
             pipe([
@@ -93,20 +93,20 @@ exports.Lister =
           }),
           filter(pipe([get("dependsOn"), includes(key)])),
           tap((results) => {
-            logger.debug(`Lister onEnd ${key}, #${size(results)}`);
+            // logger.debug(`Lister onEnd ${key}, #${size(results)}`);
           }),
           switchCase([
             isUp,
-            map.pool(10, (entry) =>
+            map.pool(5, (entry) =>
               pipe([
                 () => entry,
                 get("dependsOn"),
                 // Remove from the dependsOn array the one that just ended
                 filter(not(includes(key))),
                 tap((updatedDependsOn) => {
-                  logger.debug(
-                    `Lister onEnd ${entry.key}, new updatedDependsOn: ${updatedDependsOn}`
-                  );
+                  // logger.debug(
+                  //   `Lister onEnd ${entry.key}, new updatedDependsOn: ${updatedDependsOn}`
+                  // );
                   entry.dependsOn = updatedDependsOn;
                 }),
                 tap.if(isEmpty, () =>
@@ -130,9 +130,9 @@ exports.Lister =
               ])()
             ),
           ]),
-          tap((result) => {
-            logger.debug(`Lister onEnd ${key}`);
-          }),
+          // tap((result) => {
+          //   logger.debug(`Lister onEnd ${key}`);
+          // }),
         ])();
 
     return pipe([
@@ -158,7 +158,7 @@ exports.Lister =
           tap.if(isEmpty, () => {
             //assert(false, `all resources has dependsOn, plan: ${tos({ inputs })}`);
           }),
-          map.pool(40, runItem({ onEnd, inputsFiltered })),
+          map.pool(poolSize, runItem({ onEnd, inputsFiltered })),
           () => inputs,
           map(({ key }) => resultMap.get(key)),
           fork({ error: any(get("error")), results: identity }),

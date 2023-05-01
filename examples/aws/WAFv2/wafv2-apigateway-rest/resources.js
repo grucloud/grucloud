@@ -495,9 +495,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
         },
       ],
     }),
@@ -531,12 +531,12 @@ exports.createResources = () => [
           },
         },
       ],
+      Scope: "REGIONAL",
       VisibilityConfig: {
         CloudWatchMetricsEnabled: true,
         MetricName: "my-webacl",
         SampledRequestsEnabled: true,
       },
-      Scope: "REGIONAL",
     }),
   },
   {

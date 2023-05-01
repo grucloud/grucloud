@@ -3,15 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc-postgres",
-    properties: ({}) => ({
-      CidrBlock: "192.168.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
   { type: "InternetGateway", group: "EC2", name: "ig-postgres" },
   {
     type: "InternetGatewayAttachment",
@@ -22,29 +13,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "subnet-1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 3,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "vpc-postgres",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 3,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-postgres",
+      ig: "ig-postgres",
+      routeTable: "vpc-postgres::route-table-public",
     }),
   },
   {
@@ -69,17 +45,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       routeTable: "vpc-postgres::route-table-public",
       subnet: "vpc-postgres::subnet-2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "ig-postgres",
-      routeTable: "vpc-postgres::route-table-public",
     }),
   },
   {
@@ -116,6 +81,41 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 3,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-postgres",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 3,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-postgres",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-postgres",
+    properties: ({}) => ({
+      CidrBlock: "192.168.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  {
     type: "Policy",
     group: "IAM",
     properties: ({}) => ({
@@ -143,18 +143,18 @@ exports.createResources = () => [
     type: "DBInstance",
     group: "RDS",
     properties: ({}) => ({
-      DBInstanceIdentifier: "db-instance",
-      DBInstanceClass: "db.t3.micro",
-      Engine: "postgres",
-      MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       AllocatedStorage: 20,
-      PreferredBackupWindow: "22:10-22:40",
       BackupRetentionPeriod: 1,
-      PreferredMaintenanceWindow: "fri:23:40-sat:00:10",
-      EngineVersion: "14.2",
-      PubliclyAccessible: true,
+      DBInstanceClass: "db.t3.micro",
+      DBInstanceIdentifier: "db-instance",
       DeletionProtection: false,
+      Engine: "postgres",
+      EngineVersion: "14.2",
+      MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       MaxAllocatedStorage: 50,
+      PreferredBackupWindow: "22:10-22:40",
+      PreferredMaintenanceWindow: "fri:23:40-sat:00:10",
+      PubliclyAccessible: true,
       Tags: [
         {
           Key: "mykey2",
@@ -172,8 +172,8 @@ exports.createResources = () => [
     type: "DBSubnetGroup",
     group: "RDS",
     properties: ({}) => ({
-      DBSubnetGroupName: "subnet-group-postgres",
       DBSubnetGroupDescription: "db subnet group",
+      DBSubnetGroupName: "subnet-group-postgres",
       Tags: [
         {
           Key: "mykey2",

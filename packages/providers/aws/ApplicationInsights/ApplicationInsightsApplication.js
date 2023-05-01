@@ -57,7 +57,13 @@ exports.ApplicationInsightsApplication = () => ({
   package: "application-insights",
   client: "ApplicationInsights",
   propertiesDefault: {},
-  omitProperties: ["Arn", "OpsItemSNSTopicArn", "LifeCycle", "Remarks"],
+  omitProperties: [
+    "Arn",
+    "OpsItemSNSTopicArn",
+    "LifeCycle",
+    "Remarks",
+    "AccountId",
+  ],
   inferName: () =>
     pipe([
       get("ResourceGroupName"),

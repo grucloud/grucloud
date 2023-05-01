@@ -47,6 +47,62 @@ phases:
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: `CodeBuildBasePolicy-my-project-${config.region}`,
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "logs:CreateLogGroup",
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+            ],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/codebuild/my-project`,
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/codebuild/my-project:*`,
+            ],
+          },
+          {
+            Action: [
+              "s3:PutObject",
+              "s3:GetObject",
+              "s3:GetObjectVersion",
+              "s3:GetBucketAcl",
+              "s3:GetBucketLocation",
+            ],
+            Effect: "Allow",
+            Resource: [`arn:aws:s3:::codepipeline-${config.region}-*`],
+          },
+          {
+            Action: [
+              "codebuild:CreateReportGroup",
+              "codebuild:CreateReport",
+              "codebuild:UpdateReport",
+              "codebuild:BatchPutTestCases",
+              "codebuild:BatchPutCodeCoverages",
+            ],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:codebuild:${
+                config.region
+              }:${config.accountId()}:report-group/my-project-*`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+      Description: "Policy used in trust relationship with CodeBuild",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -67,62 +123,6 @@ phases:
     }),
     dependencies: ({ config }) => ({
       policies: [`CodeBuildBasePolicy-my-project-${config.region}`],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: `CodeBuildBasePolicy-my-project-${config.region}`,
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Resource: [
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:/aws/codebuild/my-project`,
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:/aws/codebuild/my-project:*`,
-            ],
-            Action: [
-              "logs:CreateLogGroup",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents",
-            ],
-          },
-          {
-            Effect: "Allow",
-            Resource: [`arn:aws:s3:::codepipeline-${config.region}-*`],
-            Action: [
-              "s3:PutObject",
-              "s3:GetObject",
-              "s3:GetObjectVersion",
-              "s3:GetBucketAcl",
-              "s3:GetBucketLocation",
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: [
-              "codebuild:CreateReportGroup",
-              "codebuild:CreateReport",
-              "codebuild:UpdateReport",
-              "codebuild:BatchPutTestCases",
-              "codebuild:BatchPutCodeCoverages",
-            ],
-            Resource: [
-              `arn:aws:codebuild:${
-                config.region
-              }:${config.accountId()}:report-group/my-project-*`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
-      Description: "Policy used in trust relationship with CodeBuild",
     }),
   },
 ];

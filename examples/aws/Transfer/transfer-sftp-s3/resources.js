@@ -23,9 +23,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSTransferLoggingAccess",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSTransferLoggingAccess",
+          PolicyName: "AWSTransferLoggingAccess",
         },
       ],
     }),
@@ -51,8 +51,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonS3FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
         },
       ],
     }),
@@ -62,15 +62,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "gc-transfer-s3",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
   {

@@ -144,6 +144,7 @@ exports.DMSReplicationInstance = ({ compare }) => ({
     pickCreated: ({ payload }) => pipe([get("ReplicationInstance")]),
     isInstanceUp: pipe([eq(get("ReplicationInstanceStatus"), "available")]),
     isInstanceError: pipe([eq(get("ReplicationInstanceStatus"), "failed")]),
+    configIsUp: { retryCount: 40 * 12, retryDelay: 5e3 },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DMS.html#modifyReplicationInstance-property
   update: {

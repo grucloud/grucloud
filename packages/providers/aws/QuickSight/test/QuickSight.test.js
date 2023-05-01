@@ -76,6 +76,21 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
+  it("FolderMembership", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::FolderMembership",
+        livesNotFound: ({ config }) => [
+          {
+            FolderId: "i13455",
+            AwsAccountId: config.accountId(),
+            MemberId: "m123",
+            MemberType: "DASHBOARD",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Group", () =>
     pipe([
       () => ({
@@ -124,6 +139,20 @@ describe("QuickSight", async function () {
         groupType: "QuickSight::Template",
         livesNotFound: ({ config }) => [
           { TemplateId: "e123", AwsAccountId: config.accountId() },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("RefreshSchedule", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::RefreshSchedule",
+        livesNotFound: ({ config }) => [
+          {
+            DataSetId: "i1234567890",
+            ScheduleId: "s123456789",
+            AwsAccountId: config.accountId(),
+          },
         ],
       }),
       awsResourceTest,

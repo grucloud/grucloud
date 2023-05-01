@@ -41,13 +41,13 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSXrayWriteOnlyAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess",
+          PolicyName: "AWSXrayWriteOnlyAccess",
         },
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
       Tags: [
@@ -92,11 +92,11 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     properties: ({ generatePassword }) => ({
+      Description: "Secret with dynamically generated secret password.",
       Name: "mysecretsam",
       SecretString: {
         SecretString: generatePassword({ length: 30 }),
       },
-      Description: "Secret with dynamically generated secret password.",
     }),
   },
 ];

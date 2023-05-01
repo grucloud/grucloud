@@ -4,10 +4,69 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "CloudWatchSyntheticsPolicy-my-canary-12d-6e865eb98bfb",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["s3:PutObject", "s3:GetObject"],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:s3:::cw-syn-results-${config.accountId()}-${
+                config.region
+              }/canary/${config.region}/my-canary-12d-6e865eb98bfb/*`,
+            ],
+          },
+          {
+            Action: ["s3:GetBucketLocation"],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:s3:::cw-syn-results-${config.accountId()}-${
+                config.region
+              }`,
+            ],
+          },
+          {
+            Action: [
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+              "logs:CreateLogGroup",
+            ],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/lambda/cwsyn-my-canary-*`,
+            ],
+          },
+          {
+            Action: ["s3:ListAllMyBuckets", "xray:PutTraceSegments"],
+            Effect: "Allow",
+            Resource: ["*"],
+          },
+          {
+            Action: "cloudwatch:PutMetricData",
+            Condition: {
+              StringEquals: {
+                "cloudwatch:namespace": "CloudWatchSynthetics",
+              },
+            },
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
+      RoleName: "CloudWatchSyntheticsRole-my-canary-12d-6e865eb98bfb",
       Description:
         "CloudWatch Synthetics lambda execution role for running canaries",
       Path: "/service-role/",
@@ -25,184 +84,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      policies: ["CloudWatchSyntheticsPolicy-my-canary-874-b96ae8dcb649"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "CloudWatchSyntheticsPolicy-my-canary-874-b96ae8dcb649",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["s3:PutObject", "s3:GetObject"],
-            Resource: [
-              `arn:aws:s3:::cw-syn-results-${config.accountId()}-${
-                config.region
-              }/canary/${config.region}/my-canary-874-b96ae8dcb649/*`,
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: ["s3:GetBucketLocation"],
-            Resource: [
-              `arn:aws:s3:::cw-syn-results-${config.accountId()}-${
-                config.region
-              }`,
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: [
-              "logs:CreateLogStream",
-              "logs:PutLogEvents",
-              "logs:CreateLogGroup",
-            ],
-            Resource: [
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:/aws/lambda/cwsyn-my-canary-*`,
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: ["s3:ListAllMyBuckets", "xray:PutTraceSegments"],
-            Resource: ["*"],
-          },
-          {
-            Effect: "Allow",
-            Resource: "*",
-            Action: "cloudwatch:PutMetricData",
-            Condition: {
-              StringEquals: {
-                "cloudwatch:namespace": "CloudWatchSynthetics",
-              },
-            },
-          },
-        ],
-      },
-      Path: "/service-role/",
-    }),
-  },
-  {
-    type: "Function",
-    group: "Lambda",
-    properties: ({ getId }) => ({
-      Configuration: {
-        FunctionName: "cwsyn-my-canary-2bf3df82-6b6a-4cf0-983a-b489fc267051",
-        Handler: "index.handler",
-        Layers: [
-          "arn:aws:lambda:us-east-1:378653112637:layer:Synthetics:30",
-          `${getId({
-            type: "Layer",
-            group: "Lambda",
-            name: "cwsyn-my-canary-2bf3df82-6b6a-4cf0-983a-b489fc267051",
-            path: "live.LayerVersionArn",
-          })}`,
-        ],
-        MemorySize: 1000,
-        Runtime: "nodejs14.x",
-        Timeout: 300,
-      },
-    }),
-    dependencies: ({}) => ({
-      layers: ["cwsyn-my-canary-2bf3df82-6b6a-4cf0-983a-b489fc267051"],
-      role: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
-    }),
-  },
-  {
-    type: "Function",
-    group: "Lambda",
-    properties: ({ getId }) => ({
-      Configuration: {
-        FunctionName: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
-        Handler: "index.handler",
-        Layers: [
-          "arn:aws:lambda:us-east-1:378653112637:layer:Synthetics:30",
-          `${getId({
-            type: "Layer",
-            group: "Lambda",
-            name: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
-            path: "live.LayerVersionArn",
-          })}`,
-        ],
-        MemorySize: 1000,
-        Runtime: "nodejs14.x",
-        Timeout: 300,
-      },
-    }),
-    dependencies: ({}) => ({
-      layers: ["cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e"],
-      role: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
-    }),
-  },
-  {
-    type: "Function",
-    group: "Lambda",
-    properties: ({ getId }) => ({
-      Configuration: {
-        FunctionName: "cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3",
-        Handler: "index.handler",
-        Layers: [
-          "arn:aws:lambda:us-east-1:378653112637:layer:Synthetics:30",
-          `${getId({
-            type: "Layer",
-            group: "Lambda",
-            name: "cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3",
-            path: "live.LayerVersionArn",
-          })}`,
-        ],
-        MemorySize: 1000,
-        Runtime: "nodejs14.x",
-        Timeout: 300,
-      },
-    }),
-    dependencies: ({}) => ({
-      layers: ["cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3"],
-      role: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
-    }),
-  },
-  {
-    type: "Layer",
-    group: "Lambda",
-    properties: ({}) => ({
-      LayerName: "cwsyn-my-canary-2bf3df82-6b6a-4cf0-983a-b489fc267051",
-      Description:
-        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
-      CompatibleRuntimes: ["nodejs14.x"],
-    }),
-  },
-  {
-    type: "Layer",
-    group: "Lambda",
-    properties: ({}) => ({
-      LayerName: "cwsyn-my-canary-351357ed-53be-4586-b1b3-e83dda2a8f15",
-      Description:
-        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
-      CompatibleRuntimes: ["nodejs14.x"],
-    }),
-  },
-  {
-    type: "Layer",
-    group: "Lambda",
-    properties: ({}) => ({
-      LayerName: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
-      Description:
-        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
-      CompatibleRuntimes: ["nodejs14.x"],
-    }),
-  },
-  {
-    type: "Layer",
-    group: "Lambda",
-    properties: ({}) => ({
-      LayerName: "cwsyn-my-canary-cbebc4a6-705d-4ee5-aa6c-3eb7823363f3",
-      Description:
-        "Created by CloudWatch Synthetics for a wonderful customer. Thank you!",
-      CompatibleRuntimes: ["nodejs14.x"],
+      policies: ["CloudWatchSyntheticsPolicy-my-canary-12d-6e865eb98bfb"],
     }),
   },
   {
@@ -227,7 +109,7 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       ArtifactS3Location: `s3://cw-syn-results-${config.accountId()}-${
         config.region
-      }/canary/${config.region}/my-canary-874-b96ae8dcb649`,
+      }/canary/${config.region}/my-canary-12d-6e865eb98bfb`,
       Code: {
         Handler: "pageLoadBlueprint.handler",
       },
@@ -248,10 +130,9 @@ exports.createResources = () => [
         blueprint: "heartbeat",
       },
     }),
-    dependencies: ({}) => ({
-      iamRole: "CloudWatchSyntheticsRole-my-canary-874-b96ae8dcb649",
-      lambdaFunction: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
-      lambdaLayer: "cwsyn-my-canary-459b7673-e931-481d-95bd-b4a5bd0bec0e",
+    dependencies: ({ config }) => ({
+      iamRole: "CloudWatchSyntheticsRole-my-canary-12d-6e865eb98bfb",
+      s3BucketArtifact: `cw-syn-results-${config.accountId()}-${config.region}`,
     }),
   },
 ];

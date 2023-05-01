@@ -171,7 +171,11 @@ exports.GlacierVault = () => ({
     enhanceParams: () => () => ({ accountId: "-" }),
     method: "listVaults",
     getParam: "VaultList",
-    decorate,
+    decorate: ({ getById }) =>
+      pipe([
+        ({ VaultName }) => ({ vaultName: VaultName, accountId: "-" }),
+        getById,
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glacier.html#createVault-property
   create: {

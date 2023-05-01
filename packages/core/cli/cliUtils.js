@@ -29,14 +29,14 @@ const runAsyncCommand = async ({ text, command }) => {
     indent,
     ...other
   }) => {
-    logger.info(
-      `onStateChange: ${JSON.stringify({
-        context,
-        previousState,
-        nextState,
-        //other,
-      })}`
-    );
+    // logger.info(
+    //   `onStateChange: ${JSON.stringify({
+    //     context,
+    //     previousState,
+    //     nextState,
+    //     //other,
+    //   })}`
+    // );
     assert(context, "onStateChange: missing context");
     const onDoneDefault = ({ state, spinnerMap }) => {
       logger.debug(

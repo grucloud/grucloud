@@ -50,14 +50,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "my-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/24",
-    }),
-  },
-  {
     type: "Subnet",
     group: "EC2",
     name: "subnet-1",
@@ -81,9 +73,9 @@ exports.createResources = () => [
         AutoAcceptSharedAttachments: "disable",
         DefaultRouteTableAssociation: "enable",
         DefaultRouteTablePropagation: "enable",
-        VpnEcmpSupport: "enable",
         DnsSupport: "enable",
         MulticastSupport: "disable",
+        VpnEcmpSupport: "enable",
       },
     }),
   },
@@ -101,23 +93,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGatewayVpcAttachment",
-    group: "EC2",
-    name: "tgw-vpc-attach::my-tgw::my-vpc",
-    properties: ({}) => ({
-      Options: {
-        DnsSupport: "enable",
-        Ipv6Support: "disable",
-        ApplianceModeSupport: "disable",
-      },
-    }),
-    dependencies: ({}) => ({
-      transitGateway: "my-tgw",
-      vpc: "my-vpc",
-      subnets: ["my-vpc::subnet-1"],
-    }),
-  },
-  {
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
@@ -131,6 +106,31 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       transitGatewayRouteTable: "tgw-rtb-my-tgw-default",
       transitGatewayVpcAttachment: "tgw-vpc-attach::my-tgw::my-vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayVpcAttachment",
+    group: "EC2",
+    name: "tgw-vpc-attach::my-tgw::my-vpc",
+    properties: ({}) => ({
+      Options: {
+        ApplianceModeSupport: "disable",
+        DnsSupport: "enable",
+        Ipv6Support: "disable",
+      },
+    }),
+    dependencies: ({}) => ({
+      transitGateway: "my-tgw",
+      vpc: "my-vpc",
+      subnets: ["my-vpc::subnet-1"],
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "my-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/24",
     }),
   },
 ];

@@ -109,8 +109,8 @@ exports.createResources = () => [
     type: "HostedConfigurationVersion",
     group: "AppConfig",
     properties: ({}) => ({
-      ContentType: "text/plain",
       Content: "yolo=3",
+      ContentType: "text/plain",
     }),
     dependencies: ({}) => ({
       configurationProfile: "my-appconfig::profile-freeform",
@@ -135,8 +135,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSQSFullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSQSFullAccess",
+          PolicyName: "AmazonSQSFullAccess",
         },
       ],
     }),

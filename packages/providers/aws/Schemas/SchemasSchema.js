@@ -9,7 +9,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { Tagger, ignoreErrorCodes } = require("./SchemasCommon");
 
 const cannotBeDeleted = () =>
-  pipe([get("SchemaName"), callProp("startsWith", "aws")]);
+  pipe([get("SchemaName", ""), callProp("startsWith", "aws")]);
 
 const buildArn = () =>
   pipe([
@@ -119,6 +119,7 @@ exports.SchemasSchema = () => ({
           method: "listSchemas",
           getParam: "Schemas",
           config,
+          noSortKey: true,
           decorate: ({ parent }) =>
             pipe([
               tap((params) => {

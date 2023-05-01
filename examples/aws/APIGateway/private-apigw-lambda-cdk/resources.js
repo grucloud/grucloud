@@ -107,14 +107,13 @@ exports.createResources = () => [
     group: "APIGateway",
     properties: ({ getId }) => ({
       policy: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "execute-api:Invoke",
             Effect: "Allow",
             Principal: {
               AWS: "*",
             },
-            Action: "execute-api:Invoke",
             Resource: `${getId({
               type: "RestApi",
               group: "APIGateway",
@@ -123,6 +122,7 @@ exports.createResources = () => [
             })}/*/*/*`,
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
@@ -145,12 +145,63 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "priv-apigw-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
+    name: ({ config }) => `priv-apigw-vpc-public-subnet-1-${config.region}a`,
+  },
+  {
+    type: "Instance",
+    group: "EC2",
+    name: "apiGatewayEC2Instance",
+    properties: ({ config, getId }) => ({
+      CreditSpecification: {
+        CpuCredits: "unlimited",
+      },
+      Image: {
+        Description: "Amazon Linux AMI 2018.03.0.20230207.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t3.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::priv-apigw-vpc::default",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `priv-apigw-vpc::priv-apigw-vpc-private-subnet-1-${config.region}a`,
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+      Tags: [
+        {
+          Key: "Key",
+          Value: "Value",
+        },
+        {
+          Key: "Project",
+          Value: "PrivateAPIGateway",
+        },
+      ],
+      UserData: `#!/bin/bash
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+restart amazon-ssm-agent`,
+    }),
+    dependencies: ({ config }) => ({
+      subnets: [
+        `priv-apigw-vpc::priv-apigw-vpc-private-subnet-1-${config.region}a`,
+      ],
+      iamInstanceProfile:
+        "PrivateAPIGatewayEc2-PrivateAPIGatewayEc2Profile-qZJnuwy2ztCR",
+      securityGroups: ["sg::priv-apigw-vpc::default"],
     }),
   },
   { type: "InternetGateway", group: "EC2", name: "priv-apigw-vpc" },
@@ -175,57 +226,47 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `priv-apigw-vpc-private-subnet-1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "priv-apigw-vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `priv-apigw-vpc-public-subnet-1-${config.region}a`,
+      routeTable: `priv-apigw-vpc::priv-apigw-vpc-private-subnet-1-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `priv-apigw-vpc-private-subnet-1-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 1,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "priv-apigw-vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `priv-apigw-vpc-public-subnet-1-${config.region}a`,
+      routeTable: `priv-apigw-vpc::priv-apigw-vpc-private-subnet-1-${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `priv-apigw-vpc-public-subnet-1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 2,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "priv-apigw-vpc",
+    dependencies: ({ config }) => ({
+      ig: "priv-apigw-vpc",
+      routeTable: `priv-apigw-vpc::priv-apigw-vpc-public-subnet-1-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `priv-apigw-vpc-public-subnet-1-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 3,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "priv-apigw-vpc",
+    dependencies: ({ config }) => ({
+      ig: "priv-apigw-vpc",
+      routeTable: `priv-apigw-vpc::priv-apigw-vpc-public-subnet-1-${config.region}b`,
     }),
   },
   {
@@ -290,50 +331,6 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       routeTable: `priv-apigw-vpc::priv-apigw-vpc-public-subnet-1-${config.region}b`,
       subnet: `priv-apigw-vpc::priv-apigw-vpc-public-subnet-1-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `priv-apigw-vpc-public-subnet-1-${config.region}a`,
-      routeTable: `priv-apigw-vpc::priv-apigw-vpc-private-subnet-1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `priv-apigw-vpc-public-subnet-1-${config.region}a`,
-      routeTable: `priv-apigw-vpc::priv-apigw-vpc-private-subnet-1-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "priv-apigw-vpc",
-      routeTable: `priv-apigw-vpc::priv-apigw-vpc-public-subnet-1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "priv-apigw-vpc",
-      routeTable: `priv-apigw-vpc::priv-apigw-vpc-public-subnet-1-${config.region}b`,
     }),
   },
   {
@@ -414,72 +411,75 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `priv-apigw-vpc-public-subnet-1-${config.region}a`,
+    name: ({ config }) => `priv-apigw-vpc-private-subnet-1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "priv-apigw-vpc",
+    }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "apiGatewayEC2Instance",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t3.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::priv-apigw-vpc::default",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: `priv-apigw-vpc::priv-apigw-vpc-private-subnet-1-${config.region}a`,
-          })}`,
-        },
-      ],
-      Tags: [
-        {
-          Key: "Key",
-          Value: "Value",
-        },
-        {
-          Key: "Project",
-          Value: "PrivateAPIGateway",
-        },
-      ],
-      Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20230207.0 x86_64 HVM gp2",
-      },
-      UserData: `#!/bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-restart amazon-ssm-agent`,
-      CreditSpecification: {
-        CpuCredits: "unlimited",
-      },
+    name: ({ config }) => `priv-apigw-vpc-private-subnet-1-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
-    dependencies: ({ config }) => ({
-      subnets: [
-        `priv-apigw-vpc::priv-apigw-vpc-private-subnet-1-${config.region}a`,
-      ],
-      iamInstanceProfile:
-        "PrivateAPIGatewayEc2-PrivateAPIGatewayEc2Profile-qZJnuwy2ztCR",
-      securityGroups: ["sg::priv-apigw-vpc::default"],
+    dependencies: ({}) => ({
+      vpc: "priv-apigw-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `priv-apigw-vpc-public-subnet-1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "priv-apigw-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `priv-apigw-vpc-public-subnet-1-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 3,
+    }),
+    dependencies: ({}) => ({
+      vpc: "priv-apigw-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "priv-apigw-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.execute-api`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.execute-api`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({ config }) => ({
       vpc: "priv-apigw-vpc",
@@ -506,27 +506,27 @@ restart amazon-ssm-agent`,
     properties: ({}) => ({
       RoleName: "PrivateAPIGatewayApi-handlerServiceRole187D5A5A-1BJGJGQK7M9ID",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
         {
-          PolicyName: "AWSLambdaVPCAccessExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+          PolicyName: "AWSLambdaVPCAccessExecutionRole",
         },
       ],
       Tags: [
@@ -548,22 +548,22 @@ restart amazon-ssm-agent`,
       RoleName:
         "PrivateAPIGatewayApi-PrivateAPIGatewayCloudWatchRo-11BENGHNP8O44",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
         },
       ],
       Tags: [
@@ -584,21 +584,21 @@ restart amazon-ssm-agent`,
     properties: ({}) => ({
       RoleName: "PrivateAPIGatewayEc2-apigatewayEC2Role0C7CF12E-805DC7BJETWT",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
+        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
       ],
     }),
@@ -613,8 +613,8 @@ restart amazon-ssm-agent`,
         Runtime: "nodejs14.x",
       },
       Tags: {
-        Project: "PrivateAPIGateway",
         Key: "Value",
+        Project: "PrivateAPIGateway",
       },
     }),
     dependencies: ({ config }) => ({
@@ -644,53 +644,53 @@ restart amazon-ssm-agent`,
           Action: "lambda:InvokeFunction",
           FunctionName: "PrivateAPIGatewayApi-handlerE1533BD5-K2tcMYal940k",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "PrivateAPIGatewayApi-PrivateAPIGatewayANYApiPermissionPrivateAPIGatewayApiPrivateAPIGa-H1JILPGSOR9I",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "PrivateAPIGateway",
             path: "live.arnv2",
           })}/prod/*/`,
+          StatementId:
+            "PrivateAPIGatewayApi-PrivateAPIGatewayANYApiPermissionPrivateAPIGatewayApiPrivateAPIGa-H1JILPGSOR9I",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName: "PrivateAPIGatewayApi-handlerE1533BD5-K2tcMYal940k",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "PrivateAPIGatewayApi-PrivateAPIGatewayANYApiPermissionTestPrivateAPIGatewayApiPrivateA-HYYGL9NUWAWK",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "PrivateAPIGateway",
             path: "live.arnv2",
           })}/test-invoke-stage/*/`,
+          StatementId:
+            "PrivateAPIGatewayApi-PrivateAPIGatewayANYApiPermissionTestPrivateAPIGatewayApiPrivateA-HYYGL9NUWAWK",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName: "PrivateAPIGatewayApi-handlerE1533BD5-K2tcMYal940k",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "PrivateAPIGatewayApi-PrivateAPIGatewayproxyANYApiPermissionPrivateAPIGatewayApiPrivate-VWTLVKVBVWI2",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "PrivateAPIGateway",
             path: "live.arnv2",
           })}/prod/*/*`,
+          StatementId:
+            "PrivateAPIGatewayApi-PrivateAPIGatewayproxyANYApiPermissionPrivateAPIGatewayApiPrivate-VWTLVKVBVWI2",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName: "PrivateAPIGatewayApi-handlerE1533BD5-K2tcMYal940k",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "PrivateAPIGatewayApi-PrivateAPIGatewayproxyANYApiPermissionTestPrivateAPIGatewayApiPri-KTPNG1I1T4T4",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "PrivateAPIGateway",
             path: "live.arnv2",
           })}/test-invoke-stage/*/*`,
+          StatementId:
+            "PrivateAPIGatewayApi-PrivateAPIGatewayproxyANYApiPermissionTestPrivateAPIGatewayApiPri-KTPNG1I1T4T4",
         },
       ],
     }),

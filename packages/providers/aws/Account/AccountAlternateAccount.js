@@ -25,6 +25,7 @@ exports.AccountAlternateAccount = () => ({
     pickId,
     method: "getAlternateContact",
     getField: "AlternateContact",
+    sortKey: true,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html#putAlternateContact-property
   create: {
@@ -41,7 +42,7 @@ exports.AccountAlternateAccount = () => ({
     method: "deleteAlternateContact",
     pickId,
   },
-  getList: ({ endpoint }) =>
+  getList: ({ endpoint, getById }) =>
     pipe([
       () => ["BILLING", "OPERATIONS", "SECURITY"],
       map(
@@ -50,8 +51,7 @@ exports.AccountAlternateAccount = () => ({
             (AlternateContactType) => ({
               AlternateContactType,
             }),
-            endpoint().getAlternateContact,
-            get("AlternateContact"),
+            getById({}),
           ]),
           // TODO throw if not  "ResourceNotFoundException" or "AccessDeniedException",
           (error) =>

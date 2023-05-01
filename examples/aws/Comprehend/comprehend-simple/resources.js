@@ -7,6 +7,7 @@ exports.createResources = () => [
     type: "DocumentClassifier",
     group: "Comprehend",
     properties: ({}) => ({
+      DocumentClassifierName: "my-model",
       InputDataConfig: {
         DataFormat: "COMPREHEND_CSV",
         S3Uri: "s3://gc-comprehend-dataset",
@@ -14,7 +15,6 @@ exports.createResources = () => [
       LanguageCode: "en",
       Mode: "MULTI_CLASS",
       OutputDataConfig: {},
-      DocumentClassifierName: "my-model",
     }),
     dependencies: ({}) => ({
       iamRole: "AmazonComprehendServiceRole-comprehend",
@@ -47,6 +47,52 @@ exports.createResources = () => [
       iamRole: "AmazonComprehendServiceRole-entity-recognizer",
       s3BucketAnnotation: "gc-comprehend-annotation",
       s3BucketDocument: "gc-comprehend-dataset",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "AmazonComprehendServicePolicy-comprehend",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "s3:GetObject",
+            Effect: "Allow",
+            Resource: ["arn:aws:s3:::gc-comprehend-dataset/*"],
+          },
+          {
+            Action: "s3:ListBucket",
+            Effect: "Allow",
+            Resource: ["arn:aws:s3:::gc-comprehend-dataset"],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "AmazonComprehendServicePolicy-entity-recognizer",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "s3:GetObject",
+            Effect: "Allow",
+            Resource: ["arn:aws:s3:::gc-comprehend-dataset/*"],
+          },
+          {
+            Action: "s3:ListBucket",
+            Effect: "Allow",
+            Resource: ["arn:aws:s3:::gc-comprehend-dataset"],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
     }),
   },
   {
@@ -97,52 +143,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       policies: ["AmazonComprehendServicePolicy-entity-recognizer"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "AmazonComprehendServicePolicy-comprehend",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: "s3:GetObject",
-            Resource: ["arn:aws:s3:::gc-comprehend-dataset/*"],
-            Effect: "Allow",
-          },
-          {
-            Action: "s3:ListBucket",
-            Resource: ["arn:aws:s3:::gc-comprehend-dataset"],
-            Effect: "Allow",
-          },
-        ],
-      },
-      Path: "/service-role/",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "AmazonComprehendServicePolicy-entity-recognizer",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: "s3:GetObject",
-            Resource: ["arn:aws:s3:::gc-comprehend-dataset/*"],
-            Effect: "Allow",
-          },
-          {
-            Action: "s3:ListBucket",
-            Resource: ["arn:aws:s3:::gc-comprehend-dataset"],
-            Effect: "Allow",
-          },
-        ],
-      },
-      Path: "/service-role/",
     }),
   },
   {

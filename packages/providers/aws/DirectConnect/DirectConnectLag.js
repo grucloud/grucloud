@@ -97,8 +97,7 @@ exports.DirectConnectLag = ({ compare }) => ({
     },
   },
   compare: compare({
-    filterAll: () =>
-      pipe([omit(["numberOfConnections"]), omit(["requestMACSec"])]),
+    filterAll: () => pipe([omit(["numberOfConnections", "requestMACSec"])]),
   }),
   ignoreErrorCodes: ["DirectConnectClientException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DirectConnect.html#describeLags-property

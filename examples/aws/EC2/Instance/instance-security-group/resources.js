@@ -3,17 +3,44 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "KeyPair", group: "EC2", name: "kp-ec2" },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
-    type: "Subnet",
+    type: "Instance",
     group: "EC2",
-    name: "subnet-default-a",
-    isDefault: true,
+    name: "my-ec2-security-group",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-default::launch-wizard-1",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "vpc-default::subnet-default-a",
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+    }),
     dependencies: ({}) => ({
-      vpc: "vpc-default",
+      subnets: ["vpc-default::subnet-default-a"],
+      keyPair: "kp-ec2",
+      securityGroups: ["sg::vpc-default::launch-wizard-1"],
     }),
   },
+  { type: "KeyPair", group: "EC2", name: "kp-ec2" },
   {
     type: "SecurityGroup",
     group: "EC2",
@@ -43,40 +70,13 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "my-ec2-security-group",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc-default::launch-wizard-1",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "vpc-default::subnet-default-a",
-          })}`,
-        },
-      ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
-      },
-    }),
+    name: "subnet-default-a",
+    isDefault: true,
     dependencies: ({}) => ({
-      subnets: ["vpc-default::subnet-default-a"],
-      keyPair: "kp-ec2",
-      securityGroups: ["sg::vpc-default::launch-wizard-1"],
+      vpc: "vpc-default",
     }),
   },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
 ];

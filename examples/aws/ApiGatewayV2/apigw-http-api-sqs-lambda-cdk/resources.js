@@ -39,10 +39,10 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "1.0",
       RequestParameters: {
+        MessageBody: "$request.body.MessageBody",
         QueueUrl: `https://sqs.${
           config.region
         }.amazonaws.com/${config.accountId()}/ApigwHttpApiSqsLambdaStack-ApigwV2SqsLambdaQueue60DA20A7-u0KdXdwrt4es`,
-        MessageBody: "$request.body.MessageBody",
       },
     }),
     dependencies: ({}) => ({
@@ -96,7 +96,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -105,21 +104,22 @@ exports.createResources = () => [
                   "sqs:PurgeQueue",
                   "sqs:DeleteMessage",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:ApigwHttpApiSqsLambdaStack-ApigwV2SqsLambdaQueue60DA20A7-u0KdXdwrt4es`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "ApiGwV2ToSqsInlinePolicyED3DFF22",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
         },
       ],
     }),
@@ -145,7 +145,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -155,21 +154,22 @@ exports.createResources = () => [
                   "sqs:DeleteMessage",
                   "sqs:GetQueueAttributes",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:ApigwHttpApiSqsLambdaStack-ApigwV2SqsLambdaQueue60DA20A7-u0KdXdwrt4es`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SqsMessageHandlerServiceRoleDefaultPolicyBA193A36",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

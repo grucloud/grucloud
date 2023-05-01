@@ -56,7 +56,7 @@ exports.MSKConfiguration = ({}) => ({
   getList: {
     method: "listConfigurations",
     getParam: "Configurations",
-    decorate,
+    decorate: ({ getById }) => pipe([getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kafka.html#createConfiguration-property
   create: {
@@ -80,8 +80,9 @@ exports.MSKConfiguration = ({}) => ({
   destroy: {
     method: "deleteConfiguration",
     pickId,
-    ignoreErrorMessages,
-    //TODO should retry on "The request could not be processed because of an internal error. Try again."
+    ignoreErrorMessages: [
+      "The request could not be processed because of an internal error. Try again.",
+    ],
   },
   getByName: getByNameCore,
   configDefault: ({

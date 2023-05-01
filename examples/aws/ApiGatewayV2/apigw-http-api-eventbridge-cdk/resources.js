@@ -32,9 +32,9 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "1.0",
       RequestParameters: {
+        Detail: "$request.body",
         DetailType: "MyDetailType",
         Source: "WebApp",
-        Detail: "$request.body",
       },
       TimeoutInMillis: 10000,
     }),
@@ -126,16 +126,16 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "events:PutEvents",
+                Effect: "Allow",
                 Resource: `arn:aws:events:${
                   config.region
                 }:${config.accountId()}:event-bus/MyEventBus`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "EventBridgeIntegrationRoleDefaultPolicy16371A00",
         },

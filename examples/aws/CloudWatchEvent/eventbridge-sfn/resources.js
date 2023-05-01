@@ -8,10 +8,10 @@ exports.createResources = () => [
     group: "CloudWatchEvents",
     properties: ({}) => ({
       EventPattern: {
-        source: ["aws.ec2"],
         detail: {
           state: ["running", "stopped", "terminated"],
         },
+        source: ["aws.ec2"],
       },
       Name: "sam-app-EC2StateWatcherStateChange-17JX9UWJE1I41",
     }),

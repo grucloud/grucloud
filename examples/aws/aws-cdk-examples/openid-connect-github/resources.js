@@ -14,7 +14,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       RoleName: "exampleGitHubDeployRole",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -22,12 +22,21 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Federated: `arn:aws:iam::${config.accountId()}:oidc-provider/token.actions.githubusercontent.com`,
+              Federated: `${getId({
+                type: "OpenIDConnectProvider",
+                group: "IAM",
+                name: "oidp::token.actions.githubusercontent.com",
+              })}`,
             },
             Action: "sts:AssumeRoleWithWebIdentity",
             Condition: {
               StringEquals: {
-                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                [`${getId({
+                  type: "OpenIDConnectProvider",
+                  group: "IAM",
+                  name: "oidp::token.actions.githubusercontent.com",
+                  path: "live.Url",
+                })}:aud`]: "sts.amazonaws.com",
               },
             },
           },

@@ -12,13 +12,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "vpcStack/test-VPC",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
+    name: ({ config }) =>
+      `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
   },
   { type: "InternetGateway", group: "EC2", name: "vpcStack/test-VPC" },
   {
@@ -43,83 +40,47 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "vpcStack/test-VPC",
+    dependencies: ({ config }) => ({
+      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
+      routeTable: `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 1,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "vpcStack/test-VPC",
+    dependencies: ({ config }) => ({
+      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
+      routeTable: `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 2,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "vpcStack/test-VPC",
+    dependencies: ({ config }) => ({
+      ig: "vpcStack/test-VPC",
+      routeTable: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 3,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "vpcStack/test-VPC",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 4,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpcStack/test-VPC",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 5,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpcStack/test-VPC",
+    dependencies: ({ config }) => ({
+      ig: "vpcStack/test-VPC",
+      routeTable: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}b`,
     }),
   },
   {
@@ -223,50 +184,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
-      routeTable: `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
-      routeTable: `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "vpcStack/test-VPC",
-      routeTable: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      ig: "vpcStack/test-VPC",
-      routeTable: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}b`,
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -318,10 +235,93 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
+    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpcStack/test-VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpcStack/test-VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpcStack/test-VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 3,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpcStack/test-VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 4,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpcStack/test-VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 5,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpcStack/test-VPC",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpcStack/test-VPC",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
   },
   {
     type: "VpcEndpoint",

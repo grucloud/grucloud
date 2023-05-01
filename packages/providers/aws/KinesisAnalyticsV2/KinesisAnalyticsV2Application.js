@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, map } = require("rubico");
+const { pipe, tap, get, pick, assign, map, omit } = require("rubico");
 const { defaultsDeep, isIn, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -28,6 +28,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KinesisAnalyticsV2.html
@@ -111,6 +112,18 @@ exports.KinesisAnalyticsV2Application = () => ({
     shouldRetryOnExceptionMessages: [
       "Kinesis Analytics service doesn't have sufficient privileges to assume the role",
     ],
+    // Tags are already registered for this resource ARN: arn:aws:kinesisanalytics:us-east-1:840541460064:application/my-app, please retry later. Or you can create without tags and then add tags using TagResource API after successful resource creation.
+    filterPayload: pipe([omit(["Tags"])]),
+    postCreate:
+      ({ endpoint, payload: { Tags } }) =>
+      ({ ApplicationARN }) =>
+        pipe([
+          tap((params) => {
+            assert(ApplicationARN);
+          }),
+          () => ({ ResourceARN: ApplicationARN, Tags }),
+          endpoint().tagResource,
+        ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KinesisAnalyticsV2.html#updateApplication-property
   update: {
@@ -121,7 +134,17 @@ exports.KinesisAnalyticsV2Application = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KinesisAnalyticsV2.html#deleteApplication-property
   destroy: {
     method: "deleteApplication",
-    pickId,
+    pickId: pipe([
+      pickId,
+      assign({
+        CreateTimestamp: pipe([
+          tap(({ CreateTimestamp }) => {
+            assert(CreateTimestamp);
+          }),
+          ({ CreateTimestamp }) => new Date(CreateTimestamp),
+        ]),
+      }),
+    ]),
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

@@ -12,7 +12,6 @@ exports.createResources = () => [
       EngineDisplayName: "MySQL",
       EngineName: "mysql",
       MySQLSettings: {},
-      SslMode: "none",
     }),
     dependencies: ({}) => ({
       iamRoleSecretsManagerMySQL: "role-secretsmanager",
@@ -41,8 +40,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "SecretsManagerReadWrite",
           PolicyArn: "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+          PolicyName: "SecretsManagerReadWrite",
         },
       ],
     }),
@@ -53,11 +52,11 @@ exports.createResources = () => [
     properties: ({ generatePassword }) => ({
       Name: "prod/db",
       SecretString: {
-        username: "dbuser",
-        password: generatePassword({ length: 9 }),
-        engine: "mysql",
-        port: "3306",
         dbname: "db",
+        engine: "mysql",
+        password: generatePassword({ length: 9 }),
+        port: "3306",
+        username: "dbuser",
       },
     }),
   },

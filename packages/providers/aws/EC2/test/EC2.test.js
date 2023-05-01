@@ -523,6 +523,19 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it("TransitGatewayVpnAttachment", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::TransitGatewayVpnAttachment",
+        livesNotFound: ({ config }) => [
+          { TransitGatewayAttachmentId: "tgw-attach-032cb2c8350925850" },
+        ],
+        skipGetById: true,
+        skipGetByName: true,
+        skipDelete: true,
+      }),
+      awsResourceTest,
+    ])());
   it("TransitGatewayRouteTableAssociation", () =>
     pipe([
       () => ({
@@ -582,6 +595,14 @@ describe("EC2", async function () {
         livesNotFound: ({ config }) => [
           { VpcEndpointId: "vpce-0ceb4fc535e8d1872" },
         ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("VpcEndpointService", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::VpcEndpointService",
+        livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());

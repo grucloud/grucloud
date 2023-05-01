@@ -11,12 +11,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^11.1.0",
-    "axios": "^0.26.0",
-    "rubico": "^1.8.9"
+    "@grucloud/core": "11.1.0",
+    "axios": "1.3.6",
+    "rubico": "1.9.6"
   },
   "devDependencies": {
-    "mocha": "^9.2.1"
+    "mocha": "10.2.0"
   },
   "repository": {
     "type": "git",

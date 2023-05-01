@@ -30,18 +30,18 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
         {
-          PolicyName: "EC2InstanceProfileForImageBuilder",
           PolicyArn:
             "arn:aws:iam::aws:policy/EC2InstanceProfileForImageBuilder",
+          PolicyName: "EC2InstanceProfileForImageBuilder",
         },
         {
-          PolicyName: "EC2InstanceProfileForImageBuilderECRContainerBuilds",
           PolicyArn:
             "arn:aws:iam::aws:policy/EC2InstanceProfileForImageBuilderECRContainerBuilds",
+          PolicyName: "EC2InstanceProfileForImageBuilderECRContainerBuilds",
         },
       ],
     }),
@@ -82,7 +82,6 @@ exports.createResources = () => [
     type: "ImageRecipe",
     group: "Imagebuilder",
     properties: ({}) => ({
-      semanticVersion: "1.0.0",
       additionalInstanceConfiguration: {
         systemsManagerAgent: {
           uninstallAfterBuild: false,
@@ -109,6 +108,7 @@ exports.createResources = () => [
       parentImage:
         "arn:aws:imagebuilder:us-east-1:aws:image/amazon-linux-2-x86/x.x.x",
       platform: "Linux",
+      semanticVersion: "1.0.0",
       workingDirectory: "/tmp",
     }),
   },

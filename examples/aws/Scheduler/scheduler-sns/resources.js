@@ -4,6 +4,29 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName:
+        "Amazon-EventBridge-Scheduler-Execution-Policy-50a964bf-c6f1-477b-bce9-869058e66a1b",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["sns:Publish"],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:topic-scheduler`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
@@ -34,29 +57,6 @@ exports.createResources = () => [
       policies: [
         "Amazon-EventBridge-Scheduler-Execution-Policy-50a964bf-c6f1-477b-bce9-869058e66a1b",
       ],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName:
-        "Amazon-EventBridge-Scheduler-Execution-Policy-50a964bf-c6f1-477b-bce9-869058e66a1b",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["sns:Publish"],
-            Resource: [
-              `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:topic-scheduler`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
     }),
   },
   {

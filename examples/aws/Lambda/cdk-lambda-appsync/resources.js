@@ -69,25 +69,25 @@ $util.qr($context.args.put("updatedAt", $createdAt))
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "appsync:GraphQL",
+                Effect: "Allow",
                 Resource: `arn:aws:appsync:${
                   config.region
                 }:${config.accountId()}:apis/qmb4gkigtva77il5mzwamzxrbe/types/Mutation/*`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "triggerServiceRoleDefaultPolicy87FA9B3E",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

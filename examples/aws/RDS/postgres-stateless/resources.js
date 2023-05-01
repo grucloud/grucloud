@@ -3,13 +3,50 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "KeyPair", group: "EC2", name: "kp-postgres-stateless" },
+  { type: "ElasticIpAddress", group: "EC2", name: "eip-bastion" },
+  { type: "ElasticIpAddress", group: "EC2", name: "iep" },
   {
-    type: "Vpc",
+    type: "ElasticIpAddressAssociation",
     group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "192.168.0.0/16",
+    dependencies: ({}) => ({
+      eip: "eip-bastion",
+      instance: "bastion",
+    }),
+  },
+  {
+    type: "Instance",
+    group: "EC2",
+    name: "bastion",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc::security-group-public",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "vpc::subnet-public-a",
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+    }),
+    dependencies: ({}) => ({
+      subnets: ["vpc::subnet-public-a"],
+      keyPair: "kp-postgres-stateless",
+      securityGroups: ["sg::vpc::security-group-public"],
     }),
   },
   { type: "InternetGateway", group: "EC2", name: "internet-gateway" },
@@ -21,6 +58,7 @@ exports.createResources = () => [
       internetGateway: "internet-gateway",
     }),
   },
+  { type: "KeyPair", group: "EC2", name: "kp-postgres-stateless" },
   {
     type: "NatGateway",
     group: "EC2",
@@ -34,55 +72,36 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "subnet-private-a",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 3,
-      NetworkNumber: 3,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "vpc",
+      natGateway: "nat-gateway",
+      routeTable: "vpc::route-table-private-a",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "subnet-private-b",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 3,
-      NetworkNumber: 4,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "vpc",
+      natGateway: "nat-gateway",
+      routeTable: "vpc::route-table-private-b",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "subnet-public-a",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 3,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-public-b",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 3,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
+      ig: "internet-gateway",
+      routeTable: "vpc::route-table-public",
     }),
   },
   {
@@ -139,39 +158,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       routeTable: "vpc::route-table-public",
       subnet: "vpc::subnet-public-b",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "nat-gateway",
-      routeTable: "vpc::route-table-private-a",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "nat-gateway",
-      routeTable: "vpc::route-table-private-b",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "internet-gateway",
-      routeTable: "vpc::route-table-public",
     }),
   },
   {
@@ -241,50 +227,64 @@ exports.createResources = () => [
       securityGroup: "sg::vpc::security-group-public",
     }),
   },
-  { type: "ElasticIpAddress", group: "EC2", name: "eip-bastion" },
-  { type: "ElasticIpAddress", group: "EC2", name: "iep" },
   {
-    type: "ElasticIpAddressAssociation",
+    type: "Subnet",
     group: "EC2",
+    name: "subnet-private-a",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 3,
+      NetworkNumber: 3,
+    }),
     dependencies: ({}) => ({
-      eip: "eip-bastion",
-      instance: "bastion",
+      vpc: "vpc",
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "bastion",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc::security-group-public",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "vpc::subnet-public-a",
-          })}`,
-        },
-      ],
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
-      },
+    name: "subnet-private-b",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 3,
+      NetworkNumber: 4,
     }),
     dependencies: ({}) => ({
-      subnets: ["vpc::subnet-public-a"],
-      keyPair: "kp-postgres-stateless",
-      securityGroups: ["sg::vpc::security-group-public"],
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-public-a",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 3,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-public-b",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 3,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "192.168.0.0/16",
     }),
   },
   {
@@ -294,29 +294,29 @@ exports.createResources = () => [
       BackupRetentionPeriod: 1,
       DatabaseName: "dev",
       DBClusterIdentifier: "cluster-postgres-stateless",
+      DeletionProtection: false,
       Engine: "aurora-postgresql",
+      EngineMode: "serverless",
       EngineVersion: "10.21",
+      HttpEndpointEnabled: false,
+      IAMDatabaseAuthenticationEnabled: false,
       MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
       PreferredBackupWindow: "01:39-02:09",
       PreferredMaintenanceWindow: "sun:00:47-sun:01:17",
-      IAMDatabaseAuthenticationEnabled: false,
-      EngineMode: "serverless",
-      DeletionProtection: false,
-      HttpEndpointEnabled: false,
+      ScalingConfiguration: {
+        AutoPause: true,
+        MaxCapacity: 4,
+        MinCapacity: 2,
+        SecondsBeforeTimeout: 300,
+        SecondsUntilAutoPause: 300,
+        TimeoutAction: "RollbackCapacityChange",
+      },
       Tags: [
         {
           Key: "mykey1",
           Value: "myvalue",
         },
       ],
-      ScalingConfiguration: {
-        MinCapacity: 2,
-        MaxCapacity: 4,
-        AutoPause: true,
-        SecondsUntilAutoPause: 300,
-        TimeoutAction: "RollbackCapacityChange",
-        SecondsBeforeTimeout: 300,
-      },
       MasterUserPassword:
         process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USER_PASSWORD,
     }),
@@ -329,8 +329,8 @@ exports.createResources = () => [
     type: "DBSubnetGroup",
     group: "RDS",
     properties: ({}) => ({
-      DBSubnetGroupName: "subnet-group-postgres-stateless",
       DBSubnetGroupDescription: "db subnet group",
+      DBSubnetGroupName: "subnet-group-postgres-stateless",
     }),
     dependencies: ({}) => ({
       subnets: ["vpc::subnet-private-a", "vpc::subnet-private-b"],

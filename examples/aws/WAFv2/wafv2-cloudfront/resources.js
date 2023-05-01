@@ -14,76 +14,98 @@ exports.createResources = () => [
   {
     type: "Distribution",
     group: "CloudFront",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
+      Comment: "",
+      DefaultCacheBehavior: {
+        AllowedMethods: {
+          CachedMethods: {
+            Items: ["HEAD", "GET"],
+            Quantity: 2,
+          },
+          Items: ["HEAD", "GET"],
+          Quantity: 2,
+        },
+        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
+        Compress: true,
+        FieldLevelEncryptionId: "",
+        SmoothStreaming: false,
+        TargetOriginId: `cloudfront-demo-waf.grucloud.org.s3-website-${config.region}.amazonaws.com`,
+        TrustedKeyGroups: {
+          Enabled: false,
+        },
+        TrustedSigners: {
+          Enabled: false,
+        },
+        ViewerProtocolPolicy: "allow-all",
+      },
       DefaultRootObject: "",
       Origins: {
         Items: [
           {
-            Id: "website.grucloud.org.s3.eu-west-2.amazonaws.com",
-            DomainName: "website.grucloud.org.s3.eu-west-2.amazonaws.com",
-            OriginPath: "",
+            ConnectionAttempts: 3,
+            ConnectionTimeout: 10,
             CustomHeaders: {
               Quantity: 0,
             },
-            S3OriginConfig: {
-              OriginAccessIdentity: `origin-access-identity/cloudfront/${getId({
-                type: "OriginAccessIdentity",
-                group: "CloudFront",
-                name: "access-identity-website.grucloud.org.s3.eu-west-2.amazonaws.com",
-              })}`,
+            CustomOriginConfig: {
+              HTTPPort: 80,
+              HTTPSPort: 443,
+              OriginKeepaliveTimeout: 5,
+              OriginProtocolPolicy: "http-only",
+              OriginReadTimeout: 30,
+              OriginSslProtocols: {
+                Items: ["TLSv1.2"],
+                Quantity: 1,
+              },
             },
-            ConnectionAttempts: 3,
-            ConnectionTimeout: 10,
+            DomainName: `cloudfront-demo-waf.grucloud.org.s3-website-${config.region}.amazonaws.com`,
+            Id: `cloudfront-demo-waf.grucloud.org.s3-website-${config.region}.amazonaws.com`,
+            OriginAccessControlId: "",
+            OriginPath: "",
             OriginShield: {
               Enabled: false,
             },
-            OriginAccessControlId: "",
           },
         ],
       },
-      DefaultCacheBehavior: {
-        TargetOriginId: "website.grucloud.org.s3.eu-west-2.amazonaws.com",
-        TrustedSigners: {
-          Enabled: false,
-        },
-        TrustedKeyGroups: {
-          Enabled: false,
-        },
-        ViewerProtocolPolicy: "redirect-to-https",
-        AllowedMethods: {
-          Quantity: 2,
-          Items: ["HEAD", "GET"],
-          CachedMethods: {
-            Quantity: 2,
-            Items: ["HEAD", "GET"],
-          },
-        },
-        SmoothStreaming: false,
-        Compress: true,
-        FieldLevelEncryptionId: "",
-        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
-      },
-      Comment: "",
       PriceClass: "PriceClass_100",
       ViewerCertificate: {
-        CloudFrontDefaultCertificate: false,
-        SSLSupportMethod: "sni-only",
-        MinimumProtocolVersion: "TLSv1.2_2021",
         CertificateSource: "acm",
+        CloudFrontDefaultCertificate: false,
+        MinimumProtocolVersion: "TLSv1.2_2021",
+        SSLSupportMethod: "sni-only",
       },
     }),
     dependencies: ({}) => ({
+      buckets: ["cloudfront-demo-waf.grucloud.org"],
       certificate: "grucloud.org",
-      originAccessIdentities: [
-        "access-identity-website.grucloud.org.s3.eu-west-2.amazonaws.com",
-      ],
-      webAcl: "webacl-cloudfront",
+      webAcl: "cloudfront-acl",
     }),
   },
   {
-    type: "OriginAccessIdentity",
-    group: "CloudFront",
-    name: "access-identity-website.grucloud.org.s3.eu-west-2.amazonaws.com",
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "cloudfront-demo-waf.grucloud.org",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+            BucketKeyEnabled: true,
+          },
+        ],
+      },
+      WebsiteConfiguration: {
+        ErrorDocument: {
+          Key: "error.html",
+        },
+        IndexDocument: {
+          Suffix: "index.html",
+        },
+      },
+    }),
   },
   {
     type: "WebACLCloudFront",
@@ -94,14 +116,14 @@ exports.createResources = () => [
         Allow: {},
       },
       ManagedByFirewallManager: false,
-      Name: "webacl-cloudfront",
+      Name: "cloudfront-acl",
       Rules: [],
+      Scope: "CLOUDFRONT",
       VisibilityConfig: {
         CloudWatchMetricsEnabled: true,
-        MetricName: "webacl-cloudfront",
+        MetricName: "cloudfront-acl",
         SampledRequestsEnabled: true,
       },
-      Scope: "CLOUDFRONT",
     }),
   },
 ];

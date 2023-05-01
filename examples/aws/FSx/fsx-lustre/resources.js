@@ -10,16 +10,6 @@ exports.createResources = () => [
       logGroupName: "/aws/fsx/lustre",
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-a",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
   {
     type: "SecurityGroup",
     group: "EC2",
@@ -46,6 +36,16 @@ exports.createResources = () => [
       securityGroup: "sg::vpc-default::default",
     }),
   },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-a",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "FileSystem",
     group: "FSx",

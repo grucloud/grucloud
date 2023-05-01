@@ -4,54 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "sam-app-vpc",
-    properties: ({}) => ({
-      CidrBlock: "172.31.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "sam-app-prv-sub-1",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 8,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "sam-app-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "sam-app-prv-sub-2",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 8,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "sam-app-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "sam-app-prv-sub-3",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
-      NewBits: 8,
-      NetworkNumber: 2,
-    }),
-    dependencies: ({}) => ({
-      vpc: "sam-app-vpc",
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -132,6 +84,54 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: "sam-app-prv-sub-1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "sam-app-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "sam-app-prv-sub-2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "sam-app-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "sam-app-prv-sub-3",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}c`,
+      NewBits: 8,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "sam-app-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "sam-app-vpc",
+    properties: ({}) => ({
+      CidrBlock: "172.31.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
@@ -151,18 +151,18 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["secretsmanager:GetSecretValue"],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:secretsmanager:${
                     config.region
                   }:${config.accountId()}:secret:secretClusterMasterUser-Mug7ijgYl9HN-4MRKXh`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "DBProxyPolicy",
         },
@@ -190,9 +190,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonRDSEnhancedMonitoringRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole",
+          PolicyName: "AmazonRDSEnhancedMonitoringRole",
         },
       ],
     }),
@@ -201,20 +201,20 @@ exports.createResources = () => [
     type: "DBCluster",
     group: "RDS",
     properties: ({}) => ({
+      BacktrackWindow: 86400,
       BackupRetentionPeriod: 1,
       DatabaseName: "mylab",
       DBClusterIdentifier: "sam-app-mysql-cluster",
+      DeletionProtection: false,
       Engine: "aurora-mysql",
+      EngineMode: "provisioned",
       EngineVersion: "5.7.mysql_aurora.2.11.1",
-      Port: 3306,
+      HttpEndpointEnabled: false,
+      IAMDatabaseAuthenticationEnabled: false,
       MasterUsername: process.env.SAM_APP_MYSQL_CLUSTER_MASTER_USERNAME,
+      Port: 3306,
       PreferredBackupWindow: "04:46-05:16",
       PreferredMaintenanceWindow: "sat:03:48-sat:04:18",
-      IAMDatabaseAuthenticationEnabled: false,
-      BacktrackWindow: 86400,
-      EngineMode: "provisioned",
-      DeletionProtection: false,
-      HttpEndpointEnabled: false,
       MasterUserPassword:
         process.env.SAM_APP_MYSQL_CLUSTER_MASTER_USER_PASSWORD,
     }),
@@ -228,19 +228,19 @@ exports.createResources = () => [
     type: "DBInstance",
     group: "RDS",
     properties: ({}) => ({
-      DBInstanceIdentifier: "sam-app-mysql-node-1",
-      DBInstanceClass: "db.r5.large",
-      Engine: "aurora-mysql",
-      PreferredMaintenanceWindow: "thu:06:23-thu:06:53",
-      EngineVersion: "5.7.mysql_aurora.2.11.1",
-      PubliclyAccessible: false,
-      StorageType: "aurora",
-      DBClusterIdentifier: "sam-app-mysql-cluster",
-      StorageEncrypted: true,
       CopyTagsToSnapshot: true,
+      DBClusterIdentifier: "sam-app-mysql-cluster",
+      DBInstanceClass: "db.r5.large",
+      DBInstanceIdentifier: "sam-app-mysql-node-1",
+      Engine: "aurora-mysql",
+      EngineVersion: "5.7.mysql_aurora.2.11.1",
       MonitoringInterval: 1,
       PerformanceInsightsEnabled: true,
       PerformanceInsightsRetentionPeriod: 7,
+      PreferredMaintenanceWindow: "thu:06:23-thu:06:53",
+      PubliclyAccessible: false,
+      StorageEncrypted: true,
+      StorageType: "aurora",
       EnablePerformanceInsights: true,
     }),
     dependencies: ({ config }) => ({
@@ -255,23 +255,23 @@ exports.createResources = () => [
     type: "DBProxy",
     group: "RDS",
     properties: ({ getId }) => ({
-      DBProxyName: "rds-proxy",
-      EngineFamily: "MYSQL",
       Auth: [
         {
           AuthScheme: "SECRETS",
+          ClientPasswordAuthType: "MYSQL_NATIVE_PASSWORD",
+          IAMAuth: "REQUIRED",
           SecretArn: `${getId({
             type: "Secret",
             group: "SecretsManager",
             name: "sam-app-cluster-secret",
           })}`,
-          IAMAuth: "REQUIRED",
-          ClientPasswordAuthType: "MYSQL_NATIVE_PASSWORD",
         },
       ],
-      RequireTLS: true,
-      IdleClientTimeout: 120,
+      DBProxyName: "rds-proxy",
       DebugLogging: false,
+      EngineFamily: "MYSQL",
+      IdleClientTimeout: 120,
+      RequireTLS: true,
     }),
     dependencies: ({}) => ({
       subnets: [
@@ -288,8 +288,8 @@ exports.createResources = () => [
     type: "DBSubnetGroup",
     group: "RDS",
     properties: ({}) => ({
-      DBSubnetGroupName: "sam-app-db-subnet-group",
       DBSubnetGroupDescription: "subnets allowed for deploying DB instances",
+      DBSubnetGroupName: "sam-app-db-subnet-group",
     }),
     dependencies: ({}) => ({
       subnets: [
@@ -303,14 +303,14 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     properties: ({ generatePassword }) => ({
+      Description:
+        "Master user credentials for DB cluster 'sam-app-mysql-cluster'",
       Name: "sam-app-cluster-secret",
       SecretString: {
         password: generatePassword({ length: 10 }),
-        username: "masteruser",
         port: 3306,
+        username: "masteruser",
       },
-      Description:
-        "Master user credentials for DB cluster 'sam-app-mysql-cluster'",
     }),
   },
 ];

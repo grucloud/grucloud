@@ -13,13 +13,9 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc",
-    properties: ({}) => ({
-      CidrBlock: "172.31.0.0/16",
-      DnsHostnames: true,
-    }),
+    name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
   },
   {
     type: "InternetGateway",
@@ -45,6 +41,238 @@ exports.createResources = () => [
       subnet:
         "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
       eip: "ECSServiceStack/SkeletonVpc/publicSubnet1",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "ECSServiceStack/SkeletonVpc",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      ig: "ECSServiceStack/SkeletonVpc",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "ECSServiceStack/SkeletonVpc/applicationSubnet1",
+    dependencies: ({}) => ({
+      vpc: "ECSServiceStack/SkeletonVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "ECSServiceStack/SkeletonVpc/applicationSubnet2",
+    dependencies: ({}) => ({
+      vpc: "ECSServiceStack/SkeletonVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "ECSServiceStack/SkeletonVpc/dataSubnet1",
+    dependencies: ({}) => ({
+      vpc: "ECSServiceStack/SkeletonVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "ECSServiceStack/SkeletonVpc/dataSubnet2",
+    dependencies: ({}) => ({
+      vpc: "ECSServiceStack/SkeletonVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
+    dependencies: ({}) => ({
+      vpc: "ECSServiceStack/SkeletonVpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "ECSServiceStack/SkeletonVpc/publicSubnet2",
+    dependencies: ({}) => ({
+      vpc: "ECSServiceStack/SkeletonVpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName:
+        "ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
+      Description:
+        "Automatically created Security Group for ELB ECSServiceStackamazonecssampleLB36F3E7CB",
+    }),
+    dependencies: ({}) => ({
+      vpc: "ECSServiceStack/SkeletonVpc",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName:
+        "ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
+      Description: "ECSServiceStack/amazon-ecs-sample/Service/SecurityGroup",
+    }),
+    dependencies: ({}) => ({
+      vpc: "ECSServiceStack/SkeletonVpc",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allow from anyone on port 80",
+        },
+      ],
+      ToPort: 80,
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 80,
+      IpProtocol: "tcp",
+      ToPort: 80,
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
+      securityGroupFrom: [
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
+      ],
+    }),
+  },
+  {
+    type: "SecurityGroupRuleEgress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 80,
+      IpProtocol: "tcp",
+      ToPort: 80,
+    }),
+    dependencies: ({}) => ({
+      securityGroup:
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
+      securityGroupFrom: [
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
+      ],
     }),
   },
   {
@@ -128,241 +356,13 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "RouteTable",
+    type: "Vpc",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/applicationSubnet1",
-    dependencies: ({}) => ({
-      vpc: "ECSServiceStack/SkeletonVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/applicationSubnet2",
-    dependencies: ({}) => ({
-      vpc: "ECSServiceStack/SkeletonVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/dataSubnet1",
-    dependencies: ({}) => ({
-      vpc: "ECSServiceStack/SkeletonVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/dataSubnet2",
-    dependencies: ({}) => ({
-      vpc: "ECSServiceStack/SkeletonVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
-    dependencies: ({}) => ({
-      vpc: "ECSServiceStack/SkeletonVpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/publicSubnet2",
-    dependencies: ({}) => ({
-      vpc: "ECSServiceStack/SkeletonVpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
-      subnet:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
-      subnet:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
-      subnet:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
-      subnet:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
-      subnet:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
-      subnet:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
+    name: "ECSServiceStack/SkeletonVpc",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+      CidrBlock: "172.31.0.0/16",
+      DnsHostnames: true,
     }),
-    dependencies: ({}) => ({
-      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
-      routeTable:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
-      routeTable:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "ECSServiceStack/SkeletonVpc",
-      routeTable:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "ECSServiceStack/SkeletonVpc",
-      routeTable:
-        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName:
-        "ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
-      Description:
-        "Automatically created Security Group for ELB ECSServiceStackamazonecssampleLB36F3E7CB",
-    }),
-    dependencies: ({}) => ({
-      vpc: "ECSServiceStack/SkeletonVpc",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName:
-        "ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
-      Description: "ECSServiceStack/amazon-ecs-sample/Service/SecurityGroup",
-    }),
-    dependencies: ({}) => ({
-      vpc: "ECSServiceStack/SkeletonVpc",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 80,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-          Description: "Allow from anyone on port 80",
-        },
-      ],
-      ToPort: 80,
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 80,
-      IpProtocol: "tcp",
-      ToPort: 80,
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
-      securityGroupFrom: [
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
-      ],
-    }),
-  },
-  {
-    type: "SecurityGroupRuleEgress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 80,
-      IpProtocol: "tcp",
-      ToPort: 80,
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
-      securityGroupFrom: [
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
-      ],
-    }),
-  },
-  {
-    type: "ElasticIpAddress",
-    group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
   },
   {
     type: "Cluster",

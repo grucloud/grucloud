@@ -276,7 +276,7 @@ exports.createResources = () => [
           apiId: `${getId({
             type: "RestApi",
             group: "APIGateway",
-            name: "User Management API",
+            name: "Reporting API",
           })}`,
           stage: "Prod",
         },
@@ -284,7 +284,7 @@ exports.createResources = () => [
           apiId: `${getId({
             type: "RestApi",
             group: "APIGateway",
-            name: "Reporting API",
+            name: "User Management API",
           })}`,
           stage: "Prod",
         },
@@ -325,9 +325,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -351,9 +351,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -405,14 +405,14 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-ReportingFunction-uWuM1bJCNVIn",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "sam-app-ReportingFunctionRestApiPermissionProd-12HUD73KN7MJO",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Reporting API",
             path: "live.arnv2",
           })}/*/GET/`,
+          StatementId:
+            "sam-app-ReportingFunctionRestApiPermissionProd-12HUD73KN7MJO",
         },
       ],
     }),
@@ -430,14 +430,14 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-UserManagementFunction-So5CQsnlAZWO",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "sam-app-UserManagementFunctionRestApiPermissionProd-UYYYNDDKZ8QY",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "User Management API",
             path: "live.arnv2",
           })}/*/GET/`,
+          StatementId:
+            "sam-app-UserManagementFunctionRestApiPermissionProd-UYYYNDDKZ8QY",
         },
       ],
     }),

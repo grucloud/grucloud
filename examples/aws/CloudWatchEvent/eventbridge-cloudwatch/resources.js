@@ -47,29 +47,20 @@ exports.createResources = () => [
     group: "CloudWatchLogs",
     properties: ({ config }) => ({
       policyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "EventBridgetoCWLogsCreateLogStreamPolicy",
+            Action: "logs:CreateLogStream",
             Effect: "Allow",
             Principal: {
               Service: "events.amazonaws.com",
             },
-            Action: "logs:CreateLogStream",
             Resource: `arn:aws:logs:${
               config.region
             }:${config.accountId()}:log-group:/aws/vendedlogs/events/resource-policy-test:*`,
+            Sid: "EventBridgetoCWLogsCreateLogStreamPolicy",
           },
           {
-            Sid: "EventBridgetoCWLogsPutLogEventsPolicy",
-            Effect: "Allow",
-            Principal: {
-              Service: "events.amazonaws.com",
-            },
             Action: "logs:PutLogEvents",
-            Resource: `arn:aws:logs:${
-              config.region
-            }:${config.accountId()}:log-group:/aws/vendedlogs/events/resource-policy-test:*`,
             Condition: {
               ArnEquals: {
                 "AWS:SourceArn": `arn:aws:events:${
@@ -77,8 +68,17 @@ exports.createResources = () => [
                 }:${config.accountId()}:rule/test-bus/eventbridge-cloudwatch-LogsRule-1F67T9N3BJWR4`,
               },
             },
+            Effect: "Allow",
+            Principal: {
+              Service: "events.amazonaws.com",
+            },
+            Resource: `arn:aws:logs:${
+              config.region
+            }:${config.accountId()}:log-group:/aws/vendedlogs/events/resource-policy-test:*`,
+            Sid: "EventBridgetoCWLogsPutLogEventsPolicy",
           },
         ],
+        Version: "2012-10-17",
       },
       policyName: "EventBridgeToCWLogsPolicy",
     }),

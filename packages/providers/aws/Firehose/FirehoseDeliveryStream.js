@@ -22,7 +22,11 @@ const {
   when,
   first,
 } = require("rubico/x");
-const { buildTags, compareAws } = require("../AwsCommon");
+const {
+  buildTags,
+  compareAws,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -148,6 +152,12 @@ exports.FirehoseDeliveryStream = ({}) => ({
         assign({
           ExtendedS3DestinationConfiguration: pipe([
             get("ExtendedS3DestinationConfiguration"),
+            assign({
+              BucketARN: pipe([
+                get("BucketARN"),
+                replaceAccountAndRegion({ lives, providerConfig }),
+              ]),
+            }),
             when(
               get("ProcessingConfiguration"),
               assign({
@@ -362,10 +372,7 @@ exports.FirehoseDeliveryStream = ({}) => ({
     shouldRetryOnExceptionMessages: ["Firehose is unable to assume role"],
     isInstanceUp: eq(get("DeliveryStreamStatus"), "ACTIVE"),
     getErrorMessage: get("FailureDescription", "error"),
-    // postCreate:
-    //   ({ endpoint }) =>
-    //   (live) =>
-    //     pipe([() => live, get("Tags"), tagResource({ endpoint })({ live })])(),
+    shouldRetryOnExceptionMessages: ["S3 Bucket"],
   },
   update: {
     method: "updateDeliveryStream",

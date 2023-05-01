@@ -541,6 +541,7 @@ exports.CloudFrontDistribution = ({ compare }) => ({
     webAcl: {
       type: "WebACLCloudFront",
       group: "WAFv2",
+      pathId: "WebACLId",
       dependencyId: ({ lives, config }) => get("WebACLId"),
     },
   },
@@ -858,7 +859,7 @@ exports.CloudFrontDistribution = ({ compare }) => ({
         ]),
       }),
       setQuantity("Restrictions.GeoRestriction"),
-      when(() => webAcl, defaultsDeep({ WebACLId: getField(webAcl, "ARN") })),
+      when(() => webAcl, assign({ WebACLId: () => getField(webAcl, "ARN") })),
     ])()),
   onDeployed: ({ resultCreate, lives, config }) =>
     pipe([

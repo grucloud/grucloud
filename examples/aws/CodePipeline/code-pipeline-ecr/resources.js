@@ -10,7 +10,6 @@ exports.createResources = () => [
       Description:
         "Amazon CloudWatch Events rule to automatically start your pipeline when a change occurs in the Amazon ECR image tag. Deleting this may prevent changes from being detected in that pipeline. Read more: http://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-about-starting.html",
       EventPattern: {
-        source: ["aws.ecr"],
         detail: {
           "action-type": ["PUSH"],
           "image-tag": ["latest"],
@@ -18,6 +17,7 @@ exports.createResources = () => [
           result: ["SUCCESS"],
         },
         "detail-type": ["ECR Image Action"],
+        source: ["aws.ecr"],
       },
       Name: "codepipeline-starha-latest-615512-rule",
     }),
@@ -163,6 +163,257 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["iam:PassRole"],
+            Condition: {
+              StringEqualsIfExists: {
+                "iam:PassedToService": [
+                  "cloudformation.amazonaws.com",
+                  "elasticbeanstalk.amazonaws.com",
+                  "ec2.amazonaws.com",
+                  "ecs-tasks.amazonaws.com",
+                ],
+              },
+            },
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "codecommit:CancelUploadArchive",
+              "codecommit:GetBranch",
+              "codecommit:GetCommit",
+              "codecommit:GetRepository",
+              "codecommit:GetUploadArchiveStatus",
+              "codecommit:UploadArchive",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "codedeploy:CreateDeployment",
+              "codedeploy:GetApplication",
+              "codedeploy:GetApplicationRevision",
+              "codedeploy:GetDeployment",
+              "codedeploy:GetDeploymentConfig",
+              "codedeploy:RegisterApplicationRevision",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["codestar-connections:UseConnection"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "elasticbeanstalk:*",
+              "ec2:*",
+              "elasticloadbalancing:*",
+              "autoscaling:*",
+              "cloudwatch:*",
+              "s3:*",
+              "sns:*",
+              "cloudformation:*",
+              "rds:*",
+              "sqs:*",
+              "ecs:*",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["lambda:InvokeFunction", "lambda:ListFunctions"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "opsworks:CreateDeployment",
+              "opsworks:DescribeApps",
+              "opsworks:DescribeCommands",
+              "opsworks:DescribeDeployments",
+              "opsworks:DescribeInstances",
+              "opsworks:DescribeStacks",
+              "opsworks:UpdateApp",
+              "opsworks:UpdateStack",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "cloudformation:CreateStack",
+              "cloudformation:DeleteStack",
+              "cloudformation:DescribeStacks",
+              "cloudformation:UpdateStack",
+              "cloudformation:CreateChangeSet",
+              "cloudformation:DeleteChangeSet",
+              "cloudformation:DescribeChangeSet",
+              "cloudformation:ExecuteChangeSet",
+              "cloudformation:SetStackPolicy",
+              "cloudformation:ValidateTemplate",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "codebuild:BatchGetBuilds",
+              "codebuild:StartBuild",
+              "codebuild:BatchGetBuildBatches",
+              "codebuild:StartBuildBatch",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "devicefarm:ListProjects",
+              "devicefarm:ListDevicePools",
+              "devicefarm:GetRun",
+              "devicefarm:GetUpload",
+              "devicefarm:CreateUpload",
+              "devicefarm:ScheduleRun",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "servicecatalog:ListProvisioningArtifacts",
+              "servicecatalog:CreateProvisioningArtifact",
+              "servicecatalog:DescribeProvisioningArtifact",
+              "servicecatalog:DeleteProvisioningArtifact",
+              "servicecatalog:UpdateProduct",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["cloudformation:ValidateTemplate"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["ecr:DescribeImages"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "states:DescribeExecution",
+              "states:DescribeStateMachine",
+              "states:StartExecution",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: [
+              "appconfig:StartDeployment",
+              "appconfig:StopDeployment",
+              "appconfig:GetDeployment",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+      Description: "Policy used in trust relationship with CodePipeline",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: `CodeBuildBasePolicy-my-project-${config.region}`,
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "logs:CreateLogGroup",
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+            ],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/codebuild/my-project`,
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/codebuild/my-project:*`,
+            ],
+          },
+          {
+            Action: [
+              "s3:PutObject",
+              "s3:GetObject",
+              "s3:GetObjectVersion",
+              "s3:GetBucketAcl",
+              "s3:GetBucketLocation",
+            ],
+            Effect: "Allow",
+            Resource: [`arn:aws:s3:::codepipeline-${config.region}-*`],
+          },
+          {
+            Action: [
+              "codebuild:CreateReportGroup",
+              "codebuild:CreateReport",
+              "codebuild:UpdateReport",
+              "codebuild:BatchPutTestCases",
+              "codebuild:BatchPutCodeCoverages",
+            ],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:codebuild:${
+                config.region
+              }:${config.accountId()}:report-group/my-project-*`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+      Description: "Policy used in trust relationship with CodeBuild",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: `start-pipeline-execution-${config.region}-my-pipeline`,
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["codepipeline:StartPipelineExecution"],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:codepipeline:${
+                config.region
+              }:${config.accountId()}:my-pipeline`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+      Description:
+        "Allows Amazon CloudWatch Events to automatically start a new execution in the my-pipeline pipeline when a change occurs",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -232,270 +483,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: ["iam:PassRole"],
-            Resource: "*",
-            Effect: "Allow",
-            Condition: {
-              StringEqualsIfExists: {
-                "iam:PassedToService": [
-                  "cloudformation.amazonaws.com",
-                  "elasticbeanstalk.amazonaws.com",
-                  "ec2.amazonaws.com",
-                  "ecs-tasks.amazonaws.com",
-                ],
-              },
-            },
-          },
-          {
-            Action: [
-              "codecommit:CancelUploadArchive",
-              "codecommit:GetBranch",
-              "codecommit:GetCommit",
-              "codecommit:GetRepository",
-              "codecommit:GetUploadArchiveStatus",
-              "codecommit:UploadArchive",
-            ],
-            Resource: "*",
-            Effect: "Allow",
-          },
-          {
-            Action: [
-              "codedeploy:CreateDeployment",
-              "codedeploy:GetApplication",
-              "codedeploy:GetApplicationRevision",
-              "codedeploy:GetDeployment",
-              "codedeploy:GetDeploymentConfig",
-              "codedeploy:RegisterApplicationRevision",
-            ],
-            Resource: "*",
-            Effect: "Allow",
-          },
-          {
-            Action: ["codestar-connections:UseConnection"],
-            Resource: "*",
-            Effect: "Allow",
-          },
-          {
-            Action: [
-              "elasticbeanstalk:*",
-              "ec2:*",
-              "elasticloadbalancing:*",
-              "autoscaling:*",
-              "cloudwatch:*",
-              "s3:*",
-              "sns:*",
-              "cloudformation:*",
-              "rds:*",
-              "sqs:*",
-              "ecs:*",
-            ],
-            Resource: "*",
-            Effect: "Allow",
-          },
-          {
-            Action: ["lambda:InvokeFunction", "lambda:ListFunctions"],
-            Resource: "*",
-            Effect: "Allow",
-          },
-          {
-            Action: [
-              "opsworks:CreateDeployment",
-              "opsworks:DescribeApps",
-              "opsworks:DescribeCommands",
-              "opsworks:DescribeDeployments",
-              "opsworks:DescribeInstances",
-              "opsworks:DescribeStacks",
-              "opsworks:UpdateApp",
-              "opsworks:UpdateStack",
-            ],
-            Resource: "*",
-            Effect: "Allow",
-          },
-          {
-            Action: [
-              "cloudformation:CreateStack",
-              "cloudformation:DeleteStack",
-              "cloudformation:DescribeStacks",
-              "cloudformation:UpdateStack",
-              "cloudformation:CreateChangeSet",
-              "cloudformation:DeleteChangeSet",
-              "cloudformation:DescribeChangeSet",
-              "cloudformation:ExecuteChangeSet",
-              "cloudformation:SetStackPolicy",
-              "cloudformation:ValidateTemplate",
-            ],
-            Resource: "*",
-            Effect: "Allow",
-          },
-          {
-            Action: [
-              "codebuild:BatchGetBuilds",
-              "codebuild:StartBuild",
-              "codebuild:BatchGetBuildBatches",
-              "codebuild:StartBuildBatch",
-            ],
-            Resource: "*",
-            Effect: "Allow",
-          },
-          {
-            Effect: "Allow",
-            Action: [
-              "devicefarm:ListProjects",
-              "devicefarm:ListDevicePools",
-              "devicefarm:GetRun",
-              "devicefarm:GetUpload",
-              "devicefarm:CreateUpload",
-              "devicefarm:ScheduleRun",
-            ],
-            Resource: "*",
-          },
-          {
-            Effect: "Allow",
-            Action: [
-              "servicecatalog:ListProvisioningArtifacts",
-              "servicecatalog:CreateProvisioningArtifact",
-              "servicecatalog:DescribeProvisioningArtifact",
-              "servicecatalog:DeleteProvisioningArtifact",
-              "servicecatalog:UpdateProduct",
-            ],
-            Resource: "*",
-          },
-          {
-            Effect: "Allow",
-            Action: ["cloudformation:ValidateTemplate"],
-            Resource: "*",
-          },
-          {
-            Effect: "Allow",
-            Action: ["ecr:DescribeImages"],
-            Resource: "*",
-          },
-          {
-            Effect: "Allow",
-            Action: [
-              "states:DescribeExecution",
-              "states:DescribeStateMachine",
-              "states:StartExecution",
-            ],
-            Resource: "*",
-          },
-          {
-            Effect: "Allow",
-            Action: [
-              "appconfig:StartDeployment",
-              "appconfig:StopDeployment",
-              "appconfig:GetDeployment",
-            ],
-            Resource: "*",
-          },
-        ],
-        Version: "2012-10-17",
-      },
-      Path: "/service-role/",
-      Description: "Policy used in trust relationship with CodePipeline",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: `CodeBuildBasePolicy-my-project-${config.region}`,
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Resource: [
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:/aws/codebuild/my-project`,
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:/aws/codebuild/my-project:*`,
-            ],
-            Action: [
-              "logs:CreateLogGroup",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents",
-            ],
-          },
-          {
-            Effect: "Allow",
-            Resource: [`arn:aws:s3:::codepipeline-${config.region}-*`],
-            Action: [
-              "s3:PutObject",
-              "s3:GetObject",
-              "s3:GetObjectVersion",
-              "s3:GetBucketAcl",
-              "s3:GetBucketLocation",
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: [
-              "codebuild:CreateReportGroup",
-              "codebuild:CreateReport",
-              "codebuild:UpdateReport",
-              "codebuild:BatchPutTestCases",
-              "codebuild:BatchPutCodeCoverages",
-            ],
-            Resource: [
-              `arn:aws:codebuild:${
-                config.region
-              }:${config.accountId()}:report-group/my-project-*`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
-      Description: "Policy used in trust relationship with CodeBuild",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: `start-pipeline-execution-${config.region}-my-pipeline`,
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["codepipeline:StartPipelineExecution"],
-            Resource: [
-              `arn:aws:codepipeline:${
-                config.region
-              }:${config.accountId()}:my-pipeline`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
-      Description:
-        "Allows Amazon CloudWatch Events to automatically start a new execution in the my-pipeline pipeline when a change occurs",
-    }),
-  },
-  {
     type: "Bucket",
     group: "S3",
     properties: ({ config }) => ({
       Name: `codepipeline-${config.region}-${config.accountId()}`,
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2012-10-17",
         Id: "SSEAndSSLPolicy",

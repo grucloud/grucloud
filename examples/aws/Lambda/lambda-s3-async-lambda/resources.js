@@ -32,11 +32,11 @@ exports.createResources = () => [
                   "s3:GetObjectVersion",
                   "s3:GetLifecycleConfiguration",
                 ],
+                Effect: "Allow",
                 Resource: [
                   "arn:aws:s3:::gc-lambda-s3-async-lambda",
                   "arn:aws:s3:::gc-lambda-s3-async-lambda/*",
                 ],
-                Effect: "Allow",
               },
             ],
           },
@@ -45,9 +45,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -75,10 +75,10 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["lambda:InvokeFunction"],
+                Effect: "Allow",
                 Resource: `arn:aws:lambda:${
                   config.region
                 }:${config.accountId()}:function:MyAsynchronousFunction*`,
-                Effect: "Allow",
               },
             ],
           },
@@ -93,11 +93,11 @@ exports.createResources = () => [
                   "s3:PutObjectAcl",
                   "s3:PutLifecycleConfiguration",
                 ],
+                Effect: "Allow",
                 Resource: [
                   "arn:aws:s3:::gc-lambda-s3-async-lambda",
                   "arn:aws:s3:::gc-lambda-s3-async-lambda/*",
                 ],
-                Effect: "Allow",
               },
             ],
           },
@@ -106,9 +106,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -135,8 +135,8 @@ exports.createResources = () => [
         Environment: {
           Variables: {
             AsyncLambdaFunctionName: "MyAsynchronousFunction",
-            PayloadPrefix: "MyPayload_",
             PayloadBucketName: "gc-lambda-s3-async-lambda",
+            PayloadPrefix: "MyPayload_",
           },
         },
         FunctionName: "SendPayloadFunction",
@@ -171,15 +171,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "gc-lambda-s3-async-lambda",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       NotificationConfiguration: {
         LambdaFunctionConfigurations: [
           {

@@ -3,23 +3,23 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
-    type: "Subnet",
+    type: "Instance",
     group: "EC2",
-    name: "subnet-default-d",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
+    name: "my-instance",
+    properties: ({ config }) => ({
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220606.1 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
+      },
     }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "rt-default",
-    isDefault: true,
     dependencies: ({}) => ({
-      vpc: "vpc-default",
+      subnets: ["vpc-default::subnet-default-d"],
+      securityGroups: ["sg::vpc-default::default"],
     }),
   },
   {
@@ -34,6 +34,15 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "RouteTable",
+    group: "EC2",
+    name: "rt-default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
     type: "SecurityGroup",
     group: "EC2",
     name: "sg::vpc-default::default",
@@ -43,22 +52,13 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "my-instance",
-    properties: ({ config }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}d`,
-      },
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220606.1 x86_64 HVM gp2",
-      },
-    }),
+    name: "subnet-default-d",
+    isDefault: true,
     dependencies: ({}) => ({
-      subnets: ["vpc-default::subnet-default-d"],
-      securityGroups: ["sg::vpc-default::default"],
+      vpc: "vpc-default",
     }),
   },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
 ];

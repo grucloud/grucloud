@@ -7,7 +7,6 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config, getId }) => ({
-      AlarmName: "alarm-stop-ec2",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
@@ -16,9 +15,9 @@ exports.createResources = () => [
           config.region
         }:${config.accountId()}:action/actions/AWS_EC2.InstanceId.Reboot/1.0`,
       ],
-      MetricName: "CPUUtilization",
-      Namespace: "AWS/EC2",
-      Statistic: "Average",
+      AlarmName: "alarm-stop-ec2",
+      ComparisonOperator: "LessThanOrEqualToThreshold",
+      DatapointsToAlarm: 1,
       Dimensions: [
         {
           Value: `${getId({
@@ -29,11 +28,12 @@ exports.createResources = () => [
           Name: "InstanceId",
         },
       ],
-      Period: 300,
       EvaluationPeriods: 1,
-      DatapointsToAlarm: 1,
+      MetricName: "CPUUtilization",
+      Namespace: "AWS/EC2",
+      Period: 300,
+      Statistic: "Average",
       Threshold: 5,
-      ComparisonOperator: "LessThanOrEqualToThreshold",
       TreatMissingData: "missing",
     }),
     dependencies: ({}) => ({
@@ -41,14 +41,40 @@ exports.createResources = () => [
       ec2Instance: "ec2-for-alarm",
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
-    type: "Subnet",
+    type: "Instance",
     group: "EC2",
-    name: "subnet-default-d",
-    isDefault: true,
+    name: "ec2-for-alarm",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220606.1 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-default::launch-wizard-1",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "vpc-default::subnet-default-d",
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
+      },
+    }),
     dependencies: ({}) => ({
-      vpc: "vpc-default",
+      subnets: ["vpc-default::subnet-default-d"],
+      securityGroups: ["sg::vpc-default::launch-wizard-1"],
     }),
   },
   {
@@ -80,40 +106,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "ec2-for-alarm",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}d`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc-default::launch-wizard-1",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "vpc-default::subnet-default-d",
-          })}`,
-        },
-      ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220606.1 x86_64 HVM gp2",
-      },
-    }),
+    name: "subnet-default-d",
+    isDefault: true,
     dependencies: ({}) => ({
-      subnets: ["vpc-default::subnet-default-d"],
-      securityGroups: ["sg::vpc-default::launch-wizard-1"],
+      vpc: "vpc-default",
     }),
   },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   { type: "Topic", group: "SNS", name: "Default_CloudWatch_Alarms_Topic" },
 ];

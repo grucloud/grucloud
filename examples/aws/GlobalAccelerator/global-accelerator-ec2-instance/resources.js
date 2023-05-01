@@ -3,14 +3,40 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
-    type: "Subnet",
+    type: "Instance",
     group: "EC2",
-    name: "subnet-default-d",
-    isDefault: true,
+    name: "my-instance",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20221004.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-default::launch-wizard-1",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "vpc-default::subnet-default-d",
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
+      },
+    }),
     dependencies: ({}) => ({
-      vpc: "vpc-default",
+      subnets: ["vpc-default::subnet-default-d"],
+      securityGroups: ["sg::vpc-default::launch-wizard-1"],
     }),
   },
   {
@@ -42,41 +68,15 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "my-instance",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}d`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc-default::launch-wizard-1",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "vpc-default::subnet-default-d",
-          })}`,
-        },
-      ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20221004.0 x86_64 HVM gp2",
-      },
-    }),
+    name: "subnet-default-d",
+    isDefault: true,
     dependencies: ({}) => ({
-      subnets: ["vpc-default::subnet-default-d"],
-      securityGroups: ["sg::vpc-default::launch-wizard-1"],
+      vpc: "vpc-default",
     }),
   },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Accelerator",
     group: "GlobalAccelerator",
@@ -96,6 +96,7 @@ exports.createResources = () => [
     type: "EndpointGroup",
     group: "GlobalAccelerator",
     properties: ({ getId }) => ({
+      AcceleratorName: "my-accelerator",
       EndpointConfigurations: [
         {
           ClientIPPreservationEnabled: true,
@@ -110,7 +111,6 @@ exports.createResources = () => [
       EndpointGroupRegion: "us-east-1",
       HealthCheckPort: 443,
       HealthCheckProtocol: "TCP",
-      AcceleratorName: "my-accelerator",
     }),
     dependencies: ({}) => ({
       listener: "my-accelerator::TCP::443::443",
@@ -121,6 +121,7 @@ exports.createResources = () => [
     type: "Listener",
     group: "GlobalAccelerator",
     properties: ({}) => ({
+      AcceleratorName: "my-accelerator",
       PortRanges: [
         {
           FromPort: 443,
@@ -128,7 +129,6 @@ exports.createResources = () => [
         },
       ],
       Protocol: "TCP",
-      AcceleratorName: "my-accelerator",
     }),
     dependencies: ({}) => ({
       accelerator: "my-accelerator",
@@ -139,15 +139,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "grucloud-global-accelarator",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       Policy: {
         Version: "2012-10-17",
         Id: "AWSLogDeliveryWrite20150319",

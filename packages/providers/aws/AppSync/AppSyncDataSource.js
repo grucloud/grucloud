@@ -43,6 +43,26 @@ const setAwsRegion = ({ providerConfig, path }) =>
     set(path, pipe([get(path), replaceRegion({ providerConfig })]))
   );
 
+const decorate = ({ endpoint, config, live }) =>
+  pipe([
+    tap((params) => {
+      assert(live.apiId);
+    }),
+    defaultsDeep({ apiId: live.apiId }),
+    omitIfEmpty([
+      "description",
+      "dynamodbConfig",
+      "elasticsearchConfig",
+      "openSearchServiceConfig",
+      "httpConfig",
+      "relationalDatabaseConfig",
+      "eventBridgeConfig",
+      "dynamodbConfig.deltaSyncConfig",
+    ]),
+    JSON.stringify,
+    JSON.parse,
+  ]);
+
 exports.AppSyncDataSource = ({ compare }) => ({
   type: "DataSource",
   package: "appsync",
@@ -66,9 +86,6 @@ exports.AppSyncDataSource = ({ compare }) => ({
     ]),
   findName,
   findId,
-  compare: compare({
-    filterAll: () => pipe([omitIfEmpty(["description"])]),
-  }),
   filterLive: ({ providerConfig }) =>
     pipe([
       setAwsRegion({ path: "dynamodbConfig.awsRegion", providerConfig }),
@@ -196,6 +213,7 @@ exports.AppSyncDataSource = ({ compare }) => ({
     pickId,
     method: "getDataSource",
     getField: "dataSource",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listDataSources-property
   getList: ({ client, endpoint, getById, config }) =>
@@ -207,8 +225,11 @@ exports.AppSyncDataSource = ({ compare }) => ({
           method: "listDataSources",
           getParam: "dataSources",
           config,
-          decorate: ({ lives, parent: { apiId } }) =>
-            pipe([defaultsDeep({ apiId })]),
+          decorate: ({ lives, parent }) =>
+            pipe([
+              defaultsDeep({ apiId: parent.apiId }),
+              decorate({ config, live: parent }),
+            ]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createDataSource-property

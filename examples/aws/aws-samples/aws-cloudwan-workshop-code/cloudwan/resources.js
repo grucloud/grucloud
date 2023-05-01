@@ -108,20 +108,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       AttachmentType: "SITE_TO_SITE_VPN",
       EdgeLocation: "us-east-1",
-      OwnerAccountId: "840541460064",
-    }),
-    dependencies: ({}) => ({
-      coreNetwork: "CloudWAN Workshop",
-      vpnConnection: { name: "vpn-connection", provider: "aws-primary" },
-    }),
-  },
-  {
-    type: "SiteToSiteVpnAttachment",
-    group: "NetworkManager",
-    properties: ({}) => ({
-      AttachmentType: "SITE_TO_SITE_VPN",
-      EdgeLocation: "us-east-1",
-      OwnerAccountId: "840541460064",
     }),
     dependencies: ({}) => ({
       coreNetwork: "CloudWAN Workshop",
@@ -134,7 +120,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       AttachmentType: "VPC",
       EdgeLocation: "us-east-1",
-      OwnerAccountId: "840541460064",
       Options: {
         ApplianceModeSupport: false,
         Ipv6Support: false,
@@ -145,11 +130,11 @@ exports.createResources = () => [
       vpc: { name: "inspection-us-east-1", provider: "aws-primary" },
       subnets: [
         {
-          name: "inspection-us-east-1::inspection-us-east-1b",
+          name: "inspection-us-east-1::inspection-us-east-1a",
           provider: "aws-primary",
         },
         {
-          name: "inspection-us-east-1::inspection-us-east-1a",
+          name: "inspection-us-east-1::inspection-us-east-1b",
           provider: "aws-primary",
         },
       ],

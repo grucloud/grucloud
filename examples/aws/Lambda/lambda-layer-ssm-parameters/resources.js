@@ -26,10 +26,10 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["ssm:GetParameter*"],
+                Effect: "Allow",
                 Resource: `arn:aws:ssm:${
                   config.region
                 }:${config.accountId()}:parameter/*`,
-                Effect: "Allow",
               },
             ],
           },
@@ -38,9 +38,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -70,6 +70,7 @@ exports.createResources = () => [
       },
       FunctionUrlConfig: {
         AuthType: "NONE",
+        InvokeMode: "BUFFERED",
       },
     }),
     dependencies: ({}) => ({

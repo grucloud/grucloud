@@ -50,12 +50,12 @@ exports.createResources = () => [
           },
         },
       ],
+      Scope: "REGIONAL",
       VisibilityConfig: {
         CloudWatchMetricsEnabled: true,
         MetricName: "my-waf",
         SampledRequestsEnabled: true,
       },
-      Scope: "REGIONAL",
     }),
   },
   {

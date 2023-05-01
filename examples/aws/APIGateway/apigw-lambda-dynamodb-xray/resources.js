@@ -136,12 +136,11 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["xray:PutTraceSegments", "xray:PutTelemetryRecords"],
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: [
@@ -153,23 +152,24 @@ exports.createResources = () => [
                   "dynamodb:Scan",
                   "dynamodb:ConditionCheckItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
                   }:${config.accountId()}:table/ApigwLambdaDynamodbCdkTsStack-TableCD117FA1-26TB2N6F0U9N`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "lambdaFunctionServiceRoleDefaultPolicy0958DD5A",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -194,9 +194,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
         },
       ],
     }),
@@ -235,28 +235,28 @@ exports.createResources = () => [
           FunctionName:
             "ApigwLambdaDynamodbCdkTsSta-lambdaFunction940E68AD-7fPOd66txEZp",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "ApigwLambdaDynamodbCdkTsStack-RestAPIscanGETApiPermissionApigwLambdaDynamodbCdkTsStack-XGO5U6C6MIXI",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "RestAPI",
             path: "live.arnv2",
           })}/prod/GET/scan`,
+          StatementId:
+            "ApigwLambdaDynamodbCdkTsStack-RestAPIscanGETApiPermissionApigwLambdaDynamodbCdkTsStack-XGO5U6C6MIXI",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "ApigwLambdaDynamodbCdkTsSta-lambdaFunction940E68AD-7fPOd66txEZp",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "ApigwLambdaDynamodbCdkTsStack-RestAPIscanGETApiPermissionTestApigwLambdaDynamodbCdkTsS-1FKVBLRU8GQTN",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "RestAPI",
             path: "live.arnv2",
           })}/test-invoke-stage/GET/scan`,
+          StatementId:
+            "ApigwLambdaDynamodbCdkTsStack-RestAPIscanGETApiPermissionTestApigwLambdaDynamodbCdkTsS-1FKVBLRU8GQTN",
         },
       ],
     }),

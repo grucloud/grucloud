@@ -83,19 +83,18 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "events:PutEvents",
+                Effect: "Allow",
                 Resource: `arn:aws:events:${
                   config.region
                 }:${config.accountId()}:event-bus/MyMainBus`,
-                Effect: "Allow",
               },
               {
                 Action: "dynamodb:ListStreams",
-                Resource: "*",
                 Effect: "Allow",
+                Resource: "*",
               },
               {
                 Action: [
@@ -103,24 +102,25 @@ exports.createResources = () => [
                   "dynamodb:GetRecords",
                   "dynamodb:GetShardIterator",
                 ],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "Table",
                   group: "DynamoDB",
                   name: "EventbridgeOutboxPatternWithDdbStack-UsersTable9725E9C8-1UH1H2LCW1XB3",
                   path: "live.LatestStreamArn",
                 })}`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "streamToEventBridgeServiceRoleDefaultPolicyEB03D4EF",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -150,9 +150,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -178,7 +178,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -188,23 +187,24 @@ exports.createResources = () => [
                   "dynamodb:PutItem",
                   "dynamodb:UpdateItem",
                 ],
+                Effect: "Allow",
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
                   }:${config.accountId()}:table/EventbridgeOutboxPatternWithDdbStack-UsersTable9725E9C8-1UH1H2LCW1XB3`,
                 ],
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "writetoddbServiceRoleDefaultPolicy2A8D0315",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -234,10 +234,10 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
+            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
+            EVENT_BUS_NAME: "MyMainBus",
             TABLE_NAME:
               "EventbridgeOutboxPatternWithDdbStack-UsersTable9725E9C8-1UH1H2LCW1XB3",
-            EVENT_BUS_NAME: "MyMainBus",
-            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
         FunctionName:
@@ -281,9 +281,9 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
+            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
             TABLE_NAME:
               "EventbridgeOutboxPatternWithDdbStack-UsersTable9725E9C8-1UH1H2LCW1XB3",
-            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
           },
         },
         FunctionName:
@@ -308,11 +308,11 @@ exports.createResources = () => [
           FunctionName:
             "EventbridgeOutboxPatternW-userCreatedConsumerF491D-XEDOXNubBDQT",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "EventbridgeOutboxPatternWithDdbStack-UserCreatedRuleAllowEventRuleEventbridgeOutboxPat-I3NSM4LNBVDF",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/MyMainBus/EventbridgeOutboxPatternWi-UserCreatedRuleFC26FD62-5YW7O6FQGB1Q`,
+          StatementId:
+            "EventbridgeOutboxPatternWithDdbStack-UserCreatedRuleAllowEventRuleEventbridgeOutboxPat-I3NSM4LNBVDF",
         },
       ],
     }),

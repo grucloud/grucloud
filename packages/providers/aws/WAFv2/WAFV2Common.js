@@ -52,13 +52,7 @@ const pickId = pick(["Id", "LockToken", "Name", "Scope"]);
 const decorate =
   ({ Scope }) =>
   ({ endpoint }) =>
-    pipe([
-      assignTags({ endpoint, findId }),
-      defaultsDeep({ Scope }),
-      tap((params) => {
-        assert(true);
-      }),
-    ]);
+    pipe([assignTags({ endpoint, findId }), defaultsDeep({ Scope })]);
 
 exports.createModelWebAcls = ({ compare, type, region, Scope }) => ({
   type,

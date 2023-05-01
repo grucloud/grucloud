@@ -7,25 +7,109 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config }) => ({
-      AlarmName: "maintenance-window-alarm",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
         }:${config.accountId()}:Default_CloudWatch_Alarms_Topic`,
       ],
+      AlarmName: "maintenance-window-alarm",
+      ComparisonOperator: "GreaterThanThreshold",
+      DatapointsToAlarm: 1,
+      Dimensions: [],
+      EvaluationPeriods: 1,
       MetricName: "CommandsSucceeded",
       Namespace: "AWS/SSM-RunCommand",
-      Statistic: "Average",
-      Dimensions: [],
       Period: 300,
-      EvaluationPeriods: 1,
-      DatapointsToAlarm: 1,
+      Statistic: "Average",
       Threshold: 1,
-      ComparisonOperator: "GreaterThanThreshold",
       TreatMissingData: "missing",
     }),
     dependencies: ({}) => ({
       snsTopic: "Default_CloudWatch_Alarms_Topic",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "my-maintenance-window-role-policy",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "ssm:SendCommand",
+              "ssm:CancelCommand",
+              "ssm:ListCommands",
+              "ssm:ListCommandInvocations",
+              "ssm:GetCommandInvocation",
+              "ssm:GetAutomationExecution",
+              "ssm:StartAutomationExecution",
+              "ssm:ListTagsForResource",
+              "ssm:GetParameters",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["states:DescribeExecution", "states:StartExecution"],
+            Effect: "Allow",
+            Resource: [
+              "arn:aws:states:*:*:execution:*:*",
+              "arn:aws:states:*:*:stateMachine:*",
+            ],
+          },
+          {
+            Action: ["lambda:InvokeFunction"],
+            Effect: "Allow",
+            Resource: ["arn:aws:lambda:*:*:function:*"],
+          },
+          {
+            Action: [
+              "resource-groups:ListGroups",
+              "resource-groups:ListGroupResources",
+            ],
+            Effect: "Allow",
+            Resource: ["*"],
+          },
+          {
+            Action: ["tag:GetResources"],
+            Effect: "Allow",
+            Resource: ["*"],
+          },
+          {
+            Action: "iam:PassRole",
+            Condition: {
+              StringEquals: {
+                "iam:PassedToService": ["ssm.amazonaws.com"],
+              },
+            },
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "my-sns-publish-permissions",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["sns:Publish"],
+            Effect: "Allow",
+            Resource: `arn:aws:sns:${
+              config.region
+            }:${config.accountId()}:maintenance-window-topic`,
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
     }),
   },
   {
@@ -77,103 +161,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "my-maintenance-window-role-policy",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: [
-              "ssm:SendCommand",
-              "ssm:CancelCommand",
-              "ssm:ListCommands",
-              "ssm:ListCommandInvocations",
-              "ssm:GetCommandInvocation",
-              "ssm:GetAutomationExecution",
-              "ssm:StartAutomationExecution",
-              "ssm:ListTagsForResource",
-              "ssm:GetParameters",
-            ],
-            Resource: "*",
-          },
-          {
-            Effect: "Allow",
-            Action: ["states:DescribeExecution", "states:StartExecution"],
-            Resource: [
-              "arn:aws:states:*:*:execution:*:*",
-              "arn:aws:states:*:*:stateMachine:*",
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: ["lambda:InvokeFunction"],
-            Resource: ["arn:aws:lambda:*:*:function:*"],
-          },
-          {
-            Effect: "Allow",
-            Action: [
-              "resource-groups:ListGroups",
-              "resource-groups:ListGroupResources",
-            ],
-            Resource: ["*"],
-          },
-          {
-            Effect: "Allow",
-            Action: ["tag:GetResources"],
-            Resource: ["*"],
-          },
-          {
-            Effect: "Allow",
-            Action: "iam:PassRole",
-            Resource: "*",
-            Condition: {
-              StringEquals: {
-                "iam:PassedToService": ["ssm.amazonaws.com"],
-              },
-            },
-          },
-        ],
-      },
-      Path: "/",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "my-sns-publish-permissions",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["sns:Publish"],
-            Resource: `arn:aws:sns:${
-              config.region
-            }:${config.accountId()}:maintenance-window-topic`,
-          },
-        ],
-      },
-      Path: "/",
-    }),
-  },
-  {
     type: "Bucket",
     group: "S3",
     properties: ({}) => ({
       Name: "gc-maintenance-window-run-command",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
   { type: "Topic", group: "SNS", name: "Default_CloudWatch_Alarms_Topic" },
@@ -210,7 +201,6 @@ exports.createResources = () => [
     type: "MaintenanceWindowTask",
     group: "SSM",
     properties: ({ getId }) => ({
-      TaskType: "RUN_COMMAND",
       AlarmConfiguration: {
         Alarms: [
           {
@@ -253,6 +243,7 @@ exports.createResources = () => [
         },
       },
       TaskParameters: {},
+      TaskType: "RUN_COMMAND",
     }),
     dependencies: ({}) => ({
       alarms: ["maintenance-window-alarm"],

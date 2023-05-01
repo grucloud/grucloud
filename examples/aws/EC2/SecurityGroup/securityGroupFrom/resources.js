@@ -4,15 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "VPC",
-    properties: ({}) => ({
-      CidrBlock: "192.168.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -50,6 +41,15 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       securityGroup: "sg::VPC::ClusterSharedNode",
       securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster"],
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "VPC",
+    properties: ({}) => ({
+      CidrBlock: "192.168.0.0/16",
+      DnsHostnames: true,
     }),
   },
 ];

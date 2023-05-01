@@ -26,8 +26,21 @@ const {
   untagResource,
 } = require("./AppSyncCommon");
 
-const findName = () => get("name");
-const findId = () => get("arn");
+const findName = () =>
+  pipe([
+    get("name"),
+    tap((name) => {
+      assert(name);
+    }),
+  ]);
+
+const findId = () =>
+  pipe([
+    get("arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
 
 const pickId = pipe([
   tap(({ apiId }) => {
@@ -83,11 +96,43 @@ const createApiKeys =
       ),
     ])();
 
+const updateSchema =
+  ({ endpoint, programOptions, payload, config }) =>
+  ({ apiId, definition }) =>
+    pipe([
+      tap(() => {
+        assert(endpoint);
+        assert(programOptions);
+        assert(apiId);
+        assert(definition);
+      }),
+      () => ({ apiId, definition: Buffer.from(definition) }),
+      endpoint().startSchemaCreation,
+      () =>
+        retryCall({
+          name: `getSchemaCreationStatus: ${apiId}`,
+          fn: pipe([() => ({ apiId }), endpoint().getSchemaCreationStatus]),
+          isExpectedResult: eq(get("status"), "SUCCESS"),
+          config,
+        }),
+      () => ({ apiId }),
+      getIntrospectionSchema({ endpoint }),
+      //TODO do not write if empty
+      (content) =>
+        fs.writeFile(
+          resolveSchemaFile({
+            programOptions,
+            schemaFile: payload.schemaFile,
+          }),
+          content
+        ),
+    ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncGraphqlApi = ({ spec, config }) => {
   const appSync = createAppSync(config);
   const client = AwsClient({ spec, config })(appSync);
-
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#getGraphqlApi-property
   const getById = client.getById({
     pickId,
     method: "getGraphqlApi",
@@ -97,7 +142,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
       pipe([
         assign({
           //TODO
-          schema: getIntrospectionSchema({ endpoint: appSync }),
+          schema: getIntrospectionSchema({ endpoint }),
           apiKeys: pipe([pickId, endpoint().listApiKeys, get("apiKeys")]),
         }),
       ]),
@@ -112,36 +157,6 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const updateSchema =
-    ({ endpoint, programOptions, payload }) =>
-    ({ apiId, definition }) =>
-      pipe([
-        tap(() => {
-          assert(apiId);
-          assert(definition);
-        }),
-        () => ({ apiId, definition: Buffer.from(definition) }),
-        appSync().startSchemaCreation,
-        () =>
-          retryCall({
-            name: `getSchemaCreationStatus: ${apiId}`,
-            fn: pipe([() => ({ apiId }), endpoint().getSchemaCreationStatus]),
-            isExpectedResult: eq(get("status"), "SUCCESS"),
-            config,
-          }),
-        () => ({ apiId }),
-        getIntrospectionSchema({ endpoint }),
-        //TODO do not write if empty
-        (content) =>
-          fs.writeFile(
-            resolveSchemaFile({
-              programOptions,
-              schemaFile: payload.schemaFile,
-            }),
-            content
-          ),
-      ])();
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createGraphqlApi-property
   const create = client.create({
     method: "createGraphqlApi",
@@ -149,18 +164,19 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     pickCreated: () => get("graphqlApi"),
     getById,
     postCreate:
-      ({ name, payload, programOptions, endpoint }) =>
+      ({ name, payload, programOptions, endpoint, config }) =>
       ({ apiId }) =>
         pipe([
           tap(() => {
             assert(apiId);
             assert(payload);
             assert(payload.schema);
+            assert(config);
           }),
           () => ({ apiId, apiKeys: payload.apiKeys }),
           createApiKeys({ endpoint }),
           () => ({ apiId, definition: payload.schema }),
-          updateSchema({ endpoint, payload, programOptions }),
+          updateSchema({ endpoint, payload, programOptions, config }),
         ])(),
   });
 
@@ -178,7 +194,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
             apiId: id,
             definition: diff.liveDiff.updated.schema,
           }),
-          updateSchema({ programOptions, payload }),
+          updateSchema({ endpoint, programOptions, payload }),
         ])()
     ),
     client.update({

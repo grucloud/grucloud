@@ -6,8 +6,8 @@ exports.createResources = (xxx) => [
   {
     type: "Table",
     group: "DynamoDB",
-    properties: ({ config }) => ({
-      TableName: config.dynamoDBTableName,
+    properties: ({}) => ({
+      TableName: "terraform-state-locking",
       AttributeDefinitions: [
         {
           AttributeName: "LockID",
@@ -29,17 +29,8 @@ exports.createResources = (xxx) => [
   {
     type: "Bucket",
     group: "S3",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       Name: config.s3BucketName,
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

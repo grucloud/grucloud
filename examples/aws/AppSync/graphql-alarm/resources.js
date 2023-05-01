@@ -230,15 +230,14 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config, getId }) => ({
-      AlarmName: "alarm-graphql-400",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
         }:${config.accountId()}:Default_CloudWatch_Alarms_Topic`,
       ],
-      MetricName: "4XXError",
-      Namespace: "AWS/AppSync",
-      Statistic: "Average",
+      AlarmName: "alarm-graphql-400",
+      ComparisonOperator: "GreaterThanThreshold",
+      DatapointsToAlarm: 1,
       Dimensions: [
         {
           Value: `${getId({
@@ -249,11 +248,12 @@ exports.createResources = () => [
           Name: "GraphQLAPIId",
         },
       ],
-      Period: 300,
       EvaluationPeriods: 1,
-      DatapointsToAlarm: 1,
+      MetricName: "4XXError",
+      Namespace: "AWS/AppSync",
+      Period: 300,
+      Statistic: "Average",
       Threshold: 2,
-      ComparisonOperator: "GreaterThanThreshold",
       TreatMissingData: "missing",
     }),
     dependencies: ({}) => ({
@@ -282,6 +282,38 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "dynamodb:DeleteItem",
+              "dynamodb:GetItem",
+              "dynamodb:PutItem",
+              "dynamodb:Query",
+              "dynamodb:Scan",
+              "dynamodb:UpdateItem",
+            ],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/MyModelTypeTable`,
+              `arn:aws:dynamodb:${
+                config.region
+              }:${config.accountId()}:table/MyModelTypeTable/*`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -303,38 +335,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       policies: ["appsync-ds-ddb-f7ekj4-MyModelTypeTable"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: [
-              "dynamodb:DeleteItem",
-              "dynamodb:GetItem",
-              "dynamodb:PutItem",
-              "dynamodb:Query",
-              "dynamodb:Scan",
-              "dynamodb:UpdateItem",
-            ],
-            Resource: [
-              `arn:aws:dynamodb:${
-                config.region
-              }:${config.accountId()}:table/MyModelTypeTable`,
-              `arn:aws:dynamodb:${
-                config.region
-              }:${config.accountId()}:table/MyModelTypeTable/*`,
-            ],
-          },
-        ],
-      },
-      Path: "/service-role/",
     }),
   },
   { type: "Topic", group: "SNS", name: "Default_CloudWatch_Alarms_Topic" },

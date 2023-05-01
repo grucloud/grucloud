@@ -44,16 +44,16 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: "states:StartExecution",
+                Effect: "Allow",
                 Resource: `arn:aws:states:${
                   config.region
                 }:${config.accountId()}:stateMachine:statemachine3BB5DA23-yz112W0tNPvb`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "schedulerroleDefaultPolicyA459C234",
         },
@@ -76,12 +76,12 @@ exports.createResources = () => [
           config.region
         }:${config.accountId()}:stateMachine:statemachine3BB5DA23-yz112W0tNPvb`,
         Input: {
-          metadata: {
-            eventId: "MY_SCHEDULED_EVENT",
-          },
           data: {
             firstName: "Pubudu",
             lastName: "Jayawardana",
+          },
+          metadata: {
+            eventId: "MY_SCHEDULED_EVENT",
           },
         },
         RetryPolicy: {

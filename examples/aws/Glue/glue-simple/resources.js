@@ -37,6 +37,14 @@ exports.createResources = () => [
     type: "Database",
     group: "Glue",
     properties: ({}) => ({
+      CreateTableDefaultPermissions: [
+        {
+          Permissions: ["ALL"],
+          Principal: {
+            DataLakePrincipalIdentifier: "IAM_ALLOWED_PRINCIPALS",
+          },
+        },
+      ],
       Name: "my-database",
     }),
   },
@@ -68,6 +76,26 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "AWSGlueServiceRole-my-EZCRC-s3Policy",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["s3:GetObject", "s3:PutObject"],
+            Effect: "Allow",
+            Resource: ["arn:aws:s3:::gc-glue-database*"],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+      Description:
+        "This policy will be used for Glue Crawler and Job execution. Please do NOT delete!",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -87,8 +115,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSGlueServiceRole",
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole",
+          PolicyName: "AWSGlueServiceRole",
         },
       ],
     }),
@@ -97,39 +125,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "AWSGlueServiceRole-my-EZCRC-s3Policy",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["s3:GetObject", "s3:PutObject"],
-            Resource: ["arn:aws:s3:::gc-glue-database*"],
-          },
-        ],
-      },
-      Path: "/service-role/",
-      Description:
-        "This policy will be used for Glue Crawler and Job execution. Please do NOT delete!",
-    }),
-  },
-  {
     type: "Bucket",
     group: "S3",
     properties: ({}) => ({
       Name: "gc-glue-database",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

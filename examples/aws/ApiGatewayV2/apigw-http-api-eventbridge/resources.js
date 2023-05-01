@@ -35,8 +35,8 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "1.0",
       RequestParameters: {
-        DetailType: "MyDetailType",
         Detail: "$request.body.Detail",
+        DetailType: "MyDetailType",
         Source: "WebApp",
       },
     }),
@@ -101,11 +101,11 @@ exports.createResources = () => [
         Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
       },
@@ -115,12 +115,12 @@ exports.createResources = () => [
             Version: "2012-10-17",
             Statement: {
               Action: ["events:PutEvents"],
+              Effect: "Allow",
               Resource: [
                 `arn:aws:events:${
                   config.region
                 }:${config.accountId()}:event-bus/default`,
               ],
-              Effect: "Allow",
             },
           },
           PolicyName: "ApiDirectWriteEventBridge",
@@ -137,19 +137,19 @@ exports.createResources = () => [
         Version: "2012-10-17",
         Statement: [
           {
+            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Action: "sts:AssumeRole",
           },
         ],
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

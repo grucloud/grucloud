@@ -28,11 +28,11 @@ exports.createResources = () => [
           },
         ],
       },
+      BaselineName: "my-patch-baseline",
+      DefaultBaseline: true,
       Name: "my-patch-baseline",
       OperatingSystem: "AMAZON_LINUX_2",
       RejectedPatchesAction: "ALLOW_AS_DEPENDENCY",
-      BaselineName: "my-patch-baseline",
-      DefaultBaseline: true,
     }),
   },
 ];

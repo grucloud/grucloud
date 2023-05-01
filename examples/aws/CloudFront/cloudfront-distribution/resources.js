@@ -15,7 +15,6 @@ exports.createResources = () => [
     group: "CloudFront",
     properties: ({ config, getId }) => ({
       Aliases: {
-        Quantity: 1,
         Items: [
           getId({
             type: "Certificate",
@@ -24,38 +23,23 @@ exports.createResources = () => [
             path: "name",
           }),
         ],
+        Quantity: 1,
       },
-      DefaultRootObject: "index.html",
-      Origins: {
-        Items: [
-          {
-            Id: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
-            DomainName: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
-            OriginPath: "",
-            CustomHeaders: {
-              Quantity: 0,
-            },
-            S3OriginConfig: {
-              OriginAccessIdentity: `origin-access-identity/cloudfront/${getId({
-                type: "OriginAccessIdentity",
-                group: "CloudFront",
-                name: `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
-              })}`,
-            },
-            ConnectionAttempts: 3,
-            ConnectionTimeout: 10,
-            OriginShield: {
-              Enabled: false,
-            },
-            OriginAccessControlId: "",
-          },
-        ],
-      },
+      Comment: "",
       DefaultCacheBehavior: {
-        TargetOriginId: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
-        TrustedSigners: {
-          Enabled: false,
+        AllowedMethods: {
+          CachedMethods: {
+            Items: ["HEAD", "GET"],
+            Quantity: 2,
+          },
+          Items: ["HEAD", "GET"],
+          Quantity: 2,
         },
+        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
+        Compress: true,
+        FieldLevelEncryptionId: "",
+        SmoothStreaming: false,
+        TargetOriginId: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
         TrustedKeyGroups: {
           Enabled: true,
           Items: [
@@ -66,34 +50,50 @@ exports.createResources = () => [
             })}`,
           ],
         },
-        ViewerProtocolPolicy: "redirect-to-https",
-        AllowedMethods: {
-          Quantity: 2,
-          Items: ["HEAD", "GET"],
-          CachedMethods: {
-            Quantity: 2,
-            Items: ["HEAD", "GET"],
-          },
+        TrustedSigners: {
+          Enabled: false,
         },
-        SmoothStreaming: false,
-        Compress: true,
-        FieldLevelEncryptionId: "",
-        CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
+        ViewerProtocolPolicy: "redirect-to-https",
       },
-      Comment: "",
+      DefaultRootObject: "index.html",
+      Origins: {
+        Items: [
+          {
+            ConnectionAttempts: 3,
+            ConnectionTimeout: 10,
+            CustomHeaders: {
+              Quantity: 0,
+            },
+            DomainName: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
+            Id: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
+            OriginAccessControlId: "",
+            OriginPath: "",
+            OriginShield: {
+              Enabled: false,
+            },
+            S3OriginConfig: {
+              OriginAccessIdentity: `origin-access-identity/cloudfront/${getId({
+                type: "OriginAccessIdentity",
+                group: "CloudFront",
+                name: `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
+              })}`,
+            },
+          },
+        ],
+      },
       PriceClass: "PriceClass_100",
-      ViewerCertificate: {
-        CloudFrontDefaultCertificate: false,
-        SSLSupportMethod: "sni-only",
-        MinimumProtocolVersion: "TLSv1.2_2019",
-        CertificateSource: "acm",
-      },
       Tags: [
         {
           Key: "mykey",
           Value: "myvalue",
         },
       ],
+      ViewerCertificate: {
+        CertificateSource: "acm",
+        CloudFrontDefaultCertificate: false,
+        MinimumProtocolVersion: "TLSv1.2_2019",
+        SSLSupportMethod: "sni-only",
+      },
     }),
     dependencies: ({ config }) => ({
       buckets: ["cloudfront-demo.grucloud.org"],
@@ -127,7 +127,6 @@ exports.createResources = () => [
     group: "CloudFront",
     properties: ({}) => ({
       PublicKeyConfig: {
-        Name: "my-public-key",
         EncodedKey: `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArprXSQCrjd/SG8ERGmXi
 wnw4I+axRZRTHnWPs+W9PTesEIHwmV4WzUNHqjpKjXoVtq3vY+2WGDfJ3Y5cQalW
@@ -138,6 +137,7 @@ BVXfLiCADx4K2alwbqhk329v5lpjOuKg4yNkN52h+vUc9FJeGG7Ld84Gp3NhaGcz
 pQIDAQAB
 -----END PUBLIC KEY-----
 `,
+        Name: "my-public-key",
       },
     }),
   },

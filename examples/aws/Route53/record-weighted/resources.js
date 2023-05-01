@@ -15,15 +15,15 @@ exports.createResources = () => [
     group: "Route53",
     properties: ({}) => ({
       Name: "latency.grucloud.org.",
-      Type: "A",
-      SetIdentifier: "eu-west-2",
       Region: "eu-west-2",
-      TTL: 300,
       ResourceRecords: [
         {
           Value: "192.168.1.10",
         },
       ],
+      SetIdentifier: "eu-west-2",
+      TTL: 300,
+      Type: "A",
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
@@ -34,15 +34,15 @@ exports.createResources = () => [
     group: "Route53",
     properties: ({}) => ({
       Name: "latency.grucloud.org.",
-      Type: "A",
-      SetIdentifier: "us-east-1",
       Region: "us-east-1",
-      TTL: 300,
       ResourceRecords: [
         {
           Value: "192.168.0.12",
         },
       ],
+      SetIdentifier: "us-east-1",
+      TTL: 300,
+      Type: "A",
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
@@ -53,15 +53,15 @@ exports.createResources = () => [
     group: "Route53",
     properties: ({}) => ({
       Name: "weighted.grucloud.org.",
-      Type: "A",
-      SetIdentifier: "weighted-1",
-      Weight: 128,
-      TTL: 300,
       ResourceRecords: [
         {
           Value: "192.168.1.10",
         },
       ],
+      SetIdentifier: "weighted-1",
+      TTL: 300,
+      Type: "A",
+      Weight: 128,
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
@@ -72,15 +72,15 @@ exports.createResources = () => [
     group: "Route53",
     properties: ({}) => ({
       Name: "weighted.grucloud.org.",
-      Type: "A",
-      SetIdentifier: "weighted-2",
-      Weight: 128,
-      TTL: 300,
       ResourceRecords: [
         {
           Value: "192.168.1.11",
         },
       ],
+      SetIdentifier: "weighted-2",
+      TTL: 300,
+      Type: "A",
+      Weight: 128,
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",

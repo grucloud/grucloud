@@ -8,8 +8,6 @@ exports.createResources = () => [
     group: "CloudWatchEvents",
     properties: ({}) => ({
       EventPattern: {
-        "detail-type": ["transaction"],
-        source: ["custom.myApp"],
         detail: {
           location: [
             {
@@ -17,6 +15,8 @@ exports.createResources = () => [
             },
           ],
         },
+        "detail-type": ["transaction"],
+        source: ["custom.myApp"],
       },
       Name: "sam-app-ConsumerFunctionTrigger-1DTESABB4TRY7",
     }),
@@ -51,9 +51,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -81,11 +81,11 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-ConsumerFunction-oP2n9mZPow7c",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "sam-app-ConsumerFunctionTriggerPermission-1JE0JMWA7NDJM",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/sam-app-ConsumerFunctionTrigger-1DTESABB4TRY7`,
+          StatementId:
+            "sam-app-ConsumerFunctionTriggerPermission-1JE0JMWA7NDJM",
         },
       ],
     }),

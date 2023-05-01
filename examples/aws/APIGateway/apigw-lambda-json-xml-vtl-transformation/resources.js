@@ -135,7 +135,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -147,12 +146,13 @@ exports.createResources = () => [
                   "logs:GetLogEvents",
                   "logs:FilterLogEvents",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:logs:${
                   config.region
                 }:${config.accountId()}:log-group:MyApi-Access-Logs:*`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "Logs",
         },
@@ -178,13 +178,13 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSXrayWriteOnlyAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess",
+          PolicyName: "AWSXrayWriteOnlyAccess",
         },
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -216,14 +216,14 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "MyLambdaFunction",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "sam-app-MyLambdaFunctionPetStorePermissionProd-8F0GNYFDNAO1",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "MyApi",
             path: "live.arnv2",
           })}/*/GET/details`,
+          StatementId:
+            "sam-app-MyLambdaFunctionPetStorePermissionProd-8F0GNYFDNAO1",
         },
       ],
     }),

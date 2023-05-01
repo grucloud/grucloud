@@ -7,9 +7,9 @@ exports.createResources = () => [
     type: "EventSubscription",
     group: "DMS",
     properties: ({}) => ({
-      SubscriptionName: "subscription-prod",
       Enabled: true,
       SourceType: "replication-instance",
+      SubscriptionName: "subscription-prod",
     }),
     dependencies: ({}) => ({
       snsTopic: "dms-topic",

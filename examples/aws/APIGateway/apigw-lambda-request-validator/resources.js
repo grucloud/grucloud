@@ -140,9 +140,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -171,13 +171,13 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "apigw-validator-lambda-function",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "sam-app-FunctionResourcePermission-1P7AT56QGZ1MZ",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "apigw-validator-lambda",
             path: "live.arnv2",
           })}/*`,
+          StatementId: "sam-app-FunctionResourcePermission-1P7AT56QGZ1MZ",
         },
       ],
     }),

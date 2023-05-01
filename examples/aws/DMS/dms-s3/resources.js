@@ -21,7 +21,6 @@ exports.createResources = () => [
         EnableStatistics: true,
         ExternalTableDefinition: '{"key":"a"}',
       },
-      SslMode: "none",
     }),
     dependencies: ({}) => ({
       iamRoleServiceAccess: "role-s3-rw",
@@ -49,8 +48,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonS3FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
         },
       ],
     }),

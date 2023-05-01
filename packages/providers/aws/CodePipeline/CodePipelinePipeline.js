@@ -150,6 +150,7 @@ exports.CodePipelinePipeline = ({}) => ({
     "metadata",
     "pipeline.roleArn",
     "pipeline.artifactStore.encryptionKey",
+    "pipeline.executionMode",
   ],
   propertiesDefault: {},
   filterLive: ({ lives, providerConfig }) =>

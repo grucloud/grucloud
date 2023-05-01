@@ -15,34 +15,12 @@ exports.createResources = () => [
     group: "EC2",
     name: "flow-log-firehose",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 600,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
       firehoseDeliveryStream: "flowlogs-delivery-stream-s3",
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
     }),
   },
   {
@@ -59,6 +37,28 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       routeTable: `vpc::rtb-private1-${config.region}a`,
       subnet: `vpc::subnet-private1-${config.region}a`,
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -109,6 +109,129 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName: `KinesisFirehoseServicePolicy-delivery-stream-s3-${config.region}`,
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "glue:GetTable",
+              "glue:GetTableVersion",
+              "glue:GetTableVersions",
+            ],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:glue:${config.region}:${config.accountId()}:catalog`,
+              `arn:aws:glue:${
+                config.region
+              }:${config.accountId()}:database/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+              `arn:aws:glue:${
+                config.region
+              }:${config.accountId()}:table/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+            ],
+            Sid: "",
+          },
+          {
+            Action: [
+              "s3:AbortMultipartUpload",
+              "s3:GetBucketLocation",
+              "s3:GetObject",
+              "s3:ListBucket",
+              "s3:ListBucketMultipartUploads",
+              "s3:PutObject",
+            ],
+            Effect: "Allow",
+            Resource: [
+              "arn:aws:s3:::gc-flowlogs-firehose-destination",
+              "arn:aws:s3:::gc-flowlogs-firehose-destination/*",
+            ],
+            Sid: "",
+          },
+          {
+            Action: [
+              "lambda:InvokeFunction",
+              "lambda:GetFunctionConfiguration",
+            ],
+            Effect: "Allow",
+            Resource: `arn:aws:lambda:${
+              config.region
+            }:${config.accountId()}:function:%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+            Sid: "",
+          },
+          {
+            Action: ["kms:GenerateDataKey", "kms:Decrypt"],
+            Condition: {
+              StringEquals: {
+                "kms:ViaService": `s3.${config.region}.amazonaws.com`,
+              },
+              StringLike: {
+                "kms:EncryptionContext:aws:s3:arn": [
+                  "arn:aws:s3:::%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/*",
+                  "arn:aws:s3:::%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%",
+                ],
+              },
+            },
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:kms:${
+                config.region
+              }:${config.accountId()}:key/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+            ],
+          },
+          {
+            Action: ["logs:PutLogEvents"],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/kinesisfirehose/delivery-stream-s3:log-stream:*`,
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%:log-stream:*`,
+            ],
+            Sid: "",
+          },
+          {
+            Action: [
+              "kinesis:DescribeStream",
+              "kinesis:GetShardIterator",
+              "kinesis:GetRecords",
+              "kinesis:ListShards",
+            ],
+            Effect: "Allow",
+            Resource: `arn:aws:kinesis:${
+              config.region
+            }:${config.accountId()}:stream/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+            Sid: "",
+          },
+          {
+            Action: ["kms:Decrypt"],
+            Condition: {
+              StringEquals: {
+                "kms:ViaService": `kinesis.${config.region}.amazonaws.com`,
+              },
+              StringLike: {
+                "kms:EncryptionContext:aws:kinesis:arn": `arn:aws:kinesis:${
+                  config.region
+                }:${config.accountId()}:stream/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+              },
+            },
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:kms:${
+                config.region
+              }:${config.accountId()}:key/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/service-role/",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({ config }) => ({
@@ -134,142 +257,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Policy",
-    group: "IAM",
-    properties: ({ config }) => ({
-      PolicyName: `KinesisFirehoseServicePolicy-delivery-stream-s3-${config.region}`,
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Action: [
-              "glue:GetTable",
-              "glue:GetTableVersion",
-              "glue:GetTableVersions",
-            ],
-            Resource: [
-              `arn:aws:glue:${config.region}:${config.accountId()}:catalog`,
-              `arn:aws:glue:${
-                config.region
-              }:${config.accountId()}:database/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
-              `arn:aws:glue:${
-                config.region
-              }:${config.accountId()}:table/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
-            ],
-          },
-          {
-            Sid: "",
-            Effect: "Allow",
-            Action: [
-              "s3:AbortMultipartUpload",
-              "s3:GetBucketLocation",
-              "s3:GetObject",
-              "s3:ListBucket",
-              "s3:ListBucketMultipartUploads",
-              "s3:PutObject",
-            ],
-            Resource: [
-              "arn:aws:s3:::gc-flowlogs-firehose-destination",
-              "arn:aws:s3:::gc-flowlogs-firehose-destination/*",
-            ],
-          },
-          {
-            Sid: "",
-            Effect: "Allow",
-            Action: [
-              "lambda:InvokeFunction",
-              "lambda:GetFunctionConfiguration",
-            ],
-            Resource: `arn:aws:lambda:${
-              config.region
-            }:${config.accountId()}:function:%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
-          },
-          {
-            Effect: "Allow",
-            Action: ["kms:GenerateDataKey", "kms:Decrypt"],
-            Resource: [
-              `arn:aws:kms:${
-                config.region
-              }:${config.accountId()}:key/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
-            ],
-            Condition: {
-              StringEquals: {
-                "kms:ViaService": `s3.${config.region}.amazonaws.com`,
-              },
-              StringLike: {
-                "kms:EncryptionContext:aws:s3:arn": [
-                  "arn:aws:s3:::%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/*",
-                  "arn:aws:s3:::%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%",
-                ],
-              },
-            },
-          },
-          {
-            Sid: "",
-            Effect: "Allow",
-            Action: ["logs:PutLogEvents"],
-            Resource: [
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:/aws/kinesisfirehose/delivery-stream-s3:log-stream:*`,
-              `arn:aws:logs:${
-                config.region
-              }:${config.accountId()}:log-group:%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%:log-stream:*`,
-            ],
-          },
-          {
-            Sid: "",
-            Effect: "Allow",
-            Action: [
-              "kinesis:DescribeStream",
-              "kinesis:GetShardIterator",
-              "kinesis:GetRecords",
-              "kinesis:ListShards",
-            ],
-            Resource: `arn:aws:kinesis:${
-              config.region
-            }:${config.accountId()}:stream/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
-          },
-          {
-            Effect: "Allow",
-            Action: ["kms:Decrypt"],
-            Resource: [
-              `arn:aws:kms:${
-                config.region
-              }:${config.accountId()}:key/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
-            ],
-            Condition: {
-              StringEquals: {
-                "kms:ViaService": `kinesis.${config.region}.amazonaws.com`,
-              },
-              StringLike: {
-                "kms:EncryptionContext:aws:kinesis:arn": `arn:aws:kinesis:${
-                  config.region
-                }:${config.accountId()}:stream/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%`,
-              },
-            },
-          },
-        ],
-      },
-      Path: "/service-role/",
-    }),
-  },
-  {
     type: "Bucket",
     group: "S3",
     properties: ({}) => ({
       Name: "gc-flowlogs-firehose-destination",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

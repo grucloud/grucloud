@@ -381,8 +381,8 @@ exports.EC2Vpc = ({ compare }) => ({
     isInstanceUp: eq(get("State"), "available"),
     filterPayload: omit(["DnsHostnames", "DnsSupport"]),
     pickCreated: () => get("Vpc"),
-    // IPAM error
     shouldRetryOnExceptionMessages: [
+      "The operation AllocateIpamPoolCidr is not supported",
       "The allocation size is too big for the pool",
     ],
     postCreate:

@@ -7,30 +7,38 @@ exports.createResources = () => [
     type: "Detector",
     group: "GuardDuty",
     properties: ({}) => ({
-      DataSources: {
-        CloudTrail: {
-          Enable: true,
+      Features: [
+        {
+          Name: "S3_DATA_EVENTS",
+          Status: "ENABLED",
         },
-        DNSLogs: {
-          Enable: true,
+        {
+          Name: "EKS_AUDIT_LOGS",
+          Status: "ENABLED",
         },
-        FlowLogs: {
-          Enable: true,
+        {
+          Name: "EBS_MALWARE_PROTECTION",
+          Status: "ENABLED",
         },
-        Kubernetes: {
-          AuditLogs: {
-            Enable: true,
-          },
+        {
+          Name: "RDS_LOGIN_EVENTS",
+          Status: "ENABLED",
         },
-        MalwareProtection: {
-          ScanEc2InstanceWithFindings: {
-            EbsVolumes: true,
-          },
+        {
+          AdditionalConfiguration: [
+            {
+              Name: "EKS_ADDON_MANAGEMENT",
+              Status: "DISABLED",
+            },
+          ],
+          Name: "EKS_RUNTIME_MONITORING",
+          Status: "DISABLED",
         },
-        S3Logs: {
-          Enable: true,
+        {
+          Name: "LAMBDA_NETWORK_LOGS",
+          Status: "DISABLED",
         },
-      },
+      ],
       FindingPublishingFrequency: "SIX_HOURS",
       Name: "detector",
     }),
@@ -50,23 +58,38 @@ exports.createResources = () => [
     group: "GuardDuty",
     properties: ({}) => ({
       AutoEnable: false,
-      DataSources: {
-        Kubernetes: {
-          AuditLogs: {
-            AutoEnable: false,
-          },
+      Features: [
+        {
+          AutoEnable: "NONE",
+          Name: "S3_DATA_EVENTS",
         },
-        MalwareProtection: {
-          ScanEc2InstanceWithFindings: {
-            EbsVolumes: {
-              AutoEnable: false,
+        {
+          AutoEnable: "NONE",
+          Name: "EKS_AUDIT_LOGS",
+        },
+        {
+          AutoEnable: "NONE",
+          Name: "EBS_MALWARE_PROTECTION",
+        },
+        {
+          AutoEnable: "NONE",
+          Name: "RDS_LOGIN_EVENTS",
+        },
+        {
+          AdditionalConfiguration: [
+            {
+              AutoEnable: "NONE",
+              Name: "EKS_ADDON_MANAGEMENT",
             },
-          },
+          ],
+          AutoEnable: "NONE",
+          Name: "EKS_RUNTIME_MONITORING",
         },
-        S3Logs: {
-          AutoEnable: false,
+        {
+          AutoEnable: "NONE",
+          Name: "LAMBDA_NETWORK_LOGS",
         },
-      },
+      ],
     }),
     dependencies: ({}) => ({
       detector: "detector",

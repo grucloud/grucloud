@@ -4,12 +4,9 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Vpc",
+    type: "ElasticIpAddress",
     group: "EC2",
-    name: "pg-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-    }),
+    name: ({ config }) => `pg-eip-${config.region}a`,
   },
   { type: "InternetGateway", group: "EC2", name: "pg-igw" },
   {
@@ -33,55 +30,36 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `pg-subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "pg-vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `pg-nat-public1-${config.region}a`,
+      routeTable: `pg-vpc::pg-rtb-private1-${config.region}a`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `pg-subnet-private2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 9,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "pg-vpc",
+    dependencies: ({ config }) => ({
+      natGateway: `pg-nat-public1-${config.region}a`,
+      routeTable: `pg-vpc::pg-rtb-private2-${config.region}b`,
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `pg-subnet-public1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "pg-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `pg-subnet-public2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "pg-vpc",
+      ig: "pg-igw",
+      routeTable: "pg-vpc::pg-rtb-public",
     }),
   },
   {
@@ -141,39 +119,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `pg-nat-public1-${config.region}a`,
-      routeTable: `pg-vpc::pg-rtb-private1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      natGateway: `pg-nat-public1-${config.region}a`,
-      routeTable: `pg-vpc::pg-rtb-private2-${config.region}b`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "pg-igw",
-      routeTable: "pg-vpc::pg-rtb-public",
-    }),
-  },
-  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
@@ -202,9 +147,64 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ElasticIpAddress",
+    type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `pg-eip-${config.region}a`,
+    name: ({ config }) => `pg-subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
+    }),
+    dependencies: ({}) => ({
+      vpc: "pg-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `pg-subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
+    }),
+    dependencies: ({}) => ({
+      vpc: "pg-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `pg-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "pg-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `pg-subnet-public2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "pg-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "pg-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+    }),
   },
   {
     type: "Role",
@@ -226,9 +226,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonRDSEnhancedMonitoringRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole",
+          PolicyName: "AmazonRDSEnhancedMonitoringRole",
         },
       ],
     }),
@@ -238,21 +238,21 @@ exports.createResources = () => [
     group: "RDS",
     properties: ({}) => ({
       BackupRetentionPeriod: 7,
+      CopyTagsToSnapshot: true,
       DatabaseName: "mydb",
       DBClusterIdentifier: "database-1",
+      DeletionProtection: false,
       Engine: "aurora-postgresql",
+      EngineMode: "provisioned",
       EngineVersion: "13.6",
+      HttpEndpointEnabled: false,
+      IAMDatabaseAuthenticationEnabled: false,
       MasterUsername: process.env.DATABASE_1_MASTER_USERNAME,
       PreferredBackupWindow: "09:29-09:59",
       PreferredMaintenanceWindow: "sun:07:52-sun:08:22",
-      IAMDatabaseAuthenticationEnabled: false,
-      EngineMode: "provisioned",
-      DeletionProtection: false,
-      HttpEndpointEnabled: false,
-      CopyTagsToSnapshot: true,
       ServerlessV2ScalingConfiguration: {
-        MinCapacity: 0.5,
         MaxCapacity: 1,
+        MinCapacity: 0.5,
       },
       MasterUserPassword: process.env.DATABASE_1_MASTER_USER_PASSWORD,
     }),
@@ -265,18 +265,18 @@ exports.createResources = () => [
     type: "DBInstance",
     group: "RDS",
     properties: ({}) => ({
-      DBInstanceIdentifier: "database-1-instance-1",
-      DBInstanceClass: "db.serverless",
-      Engine: "aurora-postgresql",
-      PreferredMaintenanceWindow: "tue:08:06-tue:08:36",
-      EngineVersion: "13.6",
-      PubliclyAccessible: false,
-      StorageType: "aurora",
       DBClusterIdentifier: "database-1",
-      StorageEncrypted: true,
+      DBInstanceClass: "db.serverless",
+      DBInstanceIdentifier: "database-1-instance-1",
+      Engine: "aurora-postgresql",
+      EngineVersion: "13.6",
       MonitoringInterval: 60,
       PerformanceInsightsEnabled: true,
       PerformanceInsightsRetentionPeriod: 7,
+      PreferredMaintenanceWindow: "tue:08:06-tue:08:36",
+      PubliclyAccessible: false,
+      StorageEncrypted: true,
+      StorageType: "aurora",
       EnablePerformanceInsights: true,
     }),
     dependencies: ({}) => ({
@@ -290,8 +290,8 @@ exports.createResources = () => [
     type: "DBSubnetGroup",
     group: "RDS",
     properties: ({}) => ({
-      DBSubnetGroupName: "default-vpc-07c0392e5e3359f2e",
       DBSubnetGroupDescription: "Created from the RDS Management Console",
+      DBSubnetGroupName: "default-vpc-07c0392e5e3359f2e",
     }),
     dependencies: ({ config }) => ({
       subnets: [

@@ -7,10 +7,6 @@ exports.createResources = () => [
     type: "Vault",
     group: "Glacier",
     properties: ({ config }) => ({
-      vaultName: "my-vault",
-      vaultNotificationConfig: {
-        Events: ["ArchiveRetrievalCompleted", "InventoryRetrievalCompleted"],
-      },
       policy: {
         Policy: {
           Version: "2012-10-17",
@@ -26,6 +22,10 @@ exports.createResources = () => [
             },
           ],
         },
+      },
+      vaultName: "my-vault",
+      vaultNotificationConfig: {
+        Events: ["ArchiveRetrievalCompleted", "InventoryRetrievalCompleted"],
       },
     }),
     dependencies: ({}) => ({

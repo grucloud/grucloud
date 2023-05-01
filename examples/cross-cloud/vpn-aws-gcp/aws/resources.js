@@ -21,25 +21,51 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "Instance",
     group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
+    name: "machine-aws",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220805.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc::launch-wizard-1",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `vpc::subnet-private1-${config.region}a`,
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+    }),
+    dependencies: ({ config }) => ({
+      subnets: [`vpc::subnet-private1-${config.region}a`],
+      iamInstanceProfile: "role-ec2-ssm",
+      securityGroups: ["sg::vpc::launch-wizard-1"],
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
+    properties: ({}) => ({
+      DestinationCidrBlock: "192.168.0.0/24",
     }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
+    dependencies: ({ config }) => ({
+      routeTable: `vpc::rtb-private1-${config.region}a`,
+      vpnGateway: "vpg",
     }),
   },
   {
@@ -56,17 +82,6 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       routeTable: `vpc::rtb-private1-${config.region}a`,
       subnet: `vpc::subnet-private1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "192.168.0.0/24",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `vpc::rtb-private1-${config.region}a`,
-      vpnGateway: "vpg",
     }),
   },
   {
@@ -130,40 +145,25 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "machine-aws",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc::launch-wizard-1",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: `vpc::subnet-private1-${config.region}a`,
-          })}`,
-        },
-      ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220805.0 x86_64 HVM gp2",
-      },
+    name: ({ config }) => `subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
     }),
-    dependencies: ({ config }) => ({
-      subnets: [`vpc::subnet-private1-${config.region}a`],
-      iamInstanceProfile: "role-ec2-ssm",
-      securityGroups: ["sg::vpc::launch-wizard-1"],
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -171,9 +171,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ec2-messages",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({ config }) => ({
       vpc: "vpc",
@@ -186,9 +186,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssm`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({ config }) => ({
       vpc: "vpc",
@@ -201,30 +201,14 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpce-ssm-messages",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({ config }) => ({
       vpc: "vpc",
       subnets: [`vpc::subnet-private1-${config.region}a`],
       securityGroups: ["sg::vpc::launch-wizard-1"],
-    }),
-  },
-  {
-    type: "VpnGateway",
-    group: "EC2",
-    name: "vpg",
-    properties: ({}) => ({
-      AmazonSideAsn: 64512,
-    }),
-  },
-  {
-    type: "VpnGatewayAttachment",
-    group: "EC2",
-    dependencies: ({}) => ({
-      vpc: "vpc",
-      vpnGateway: "vpg",
     }),
   },
   {
@@ -253,6 +237,30 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "VpnGateway",
+    group: "EC2",
+    name: "vpg",
+    properties: ({}) => ({
+      AmazonSideAsn: 64512,
+    }),
+  },
+  {
+    type: "VpnGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "vpc",
+      vpnGateway: "vpg",
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-ec2-ssm",
+    dependencies: ({}) => ({
+      roles: ["role-ec2-ssm"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -272,18 +280,10 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
       ],
-    }),
-  },
-  {
-    type: "InstanceProfile",
-    group: "IAM",
-    name: "role-ec2-ssm",
-    dependencies: ({}) => ({
-      roles: ["role-ec2-ssm"],
     }),
   },
 ];

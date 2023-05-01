@@ -20,13 +20,13 @@ exports.createResources = () => [
     type: "Connection",
     group: "CloudWatchEvents",
     properties: ({}) => ({
+      AuthorizationType: "API_KEY",
       AuthParameters: {
         ApiKeyAuthParameters: {
           ApiKeyName: "MyWebhook",
           ApiKeyValue: process.env.MY_CONNECTION_V2T_EYU29_RU_DM_API_KEY_VALUE,
         },
       },
-      AuthorizationType: "API_KEY",
       Description: "My connection with an API key",
       Name: "MyConnection-v2tEYU29RuDM",
     }),
@@ -59,7 +59,6 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -67,36 +66,36 @@ exports.createResources = () => [
                   "logs:CreateLogStream",
                   "logs:PutLogEvents",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:logs:${
                   config.region
                 }:${config.accountId()}:log-group:sqs-pipes-api-logs:*`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "CloudWatchLogs",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: ["events:InvokeApiDestination"],
+                Effect: "Allow",
                 Resource: `${getId({
                   type: "ApiDestination",
                   group: "CloudWatchEvents",
                   name: "MyWebhookTest",
                   path: "live.ApiDestinationArn",
                 })}`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "InvokeApiDest",
         },
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -104,12 +103,13 @@ exports.createResources = () => [
                   "sqs:DeleteMessage",
                   "sqs:GetQueueAttributes",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:sqs:${
                   config.region
                 }:${config.accountId()}:sam-app-SourceQueue-ncHASMZwgjNq`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "ReadSQS",
         },

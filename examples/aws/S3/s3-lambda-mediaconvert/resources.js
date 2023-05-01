@@ -47,9 +47,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -73,12 +73,12 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayInvokeFullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess",
+          PolicyName: "AmazonAPIGatewayInvokeFullAccess",
         },
         {
-          PolicyName: "AmazonS3FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
         },
       ],
     }),
@@ -126,15 +126,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({ config }) => ({
       Name: "sam-app-videoinput-1m6aten2xp1ko",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
       NotificationConfiguration: {
         LambdaFunctionConfigurations: [
           {
@@ -152,15 +143,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "sam-app-videooutput-1de7ubqosy7ld",
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-          },
-        ],
-      },
     }),
   },
 ];

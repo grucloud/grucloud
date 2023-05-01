@@ -42,8 +42,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "shared-services-vpc",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 600,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "shared-services-vpc",
@@ -57,8 +57,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "spoke-vpc-1",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 600,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -72,8 +72,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "spoke-vpc-2",
     properties: ({}) => ({
-      TrafficType: "ALL",
       MaxAggregationInterval: 600,
+      TrafficType: "ALL",
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -83,134 +83,125 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
+    type: "Instance",
     group: "EC2",
-    name: "shared-services-vpc",
+    name: "spoke-vpc-1-instance-1-hubspoke-shared-services",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description: "Amazon Linux AMI 2018.03.0.20220609.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      MetadataOptions: {
+        HttpTokens: "required",
+      },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::spoke-vpc-1::instance_sg",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `spoke-vpc-1::private-${config.region}a`,
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+    }),
+    dependencies: ({ config }) => ({
+      subnets: [`spoke-vpc-1::private-${config.region}a`],
+      iamInstanceProfile: "ec2_instance_profile_hubspoke-shared-services",
+      securityGroups: ["sg::spoke-vpc-1::instance_sg"],
+    }),
+  },
+  {
+    type: "Instance",
+    group: "EC2",
+    name: "spoke-vpc-2-instance-1-hubspoke-shared-services",
+    properties: ({ config, getId }) => ({
+      Image: {
+        Description: "Amazon Linux AMI 2018.03.0.20220609.0 x86_64 HVM gp2",
+      },
+      InstanceType: "t2.micro",
+      MetadataOptions: {
+        HttpTokens: "required",
+      },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::spoke-vpc-2::instance_sg",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `spoke-vpc-2::private-${config.region}a`,
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+    }),
+    dependencies: ({ config }) => ({
+      subnets: [`spoke-vpc-2::private-${config.region}a`],
+      iamInstanceProfile: "ec2_instance_profile_hubspoke-shared-services",
+      securityGroups: ["sg::spoke-vpc-2::instance_sg"],
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
-      CidrBlock: "10.0.50.0/24",
-      DnsHostnames: true,
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `shared-services-vpc::private-${config.region}a`,
+      transitGateway: "transit-gateway-hubspoke-shared-services",
     }),
   },
   {
-    type: "Vpc",
+    type: "Route",
     group: "EC2",
-    name: "spoke-vpc-1",
     properties: ({}) => ({
-      CidrBlock: "10.0.0.0/24",
-      DnsHostnames: true,
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `shared-services-vpc::private-${config.region}b`,
+      transitGateway: "transit-gateway-hubspoke-shared-services",
     }),
   },
   {
-    type: "Vpc",
+    type: "Route",
     group: "EC2",
-    name: "spoke-vpc-2",
     properties: ({}) => ({
-      CidrBlock: "10.0.1.0/24",
-      DnsHostnames: true,
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `spoke-vpc-1::private-${config.region}a`,
+      transitGateway: "transit-gateway-hubspoke-shared-services",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `private-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 2,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `private-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 2,
-      NetworkNumber: 1,
-    }),
-    dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `tgw-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 12,
-    }),
-    dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `tgw-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 13,
-    }),
-    dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `private-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 2,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `tgw-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 12,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-1",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `private-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 2,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `tgw-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 12,
-    }),
-    dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
+    dependencies: ({ config }) => ({
+      routeTable: `spoke-vpc-2::private-${config.region}a`,
+      transitGateway: "transit-gateway-hubspoke-shared-services",
     }),
   },
   {
@@ -339,50 +330,6 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       routeTable: `spoke-vpc-2::tgw-${config.region}a`,
       subnet: `spoke-vpc-2::tgw-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `shared-services-vpc::private-${config.region}a`,
-      transitGateway: "transit-gateway-hubspoke-shared-services",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `shared-services-vpc::private-${config.region}b`,
-      transitGateway: "transit-gateway-hubspoke-shared-services",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `spoke-vpc-1::private-${config.region}a`,
-      transitGateway: "transit-gateway-hubspoke-shared-services",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `spoke-vpc-2::private-${config.region}a`,
-      transitGateway: "transit-gateway-hubspoke-shared-services",
     }),
   },
   {
@@ -599,141 +546,107 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Instance",
+    type: "Subnet",
     group: "EC2",
-    name: "spoke-vpc-1-instance-1-hubspoke-shared-services",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::spoke-vpc-1::instance_sg",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: `spoke-vpc-1::private-${config.region}a`,
-          })}`,
-        },
-      ],
-      MetadataOptions: {
-        HttpTokens: "required",
-      },
-      Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220609.0 x86_64 HVM gp2",
-      },
-    }),
-    dependencies: ({ config }) => ({
-      subnets: [`spoke-vpc-1::private-${config.region}a`],
-      iamInstanceProfile: "ec2_instance_profile_hubspoke-shared-services",
-      securityGroups: ["sg::spoke-vpc-1::instance_sg"],
-    }),
-  },
-  {
-    type: "Instance",
-    group: "EC2",
-    name: "spoke-vpc-2-instance-1-hubspoke-shared-services",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::spoke-vpc-2::instance_sg",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: `spoke-vpc-2::private-${config.region}a`,
-          })}`,
-        },
-      ],
-      MetadataOptions: {
-        HttpTokens: "required",
-      },
-      Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220609.0 x86_64 HVM gp2",
-      },
-    }),
-    dependencies: ({ config }) => ({
-      subnets: [`spoke-vpc-2::private-${config.region}a`],
-      iamInstanceProfile: "ec2_instance_profile_hubspoke-shared-services",
-      securityGroups: ["sg::spoke-vpc-2::instance_sg"],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 2,
+      NetworkNumber: 0,
     }),
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       vpc: "shared-services-vpc",
-      subnets: [
-        `shared-services-vpc::private-${config.region}a`,
-        `shared-services-vpc::private-${config.region}b`,
-      ],
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `private-${config.region}b`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.s3`,
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 2,
+      NetworkNumber: 1,
     }),
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       vpc: "shared-services-vpc",
-      subnets: [
-        `shared-services-vpc::private-${config.region}a`,
-        `shared-services-vpc::private-${config.region}b`,
-      ],
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `tgw-${config.region}a`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssm`,
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 12,
     }),
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       vpc: "shared-services-vpc",
-      subnets: [
-        `shared-services-vpc::private-${config.region}a`,
-        `shared-services-vpc::private-${config.region}b`,
-      ],
     }),
   },
   {
-    type: "VpcEndpoint",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `tgw-${config.region}b`,
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 13,
     }),
-    dependencies: ({ config }) => ({
+    dependencies: ({}) => ({
       vpc: "shared-services-vpc",
-      subnets: [
-        `shared-services-vpc::private-${config.region}a`,
-        `shared-services-vpc::private-${config.region}b`,
-      ],
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `private-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 2,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `tgw-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 12,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `private-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 2,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `tgw-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 12,
+    }),
+    dependencies: ({}) => ({
+      vpc: "spoke-vpc-2",
     }),
   },
   {
@@ -747,9 +660,9 @@ exports.createResources = () => [
         AutoAcceptSharedAttachments: "disable",
         DefaultRouteTableAssociation: "disable",
         DefaultRouteTablePropagation: "disable",
-        VpnEcmpSupport: "enable",
         DnsSupport: "enable",
         MulticastSupport: "disable",
+        VpnEcmpSupport: "enable",
       },
     }),
   },
@@ -778,14 +691,71 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable:
+        "shared-services-vpc-rt-hubspoke-shared-services",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::shared-services-vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "spoke-vpc-rt-hubspoke-shared-services",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::spoke-vpc-1",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "spoke-vpc-rt-hubspoke-shared-services",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::spoke-vpc-2",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "spoke-vpc-rt-hubspoke-shared-services",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::shared-services-vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable:
+        "shared-services-vpc-rt-hubspoke-shared-services",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::spoke-vpc-1",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable:
+        "shared-services-vpc-rt-hubspoke-shared-services",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::spoke-vpc-2",
+    }),
+  },
+  {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
     name: "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::shared-services-vpc",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "disable",
         DnsSupport: "enable",
         Ipv6Support: "disable",
-        ApplianceModeSupport: "disable",
       },
     }),
     dependencies: ({ config }) => ({
@@ -803,9 +773,9 @@ exports.createResources = () => [
     name: "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::spoke-vpc-1",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "disable",
         DnsSupport: "enable",
         Ipv6Support: "disable",
-        ApplianceModeSupport: "disable",
       },
     }),
     dependencies: ({ config }) => ({
@@ -820,9 +790,9 @@ exports.createResources = () => [
     name: "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::spoke-vpc-2",
     properties: ({}) => ({
       Options: {
+        ApplianceModeSupport: "disable",
         DnsSupport: "enable",
         Ipv6Support: "disable",
-        ApplianceModeSupport: "disable",
       },
     }),
     dependencies: ({ config }) => ({
@@ -832,60 +802,90 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGatewayRouteTableAssociation",
+    type: "Vpc",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable:
-        "shared-services-vpc-rt-hubspoke-shared-services",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::shared-services-vpc",
+    name: "shared-services-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.50.0/24",
+      DnsHostnames: true,
     }),
   },
   {
-    type: "TransitGatewayRouteTableAssociation",
+    type: "Vpc",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "spoke-vpc-rt-hubspoke-shared-services",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::spoke-vpc-1",
+    name: "spoke-vpc-1",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/24",
+      DnsHostnames: true,
     }),
   },
   {
-    type: "TransitGatewayRouteTableAssociation",
+    type: "Vpc",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "spoke-vpc-rt-hubspoke-shared-services",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::spoke-vpc-2",
+    name: "spoke-vpc-2",
+    properties: ({}) => ({
+      CidrBlock: "10.0.1.0/24",
+      DnsHostnames: true,
     }),
   },
   {
-    type: "TransitGatewayRouteTablePropagation",
+    type: "VpcEndpoint",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "spoke-vpc-rt-hubspoke-shared-services",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::shared-services-vpc",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "shared-services-vpc",
+      subnets: [
+        `shared-services-vpc::private-${config.region}a`,
+        `shared-services-vpc::private-${config.region}b`,
+      ],
     }),
   },
   {
-    type: "TransitGatewayRouteTablePropagation",
+    type: "VpcEndpoint",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable:
-        "shared-services-vpc-rt-hubspoke-shared-services",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::spoke-vpc-1",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.s3`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "shared-services-vpc",
+      subnets: [
+        `shared-services-vpc::private-${config.region}a`,
+        `shared-services-vpc::private-${config.region}b`,
+      ],
     }),
   },
   {
-    type: "TransitGatewayRouteTablePropagation",
+    type: "VpcEndpoint",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable:
-        "shared-services-vpc-rt-hubspoke-shared-services",
-      transitGatewayVpcAttachment:
-        "tgw-vpc-attach::transit-gateway-hubspoke-shared-services::spoke-vpc-2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "shared-services-vpc",
+      subnets: [
+        `shared-services-vpc::private-${config.region}a`,
+        `shared-services-vpc::private-${config.region}b`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "shared-services-vpc",
+      subnets: [
+        `shared-services-vpc::private-${config.region}a`,
+        `shared-services-vpc::private-${config.region}b`,
+      ],
     }),
   },
   {
@@ -894,6 +894,88 @@ exports.createResources = () => [
     name: "ec2_instance_profile_hubspoke-shared-services",
     dependencies: ({}) => ({
       roles: ["ec2_ssm_role_hubspoke-shared-services"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName:
+        "shared-services-vpc-cw-access-policy-20220717111207838000000002",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "logs:PutLogEvents",
+              "logs:DescribeLogStreams",
+              "logs:DescribeLogGroups",
+              "logs:CreateLogStream",
+              "logs:CreateLogGroup",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+            Sid: "SharedServicesVpcLogsToCW",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+      Description:
+        "Cloudwatch permissions policy for shared-services-vpc with vpc-flow-logs",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "spoke-vpc-1-cw-access-policy-20220717111208786100000004",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "logs:PutLogEvents",
+              "logs:DescribeLogStreams",
+              "logs:DescribeLogGroups",
+              "logs:CreateLogStream",
+              "logs:CreateLogGroup",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+            Sid: "SpokeVpc1LogsToCW",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+      Description:
+        "Cloudwatch permissions policy for spoke-vpc-1 with vpc-flow-logs",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "spoke-vpc-2-cw-access-policy-20220717111208293100000003",
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "logs:PutLogEvents",
+              "logs:DescribeLogStreams",
+              "logs:DescribeLogGroups",
+              "logs:CreateLogStream",
+              "logs:CreateLogGroup",
+            ],
+            Effect: "Allow",
+            Resource: "*",
+            Sid: "SpokeVpc2LogsToCW",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+      Description:
+        "Cloudwatch permissions policy for spoke-vpc-2 with vpc-flow-logs",
     }),
   },
   {
@@ -916,16 +998,16 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonS3ReadOnlyAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+          PolicyName: "AmazonS3ReadOnlyAccess",
         },
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
         {
-          PolicyName: "AmazonEC2RoleforSSM",
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+          PolicyName: "AmazonEC2RoleforSSM",
         },
       ],
     }),
@@ -1028,11 +1110,8 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
-                Sid: "2",
-                Effect: "Allow",
                 Action: [
                   "logs:PutLogEvents",
                   "logs:DescribeLogStreams",
@@ -1040,97 +1119,18 @@ exports.createResources = () => [
                   "logs:CreateLogStream",
                   "logs:CreateLogGroup",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:logs:${
                   config.region
                 }:${config.accountId()}:*`,
+                Sid: "2",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "vpc-flowlog-role-policy-hubspoke-shared-services",
         },
       ],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName:
-        "shared-services-vpc-cw-access-policy-20220717111207838000000002",
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              "logs:PutLogEvents",
-              "logs:DescribeLogStreams",
-              "logs:DescribeLogGroups",
-              "logs:CreateLogStream",
-              "logs:CreateLogGroup",
-            ],
-            Effect: "Allow",
-            Resource: "*",
-            Sid: "SharedServicesVpcLogsToCW",
-          },
-        ],
-        Version: "2012-10-17",
-      },
-      Path: "/",
-      Description:
-        "Cloudwatch permissions policy for shared-services-vpc with vpc-flow-logs",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "spoke-vpc-1-cw-access-policy-20220717111208786100000004",
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              "logs:PutLogEvents",
-              "logs:DescribeLogStreams",
-              "logs:DescribeLogGroups",
-              "logs:CreateLogStream",
-              "logs:CreateLogGroup",
-            ],
-            Effect: "Allow",
-            Resource: "*",
-            Sid: "SpokeVpc1LogsToCW",
-          },
-        ],
-        Version: "2012-10-17",
-      },
-      Path: "/",
-      Description:
-        "Cloudwatch permissions policy for spoke-vpc-1 with vpc-flow-logs",
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    properties: ({}) => ({
-      PolicyName: "spoke-vpc-2-cw-access-policy-20220717111208293100000003",
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              "logs:PutLogEvents",
-              "logs:DescribeLogStreams",
-              "logs:DescribeLogGroups",
-              "logs:CreateLogStream",
-              "logs:CreateLogGroup",
-            ],
-            Effect: "Allow",
-            Resource: "*",
-            Sid: "SpokeVpc2LogsToCW",
-          },
-        ],
-        Version: "2012-10-17",
-      },
-      Path: "/",
-      Description:
-        "Cloudwatch permissions policy for spoke-vpc-2 with vpc-flow-logs",
     }),
   },
   {
@@ -1233,11 +1233,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `*.s3.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `*.s3.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `s3.${config.region}.amazonaws.com.`,
@@ -1248,11 +1248,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `ec2messages.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `ec2messages.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
@@ -1263,11 +1263,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `s3.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `s3.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `s3.${config.region}.amazonaws.com.`,
@@ -1278,11 +1278,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `ssm.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `ssm.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ssm.${config.region}.amazonaws.com.`,
@@ -1293,11 +1293,11 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     properties: ({ config }) => ({
-      Name: `ssmmessages.${config.region}.amazonaws.com.`,
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: `ssmmessages.${config.region}.amazonaws.com.`,
+      Type: "A",
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
@@ -1373,7 +1373,6 @@ exports.createResources = () => [
     group: "Route53Resolver",
     properties: ({ config, getId }) => ({
       Direction: "INBOUND",
-      Name: "inbound-endpoint-hubspoke-shared-services",
       IpAddresses: [
         {
           SubnetId: `${getId({
@@ -1390,6 +1389,7 @@ exports.createResources = () => [
           })}`,
         },
       ],
+      Name: "inbound-endpoint-hubspoke-shared-services",
     }),
     dependencies: ({ config }) => ({
       securityGroups: ["sg::shared-services-vpc::r53endpoint_inbound_sg"],
@@ -1404,7 +1404,6 @@ exports.createResources = () => [
     group: "Route53Resolver",
     properties: ({ config, getId }) => ({
       Direction: "OUTBOUND",
-      Name: "outbound-endpoint-hubspoke-shared-services",
       IpAddresses: [
         {
           SubnetId: `${getId({
@@ -1421,6 +1420,7 @@ exports.createResources = () => [
           })}`,
         },
       ],
+      Name: "outbound-endpoint-hubspoke-shared-services",
     }),
     dependencies: ({ config }) => ({
       securityGroups: ["sg::shared-services-vpc::r53endpoint_outbound_sg"],

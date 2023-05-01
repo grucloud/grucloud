@@ -30,12 +30,23 @@ const {
 const util = require("util");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
+const { deepReject } = require("@grucloud/core/deepReject");
+const { deepSortKey } = require("@grucloud/core/deepSortKey");
 const { retryCall } = require("@grucloud/core/Retry");
 const { assignTagsSort, createEndpoint } = require("./AwsCommon");
 
 const shouldRetryOnExceptionMessagesDefaults = [
   "Service Unavailable. Please try again later",
 ];
+const myDeepSortKey = deepSortKey({
+  keysExclude: [
+    "policy",
+    "Policy",
+    "AssumeRolePolicyDocument",
+    "PolicyDocument",
+    "policyText",
+  ],
+});
 
 const shouldRetryOnExceptionCodesDefault =
   (shouldRetryOnExceptionCodes) =>
@@ -79,6 +90,10 @@ const shouldRetryOnExceptionDefault = ({
     ]),
   ]);
 
+const myDeepReject = deepReject(
+  ([key, value]) => value == undefined || value == null || key.startsWith("__")
+);
+
 const AwsClient =
   ({ spec, config, getContext = () => ({}), getEndpointConfig = () => ({}) }) =>
   (endpoint) => {
@@ -95,6 +110,7 @@ const AwsClient =
         decorate = () => identity,
         ignoreErrorCodes = [],
         ignoreErrorMessages = [],
+        sortKey = false,
       }) =>
       ({ lives }) =>
       (live) =>
@@ -132,6 +148,8 @@ const AwsClient =
                     config,
                     endpointConfig: getEndpointConfig(getContext()),
                   }),
+                  myDeepReject,
+                  when(() => sortKey, myDeepSortKey),
                   assignTagsSort,
                 ])
               ),
@@ -171,7 +189,7 @@ const AwsClient =
             // logger.debug(
             //   `getById ${type} result: ${JSON.stringify(result, null, 4)}`
             // );
-            logger.debug(`getById ${groupType} done`);
+            logger.debug(`getById ${groupType} has ${!!result}`);
           }),
         ])();
 
@@ -195,6 +213,7 @@ const AwsClient =
           "BadRequest",
         ],
         getById,
+        noSortKey = false,
       }) =>
       ({ lives, params = {} } = {}) =>
         pipe([
@@ -208,13 +227,13 @@ const AwsClient =
               () => params,
               defaultsDeep(extraParam),
               defaultsDeep(enhanceParams({ config })()),
-              tap((params) => {
-                logger.debug(
-                  `getList ${groupType}, method: ${method}, params: ${JSON.stringify(
-                    params
-                  )}`
-                );
-              }),
+              // tap((params) => {
+              //   logger.debug(
+              //     `getList ${groupType}, method: ${method}, params: ${JSON.stringify(
+              //       params
+              //     )}`
+              //   );
+              // }),
               async (params) => {
                 let NextToken;
                 let Marker;
@@ -249,13 +268,24 @@ const AwsClient =
                 assert(true);
               }),
               map.withIndex((item, index) =>
-                decorate({
-                  lives,
-                  index,
-                  endpoint,
-                  getById: getById ? getById({ lives, config }) : undefined,
-                  config,
-                })(item)
+                pipe([
+                  () => item,
+                  decorate({
+                    lives,
+                    index,
+                    endpoint,
+                    getById: getById ? getById({ lives, config }) : undefined,
+                    config,
+                  }),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  unless(() => noSortKey, myDeepSortKey),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  myDeepReject,
+                ])()
               ),
               transformListPost({ lives, endpoint }),
               tap((params) => {
@@ -264,12 +294,12 @@ const AwsClient =
               map(assignTagsSort),
               tap((items) => {
                 assert(Array.isArray(items));
-                logger.info(`getList ${groupType} #items ${size(items)}`);
+                //logger.info(`getList ${groupType} #items ${size(items)}`);
               }),
               filter(not(isEmpty)),
               tap((items) => {
                 assert(Array.isArray(items));
-                logger.info(`getList ${groupType} final #items ${size(items)}`);
+                //logger.info(`getList ${groupType} final #items ${size(items)}`);
               }),
             ]),
             pipe([
@@ -299,6 +329,7 @@ const AwsClient =
         decorate = () => identity,
         filterParent = () => true,
         transformListPost = () => identity,
+        noSortKey = false,
       }) =>
       ({ lives, config }) =>
         pipe([
@@ -402,6 +433,8 @@ const AwsClient =
             ])()
           ),
           filter(not(isEmpty)),
+          unless(() => noSortKey, map(myDeepSortKey)),
+          map(myDeepReject),
           tap((items) => {
             logger.info(`getListWithParent ${type} #items ${size(items)}`);
           }),
