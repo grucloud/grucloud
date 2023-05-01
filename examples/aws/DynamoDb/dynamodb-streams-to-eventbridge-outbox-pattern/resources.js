@@ -69,16 +69,16 @@ exports.createResources = () => [
       RoleName:
         "EventbridgeOutboxPatternW-streamToEventBridgeServi-1Q8XE9F7MA3Y3",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -137,16 +137,16 @@ exports.createResources = () => [
       RoleName:
         "EventbridgeOutboxPatternW-userCreatedConsumerServi-ID0RGEAD9FXP",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -164,16 +164,16 @@ exports.createResources = () => [
       RoleName:
         "EventbridgeOutboxPatternW-writetoddbServiceRole08D-1R7G1M1FLQP3T",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

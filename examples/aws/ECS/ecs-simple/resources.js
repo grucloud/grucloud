@@ -329,17 +329,17 @@ echo 'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}' >> /etc/ecs/ecs.config
     properties: ({}) => ({
       RoleName: "ecsInstanceRole",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Sid: "",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       AttachedPolicies: [
         {

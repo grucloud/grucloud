@@ -70,7 +70,6 @@ exports.createResources = () => [
     group: "Route53Resolver",
     properties: ({ getId }) => ({
       Direction: "OUTBOUND",
-      Name: "endpoint",
       IpAddresses: [
         {
           SubnetId: `${getId({
@@ -87,6 +86,7 @@ exports.createResources = () => [
           })}`,
         },
       ],
+      Name: "endpoint",
     }),
     dependencies: ({}) => ({
       securityGroups: ["sg::vpc-resolver-endpoint::dns"],

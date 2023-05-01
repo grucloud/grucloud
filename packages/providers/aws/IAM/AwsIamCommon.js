@@ -143,7 +143,7 @@ const replaceResource = ({ key, providerConfig, lives }) =>
     when(
       get(key),
       assign({
-        Resource: pipe([
+        [key]: pipe([
           get(key),
           switchCase([
             Array.isArray,

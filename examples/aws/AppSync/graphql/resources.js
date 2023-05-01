@@ -127,16 +127,16 @@ exports.createResources = () => [
       RoleName:
         "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "appsync.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -164,16 +164,16 @@ exports.createResources = () => [
       RoleName:
         "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

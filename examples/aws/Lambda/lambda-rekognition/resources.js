@@ -40,16 +40,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "TextRecognitionLambdaRole",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

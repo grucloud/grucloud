@@ -7,7 +7,6 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config, getId }) => ({
-      AlarmName: "alarm-stop-ec2",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
@@ -16,9 +15,9 @@ exports.createResources = () => [
           config.region
         }:${config.accountId()}:action/actions/AWS_EC2.InstanceId.Reboot/1.0`,
       ],
-      MetricName: "CPUUtilization",
-      Namespace: "AWS/EC2",
-      Statistic: "Average",
+      AlarmName: "alarm-stop-ec2",
+      ComparisonOperator: "LessThanOrEqualToThreshold",
+      DatapointsToAlarm: 1,
       Dimensions: [
         {
           Value: `${getId({
@@ -29,11 +28,12 @@ exports.createResources = () => [
           Name: "InstanceId",
         },
       ],
-      Period: 300,
       EvaluationPeriods: 1,
-      DatapointsToAlarm: 1,
+      MetricName: "CPUUtilization",
+      Namespace: "AWS/EC2",
+      Period: 300,
+      Statistic: "Average",
       Threshold: 5,
-      ComparisonOperator: "LessThanOrEqualToThreshold",
       TreatMissingData: "missing",
     }),
     dependencies: ({}) => ({
@@ -46,10 +46,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "ec2-for-alarm",
     properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}d`,
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220606.1 x86_64 HVM gp2",
       },
+      InstanceType: "t2.micro",
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -67,9 +68,8 @@ exports.createResources = () => [
           })}`,
         },
       ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220606.1 x86_64 HVM gp2",
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
       },
     }),
     dependencies: ({}) => ({

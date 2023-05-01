@@ -120,16 +120,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-AppFunctionRole-1X1Q8LI42XT4E",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -146,16 +146,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-TokenAuthorizerFunctionRole-1C4MB81Y5P9AI",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

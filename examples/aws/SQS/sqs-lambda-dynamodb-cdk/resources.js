@@ -33,16 +33,16 @@ exports.createResources = () => [
       RoleName:
         "vsam-to-dynamo-SQSToDynamoFunctionServiceRole574AE-1UJ4RMVYBA5KC",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

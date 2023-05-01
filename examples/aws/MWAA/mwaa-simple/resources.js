@@ -440,16 +440,16 @@ exports.createResources = () => [
       RoleName: "AmazonMWAA-MyAirflowEnvironment-5mqrsR",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: ["airflow-env.amazonaws.com", "airflow.amazonaws.com"],
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
@@ -463,16 +463,16 @@ exports.createResources = () => [
       RoleName: "AmazonMWAA-MyAirflowEnvironment-RAZcH1",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: ["airflow-env.amazonaws.com", "airflow.amazonaws.com"],
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({

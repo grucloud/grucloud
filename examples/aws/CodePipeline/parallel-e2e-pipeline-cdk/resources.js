@@ -8,15 +8,15 @@ exports.createResources = () => [
     group: "CloudWatchEvents",
     properties: ({}) => ({
       EventPattern: {
+        detail: {
+          event: ["referenceCreated", "referenceUpdated"],
+          referenceName: ["mainline"],
+        },
         "detail-type": ["CodeCommit Repository State Change"],
         resources: [
           "arn:aws:codecommit:us-east-1:840541460064:serverless-patterns",
         ],
         source: ["aws.codecommit"],
-        detail: {
-          event: ["referenceCreated", "referenceUpdated"],
-          referenceName: ["mainline"],
-        },
       },
       Name: "ParallelE2EPipelineCDK-ImportedRepoParallelE2EPipe-XMTRRUGDXQDA",
     }),
@@ -379,8 +379,8 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonS3FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
         },
       ],
     }),
@@ -695,17 +695,17 @@ exports.createResources = () => [
     name: "alias/codepipeline-parallele2epipelinecdkserverlesslandpipelineedfc43a9",
     properties: ({ config }) => ({
       Policy: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "kms:*",
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
+            Action: "kms:*",
             Resource: "*",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },

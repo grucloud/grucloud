@@ -25,6 +25,7 @@ exports.AccountAlternateAccount = () => ({
     pickId,
     method: "getAlternateContact",
     getField: "AlternateContact",
+    sortKey: true,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html#putAlternateContact-property
   create: {

@@ -47,9 +47,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -73,12 +73,12 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayInvokeFullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess",
+          PolicyName: "AmazonAPIGatewayInvokeFullAccess",
         },
         {
-          PolicyName: "AmazonS3FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
         },
       ],
     }),

@@ -346,16 +346,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "eks.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -408,16 +408,16 @@ exports.createResources = () => [
       RoleName:
         "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

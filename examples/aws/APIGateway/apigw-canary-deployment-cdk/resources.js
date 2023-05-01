@@ -93,16 +93,16 @@ exports.createResources = () => [
       RoleName:
         "MyServerlessApplicationSt-MyFunctionServiceRole3C3-1HCKXNRK6G7IA",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -120,16 +120,16 @@ exports.createResources = () => [
       RoleName:
         "MyServerlessApplicationSt-RestApiCloudWatchRoleE3E-GC7YEQUWF6JE",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

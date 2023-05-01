@@ -7,14 +7,13 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config, getId }) => ({
-      AlarmName:
-        "healthcheck-grucloud-awsroute53-5dcc5fa2-2b2f-4735-9a2f-109415b1e977-Low-HealthCheckStatus",
       AlarmActions: [
         `arn:aws:sns:${config.region}:${config.accountId()}:healthcheck`,
       ],
-      MetricName: "HealthCheckStatus",
-      Namespace: "AWS/Route53",
-      Statistic: "Minimum",
+      AlarmName:
+        "healthcheck-grucloud-awsroute53-5dcc5fa2-2b2f-4735-9a2f-109415b1e977-Low-HealthCheckStatus",
+      ComparisonOperator: "LessThanThreshold",
+      DatapointsToAlarm: 1,
       Dimensions: [
         {
           Value: `${getId({
@@ -25,11 +24,12 @@ exports.createResources = () => [
           Name: "HealthCheckId",
         },
       ],
-      Period: 60,
       EvaluationPeriods: 1,
-      DatapointsToAlarm: 1,
+      MetricName: "HealthCheckStatus",
+      Namespace: "AWS/Route53",
+      Period: 60,
+      Statistic: "Minimum",
       Threshold: 1,
-      ComparisonOperator: "LessThanThreshold",
     }),
     dependencies: ({}) => ({
       snsTopic: "healthcheck",

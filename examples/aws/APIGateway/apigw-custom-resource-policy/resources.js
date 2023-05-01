@@ -48,9 +48,18 @@ exports.createResources = () => [
     group: "APIGateway",
     properties: ({ getId }) => ({
       policy: {
+        Version: "2012-10-17",
         Statement: [
           {
+            Effect: "Allow",
+            Principal: "*",
             Action: "execute-api:Invoke",
+            Resource: `${getId({
+              type: "RestApi",
+              group: "APIGateway",
+              name: "sam-app",
+              path: "live.arnv2",
+            })}/Prod/*/*`,
             Condition: {
               DateGreaterThan: {
                 "aws:CurrentTime": "2022-09-01T00:00:00Z",
@@ -59,17 +68,8 @@ exports.createResources = () => [
                 "aws:CurrentTime": "2022-09-30T23:59:59Z",
               },
             },
-            Effect: "Allow",
-            Principal: "*",
-            Resource: `${getId({
-              type: "RestApi",
-              group: "APIGateway",
-              name: "sam-app",
-              path: "live.arnv2",
-            })}/Prod/*/*`,
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
@@ -102,16 +102,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-HelloWorldFunctionRole-1K79IUAXP1MXQ",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

@@ -130,16 +130,16 @@ exports.createResources = () => [
       RoleName: "role-execution-batch",
       Description: "Allows ECS to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },

@@ -140,9 +140,6 @@ exports.ServiceDiscoveryPrivateDnsNamespace = () => ({
         endpoint().getOperation,
         get("Operation.Targets.NAMESPACE"),
         (Id) => ({ Id }),
-        tap((params) => {
-          assert(true);
-        }),
       ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceDiscovery.html#updatePrivateDnsNamespace-property

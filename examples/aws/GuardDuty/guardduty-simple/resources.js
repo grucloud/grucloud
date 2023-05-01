@@ -25,6 +25,12 @@ exports.createResources = () => [
           Status: "ENABLED",
         },
         {
+          AdditionalConfiguration: [
+            {
+              Name: "EKS_ADDON_MANAGEMENT",
+              Status: "DISABLED",
+            },
+          ],
           Name: "EKS_RUNTIME_MONITORING",
           Status: "DISABLED",
         },
@@ -52,23 +58,38 @@ exports.createResources = () => [
     group: "GuardDuty",
     properties: ({}) => ({
       AutoEnable: false,
-      DataSources: {
-        Kubernetes: {
-          AuditLogs: {
-            AutoEnable: false,
-          },
+      Features: [
+        {
+          AutoEnable: "NONE",
+          Name: "S3_DATA_EVENTS",
         },
-        MalwareProtection: {
-          ScanEc2InstanceWithFindings: {
-            EbsVolumes: {
-              AutoEnable: false,
+        {
+          AutoEnable: "NONE",
+          Name: "EKS_AUDIT_LOGS",
+        },
+        {
+          AutoEnable: "NONE",
+          Name: "EBS_MALWARE_PROTECTION",
+        },
+        {
+          AutoEnable: "NONE",
+          Name: "RDS_LOGIN_EVENTS",
+        },
+        {
+          AdditionalConfiguration: [
+            {
+              AutoEnable: "NONE",
+              Name: "EKS_ADDON_MANAGEMENT",
             },
-          },
+          ],
+          AutoEnable: "NONE",
+          Name: "EKS_RUNTIME_MONITORING",
         },
-        S3Logs: {
-          AutoEnable: false,
+        {
+          AutoEnable: "NONE",
+          Name: "LAMBDA_NETWORK_LOGS",
         },
-      },
+      ],
     }),
     dependencies: ({}) => ({
       detector: "detector",

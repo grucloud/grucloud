@@ -39,16 +39,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-EnrichmentStateMachineRole-VHHJR3QAFHSP",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "states.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -94,16 +94,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-PipeRole-HY6EHVTRSCJE",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "pipes.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -164,16 +164,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-TargetRole-J97H5E26J5AT",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

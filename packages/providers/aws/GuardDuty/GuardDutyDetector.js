@@ -95,6 +95,8 @@ exports.GuardDutyDetector = () => ({
     "UpdatedAt",
     "Arn",
     "DataSources",
+    "Features[].UpdatedAt",
+    "Features[].AdditionalConfiguration.UpdatedAt",
   ],
   inferName: () =>
     pipe([

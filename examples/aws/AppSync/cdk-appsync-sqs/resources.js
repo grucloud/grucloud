@@ -7,10 +7,7 @@ exports.createResources = () => [
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
-      name: "sqs",
-      type: "HTTP",
       httpConfig: {
-        endpoint: `https://sqs.${config.region}.amazonaws.com`,
         authorizationConfig: {
           authorizationType: "AWS_IAM",
           awsIamConfig: {
@@ -18,7 +15,10 @@ exports.createResources = () => [
             signingServiceName: "sqs",
           },
         },
+        endpoint: `https://sqs.${config.region}.amazonaws.com`,
       },
+      name: "sqs",
+      type: "HTTP",
     }),
     dependencies: ({}) => ({
       graphqlApi: "ToSqSApi",

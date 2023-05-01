@@ -91,16 +91,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-ApiGatewayWebsocketSQSRole-1V39NB449HWBY",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -127,16 +127,16 @@ exports.createResources = () => [
     properties: ({ config, getId }) => ({
       RoleName: "sam-app-SQSWebsocketResponseServiceRole-13ZF133MLHMTF",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

@@ -122,8 +122,6 @@ exports.createResources = () => [
     type: "HostedConfigurationVersion",
     group: "AppConfig",
     properties: ({}) => ({
-      Description: "A sample hosted configuration version",
-      ContentType: "application/json",
       Content: {
         flags: {
           pagination: {
@@ -154,6 +152,8 @@ exports.createResources = () => [
         },
         version: "1",
       },
+      ContentType: "application/json",
+      Description: "A sample hosted configuration version",
     }),
     dependencies: ({}) => ({
       configurationProfile: "appconfig-feature-flag-sam::TestConfig",
@@ -179,28 +179,28 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
-            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
                   "appconfig:GetLatestConfiguration",
                   "appconfig:StartConfigurationSession",
                 ],
+                Effect: "Allow",
                 Resource: `arn:aws:appconfig:${
                   config.region
                 }:${config.accountId()}:application/*`,
-                Effect: "Allow",
               },
             ],
+            Version: "2012-10-17",
           },
           PolicyName: "SAMConfigFunctionRolePolicy0",
         },
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -208,7 +208,7 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       Configuration: {
         Environment: {
           Variables: {
@@ -219,7 +219,7 @@ exports.createResources = () => [
         FunctionName: "sam-app-SAMConfigFunction-LV97iqvm1Uz9",
         Handler: "app.lambdaHandler",
         Layers: [
-          `arn:aws:lambda:${config.region}:027255383542:layer:AWS-AppConfig-Extension:82`,
+          "arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:82",
         ],
         Runtime: "nodejs16.x",
       },
@@ -237,14 +237,14 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-SAMConfigFunction-LV97iqvm1Uz9",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "sam-app-SAMConfigFunctionApiEventPermission-1P5FAXZHS71VD",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "sam-app",
             path: "live.ArnV2",
           })}/*/GET/config`,
+          StatementId:
+            "sam-app-SAMConfigFunctionApiEventPermission-1P5FAXZHS71VD",
         },
       ],
     }),

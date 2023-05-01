@@ -291,16 +291,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "ApigwS3CdkStack-apigatewayroleE6D48DBD-GPQ1YV05N9TS",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -341,16 +341,16 @@ exports.createResources = () => [
       RoleName:
         "ApigwS3CdkStack-S3ObjectsApiCloudWatchRole1AFD0F4C-ABPYNYNF4B8R",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

@@ -984,17 +984,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "ec2_ssm_role_hubspoke-shared-services",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "1",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Sid: "1",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -1020,17 +1020,17 @@ exports.createResources = () => [
       Description:
         "Cloudwatch permissions role for shared-services-vpc with vpc-flow-logs",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "SharedServicesVpcVpcFlowLogsCloudwatchTrust",
             Effect: "Allow",
             Principal: {
               Service: "vpc-flow-logs.amazonaws.com",
             },
-            Sid: "SharedServicesVpcVpcFlowLogsCloudwatchTrust",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
@@ -1047,17 +1047,17 @@ exports.createResources = () => [
       Description:
         "Cloudwatch permissions role for spoke-vpc-1 with vpc-flow-logs",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "SpokeVpc1VpcFlowLogsCloudwatchTrust",
             Effect: "Allow",
             Principal: {
               Service: "vpc-flow-logs.amazonaws.com",
             },
-            Sid: "SpokeVpc1VpcFlowLogsCloudwatchTrust",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
@@ -1072,17 +1072,17 @@ exports.createResources = () => [
       Description:
         "Cloudwatch permissions role for spoke-vpc-2 with vpc-flow-logs",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "SpokeVpc2VpcFlowLogsCloudwatchTrust",
             Effect: "Allow",
             Principal: {
               Service: "vpc-flow-logs.amazonaws.com",
             },
-            Sid: "SpokeVpc2VpcFlowLogsCloudwatchTrust",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
@@ -1095,17 +1095,17 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "vpc-flowlog-role-hubspoke-shared-services",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "1",
             Effect: "Allow",
             Principal: {
               Service: "vpc-flow-logs.amazonaws.com",
             },
-            Sid: "1",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -1140,17 +1140,23 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Description: "KMS Logs Key",
       Policy: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "kms:*",
+            Sid: "Enable IAM User Permissions",
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
+            Action: "kms:*",
             Resource: `arn:aws:kms:${config.region}:${config.accountId()}:*`,
-            Sid: "Enable IAM User Permissions",
           },
           {
+            Sid: "Enable KMS to be used by CloudWatch Logs",
+            Effect: "Allow",
+            Principal: {
+              Service: `logs.${config.region}.amazonaws.com`,
+            },
             Action: [
               "kms:ReEncrypt*",
               "kms:GenerateDataKey*",
@@ -1158,6 +1164,7 @@ exports.createResources = () => [
               "kms:Describe*",
               "kms:Decrypt*",
             ],
+            Resource: `arn:aws:kms:${config.region}:${config.accountId()}:*`,
             Condition: {
               ArnLike: {
                 "kms:EncryptionContext:aws:logs:arn": `arn:aws:logs:${
@@ -1165,15 +1172,8 @@ exports.createResources = () => [
                 }:${config.accountId()}:*`,
               },
             },
-            Effect: "Allow",
-            Principal: {
-              Service: `logs.${config.region}.amazonaws.com`,
-            },
-            Resource: `arn:aws:kms:${config.region}:${config.accountId()}:*`,
-            Sid: "Enable KMS to be used by CloudWatch Logs",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },

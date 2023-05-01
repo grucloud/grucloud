@@ -30,10 +30,10 @@ exports.createResources = () => [
     name: "lt-ec2-micro",
     properties: ({}) => ({
       LaunchTemplateData: {
-        InstanceType: "t2.micro",
         Image: {
           Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
         },
+        InstanceType: "t2.micro",
       },
       Tags: [
         {

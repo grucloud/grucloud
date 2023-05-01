@@ -33,19 +33,19 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
+          Version: "2008-10-17",
           Statement: [
             {
-              Action: "sns:Publish",
               Effect: "Allow",
               Principal: {
                 Service: "events.amazonaws.com",
               },
+              Action: "sns:Publish",
               Resource: `arn:aws:sns:${
                 config.region
               }:${config.accountId()}:sam-app-MySnsTopic-4zKsbzEFMsaq`,
             },
           ],
-          Version: "2008-10-17",
         },
       },
     }),

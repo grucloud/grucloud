@@ -51,8 +51,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "SecretsManagerReadWrite",
           PolicyArn: "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+          PolicyName: "SecretsManagerReadWrite",
         },
       ],
     }),
@@ -131,18 +131,18 @@ exports.createResources = () => [
     group: "SecretsManager",
     properties: ({}) => ({
       ResourcePolicy: {
-        Version: "2012-10-17",
         Statement: [
           {
-            Sid: "EnableAnotherAccountToReadTheSecret",
+            Action: "secretsmanager:GetSecretValue",
             Effect: "Allow",
             Principal: {
               AWS: "arn:aws:iam::548529576214:root",
             },
-            Action: "secretsmanager:GetSecretValue",
             Resource: "*",
+            Sid: "EnableAnotherAccountToReadTheSecret",
           },
         ],
+        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({

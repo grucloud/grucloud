@@ -2339,17 +2339,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "dev_endpoint_vpc_flow_logs",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "",
             Effect: "Allow",
             Principal: {
               Service: "vpc-flow-logs.amazonaws.com",
             },
-            Sid: "",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -2380,8 +2380,13 @@ exports.createResources = () => [
     properties: ({ getId }) => ({
       RoleName: "dev_network_automation_role",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
+            Effect: "Allow",
+            Principal: {
+              AWS: "*",
+            },
             Action: "sts:AssumeRole",
             Condition: {
               StringEquals: {
@@ -2395,13 +2400,8 @@ exports.createResources = () => [
                 "aws:RequestTag/automation": "true",
               },
             },
-            Effect: "Allow",
-            Principal: {
-              AWS: "*",
-            },
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
@@ -2416,17 +2416,23 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Description: "KMS Logs Key",
       Policy: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "kms:*",
+            Sid: "Enable IAM User Permissions",
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
+            Action: "kms:*",
             Resource: "*",
-            Sid: "Enable IAM User Permissions",
           },
           {
+            Sid: "Enable KMS to be used by CloudWatch Logs",
+            Effect: "Allow",
+            Principal: {
+              Service: `logs.${config.region}.amazonaws.com`,
+            },
             Action: [
               "kms:ReEncrypt*",
               "kms:GenerateDataKey*",
@@ -2434,15 +2440,9 @@ exports.createResources = () => [
               "kms:Describe*",
               "kms:Decrypt*",
             ],
-            Effect: "Allow",
-            Principal: {
-              Service: `logs.${config.region}.amazonaws.com`,
-            },
             Resource: "*",
-            Sid: "Enable KMS to be used by CloudWatch Logs",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },

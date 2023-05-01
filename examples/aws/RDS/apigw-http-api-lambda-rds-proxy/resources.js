@@ -137,16 +137,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-dbProxyRole-1BMIN3H39UUK3",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "rds.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -177,16 +177,16 @@ exports.createResources = () => [
       Description:
         "Allows your Aurora DB cluster to deliver Enhanced Monitoring metrics.",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "monitoring.rds.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

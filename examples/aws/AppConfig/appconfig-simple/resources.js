@@ -135,8 +135,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSQSFullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSQSFullAccess",
+          PolicyName: "AmazonSQSFullAccess",
         },
       ],
     }),

@@ -59,9 +59,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -107,17 +107,17 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonS3ReadOnlyAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+          PolicyName: "AmazonS3ReadOnlyAccess",
         },
         {
-          PolicyName: "AWSLambdaInvocation-DynamoDB",
           PolicyArn: "arn:aws:iam::aws:policy/AWSLambdaInvocation-DynamoDB",
+          PolicyName: "AWSLambdaInvocation-DynamoDB",
         },
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -173,20 +173,20 @@ exports.createResources = () => [
           FunctionName:
             "S3LambdaDynamodbCdkStack-dataloadD006E5C2-gtXcpb19cPHr",
           Principal: "s3.amazonaws.com",
-          StatementId:
-            "S3LambdaDynamodbCdkStack-dataloadInvokeServicePrincipals3amazonawscom645984A8-1BGJA5IHT4DDC",
           SourceArn:
             "arn:aws:s3:::s3lambdadynamodbcdkstack-s3lambdaddbcdkc208e71f-1halzsydjpaor",
+          StatementId:
+            "S3LambdaDynamodbCdkStack-dataloadInvokeServicePrincipals3amazonawscom645984A8-1BGJA5IHT4DDC",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "S3LambdaDynamodbCdkStack-dataloadD006E5C2-gtXcpb19cPHr",
           Principal: "s3.amazonaws.com",
-          StatementId:
-            "S3LambdaDynamodbCdkStack-s3lambdaddbcdkAllowBucketNotificationsToS3LambdaDynamodbCdkSt-17WSJ80917ZAK",
           SourceArn:
             "arn:aws:s3:::s3lambdadynamodbcdkstack-s3lambdaddbcdkc208e71f-1halzsydjpaor",
+          StatementId:
+            "S3LambdaDynamodbCdkStack-s3lambdaddbcdkAllowBucketNotificationsToS3LambdaDynamodbCdkSt-17WSJ80917ZAK",
         },
       ],
     }),

@@ -98,8 +98,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEKSWorkerNodePolicy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+          PolicyName: "AmazonEKSWorkerNodePolicy",
         },
       ],
     }),

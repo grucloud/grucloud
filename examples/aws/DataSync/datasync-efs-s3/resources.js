@@ -133,26 +133,26 @@ exports.createResources = () => [
       RoleName: "AWSDataSyncS3BucketAccess-gc-datasync-destination",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
+            Effect: "Allow",
+            Principal: {
+              Service: "datasync.amazonaws.com",
+            },
             Action: "sts:AssumeRole",
             Condition: {
+              StringEquals: {
+                "aws:SourceAccount": `${config.accountId()}`,
+              },
               ArnLike: {
                 "aws:SourceArn": `arn:aws:datasync:${
                   config.region
                 }:${config.accountId()}:*`,
               },
-              StringEquals: {
-                "aws:SourceAccount": `${config.accountId()}`,
-              },
-            },
-            Effect: "Allow",
-            Principal: {
-              Service: "datasync.amazonaws.com",
             },
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({

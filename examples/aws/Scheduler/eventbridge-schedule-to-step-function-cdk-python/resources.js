@@ -10,16 +10,16 @@ exports.createResources = () => [
       RoleName:
         "EventbridgeScheduleToStep-statemachineRole8DD785C2-K46ETFNXLLTA",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "states.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },
@@ -30,16 +30,16 @@ exports.createResources = () => [
       RoleName:
         "EventbridgeScheduleToStepFun-schedulerrole9B80A9F3-GY3556909SKH",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "scheduler.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

@@ -88,26 +88,26 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config }) => ({
-      AlarmName: "High_5xx_Errors_Alarm",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
         }:${config.accountId()}:5xx_Errors_SNS_Topic`,
       ],
-      MetricName: "ConsumedLCUs",
-      Namespace: "AWS/ApplicationELB",
-      Statistic: "Sum",
+      AlarmName: "High_5xx_Errors_Alarm",
+      ComparisonOperator: "GreaterThanThreshold",
+      DatapointsToAlarm: 1,
       Dimensions: [
         {
           Value: "app/CdkSt-Farga-1U06CXLRFZ4ZC/01670162ba2b5d68",
           Name: "LoadBalancer",
         },
       ],
-      Period: 60,
       EvaluationPeriods: 1,
-      DatapointsToAlarm: 1,
+      MetricName: "ConsumedLCUs",
+      Namespace: "AWS/ApplicationELB",
+      Period: 60,
+      Statistic: "Sum",
       Threshold: 1,
-      ComparisonOperator: "GreaterThanThreshold",
       TreatMissingData: "missing",
     }),
     dependencies: ({}) => ({

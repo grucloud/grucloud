@@ -9,16 +9,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-MyFirstScheduleRole-A76X8CY1CMB7",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "scheduler.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -47,16 +47,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-ScheduledLambdaFunctionRole-4JYXF2YKLM8V",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

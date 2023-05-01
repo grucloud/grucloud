@@ -357,24 +357,24 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({ config }) => ({
       PolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
+            Effect: "Allow",
+            Principal: {
+              AWS: "*",
+            },
             Action: "dynamodb:PutItem",
+            Resource: `arn:aws:dynamodb:${
+              config.region
+            }:${config.accountId()}:table/CdkStack-DynamoTableB2B22E15-1T1CPCS57NG64`,
             Condition: {
               ArnEquals: {
                 "aws:PrincipalArn": `arn:aws:iam::${config.accountId()}:role/CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-GTVVNX6JAX97`,
               },
             },
-            Effect: "Allow",
-            Principal: {
-              AWS: "*",
-            },
-            Resource: `arn:aws:dynamodb:${
-              config.region
-            }:${config.accountId()}:table/CdkStack-DynamoTableB2B22E15-1T1CPCS57NG64`,
           },
         ],
-        Version: "2012-10-17",
       },
       ServiceName: `com.amazonaws.${config.region}.dynamodb`,
       VpcEndpointType: "Gateway",
@@ -506,16 +506,16 @@ exports.createResources = () => [
       RoleName:
         "CdkStack-MyFargateServiceTaskDefExecutionRoleD6305-12UZ2O2VLJ5O5",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -561,16 +561,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-GTVVNX6JAX97",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

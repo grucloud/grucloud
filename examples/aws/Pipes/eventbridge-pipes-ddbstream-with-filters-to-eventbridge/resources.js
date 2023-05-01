@@ -43,16 +43,16 @@ exports.createResources = () => [
     properties: ({ config, getId }) => ({
       RoleName: "sam-app-PipeRole-19SXRFUEF1TVT",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "pipes.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

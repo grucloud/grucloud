@@ -448,6 +448,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
                   "ServiceUnavailable",
                   "RequestLimitExceeded",
                   "SyntaxError", // SDK v3 JSON.parse exception
+                  "InvalidSignatureException",
                 ],
                 includes(error.name),
               ]),

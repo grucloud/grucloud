@@ -1451,9 +1451,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -1478,9 +1478,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
         },
       ],
     }),
@@ -1517,224 +1517,224 @@ exports.createResources = () => [
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsGETApiPermissionAmazonQldbRestApiSta-W9I5TVRS2V7B",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/prod/GET/`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsGETApiPermissionAmazonQldbRestApiSta-W9I5TVRS2V7B",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsGETApiPermissionTestAmazonQldbRestAp-164KVRIISAZZI",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/test-invoke-stage/GET/`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsGETApiPermissionTestAmazonQldbRestAp-164KVRIISAZZI",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvshistoryGETApiPermissionAmazonQldbRes-1H2CBMF9T6B9E",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/prod/GET/history`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvshistoryGETApiPermissionAmazonQldbRes-1H2CBMF9T6B9E",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvshistoryGETApiPermissionTestAmazonQld-1A4UKKCH23SPJ",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/test-invoke-stage/GET/history`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvshistoryGETApiPermissionTestAmazonQld-1A4UKKCH23SPJ",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsPOSTApiPermissionAmazonQldbRestApiSt-LMN7OINDEAK4",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/prod/POST/`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsPOSTApiPermissionAmazonQldbRestApiSt-LMN7OINDEAK4",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsPOSTApiPermissionTestAmazonQldbRestA-10MFAFLT61BS3",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/test-invoke-stage/POST/`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsPOSTApiPermissionTestAmazonQldbRestA-10MFAFLT61BS3",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsreceiptbydocGETApiPermissionAmazonQl-E08OK9U3CGWT",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/prod/GET/receipt-by-doc`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsreceiptbydocGETApiPermissionAmazonQl-E08OK9U3CGWT",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsreceiptbydocGETApiPermissionTestAmaz-VKZB5LONGRNJ",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/test-invoke-stage/GET/receipt-by-doc`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsreceiptbydocGETApiPermissionTestAmaz-VKZB5LONGRNJ",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsreceiptbykeyGETApiPermissionAmazonQl-EI9CF9F5O0N1",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/prod/GET/receipt-by-key`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsreceiptbykeyGETApiPermissionAmazonQl-EI9CF9F5O0N1",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsreceiptbykeyGETApiPermissionTestAmaz-6NOCEMI57M81",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/test-invoke-stage/GET/receipt-by-key`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsreceiptbykeyGETApiPermissionTestAmaz-6NOCEMI57M81",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsretrievedocrevisionPOSTApiPermission-1GTUAJ0T0XCMU",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/prod/POST/retrieve-doc-revision`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsretrievedocrevisionPOSTApiPermission-1GTUAJ0T0XCMU",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsretrievedocrevisionPOSTApiPermission-304EAEOLZBY2",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/test-invoke-stage/POST/retrieve-doc-revision`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsretrievedocrevisionPOSTApiPermission-304EAEOLZBY2",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsverifydocrevisionPOSTApiPermissionAm-FTKBI9M6GUF3",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/prod/POST/verify-doc-revision`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsverifydocrevisionPOSTApiPermissionAm-FTKBI9M6GUF3",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsverifydocrevisionPOSTApiPermissionTe-M4NMRXF61W8S",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/test-invoke-stage/POST/verify-doc-revision`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsverifydocrevisionPOSTApiPermissionTe-M4NMRXF61W8S",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsverifyreceiptPOSTApiPermissionAmazon-1VDAM528JX0SJ",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/prod/POST/verify-receipt`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsverifyreceiptPOSTApiPermissionAmazon-1VDAM528JX0SJ",
         },
         {
           Action: "lambda:InvokeFunction",
           FunctionName:
             "AmazonQldbRestApiStack-AmazonQldbKVSqldblambdakvs7-2Hqg3i8vUtDy",
           Principal: "apigateway.amazonaws.com",
-          StatementId:
-            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsverifyreceiptPOSTApiPermissionTestAm-1W34XUHAQFDQG",
           SourceArn: `${getId({
             type: "RestApi",
             group: "APIGateway",
             name: "Amazon QLDB key value store Service",
             path: "live.arnv2",
           })}/test-invoke-stage/POST/verify-receipt`,
+          StatementId:
+            "AmazonQldbRestApiStack-AmazonQldbKVSqldbrestapikvsverifyreceiptPOSTApiPermissionTestAm-1W34XUHAQFDQG",
         },
       ],
     }),

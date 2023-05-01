@@ -10,9 +10,18 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
+          Version: "2012-10-17",
           Statement: [
             {
+              Sid: "Allow SNS publish to SQS",
+              Effect: "Allow",
+              Principal: {
+                Service: "sns.amazonaws.com",
+              },
               Action: "SQS:SendMessage",
+              Resource: `arn:aws:sqs:${
+                config.region
+              }:${config.accountId()}:sam-app-MySqsQueue-KMqXSqHYypds`,
               Condition: {
                 ArnEquals: {
                   "aws:SourceArn": `arn:aws:sns:${
@@ -20,17 +29,8 @@ exports.createResources = () => [
                   }:${config.accountId()}:sam-app-MySnsTopic-7ZOEL49PL4BA`,
                 },
               },
-              Effect: "Allow",
-              Principal: {
-                Service: "sns.amazonaws.com",
-              },
-              Resource: `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:sam-app-MySqsQueue-KMqXSqHYypds`,
-              Sid: "Allow SNS publish to SQS",
             },
           ],
-          Version: "2012-10-17",
         },
       },
       QueueName: "sam-app-MySqsQueue-KMqXSqHYypds",

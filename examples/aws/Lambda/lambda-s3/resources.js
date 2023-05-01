@@ -9,16 +9,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-PutObjectFunctionRole-TFR4FTCB12K2",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

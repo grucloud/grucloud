@@ -41,17 +41,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sqs_lambda_demo_functionrole",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Sid: "",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({

@@ -10,7 +10,6 @@ exports.createResources = () => [
       Description:
         "Amazon CloudWatch Events rule to automatically start your pipeline when a change occurs in the Amazon ECR image tag. Deleting this may prevent changes from being detected in that pipeline. Read more: http://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-about-starting.html",
       EventPattern: {
-        source: ["aws.ecr"],
         detail: {
           "action-type": ["PUSH"],
           "image-tag": ["latest"],
@@ -18,6 +17,7 @@ exports.createResources = () => [
           result: ["SUCCESS"],
         },
         "detail-type": ["ECR Image Action"],
+        source: ["aws.ecr"],
       },
       Name: "codepipeline-starha-latest-615512-rule",
     }),

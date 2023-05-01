@@ -31,8 +31,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+          PolicyName: "AmazonEC2FullAccess",
         },
       ],
       Tags: [

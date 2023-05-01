@@ -82,16 +82,16 @@ exports.createResources = () => [
       RoleName:
         "ApigwHttpApiSqsLambdaStac-ApiGwV2ToSqsRole230A72FB-DSMDY5EKTBRF",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -131,16 +131,16 @@ exports.createResources = () => [
       RoleName:
         "ApigwHttpApiSqsLambdaStac-SqsMessageHandlerService-H5VSPLLD36UB",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

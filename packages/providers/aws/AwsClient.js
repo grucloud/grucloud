@@ -26,7 +26,6 @@ const {
   first,
   when,
   unless,
-  callProp,
 } = require("rubico/x");
 const util = require("util");
 
@@ -39,6 +38,15 @@ const { assignTagsSort, createEndpoint } = require("./AwsCommon");
 const shouldRetryOnExceptionMessagesDefaults = [
   "Service Unavailable. Please try again later",
 ];
+const myDeepSortKey = deepSortKey({
+  keysExclude: [
+    "policy",
+    "Policy",
+    "AssumeRolePolicyDocument",
+    "PolicyDocument",
+    "policyText",
+  ],
+});
 
 const shouldRetryOnExceptionCodesDefault =
   (shouldRetryOnExceptionCodes) =>
@@ -102,6 +110,7 @@ const AwsClient =
         decorate = () => identity,
         ignoreErrorCodes = [],
         ignoreErrorMessages = [],
+        sortKey = false,
       }) =>
       ({ lives }) =>
       (live) =>
@@ -139,14 +148,9 @@ const AwsClient =
                     config,
                     endpointConfig: getEndpointConfig(getContext()),
                   }),
-                  tap((params) => {
-                    assert(true);
-                  }),
                   myDeepReject,
+                  when(() => sortKey, myDeepSortKey),
                   assignTagsSort,
-                  tap((params) => {
-                    assert(true);
-                  }),
                 ])
               ),
             ]),
@@ -223,13 +227,13 @@ const AwsClient =
               () => params,
               defaultsDeep(extraParam),
               defaultsDeep(enhanceParams({ config })()),
-              tap((params) => {
-                logger.debug(
-                  `getList ${groupType}, method: ${method}, params: ${JSON.stringify(
-                    params
-                  )}`
-                );
-              }),
+              // tap((params) => {
+              //   logger.debug(
+              //     `getList ${groupType}, method: ${method}, params: ${JSON.stringify(
+              //       params
+              //     )}`
+              //   );
+              // }),
               async (params) => {
                 let NextToken;
                 let Marker;
@@ -273,7 +277,13 @@ const AwsClient =
                     getById: getById ? getById({ lives, config }) : undefined,
                     config,
                   }),
-                  unless(() => noSortKey, deepSortKey),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  unless(() => noSortKey, myDeepSortKey),
+                  tap((params) => {
+                    assert(true);
+                  }),
                   myDeepReject,
                 ])()
               ),
@@ -423,7 +433,7 @@ const AwsClient =
             ])()
           ),
           filter(not(isEmpty)),
-          unless(() => noSortKey, map(deepSortKey)),
+          unless(() => noSortKey, map(myDeepSortKey)),
           map(myDeepReject),
           tap((items) => {
             logger.info(`getListWithParent ${type} #items ${size(items)}`);

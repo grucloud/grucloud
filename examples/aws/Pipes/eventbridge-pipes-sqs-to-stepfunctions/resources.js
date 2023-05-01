@@ -17,16 +17,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-EventBridgePipesRole-E5SRBPCBWT7D",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "pipes.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -89,16 +89,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-TargetStateMachineRole-RGUSC4UJPHNM",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "states.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

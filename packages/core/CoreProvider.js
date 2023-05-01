@@ -1233,6 +1233,7 @@ function CoreProvider({
         assert(true);
       }),
       Lister({
+        poolSize: 5,
         onStateChange: ({ key, meta, result, error, ...other }) => {
           assert(key);
           const spec = meta;

@@ -7,22 +7,22 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({}) => ({
-      AlarmName: "InboundWebhook-Lambda-Invocation-Alarm-sam-app",
       AlarmDescription:
         "Alarm for sam-app - InboundWebhook Lambda for traffic spikes",
-      MetricName: "Invocations",
-      Namespace: "AWS/Lambda",
-      Statistic: "Sum",
+      AlarmName: "InboundWebhook-Lambda-Invocation-Alarm-sam-app",
+      ComparisonOperator: "GreaterThanThreshold",
       Dimensions: [
         {
           Value: "InboundWebhook-Lambda-cb9166b0-ac6d-11ed-9aac-0a4580dc23a9",
           Name: "FunctionName",
         },
       ],
-      Period: 300,
       EvaluationPeriods: 2,
+      MetricName: "Invocations",
+      Namespace: "AWS/Lambda",
+      Period: 300,
+      Statistic: "Sum",
       Threshold: 2000,
-      ComparisonOperator: "GreaterThanThreshold",
     }),
   },
   {
@@ -81,9 +81,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

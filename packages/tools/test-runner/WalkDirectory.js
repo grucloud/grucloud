@@ -48,6 +48,7 @@ const IncludeListExpensive = [
   "VpcLattice",
   "WAFv2",
 ];
+
 const IncludeList = [
   "ACM",
   "APIGateway",
@@ -66,14 +67,14 @@ const IncludeList = [
   "ApplicationInsights",
   "Aps",
   "Athena",
-  "AuditManager",
+  //"AuditManager",
   "AutoScaling",
   "Backup",
   "Batch",
   "Budgets",
   "CUR",
   "Cloud9",
-  // "CloudFront"
+  "CloudFront",
   //"CloudHSMv2"
   "CloudTrail",
   "CloudWatch",
@@ -135,7 +136,7 @@ const IncludeList = [
   "KinesisVideo",
   "LakeFormation",
   "Lambda",
-  "Lex",
+  //"Lex",
   "LicenseManager",
   "Lightsail",
   "Location",
@@ -154,12 +155,12 @@ const IncludeList = [
   // "NetworkManager"
   // "OpenSearch"
   //  "OpenSearchServerless"
-  "Organisation",
+  //"Organisation",
   //  "Pinpoint"
   "Pipes",
   "QLDB",
   // "QuickSight",
-  "RAM",
+  //"RAM",
   // "RDS", $$
   "RUM",
   "Rbin",
@@ -216,8 +217,11 @@ const ExcludeDirsDefault = [
   "amplify-nextjs",
   "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
   "private-apigw-lambda-cdk", //  Too slow"
+  "auth0", //run as default profile due to certificate
+  "http-lambda", //run as default profile due to certificate
   "appstream-stack",
   "appstream-simple", // need to create an S3 object
+  "backup-simple", //UpdateGlobalSettings AccessDeniedException: Insufficient privileges to perform this action.
   "ta-eventbridge-lambda-s3",
   "cloud9-simple", // reason: 'Instance profile AWSCloud9SSMInstanceProfile does not exist in this account. Please create an instance profile and role as described here https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html',
   "directory-service-microsoft-ad", // multi account
@@ -373,9 +377,9 @@ exports.walkDirectory =
       fileExist,
       () => readdir(directory, { withFileTypes: true }),
       filter(callProp("isDirectory")),
-      filterExcludeFiles({ excludeDirs }),
+      //filterExcludeFiles({ excludeDirs }),
       //filterIncludeDir({ IncludeList }),
-      filterIncludeDir({ IncludeList: IncludeListExpensive }),
+      //filterIncludeDir({ IncludeList: IncludeListExpensive }),
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])
       ),

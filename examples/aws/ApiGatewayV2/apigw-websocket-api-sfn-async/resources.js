@@ -101,16 +101,16 @@ exports.createResources = () => [
     properties: ({ getId }) => ({
       RoleName: "sam-app-AsyncSFnRole-DJEA1WIA8X0T",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "states.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -145,16 +145,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-StepFunctionsAsyncExecutionRole-6RGKCARYYWG",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

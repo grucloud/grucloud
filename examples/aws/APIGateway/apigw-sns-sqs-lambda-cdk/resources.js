@@ -123,16 +123,16 @@ exports.createResources = () => [
       RoleName:
         "CdkApigwSnsSqsLambdaStack-GatewayExecutionRole16B5-1SKXUSE3EULAH",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -160,16 +160,16 @@ exports.createResources = () => [
       RoleName:
         "CdkApigwSnsSqsLambdaStack-RestApiCloudWatchRoleE3E-16T4PBS8JC1QB",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -187,16 +187,16 @@ exports.createResources = () => [
       RoleName:
         "CdkApigwSnsSqsLambdaStack-workerLambdaTypeOneHandl-1PCFAO2SNO4HO",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -238,16 +238,16 @@ exports.createResources = () => [
       RoleName:
         "CdkApigwSnsSqsLambdaStack-workerLambdaTypeTwoHandl-19SGRUJJBHV9C",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -367,9 +367,17 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
+          Version: "2012-10-17",
           Statement: [
             {
+              Effect: "Allow",
+              Principal: {
+                Service: "sns.amazonaws.com",
+              },
               Action: "sqs:SendMessage",
+              Resource: `arn:aws:sqs:${
+                config.region
+              }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-SubscriberQueueOne2F3DD46E-6C5ZXYtstbZx`,
               Condition: {
                 ArnEquals: {
                   "aws:SourceArn": `arn:aws:sns:${
@@ -377,16 +385,8 @@ exports.createResources = () => [
                   }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-topic69831491-vgMzreNVdE37`,
                 },
               },
-              Effect: "Allow",
-              Principal: {
-                Service: "sns.amazonaws.com",
-              },
-              Resource: `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-SubscriberQueueOne2F3DD46E-6C5ZXYtstbZx`,
             },
           ],
-          Version: "2012-10-17",
         },
       },
       QueueName:
@@ -402,9 +402,17 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
+          Version: "2012-10-17",
           Statement: [
             {
+              Effect: "Allow",
+              Principal: {
+                Service: "sns.amazonaws.com",
+              },
               Action: "sqs:SendMessage",
+              Resource: `arn:aws:sqs:${
+                config.region
+              }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-SubscriberQueueTwo43B9D9F1-KiJCjrQeHx5a`,
               Condition: {
                 ArnEquals: {
                   "aws:SourceArn": `arn:aws:sns:${
@@ -412,16 +420,8 @@ exports.createResources = () => [
                   }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-topic69831491-vgMzreNVdE37`,
                 },
               },
-              Effect: "Allow",
-              Principal: {
-                Service: "sns.amazonaws.com",
-              },
-              Resource: `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:CdkApigwSnsSqsLambdaStack-SubscriberQueueTwo43B9D9F1-KiJCjrQeHx5a`,
             },
           ],
-          Version: "2012-10-17",
         },
       },
       QueueName:

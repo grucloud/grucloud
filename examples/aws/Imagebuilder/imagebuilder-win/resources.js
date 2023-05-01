@@ -30,18 +30,18 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
         {
-          PolicyName: "EC2InstanceProfileForImageBuilder",
           PolicyArn:
             "arn:aws:iam::aws:policy/EC2InstanceProfileForImageBuilder",
+          PolicyName: "EC2InstanceProfileForImageBuilder",
         },
         {
-          PolicyName: "EC2InstanceProfileForImageBuilderECRContainerBuilds",
           PolicyArn:
             "arn:aws:iam::aws:policy/EC2InstanceProfileForImageBuilderECRContainerBuilds",
+          PolicyName: "EC2InstanceProfileForImageBuilderECRContainerBuilds",
         },
       ],
     }),

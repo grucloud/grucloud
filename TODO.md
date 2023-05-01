@@ -5,16 +5,21 @@
 FIS
 Verified Access
 
+lambda-web-adapter-cdk lambda update
+aws-network-hub-for-terraform ✖ NetworkFirewall::LoggingConfiguration 0/1 LogDestination: /aws/network-firewall/flows does not exist
+xray-simple kms key
+✖ vpc-lattice-simple [e2e-charly]  
+CoreNetwork update
+delete ECR repo
+ecs-simple update
 appsync-cognito-lambda-cdk lambda signing
 s3-s3-replication-cdk retry
 SecurityHub consolidated finding
 GraphqlApi substitute region in additionalAuthenticationProviders
 cdk-vpc-lamba-sfn
 rattitmq-lambda
-emr studio
 kerndra-simple
 requestMACSec
-waf-appsync-cdk
 
 - MQ user for RabbitMQ
 - CodeStarConnections Host

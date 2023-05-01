@@ -42,9 +42,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -72,10 +72,10 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "CloudWatchScheduledEventFunction",
           Principal: "events.amazonaws.com",
-          StatementId: "terraform-20230211145658038600000003",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/terraform-20230211145642529800000001`,
+          StatementId: "terraform-20230211145658038600000003",
         },
       ],
     }),

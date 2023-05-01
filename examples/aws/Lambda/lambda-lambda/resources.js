@@ -9,16 +9,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-OnFailureFunctionRole-1F4V5FIK907PV",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -35,16 +35,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-OnSuccessFunctionRole-1F2XESIKF6EV9",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -61,16 +61,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-ProducerFunctionRole-PNQ5UE1I36B9",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

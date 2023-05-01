@@ -87,7 +87,6 @@ exports.createResources = () => [
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
     properties: ({}) => ({
-      PoolName: "UserPool-3Fx2HozhHSsp",
       Policies: {
         PasswordPolicy: {
           RequireLowercase: false,
@@ -96,6 +95,7 @@ exports.createResources = () => [
           RequireUppercase: false,
         },
       },
+      PoolName: "UserPool-3Fx2HozhHSsp",
       UsernameAttributes: ["email"],
     }),
   },
@@ -144,9 +144,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -174,13 +174,13 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-AppFunction-gKUxwsmxX2fK",
           Principal: "apigateway.amazonaws.com",
-          StatementId: "4yymkbc",
           SourceArn: `${getId({
             type: "Api",
             group: "ApiGatewayV2",
             name: "sam-app",
             path: "live.ArnV2",
           })}/*/*/sam-app-AppFunction-gKUxwsmxX2fK`,
+          StatementId: "4yymkbc",
         },
       ],
     }),

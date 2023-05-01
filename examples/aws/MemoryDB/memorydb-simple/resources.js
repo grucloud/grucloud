@@ -49,7 +49,7 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
+      AvailabilityZone: `${config.region}b`,
       NewBits: 4,
       NetworkNumber: 8,
     }),
@@ -62,7 +62,7 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
+      AvailabilityZone: `${config.region}c`,
       NewBits: 4,
       NetworkNumber: 9,
     }),

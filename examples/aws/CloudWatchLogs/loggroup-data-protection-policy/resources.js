@@ -10,12 +10,10 @@ exports.createResources = () => [
       logGroupName: "log-group-data-protection",
       retentionInDays: 1,
       dataProtectionPolicy: {
-        Name: "data-protection-policy",
         Description: "",
-        Version: "2021-06-01",
+        Name: "data-protection-policy",
         Statement: [
           {
-            Sid: "audit-policy",
             DataIdentifier: [
               "arn:aws:dataprotection::aws:data-identifier/Address",
             ],
@@ -24,9 +22,9 @@ exports.createResources = () => [
                 FindingsDestination: {},
               },
             },
+            Sid: "audit-policy",
           },
           {
-            Sid: "redact-policy",
             DataIdentifier: [
               "arn:aws:dataprotection::aws:data-identifier/Address",
             ],
@@ -35,8 +33,10 @@ exports.createResources = () => [
                 MaskConfig: {},
               },
             },
+            Sid: "redact-policy",
           },
         ],
+        Version: "2021-06-01",
       },
     }),
   },

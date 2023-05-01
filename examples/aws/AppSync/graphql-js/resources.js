@@ -7,15 +7,15 @@ exports.createResources = () => [
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
-      name: "MyModelTypeTable",
       description: "DynamoDB table backing the MyModelType object type.",
-      type: "AMAZON_DYNAMODB",
       dynamodbConfig: {
-        tableName: "MyModelTypeTable",
         awsRegion: `${config.region}`,
+        tableName: "MyModelTypeTable",
         useCallerCredentials: false,
         versioned: false,
       },
+      name: "MyModelTypeTable",
+      type: "AMAZON_DYNAMODB",
     }),
     dependencies: ({}) => ({
       graphqlApi: "My AppSync App",
@@ -27,13 +27,6 @@ exports.createResources = () => [
     type: "Function",
     group: "AppSync",
     properties: ({}) => ({
-      name: "myFunction",
-      dataSourceName: "MyModelTypeTable",
-      maxBatchSize: 0,
-      runtime: {
-        name: "APPSYNC_JS",
-        runtimeVersion: "1.0.0",
-      },
       code: `/**
  * Available AppSync utilities that you can use in your request and response handler.
  */
@@ -59,6 +52,13 @@ export function request(ctx) {
 export function response(ctx) {
     return {};
 }`,
+      dataSourceName: "MyModelTypeTable",
+      maxBatchSize: 0,
+      name: "myFunction",
+      runtime: {
+        name: "APPSYNC_JS",
+        runtimeVersion: "1.0.0",
+      },
     }),
     dependencies: ({}) => ({
       graphqlApi: "My AppSync App",

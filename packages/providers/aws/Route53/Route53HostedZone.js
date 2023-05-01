@@ -98,8 +98,8 @@ const findName = () =>
 const findId = () =>
   pipe([
     get("HostedZoneId"),
-    tap((id) => {
-      assert(id);
+    tap((HostedZoneId) => {
+      assert(HostedZoneId);
     }),
   ]);
 

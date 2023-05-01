@@ -100,17 +100,17 @@ exports.createResources = () => [
       RoleName: "sam-app-ApiGatewayStepFunctionsRole-1N0DEXSEOPMRW",
       Path: "/sam-app/",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "AllowApiGatewayServiceToAssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Sid: "AllowApiGatewayServiceToAssumeRole",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -139,16 +139,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-WaitableStateMachineRole-OWUCFZYWKOXA",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "states.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

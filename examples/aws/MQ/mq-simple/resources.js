@@ -44,9 +44,6 @@ exports.createResources = () => [
     group: "MQ",
     properties: ({}) => ({
       AuthenticationStrategy: "simple",
-      EngineType: "ActiveMQ",
-      EngineVersion: "5.17.1",
-      Name: "my-broker-configuration",
       Data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <broker xmlns="http://activemq.apache.org/schema/core" schedulePeriodForDestinationPurge="10000">
   <!--
@@ -230,6 +227,9 @@ exports.createResources = () => [
   -->
 </broker>
 `,
+      EngineType: "ActiveMQ",
+      EngineVersion: "5.17.1",
+      Name: "my-broker-configuration",
     }),
   },
 ];

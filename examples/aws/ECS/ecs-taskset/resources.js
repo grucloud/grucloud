@@ -1145,16 +1145,16 @@ nohup ./startup.sh &
     properties: ({}) => ({
       RoleName: "appmesh-workshop-EC2ExternalInstanceRole-7TP1XLCF2830",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -1184,16 +1184,16 @@ nohup ./startup.sh &
     properties: ({}) => ({
       RoleName: "appmesh-workshop-EC2InstanceRole-P65NSC5SSWJH",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -1242,16 +1242,16 @@ nohup ./startup.sh &
     properties: ({}) => ({
       RoleName: "appmesh-workshop-ECSServiceRole-RIAPE76QVW0Z",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: ["ecs-tasks.amazonaws.com", "ecs.amazonaws.com"],
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -1297,16 +1297,16 @@ nohup ./startup.sh &
     properties: ({}) => ({
       RoleName: "appmesh-workshop-ECSTaskRole-U9NTCA3G3INQ",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -1344,16 +1344,16 @@ nohup ./startup.sh &
     properties: ({}) => ({
       RoleName: "appmesh-workshop-KeyPairHelperExecutionRole-14336BINEI2BQ",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -1393,9 +1393,15 @@ nohup ./startup.sh &
     name: "alias/appmeshworkshop",
     properties: ({ config }) => ({
       Policy: {
+        Version: "2012-10-17",
         Id: "master-key",
         Statement: [
           {
+            Sid: "Enable IAM User Permissions",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:root`,
+            },
             Action: [
               "kms:Create*",
               "kms:Describe*",
@@ -1412,14 +1418,14 @@ nohup ./startup.sh &
               "kms:ScheduleKeyDeletion",
               "kms:CancelKeyDeletion",
             ],
+            Resource: "*",
+          },
+          {
+            Sid: "Allow Use of the Key",
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
-            Resource: "*",
-            Sid: "Enable IAM User Permissions",
-          },
-          {
             Action: [
               "kms:Encrypt",
               "kms:Decrypt",
@@ -1427,15 +1433,9 @@ nohup ./startup.sh &
               "kms:GenerateDataKey*",
               "kms:DescribeKey",
             ],
-            Effect: "Allow",
-            Principal: {
-              AWS: `arn:aws:iam::${config.accountId()}:root`,
-            },
             Resource: "*",
-            Sid: "Allow Use of the Key",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },

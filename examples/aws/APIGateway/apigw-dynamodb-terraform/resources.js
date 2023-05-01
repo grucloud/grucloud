@@ -275,16 +275,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "terraform-20220714213227147500000002",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
@@ -297,17 +297,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "terraform-20220714213227147700000003",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Sid: "",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

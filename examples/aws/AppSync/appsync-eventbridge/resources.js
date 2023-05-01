@@ -7,10 +7,7 @@ exports.createResources = () => [
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
-      name: "events",
-      type: "HTTP",
       httpConfig: {
-        endpoint: `https://events.${config.region}.amazonaws.com/`,
         authorizationConfig: {
           authorizationType: "AWS_IAM",
           awsIamConfig: {
@@ -18,7 +15,10 @@ exports.createResources = () => [
             signingServiceName: "events",
           },
         },
+        endpoint: `https://events.${config.region}.amazonaws.com/`,
       },
+      name: "events",
+      type: "HTTP",
     }),
     dependencies: ({}) => ({
       graphqlApi: "AppSyncEventBridgeAPI",
@@ -119,9 +119,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSAppSyncPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs",
+          PolicyName: "AWSAppSyncPushToCloudWatchLogs",
         },
       ],
     }),

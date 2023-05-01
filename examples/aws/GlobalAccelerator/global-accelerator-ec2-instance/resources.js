@@ -8,10 +8,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "my-instance",
     properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}d`,
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20221004.0 x86_64 HVM gp2",
       },
+      InstanceType: "t2.micro",
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -29,9 +30,8 @@ exports.createResources = () => [
           })}`,
         },
       ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20221004.0 x86_64 HVM gp2",
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
       },
     }),
     dependencies: ({}) => ({
@@ -96,6 +96,7 @@ exports.createResources = () => [
     type: "EndpointGroup",
     group: "GlobalAccelerator",
     properties: ({ getId }) => ({
+      AcceleratorName: "my-accelerator",
       EndpointConfigurations: [
         {
           ClientIPPreservationEnabled: true,
@@ -110,7 +111,6 @@ exports.createResources = () => [
       EndpointGroupRegion: "us-east-1",
       HealthCheckPort: 443,
       HealthCheckProtocol: "TCP",
-      AcceleratorName: "my-accelerator",
     }),
     dependencies: ({}) => ({
       listener: "my-accelerator::TCP::443::443",
@@ -121,6 +121,7 @@ exports.createResources = () => [
     type: "Listener",
     group: "GlobalAccelerator",
     properties: ({}) => ({
+      AcceleratorName: "my-accelerator",
       PortRanges: [
         {
           FromPort: 443,
@@ -128,7 +129,6 @@ exports.createResources = () => [
         },
       ],
       Protocol: "TCP",
-      AcceleratorName: "my-accelerator",
     }),
     dependencies: ({}) => ({
       accelerator: "my-accelerator",

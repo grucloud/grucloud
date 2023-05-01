@@ -7,15 +7,15 @@ exports.createResources = () => [
     type: "DataSource",
     group: "AppSync",
     properties: ({ config }) => ({
-      name: "MyModelTypeTable",
       description: "DynamoDB table backing the MyModelType object type.",
-      type: "AMAZON_DYNAMODB",
       dynamodbConfig: {
-        tableName: "MyModelTypeTable",
         awsRegion: `${config.region}`,
+        tableName: "MyModelTypeTable",
         useCallerCredentials: false,
         versioned: false,
       },
+      name: "MyModelTypeTable",
+      type: "AMAZON_DYNAMODB",
     }),
     dependencies: ({}) => ({
       graphqlApi: "My AppSync App",
@@ -230,15 +230,14 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config, getId }) => ({
-      AlarmName: "alarm-graphql-400",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
         }:${config.accountId()}:Default_CloudWatch_Alarms_Topic`,
       ],
-      MetricName: "4XXError",
-      Namespace: "AWS/AppSync",
-      Statistic: "Average",
+      AlarmName: "alarm-graphql-400",
+      ComparisonOperator: "GreaterThanThreshold",
+      DatapointsToAlarm: 1,
       Dimensions: [
         {
           Value: `${getId({
@@ -249,11 +248,12 @@ exports.createResources = () => [
           Name: "GraphQLAPIId",
         },
       ],
-      Period: 300,
       EvaluationPeriods: 1,
-      DatapointsToAlarm: 1,
+      MetricName: "4XXError",
+      Namespace: "AWS/AppSync",
+      Period: 300,
+      Statistic: "Average",
       Threshold: 2,
-      ComparisonOperator: "GreaterThanThreshold",
       TreatMissingData: "missing",
     }),
     dependencies: ({}) => ({

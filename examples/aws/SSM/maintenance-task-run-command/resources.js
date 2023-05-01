@@ -7,21 +7,21 @@ exports.createResources = () => [
     type: "MetricAlarm",
     group: "CloudWatch",
     properties: ({ config }) => ({
-      AlarmName: "maintenance-window-alarm",
       AlarmActions: [
         `arn:aws:sns:${
           config.region
         }:${config.accountId()}:Default_CloudWatch_Alarms_Topic`,
       ],
+      AlarmName: "maintenance-window-alarm",
+      ComparisonOperator: "GreaterThanThreshold",
+      DatapointsToAlarm: 1,
+      Dimensions: [],
+      EvaluationPeriods: 1,
       MetricName: "CommandsSucceeded",
       Namespace: "AWS/SSM-RunCommand",
-      Statistic: "Average",
-      Dimensions: [],
       Period: 300,
-      EvaluationPeriods: 1,
-      DatapointsToAlarm: 1,
+      Statistic: "Average",
       Threshold: 1,
-      ComparisonOperator: "GreaterThanThreshold",
       TreatMissingData: "missing",
     }),
     dependencies: ({}) => ({

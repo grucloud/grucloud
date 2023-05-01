@@ -23,9 +23,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -117,11 +117,11 @@ exports.createResources = () => [
           FunctionName:
             "KVSRekognitionStack-processinglambda6F2FFA55-kdeJoOnyx0zM",
           Principal: "sns.amazonaws.com",
-          StatementId:
-            "KVSRekognitionStack-processinglambdaAllowInvokeKVSRekognitionStackconnectedhometopic1E-UETUBSN9R37O",
           SourceArn: `arn:aws:sns:${
             config.region
           }:${config.accountId()}:connected-home-topic`,
+          StatementId:
+            "KVSRekognitionStack-processinglambdaAllowInvokeKVSRekognitionStackconnectedhometopic1E-UETUBSN9R37O",
         },
       ],
     }),

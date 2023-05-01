@@ -21,18 +21,24 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Description: "KMS Logs Key",
       Policy: {
+        Version: "2012-10-17",
         Id: "key-default-1",
         Statement: [
           {
-            Action: "kms:*",
+            Sid: "Enable IAM User Permissions",
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
+            Action: "kms:*",
             Resource: "*",
-            Sid: "Enable IAM User Permissions",
           },
           {
+            Sid: "Enable KMS to be used by CloudWatch Logs",
+            Effect: "Allow",
+            Principal: {
+              Service: `logs.${config.region}.amazonaws.com`,
+            },
             Action: [
               "kms:Encrypt*",
               "kms:Decrypt*",
@@ -40,15 +46,9 @@ exports.createResources = () => [
               "kms:GenerateDataKey*",
               "kms:Describe*",
             ],
-            Effect: "Allow",
-            Principal: {
-              Service: `logs.${config.region}.amazonaws.com`,
-            },
             Resource: "*",
-            Sid: "Enable KMS to be used by CloudWatch Logs",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },

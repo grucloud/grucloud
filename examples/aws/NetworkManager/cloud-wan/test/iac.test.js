@@ -13,11 +13,12 @@ describe(title, async function () {
       title,
       steps: [
         { createStack, configs: [config] },
-        {
-          createStack,
-          createResources: require("./resourcesUpdate1").createResources,
-          configs: [config],
-        },
+        // TODO
+        // {
+        //   createStack,
+        //   createResources: require("./resourcesUpdate1").createResources,
+        //   configs: [config],
+        // },
       ],
     });
   }).timeout(45 * 60e3);

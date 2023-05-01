@@ -247,16 +247,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-DefaultRouteFunctionRole-1RNBIXEOE8DGH",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -273,16 +273,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-SessionsTableAccessRole-RKP6XCC4WDQN",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

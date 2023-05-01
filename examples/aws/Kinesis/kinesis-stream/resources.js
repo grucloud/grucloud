@@ -51,8 +51,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonKinesisFullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonKinesisFullAccess",
+          PolicyName: "AmazonKinesisFullAccess",
         },
       ],
     }),

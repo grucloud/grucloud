@@ -7,26 +7,6 @@ exports.createResources = () => [
     type: "Budget",
     group: "Budgets",
     properties: ({ getId }) => ({
-      BudgetLimit: {
-        Amount: "40.0",
-        Unit: "USD",
-      },
-      BudgetName: "budget",
-      BudgetType: "COST",
-      CostTypes: {
-        IncludeCredit: false,
-        IncludeDiscount: true,
-        IncludeOtherSubscription: true,
-        IncludeRecurring: true,
-        IncludeRefund: false,
-        IncludeSubscription: true,
-        IncludeSupport: true,
-        IncludeTax: true,
-        IncludeUpfront: true,
-        UseAmortized: false,
-        UseBlended: false,
-      },
-      TimeUnit: "MONTHLY",
       Actions: [
         {
           ActionThreshold: {
@@ -64,11 +44,29 @@ exports.createResources = () => [
           ],
         },
       ],
+      BudgetLimit: {
+        Amount: "40.0",
+        Unit: "USD",
+      },
+      BudgetName: "budget",
+      BudgetType: "COST",
+      CostTypes: {
+        IncludeCredit: false,
+        IncludeDiscount: true,
+        IncludeOtherSubscription: true,
+        IncludeRecurring: true,
+        IncludeRefund: false,
+        IncludeSubscription: true,
+        IncludeSupport: true,
+        IncludeTax: true,
+        IncludeUpfront: true,
+        UseAmortized: false,
+        UseBlended: false,
+      },
       Notifications: [
         {
           ComparisonOperator: "GREATER_THAN",
           NotificationType: "ACTUAL",
-          Threshold: 70,
           Subscribers: [
             {
               Address: `${getId({
@@ -83,8 +81,10 @@ exports.createResources = () => [
               SubscriptionType: "EMAIL",
             },
           ],
+          Threshold: 70,
         },
       ],
+      TimeUnit: "MONTHLY",
     }),
     dependencies: ({}) => ({
       iamRolesExecution: ["role-budget-ec2"],
@@ -119,8 +119,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+          PolicyName: "AmazonEC2FullAccess",
         },
       ],
     }),
@@ -132,20 +132,26 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
+          Version: "2008-10-17",
           Id: "__default_policy_ID",
           Statement: [
             {
-              Action: "SNS:Publish",
+              Sid: "AWSBudgets-notification-1",
               Effect: "Allow",
               Principal: {
                 Service: "budgets.amazonaws.com",
               },
+              Action: "SNS:Publish",
               Resource: `arn:aws:sns:${
                 config.region
               }:${config.accountId()}:topic-budget`,
-              Sid: "AWSBudgets-notification-1",
             },
             {
+              Sid: "__default_statement_ID",
+              Effect: "Allow",
+              Principal: {
+                AWS: "*",
+              },
               Action: [
                 "SNS:GetTopicAttributes",
                 "SNS:SetTopicAttributes",
@@ -156,22 +162,16 @@ exports.createResources = () => [
                 "SNS:ListSubscriptionsByTopic",
                 "SNS:Publish",
               ],
+              Resource: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:topic-budget`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,
                 },
               },
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:topic-budget`,
-              Sid: "__default_statement_ID",
             },
           ],
-          Version: "2008-10-17",
         },
       },
     }),

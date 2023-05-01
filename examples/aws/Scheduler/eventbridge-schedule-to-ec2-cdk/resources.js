@@ -10,16 +10,16 @@ exports.createResources = () => [
       RoleName:
         "ScheduleEc2InstancesStartAnd-schedulerrole9B80A9F3-5BUXY937EA95",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "scheduler.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

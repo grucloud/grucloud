@@ -21,7 +21,9 @@ exports.createResources = () => [
         unauthenticated: `${getId({
           type: "Role",
           group: "IAM",
-          name: `RUM-Monitor-${config.region}-351503522549-8918708312761-Unauth`,
+          name: `RUM-Monitor-${
+            config.region
+          }-${config.accountId()}-8918708312761-Unauth`,
         })}`,
       },
     }),
@@ -60,7 +62,9 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({ config, getId }) => ({
-      RoleName: `RUM-Monitor-${config.region}-351503522549-8918708312761-Unauth`,
+      RoleName: `RUM-Monitor-${
+        config.region
+      }-${config.accountId()}-8918708312761-Unauth`,
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -75,7 +79,9 @@ exports.createResources = () => [
                 "cognito-identity.amazonaws.com:aud": `${getId({
                   type: "IdentityPool",
                   group: "Cognito",
-                  name: `RUM-Monitor-${config.region}-351503522549-8918708312761`,
+                  name: `RUM-Monitor-${
+                    config.region
+                  }-${config.accountId()}-8918708312761`,
                 })}`,
               },
               "ForAnyValue:StringLike": {

@@ -8,7 +8,6 @@ exports.createResources = () => [
     group: "CloudWatchEvents",
     properties: ({}) => ({
       EventPattern: {
-        "detail-type": ["Schema Created", "Schema Version Created"],
         detail: {
           SchemaName: [
             {
@@ -19,6 +18,7 @@ exports.createResources = () => [
             },
           ],
         },
+        "detail-type": ["Schema Created", "Schema Version Created"],
         source: ["aws.schemas"],
       },
       Name: "TeamXSchemaNotifications-listen-to-schema-changes",
@@ -93,9 +93,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -138,9 +138,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -195,11 +195,11 @@ exports.createResources = () => [
           FunctionName:
             "NotifyConsumersOfSchemaCh-TeamXSchemaNotifications-T6ZnRQpt1cSj",
           Principal: "events.amazonaws.com",
-          StatementId:
-            "NotifyConsumersOfSchemaChangesStack-TeamXSchemaNotificationsRuleAllowEventRuleNotifyCo-GTN2YIEIKCRK",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/TeamXSchemaNotifications-listen-to-schema-changes`,
+          StatementId:
+            "NotifyConsumersOfSchemaChangesStack-TeamXSchemaNotificationsRuleAllowEventRuleNotifyCo-GTN2YIEIKCRK",
         },
       ],
     }),

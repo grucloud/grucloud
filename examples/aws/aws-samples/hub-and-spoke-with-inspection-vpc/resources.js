@@ -1621,17 +1621,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "test-ssm-ec2",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Sid: "",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -1652,17 +1652,23 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Description: "KMS Logs Key",
       Policy: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "kms:*",
+            Sid: "Enable IAM User Permissions",
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
+            Action: "kms:*",
             Resource: "*",
-            Sid: "Enable IAM User Permissions",
           },
           {
+            Sid: "Enable KMS to be used by CloudWatch Logs",
+            Effect: "Allow",
+            Principal: {
+              Service: `logs.${config.region}.amazonaws.com`,
+            },
             Action: [
               "kms:ReEncrypt*",
               "kms:GenerateDataKey*",
@@ -1670,15 +1676,9 @@ exports.createResources = () => [
               "kms:Describe*",
               "kms:Decrypt*",
             ],
-            Effect: "Allow",
-            Principal: {
-              Service: `logs.${config.region}.amazonaws.com`,
-            },
             Resource: "*",
-            Sid: "Enable KMS to be used by CloudWatch Logs",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },

@@ -278,17 +278,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "crucial-bass-lambda",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Sid: "",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Tags: [
         {
@@ -311,17 +311,17 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "robust-gelding",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "",
             Effect: "Allow",
             Principal: {
               Service: `states.${config.region}.amazonaws.com`,
             },
-            Sid: "",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Tags: [
         {
@@ -348,17 +348,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "robust-gelding-lambda",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
-            Sid: "",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Tags: [
         {

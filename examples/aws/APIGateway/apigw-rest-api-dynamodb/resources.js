@@ -167,16 +167,16 @@ exports.createResources = () => [
       RoleName:
         "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-1HLKDWM5HWYRZ",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -193,16 +193,16 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

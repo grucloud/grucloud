@@ -28,19 +28,19 @@ exports.createResources = () => [
       Name: "my-accesspoint",
       NetworkOrigin: "Internet",
       Policy: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: ["s3:GetObject", "s3:PutObject"],
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
+            Action: ["s3:GetObject", "s3:PutObject"],
             Resource: `arn:aws:s3:${
               config.region
             }:${config.accountId()}:accesspoint/my-accesspoint/object/Jane/*`,
           },
         ],
-        Version: "2012-10-17",
       },
       PublicAccessBlockConfiguration: {
         BlockPublicAcls: true,

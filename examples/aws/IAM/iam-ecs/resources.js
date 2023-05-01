@@ -31,9 +31,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
         },
       ],
     }),

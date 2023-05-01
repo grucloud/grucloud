@@ -98,6 +98,7 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       RoleName: "sam-app-MyHttpApiRole-KV1DOMSBSRDO",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
             Action: "sts:AssumeRole",
@@ -107,11 +108,11 @@ exports.createResources = () => [
             },
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
           PolicyDocument: {
+            Version: "2012-10-17",
             Statement: {
               Action: ["events:PutEvents"],
               Effect: "Allow",
@@ -121,7 +122,6 @@ exports.createResources = () => [
                 }:${config.accountId()}:event-bus/default`,
               ],
             },
-            Version: "2012-10-17",
           },
           PolicyName: "ApiDirectWriteEventBridge",
         },
@@ -134,6 +134,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-MyTriggeredLambdaRole-PFCAXLPPKQG8",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
             Action: "sts:AssumeRole",
@@ -143,7 +144,6 @@ exports.createResources = () => [
             },
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

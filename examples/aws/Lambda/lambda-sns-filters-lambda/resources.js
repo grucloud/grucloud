@@ -10,16 +10,16 @@ exports.createResources = () => [
       RoleName:
         "LambdaSNSFiltersLambdaSta-ConsumerAllFunctionServi-BFMF3HZQSVS4",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -37,16 +37,16 @@ exports.createResources = () => [
       RoleName:
         "LambdaSNSFiltersLambdaSta-ConsumerRedFunctionServi-1XWOHDWSDOTBO",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -64,16 +64,16 @@ exports.createResources = () => [
       RoleName:
         "LambdaSNSFiltersLambdaSta-SenderFunctionServiceRol-4MUE5FV98RX",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {

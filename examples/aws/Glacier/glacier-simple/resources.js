@@ -9,18 +9,18 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       policy: {
         Policy: {
+          Version: "2012-10-17",
           Statement: [
             {
-              Action: ["glacier:InitiateJob", "glacier:GetJobOutput"],
+              Sid: "add-read-only-perm",
               Effect: "Allow",
               Principal: "*",
+              Action: ["glacier:InitiateJob", "glacier:GetJobOutput"],
               Resource: `arn:aws:glacier:${
                 config.region
               }:${config.accountId()}:vaults/my-vault`,
-              Sid: "add-read-only-perm",
             },
           ],
-          Version: "2012-10-17",
         },
       },
       vaultName: "my-vault",

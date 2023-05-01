@@ -73,11 +73,11 @@ exports.createResources = () => [
       asn: 65001,
       authKey: process.env.VIF_PRIVATE_AUTH_KEY,
       customerAddress: "169.254.96.6/29",
+      enableSiteLink: false,
       mtu: 1500,
       virtualInterfaceName: "vif-private",
       virtualInterfaceType: "private",
       vlan: 100,
-      enableSiteLink: false,
     }),
     dependencies: ({}) => ({
       lag: "lag",

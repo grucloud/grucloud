@@ -118,16 +118,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "ServerlessLand-handlerServiceRole187D5A5A-1QKSYX4MFFNOR",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -155,16 +155,16 @@ exports.createResources = () => [
       RoleName:
         "ServerlessLand-ServerlessLandCloudWatchRole836732A-W72RXN6FCTVP",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

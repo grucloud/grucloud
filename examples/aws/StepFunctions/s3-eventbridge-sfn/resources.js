@@ -8,13 +8,13 @@ exports.createResources = () => [
     group: "CloudWatchEvents",
     properties: ({}) => ({
       EventPattern: {
-        "detail-type": ["Object Created"],
-        source: ["aws.s3"],
         detail: {
           bucket: {
             name: ["sam-app-ingestionbucket-bs6srdysvd8l"],
           },
         },
+        "detail-type": ["Object Created"],
+        source: ["aws.s3"],
       },
       Name: "sam-app-CatDetectorStateMachineStateChange-1URDDNAKETLAP",
     }),

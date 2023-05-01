@@ -312,16 +312,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-ReportingFunctionRole-O4OB63LJ7IYA",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -338,16 +338,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-UserManagementFunctionRole-PCG3JRRLN8CI",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {

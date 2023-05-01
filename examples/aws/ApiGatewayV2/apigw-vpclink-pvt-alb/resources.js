@@ -351,16 +351,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-ECSTaskExecutionRole-PMX4OZKH4A2P",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },
@@ -370,16 +370,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-ECSTaskRole-1PCVBVKCZRWS2",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },

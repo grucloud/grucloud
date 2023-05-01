@@ -196,7 +196,7 @@ exports.createResources = () => [
       DeliveryStreamName: "delivery-stream-s3",
       DeliveryStreamType: "DirectPut",
       ExtendedS3DestinationConfiguration: {
-        BucketARN: "arn:aws:s3:::gc-firehose-destination-840541460064",
+        BucketARN: `arn:aws:s3:::gc-firehose-destination-${config.accountId()}`,
         BufferingHints: {
           IntervalInSeconds: 300,
           SizeInMBs: 5,

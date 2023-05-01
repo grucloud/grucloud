@@ -180,8 +180,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSGlueServiceRole",
           PolicyArn: "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole",
+          PolicyName: "AWSGlueServiceRole",
         },
       ],
     }),

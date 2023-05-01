@@ -56,14 +56,10 @@ exports.DataSyncLocationS3 = () => ({
       }),
       () => `${s3Bucket}`,
     ]),
-  findName: ({ lives, config }) =>
-    pipe([
-      findS3FromLocationUri({ lives, config }),
-      get("name"),
-      tap((name) => {
-        assert(name);
-      }),
-    ]),
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([() => live, findS3FromLocationUri({ lives, config })])(),
   findId: () =>
     pipe([
       get("LocationArn"),
@@ -89,13 +85,7 @@ exports.DataSyncLocationS3 = () => ({
       group: "S3",
       parent: true,
       dependencyId: ({ lives, config }) =>
-        pipe([
-          findS3FromLocationUri({ lives, config }),
-          get("id"),
-          tap((id) => {
-            assert(id);
-          }),
-        ]),
+        pipe([findS3FromLocationUri({ lives, config })]),
     },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DataSync.html#describeLocationS3-property

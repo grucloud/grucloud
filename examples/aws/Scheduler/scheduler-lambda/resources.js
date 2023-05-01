@@ -64,8 +64,13 @@ exports.createResources = () => [
       RoleName: "Amazon_EventBridge_Scheduler_LAMBDA_d6db1d2ad4",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
+            Effect: "Allow",
+            Principal: {
+              Service: "scheduler.amazonaws.com",
+            },
             Action: "sts:AssumeRole",
             Condition: {
               StringEquals: {
@@ -75,13 +80,8 @@ exports.createResources = () => [
                 }:${config.accountId()}:schedule/default/scheduleLambda`,
               },
             },
-            Effect: "Allow",
-            Principal: {
-              Service: "scheduler.amazonaws.com",
-            },
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({
@@ -97,16 +97,16 @@ exports.createResources = () => [
       RoleName: "mylambda-role-9ogx9vwe",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
     dependencies: ({}) => ({

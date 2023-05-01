@@ -66,9 +66,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -96,10 +96,10 @@ exports.createResources = () => [
           Action: "lambda:InvokeFunction",
           FunctionName: "sam-app-MyFunction-d0RdgPN8djZ9",
           Principal: "events.amazonaws.com",
-          StatementId: "sam-app-MyFunctionTriggerPermission-1OZKJ0UDFJU4B",
           SourceArn: `arn:aws:events:${
             config.region
           }:${config.accountId()}:rule/sam-app-MyFunctionTrigger-4TOBV7BERNJE`,
+          StatementId: "sam-app-MyFunctionTriggerPermission-1OZKJ0UDFJU4B",
         },
       ],
     }),

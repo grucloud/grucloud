@@ -333,16 +333,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-SampleFunctionRole-113ACVPJUKMC7",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -370,25 +370,25 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Description: "CMK for SNS alarms topic",
       Policy: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: ["kms:GenerateDataKey*", "kms:Decrypt"],
             Effect: "Allow",
             Principal: {
               Service: ["cloudwatch.amazonaws.com", "sns.amazonaws.com"],
             },
+            Action: ["kms:GenerateDataKey*", "kms:Decrypt"],
             Resource: "*",
           },
           {
-            Action: "kms:*",
             Effect: "Allow",
             Principal: {
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
+            Action: "kms:*",
             Resource: "*",
           },
         ],
-        Version: "2012-10-17",
       },
     }),
   },

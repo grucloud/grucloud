@@ -10,7 +10,7 @@ const {
   filter,
 } = require("rubico");
 const { find, isEmpty, unless, size, isIn } = require("rubico/x");
-const shell = require("shelljs");
+const { spawn } = require("child_process");
 
 const { createSpinnies } = require("./SpinniesUtils");
 
@@ -46,33 +46,38 @@ const executeCommand = ({ command, environment }) =>
     }),
     (directory) =>
       new Promise((resolve, reject) => {
-        shell.exec(
-          command,
-          {
-            silent: true,
-            async: true,
-            cwd: directory,
-            env: {
-              ...process.env,
-              AWS_PROFILE: environment.awsAccount,
-              CONTINUOUS_INTEGRATION: true,
-            },
+        const child = spawn(command, {
+          //stdio: "inherit",
+          shell: true,
+          detached: true,
+          cwd: directory,
+          env: {
+            ...process.env,
+            AWS_PROFILE: environment.awsAccount,
+            CONTINUOUS_INTEGRATION: true,
           },
-          (code, stdout, stderr) =>
-            pipe([
-              tap(() => {
-                assert(true);
-              }),
-              switchCase([
-                () => code === 0,
-                pipe([() => stdout, resolve]),
-                pipe([() => stderr, reject]),
-              ]),
-            ])()
-        );
+        });
+        child.stderr.on("data", (x) => {
+          console.error(x.toString());
+        });
+        child.stdout.on("data", (x) => {
+          //console.log(x.toString());
+        });
+        child.on("error", (code) => {
+          console.error(directory, "error", code);
+          reject(code);
+        });
+        child.on("exit", (code) => {
+          console.log(directory, "exit", code);
+          if (code !== 0) {
+            reject(code);
+          } else {
+            resolve(code);
+          }
+        });
       }),
     tap((directory) => {
-      assert(directory);
+      assert(true);
     }),
   ]);
 

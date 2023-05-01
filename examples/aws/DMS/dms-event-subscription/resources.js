@@ -22,9 +22,15 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
+          Version: "2012-10-17",
           Id: "__default_policy_ID",
           Statement: [
             {
+              Sid: "__default_statement_ID",
+              Effect: "Allow",
+              Principal: {
+                AWS: "*",
+              },
               Action: [
                 "SNS:GetTopicAttributes",
                 "SNS:SetTopicAttributes",
@@ -35,33 +41,27 @@ exports.createResources = () => [
                 "SNS:ListSubscriptionsByTopic",
                 "SNS:Publish",
               ],
+              Resource: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:dms-topic`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,
                 },
               },
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:dms-topic`,
-              Sid: "__default_statement_ID",
             },
             {
-              Action: "sns:Publish",
+              Sid: "dms-allow-publish",
               Effect: "Allow",
               Principal: {
                 Service: "dms.amazonaws.com",
               },
+              Action: "sns:Publish",
               Resource: `arn:aws:sns:${
                 config.region
               }:${config.accountId()}:dms-topic`,
-              Sid: "dms-allow-publish",
             },
           ],
-          Version: "2012-10-17",
         },
       },
     }),

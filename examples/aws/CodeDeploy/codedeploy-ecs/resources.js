@@ -308,13 +308,13 @@ exports.createResources = () => [
     name: "ECS cluster - VPC",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
       Tags: [
         {
           Key: "Description",
           Value: "Created for ECS cluster cluster",
         },
       ],
-      DnsHostnames: true,
     }),
   },
   {
@@ -522,9 +522,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonECSTaskExecutionRolePolicy",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+          PolicyName: "AmazonECSTaskExecutionRolePolicy",
         },
       ],
     }),
@@ -551,8 +551,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSCodeDeployRoleForECS",
           PolicyArn: "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS",
+          PolicyName: "AWSCodeDeployRoleForECS",
         },
       ],
     }),

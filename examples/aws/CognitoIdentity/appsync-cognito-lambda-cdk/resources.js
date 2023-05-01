@@ -121,9 +121,9 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSAppSyncPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs",
+          PolicyName: "AWSAppSyncPushToCloudWatchLogs",
         },
       ],
     }),
@@ -163,14 +163,14 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSAppSyncPushToCloudWatchLogs",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs",
+          PolicyName: "AWSAppSyncPushToCloudWatchLogs",
         },
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -194,8 +194,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambda_FullAccess",
           PolicyArn: "arn:aws:iam::aws:policy/AWSLambda_FullAccess",
+          PolicyName: "AWSLambda_FullAccess",
         },
       ],
     }),

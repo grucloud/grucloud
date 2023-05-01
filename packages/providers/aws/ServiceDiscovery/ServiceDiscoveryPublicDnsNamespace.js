@@ -64,8 +64,8 @@ exports.ServiceDiscoveryPublicDnsNamespace = () => ({
   findId: () =>
     pipe([
       get("Id"),
-      tap((id) => {
-        assert(id);
+      tap((Id) => {
+        assert(Id);
       }),
     ]),
   managedByOther,
@@ -93,11 +93,19 @@ exports.ServiceDiscoveryPublicDnsNamespace = () => ({
     getParam: "Namespaces",
     decorate,
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceDiscovery.html#createPublicDnsNamespace-property
   create: {
     method: "createPublicDnsNamespace",
-    pickCreated: ({ payload }) => pipe([() => payload]),
+    pickCreated: ({ payload, endpoint }) =>
+      pipe([
+        pick(["OperationId"]),
+        endpoint().getOperation,
+        get("Operation.Targets.NAMESPACE"),
+        tap((Id) => {
+          assert(Id);
+        }),
+        (Id) => ({ Id }),
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ServiceDiscovery.html#updatePublicDnsNamespace-property
   update: {

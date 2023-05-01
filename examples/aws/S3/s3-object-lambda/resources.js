@@ -61,9 +61,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -74,9 +74,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Configuration: {
         FunctionName: "sam-app-ResizeFunction-NiODFBqJDB40",
-        Runtime: "nodejs12.x",
-        MemorySize: 2048,
         Handler: "app.handler",
+        MemorySize: 2048,
+        Runtime: "nodejs12.x",
       },
     }),
     dependencies: ({}) => ({
@@ -120,8 +120,8 @@ exports.createResources = () => [
       NetworkOrigin: "Internet",
       PublicAccessBlockConfiguration: {
         BlockPublicAcls: true,
-        IgnorePublicAcls: true,
         BlockPublicPolicy: true,
+        IgnorePublicAcls: true,
         RestrictPublicBuckets: true,
       },
     }),
@@ -133,13 +133,12 @@ exports.createResources = () => [
     type: "ObjectLambdaAccessPoint",
     group: "S3Control",
     properties: ({ config, getId }) => ({
-      Name: "resize-olap",
       Configuration: {
+        AllowedFeatures: [],
+        CloudWatchMetricsEnabled: false,
         SupportingAccessPoint: `arn:aws:s3:${
           config.region
         }:${config.accountId()}:accesspoint/resize-ap`,
-        CloudWatchMetricsEnabled: false,
-        AllowedFeatures: [],
         TransformationConfigurations: [
           {
             Actions: ["GetObject"],
@@ -156,6 +155,7 @@ exports.createResources = () => [
           },
         ],
       },
+      Name: "resize-olap",
     }),
     dependencies: ({}) => ({
       s3AccessPoint: "resize-ap",

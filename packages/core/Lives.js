@@ -166,13 +166,13 @@ exports.createLives = () => {
     addResources: ({ groupType, resources = [], error: latestError }) => {
       assert(groupType);
       assert(Array.isArray(resources) || latestError);
-      logger.info(
-        `live addResources ${JSON.stringify({
-          //providerName: resources[0].providerName,
-          groupType,
-          resourceCount: size(resources),
-        })}`
-      );
+      // logger.info(
+      //   `live addResources ${JSON.stringify({
+      //     //providerName: resources[0].providerName,
+      //     groupType,
+      //     resourceCount: size(resources),
+      //   })}`
+      // );
 
       if (isEmpty(resources)) {
         return;

@@ -242,17 +242,17 @@ exports.createResources = () => [
       RoleName: "sam-app-ApiGatewayBatchRole-WWSNJKBXNX4",
       Path: "/sam-app/",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "AllowApiGatewayServiceToAssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "apigateway.amazonaws.com",
             },
-            Sid: "AllowApiGatewayServiceToAssumeRole",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       Policies: [
         {
@@ -284,16 +284,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-BatchServiceRole-1NEHP2HZWO2GS",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "batch.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -309,17 +309,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "sam-app-EcsInstanceRole-1HOBBJD9ZPIRW",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Sid: "",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
-            Sid: "",
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       AttachedPolicies: [
         {
