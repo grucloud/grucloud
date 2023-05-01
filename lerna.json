@@ -4,11 +4,13 @@
     "examples/**/*",
     "!examples/aws/website-https/svelte-app"
   ],
+  "npmClient": "pnpm",
+  "useWorkspaces": true,
   "version": "11.1.0",
   "command": {
     "command": {
       "bootstrap": {
-        "npmClientArgs": ["--no-package-lock", "--no-audit", "--ignore-scripts"]
+        "npmClientArgs": ["--no-package-lock", "--no-audit"]
       }
     },
     "publish": {

@@ -1,167 +1,231 @@
 const assert = require("assert");
 const { pipe, tap, tryCatch, get, pick, assign, omit } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { throwIfNotAwsError, buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createECR, tagResource, untagResource } = require("./ECRCommon");
+const { ignoreResourceCdk } = require("../AwsCommon");
 
-const findName = () => get("repositoryName");
-const findId = () => get("repositoryArn");
-const pickId = pick(["repositoryName", "registryId"]);
+const { getByNameCore } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
-exports.EcrRepository = ({ spec, config }) => {
-  const ecr = createECR(config);
-  const client = AwsClient({ spec, config })(ecr);
+const { Tagger } = require("./ECRCommon");
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRepositoryPolicy-property
-  const getRepositoryPolicy = tryCatch(
-    pipe([
-      pickId,
-      (params) => ecr().getRepositoryPolicy(params),
-      get("policyText"),
-      JSON.parse,
-    ]),
-    throwIfNotAwsError("RepositoryPolicyNotFoundException")
-  );
+const buildArn = () =>
+  pipe([
+    get("repositoryArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getLifecyclePolicy-property
-  const getLifecyclePolicy = tryCatch(
-    pipe([
-      pickId,
-      (params) => ecr().getLifecyclePolicy(params),
-      get("lifecyclePolicyText"),
-      JSON.parse,
-    ]),
-    throwIfNotAwsError("LifecyclePolicyNotFoundException")
-  );
+const findName = () =>
+  pipe([
+    get("repositoryName"),
+    tap((repositoryName) => {
+      assert(repositoryName);
+    }),
+  ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#listTagsForResource-property
-  const getTags = pipe([
-    ({ repositoryArn }) =>
-      ecr().listTagsForResource({ resourceArn: repositoryArn }),
+const findId = () =>
+  pipe([
+    get("repositoryArn"),
+    tap((repositoryArn) => {
+      assert(repositoryArn);
+    }),
+  ]);
+
+const pickId = pipe([
+  pick(["repositoryName", "registryId"]),
+  tap(({ repositoryName, registryId }) => {
+    assert(repositoryName);
+    assert(registryId);
+  }),
+]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRepositoryPolicy-property
+const getRepositoryPolicy = ({ endpoint }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+    tryCatch(
+      pipe([
+        pickId,
+        endpoint().getRepositoryPolicy,
+        get("policyText"),
+        JSON.parse,
+      ]),
+      throwIfNotAwsError("RepositoryPolicyNotFoundException")
+    ),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getLifecyclePolicy-property
+const getLifecyclePolicy = ({ endpoint }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+    tryCatch(
+      pipe([
+        pickId,
+        endpoint().getLifecyclePolicy,
+        get("lifecyclePolicyText"),
+        JSON.parse,
+      ]),
+      throwIfNotAwsError("LifecyclePolicyNotFoundException")
+    ),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#listTagsForResource-property
+const getTags = ({ endpoint }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+    ({ repositoryArn }) => ({ resourceArn: repositoryArn }),
+    endpoint().listTagsForResource,
     get("tags"),
   ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#describeRepositories-property
-  const getList = client.getList({
-    method: "describeRepositories",
-    getParam: "repositories",
-    decorate: () =>
-      assign({
-        policyText: getRepositoryPolicy,
-        lifecyclePolicyText: getLifecyclePolicy,
-        tags: getTags,
-      }),
-  });
-
-  const getById = client.getById({
-    pickId: ({ repositoryName }) => ({ repositoryNames: [repositoryName] }),
-    method: "describeRepositories",
-    getField: "repositories",
-    ignoreErrorCodes: ["RepositoryNotFoundException"],
-  });
-
-  const getByName = pipe([
-    ({ name }) => ({ repositoryName: name }),
-    getById({}),
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      policyText: getRepositoryPolicy({ endpoint }),
+      lifecyclePolicyText: getLifecyclePolicy({ endpoint }),
+      tags: getTags({ endpoint }),
+    }),
+    omitIfEmpty(["lifecyclePolicyText", "policyText"]),
   ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#setRepositoryPolicy-property
-  const setRepositoryPolicy = ({ payload }) =>
-    tap.if(
-      () => payload.policyText,
-      pipe([
-        pickId,
-        assign({ policyText: () => JSON.stringify(payload.policyText) }),
-        (params) => ecr().setRepositoryPolicy(params),
-      ])
-    );
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putLifecyclePolicy-property
-  const putLifecyclePolicy = ({ payload }) =>
-    tap.if(
-      () => payload.lifecyclePolicyText,
-      pipe([
-        pickId,
-        assign({
-          lifecyclePolicyText: () =>
-            JSON.stringify(payload.lifecyclePolicyText),
-        }),
-        ecr().putLifecyclePolicy,
-      ])
-    );
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#createRepository-property
-  const create = ({ payload, name }) =>
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#setRepositoryPolicy-property
+const setRepositoryPolicy = ({ endpoint, payload }) =>
+  tap.if(
+    () => payload.policyText,
     pipe([
-      () => payload,
-      omit(["policyText", "lifecyclePolicyText"]),
-      ecr().createRepository,
-      get("repository"),
-      setRepositoryPolicy({ payload }),
-      putLifecyclePolicy({ payload }),
-    ])();
+      pickId,
+      assign({ policyText: () => JSON.stringify(payload.policyText) }),
+      endpoint().setRepositoryPolicy,
+    ])
+  );
 
-  const update = ({ payload, live, name, diff }) =>
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putLifecyclePolicy-property
+const putLifecyclePolicy = ({ endpoint, payload }) =>
+  tap.if(
+    () => payload.lifecyclePolicyText,
     pipe([
-      () => live,
-      tap(() => {
-        assert(diff);
-        assert(payload);
-        assert(live);
+      pickId,
+      assign({
+        lifecyclePolicyText: () => JSON.stringify(payload.lifecyclePolicyText),
       }),
-      //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putImageScanningConfiguration-property
-      setRepositoryPolicy({ payload }),
-      putLifecyclePolicy({ payload }),
-    ])();
+      endpoint().putLifecyclePolicy,
+    ])
+  );
 
+exports.ECRRepository = () => ({
+  type: "Repository",
+  package: "ecr",
+  client: "ECR",
+  propertiesDefault: {},
+  omitProperties: ["repositoryArn", "registryId", "repositoryUri", "createdAt"],
+  inferName: findName,
+  findName,
+  findId,
+  ignoreErrorCodes: ["RepositoryNotFoundException"],
+  ignoreResource: ignoreResourceCdk,
+  filterLive: ({ providerConfig, lives }) =>
+    pipe([
+      pick([
+        "repositoryName",
+        "imageTagMutability",
+        "imageScanningConfiguration",
+        "encryptionConfiguration",
+        "policyText",
+        "lifecyclePolicyText",
+      ]),
+      when(
+        get("policyText"),
+        assign({
+          policyText: pipe([
+            get("policyText"),
+            assignPolicyAccountAndRegion({ providerConfig, lives }),
+          ]),
+        })
+      ),
+    ]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#describeRepositories-property
+  getById: {
+    pickId: pipe([
+      tap(({ repositoryName }) => {
+        assert(repositoryName);
+      }),
+      ({ repositoryName }) => ({ repositoryNames: [repositoryName] }),
+    ]),
+    method: "describeRepositories",
+    getField: "repositories",
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#describeRepositories-property
+  getList: {
+    method: "describeRepositories",
+    getParam: "repositories",
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#createRepository-property
+  create: {
+    filterPayload: pipe([omit(["policyText", "lifecyclePolicyText"])]),
+    method: "createRepository",
+    pickCreated: ({ payload }) => pipe([get("repository")]),
+    postCreate: ({ endpoint, payload }) =>
+      pipe([
+        tap((params) => {
+          assert(payload);
+        }),
+        setRepositoryPolicy({ endpoint, payload }),
+        putLifecyclePolicy({ endpoint, payload }),
+      ]),
+  },
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        () => live,
+        //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putImageScanningConfiguration-property
+        setRepositoryPolicy({ endpoint, payload }),
+        putLifecyclePolicy({ endpoint, payload }),
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#deleteRepository-property
-
-  const destroy = client.destroy({
-    pickId,
-    extraParam: { force: true },
+  destroy: {
+    pickId: pipe([defaultsDeep({ force: true })]),
     method: "deleteRepository",
-    ignoreErrorCodes: ["RepositoryNotFoundException"],
-    config,
-  });
-
-  //TODO user tags
-  const configDefault = ({
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties,
-    dependencies: { kmsKey },
+    dependencies: { tags, kmsKey },
     config,
   }) =>
     pipe([
       () => properties,
       defaultsDeep({
         repositoryName: name,
-        tags: buildTags({ config, namespace, name }),
-        ...(kmsKey &
-          {
-            encryptionConfiguration: {
-              encryptionType: "KMS",
-              kmsKey: getField(kmsKey, "Arn"),
-            },
-          }),
+        tags: buildTags({ config, namespace, name, UserTags: tags }),
       }),
-    ])();
-
-  return {
-    spec,
-    findId,
-    getByName,
-    getById,
-    findName,
-    create,
-    update,
-    destroy,
-    getList,
-    configDefault,
-    tagResource: tagResource({ ecr }),
-    untagResource: untagResource({ ecr }),
-  };
-};
+      when(
+        () => kmsKey,
+        defaultsDeep({
+          encryptionConfiguration: {
+            encryptionType: "KMS",
+            kmsKey: getField(kmsKey, "Arn"),
+          },
+        })
+      ),
+    ])(),
+});
