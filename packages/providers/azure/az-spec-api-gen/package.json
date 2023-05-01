@@ -1,6 +1,6 @@
 {
   "name": "az-spec-api-gen",
-  "version": "11.1.0",
+  "version": "12.0.1",
   "description": "Generate artifacts from the azure swagger specification for the Azure GruCloud provider",
   "main": "index.js",
   "private": true,
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "10.0.3",
-    "@grucloud/core": "11.1.0",
+    "@grucloud/core": "^12.0.1",
     "azure-rest-api-specs": "https://github.com/Azure/azure-rest-api-specs.git#2feaf7f24cc26a7274c9fd79015ae62b1d273986",
     "change-case": "4.1.2",
     "deep-object-diff": "1.1.9",
