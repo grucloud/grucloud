@@ -3,6 +3,7 @@
   "version": "11.0.2",
   "description": "GruCloud Test Runner",
   "main": "index.js",
+  "private": true,
   "bin": {
     "gc-test": "./TestRunnerApp.js"
   },
