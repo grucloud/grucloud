@@ -4,6 +4,7 @@
 
 FIS
 Verified Access
+SSM contact
 
 xray-simple kms key
 ✖ vpc-lattice-simple [e2e-charly]  

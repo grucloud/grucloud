@@ -1,14 +1,12 @@
 const assert = require("assert");
-const { tap, assign, map, pipe, omit, pick, get, not, and } = require("rubico");
-const { callProp, when, defaultsDeep } = require("rubico/x");
+const { tap, map, pipe } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
-const { omitIfEmpty } = require("@grucloud/core/Common");
-
-const { compareAws, ignoreResourceCdk } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
 
 const { createAwsService } = require("../AwsService");
 
-const { EcrRepository } = require("./EcrRepository");
+const { ECRRepository } = require("./EcrRepository");
 const { ECRRegistry } = require("./EcrRegistry");
 
 const GROUP = "ECR";
@@ -18,65 +16,18 @@ const compare = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
-    {
-      type: "Repository",
-      Client: EcrRepository,
-      inferName: () => get("repositoryName"),
-      compare: compare({
-        filterLive: () =>
-          pipe([
-            omit(["repositoryArn", "registryId", "repositoryUri", "createdAt"]),
-            omitIfEmpty(["lifecyclePolicyText", "policyText"]),
-          ]),
-      }),
-      ignoreResource: ignoreResourceCdk,
-      filterLive: ({ providerConfig }) =>
-        pipe([
-          pick([
-            "repositoryName",
-            "imageTagMutability",
-            "imageScanningConfiguration",
-            "encryptionConfiguration",
-            "policyText",
-            "lifecyclePolicyText",
-          ]),
-          when(
-            get("policyText"),
-            assign({
-              policyText: pipe([
-                get("policyText"),
-                assign({
-                  Statement: pipe([
-                    get("Statement"),
-                    map(
-                      assign({
-                        Principal: pipe([
-                          get("Principal.AWS"),
-                          callProp(
-                            "replace",
-                            providerConfig.accountId(),
-                            "${config.accountId()}"
-                          ),
-                          (principal) => ({
-                            AWS: () => "`" + principal + "`",
-                          }),
-                        ]),
-                      })
-                    ),
-                  ]),
-                }),
-              ]),
-            })
-          ),
-        ]),
-    },
-    createAwsService(ECRRegistry({ compare })),
+    //
+    ECRRegistry({ compare }),
+    ECRRepository({ compare }),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      tagsKey,
-      compare: compare({}),
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        tagsKey,
+        compare: compare({}),
+      }),
+    ])
   ),
 ]);
