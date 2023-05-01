@@ -4,10 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Registry",
-    group: "ECR",
-  },
-  {
     type: "Repository",
     group: "ECR",
     properties: ({ config }) => ({
@@ -43,16 +39,16 @@ exports.createResources = () => [
       lifecyclePolicyText: {
         rules: [
           {
-            rulePriority: 1,
-            description: "Expire images older than 14 days",
-            selection: {
-              tagStatus: "untagged",
-              countType: "sinceImagePushed",
-              countUnit: "days",
-              countNumber: 14,
-            },
             action: {
               type: "expire",
+            },
+            description: "Expire images older than 14 days",
+            rulePriority: 1,
+            selection: {
+              countNumber: 14,
+              countType: "sinceImagePushed",
+              countUnit: "days",
+              tagStatus: "untagged",
             },
           },
         ],

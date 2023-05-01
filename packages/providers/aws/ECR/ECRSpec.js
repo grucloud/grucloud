@@ -4,20 +4,17 @@ const { callProp, when, defaultsDeep } = require("rubico/x");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
-const {
-  compareAws,
-  isOurMinionFactory,
-  ignoreResourceCdk,
-} = require("../AwsCommon");
+const { compareAws, ignoreResourceCdk } = require("../AwsCommon");
+
+const { createAwsService } = require("../AwsService");
+
 const { EcrRepository } = require("./EcrRepository");
-const { EcrRegistry } = require("./EcrRegistry");
+const { ECRRegistry } = require("./EcrRegistry");
 
 const GROUP = "ECR";
 
 const tagsKey = "tags";
-const compareECR = compareAws({ tagsKey });
-
-const isOurMinion = isOurMinionFactory({ tags: tagsKey });
+const compare = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
@@ -25,7 +22,7 @@ module.exports = pipe([
       type: "Repository",
       Client: EcrRepository,
       inferName: () => get("repositoryName"),
-      compare: compareECR({
+      compare: compare({
         filterLive: () =>
           pipe([
             omit(["repositoryArn", "registryId", "repositoryUri", "createdAt"]),
@@ -73,27 +70,13 @@ module.exports = pipe([
           ),
         ]),
     },
-    {
-      type: "Registry",
-      Client: EcrRegistry,
-      inferName: () => () => "default",
-      compare: compareECR({
-        filterLive: () => pipe([omit(["registryId"])]),
-      }),
-      ignoreResource: () =>
-        pipe([
-          get("live"),
-          not(and([get("policyText"), get("replicationConfiguration")])),
-        ]),
-      filterLive: () =>
-        pipe([pick(["policyText", "replicationConfiguration"])]),
-    },
+    createAwsService(ECRRegistry({ compare })),
   ],
   map(
     defaultsDeep({
       group: GROUP,
       tagsKey,
-      isOurMinion,
+      compare: compare({}),
     })
   ),
 ]);
