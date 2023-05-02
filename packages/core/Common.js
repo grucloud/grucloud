@@ -173,15 +173,19 @@ exports.typeFromResources = typeFromResources;
 const groupFromResources = pipe([first, get("group")]);
 exports.groupFromResources = groupFromResources;
 
-const replaceRegion = ({ providerConfig }) =>
+// TODO this is specific to AWS
+const replaceName = ({
+  providerConfig: { region, accountId = () => undefined },
+}) =>
   pipe([
     tap((params) => {
       //assert(providerConfig.region);
     }),
     switchCase([
-      includes(providerConfig.region),
+      or([includes(region), includes(accountId())]),
       pipe([
-        callProp("replace", providerConfig.region, "${config.region}"),
+        callProp("replace", region, "${config.region}"),
+        callProp("replace", accountId(), "${config.accountId()}"),
         (resource) => "`" + resource + "`",
       ]),
       (resource) => "'" + resource + "'",
@@ -618,8 +622,7 @@ const buildGetId =
       append("', group:'"),
       append(group),
       append("', name:"),
-      (str) => `${str}${replaceRegion({ providerConfig })(name)}`,
-      //append(replaceRegion({ providerConfig })(name)),
+      (str) => `${str}${replaceName({ providerConfig })(name)}`,
       append(""),
       unless(
         // TODO rubico breaking change
