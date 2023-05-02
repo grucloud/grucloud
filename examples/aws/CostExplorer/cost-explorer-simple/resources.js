@@ -30,6 +30,12 @@ exports.createResources = () => [
         },
       ],
       SubscriptionName: "team",
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
       ThresholdExpression: {
         Dimensions: {
           Key: "ANOMALY_TOTAL_IMPACT_ABSOLUTE",
@@ -37,12 +43,6 @@ exports.createResources = () => [
           Values: ["60.0"],
         },
       },
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "myvalue",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       anomalyMonitors: ["my-anomaly-monitor"],
@@ -61,7 +61,6 @@ exports.createResources = () => [
     properties: ({ getId }) => ({
       EffectiveStart: "2022-11-01T00:00:00Z",
       Name: "dev",
-      RuleVersion: "CostCategoryExpression.v1",
       Rules: [
         {
           Rule: {
@@ -81,6 +80,7 @@ exports.createResources = () => [
           Value: "5",
         },
       ],
+      RuleVersion: "CostCategoryExpression.v1",
     }),
     dependencies: ({}) => ({
       accounts: ["test account"],
