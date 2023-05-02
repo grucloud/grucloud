@@ -16,3 +16,4 @@ mochawesome-report
 *.dtmp
 bun.lockb
 package-lock.json
+pnpm-lock.yaml
