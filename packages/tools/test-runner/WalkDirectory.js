@@ -97,7 +97,7 @@ const IncludeList = [
   // "DataBrew"
   // "DataPipeline"
   // "DataSync" $$$
-  "Detective",
+  //"Detective",
   "DeviceFarm",
   // "DirectConnect"
   // "DirectoryService"
@@ -106,7 +106,7 @@ const IncludeList = [
   "ECR",
   "ECS",
   // "EFS",
-  "EKS",
+  //"EKS",
   // "EMR"
   // "EMRServerless"
   // "ElastiCache"
@@ -123,7 +123,7 @@ const IncludeList = [
   // "GuardDuty"
   "IAM",
   // "IVS",
-  "IdentityStore",
+  //"IdentityStore",
   "Imagebuilder",
   //  "Inspector2",
   // "InternetMonitor",
@@ -137,18 +137,18 @@ const IncludeList = [
   "LakeFormation",
   "Lambda",
   //"Lex",
-  "LicenseManager",
+  //"LicenseManager",
   "Lightsail",
   "Location",
   //"MQ",
   //"MSK",
   // "MWAA", $$$
   // "Macie"
-  "MediaConnect",
-  "MediaConvert",
-  "MediaLive",
-  "MediaPackage",
-  "MediaTailor",
+  // "MediaConnect",
+  // "MediaConvert",
+  // "MediaLive",
+  // "MediaPackage",
+  // "MediaTailor",
   // "MemoryDB",
   //"Neptune",
   //"NetworkFirewall"
@@ -180,7 +180,7 @@ const IncludeList = [
   "SNS",
   "SQS",
   "SSM",
-  "SSOAdmin",
+  //"SSOAdmin",
   // "SageMaker",$$$
   "Scheduler",
   "Schema",
@@ -198,12 +198,7 @@ const IncludeList = [
   //  "WAFv2" $
   // "WorkSpaces", $$$
   // "WorkSpacesWeb",
-  "XRay",
-  "docker", // TODO move docker dir out of the example
-  "kops",
-  "aws-samples",
-  "aws-cdk-examples",
-  "terraform-backend-s3-dynamodb",
+  //"XRay",
 ];
 const ExcludeDirsDefault = [
   //
@@ -217,8 +212,7 @@ const ExcludeDirsDefault = [
   "amplify-nextjs",
   "amplify_cognito_apigateway_lambda_envvariables", // Github token expires quickly
   "private-apigw-lambda-cdk", //  Too slow"
-  "auth0", //run as default profile due to certificate
-  "http-lambda", //run as default profile due to certificate
+
   "appstream-stack",
   "appstream-simple", // need to create an S3 object
   "backup-simple", //UpdateGlobalSettings AccessDeniedException: Insufficient privileges to perform this action.
@@ -270,6 +264,20 @@ const ExcludeDirsDefault = [
   "dynamodb-kinesis", // Table is not in a valid state to enable Kinesis Streaming Destination: KinesisStreamingDestination must be ACTIVE to perform DISABLE operation.
   "ec2-credit", // "This account cannot launch T2 instances with Unlimited enabled. Please contact AWS Support to enable this feature.",
   "fsx-openzfs", // Volume "1 validation error detected: Value null at 'openZFSConfiguration.parentVolumeId' failed to satisfy constraint: Member must not be null",
+
+  "graphql",
+  "auth0", //run as default profile due to certificate
+  "http-lambda", //run as default profile due to certificate
+  "load-balancer",
+  "cloudfront-distribution",
+  "website-https",
+  "detective-simple",
+  "cost-explorer-simple",
+  "docker", // TODO move docker dir out of the example
+  "kops",
+  "aws-samples",
+  "aws-cdk-examples",
+  "terraform-backend-s3-dynamodb",
 ];
 
 const fileExist = pipe([
@@ -377,8 +385,8 @@ exports.walkDirectory =
       fileExist,
       () => readdir(directory, { withFileTypes: true }),
       filter(callProp("isDirectory")),
-      //filterExcludeFiles({ excludeDirs }),
-      //filterIncludeDir({ IncludeList }),
+      filterExcludeFiles({ excludeDirs }),
+      filterIncludeDir({ IncludeList }),
       //filterIncludeDir({ IncludeList: IncludeListExpensive }),
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])

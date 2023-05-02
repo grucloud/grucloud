@@ -160,16 +160,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "vpclatticedemo-InboundLambdaFunctionRole-MOK9FMSJUYDM",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       Policies: [
         {
@@ -202,16 +202,16 @@ exports.createResources = () => [
     properties: ({}) => ({
       RoleName: "vpclatticedemo-OutboundLambdaFunctionRole-4HOJL6ADS26",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "lambda.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       Policies: [
         {

@@ -2,17 +2,13 @@
 
 ## Aws
 
-FIS
 Verified Access
 SSM contact
 
-cost-explorer-simple
 ✖ s3-s3-replication-cdk [e2e-mike]  
 detective-simple fix guardduty
 glue-simple
-RUM simple
 xray-simple kms key
-✖ vpc-lattice-simple [e2e-charly]  
 CoreNetwork update
 ecs-simple update
 appsync-cognito-lambda-cdk lambda signing

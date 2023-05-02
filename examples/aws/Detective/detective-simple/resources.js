@@ -7,32 +7,39 @@ exports.createResources = () => [
     type: "Detector",
     group: "GuardDuty",
     properties: ({}) => ({
-      DataSources: {
-        CloudTrail: {
-          Enable: true,
+      Features: [
+        {
+          Name: "S3_DATA_EVENTS",
+          Status: "ENABLED",
         },
-        DNSLogs: {
-          Enable: true,
+        {
+          Name: "EKS_AUDIT_LOGS",
+          Status: "ENABLED",
         },
-        FlowLogs: {
-          Enable: true,
+        {
+          Name: "EBS_MALWARE_PROTECTION",
+          Status: "ENABLED",
         },
-        Kubernetes: {
-          AuditLogs: {
-            Enable: false,
-          },
+        {
+          Name: "RDS_LOGIN_EVENTS",
+          Status: "ENABLED",
         },
-        MalwareProtection: {
-          ScanEc2InstanceWithFindings: {
-            EbsVolumes: false,
-          },
+        {
+          AdditionalConfiguration: [
+            {
+              Name: "EKS_ADDON_MANAGEMENT",
+              Status: "DISABLED",
+            },
+          ],
+          Name: "EKS_RUNTIME_MONITORING",
+          Status: "DISABLED",
         },
-        S3Logs: {
-          Enable: false,
+        {
+          Name: "LAMBDA_NETWORK_LOGS",
+          Status: "DISABLED",
         },
-      },
+      ],
       FindingPublishingFrequency: "SIX_HOURS",
-      Status: "ENABLED",
       Name: "detector",
     }),
   },
