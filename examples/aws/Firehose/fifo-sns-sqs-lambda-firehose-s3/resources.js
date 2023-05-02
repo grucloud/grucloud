@@ -202,8 +202,14 @@ exports.createResources = () => [
         DisplayName: "fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5",
         FifoTopic: "true",
         Policy: {
+          Version: "2012-10-17",
           Statement: [
             {
+              Sid: "",
+              Effect: "Allow",
+              Principal: {
+                AWS: "*",
+              },
               Action: [
                 "SNS:Subscribe",
                 "SNS:SetTopicAttributes",
@@ -214,22 +220,16 @@ exports.createResources = () => [
                 "SNS:DeleteTopic",
                 "SNS:AddPermission",
               ],
+              Resource: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,
                 },
               },
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo`,
-              Sid: "",
             },
           ],
-          Version: "2012-10-17",
         },
       },
     }),
@@ -255,20 +255,29 @@ exports.createResources = () => [
         FifoQueue: "true",
         FifoThroughputLimit: "perQueue",
         Policy: {
+          Version: "2012-10-17",
           Statement: [
             {
-              Action: "sqs:*",
+              Sid: "",
               Effect: "Allow",
               Principal: {
                 AWS: `arn:aws:iam::${config.accountId()}:root`,
               },
+              Action: "sqs:*",
               Resource: `arn:aws:sqs:${
                 config.region
               }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo`,
-              Sid: "",
             },
             {
+              Sid: "",
+              Effect: "Allow",
+              Principal: {
+                AWS: "*",
+              },
               Action: "sqs:SendMessage",
+              Resource: `arn:aws:sqs:${
+                config.region
+              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo`,
               Condition: {
                 ArnEquals: {
                   "aws:SourceArn": `arn:aws:sns:${
@@ -276,17 +285,8 @@ exports.createResources = () => [
                   }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-topic-5d62e6b5.fifo`,
                 },
               },
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
-              Resource: `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo`,
-              Sid: "",
             },
           ],
-          Version: "2012-10-17",
         },
       },
       QueueName: "fifo-sns-sqs-lambda-firehose-s3-queue-5d62e6b5.fifo",

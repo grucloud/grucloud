@@ -105,6 +105,7 @@ const GROUPS = [
   ["Evidently", "evidently"],
   ["EventBridge", "eventbridge"],
   ["Firehose", "firehose"],
+  ["Fis", "fis"],
   ["FMS", "fms"],
   ["FSx", "fsx"],
   ["Glacier", "glacier"],

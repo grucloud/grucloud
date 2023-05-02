@@ -80,9 +80,7 @@ exports.MSKConfiguration = ({}) => ({
   destroy: {
     method: "deleteConfiguration",
     pickId,
-    ignoreErrorMessages: [
-      "The request could not be processed because of an internal error. Try again.",
-    ],
+    ignoreErrorMessages,
   },
   getByName: getByNameCore,
   configDefault: ({

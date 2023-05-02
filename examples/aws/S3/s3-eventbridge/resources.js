@@ -37,15 +37,15 @@ exports.createResources = () => [
       Description:
         "This rule will trigger lambda when an image is uploaded into S3",
       EventPattern: {
-        "detail-type": ["AWS API Call via CloudTrail"],
-        source: ["aws.s3"],
         detail: {
+          eventName: ["PutObject", "CopyObject", "CompleteMultipartUpload"],
           eventSource: ["s3.amazonaws.com"],
           requestParameters: {
             bucketName: ["gc-s3-eventbridge"],
           },
-          eventName: ["PutObject", "CopyObject", "CompleteMultipartUpload"],
         },
+        "detail-type": ["AWS API Call via CloudTrail"],
+        source: ["aws.s3"],
       },
       Name: "sam-app-S3NewImageEvent-WQBVMJ27U1IW",
     }),
@@ -143,19 +143,19 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
+          Version: "2008-10-17",
           Statement: [
             {
-              Action: "SQS:SendMessage",
               Effect: "Allow",
               Principal: {
                 Service: "events.amazonaws.com",
               },
+              Action: "SQS:SendMessage",
               Resource: `arn:aws:sqs:${
                 config.region
               }:${config.accountId()}:sam-app-NewImageEventQueue-xg4G9e9EBenI`,
             },
           ],
-          Version: "2008-10-17",
         },
       },
       QueueName: "sam-app-NewImageEventQueue-xg4G9e9EBenI",

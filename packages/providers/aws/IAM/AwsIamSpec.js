@@ -55,6 +55,7 @@ const {
   isOurMinion,
   ignoreResourceCdk,
   replaceRegion,
+  replaceAccountAndRegion,
 } = require("../AwsCommon");
 
 const GROUP = "IAM";
@@ -160,7 +161,7 @@ module.exports = pipe([
           assign({
             RoleName: pipe([
               get("RoleName"),
-              replaceRegion({ lives, providerConfig }),
+              replaceAccountAndRegion({ lives, providerConfig }),
             ]),
           }),
           when(

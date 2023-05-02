@@ -176,11 +176,30 @@ const pickId = pipe([
   pick(["VolumeId"]),
 ]);
 
+const assignArn = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    assign({
+      Arn: pipe([
+        tap(({ VolumeId }) => {
+          assert(VolumeId);
+        }),
+        ({ VolumeId }) =>
+          `arn:aws:ec2:${
+            config.region
+          }:${config.accountId()}:volume/${VolumeId}`,
+      ]),
+    }),
+  ]);
+
 const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
     }),
+    assignArn({ config }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
@@ -199,6 +218,7 @@ exports.EC2Volume = () => ({
     "State",
     "VolumeId",
     "Device",
+    "Arn",
   ],
   propertiesDefault: {
     MultiAttachEnabled: false,

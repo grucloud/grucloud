@@ -63,6 +63,9 @@ exports.ApplicationInsightsApplication = () => ({
     "LifeCycle",
     "Remarks",
     "AccountId",
+    "ConfigurationHistoryEventErrorCount",
+    "ConfigurationHistoryEventInfoCount",
+    "ConfigurationHistoryEventWarnCount",
   ],
   inferName: () =>
     pipe([
