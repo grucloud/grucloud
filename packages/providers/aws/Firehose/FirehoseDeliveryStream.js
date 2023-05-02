@@ -368,11 +368,12 @@ exports.FirehoseDeliveryStream = ({}) => ({
   create: {
     method: "createDeliveryStream",
     pickCreated: ({ payload }) => pipe([() => payload]),
-    //filterParams: pipe([omit(["EnhancedMonitoring"])]),
-    shouldRetryOnExceptionMessages: ["Firehose is unable to assume role"],
     isInstanceUp: eq(get("DeliveryStreamStatus"), "ACTIVE"),
     getErrorMessage: get("FailureDescription", "error"),
-    shouldRetryOnExceptionMessages: ["S3 Bucket"],
+    shouldRetryOnExceptionMessages: [
+      "S3 Bucket",
+      "Firehose is unable to assume role",
+    ],
   },
   update: {
     method: "updateDeliveryStream",

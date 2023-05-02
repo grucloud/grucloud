@@ -203,6 +203,7 @@
     "@aws-sdk/client-eventbridge": "3.321.1",
     "@aws-sdk/client-evidently": "3.321.1",
     "@aws-sdk/client-firehose": "3.321.1",
+    "@aws-sdk/client-fis": "3.321.1",
     "@aws-sdk/client-fms": "3.321.1",
     "@aws-sdk/client-fsx": "3.321.1",
     "@aws-sdk/client-glacier": "3.321.1",

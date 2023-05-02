@@ -6,6 +6,19 @@ FIS
 Verified Access
 SSM contact
 
+cost-explorer-simple
+✖ load-balancer [e2e-india]  
+✖ firehose-delivery-stream-http [e2e-hotel]  
+✖ lambda-layer-ssm-parameters [e2e-juliett]  
+✖ lambda-web-adapter-cdk [e2e-charly]  
+✖ record-vpc-endpoint [e2e-india]  
+✖ s3-object-lambda [e2e-juliett]  
+✖ s3-s3-replication-cdk [e2e-mike]  
+✖ lambda-s3-sfn [e2e-alpha]  
+✖ lambda-sfn [e2e-papa]
+detective-simple fix guardduty
+glue-simple
+RUM simple
 xray-simple kms key
 ✖ vpc-lattice-simple [e2e-charly]  
 CoreNetwork update
