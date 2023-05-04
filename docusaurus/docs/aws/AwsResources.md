@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 711 resources in 157 services for provider aws:
+List of 716 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -296,6 +296,10 @@ List of 711 resources in 157 services for provider aws:
 [Queue](./resources/SQS/Queue.md), [QueueRedriveAllowPolicy](./resources/SQS/QueueRedriveAllowPolicy.md), [QueueRedrivePolicy](./resources/SQS/QueueRedrivePolicy.md)
 * SSM: 
 [Activation](./resources/SSM/Activation.md), [Association](./resources/SSM/Association.md), [Document](./resources/SSM/Document.md), [MaintenanceWindow](./resources/SSM/MaintenanceWindow.md), [MaintenanceWindowTarget](./resources/SSM/MaintenanceWindowTarget.md), [MaintenanceWindowTask](./resources/SSM/MaintenanceWindowTask.md), [Parameter](./resources/SSM/Parameter.md), [PatchBaseline](./resources/SSM/PatchBaseline.md), [ResourceDataSync](./resources/SSM/ResourceDataSync.md), [ServiceSetting](./resources/SSM/ServiceSetting.md)
+* SSMContacts: 
+[Contact](./resources/SSMContacts/Contact.md), [ContactChannel](./resources/SSMContacts/ContactChannel.md), [Plan](./resources/SSMContacts/Plan.md)
+* SSMIncidents: 
+[ReplicationSet](./resources/SSMIncidents/ReplicationSet.md), [ResponsePlan](./resources/SSMIncidents/ResponsePlan.md)
 * SSOAdmin: 
 [AccountAssignment](./resources/SSOAdmin/AccountAssignment.md), [Instance](./resources/SSOAdmin/Instance.md), [InstanceAccessControlAttribute](./resources/SSOAdmin/InstanceAccessControlAttribute.md), [PermissionSet](./resources/SSOAdmin/PermissionSet.md)
 * StepFunctions: 
