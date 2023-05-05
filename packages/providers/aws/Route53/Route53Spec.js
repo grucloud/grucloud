@@ -74,8 +74,9 @@ const omitHostedZoneConfigComment = pipe([
 ]);
 
 const dependenciesRecord = [
-  { groupType: "EC2::ElasticIpAddress", path: "PublicIp" },
   { groupType: "AppRunner::Service", path: "ServiceUrl" },
+  { groupType: "EC2::ElasticIpAddress", path: "PublicIp" },
+  { groupType: "EC2::VerifiedAccessEndpoint", path: "EndpointDomain" },
 ];
 
 const findRecordByValue =
@@ -277,6 +278,11 @@ module.exports = pipe([
               pipe([
                 get("appRunnerService", "noName"),
                 prepend("AppRunner::Service::CNAME::"),
+              ]),
+              get("verifiedAccessEndpoint"),
+              pipe([
+                () =>
+                  `EC2::VerifiedAccessEndpoint::${properties.Type}::${properties.Name}`,
               ]),
               get("vpcEndpoint"),
               pipe([

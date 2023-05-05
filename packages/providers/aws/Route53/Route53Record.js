@@ -146,17 +146,11 @@ const Route53RecordDependencies = {
     parentForName: true,
     dependencyId: ({ lives, config }) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
         switchCase([
           eq(get("Type"), "CNAME"),
           pipe([
             get("ResourceRecords", []),
             pluck("Value"),
-            tap((params) => {
-              assert(true);
-            }),
             (Values) =>
               pipe([
                 lives.getByType({
@@ -164,14 +158,8 @@ const Route53RecordDependencies = {
                   group: "AppRunner",
                   providerName: config.providerName,
                 }),
-                tap((params) => {
-                  assert(true);
-                }),
                 find(pipe([get("live.ServiceUrl"), isIn(Values)])),
                 pick(["id", "name"]),
-                tap((params) => {
-                  assert(true);
-                }),
               ])(),
           ]),
           () => undefined,
@@ -349,6 +337,33 @@ const Route53RecordDependencies = {
           pick(["id", "name"]),
         ])(),
   },
+  verifiedAccessEndpoint: {
+    type: "VerifiedAccessEndpoint",
+    group: "EC2",
+    parent: true,
+    parentForName: true,
+    dependencyId: ({ lives, config }) =>
+      pipe([
+        switchCase([
+          eq(get("Type"), "CNAME"),
+          pipe([
+            get("ResourceRecords", []),
+            pluck("Value"),
+            (Values) =>
+              pipe([
+                lives.getByType({
+                  type: "VerifiedAccessEndpoint",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+                find(pipe([get("live.EndpointDomain"), isIn(Values)])),
+                pick(["id", "name"]),
+              ])(),
+          ]),
+          () => undefined,
+        ]),
+      ]),
+  },
   vpcEndpoint: {
     type: "VpcEndpoint",
     group: "EC2",
@@ -365,9 +380,6 @@ const Route53RecordDependencies = {
               group: "EC2",
               providerName: config.providerName,
             }),
-            tap((params) => {
-              assert(true);
-            }),
             find(({ live: endpointLive }) =>
               pipe([
                 () => DNSName,
@@ -376,9 +388,6 @@ const Route53RecordDependencies = {
                 ),
               ])()
             ),
-            tap((params) => {
-              assert(true);
-            }),
             pick(["id", "name"]),
           ])(),
       ]),
@@ -420,7 +429,10 @@ exports.Route53Record = ({ spec, config }) => {
               assert(id);
             }),
             switchCase([
-              eq(get("type"), "VpcEndpoint"),
+              pipe([
+                get("type"),
+                isIn(["VpcEndpoint", "VerifiedAccessEndpoint"]),
+              ]),
               ({ group, type }) =>
                 `record::${group}::${type}::${live.Type}::${live.Name}`,
               pipe([

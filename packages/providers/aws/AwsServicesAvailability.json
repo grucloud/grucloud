@@ -368,6 +368,7 @@
     {
         "region": "ap-northeast-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -673,6 +674,7 @@
     {
         "region": "ap-northeast-2",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -1090,6 +1092,7 @@
     {
         "region": "ap-south-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -1451,6 +1454,7 @@
     {
         "region": "ap-southeast-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -1743,6 +1747,7 @@
     {
         "region": "ap-southeast-2",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -2030,6 +2035,7 @@
             "transitgateway",
             "translate",
             "trustedadvisor",
+            "verified-access",
             "vmwarecloudonaws",
             "voice-id",
             "vpc",
@@ -2274,6 +2280,7 @@
     {
         "region": "ca-central-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -2516,6 +2523,7 @@
             "transitgateway",
             "translate",
             "trustedadvisor",
+            "verified-access",
             "vmwarecloudonaws",
             "voice-id",
             "vpc",
@@ -2826,6 +2834,7 @@
     {
         "region": "eu-central-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -3119,6 +3128,7 @@
             "transitgateway",
             "translate",
             "trustedadvisor",
+            "verified-access",
             "vmwarecloudonaws",
             "voice-id",
             "vpc",
@@ -3245,6 +3255,7 @@
     {
         "region": "eu-north-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -3750,6 +3761,7 @@
     {
         "region": "eu-west-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -4049,6 +4061,7 @@
             "transitgateway",
             "translate",
             "trustedadvisor",
+            "verified-access",
             "vmwarecloudonaws",
             "vpc",
             "vpc-lattice",
@@ -4068,6 +4081,7 @@
     {
         "region": "eu-west-2",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -4329,6 +4343,7 @@
             "transitgateway",
             "translate",
             "trustedadvisor",
+            "verified-access",
             "vmwarecloudonaws",
             "voice-id",
             "vpc",
@@ -4345,6 +4360,7 @@
     {
         "region": "eu-west-3",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -4872,6 +4888,7 @@
     {
         "region": "sa-east-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -5082,6 +5099,7 @@
             "transfer",
             "transitgateway",
             "trustedadvisor",
+            "verified-access",
             "vmwarecloudonaws",
             "vpc",
             "vpn",
@@ -5095,6 +5113,7 @@
     {
         "region": "us-east-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -5431,6 +5450,7 @@
             "transitgateway",
             "translate",
             "trustedadvisor",
+            "verified-access",
             "vmwarecloudonaws",
             "voice-id",
             "vpc",
@@ -5453,6 +5473,7 @@
     {
         "region": "us-east-2",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -5724,6 +5745,7 @@
             "transitgateway",
             "translate",
             "trustedadvisor",
+            "verified-access",
             "vmwarecloudonaws",
             "vpc",
             "vpc-lattice",
@@ -6076,6 +6098,7 @@
     {
         "region": "us-west-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -6291,6 +6314,7 @@
             "transitgateway",
             "translate",
             "trustedadvisor",
+            "verified-access",
             "vmwarecloudonaws",
             "vpc",
             "vpn",
@@ -6303,6 +6327,7 @@
     {
         "region": "us-west-2",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -6620,6 +6645,7 @@
             "transitgateway",
             "translate",
             "trustedadvisor",
+            "verified-access",
             "vmwarecloudonaws",
             "voice-id",
             "vpc",

@@ -98,6 +98,14 @@ const {
 const {
   EC2TransitGatewayRouteTablePropagation,
 } = require("./EC2TransitGatewayRouteTablePropagation");
+
+const { EC2VerifiedAccessEndpoint } = require("./EC2VerifiedAccessEndpoint");
+const { EC2VerifiedAccessGroup } = require("./EC2VerifiedAccessGroup");
+const { EC2VerifiedAccessInstance } = require("./EC2VerifiedAccessInstance");
+const {
+  EC2VerifiedAccessTrustProvider,
+} = require("./EC2VerifiedAccessTrustProvider");
+
 const { EC2Volume } = require("./EC2Volume");
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { EC2Vpc } = require("./EC2Vpc");
@@ -353,6 +361,12 @@ module.exports = pipe([
     ),
     createAwsService(EC2TransitGatewayVpcAttachment({ compare: compareEC2 })),
     createAwsService(EC2TransitGatewayVpnAttachment({ compare: compareEC2 })),
+
+    createAwsService(EC2VerifiedAccessEndpoint({ compare: compareEC2 })),
+    createAwsService(EC2VerifiedAccessGroup({ compare: compareEC2 })),
+    createAwsService(EC2VerifiedAccessInstance({ compare: compareEC2 })),
+    createAwsService(EC2VerifiedAccessTrustProvider({ compare: compareEC2 })),
+
     createAwsService(EC2Volume({ compare: compareEC2 })),
     createAwsService(EC2VolumeAttachment({ compare: compareEC2 })),
     createAwsService(EC2Vpc({ compare: compareEC2 })),
