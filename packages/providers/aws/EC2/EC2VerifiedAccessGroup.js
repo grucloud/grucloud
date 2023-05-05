@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
+const { pipe, tap, get, pick, not, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -24,6 +24,14 @@ const decorate = () =>
     }),
   ]);
 
+const managedByOther = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    not(eq(get("Owner"), config.accountId())),
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2VerifiedAccessGroup = () => ({
   type: "VerifiedAccessGroup",
@@ -42,6 +50,8 @@ exports.EC2VerifiedAccessGroup = () => ({
   findName: findNameInTagsOrId({ findId }),
   findId,
   ignoreErrorCodes: ["InvalidVerifiedAccessGroupId.NotFound"],
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   dependencies: {
     verifiedAccessInstance: {
       type: "VerifiedAccessInstance",
