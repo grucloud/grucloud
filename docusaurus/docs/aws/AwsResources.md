@@ -2,12 +2,12 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 720 resources in 159 services for provider aws:
+List of 722 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
 * Account: 
-[AlternateAccount](./resources/Account/AlternateAccount.md)
+[AlternateAccount](./resources/Account/AlternateAccount.md), [ContactInformation](./resources/Account/ContactInformation.md)
 * ACM: 
 [Certificate](./resources/ACM/Certificate.md)
 * ACMPCA: 
@@ -23,7 +23,7 @@ List of 720 resources in 159 services for provider aws:
 * Appflow: 
 [Flow](./resources/Appflow/Flow.md), [ConnectorProfile](./resources/Appflow/ConnectorProfile.md)
 * AppIntegrations: 
-[EventIntegration](./resources/AppIntegrations/EventIntegration.md)
+[EventIntegration](./resources/AppIntegrations/EventIntegration.md), [DataIntegration](./resources/AppIntegrations/DataIntegration.md)
 * ApplicationAutoScaling: 
 [Policy](./resources/ApplicationAutoScaling/Policy.md), [Target](./resources/ApplicationAutoScaling/Target.md)
 * ApplicationInsights: 
