@@ -564,6 +564,46 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it("VerifiedAccessEndpoint", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::VerifiedAccessEndpoint",
+        livesNotFound: ({ config }) => [
+          { VerifiedAccessEndpointId: "vap-035a2aa7c23edd8e0" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("VerifiedAccessGroup", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::VerifiedAccessGroup",
+        livesNotFound: ({ config }) => [
+          { VerifiedAccessGroupId: "vol-035a2aa7c23edd8e0" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("VerifiedAccessInstance", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::VerifiedAccessInstance",
+        livesNotFound: ({ config }) => [
+          { VerifiedAccessInstanceId: "vol-035a2aa7c23edd8e0" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("VerifiedAccessTrustProvider", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::VerifiedAccessTrustProvider",
+        livesNotFound: ({ config }) => [
+          { VerifiedAccessTrustProviderId: "vatp-035a2aa7c23edd8e0" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Volume", () =>
     pipe([
       () => ({

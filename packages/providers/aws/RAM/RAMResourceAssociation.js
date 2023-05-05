@@ -16,6 +16,29 @@ const findDependencyFromEntity =
       get("id"),
     ])();
 
+// AuroraDB Cluster
+// CodeBuildProject
+// CodeBuildProjectReportGroup
+// CoreNetwork
+// customer ownn ipv4Pool
+// Glue Catalog
+
+// Glue Database
+// Glue Table
+// IPPAM resource discoveries
+// Image Builder Comonent - container recipe - image recipes - images
+// SSM Contact  Incidents Response Plan
+// Local Gateway route tables
+// Network Firewall rules group - policy
+// Outpost - outpost site
+// Resource Groups
+// Route53 resolver firewall rule group
+// Prefix List
+// SageMaker pipeline - lineage group
+// Private CA
+// Traffic mirror target
+//  transitGatewayMulticastDomain
+
 const RamResourceDependencies = {
   appMesh: {
     type: "Mesh",
@@ -65,6 +88,37 @@ const RamResourceDependencies = {
       type: "TransitGateway",
       group: "EC2",
       arnKey: "TransitGatewayArn",
+    }),
+  },
+  verifiedAccessGroup: {
+    type: "VerifiedAccessGroup",
+    group: "EC2",
+    arnKey: "VerifiedAccessGroupArn",
+    dependencyId: findDependencyFromEntity({
+      type: "Service",
+      group: "VpcLattice",
+      arnKey: "VerifiedAccessGroupArn",
+    }),
+  },
+  // TODO
+  vpcLatticeService: {
+    type: "Service",
+    group: "VpcLattice",
+    arnKey: "arn",
+    dependencyId: findDependencyFromEntity({
+      type: "Service",
+      group: "VpcLattice",
+      arnKey: "arn",
+    }),
+  },
+  vpcLatticeServiceNetwork: {
+    type: "ServiceNetwork",
+    group: "VpcLattice",
+    arnKey: "arn",
+    dependencyId: findDependencyFromEntity({
+      type: "ServiceNetwork",
+      group: "VpcLattice",
+      arnKey: "arn",
     }),
   },
 };

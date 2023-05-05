@@ -44,4 +44,20 @@ describe("Config", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("OrganizationCustomPolicyRule", () =>
+    pipe([
+      () => ({
+        groupType: "Config::OrganizationCustomPolicyRule",
+        livesNotFound: ({ config }) => [{ name: "b123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("OrganizationCustomRule", () =>
+    pipe([
+      () => ({
+        groupType: "Config::OrganizationCustomRule",
+        livesNotFound: ({ config }) => [{ name: "b123" }],
+      }),
+      awsResourceTest,
+    ])());
 });

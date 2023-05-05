@@ -285,6 +285,8 @@
     "@aws-sdk/client-sns": "3.321.1",
     "@aws-sdk/client-sqs": "3.321.1",
     "@aws-sdk/client-ssm": "3.321.1",
+    "@aws-sdk/client-ssm-contacts": "3.321.1",
+    "@aws-sdk/client-ssm-incidents": "3.321.1",
     "@aws-sdk/client-sso-admin": "3.321.1",
     "@aws-sdk/client-storage-gateway": "3.321.1",
     "@aws-sdk/client-sts": "3.321.1",
