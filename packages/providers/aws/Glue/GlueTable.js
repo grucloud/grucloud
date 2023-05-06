@@ -84,9 +84,6 @@ exports.GlueTable = () => ({
         assert(id);
       }),
     ]),
-  // compare: compare({
-  //   filterTarget: () => pipe([omit(["compare"])]),
-  // }),
   dependencies: {
     database: {
       type: "Database",
@@ -118,6 +115,7 @@ exports.GlueTable = () => ({
           get("id"),
         ]),
     },
+    // TODO add glue Schema
     // TODO kinesis stream
   },
   ignoreErrorCodes: ["EntityNotFoundException"],

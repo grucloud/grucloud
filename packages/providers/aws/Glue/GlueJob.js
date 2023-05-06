@@ -43,11 +43,9 @@ const pickId = pipe([
 
 const decorate = ({ endpoint, config }) =>
   pipe([
+    //
     assignArn({ config }),
     assignTags({ endpoint, buildArn: buildArn() }),
-    tap((params) => {
-      assert(params);
-    }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html

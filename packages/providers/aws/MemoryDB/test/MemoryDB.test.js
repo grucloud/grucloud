@@ -28,6 +28,14 @@ describe("MemoryDB", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("Snapshot", () =>
+    pipe([
+      () => ({
+        groupType: "MemoryDB::Snapshot",
+        livesNotFound: ({ config }) => [{ Name: "subnetGroup-12345" }],
+      }),
+      awsResourceTest,
+    ])());
   it("SubnetGroup", () =>
     pipe([
       () => ({

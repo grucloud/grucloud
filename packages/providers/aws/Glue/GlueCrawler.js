@@ -23,6 +23,10 @@ const pickId = pipe([
 
 const assignArn = ({ config }) =>
   pipe([
+    tap(({ Name }) => {
+      assert(Name);
+      assert(config);
+    }),
     assign({
       Arn: pipe([
         ({ Name }) =>
@@ -96,14 +100,11 @@ exports.GlueCrawler = () => ({
     ]),
   findId: () =>
     pipe([
-      get("Arn"),
+      get("Name"),
       tap((id) => {
         assert(id);
       }),
     ]),
-  // compare: compare({
-  //   filterTarget: () => pipe([omit(["compare"])]),
-  // }),
   ignoreErrorCodes: ["EntityNotFoundException"],
   dependencies: {
     database: {

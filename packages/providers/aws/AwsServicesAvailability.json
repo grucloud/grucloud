@@ -1423,6 +1423,7 @@
             "route53resolver",
             "s3",
             "sagemaker",
+            "sagemaker-metrics",
             "sagemaker-runtime",
             "scheduler",
             "secretsmanager",
