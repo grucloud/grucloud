@@ -1,7 +1,24 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, flatMap, pick, switchCase } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  eq,
+  flatMap,
+  pick,
+  switchCase,
+  map,
+  omit,
+} = require("rubico");
 const { defaultsDeep, callProp, last } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { buildTagsObject } = require("@grucloud/core/Common");
+
+const {
+  ServiceList,
+  Tagger,
+  assignTags,
+} = require("./ApplicationAutoScalingCommon");
 
 const pickId = pipe([
   pick(["ResourceId", "ScalableDimension", "ServiceNamespace"]),
@@ -11,6 +28,23 @@ const pickId = pipe([
     assert(ScalableDimension);
   }),
 ]);
+
+const buildArn = () =>
+  pipe([
+    get("ScalableTargetARN"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const decorate = ({ config, endpoint }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+      assert(endpoint);
+    }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
+  ]);
 
 const findName = () =>
   pipe([
@@ -32,6 +66,7 @@ const findDependencyId =
           get("ResourceId"),
           callProp("split", "/"),
           last,
+          // TODO always getByName ?
           lives.getByName({
             type,
             group,
@@ -81,36 +116,28 @@ exports.ApplicationAutoScalingTarget = ({}) => ({
         ServiceNamespace: "ecs",
       }),
     },
+    rdsCluster: {
+      type: "DBCluster",
+      group: "RDS",
+      dependencyId: findDependencyId({
+        type: "DBCluster",
+        group: "RDS",
+        ServiceNamespace: "rds",
+      }),
+    },
   },
   getByName: getByNameCore,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#describeScalableTargets-property
-  getList: ({ endpoint }) =>
+  getList: ({ endpoint, config }) =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       //TODO
-      () => [
-        "appstream",
-        "dynamodb",
-        "ecs",
-        "ec2",
-        "elasticache",
-        "elasticmapreduce",
-        "kafka",
-        "lambda",
-        "neptune",
-        "rds",
-        //"sagemaker",
-        //"custom-resource",
-        //"comprehend",
-        //"cassandra",
-      ],
+      () => ServiceList,
       flatMap(
         pipe([
           (ServiceNamespace) => ({ ServiceNamespace }),
           endpoint().describeScalableTargets,
           get("ScalableTargets"),
+          map(decorate({ endpoint, config })),
         ])
       ),
     ]),
@@ -128,27 +155,41 @@ exports.ApplicationAutoScalingTarget = ({}) => ({
     ]),
     method: "describeScalableTargets",
     getField: "ScalableTargets",
+    decorate,
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#registerScalableTarget-property
   create: {
     method: "registerScalableTarget",
     pickCreated: ({ payload }) => pipe([() => payload]),
+    shouldRetryOnExceptionMessages: [
+      "Unable to assume IAM role",
+      "ECS service doesn't exist",
+    ],
   },
   update: {
     method: "registerScalableTarget",
-    filterParams: ({ payload }) => pipe([() => payload])(),
+    filterParams: ({ payload }) => pipe([() => payload, omit(["Tags"])])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#deregisterScalableTarget-property
   destroy: {
     method: "deregisterScalableTarget",
     pickId,
   },
-  //TODO Tags
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
   configDefault: ({
     name,
     namespace,
-    properties: { tags, ...otherProps },
+    properties: { Tags, ...otherProps },
     dependencies: {},
-  }) => pipe([() => otherProps, defaultsDeep({})])(),
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+      }),
+    ])(),
 });

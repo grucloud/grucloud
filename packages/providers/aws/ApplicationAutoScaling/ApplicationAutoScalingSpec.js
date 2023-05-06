@@ -16,7 +16,7 @@ const {
 
 const GROUP = "ApplicationAutoScaling";
 const tagsKey = "Tags";
-const compare = compareAws({ tagsKey, key: "Key" });
+const compare = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [

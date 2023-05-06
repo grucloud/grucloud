@@ -2,6 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, flatMap, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { ServiceList } = require("./ApplicationAutoScalingCommon");
 
 const pickId = pipe([
   pick(["PolicyName", "ResourceId", "ScalableDimension", "ServiceNamespace"]),
@@ -80,22 +81,7 @@ exports.ApplicationAutoScalingPolicy = ({}) => ({
         assert(true);
       }),
       //TODO
-      () => [
-        "appstream",
-        "dynamodb",
-        "ecs",
-        "ec2",
-        "elasticache",
-        "elasticmapreduce",
-        "kafka",
-        "lambda",
-        "neptune",
-        "rds",
-        //"sagemaker",
-        //"custom-resource",
-        //"comprehend",
-        //"cassandra",
-      ],
+      () => ServiceList,
       flatMap(
         pipe([
           (ServiceNamespace) => ({ ServiceNamespace }),
@@ -104,11 +90,10 @@ exports.ApplicationAutoScalingPolicy = ({}) => ({
         ])
       ),
     ]),
-  // TODO Tag
   configDefault: ({
     name,
     namespace,
-    properties: { tags, ...otherProps },
+    properties: { ...otherProps },
     dependencies: {},
   }) => pipe([() => otherProps, defaultsDeep({})])(),
 });

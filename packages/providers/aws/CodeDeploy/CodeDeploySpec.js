@@ -12,7 +12,7 @@ const GROUP = "CodeDeploy";
 const tagsKey = "tags";
 const compare = compareAws({
   tagsKey,
-  key: "key",
+  key: "Key",
 });
 
 module.exports = pipe([
