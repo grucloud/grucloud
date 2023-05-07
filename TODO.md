@@ -2,8 +2,8 @@
 
 ## Aws
 
-Verified Access
-SSM contact
+RolesAnywhere
+aws_serverlessapplicationrepository_cloudformation_stack
 
 ✖ s3-s3-replication-cdk [e2e-mike]  
 detective-simple fix guardduty

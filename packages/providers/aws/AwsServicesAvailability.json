@@ -368,7 +368,6 @@
     {
         "region": "ap-northeast-1",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -674,7 +673,6 @@
     {
         "region": "ap-northeast-2",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -1092,7 +1090,6 @@
     {
         "region": "ap-south-1",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -1426,6 +1423,7 @@
             "route53resolver",
             "s3",
             "sagemaker",
+            "sagemaker-metrics",
             "sagemaker-runtime",
             "scheduler",
             "secretsmanager",
@@ -1454,7 +1452,6 @@
     {
         "region": "ap-southeast-1",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -1747,7 +1744,6 @@
     {
         "region": "ap-southeast-2",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -2280,7 +2276,6 @@
     {
         "region": "ca-central-1",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -2834,7 +2829,6 @@
     {
         "region": "eu-central-1",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -3255,7 +3249,6 @@
     {
         "region": "eu-north-1",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -3761,7 +3754,6 @@
     {
         "region": "eu-west-1",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -4081,7 +4073,6 @@
     {
         "region": "eu-west-2",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -4360,7 +4351,6 @@
     {
         "region": "eu-west-3",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -4888,7 +4878,6 @@
     {
         "region": "sa-east-1",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -5113,7 +5102,6 @@
     {
         "region": "us-east-1",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -5473,7 +5461,6 @@
     {
         "region": "us-east-2",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -6098,7 +6085,6 @@
     {
         "region": "us-west-1",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -6327,7 +6313,6 @@
     {
         "region": "us-west-2",
         "services": [
-            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",

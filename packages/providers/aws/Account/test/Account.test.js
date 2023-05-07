@@ -13,7 +13,7 @@ describe("Account", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ContactInformation", () =>
+  it("ContactInformation", () =>
     pipe([
       () => ({
         groupType: "Account::ContactInformation",

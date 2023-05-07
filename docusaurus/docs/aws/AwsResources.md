@@ -2,12 +2,12 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 720 resources in 159 services for provider aws:
+List of 732 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
 * Account: 
-[AlternateAccount](./resources/Account/AlternateAccount.md)
+[AlternateAccount](./resources/Account/AlternateAccount.md), [ContactInformation](./resources/Account/ContactInformation.md)
 * ACM: 
 [Certificate](./resources/ACM/Certificate.md)
 * ACMPCA: 
@@ -23,7 +23,7 @@ List of 720 resources in 159 services for provider aws:
 * Appflow: 
 [Flow](./resources/Appflow/Flow.md), [ConnectorProfile](./resources/Appflow/ConnectorProfile.md)
 * AppIntegrations: 
-[EventIntegration](./resources/AppIntegrations/EventIntegration.md)
+[EventIntegration](./resources/AppIntegrations/EventIntegration.md), [DataIntegration](./resources/AppIntegrations/DataIntegration.md)
 * ApplicationAutoScaling: 
 [Policy](./resources/ApplicationAutoScaling/Policy.md), [Target](./resources/ApplicationAutoScaling/Target.md)
 * ApplicationInsights: 
@@ -153,7 +153,7 @@ List of 720 resources in 159 services for provider aws:
 * GlobalAccelerator: 
 [Accelerator](./resources/GlobalAccelerator/Accelerator.md), [CustomRoutingAccelerator](./resources/GlobalAccelerator/CustomRoutingAccelerator.md), [CustomRoutingEndpointGroup](./resources/GlobalAccelerator/CustomRoutingEndpointGroup.md), [CustomRoutingListener](./resources/GlobalAccelerator/CustomRoutingListener.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
 * Glue: 
-[Classifier](./resources/Glue/Classifier.md), [Crawler](./resources/Glue/Crawler.md), [Database](./resources/Glue/Database.md), [Job](./resources/Glue/Job.md), [Table](./resources/Glue/Table.md)
+[Classifier](./resources/Glue/Classifier.md), [Connection](./resources/Glue/Connection.md), [Crawler](./resources/Glue/Crawler.md), [Database](./resources/Glue/Database.md), [DevEndpoint](./resources/Glue/DevEndpoint.md), [Job](./resources/Glue/Job.md), [Partition](./resources/Glue/Partition.md), [Registry](./resources/Glue/Registry.md), [ResourcePolicy](./resources/Glue/ResourcePolicy.md), [Schema](./resources/Glue/Schema.md), [SecurityConfiguration](./resources/Glue/SecurityConfiguration.md), [Table](./resources/Glue/Table.md), [Trigger](./resources/Glue/Trigger.md), [UserDefinedFunction](./resources/Glue/UserDefinedFunction.md), [Workflow](./resources/Glue/Workflow.md)
 * Grafana: 
 [Workspace](./resources/Grafana/Workspace.md)
 * GuardDuty: 

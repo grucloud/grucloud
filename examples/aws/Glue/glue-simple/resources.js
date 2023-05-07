@@ -37,14 +37,6 @@ exports.createResources = () => [
     type: "Database",
     group: "Glue",
     properties: ({}) => ({
-      CreateTableDefaultPermissions: [
-        {
-          Permissions: ["ALL"],
-          Principal: {
-            DataLakePrincipalIdentifier: "IAM_ALLOWED_PRINCIPALS",
-          },
-        },
-      ],
       Name: "my-database",
     }),
   },

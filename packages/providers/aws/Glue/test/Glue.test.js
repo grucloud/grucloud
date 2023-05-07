@@ -16,7 +16,6 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-
   it("Classifier", () =>
     pipe([
       () => ({
@@ -29,7 +28,7 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Connection", () =>
+  it("Connection", () =>
     pipe([
       () => ({
         groupType: "Glue::Connection",
@@ -53,7 +52,7 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("DevEndpoint", () =>
+  it("DevEndpoint", () =>
     pipe([
       () => ({
         groupType: "Glue::Crawler",
@@ -77,43 +76,56 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Partition", () =>
+  it("Partition", () =>
     pipe([
       () => ({
         groupType: "Glue::Partition",
         livesNotFound: ({ config }) => [
           {
-            Name: "a-12345",
+            DatabaseName: "a123",
+            PartitionValues: ["p123"],
+            TableName: "t123",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Registry", () =>
+  it("Registry", () =>
     pipe([
       () => ({
         groupType: "Glue::Registry",
         livesNotFound: ({ config }) => [
           {
-            Name: "a-12345",
+            RegistryArn: `arn:aws:glue:${
+              config.region
+            }:${config.accountId()}:registry/r123`,
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("ResourcePolicy", () =>
+  it("ResourcePolicy", () =>
     pipe([
       () => ({
         groupType: "Glue::ResourcePolicy",
+        livesNotFound: ({ config }) => [{ PolicyHash: "123456789" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("Schema", () =>
+    pipe([
+      () => ({
+        groupType: "Glue::Schema",
         livesNotFound: ({ config }) => [
           {
-            Name: "a-12345",
+            RegistryName: `r123`,
+            SchemaName: `r123`,
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("SecurityConfiguration", () =>
+  it("SecurityConfiguration", () =>
     pipe([
       () => ({
         groupType: "Glue::SecurityConfiguration",
@@ -138,7 +150,7 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Trigger", () =>
+  it("Trigger", () =>
     pipe([
       () => ({
         groupType: "Glue::Trigger",
@@ -150,19 +162,20 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("UserDefinedFunction", () =>
+  it("UserDefinedFunction", () =>
     pipe([
       () => ({
         groupType: "Glue::UserDefinedFunction",
         livesNotFound: ({ config }) => [
           {
-            Name: "a-12345",
+            DatabaseName: "d123",
+            FunctionName: "f123",
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Workflow", () =>
+  it("Workflow", () =>
     pipe([
       () => ({
         groupType: "Glue::Workflow",

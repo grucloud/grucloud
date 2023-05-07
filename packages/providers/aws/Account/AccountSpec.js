@@ -11,13 +11,13 @@ const GROUP = "Account";
 const compare = compareAws({});
 
 const { AccountAlternateAccount } = require("./AccountAlternateAccount");
-//const { AccountContactInformation } = require("./AccountContactInformation");
+const { AccountContactInformation } = require("./AccountContactInformation");
 
 module.exports = pipe([
   () => [
     //
     AccountAlternateAccount({}),
-    //AccountContactInformation({}),
+    AccountContactInformation({}),
   ],
   map(
     pipe([
