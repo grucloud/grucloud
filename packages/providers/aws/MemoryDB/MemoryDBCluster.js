@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, map, assign } = require("rubico");
-const { defaultsDeep, when, pluck } = require("rubico/x");
+const { pipe, tap, get, map, assign } = require("rubico");
+const { defaultsDeep, when, pluck, isIn } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -129,7 +129,7 @@ exports.MemoryDBCluster = ({}) => ({
       }),
     ]),
     pickCreated: ({ payload }) => pipe([get("Cluster")]),
-    isInstanceUp: pipe([eq(get("Status"), "available")]),
+    isInstanceUp: pipe([get("Status"), isIn(["available"])]),
     configIsUp: { retryCount: 60 * 10, retryDelay: 5e3 },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#deleteCluster-property

@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 733 resources in 159 services for provider aws:
+List of 734 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -63,7 +63,7 @@ List of 733 resources in 159 services for provider aws:
 * CloudTrail: 
 [Trail](./resources/CloudTrail/Trail.md), [Channel](./resources/CloudTrail/Channel.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
 * CloudWatch: 
-[CompositeAlarm](./resources/CloudWatch/CompositeAlarm.md), [Dashboard](./resources/CloudWatch/Dashboard.md), [MetricAlarm](./resources/CloudWatch/MetricAlarm.md)
+[CompositeAlarm](./resources/CloudWatch/CompositeAlarm.md), [Dashboard](./resources/CloudWatch/Dashboard.md), [MetricAlarm](./resources/CloudWatch/MetricAlarm.md), [MetricStream](./resources/CloudWatch/MetricStream.md)
 * CloudWatchEvents: 
 [ApiDestination](./resources/CloudWatchEvents/ApiDestination.md), [Connection](./resources/CloudWatchEvents/Connection.md), [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
