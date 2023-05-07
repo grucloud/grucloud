@@ -20,11 +20,13 @@ describe("OpenSearchServerless", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("SecurityConfig", () =>
+  it("SecurityConfig", () =>
     pipe([
       () => ({
         groupType: "OpenSearchServerless::SecurityConfig",
-        livesNotFound: ({ config }) => [{ id: "s123" }],
+        livesNotFound: ({ config }) => [
+          { id: "saml/840541460064/mysamlprovider" },
+        ],
       }),
       awsResourceTest,
     ])());
