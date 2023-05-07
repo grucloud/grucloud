@@ -14,6 +14,7 @@ const { GlueDevEndpoint } = require("./GlueDevEndpoint");
 const { GlueJob } = require("./GlueJob");
 const { GluePartition } = require("./GluePartition");
 const { GlueRegistry } = require("./GlueRegistry");
+const { GlueResourcePolicy } = require("./GlueResourcePolicy");
 const { GlueSchema } = require("./GlueSchema");
 const { GlueTable } = require("./GlueTable");
 const { GlueTrigger } = require("./GlueTrigger");
@@ -35,6 +36,7 @@ module.exports = pipe([
     GlueJob({ compare }),
     GluePartition({ compare }),
     GlueRegistry({ compare }),
+    GlueResourcePolicy({ compare }),
     GlueSchema({ compare }),
     GlueTable({ compare }),
     GlueTrigger({ compare }),

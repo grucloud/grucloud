@@ -104,15 +104,11 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ResourcePolicy", () =>
+  it("ResourcePolicy", () =>
     pipe([
       () => ({
         groupType: "Glue::ResourcePolicy",
-        livesNotFound: ({ config }) => [
-          {
-            Name: "a-12345",
-          },
-        ],
+        livesNotFound: ({ config }) => [{ PolicyHash: "123456789" }],
       }),
       awsResourceTest,
     ])());
