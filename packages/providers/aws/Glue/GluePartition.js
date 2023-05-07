@@ -91,11 +91,6 @@ exports.GluePartition = () => ({
     decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#getPartitions-property
-  getList: {
-    method: "getPartitions",
-    getParam: "Partitions",
-    decorate: ({ getById }) => pipe([getById]),
-  },
   getList: ({ client, endpoint, getById, config }) =>
     pipe([
       () =>
@@ -114,7 +109,6 @@ exports.GluePartition = () => ({
           decorate: () => pipe([decorate({ config })]),
         }),
     ])(),
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Glue.html#createPartition-property
   create: {
     method: "createPartition",
@@ -146,7 +140,7 @@ exports.GluePartition = () => ({
       }),
       () => otherProps,
       defaultsDeep({
-        DatabaseName: get("config.DatabaseName")(database),
+        DatabaseName: get("config.Name")(database),
         TableName: get("config.Name")(table),
       }),
     ])(),

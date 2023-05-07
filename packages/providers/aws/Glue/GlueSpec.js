@@ -16,8 +16,10 @@ const { GluePartition } = require("./GluePartition");
 const { GlueRegistry } = require("./GlueRegistry");
 const { GlueResourcePolicy } = require("./GlueResourcePolicy");
 const { GlueSchema } = require("./GlueSchema");
+const { GlueSecurityConfiguration } = require("./GlueSecurityConfiguration");
 const { GlueTable } = require("./GlueTable");
 const { GlueTrigger } = require("./GlueTrigger");
+const { GlueUserDefinedFunction } = require("./GlueUserDefinedFunction");
 const { GlueWorkflow } = require("./GlueWorkflow");
 
 const GROUP = "Glue";
@@ -38,8 +40,10 @@ module.exports = pipe([
     GlueRegistry({ compare }),
     GlueResourcePolicy({ compare }),
     GlueSchema({ compare }),
+    GlueSecurityConfiguration({ compare }),
     GlueTable({ compare }),
     GlueTrigger({ compare }),
+    GlueUserDefinedFunction({ compare }),
     GlueWorkflow({ compare }),
   ],
   map(

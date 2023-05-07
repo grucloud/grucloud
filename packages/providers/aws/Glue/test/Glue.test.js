@@ -125,7 +125,7 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("SecurityConfiguration", () =>
+  it("SecurityConfiguration", () =>
     pipe([
       () => ({
         groupType: "Glue::SecurityConfiguration",
@@ -162,13 +162,14 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("UserDefinedFunction", () =>
+  it("UserDefinedFunction", () =>
     pipe([
       () => ({
         groupType: "Glue::UserDefinedFunction",
         livesNotFound: ({ config }) => [
           {
-            Name: "a-12345",
+            DatabaseName: "d123",
+            FunctionName: "f123",
           },
         ],
       }),
