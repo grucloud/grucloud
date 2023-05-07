@@ -10,7 +10,6 @@ exports.createResources = () => [
       AlarmName: "my-ec2-alarm",
       ComparisonOperator: "GreaterThanThreshold",
       DatapointsToAlarm: 1,
-      Dimensions: [],
       EvaluationPeriods: 1,
       MetricName: "CPUUtilization",
       Namespace: "AWS/EC2",

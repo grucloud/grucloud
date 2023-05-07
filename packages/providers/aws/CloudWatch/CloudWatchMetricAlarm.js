@@ -19,11 +19,16 @@ const {
   unless,
   isEmpty,
   values,
+  when,
 } = require("rubico/x");
 
 const { buildTags, replaceAccountAndRegion } = require("../AwsCommon");
-const { Tagger } = require("./CloudWatchCommon");
-const { replaceWithName } = require("@grucloud/core/Common");
+const {
+  Tagger,
+  assignTags,
+  dependenciesSnsAlarms,
+} = require("./CloudWatchCommon");
+const { replaceWithName, omitIfEmpty } = require("@grucloud/core/Common");
 
 const buildArn = () => pipe([get("AlarmArn")]);
 
@@ -113,22 +118,17 @@ const managedByOther = () =>
     ]),
   ]);
 
-const decorate = ({ endpoint }) =>
+const decorate = ({ endpoint, config }) =>
   pipe([
     assign({
       AlarmActions: pipe([
         get("AlarmActions", []),
         callProp("sort", (a, b) => a.localeCompare(b)),
       ]),
-      Tags: pipe([
-        ({ AlarmArn }) => ({ ResourceARN: AlarmArn }),
-        endpoint().listTagsForResource,
-        get("Tags"),
-      ]),
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
+    omitIfEmpty(["Dimensions"]),
   ]);
-
-const model = ({ config }) => ({});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html
 exports.CloudWatchMetricAlarm = ({ spec, config }) => ({
@@ -150,15 +150,7 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) => ({
     "StateTransitionedTimestamp",
   ],
   dependencies: {
-    snsTopic: {
-      type: "Topic",
-      group: "SNS",
-      dependencyId: ({ lives, config }) =>
-        pipe([
-          get("AlarmActions"),
-          find(callProp("startsWith", "arn:aws:sns")),
-        ]),
-    },
+    ...dependenciesSnsAlarms,
     ...AlarmDependenciesDimensions,
   },
   propertiesDefault: {
@@ -174,14 +166,24 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) => ({
           get("AlarmActions"),
           map(replaceAccountAndRegion({ providerConfig })),
         ]),
-        Dimensions: pipe([
-          get("Dimensions"),
-          map(pipe([replaceDimension({ providerConfig, lives })])),
+        OKActions: pipe([
+          get("OKActions"),
+          map(replaceAccountAndRegion({ providerConfig })),
+        ]),
+        InsufficientDataActions: pipe([
+          get("InsufficientDataActions"),
+          map(replaceAccountAndRegion({ providerConfig })),
         ]),
       }),
-      tap((params) => {
-        assert(true);
-      }),
+      when(
+        get("Dimensions"),
+        assign({
+          Dimensions: pipe([
+            get("Dimensions"),
+            map(pipe([replaceDimension({ providerConfig, lives })])),
+          ]),
+        })
+      ),
     ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#describeAlarms-property
   getById: {
@@ -195,9 +197,9 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#describeAlarms-property
   getList: {
+    enhanceParams: () => () => ({ AlarmTypes: ["MetricAlarm"] }),
     method: "describeAlarms",
     getParam: "MetricAlarms",
-    enhanceParams: () => () => ({ AlarmTypes: ["MetricAlarm"] }),
     decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#putMetricAlarm-property
@@ -215,6 +217,9 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) => ({
   destroy: {
     method: "deleteAlarms",
     pickId: pipe([({ AlarmName }) => ({ AlarmNames: [AlarmName] })]),
+    shouldRetryOnExceptionMessages: [
+      "as there are composite alarm(s) depending on it",
+    ],
   },
   getByName: ({ getList, endpoint, getById }) =>
     pipe([({ name }) => ({ AlarmName: name }), getById({})]),
@@ -231,7 +236,6 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) => ({
     pipe([
       () => otherProps,
       defaultsDeep({
-        AlarmName: name,
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
     ])(),

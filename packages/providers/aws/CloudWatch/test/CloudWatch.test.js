@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("CloudWatch", async function () {
-  it.skip("CompositeAlarm", () =>
+  it("CompositeAlarm", () =>
     pipe([
       () => ({
         groupType: "CloudWatch::CompositeAlarm",
@@ -24,6 +24,14 @@ describe("CloudWatch", async function () {
     pipe([
       () => ({
         groupType: "CloudWatch::MetricAlarm",
+        livesNotFound: ({ config }) => [{ AlarmName: "api-12345" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("MetricStream", () =>
+    pipe([
+      () => ({
+        groupType: "CloudWatch::MetricStream",
         livesNotFound: ({ config }) => [{ AlarmName: "api-12345" }],
       }),
       awsResourceTest,

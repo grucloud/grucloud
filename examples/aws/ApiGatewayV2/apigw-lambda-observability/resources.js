@@ -288,7 +288,7 @@ exports.createResources = () => [
       Threshold: 1,
     }),
     dependencies: ({}) => ({
-      snsTopic: "sam-app-AlarmsTopic-dHb6mAE6WUbZ",
+      snsTopicAlarmActions: "sam-app-AlarmsTopic-dHb6mAE6WUbZ",
     }),
   },
   {
@@ -316,7 +316,7 @@ exports.createResources = () => [
       Threshold: 1,
     }),
     dependencies: ({}) => ({
-      snsTopic: "sam-app-AlarmsTopic-dHb6mAE6WUbZ",
+      snsTopicAlarmActions: "sam-app-AlarmsTopic-dHb6mAE6WUbZ",
     }),
   },
   {

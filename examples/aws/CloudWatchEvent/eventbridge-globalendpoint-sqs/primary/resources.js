@@ -12,7 +12,6 @@ exports.createResources = () => [
       MetricName: "IngestionToInvocationStartLatency-dev",
       Namespace: "AWS/Events",
       Statistic: "Average",
-      Dimensions: [],
       Period: 60,
       EvaluationPeriods: 5,
       Threshold: 30000,
