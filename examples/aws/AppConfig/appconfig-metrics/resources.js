@@ -111,7 +111,7 @@ exports.createResources = () => [
       TreatMissingData: "missing",
     }),
     dependencies: ({}) => ({
-      snsTopic: "5xx_Errors_SNS_Topic",
+      snsTopicAlarmActions: "5xx_Errors_SNS_Topic",
     }),
   },
   {

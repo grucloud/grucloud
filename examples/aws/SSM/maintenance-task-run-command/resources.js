@@ -15,7 +15,6 @@ exports.createResources = () => [
       AlarmName: "maintenance-window-alarm",
       ComparisonOperator: "GreaterThanThreshold",
       DatapointsToAlarm: 1,
-      Dimensions: [],
       EvaluationPeriods: 1,
       MetricName: "CommandsSucceeded",
       Namespace: "AWS/SSM-RunCommand",
@@ -25,7 +24,7 @@ exports.createResources = () => [
       TreatMissingData: "missing",
     }),
     dependencies: ({}) => ({
-      snsTopic: "Default_CloudWatch_Alarms_Topic",
+      snsTopicAlarmActions: "Default_CloudWatch_Alarms_Topic",
     }),
   },
   {

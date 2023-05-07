@@ -4,10 +4,9 @@
 
 RolesAnywhere
 aws_serverlessapplicationrepository_cloudformation_stack
-
+MetricAlarm with APIGateway, example ApiGatewayV2/apigw-lambda-observability
 ✖ s3-s3-replication-cdk [e2e-mike]  
 detective-simple fix guardduty
-glue-simple
 xray-simple kms key
 CoreNetwork update
 ecs-simple update

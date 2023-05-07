@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project cloudwatch-composite-alarm
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatch
+++++ CompositeAlarm (1)
+++++ MetricAlarm (2)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ SNS
+++++ Topic (1)
+@endmindmap

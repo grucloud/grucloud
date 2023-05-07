@@ -37,7 +37,7 @@ exports.createResources = () => [
       TreatMissingData: "missing",
     }),
     dependencies: ({}) => ({
-      snsTopic: "Default_CloudWatch_Alarms_Topic",
+      snsTopicAlarmActions: "Default_CloudWatch_Alarms_Topic",
       ec2Instance: "ec2-for-alarm",
     }),
   },

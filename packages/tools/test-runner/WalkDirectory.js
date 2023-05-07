@@ -386,7 +386,7 @@ exports.walkDirectory =
       () => readdir(directory, { withFileTypes: true }),
       filter(callProp("isDirectory")),
       filterExcludeFiles({ excludeDirs }),
-      filterIncludeDir({ IncludeList }),
+      //filterIncludeDir({ IncludeList }),
       //filterIncludeDir({ IncludeList: IncludeListExpensive }),
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])

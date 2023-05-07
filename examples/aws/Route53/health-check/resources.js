@@ -32,7 +32,7 @@ exports.createResources = () => [
       Threshold: 1,
     }),
     dependencies: ({}) => ({
-      snsTopic: "healthcheck",
+      snsTopicAlarmActions: "healthcheck",
       route53HealhCheck: "heathcheck::HTTP::healthcheck.grucloud.org",
     }),
   },
