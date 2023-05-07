@@ -28,11 +28,11 @@ describe("CloudWatch", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("MetricStream", () =>
+  it("MetricStream", () =>
     pipe([
       () => ({
         groupType: "CloudWatch::MetricStream",
-        livesNotFound: ({ config }) => [{ AlarmName: "api-12345" }],
+        livesNotFound: ({ config }) => [{ Name: "api-12345" }],
       }),
       awsResourceTest,
     ])());

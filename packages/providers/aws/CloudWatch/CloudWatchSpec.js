@@ -8,7 +8,7 @@ const { compareAws } = require("../AwsCommon");
 const { CloudWatchCompositeAlarm } = require("./CloudWatchCompositeAlarm");
 const { CloudWatchDashboard } = require("./CloudWatchDashboard");
 const { CloudWatchMetricAlarm } = require("./CloudWatchMetricAlarm");
-//const { CloudWatchMetricStream } = require("./CloudWatchMetricStream");
+const { CloudWatchMetricStream } = require("./CloudWatchMetricStream");
 
 const GROUP = "CloudWatch";
 
@@ -20,7 +20,7 @@ module.exports = pipe([
     CloudWatchCompositeAlarm({}),
     CloudWatchDashboard({}),
     CloudWatchMetricAlarm({}),
-    //CloudWatchMetricStream({}),
+    CloudWatchMetricStream({}),
   ],
   map(
     pipe([
