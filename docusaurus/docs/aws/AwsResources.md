@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 734 resources in 159 services for provider aws:
+List of 735 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -57,7 +57,7 @@ List of 734 resources in 159 services for provider aws:
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md), [StackSet](./resources/CloudFormation/StackSet.md), [Type](./resources/CloudFormation/Type.md)
 * CloudFront: 
-[CachePolicy](./resources/CloudFront/CachePolicy.md), [Distribution](./resources/CloudFront/Distribution.md), [Function](./resources/CloudFront/Function.md), [KeyGroup](./resources/CloudFront/KeyGroup.md), [OriginRequestPolicy](./resources/CloudFront/OriginRequestPolicy.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md), [PublicKey](./resources/CloudFront/PublicKey.md), [ResponseHeadersPolicy](./resources/CloudFront/ResponseHeadersPolicy.md)
+[CachePolicy](./resources/CloudFront/CachePolicy.md), [Distribution](./resources/CloudFront/Distribution.md), [Function](./resources/CloudFront/Function.md), [KeyGroup](./resources/CloudFront/KeyGroup.md), [MonitoringSubscription](./resources/CloudFront/MonitoringSubscription.md), [OriginRequestPolicy](./resources/CloudFront/OriginRequestPolicy.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md), [PublicKey](./resources/CloudFront/PublicKey.md), [ResponseHeadersPolicy](./resources/CloudFront/ResponseHeadersPolicy.md)
 * CloudHSMV2: 
 [Cluster](./resources/CloudHSMV2/Cluster.md), [Hsm](./resources/CloudHSMV2/Hsm.md)
 * CloudTrail: 

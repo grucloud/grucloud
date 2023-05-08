@@ -117,6 +117,20 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "MonitoringSubscription",
+    group: "CloudFront",
+    properties: ({}) => ({
+      MonitoringSubscription: {
+        RealtimeMetricsSubscriptionConfig: {
+          RealtimeMetricsSubscriptionStatus: "Enabled",
+        },
+      },
+    }),
+    dependencies: ({ config }) => ({
+      distribution: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
+    }),
+  },
+  {
     type: "OriginAccessIdentity",
     group: "CloudFront",
     name: ({ config }) =>
