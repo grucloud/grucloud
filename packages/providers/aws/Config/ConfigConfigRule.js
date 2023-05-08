@@ -3,12 +3,22 @@ const { pipe, tap, get, pick, eq, or } = require("rubico");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
+const { Tagger, assignTags } = require("./ConfigServiceCommon");
+
 const managedByOther = () =>
   pipe([
     or([
       eq(get("Source.Owner"), "AWS"),
       eq(get("CreatedBy"), "securityhub.amazonaws.com"),
     ]),
+  ]);
+
+const buildArn = () =>
+  pipe([
+    get("ConfigRuleArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
   ]);
 
 const pickId = pipe([
@@ -18,11 +28,12 @@ const pickId = pipe([
   pick(["ConfigRuleName"]),
 ]);
 
-const decorate = ({ endpoint, parent }) =>
+const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(true);
     }),
+    assignTags({ buildArn: buildArn({ config }), endpoint }),
   ]);
 
 exports.ConfigConfigRule = ({}) => ({
@@ -65,21 +76,30 @@ exports.ConfigConfigRule = ({}) => ({
     method: "putConfigRule",
     pickCreated: ({ payload }) => pipe([() => payload]),
   },
-  // TODO update
+  update: {
+    method: "putConfigRule",
+    filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#deleteConfigRule-property
   destroy: {
     method: "deleteConfigRule",
     pickId,
   },
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
   configDefault: ({
     name,
     namespace,
-    properties: { ...otherProps },
+    properties: { Tags, ...otherProps },
     dependencies: {},
     config,
   }) =>
     pipe([
-      // TODO Tags
       () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
     ])(),
 });

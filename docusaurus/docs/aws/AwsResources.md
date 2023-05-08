@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 735 resources in 159 services for provider aws:
+List of 738 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -93,7 +93,7 @@ List of 735 resources in 159 services for provider aws:
 * Comprehend: 
 [DocumentClassifier](./resources/Comprehend/DocumentClassifier.md), [EntityRecognizer](./resources/Comprehend/EntityRecognizer.md)
 * Config: 
-[ConfigRule](./resources/Config/ConfigRule.md), [ConfigurationRecorder](./resources/Config/ConfigurationRecorder.md), [ConfigurationRecorderStatus](./resources/Config/ConfigurationRecorderStatus.md), [ConformancePack](./resources/Config/ConformancePack.md), [DeliveryChannel](./resources/Config/DeliveryChannel.md)
+[AggregationAuthorization](./resources/Config/AggregationAuthorization.md), [ConfigRule](./resources/Config/ConfigRule.md), [ConfigurationAggregator](./resources/Config/ConfigurationAggregator.md), [ConfigurationRecorder](./resources/Config/ConfigurationRecorder.md), [ConfigurationRecorderStatus](./resources/Config/ConfigurationRecorderStatus.md), [ConformancePack](./resources/Config/ConformancePack.md), [DeliveryChannel](./resources/Config/DeliveryChannel.md), [OrganizationConfigRule](./resources/Config/OrganizationConfigRule.md)
 * ControlTower: 
 [Control](./resources/ControlTower/Control.md)
 * CostExplorer: 

@@ -94,7 +94,7 @@ exports.ConfigDeliveryChannel = ({}) => ({
         assert(s3Bucket);
       }),
       () => otherProps,
-      defaultsDeep({ s3BucketName: s3Bucket.config.Name }),
+      defaultsDeep({ s3BucketName: get("config.Name")(s3Bucket) }),
       when(
         () => snsTopic,
         defaultsDeep({
