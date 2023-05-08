@@ -137,7 +137,10 @@ exports.CloudFrontMonitoringSubscription = () => ({
         ),
       ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createMonitoringSubscription-property
-  // Only update, no create
+  create: {
+    method: "createMonitoringSubscription",
+    pickCreated: ({ payload }) => pipe([() => payload]),
+  },
   update:
     ({ endpoint, getById, create, destroy }) =>
     async ({ payload, live, diff }) =>
