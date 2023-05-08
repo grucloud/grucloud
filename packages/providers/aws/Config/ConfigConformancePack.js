@@ -1,10 +1,14 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, fork, assign } = require("rubico");
-const { defaultsDeep, when, first } = require("rubico/x");
+const { pipe, tap, get, pick, assign } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
 
-const Json2yaml = require("@grucloud/core/cli/json2yaml");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { deepMap } = require("@grucloud/core/deepMap");
+
+const {
+  conformancePackdependencies,
+  conformanceDecorate,
+  conformanceCreate,
+} = require("./ConfigServiceCommon");
 
 const pickId = pipe([
   tap(({ ConformancePackName }) => {
@@ -13,68 +17,10 @@ const pickId = pipe([
   pick(["ConformancePackName"]),
 ]);
 
-const decorate =
-  ({ endpoint, parent, lives, config }) =>
-  (live) =>
-    pipe([
-      tap((params) => {
-        assert(lives);
-      }),
-      () => live,
-      fork({
-        TemplateBody: pipe([
-          ({ ConformancePackName, ConformancePackId }) =>
-            `awsconfigconforms-${ConformancePackName}-${ConformancePackId}`,
-          lives.getByName({
-            type: "Stack",
-            group: "CloudFormation",
-            providerName: config.providerName,
-          }),
-          get("live.TemplateBody"),
-          // When creating the conformance pack, the resulting ConfigRuleName property value is suffixed the the ConformancePackId
-          // This code the suffix from the response
-          deepMap(
-            when(
-              ([key, value]) => key == "ConfigRuleName",
-              ([key, value]) => [
-                key,
-                value.replace(`-${live.ConformancePackId}`, ""),
-              ]
-            )
-          ),
-        ]),
-        Details: pipe([
-          ({ ConformancePackName }) => ({
-            ConformancePackNames: [ConformancePackName],
-          }),
-          endpoint().describeConformancePackStatus,
-          get("ConformancePackStatusDetails"),
-          first,
-        ]),
-        // Rules: pipe([
-        //   pickId,
-        //   endpoint().describeConformancePackCompliance,
-        //   get("ConformancePackRuleComplianceList"),
-        // ]),
-      }),
-      ({ Details, ...other }) => ({ ...Details, ...other }),
-      tap((params) => {
-        assert(true);
-      }),
-      defaultsDeep(live),
-    ])();
-
-const filterPayload = pipe([
-  assign({
-    TemplateBody: pipe([
-      get("TemplateBody"),
-      tap((TemplateBody) => {
-        assert(TemplateBody);
-      }),
-      Json2yaml.stringify,
-    ]),
-  }),
-]);
+const decorate = conformanceDecorate({
+  describeConformancePackStatus: "describeConformancePackStatus",
+  ConformancePackStatusDetails: "ConformancePackStatusDetails",
+});
 
 exports.ConfigConformancePack = ({}) => ({
   type: "ConformancePack",
@@ -96,32 +42,8 @@ exports.ConfigConformancePack = ({}) => ({
     "Rules[].ComplianceType",
     "Rules[].Controls",
   ],
-  dependencies: {
-    stack: {
-      type: "Stack",
-      group: "CloudFormation",
-      parent: true,
-      dependsOnTypeOnly: true,
-    },
-    s3BucketDelivery: {
-      type: "Bucket",
-      group: "S3",
-      dependencyId: ({ lives, config }) => pipe([get("DeliveryS3Bucket")]),
-    },
-    s3BucketTemplate: {
-      type: "Bucket",
-      group: "S3",
-      dependencyId: ({ lives, config }) => pipe([get("TemplateS3Uri")]),
-    },
-    // TODO
-    // deliveryChannel: {
-    //   type: "DeliveryChannel",
-    //   group: "Config",
-    //   parent: true,
-    //   dependencyId: ({ lives, config }) =>
-    //     pipe([get("ConfigurationRecorderName")]),
-    // },
-  },
+  dependencies: conformancePackdependencies,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#describeConformancePacks-property
   getById: {
     method: "describeConformancePacks",
     pickId: pipe([
@@ -135,17 +57,13 @@ exports.ConfigConformancePack = ({}) => ({
     getField: "ConformancePackDetails",
     decorate,
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html#describeConformancePacks-property
   getList: {
     method: "describeConformancePacks",
     getParam: "ConformancePackDetails",
     decorate,
   },
-  create: {
-    filterPayload,
-    method: "putConformancePack",
-    pickCreated: ({ payload }) => pipe([() => payload]),
-    // TODO ConformancePackState: CREATE_COMPLETE
-  },
+  create: conformanceCreate({ putConformancePack: "putConformancePack" }),
   update: {
     method: "putConformancePack",
     filterParams: ({ payload, diff, live }) => pipe([() => payload])(),

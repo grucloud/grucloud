@@ -101,7 +101,6 @@ exports.MyModuleMyResource = () => ({
     getParam: "MyResources",
     decorate: ({ getById }) => pipe([getById]),
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#createMyResource-property
   create: {
     method: "createMyResource",
@@ -130,7 +129,6 @@ exports.MyModuleMyResource = () => ({
     }),
   configDefault: ({
     name,
-    namespace,
     properties: { Tags, ...otherProps },
     dependencies: {},
     config,

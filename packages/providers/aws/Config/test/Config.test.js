@@ -4,11 +4,26 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Config", async function () {
-  it("ConfigRule", () =>
+  it("AggregationAuthorization", () =>
     pipe([
       () => ({
-        groupType: "Config::ConfigRule",
-        livesNotFound: ({ config }) => [{ ConfigRuleName: "b123" }],
+        groupType: "Config::AggregationAuthorization",
+        livesNotFound: ({ config }) => [
+          {
+            AuthorizedAccountId: "123456789012",
+            AuthorizedAwsRegion: "us-east-1",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("ConfigurationAggregator", () =>
+    pipe([
+      () => ({
+        groupType: "Config::ConfigurationAggregator",
+        livesNotFound: ({ config }) => [
+          { ConfigurationAggregatorName: "b123" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -44,19 +59,21 @@ describe("Config", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("OrganizationCustomPolicyRule", () =>
+  it("OrganizationConfigRule", () =>
     pipe([
       () => ({
-        groupType: "Config::OrganizationCustomPolicyRule",
-        livesNotFound: ({ config }) => [{ name: "b123" }],
+        groupType: "Config::OrganizationConfigRule",
+        livesNotFound: ({ config }) => [{ OrganizationConfigRuleName: "b123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("OrganizationCustomRule", () =>
+  it("OrganizationConformancePack", () =>
     pipe([
       () => ({
-        groupType: "Config::OrganizationCustomRule",
-        livesNotFound: ({ config }) => [{ name: "b123" }],
+        groupType: "Config::OrganizationConformancePack",
+        livesNotFound: ({ config }) => [
+          { OrganizationConformancePackName: "b123" },
+        ],
       }),
       awsResourceTest,
     ])());

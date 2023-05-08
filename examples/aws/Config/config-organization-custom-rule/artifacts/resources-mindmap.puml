@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project config-organization-custom-rule
+skinparam monochrome true
++ Infra
+++ aws
++++ Config
+++++ AggregationAuthorization (2)
+++++ ConfigurationAggregator (1)
+++++ ConfigurationRecorder (1)
+++++ ConfigurationRecorderStatus (1)
+++++ DeliveryChannel (1)
++++ IAM
+++++ Role (1)
++++ Organisations
+++++ Account (1)
++++ S3
+++++ Bucket (1)
+@endmindmap
