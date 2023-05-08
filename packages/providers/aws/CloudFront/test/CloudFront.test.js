@@ -57,11 +57,11 @@ describe("CloudFront", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("MonitoringSubscription", () =>
+  it("MonitoringSubscription", () =>
     pipe([
       () => ({
         groupType: "CloudFront::MonitoringSubscription",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ DistributionId: "d12345" }],
         skipGetById: true,
       }),
     ])());

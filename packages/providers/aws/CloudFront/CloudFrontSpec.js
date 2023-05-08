@@ -12,6 +12,9 @@ const { CloudFrontCachePolicy } = require("./CloudFrontCachePolicy");
 const { CloudFrontFunction } = require("./CloudFrontFunction");
 
 const { CloudFrontKeyGroup } = require("./CloudFrontKeyGroup");
+const {
+  CloudFrontMonitoringSubscription,
+} = require("./CloudFrontMonitoringSubscription");
 
 const {
   CloudFrontOriginRequestPolicy,
@@ -33,6 +36,7 @@ module.exports = pipe([
     CloudFrontDistribution({ compare }),
     CloudFrontFunction({ compare }),
     CloudFrontKeyGroup({ compare }),
+    CloudFrontMonitoringSubscription({ compare }),
     CloudFrontOriginRequestPolicy({ compare }),
     CloudFrontOriginAccessIdentity({ compare }),
     CloudFrontPublicKey({ compare }),

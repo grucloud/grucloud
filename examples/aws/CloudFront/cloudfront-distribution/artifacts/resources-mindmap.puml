@@ -8,6 +8,7 @@ skinparam monochrome true
 +++ CloudFront
 ++++ Distribution (1)
 ++++ KeyGroup (1)
+++++ MonitoringSubscription (1)
 ++++ OriginAccessIdentity (1)
 ++++ PublicKey (1)
 +++ Route53
