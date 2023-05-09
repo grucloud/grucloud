@@ -6,7 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const {
   assignPolicyAccountAndRegion,
   sortStatements,
-} = require("../IAM/AwsIamCommon");
+} = require("../IAM/IAMCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { ignoreErrorCodes } = require("./EFSCommon");

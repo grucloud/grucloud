@@ -31,7 +31,7 @@ const {
   replaceArnWithAccountAndRegion,
   replaceAccountAndRegion,
 } = require("../AwsCommon");
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/IAMCommon");
 
 const GROUP = "S3";
 

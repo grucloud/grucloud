@@ -8,7 +8,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const {
   assignPolicyAccountAndRegion,
   sortStatements,
-} = require("../IAM/AwsIamCommon");
+} = require("../IAM/IAMCommon");
 
 const pickId = pipe([
   tap(({ resourceArn }) => {

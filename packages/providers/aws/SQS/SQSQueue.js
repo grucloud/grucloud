@@ -14,9 +14,9 @@ const {
 const { defaultsDeep, last, callProp, when } = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { findInStatement, sortStatements } = require("../IAM/AwsIamCommon");
+const { findInStatement, sortStatements } = require("../IAM/IAMCommon");
 const { throwIfNotAwsError } = require("../AwsCommon");
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/IAMCommon");
 
 const { Tagger, ignoreErrorCodes } = require("./SQSCommon");
 

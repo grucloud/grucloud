@@ -11,7 +11,7 @@ const {
   sortPolicies,
   ignoreErrorCodes,
   filterAttachedPolicies,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 const findName = () => get("GroupName");
 const findId = findName;

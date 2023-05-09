@@ -34,22 +34,21 @@ const {
 
 const { createAwsService } = require("../AwsService");
 
-const { IAMGroup } = require("./AwsIamGroup");
-const { AwsIamRole, findDependenciesRole } = require("./AwsIamRole");
-const { IAMInstanceProfile } = require("./AwsIamInstanceProfile");
-const { IAMOpenIDConnectProvider } = require("./AwsIamOpenIDConnectProvider");
-const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
-const { IAMUser } = require("./AwsIamUser");
+const { IAMGroup } = require("./IAMGroup");
+const { IAMRole, findDependenciesRole } = require("./IAMRole");
+const { IAMInstanceProfile } = require("./IAMInstanceProfile");
+const { IAMOpenIDConnectProvider } = require("./IAMOpenIDConnectProvider");
+const { IAMPolicy, isOurMinionIamPolicy } = require("./IAMPolicy");
+const { IAMUser } = require("./IAMUser");
 const { IAMSAMLProvider } = require("./IAMSAMLProvider");
 const { IAMUserPolicy } = require("./IAMUserPolicy");
-
 const { IAMVirtualMFADevice } = require("./IAMVirtualMFADevice");
 
 const {
   buildDependenciesPolicy,
   assignPolicyDocumentAccountAndRegion,
   assignPolicyAccountAndRegion,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 const {
   compareAws,
@@ -70,7 +69,7 @@ module.exports = pipe([
     createAwsService(IAMOpenIDConnectProvider({ compare })),
     {
       type: "Policy",
-      Client: AwsIamPolicy,
+      Client: IAMPolicy,
       inferName: () =>
         pipe([
           get("PolicyName"),
@@ -105,7 +104,7 @@ module.exports = pipe([
     },
     {
       type: "Role",
-      Client: AwsIamRole,
+      Client: IAMRole,
       inferName: () => get("RoleName"),
       propertiesDefault: { Path: "/" },
       compare: compare({

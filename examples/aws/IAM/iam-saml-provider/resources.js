@@ -46,8 +46,6 @@ exports.createResources = () => [
     <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://terraform-dev-ed.my.salesforce.com/idp/endpoint/HttpRedirect"/>
   </md:IDPSSODescriptor>
 </md:EntityDescriptor>`,
-      SAMLProviderArn:
-        "arn:aws:iam::840541460064:saml-provider/my-saml-provider",
     }),
   },
 ];

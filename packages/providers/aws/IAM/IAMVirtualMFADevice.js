@@ -5,7 +5,7 @@ const { defaultsDeep, last, find, callProp } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
-const { tagResourceIam, untagResourceIam } = require("./AwsIamCommon");
+const { tagResourceIam, untagResourceIam } = require("./IAMCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagMFADevice-property
 const tagResource = tagResourceIam({

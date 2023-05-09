@@ -21,7 +21,7 @@ const {
   untagResourceIam,
   ignoreErrorCodes,
   filterAttachedPolicies,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagUser-property
 const tagResource = tagResourceIam({ field: "UserName", method: "tagUser" });

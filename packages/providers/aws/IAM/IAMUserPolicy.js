@@ -9,7 +9,7 @@ const {
   ignoreErrorCodes,
   buildDependenciesPolicy,
   assignPolicyAccountAndRegion,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 const pickId = pipe([
   tap(({ PolicyName, UserName }) => {

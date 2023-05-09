@@ -32,9 +32,9 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");
 
-const { sortStatements } = require("../IAM/AwsIamCommon");
+const { sortStatements } = require("../IAM/IAMCommon");
 
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/IAMCommon");
 
 const { tagResource, untagResource } = require("./KmsCommon");
 

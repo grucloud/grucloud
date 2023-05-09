@@ -36,7 +36,7 @@ const {
   untagResourceIam,
   createFetchPolicyDocument,
   ignoreErrorCodes,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagPolicy-property
 const tagResource = tagResourceIam({
@@ -56,7 +56,7 @@ const pickId = pipe([({ Arn }) => ({ PolicyArn: Arn })]);
 const findId = () => get("Arn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
-exports.AwsIamPolicy = ({ spec, config }) => {
+exports.IAMPolicy = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
   const fetchPolicyDocument = createFetchPolicyDocument({ iam });

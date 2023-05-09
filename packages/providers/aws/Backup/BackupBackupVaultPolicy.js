@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, map, filter, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/IAMCommon");
 
 const pickId = pick(["BackupVaultName"]);
 

@@ -14,10 +14,7 @@ const {
 const { defaultsDeep, when, find, callProp, first } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const {
-  replacePolicy,
-  dependenciesFromPolicies,
-} = require("../IAM/AwsIamCommon");
+const { replacePolicy, dependenciesFromPolicies } = require("../IAM/IAMCommon");
 
 const managedByOther = () =>
   pipe([

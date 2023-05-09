@@ -9,7 +9,7 @@ const {
   tagResourceIam,
   untagResourceIam,
   ignoreErrorCodes,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 const toSAMLProviderArn = pipe([
   tap(({ Arn }) => {
@@ -58,7 +58,7 @@ exports.IAMSAMLProvider = () => ({
   package: "iam",
   client: "IAM",
   propertiesDefault: {},
-  omitProperties: ["CreateDate", "ValidUntil"],
+  omitProperties: ["CreateDate", "ValidUntil", "SAMLProviderArn"],
   inferName: () =>
     pipe([
       get("Name"),

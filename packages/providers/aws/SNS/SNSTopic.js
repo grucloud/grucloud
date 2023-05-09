@@ -5,7 +5,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const {
   assignPolicyAccountAndRegion,
   sortStatements,
-} = require("../IAM/AwsIamCommon");
+} = require("../IAM/IAMCommon");
 
 const { buildTags } = require("../AwsCommon");
 const { Tagger } = require("./SNSCommon");
