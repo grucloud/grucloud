@@ -40,6 +40,7 @@ const { IAMInstanceProfile } = require("./AwsIamInstanceProfile");
 const { IAMOpenIDConnectProvider } = require("./AwsIamOpenIDConnectProvider");
 const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
 const { IAMUser } = require("./AwsIamUser");
+const { IAMSAMLProvider } = require("./IAMSAMLProvider");
 const { IAMUserPolicy } = require("./IAMUserPolicy");
 
 const { IAMVirtualMFADevice } = require("./IAMVirtualMFADevice");
@@ -262,6 +263,7 @@ module.exports = pipe([
         ...findDependenciesRole(),
       },
     },
+    createAwsService(IAMSAMLProvider({ compare })),
     createAwsService(IAMUser({ compare })),
     createAwsService(IAMUserPolicy({ compare })),
     createAwsService(IAMVirtualMFADevice({ compare })),
