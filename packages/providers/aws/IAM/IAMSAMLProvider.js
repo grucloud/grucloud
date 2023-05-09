@@ -1,6 +1,12 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign } = require("rubico");
-const { defaultsDeep, identity, callProp, last } = require("rubico/x");
+const {
+  defaultsDeep,
+  identity,
+  callProp,
+  last,
+  includes,
+} = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
@@ -20,6 +26,8 @@ const toSAMLProviderArn = pipe([
     ...other,
   }),
 ]);
+
+const cannotBeDeleted = () => pipe([get("Name"), includes("DO_NOT_DELETE")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagUser-property
 const tagResource = tagResourceIam({
@@ -58,6 +66,8 @@ exports.IAMSAMLProvider = () => ({
   package: "iam",
   client: "IAM",
   propertiesDefault: {},
+  cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
   omitProperties: ["CreateDate", "ValidUntil", "SAMLProviderArn"],
   inferName: () =>
     pipe([

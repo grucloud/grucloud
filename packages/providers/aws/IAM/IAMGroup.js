@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, pick, omit, map } = require("rubico");
+const { pipe, tap, get, assign, pick, omit, map, tryCatch } = require("rubico");
 const { defaultsDeep, forEach, pluck } = require("rubico/x");
 const { updateResourceArray } = require("@grucloud/core/updateResourceArray");
 
@@ -76,16 +76,19 @@ const detachGroupPolicy = ({ endpoint, live }) =>
 
 // Attached Policy
 const deleteGroupPolicy = ({ endpoint, live }) =>
-  pipe([
-    tap(({ PolicyName }) => {
-      assert(endpoint);
-      assert(PolicyName);
-      assert(live.GroupName);
-    }),
-    pick(["PolicyName"]),
-    defaultsDeep({ GroupName: live.GroupName }),
-    endpoint().deleteGroupPolicy,
-  ]);
+  tryCatch(
+    pipe([
+      tap(({ PolicyName }) => {
+        assert(endpoint);
+        assert(PolicyName);
+        assert(live.GroupName);
+      }),
+      pick(["PolicyName"]),
+      defaultsDeep({ GroupName: live.GroupName }),
+      endpoint().deleteGroupPolicy,
+    ]),
+    () => {}
+  );
 
 exports.IAMGroup = ({}) => ({
   type: "Group",
@@ -155,17 +158,15 @@ exports.IAMGroup = ({}) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteGroup-property
   destroy: {
     pickId,
-    preDestroy:
-      ({ endpoint }) =>
-      (live) =>
-        tap(
-          pipe([
-            //
-            () => live,
-            get("AttachedPolicies"),
-            map(deleteGroupPolicy({ endpoint, live })),
-          ])
-        )(),
+    preDestroy: ({ endpoint }) =>
+      tap((live) =>
+        pipe([
+          //
+          () => live,
+          get("AttachedPolicies"),
+          map(detachGroupPolicy({ endpoint, live })),
+        ])()
+      ),
     method: "deleteGroup",
     ignoreErrorCodes,
     shouldRetryOnExceptionMessages: [
