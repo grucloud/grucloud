@@ -12,11 +12,11 @@ const {
 } = require("./IAMCommon");
 
 const pickId = pipe([
-  tap(({ PolicyName, UserName }) => {
+  tap(({ PolicyName, GroupName }) => {
     assert(PolicyName);
-    assert(UserName);
+    assert(GroupName);
   }),
-  pick(["PolicyName", "UserName"]),
+  pick(["PolicyName", "GroupName"]),
 ]);
 
 const decorate = ({ endpoint, live }) =>
@@ -42,45 +42,45 @@ const filterPayload = pipe([
 
 const findName =
   ({ lives, config }) =>
-  ({ UserName, PolicyName }) =>
+  ({ GroupName, PolicyName }) =>
     pipe([
       tap(() => {
-        assert(UserName);
+        assert(GroupName);
         assert(PolicyName);
       }),
-      () => `${UserName}::${PolicyName}`,
+      () => `${GroupName}::${PolicyName}`,
     ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
-exports.IAMUserPolicy = () => ({
-  type: "UserPolicy",
+exports.IAMGroupPolicy = () => ({
+  type: "GroupPolicy",
   package: "iam",
   client: "IAM",
   propertiesDefault: {},
-  omitProperties: ["UserName"],
+  omitProperties: ["GroupName"],
   inferName:
-    ({ dependenciesSpec: { user } }) =>
+    ({ dependenciesSpec: { group } }) =>
     ({ PolicyName }) =>
       pipe([
         tap((name) => {
-          assert(user);
+          assert(group);
           assert(PolicyName);
         }),
-        () => `${user}::${PolicyName}`,
+        () => `${group}::${PolicyName}`,
       ])(),
   findName,
   findId: findName,
   ignoreErrorCodes,
   dependencies: {
-    user: {
-      type: "User",
+    group: {
+      type: "Group",
       group: "IAM",
       parent: true,
       dependencyId: ({ lives, config }) =>
         pipe([
-          get("UserName"),
+          get("GroupName"),
           lives.getByName({
-            type: "User",
+            type: "Group",
             group: "IAM",
             providerName: config.providerName,
           }),
@@ -98,52 +98,52 @@ exports.IAMUserPolicy = () => ({
         ]),
       }),
     ]),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#getUserPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#getGroupPolicy-property
   getById: {
-    method: "getUserPolicy",
+    method: "getGroupPolicy",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUserPolicies-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroupPolicies-property
   getList: ({ client, endpoint, getById, config }) =>
     pipe([
       () =>
         client.getListWithParent({
-          parent: { type: "User", group: "IAM" },
+          parent: { type: "Group", group: "IAM" },
           pickKey: pipe([
-            pick(["UserName"]),
-            tap(({ UserName }) => {
-              assert(UserName);
+            pick(["GroupName"]),
+            tap(({ GroupName }) => {
+              assert(GroupName);
             }),
           ]),
-          method: "listUserPolicies",
+          method: "listGroupPolicies",
           getParam: "PolicyNames",
           config,
           decorate: ({ parent }) =>
             pipe([
-              (PolicyName) => ({ PolicyName, UserName: parent.UserName }),
-              tap(({ UserName }) => {
-                assert(UserName);
+              (PolicyName) => ({ PolicyName, GroupName: parent.GroupName }),
+              tap(({ GroupName }) => {
+                assert(GroupName);
               }),
               getById({}),
             ]),
         }),
     ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#putUserPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#putGroupPolicy-property
   create: {
     filterPayload,
-    method: "putUserPolicy",
+    method: "putGroupPolicy",
     pickCreated: ({ payload }) => pipe([() => payload]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#putUserPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#putGroupPolicy-property
   update: {
-    method: "putUserPolicy",
+    method: "putGroupPolicy",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, filterPayload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUserPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteGroupPolicy-property
   destroy: {
-    method: "deleteUserPolicy",
+    method: "deleteGroupPolicy",
     pickId,
   },
   getByName: getByNameCore,
@@ -151,18 +151,18 @@ exports.IAMUserPolicy = () => ({
     name,
     namespace,
     properties: { ...otherProps },
-    dependencies: { user },
+    dependencies: { group },
     config,
   }) =>
     pipe([
       tap((params) => {
-        assert(user);
+        assert(group);
         assert(otherProps.PolicyDocument);
         assert(otherProps.PolicyName);
       }),
       () => otherProps,
       defaultsDeep({
-        UserName: getField(user, "UserName"),
+        GroupName: getField(group, "GroupName"),
       }),
     ])(),
 });

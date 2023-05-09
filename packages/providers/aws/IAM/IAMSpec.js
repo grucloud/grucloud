@@ -6,9 +6,7 @@ const {
   tap,
   get,
   pick,
-  omit,
   switchCase,
-  or,
   eq,
   not,
   filter,
@@ -27,14 +25,12 @@ const {
   unless,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const {
-  hasDependency,
-  findLiveById,
-} = require("@grucloud/core/generatorUtils");
+const { findLiveById } = require("@grucloud/core/generatorUtils");
 
 const { createAwsService } = require("../AwsService");
 
 const { IAMGroup } = require("./IAMGroup");
+const { IAMGroupPolicy } = require("./IAMGroupPolicy");
 const { IAMRole, findDependenciesRole } = require("./IAMRole");
 const { IAMInstanceProfile } = require("./IAMInstanceProfile");
 const { IAMOpenIDConnectProvider } = require("./IAMOpenIDConnectProvider");
@@ -65,6 +61,7 @@ const compare = compareAws({});
 module.exports = pipe([
   () => [
     createAwsService(IAMGroup({ compare })),
+    createAwsService(IAMGroupPolicy({ compare })),
     createAwsService(IAMInstanceProfile({ compare })),
     createAwsService(IAMOpenIDConnectProvider({ compare })),
     {

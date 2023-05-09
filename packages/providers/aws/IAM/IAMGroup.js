@@ -1,21 +1,38 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, any, assign, pick, omit } = require("rubico");
-const { defaultsDeep, forEach, size, pluck } = require("rubico/x");
+const { pipe, tap, get, assign, pick, omit, map } = require("rubico");
+const { defaultsDeep, forEach, pluck } = require("rubico/x");
+const { updateResourceArray } = require("@grucloud/core/updateResourceArray");
 
-const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
 const { getByNameCore } = require("@grucloud/core/Common");
-const { AwsClient } = require("../AwsClient");
 const {
-  createIAM,
   assignAttachedPolicies,
   sortPolicies,
   ignoreErrorCodes,
   filterAttachedPolicies,
 } = require("./IAMCommon");
 
-const findName = () => get("GroupName");
-const findId = findName;
-const pickId = pick(["GroupName"]);
+const findName = () =>
+  pipe([
+    get("GroupName"),
+    tap((GroupName) => {
+      assert(GroupName);
+    }),
+  ]);
+
+const findId = () =>
+  pipe([
+    get("Arn"),
+    tap((Arn) => {
+      assert(Arn);
+    }),
+  ]);
+
+const pickId = pipe([
+  pick(["GroupName"]),
+  tap(({ GroupName }) => {
+    assert(GroupName);
+  }),
+]);
 
 const decorate = ({ endpoint }) =>
   pipe([
@@ -30,74 +47,45 @@ const decorate = ({ endpoint }) =>
         get("AttachedPolicies"),
         sortPolicies,
       ]),
-      Policies: pipe([
-        pick(["GroupName"]),
-        defaultsDeep({ MaxItems: 1e3 }),
-        endpoint().listGroupPolicies,
-        get("Policies"),
-      ]),
     }),
   ]);
 
-const removeGroupFromGroup =
-  ({ endpoint }) =>
-  ({ GroupName }) =>
-    pipe([
-      tap((params) => {
-        assert(GroupName);
-        assert(endpoint);
-      }),
-      () => ({
-        GroupName,
-        MaxItems: 1e3,
-      }),
-      endpoint().getGroup,
-      get("Groups"),
-      tap((Groups = []) => {
-        logger.info(`removeGroupFromGroup #Groups ${size(Groups)}`);
-      }),
-      forEach(({ GroupName }) =>
-        endpoint().removeGroupFromGroup({
-          GroupName,
-          GroupName,
-        })
-      ),
-    ])();
-
-const attachGroupPolicy = ({ endpoint, name }) =>
+const attachGroupPolicy = ({ endpoint, live }) =>
   pipe([
-    forEach(
-      pipe([
-        tap(({ PolicyArn }) => {
-          assert(PolicyArn);
-          assert(name);
-          assert(endpoint);
-        }),
-        pick(["PolicyArn"]),
-        defaultsDeep({ GroupName: name }),
-        endpoint().attachGroupPolicy,
-      ])
-    ),
+    tap(({ PolicyArn }) => {
+      assert(PolicyArn);
+      assert(live.GroupName);
+      assert(endpoint);
+    }),
+    pick(["PolicyArn"]),
+    defaultsDeep({ GroupName: live.GroupName }),
+    endpoint().attachGroupPolicy,
   ]);
 
-const detachGroupPolicy =
-  ({ endpoint }) =>
-  ({ GroupName }) =>
-    pipe([
-      tap(() => {
-        assert(endpoint);
-        assert(GroupName);
-      }),
-      () => ({ GroupName, MaxItems: 1e3 }),
-      endpoint().listAttachedGroupPolicies,
-      get("AttachedPolicies"),
-      forEach(({ PolicyArn }) => {
-        endpoint().detachGroupPolicy({
-          PolicyArn,
-          GroupName,
-        });
-      }),
-    ])();
+const detachGroupPolicy = ({ endpoint, live }) =>
+  pipe([
+    tap(({ PolicyArn }) => {
+      assert(endpoint);
+      assert(live.GroupName);
+      assert(PolicyArn);
+    }),
+    pick(["PolicyArn"]),
+    defaultsDeep({ GroupName: live.GroupName }),
+    endpoint().detachGroupPolicy,
+  ]);
+
+// Attached Policy
+const deleteGroupPolicy = ({ endpoint, live }) =>
+  pipe([
+    tap(({ PolicyName }) => {
+      assert(endpoint);
+      assert(PolicyName);
+      assert(live.GroupName);
+    }),
+    pick(["PolicyName"]),
+    defaultsDeep({ GroupName: live.GroupName }),
+    endpoint().deleteGroupPolicy,
+  ]);
 
 exports.IAMGroup = ({}) => ({
   type: "Group",
@@ -142,31 +130,42 @@ exports.IAMGroup = ({}) => ({
     method: "createGroup",
     filterPayload: omit(["AttachedPolicies"]),
     pickCreated: () => get("Group"),
-    postCreate: ({ endpoint, name, payload }) =>
-      pipe([
-        () => payload,
-        get("AttachedPolicies", []),
-        attachGroupPolicy({ endpoint, name }),
-      ]),
+    postCreate:
+      ({ endpoint, name, payload }) =>
+      (live) =>
+        pipe([
+          () => payload,
+          get("AttachedPolicies", []),
+          map(attachGroupPolicy({ endpoint, live })),
+        ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#updateMyResource-property
   update:
     ({ endpoint }) =>
-    ({ name, diff }) =>
-      pipe([() => payload])(),
+    ({ name, diff, payload, live }) =>
+      pipe([
+        () => ({ payload, live, diff }),
+        updateResourceArray({
+          endpoint,
+          arrayPath: "AttachedPolicies",
+          onAdd: attachGroupPolicy,
+          onRemove: detachGroupPolicy,
+        }),
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteGroup-property
   destroy: {
     pickId,
-    preDestroy: ({ endpoint }) =>
-      tap(
-        pipe([
-          tap((params) => {
-            assert(endpoint);
-          }),
-          tap(detachGroupPolicy({ endpoint })),
-          tap(removeGroupFromGroup({ endpoint })),
-        ])
-      ),
+    preDestroy:
+      ({ endpoint }) =>
+      (live) =>
+        tap(
+          pipe([
+            //
+            () => live,
+            get("AttachedPolicies"),
+            map(deleteGroupPolicy({ endpoint, live })),
+          ])
+        )(),
     method: "deleteGroup",
     ignoreErrorCodes,
     shouldRetryOnExceptionMessages: [

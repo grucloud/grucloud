@@ -28,13 +28,13 @@ describe("IAM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("GroupPolicy", () =>
+  it("GroupPolicy", () =>
     pipe([
       () => ({
         groupType: "IAM::GroupPolicy",
         livesNotFound: ({ config }) => [
           {
-            GroupName: "username",
+            GroupName: "groupname",
             PolicyName: "p123",
           },
         ],

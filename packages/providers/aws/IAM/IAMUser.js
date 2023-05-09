@@ -12,7 +12,6 @@ const {
 } = require("rubico");
 const { defaultsDeep, forEach, pluck, size } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "IamUser" });
 const { throwIfNotAwsError, buildTags } = require("../AwsCommon");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 
@@ -52,21 +51,6 @@ const decorate =
           endpoint().listAttachedUserPolicies,
           get("AttachedPolicies"),
         ]),
-        // Policies: pipe([
-        //   pick(["UserName"]),
-        //   defaultsDeep({ MaxItems: 1e3 }),
-        //   endpoint().listUserPolicies,
-        //   get("PolicyNames"),
-        //   map(
-        //     pipe([
-        //       (PolicyName) => ({ PolicyName, UserName }),
-        //       endpoint().getUserPolicy,
-        //       get("PolicyDocument"),
-        //       decodeURIComponent,
-        //       JSON.parse,
-        //     ])
-        //   ),
-        // ]),
         Groups: pipe([
           pickId,
           endpoint().listGroupsForUser,
@@ -84,27 +68,27 @@ const decorate =
         SSHPublicKeys: pipe([
           pickId,
           endpoint().listSSHPublicKeys,
-          tap((params) => {
-            assert(params);
-          }),
           get("SSHPublicKeys"),
         ]),
         LoginProfile: fetchLoginProfile({ endpoint }),
         Tags: pipe([pickId, endpoint().listUserTags, get("Tags")]),
       }),
       omitIfEmpty([
-        //
         "SSHPublicKeys",
         "Groups",
         "AttachedPolicies",
         "AccessKeys",
-        //"Policies",
       ]),
     ])();
 
 const fetchLoginProfile = ({ endpoint }) =>
   tryCatch(
-    pipe([pick(["UserName"]), endpoint().getLoginProfile, get("LoginProfile")]),
+    pipe([
+      //
+      pickId,
+      endpoint().getLoginProfile,
+      get("LoginProfile"),
+    ]),
     throwIfNotAwsError("NoSuchEntityException")
   );
 
@@ -211,13 +195,15 @@ const deleteSSHPublicKey =
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteServiceSpecificCredential-property
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteLoginProfile-property
-const deleteLoginProfile =
-  ({ endpoint }) =>
-  ({ UserName }) =>
-    tryCatch(
-      pipe([() => ({ UserName }), endpoint().deleteLoginProfile]),
-      throwIfNotAwsError("NoSuchEntityException")
-    )();
+const deleteLoginProfile = ({ endpoint }) =>
+  tryCatch(
+    pipe([
+      //
+      pickId,
+      endpoint().deleteLoginProfile,
+    ]),
+    throwIfNotAwsError("NoSuchEntityException")
+  );
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUserPolicy-property
 const deleteUserPolicy =
@@ -231,9 +217,6 @@ const deleteUserPolicy =
       () => ({ UserName, MaxItems: 1e3 }),
       endpoint().listUserPolicies,
       get("PolicyNames"),
-      tap((PolicyNames = []) => {
-        logger.debug(`deleteUserPolicy: ${PolicyNames.length}`);
-      }),
       forEach((PolicyName) => {
         endpoint().deleteUserPolicy({
           PolicyName,
@@ -253,9 +236,6 @@ const detachUserPolicy =
       () => ({ UserName, MaxItems: 1e3 }),
       endpoint().listAttachedUserPolicies,
       get("AttachedPolicies"),
-      tap((AttachedPolicies = []) => {
-        logger.debug(`detachUserPolicy: ${AttachedPolicies.length}`);
-      }),
       forEach(({ PolicyArn }) => {
         endpoint().detachUserPolicy({
           PolicyArn,
@@ -275,9 +255,6 @@ const removeUserFromGroup =
       () => ({ UserName }),
       endpoint().listGroupsForUser,
       get("Groups"),
-      tap((Groups = []) => {
-        logger.debug(`removeUserFromGroup: ${size(Groups)}`);
-      }),
       forEach(({ GroupName }) => {
         endpoint().removeUserFromGroup({
           GroupName,
@@ -337,13 +314,7 @@ exports.IAMUser = ({}) => ({
   getList: {
     method: "listUsers",
     getParam: "Users",
-    decorate: ({ getById }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        getById,
-      ]),
+    decorate: ({ getById }) => pipe([getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createUser-property
   create: {
