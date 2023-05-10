@@ -12,7 +12,7 @@ describe("FMS", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("NotificationChannel", () =>
+  it("NotificationChannel", () =>
     pipe([
       () => ({
         groupType: "FMS::NotificationChannel",
@@ -30,11 +30,13 @@ describe("FMS", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Protocol", () =>
+  it("ProtocolsList", () =>
     pipe([
       () => ({
-        groupType: "FMS::Protocol",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "FMS::ProtocolsList",
+        livesNotFound: ({ config }) => [
+          { ListId: "l12345678901234567890123456789123456" },
+        ],
       }),
       awsResourceTest,
     ])());

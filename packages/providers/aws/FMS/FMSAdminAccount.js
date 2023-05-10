@@ -4,6 +4,7 @@ const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { ignoreErrorCodes } = require("./FMSCommon");
 
 const pickId = pipe([
   tap((params) => {
@@ -28,7 +29,7 @@ exports.FMSAdminAccount = () => ({
   findName: () => pipe([() => "default"]),
   findId: () => pipe([() => "default"]),
   inferName: () => () => "default",
-  ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
+  ignoreErrorCodes,
   dependencies: {
     account: {
       type: "Account",
