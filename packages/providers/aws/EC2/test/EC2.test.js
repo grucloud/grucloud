@@ -224,11 +224,13 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Fleet", () =>
+  it("Fleet", () =>
     pipe([
       () => ({
         groupType: "EC2::Fleet",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { FleetId: "fleet-12a34b55-67cd-8ef9-ba9b-9208d" },
+        ],
       }),
       awsResourceTest,
     ])());

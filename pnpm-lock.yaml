@@ -3373,6 +3373,25 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(mocha@10.2.0)
 
+  examples/aws/EC2/Fleet/ec2-fleet:
+    dependencies:
+      '@grucloud/core':
+        specifier: ^12.0.1
+        version: link:../../../../../packages/core
+      '@grucloud/provider-aws':
+        specifier: ^12.0.1
+        version: link:../../../../../packages/providers/aws
+      rubico:
+        specifier: 1.9.6
+        version: 1.9.6
+    devDependencies:
+      mocha:
+        specifier: 10.2.0
+        version: 10.2.0
+      mocha-junit-reporter:
+        specifier: 2.2.0
+        version: 2.2.0(mocha@10.2.0)
+
   examples/aws/EC2/Instance/ec2:
     dependencies:
       '@grucloud/core':

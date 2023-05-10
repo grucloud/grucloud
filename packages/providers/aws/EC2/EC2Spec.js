@@ -21,11 +21,12 @@ const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const {
   EC2EgressOnlyInternetGateway,
 } = require("./EC2EgressOnlyInternetGateway");
-const { EC2KeyPair } = require("./EC2KeyPair");
+const { EC2Fleet } = require("./EC2Fleet");
 const { EC2InternetGateway } = require("./EC2InternetGateway");
 const {
   EC2InternetGatewayAttachment,
 } = require("./EC2InternetGatewayAttachment");
+const { EC2KeyPair } = require("./EC2KeyPair");
 
 const { EC2LaunchTemplate } = require("./EC2LaunchTemplate");
 //const { EC2LocalGatewayRoute } = require("./EC2LocalGatewayRoute");
@@ -133,6 +134,7 @@ module.exports = pipe([
     createAwsService(EC2EgressOnlyInternetGateway({})),
     createAwsService(EC2ElasticIpAddress({ compare: compareEC2 })),
     createAwsService(EC2ElasticIpAddressAssociation({ compare: compareEC2 })),
+    createAwsService(EC2Fleet({ compare: compareEC2 })),
     createAwsService(EC2FlowLogs({ compare: compareEC2 })),
     createAwsService(EC2Instance({ compare: compareEC2 })),
     createAwsService(EC2InternetGateway({ compare: compareEC2 })),
