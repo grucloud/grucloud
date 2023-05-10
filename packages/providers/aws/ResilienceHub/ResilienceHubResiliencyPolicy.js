@@ -5,21 +5,21 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
-const { Tagger } = require("./ResilienceHubCommon");
+const { Tagger } = require("./ResiliencehubCommon");
 
 const buildArn = () =>
   pipe([
-    get("appArn"),
+    get("policyArn"),
     tap((arn) => {
       assert(arn);
     }),
   ]);
 
 const pickId = pipe([
-  tap(({ appArn }) => {
-    assert(appArn);
+  tap(({ policyArn }) => {
+    assert(policyArn);
   }),
-  pick(["appArn"]),
+  pick(["policyArn"]),
 ]);
 
 const decorate = ({ endpoint, config }) =>
@@ -29,69 +29,63 @@ const decorate = ({ endpoint, config }) =>
     }),
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResilienceHub.html
-exports.ResilienceHubApp = () => ({
-  type: "App",
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Resiliencehub.html
+exports.ResilienceHubResiliencyPolicy = () => ({
+  type: "ResiliencyPolicy",
   package: "resiliencehub",
   client: "Resiliencehub",
   propertiesDefault: {},
-  omitProperties: [
-    "appArn",
-    "status",
-    "resiliencyScore",
-    "creationTime",
-    "complianceStatus",
-  ],
+  omitProperties: ["policyArn", "creationTime"],
   inferName: () =>
     pipe([
-      get("name"),
+      get("policyName"),
       tap((Name) => {
         assert(Name);
       }),
     ]),
   findName: () =>
     pipe([
-      get("name"),
+      get("policyName"),
       tap((name) => {
         assert(name);
       }),
     ]),
   findId: () =>
     pipe([
-      get("appArn"),
+      get("policyArn"),
       tap((id) => {
         assert(id);
       }),
     ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResilienceHub.html#describeApp-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Resiliencehub.html#describeResiliencyPolicy-property
   getById: {
-    method: "describeApp",
-    getField: "app",
+    method: "describeResiliencyPolicy",
+    getField: "policy",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResilienceHub.html#listApps-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Resiliencehub.html#listResiliencyPolicies-property
   getList: {
-    method: "listApps",
-    getParam: "appSummaries",
+    method: "listResiliencyPolicies",
+    getParam: "resiliencyPolicies",
     decorate: ({ getById }) => pipe([getById]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResilienceHub.html#createApp-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Resiliencehub.html#createResiliencyPolicy-property
   create: {
-    method: "createApp",
-    pickCreated: ({ payload }) => pipe([get("app")]),
+    method: "createResiliencyPolicy",
+    pickCreated: ({ payload }) => pipe([get("policy")]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResilienceHub.html#updateApp-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Resiliencehub.html#updateResiliencyPolicy-property
   update: {
-    method: "updateApp",
+    method: "updateResiliencyPolicy",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResilienceHub.html#deleteApp-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Resiliencehub.html#deleteResiliencyPolicy-property
   destroy: {
-    method: "deleteApp",
-    pickId: pipe([pickId, defaultsDeep({ forceDelete: true })]),
+    method: "deleteResiliencyPolicy",
+    pickId,
   },
   getByName: getByNameCore,
   tagger: ({ config }) =>

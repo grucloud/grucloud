@@ -406,7 +406,10 @@ describe("EC2", async function () {
       () => ({
         groupType: "EC2::Route",
         livesNotFound: ({ config }) => [
-          { RouteTableId: "rtb-12345", DestinationCidrBlock: "0.0.0.0/0" },
+          {
+            RouteTableId: "rtb-032cb2c8350925850",
+            DestinationCidrBlock: "0.0.0.0/0",
+          },
         ],
       }),
       awsResourceTest,

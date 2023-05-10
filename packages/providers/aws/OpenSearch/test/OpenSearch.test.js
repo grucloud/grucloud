@@ -12,14 +12,6 @@ describe("OpenSearch", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("DomainSamlOption", () =>
-    pipe([
-      () => ({
-        groupType: "OpenSearch::DomainSamlOption",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
   it.skip("InboundConnectionAccepter", () =>
     pipe([
       () => ({
@@ -28,11 +20,11 @@ describe("OpenSearch", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("OutboundConnection", () =>
+  it("OutboundConnection", () =>
     pipe([
       () => ({
         groupType: "OpenSearch::OutboundConnection",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ConnectionId: "c1234567890" }],
       }),
       awsResourceTest,
     ])());

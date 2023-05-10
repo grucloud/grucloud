@@ -11,14 +11,16 @@ const compare = compareAws({});
 
 const { OpenSearchDomain } = require("./OpenSearchDomain");
 //const { OpenSearchInboundConnectionAccepter } = require("./OpenSearchInboundConnectionAccepter");
-//const { OpenSearchOutboundConnection } = require("./OpenSearchOutboundConnection");
+const {
+  OpenSearchOutboundConnection,
+} = require("./OpenSearchOutboundConnection");
 const { OpenSearchVpcEndpoint } = require("./OpenSearchVpcEndpoint");
 
 module.exports = pipe([
   () => [
     OpenSearchDomain({ compare }),
     // OpenSearchInboundConnectionAccepter({})
-    // OpenSearchOutboundConnection({})
+    OpenSearchOutboundConnection({}),
     OpenSearchVpcEndpoint({ compare }),
   ],
   map(createAwsService),

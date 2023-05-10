@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 746 resources in 159 services for provider aws:
+List of 748 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -223,7 +223,7 @@ List of 746 resources in 159 services for provider aws:
 * OAM: 
 [Link](./resources/OAM/Link.md), [Sink](./resources/OAM/Sink.md), [SinkPolicy](./resources/OAM/SinkPolicy.md)
 * OpenSearch: 
-[Domain](./resources/OpenSearch/Domain.md), [VpcEndpoint](./resources/OpenSearch/VpcEndpoint.md)
+[Domain](./resources/OpenSearch/Domain.md), [OutboundConnection](./resources/OpenSearch/OutboundConnection.md), [VpcEndpoint](./resources/OpenSearch/VpcEndpoint.md)
 * OpenSearchServerless: 
 [AccessPolicy](./resources/OpenSearchServerless/AccessPolicy.md), [Collection](./resources/OpenSearchServerless/Collection.md), [SecurityConfig](./resources/OpenSearchServerless/SecurityConfig.md), [SecurityPolicy](./resources/OpenSearchServerless/SecurityPolicy.md), [VpcEndpoint](./resources/OpenSearchServerless/VpcEndpoint.md)
 * Organisations: 
@@ -249,7 +249,7 @@ List of 746 resources in 159 services for provider aws:
 * Rekognition: 
 [Collection](./resources/Rekognition/Collection.md), [Project](./resources/Rekognition/Project.md), [StreamProcessor](./resources/Rekognition/StreamProcessor.md)
 * ResilienceHub: 
-[App](./resources/ResilienceHub/App.md)
+[App](./resources/ResilienceHub/App.md), [ResiliencyPolicy](./resources/ResilienceHub/ResiliencyPolicy.md)
 * ResourceExplorer2: 
 [Index](./resources/ResourceExplorer2/Index.md), [View](./resources/ResourceExplorer2/View.md)
 * ResourceGroups: 
