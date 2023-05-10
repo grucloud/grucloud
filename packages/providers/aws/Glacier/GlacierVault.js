@@ -10,7 +10,7 @@ const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
 const {
   assignPolicyAccountAndRegion,
   sortStatements,
-} = require("../IAM/AwsIamCommon");
+} = require("../IAM/IAMCommon");
 
 const pickId = pipe([
   tap(({ vaultName, accountId }) => {

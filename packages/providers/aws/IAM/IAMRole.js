@@ -49,7 +49,7 @@ const {
   ignoreErrorCodes,
   sortStatements,
   dependenciesFromPolicies,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 const findName = () =>
   pipe([
@@ -250,7 +250,7 @@ const attachRoleAttachedPolicies = ({ endpoint, name }) =>
   );
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
-exports.AwsIamRole = ({ spec, config }) => {
+exports.IAMRole = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
 

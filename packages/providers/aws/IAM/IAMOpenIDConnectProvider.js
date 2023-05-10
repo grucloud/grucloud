@@ -23,7 +23,7 @@ const {
   tagResourceIam,
   untagResourceIam,
   ignoreErrorCodes,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 const formatThumbPrint = pipe([
   get("fingerprint"),

@@ -3,7 +3,7 @@ const { pipe, tap, get, pick, eq, assign } = require("rubico");
 const { find, defaultsDeep, isIn } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/IAMCommon");
 
 const pickId = pipe([
   tap(({ policyName }) => {

@@ -4,7 +4,7 @@ const { defaultsDeep, when, callProp } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/IAMCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./OpenSearchCommon");

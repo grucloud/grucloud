@@ -34,7 +34,7 @@ const {
   tagResourceIam,
   untagResourceIam,
   ignoreErrorCodes,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagInstanceProfile-property
 const tagResource = tagResourceIam({

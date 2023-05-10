@@ -7,7 +7,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const {
   assignPolicyAccountAndRegion,
   sortStatements,
-} = require("../IAM/AwsIamCommon");
+} = require("../IAM/IAMCommon");
 
 const toAccountId = ({ BucketAccountId, ...other }) => ({
   AccountId: BucketAccountId,

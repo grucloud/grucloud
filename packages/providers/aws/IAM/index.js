@@ -1,1 +1,1 @@
-module.exports = require("./AwsIamSpec");
+module.exports = require("./IAMSpec");

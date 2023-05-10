@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, assign, eq, tryCatch, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/IAMCommon");
 
 const pickId = pipe([pick(["domain"])]);
 

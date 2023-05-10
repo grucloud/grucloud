@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project iam-saml-provider
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
+++++ SAMLProvider (1)
+@endmindmap

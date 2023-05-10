@@ -9,7 +9,7 @@ const {
   ignoreErrorCodes,
   buildDependenciesPolicy,
   assignPolicyAccountAndRegion,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 const pickId = pipe([
   tap(({ PolicyName, UserName }) => {
@@ -34,6 +34,9 @@ const decorate = ({ endpoint, live }) =>
   ]);
 
 const filterPayload = pipe([
+  tap(({ PolicyDocument }) => {
+    assert(PolicyDocument);
+  }),
   assign({ PolicyDocument: pipe([get("PolicyDocument"), JSON.stringify]) }),
 ]);
 

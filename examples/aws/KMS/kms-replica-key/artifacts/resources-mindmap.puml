@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project kms-replica-key
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ KMS
+++++ Key (1)
+-- aws-secondary
+--- KMS
+---- ReplicaKey (1)
+@endmindmap

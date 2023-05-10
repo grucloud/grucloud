@@ -28,13 +28,13 @@ describe("IAM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("GroupPolicy", () =>
+  it("GroupPolicy", () =>
     pipe([
       () => ({
         groupType: "IAM::GroupPolicy",
         livesNotFound: ({ config }) => [
           {
-            GroupName: "username",
+            GroupName: "groupname",
             PolicyName: "p123",
           },
         ],
@@ -77,30 +77,31 @@ describe("IAM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("SAMLProvider", () =>
+  it("SAMLProvider", () =>
     pipe([
       () => ({
         groupType: "IAM::SAMLProvider",
         livesNotFound: ({ config }) => [
           {
-            SAMLProviderArn: "TODO",
+            SAMLProviderArn: `arn:aws:iam::${config.accountId()}:saml-provider/s123`,
           },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("ServerCertificate", () =>
-    pipe([
-      () => ({
-        groupType: "IAM::ServerCertificate",
-        livesNotFound: ({ config }) => [
-          {
-            ServerCertificateName: "s123",
-          },
-        ],
-      }),
-      awsResourceTest,
-    ])());
+  // AWS recommend to use ACM Certificate
+  // it.skip("ServerCertificate", () =>
+  //   pipe([
+  //     () => ({
+  //       groupType: "IAM::ServerCertificate",
+  //       livesNotFound: ({ config }) => [
+  //         {
+  //           ServerCertificateName: "s123",
+  //         },
+  //       ],
+  //     }),
+  //     awsResourceTest,
+  //   ])());
   it.skip("ServiceSpecificCredential", () =>
     pipe([
       () => ({
@@ -113,18 +114,18 @@ describe("IAM", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("SigningCertificate", () =>
-    pipe([
-      () => ({
-        groupType: "IAM::SigningCertificate",
-        livesNotFound: ({ config }) => [
-          {
-            CertificateId: "s123",
-          },
-        ],
-      }),
-      awsResourceTest,
-    ])());
+  // it.skip("SigningCertificate", () =>
+  //   pipe([
+  //     () => ({
+  //       groupType: "IAM::SigningCertificate",
+  //       livesNotFound: ({ config }) => [
+  //         {
+  //           CertificateId: "s123",
+  //         },
+  //       ],
+  //     }),
+  //     awsResourceTest,
+  //   ])());
   it("User", () =>
     pipe([
       () => ({

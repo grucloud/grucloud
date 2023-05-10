@@ -6,9 +6,7 @@ const {
   tap,
   get,
   pick,
-  omit,
   switchCase,
-  or,
   eq,
   not,
   filter,
@@ -27,28 +25,26 @@ const {
   unless,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const {
-  hasDependency,
-  findLiveById,
-} = require("@grucloud/core/generatorUtils");
+const { findLiveById } = require("@grucloud/core/generatorUtils");
 
 const { createAwsService } = require("../AwsService");
 
-const { IAMGroup } = require("./AwsIamGroup");
-const { AwsIamRole, findDependenciesRole } = require("./AwsIamRole");
-const { IAMInstanceProfile } = require("./AwsIamInstanceProfile");
-const { IAMOpenIDConnectProvider } = require("./AwsIamOpenIDConnectProvider");
-const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
-const { IAMUser } = require("./AwsIamUser");
+const { IAMGroup } = require("./IAMGroup");
+const { IAMGroupPolicy } = require("./IAMGroupPolicy");
+const { IAMRole, findDependenciesRole } = require("./IAMRole");
+const { IAMInstanceProfile } = require("./IAMInstanceProfile");
+const { IAMOpenIDConnectProvider } = require("./IAMOpenIDConnectProvider");
+const { IAMPolicy, isOurMinionIamPolicy } = require("./IAMPolicy");
+const { IAMUser } = require("./IAMUser");
+const { IAMSAMLProvider } = require("./IAMSAMLProvider");
 const { IAMUserPolicy } = require("./IAMUserPolicy");
-
 const { IAMVirtualMFADevice } = require("./IAMVirtualMFADevice");
 
 const {
   buildDependenciesPolicy,
   assignPolicyDocumentAccountAndRegion,
   assignPolicyAccountAndRegion,
-} = require("./AwsIamCommon");
+} = require("./IAMCommon");
 
 const {
   compareAws,
@@ -65,11 +61,12 @@ const compare = compareAws({});
 module.exports = pipe([
   () => [
     createAwsService(IAMGroup({ compare })),
+    createAwsService(IAMGroupPolicy({ compare })),
     createAwsService(IAMInstanceProfile({ compare })),
     createAwsService(IAMOpenIDConnectProvider({ compare })),
     {
       type: "Policy",
-      Client: AwsIamPolicy,
+      Client: IAMPolicy,
       inferName: () =>
         pipe([
           get("PolicyName"),
@@ -104,7 +101,7 @@ module.exports = pipe([
     },
     {
       type: "Role",
-      Client: AwsIamRole,
+      Client: IAMRole,
       inferName: () => get("RoleName"),
       propertiesDefault: { Path: "/" },
       compare: compare({
@@ -262,6 +259,7 @@ module.exports = pipe([
         ...findDependenciesRole(),
       },
     },
+    createAwsService(IAMSAMLProvider({ compare })),
     createAwsService(IAMUser({ compare })),
     createAwsService(IAMUserPolicy({ compare })),
     createAwsService(IAMVirtualMFADevice({ compare })),

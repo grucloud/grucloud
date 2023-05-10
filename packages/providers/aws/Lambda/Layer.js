@@ -22,7 +22,7 @@ const logger = require("@grucloud/core/logger")({
 });
 
 const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
-const { sortStatements } = require("../IAM/AwsIamCommon");
+const { sortStatements } = require("../IAM/IAMCommon");
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 
 const createTempDir = () => os.tmpdir();

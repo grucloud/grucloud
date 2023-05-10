@@ -1,108 +1,30 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  not,
-  and,
-  assign,
-  tryCatch,
-  or,
-  pick,
-  omit,
-  fork,
-} = require("rubico");
-const {
-  find,
-  first,
-  defaultsDeep,
-  isEmpty,
-  callProp,
-  when,
-} = require("rubico/x");
-const moment = require("moment");
+const { map, pipe, tap, get, eq, assign, pick, omit } = require("rubico");
+const { defaultsDeep, filterOut } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "KmsKey",
-});
-const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
-const { configProviderDefault } = require("@grucloud/core/Common");
 
-const { sortStatements } = require("../IAM/AwsIamCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/IAMCommon");
 
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
-
-const { tagResource, untagResource } = require("./KmsCommon");
-
-const findId = () => get("Arn");
-const pickId = pick(["KeyId"]);
-
-const findNameInTags = pipe([
-  get("Tags"),
-  find(eq(get("Key"), configProviderDefault.nameKey)),
-  get("Value"),
-  tap((params) => {
-    assert(true);
-  }),
-]);
-
-const findNames = [findNameInTags, get("Alias"), get("KeyId")];
-
-const findName = () => (live) =>
-  pipe([() => findNames, map((fn) => fn(live)), find(not(isEmpty))])();
-
-const decorate = ({ endpoint }) =>
-  pipe([
-    assign({
-      Policy: pipe([
-        pickId,
-        defaultsDeep({ PolicyName: "default" }),
-        endpoint().getKeyPolicy,
-        get("Policy"),
-        JSON.parse,
-        sortStatements,
-      ]),
-    }),
-    tryCatch(
-      assign({
-        Tags: pipe([
-          pickId,
-          endpoint().listResourceTags,
-          get("Tags"),
-          map(({ TagKey, TagValue }) => ({ Key: TagKey, Value: TagValue })),
-        ]),
-      }),
-      (error, item) => item
-    ),
-    tryCatch(
-      assign({
-        Alias: pipe([
-          pickId,
-          endpoint().listAliases,
-          get("Aliases"),
-          first,
-          get("AliasName"),
-        ]),
-      }),
-      (error, item) => item
-    ),
-  ]);
-
-const isInstanceUp = and([
-  eq(get("KeyState"), "Enabled"),
-  eq(get("Enabled"), true),
-]);
-
-const isInstanceDisabled = and([
-  eq(get("KeyState"), "Disabled"),
-  eq(get("Enabled"), false),
-]);
-
-const isInstanceDown = eq(get("KeyState"), "PendingDeletion");
+const {
+  tagResource,
+  untagResource,
+  omitProperties,
+  pickId,
+  findId,
+  findName,
+  isInstanceUp,
+  getById,
+  getList,
+  update,
+  destroy,
+  cannotBeDeleted,
+  managedByOther,
+  putKeyPolicy,
+  assignTags,
+  ignoreErrorCodes,
+} = require("./KMSCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createAlias-property
 const createAlias = ({ endpoint, name }) =>
@@ -112,48 +34,13 @@ const createAlias = ({ endpoint, name }) =>
     endpoint().createAlias,
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaS:criptSDK/latest/AWS/KMS.html#putKeyPolicy-property
-const putKeyPolicy = ({ endpoint, payload: { Policy } }) =>
-  when(
-    () => Policy,
-    pipe([
-      pickId,
-      defaultsDeep({ PolicyName: "default", Policy: JSON.stringify(Policy) }),
-      endpoint().putKeyPolicy,
-    ])
-  );
-
-const isDefault = () =>
-  pipe([
-    or([
-      pipe([get("Alias", ""), callProp("startsWith", "alias/aws/")]),
-      pipe([get("Description", ""), callProp("startsWith", "Default ")]),
-    ]),
-  ]);
-
-const cannotBeDeleted = () =>
-  or([
-    //
-    eq(get("KeyState"), "PendingDeletion"),
-    isDefault(),
-  ]);
-
 exports.KmsKey = () => ({
   type: "Key",
   package: "kms",
   client: "KMS",
   cannotBeDeleted,
-  managedByOther: cannotBeDeleted,
-  omitProperties: [
-    "AWSAccountId",
-    "KeyId",
-    "Arn",
-    "Alias",
-    "CreationDate",
-    "DeletionDate",
-    "KeyState",
-    "CustomerMasterKeySpec",
-  ],
+  managedByOther,
+  omitProperties,
   propertiesDefault: {
     Enabled: true,
     KeyManager: "CUSTOMER",
@@ -169,7 +56,7 @@ exports.KmsKey = () => ({
   filterLive: ({ providerConfig, lives }) =>
     pipe([
       //TODO no pick
-      pick(["Enabled", "Description", "Policy"]),
+      pick(["Enabled", "Description", "Policy", "MultiRegion"]),
       assign({
         Policy: pipe([
           get("Policy"),
@@ -177,43 +64,26 @@ exports.KmsKey = () => ({
         ]),
       }),
     ]),
-  ignoreResource: ({ lives }) => pipe([not(get("live.Enabled"))]),
   findName,
   findId,
-  ignoreErrorCodes: ["NotFoundException"],
+  ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#describeKey-property
-  getById: {
-    pickId,
-    method: "describeKey",
-    getField: "KeyMetadata",
-    decorate,
-  },
+  getById,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#listKeys-property
   getList: {
-    method: "listKeys",
-    getParam: "Keys",
+    ...getList,
     transformListPost: () =>
       pipe([
-        callProp("sort", (a, b) => {
-          return moment(b.CreationDate).isAfter(a.CreationDate) ? 1 : -1;
-        }),
+        filterOut(
+          eq(get("MultiRegionConfiguration.MultiRegionKeyType"), "REPLICA")
+        ),
       ]),
-    decorate: ({ getById }) => pipe([getById]),
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createKey-property
   create: {
     isInstanceUp,
     method: "createKey",
-    filterPayload: pipe([
-      omit(["Policy"]),
-      assign({
-        Tags: pipe([
-          get("Tags", []),
-          map(({ Key, Value }) => ({ TagKey: Key, TagValue: Value })),
-        ]),
-      }),
-    ]),
+    filterPayload: pipe([omit(["Policy"]), assignTags]),
     pickCreated: () => pipe([get("KeyMetadata")]),
     postCreate: ({ endpoint, name, payload }) =>
       pipe([
@@ -222,125 +92,9 @@ exports.KmsKey = () => ({
       ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#updateMyResource-property
-  update:
-    ({ endpoint, getById, config }) =>
-    ({ name, payload, diff, live }) =>
-      pipe([
-        tap(() => {
-          assert(endpoint);
-          assert(getById);
-          logger.info(`key update: ${name}`);
-          //logger.debug(tos({ payload, diff, live }));
-        }),
-        () => live,
-        tap.if(
-          isInstanceDown,
-          tryCatch(
-            pipe([
-              pickId,
-              endpoint().cancelKeyDeletion,
-              tap(({ KeyId }) =>
-                retryCall({
-                  name: `key isInstanceDisabled: ${name} id: ${KeyId}`,
-                  fn: pipe([
-                    () => ({ KeyId }),
-                    getById({}),
-                    isInstanceDisabled,
-                  ]),
-                  config,
-                })
-              ),
-            ]),
-            (error) =>
-              pipe([
-                tap(() => {
-                  // Ignore error
-                  logger.error(`cancelKeyDeletion: ${JSON.stringify(error)}`);
-                }),
-              ])()
-          )
-        ),
-
-        tap.if(
-          () => get("liveDiff.updated.Enabled")(diff),
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pickId,
-            // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#enableKey-property
-            tap(endpoint().enableKey),
-            tap(({ KeyId }) =>
-              retryCall({
-                name: `key isUpById: ${name} id: ${KeyId}`,
-                fn: pipe([() => ({ KeyId }), getById({}), isInstanceUp]),
-                config,
-              })
-            ),
-          ])
-        ),
-        tap.if(
-          () => eq(get("liveDiff.updated.Enabled"), false)(diff),
-          pipe([
-            pickId,
-            // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#disableKey-property
-            tap(endpoint().disableKey),
-            tap(({ KeyId }) =>
-              retryCall({
-                name: `key isUpById: ${name} id: ${KeyId}`,
-                fn: pipe([() => ({ KeyId }), getById({}), isInstanceDisabled]),
-                config,
-              })
-            ),
-          ])
-        ),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#updateKeyDescription-property
-        tap.if(
-          () => get("liveDiff.updated.Description")(diff) != undefined,
-          pipe([
-            () => ({ KeyId: live.KeyId, Description: payload.Description }),
-            tap((params) => {
-              assert(true);
-            }),
-            // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#disableKey-property
-            tap(endpoint().updateKeyDescription),
-          ])
-        ),
-        // Update policy
-        tap.if(
-          or([
-            () => get("liveDiff.updated.Policy")(diff),
-            () => get("liveDiff.deleted.Policy")(diff),
-          ]),
-          pipe([putKeyPolicy({ endpoint, payload })])
-        ),
-        tap(() => {
-          logger.info(`key updated: ${name}`);
-        }),
-      ])(),
+  update,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#deleteMyResource-property
-  destroy: {
-    postDestroy: ({ endpoint }) =>
-      pipe([
-        fork({
-          deleteAlias: when(
-            get("Alias"),
-            pipe([
-              ({ Alias }) => ({ AliasName: Alias }),
-              endpoint().deleteAlias,
-            ])
-          ),
-          scheduleKeyDeletion: pipe([
-            pickId,
-            defaultsDeep({ PendingWindowInDays: 7 }),
-            endpoint().scheduleKeyDeletion,
-          ]),
-        }),
-      ]),
-    pickId,
-    method: "disableKey",
-    isInstanceDown,
-  },
+  destroy,
   getByName: getByNameCore,
   tagger: ({ config }) => ({
     tagResource,

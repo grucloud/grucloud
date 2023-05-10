@@ -2,7 +2,7 @@ const assert = require("assert");
 
 const { deepSortKey } = require("../deepSortKey");
 
-describe.only("deepSortKey", function () {
+describe("deepSortKey", function () {
   it("deepSortKey simple", async function () {
     const obj = {
       c: 3,

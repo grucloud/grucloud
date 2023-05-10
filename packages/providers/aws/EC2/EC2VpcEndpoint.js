@@ -35,7 +35,7 @@ const {
 const {
   findInStatement,
   assignPolicyDocumentAccountAndRegion,
-} = require("../IAM/AwsIamCommon");
+} = require("../IAM/IAMCommon");
 
 const {
   tagResource,

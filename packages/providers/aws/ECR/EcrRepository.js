@@ -8,7 +8,7 @@ const { ignoreResourceCdk } = require("../AwsCommon");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { assignPolicyAccountAndRegion } = require("../IAM/AwsIamCommon");
+const { assignPolicyAccountAndRegion } = require("../IAM/IAMCommon");
 
 const { Tagger } = require("./ECRCommon");
 

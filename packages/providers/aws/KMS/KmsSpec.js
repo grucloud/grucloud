@@ -6,6 +6,7 @@ const { compareAws } = require("../AwsCommon");
 const { createAwsService } = require("../AwsService");
 
 const { KmsKey } = require("./KmsKey");
+const { KmsReplicaKey } = require("./KmsReplicaKey");
 
 const GROUP = "KMS";
 
@@ -14,7 +15,11 @@ const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
 module.exports = pipe([
-  () => [KmsKey({ compare })],
+  () => [
+    //
+    KmsKey({ compare }),
+    KmsReplicaKey({ compare }),
+  ],
   map(
     pipe([
       createAwsService,

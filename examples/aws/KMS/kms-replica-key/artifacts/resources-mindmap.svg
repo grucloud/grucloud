@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="115px" preserveAspectRatio="none" style="width:886px;height:115px;background:#FFFFFF;" version="1.1" viewBox="0 0 886 115" width="886px" zoomAndPan="magnify"><defs/><g><rect height="26.4883" style="stroke:#00000000;stroke-width:1.0;fill:none;" width="291" x="246" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="281" x="251" y="33.5352">Resources for project kms-replica-key</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="52" x="449" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="459" y="81.0234">Infra</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="107" x="551" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="87" x="561" y="81.0234">aws-primary</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="49" x="708" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29" x="718" y="81.0234">KMS</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="67" x="807" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47" x="817" y="81.0234">Key (1)</text><path d="M757,75.7324 L767,75.7324 C782,75.7324 782,75.7324 797,75.7324 L807,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M658,75.7324 L668,75.7324 C683,75.7324 683,75.7324 698,75.7324 L708,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M501,75.7324 L511,75.7324 C526,75.7324 526,75.7324 541,75.7324 L551,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="124" x="275" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="104" x="285" y="81.0234">aws-secondary</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="49" x="176" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29" x="186" y="81.0234">KMS</text><rect fill="#F1F1F1" height="36.4883" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:1.5;" width="116" x="10" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="96" x="20" y="81.0234">ReplicaKey (1)</text><path d="M176,75.7324 L166,75.7324 C151,75.7324 151,75.7324 136,75.7324 L126,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M275,75.7324 L265,75.7324 C250,75.7324 250,75.7324 235,75.7324 L225,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><path d="M449,75.7324 L439,75.7324 C424,75.7324 424,75.7324 409,75.7324 L399,75.7324 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><!--MD5=[e9ef73886963cb11f74690cd58133e3c]
+@startmindmap
+title Resources for project kms-replica-key
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ KMS
+++++ Key (1)
+- - aws-secondary
+- - - KMS
+- - - - ReplicaKey (1)
+@endmindmap
+
+PlantUML version 1.2022.6(Tue Jun 21 19:34:49 CEST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>
