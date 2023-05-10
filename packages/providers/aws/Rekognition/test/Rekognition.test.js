@@ -4,19 +4,26 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Rekognition", async function () {
-  it.skip("Collection", () =>
+  it("Collection", () =>
     pipe([
       () => ({
         groupType: "Rekognition::Collection",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ CollectionId: "c1234567" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Project", () =>
+  it("Project", () =>
     pipe([
       () => ({
         groupType: "Rekognition::Project",
-        livesNotFound: ({ config }) => [{ ProjectArn: "e123" }],
+        livesNotFound: ({ config }) => [
+          {
+            ProjectName: "p1234",
+            ProjectArn: `arn:aws:rekognition:${
+              config.region
+            }:${config.accountId()}:project/qnzC51EnBACHk3oTTh.oTB9WxH2eMHE/762093524950321420860781117375238604510212472218043533303676583042196901597683897`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 744 resources in 159 services for provider aws:
+List of 746 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -247,7 +247,7 @@ List of 744 resources in 159 services for provider aws:
 * RedshiftServerless: 
 [EndpointAccess](./resources/RedshiftServerless/EndpointAccess.md), [Namespace](./resources/RedshiftServerless/Namespace.md), [Snapshot](./resources/RedshiftServerless/Snapshot.md), [ResourcePolicy](./resources/RedshiftServerless/ResourcePolicy.md), [UsageLimit](./resources/RedshiftServerless/UsageLimit.md), [Workgroup](./resources/RedshiftServerless/Workgroup.md)
 * Rekognition: 
-[StreamProcessor](./resources/Rekognition/StreamProcessor.md)
+[Collection](./resources/Rekognition/Collection.md), [Project](./resources/Rekognition/Project.md), [StreamProcessor](./resources/Rekognition/StreamProcessor.md)
 * ResilienceHub: 
 [App](./resources/ResilienceHub/App.md)
 * ResourceExplorer2: 
