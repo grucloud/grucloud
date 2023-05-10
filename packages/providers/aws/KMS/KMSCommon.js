@@ -57,6 +57,8 @@ exports.untagResource =
       endpoint().untagResource,
     ]);
 
+exports.ignoreErrorCodes = ["NotFoundException"];
+
 const cannotBeDeleted = () =>
   or([
     isInstanceDown,
