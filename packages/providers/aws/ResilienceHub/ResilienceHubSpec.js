@@ -8,6 +8,9 @@ const { createAwsService } = require("../AwsService");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResilienceHub.html
 
 const { ResilienceHubApp } = require("./ResilienceHubApp");
+const {
+  ResilienceHubResiliencyPolicy,
+} = require("./ResilienceHubResiliencyPolicy");
 
 const GROUP = "ResilienceHub";
 
@@ -18,6 +21,7 @@ module.exports = pipe([
   () => [
     //
     ResilienceHubApp({}),
+    ResilienceHubResiliencyPolicy({}),
   ],
   map(
     pipe([

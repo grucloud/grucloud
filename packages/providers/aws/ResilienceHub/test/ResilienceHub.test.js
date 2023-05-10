@@ -18,7 +18,7 @@ describe("ResilienceHub", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ResiliencyPolicy", () =>
+  it("ResiliencyPolicy", () =>
     pipe([
       () => ({
         groupType: "ResilienceHub::ResiliencyPolicy",
