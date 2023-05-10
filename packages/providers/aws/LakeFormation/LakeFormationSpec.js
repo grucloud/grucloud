@@ -15,12 +15,16 @@ const {
 } = require("./LakeFormationDataLakeSettings");
 const { LakeFormationLFTag } = require("./LakeFormationLFTag");
 const { LakeFormationResource } = require("./LakeFormationResource");
+const {
+  LakeFormationResourceLFTags,
+} = require("./LakeFormationResourceLFTags");
 
 module.exports = pipe([
   () => [
     LakeFormationDataLakeSettings({}),
     LakeFormationLFTag({}),
     LakeFormationResource({}),
+    LakeFormationResourceLFTags({}),
   ],
   map(
     pipe([

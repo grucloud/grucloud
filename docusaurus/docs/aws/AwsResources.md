@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 749 resources in 159 services for provider aws:
+List of 750 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -185,7 +185,7 @@ List of 749 resources in 159 services for provider aws:
 * KMS: 
 [Key](./resources/KMS/Key.md), [ReplicaKey](./resources/KMS/ReplicaKey.md)
 * LakeFormation: 
-[DataLakeSettings](./resources/LakeFormation/DataLakeSettings.md), [LFTag](./resources/LakeFormation/LFTag.md), [Resource](./resources/LakeFormation/Resource.md)
+[DataLakeSettings](./resources/LakeFormation/DataLakeSettings.md), [LFTag](./resources/LakeFormation/LFTag.md), [Resource](./resources/LakeFormation/Resource.md), [ResourceLFTags](./resources/LakeFormation/ResourceLFTags.md)
 * Lambda: 
 [Alias](./resources/Lambda/Alias.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md), [Function](./resources/Lambda/Function.md), [Layer](./resources/Lambda/Layer.md), [Permission](./resources/Lambda/Permission.md)
 * LexModelsV2: 

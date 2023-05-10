@@ -42,11 +42,25 @@ describe("LakeFormation", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ResourceIfTags", () =>
+  it("ResourceLFTags", () =>
     pipe([
       () => ({
-        groupType: "LakeFormation::ResourceIfTags",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "LakeFormation::ResourceLFTags",
+        livesNotFound: ({ config }) => [
+          {
+            LFTags: [
+              {
+                TagKey: "STRING_VALUE",
+                TagValues: ["STRING_VALUE"],
+              },
+            ],
+            Resource: {
+              Database: {
+                Name: "d1234",
+              },
+            },
+          },
+        ],
       }),
       awsResourceTest,
     ])());
