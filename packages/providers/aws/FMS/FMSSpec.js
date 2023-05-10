@@ -7,7 +7,9 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/FMS.html
 const { FMSAdminAccount } = require("./FMSAdminAccount");
+const { FMSNotificationChannel } = require("./FMSNotificationChannel");
 const { FMSPolicy } = require("./FMSPolicy");
+const { FMSProtocolsList } = require("./FMSProtocolsList");
 
 const GROUP = "FMS";
 const tagsKey = "Tags";
@@ -17,7 +19,9 @@ module.exports = pipe([
   () => [
     //
     FMSAdminAccount({}),
+    FMSNotificationChannel({}),
     FMSPolicy({}),
+    FMSProtocolsList({}),
   ],
   map(
     pipe([

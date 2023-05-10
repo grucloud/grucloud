@@ -5,7 +5,7 @@ const { replaceWithName } = require("@grucloud/core/Common");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { Tagger, assignTags } = require("./FMSCommon");
+const { Tagger, assignTags, ignoreErrorCodes } = require("./FMSCommon");
 
 const buildArn = () =>
   pipe([
@@ -112,7 +112,7 @@ exports.FMSPolicy = () => ({
         assert(id);
       }),
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
+  ignoreErrorCodes,
   dependencies: {
     adminAccount: {
       type: "AdminAccount",

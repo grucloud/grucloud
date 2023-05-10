@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 742 resources in 159 services for provider aws:
+List of 744 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -145,7 +145,7 @@ List of 742 resources in 159 services for provider aws:
 * Fis: 
 [ExperimentTemplate](./resources/Fis/ExperimentTemplate.md)
 * FMS: 
-[AdminAccount](./resources/FMS/AdminAccount.md), [Policy](./resources/FMS/Policy.md)
+[AdminAccount](./resources/FMS/AdminAccount.md), [NotificationChannel](./resources/FMS/NotificationChannel.md), [Policy](./resources/FMS/Policy.md), [ProtocolsList](./resources/FMS/ProtocolsList.md)
 * FSx: 
 [Backup](./resources/FSx/Backup.md), [DataRepositoryAssociation](./resources/FSx/DataRepositoryAssociation.md), [FileCache](./resources/FSx/FileCache.md), [FileSystem](./resources/FSx/FileSystem.md), [Snapshot](./resources/FSx/Snapshot.md), [StorageVirtualMachine](./resources/FSx/StorageVirtualMachine.md), [Volume](./resources/FSx/Volume.md)
 * Glacier: 

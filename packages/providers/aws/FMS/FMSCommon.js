@@ -3,6 +3,11 @@ const { pipe, tap, assign, get, tryCatch } = require("rubico");
 
 const { createTagger } = require("../AwsTagger");
 
+exports.ignoreErrorCodes = [
+  "ResourceNotFoundException",
+  "AccessDeniedException",
+];
+
 exports.Tagger = createTagger({
   methodTagResource: "tagResource",
   methodUnTagResource: "untagResource",
