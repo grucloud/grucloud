@@ -4,11 +4,11 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Rekognition", async function () {
-  it.skip("Collection", () =>
+  it("Collection", () =>
     pipe([
       () => ({
         groupType: "Rekognition::Collection",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ CollectionId: "c1234" }],
       }),
       awsResourceTest,
     ])());
