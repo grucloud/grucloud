@@ -988,7 +988,7 @@ exports.createAwsResource = ({
               ]),
               create: switchCase([
                 () => isFunction(create),
-                ({ getById }) => create({ endpoint, getById, client }),
+                ({ getById }) => create({ endpoint, getById, client, config }),
                 () => isFunction(model.create),
                 ({ getById }) => model.create({ endpoint, getById }),
                 () => isObject(model.create),

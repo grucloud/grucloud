@@ -129,6 +129,7 @@ exports.MyModuleMyResource = () => ({
     }),
   configDefault: ({
     name,
+    namespace,
     properties: { Tags, ...otherProps },
     dependencies: {},
     config,
