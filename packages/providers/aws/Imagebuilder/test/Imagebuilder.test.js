@@ -46,11 +46,17 @@ describe("Imagebuilder", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Image", () =>
+  it("Image", () =>
     pipe([
       () => ({
         groupType: "Imagebuilder::Image",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            arn: `arn:aws:imagebuilder:${
+              config.region
+            }:${config.accountId()}:image/-9e6pj-a4i-yio-suowxez4wnse94ma0mxledfuw-b8sfoo2d/9582574101122192693379095400736515105.x.x`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

@@ -106,7 +106,10 @@ exports.ImagebuilderImage = () => ({
         pipe([get("infrastructureConfigurationArn")]),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: [
+    "ResourceNotFoundException",
+    "InvalidParameterValueException",
+  ],
   filterLive: ({ lives, providerConfig }) =>
     pipe([
       tap((params) => {
