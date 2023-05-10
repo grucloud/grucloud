@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 741 resources in 159 services for provider aws:
+List of 742 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -183,7 +183,7 @@ List of 741 resources in 159 services for provider aws:
 * KinesisVideo: 
 [Stream](./resources/KinesisVideo/Stream.md)
 * KMS: 
-[Key](./resources/KMS/Key.md)
+[Key](./resources/KMS/Key.md), [ReplicaKey](./resources/KMS/ReplicaKey.md)
 * LakeFormation: 
 [DataLakeSettings](./resources/LakeFormation/DataLakeSettings.md), [LFTag](./resources/LakeFormation/LFTag.md), [Resource](./resources/LakeFormation/Resource.md)
 * Lambda: 

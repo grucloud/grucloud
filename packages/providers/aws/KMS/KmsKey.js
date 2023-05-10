@@ -23,6 +23,7 @@ const {
   managedByOther,
   putKeyPolicy,
   assignTags,
+  ignoreErrorCodes,
 } = require("./KMSCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createAlias-property
@@ -65,7 +66,7 @@ exports.KmsKey = () => ({
     ]),
   findName,
   findId,
-  ignoreErrorCodes: ["NotFoundException"],
+  ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#describeKey-property
   getById,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#listKeys-property

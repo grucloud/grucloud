@@ -12,11 +12,7 @@ const {
 } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const {
-  buildTags,
-  replaceRegion,
-  replaceAccountAndRegion,
-} = require("../AwsCommon");
+const { buildTags, replaceAccountAndRegion } = require("../AwsCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./CodePipelineCommon");

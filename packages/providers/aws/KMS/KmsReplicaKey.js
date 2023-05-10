@@ -21,6 +21,7 @@ const {
   cannotBeDeleted,
   managedByOther,
   assignTags,
+  ignoreErrorCodes,
 } = require("./KMSCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html
@@ -41,7 +42,7 @@ exports.KmsReplicaKey = () => ({
   ],
   findName,
   findId,
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes,
   dependencies: {
     kmsKey: {
       type: "Key",
