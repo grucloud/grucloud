@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 750 resources in 159 services for provider aws:
+List of 751 resources in 159 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -237,7 +237,7 @@ List of 750 resources in 159 services for provider aws:
 * QuickSight: 
 [AccountSubscription](./resources/QuickSight/AccountSubscription.md), [Analysis](./resources/QuickSight/Analysis.md), [Dashboard](./resources/QuickSight/Dashboard.md), [DataSet](./resources/QuickSight/DataSet.md), [DataSource](./resources/QuickSight/DataSource.md), [Folder](./resources/QuickSight/Folder.md), [FolderMembership](./resources/QuickSight/FolderMembership.md), [IAMPolicyAssignment](./resources/QuickSight/IAMPolicyAssignment.md), [Ingestion](./resources/QuickSight/Ingestion.md), [Group](./resources/QuickSight/Group.md), [GroupMembership](./resources/QuickSight/GroupMembership.md), [RefreshSchedule](./resources/QuickSight/RefreshSchedule.md), [Template](./resources/QuickSight/Template.md), [Theme](./resources/QuickSight/Theme.md), [User](./resources/QuickSight/User.md)
 * RAM: 
-[ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
+[Permission](./resources/RAM/Permission.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md), [ResourceShare](./resources/RAM/ResourceShare.md)
 * Rbin: 
 [Rule](./resources/Rbin/Rule.md)
 * RDS: 

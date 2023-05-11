@@ -3,15 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "project-vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
   { type: "InternetGateway", group: "EC2", name: "project-igw" },
   {
     type: "InternetGatewayAttachment",
@@ -22,16 +13,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: ({ config }) => `project-subnet-public1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 0,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "project-vpc",
+      ig: "project-igw",
+      routeTable: "project-vpc::project-rtb-public",
     }),
   },
   {
@@ -51,14 +40,25 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Route",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
-      ig: "project-igw",
-      routeTable: "project-vpc::project-rtb-public",
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "project-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -79,6 +79,7 @@ exports.createResources = () => [
         "account.amazonaws.com",
         "auditmanager.amazonaws.com",
         "cloudtrail.amazonaws.com",
+        "config.amazonaws.com",
         "guardduty.amazonaws.com",
         "inspector2.amazonaws.com",
         "member.org.stacksets.cloudformation.amazonaws.com",
@@ -86,16 +87,8 @@ exports.createResources = () => [
         "securityhub.amazonaws.com",
         "ssm.amazonaws.com",
         "sso.amazonaws.com",
+        "storage-lens.s3.amazonaws.com",
       ],
-    }),
-  },
-  {
-    type: "ResourceShare",
-    group: "RAM",
-    properties: ({}) => ({
-      allowExternalPrincipals: false,
-      featureSet: "STANDARD",
-      name: "my-share",
     }),
   },
   {
@@ -129,6 +122,14 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       resourceShare: "my-share",
       subnet: `project-vpc::project-subnet-public1-${config.region}a`,
+    }),
+  },
+  {
+    type: "ResourceShare",
+    group: "RAM",
+    properties: ({}) => ({
+      featureSet: "STANDARD",
+      name: "my-share",
     }),
   },
 ];

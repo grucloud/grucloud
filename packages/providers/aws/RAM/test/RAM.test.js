@@ -4,11 +4,17 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("RAM", async function () {
-  it.skip("Permission", () =>
+  it("Permission", () =>
     pipe([
       () => ({
         groupType: "RAM::Permission",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            permissionArn: `arn:aws:ram:${
+              config.region
+            }:${config.accountId()}:permission/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
