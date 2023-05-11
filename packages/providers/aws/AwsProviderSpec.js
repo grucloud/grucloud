@@ -62,6 +62,8 @@ const GROUPS = [
   ["Budgets", "budgets"],
   ["CodeArtifact", "codeartifact"],
   ["CodeBuild", "codebuild"],
+  // TODO
+  //["CodeCatalyst", "codecatalyst"],
   ["CodeCommit", "codecommit"],
   ["CodeDeploy", "codedeploy"],
   ["CodePipeline", "codepipeline"],
