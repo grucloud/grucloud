@@ -10,7 +10,7 @@ const {
   assign,
   map,
 } = require("rubico");
-const { defaultsDeep, first, pluck } = require("rubico/x");
+const { defaultsDeep, first, pluck, when } = require("rubico/x");
 
 const { replaceWithName, omitIfEmpty } = require("@grucloud/core/Common");
 
