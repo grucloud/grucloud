@@ -145,7 +145,32 @@ exports.createResources = () => [
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "target-group-web",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "target-group-web",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 80,
       Protocol: "HTTP",
       Tags: [
@@ -157,19 +182,44 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       loadBalancer: "load-balancer",
-      targetGroup: "target-group-web",
+      targetGroups: ["target-group-web"],
     }),
   },
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "target-group-web",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "target-group-web",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 443,
       Protocol: "HTTPS",
     }),
     dependencies: ({}) => ({
       loadBalancer: "load-balancer",
-      targetGroup: "target-group-rest",
+      targetGroups: ["target-group-web"],
       certificate: "grucloud.org",
     }),
   },
@@ -267,11 +317,12 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "target-group-rest",
-      Protocol: "HTTP",
-      Port: 30020,
-      HealthCheckProtocol: "HTTP",
       HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "target-group-rest",
+      Port: 30020,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
       Tags: [
         {
           Key: "mykey",
@@ -287,11 +338,12 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "target-group-web",
-      Protocol: "HTTP",
-      Port: 30010,
-      HealthCheckProtocol: "HTTP",
       HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "target-group-web",
+      Port: 30010,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
     }),
     dependencies: ({}) => ({
       vpc: "vpc",

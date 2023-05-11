@@ -11,13 +11,13 @@ skinparam monochrome true
 ++++ Stage (1)
 ++++ VpcLink (1)
 +++ EC2
-++++ Vpc (1)
-++++ Subnet (2)
 ++++ RouteTable (2)
 ++++ RouteTableAssociation (2)
 ++++ SecurityGroup (2)
 ++++ SecurityGroupRuleIngress (2)
 ++++ SecurityGroupRuleEgress (1)
+++++ Subnet (2)
+++++ Vpc (1)
 +++ ECS
 ++++ Cluster (1)
 ++++ Service (1)

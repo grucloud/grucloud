@@ -417,13 +417,38 @@ exports.createResources = () => [
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "EC2Co-Defau-MMUISWY3DEAQ",
+                })}`,
+                Weight: 100,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "EC2Co-Defau-MMUISWY3DEAQ",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 80,
       Protocol: "HTTP",
     }),
     dependencies: ({}) => ({
       loadBalancer: "EC2Co-EcsEl-GK4BG406T8NP",
-      targetGroup: "EC2Co-Defau-MMUISWY3DEAQ",
+      targetGroups: ["EC2Co-Defau-MMUISWY3DEAQ"],
     }),
   },
   {
@@ -455,32 +480,18 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "EC2Co-Defau-MMUISWY3DEAQ",
-      Protocol: "HTTP",
-      Port: 80,
-      HealthCheckProtocol: "HTTP",
       HealthCheckPort: "traffic-port",
-      TargetType: "ip",
+      HealthCheckProtocol: "HTTP",
+      Name: "EC2Co-Defau-MMUISWY3DEAQ",
+      Port: 80,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
       Tags: [
         {
           Key: "Description",
           Value: "Created for ECS cluster cluster",
         },
       ],
-    }),
-    dependencies: ({}) => ({
-      vpc: "ECS cluster - VPC",
-    }),
-  },
-  {
-    type: "TargetGroup",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Name: "tg-cluste-api-2",
-      Protocol: "HTTP",
-      Port: 80,
-      HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({
@@ -491,11 +502,28 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "tg2",
-      Protocol: "HTTP",
-      Port: 80,
-      HealthCheckProtocol: "HTTP",
       HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "tg-cluste-api-2",
+      Port: 80,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
+      TargetType: "ip",
+    }),
+    dependencies: ({}) => ({
+      vpc: "ECS cluster - VPC",
+    }),
+  },
+  {
+    type: "TargetGroup",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "tg2",
+      Port: 80,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({

@@ -420,13 +420,38 @@ exports.createResources = () => [
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "CdkSta-MyFar-NUW0IUOKU6VV",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "CdkSta-MyFar-NUW0IUOKU6VV",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 80,
       Protocol: "HTTP",
     }),
     dependencies: ({}) => ({
       loadBalancer: "CdkSt-MyFar-1BJ92JK9UITKG",
-      targetGroup: "CdkSta-MyFar-NUW0IUOKU6VV",
+      targetGroups: ["CdkSta-MyFar-NUW0IUOKU6VV"],
     }),
   },
   {
@@ -452,11 +477,12 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "CdkSta-MyFar-NUW0IUOKU6VV",
-      Protocol: "HTTP",
-      Port: 80,
-      HealthCheckProtocol: "HTTP",
       HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "CdkSta-MyFar-NUW0IUOKU6VV",
+      Port: 80,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({

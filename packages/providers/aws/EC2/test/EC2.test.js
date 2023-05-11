@@ -643,11 +643,11 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("VpcEndpointService", () =>
+  it("VpcEndpointService", () =>
     pipe([
       () => ({
         groupType: "EC2::VpcEndpointService",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ServiceId: "vpce-svc-123456789" }],
       }),
       awsResourceTest,
     ])());

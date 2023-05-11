@@ -302,13 +302,38 @@ exports.createResources = () => [
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "sam-a-LoadB-29TIQLVPQQY9",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "sam-a-LoadB-29TIQLVPQQY9",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 80,
       Protocol: "HTTP",
     }),
     dependencies: ({}) => ({
       loadBalancer: "sam-a-LoadB-EC9ZTKNG2RSH",
-      targetGroup: "sam-a-LoadB-29TIQLVPQQY9",
+      targetGroups: ["sam-a-LoadB-29TIQLVPQQY9"],
     }),
   },
   {
@@ -334,11 +359,12 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "sam-a-LoadB-29TIQLVPQQY9",
-      Protocol: "HTTP",
-      Port: 80,
-      HealthCheckProtocol: "HTTP",
       HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "sam-a-LoadB-29TIQLVPQQY9",
+      Port: 80,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({

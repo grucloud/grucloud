@@ -592,13 +592,38 @@ systemctl start nginx
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "lattice-ecs-testing-target-group",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "lattice-ecs-testing-target-group",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 80,
       Protocol: "HTTP",
     }),
     dependencies: ({}) => ({
       loadBalancer: "lattice-ecs-testing-loadbalancer",
-      targetGroup: "lattice-ecs-testing-target-group",
+      targetGroups: ["lattice-ecs-testing-target-group"],
     }),
   },
   {
@@ -624,12 +649,13 @@ systemctl start nginx
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "lattice-ecs-testing-target-group",
-      Protocol: "HTTP",
-      Port: 80,
-      HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
       HealthCheckIntervalSeconds: 10,
+      HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "lattice-ecs-testing-target-group",
+      Port: 80,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({
@@ -658,16 +684,16 @@ systemctl start nginx
     properties: ({}) => ({
       RoleName: "lattice-ec2-testing-role",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ec2.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       AttachedPolicies: [
         {
@@ -683,8 +709,17 @@ systemctl start nginx
     properties: ({ getId }) => ({
       RoleName: "lattice-ecs-GitHub-to-fastapi-role",
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
+            Effect: "Allow",
+            Principal: {
+              Federated: `${getId({
+                type: "OpenIDConnectProvider",
+                group: "IAM",
+                name: "oidp::token.actions.githubusercontent.com",
+              })}`,
+            },
             Action: "sts:AssumeRoleWithWebIdentity",
             Condition: {
               "ForAnyValue:StringEquals": {
@@ -695,17 +730,8 @@ systemctl start nginx
                 ],
               },
             },
-            Effect: "Allow",
-            Principal: {
-              Federated: `${getId({
-                type: "OpenIDConnectProvider",
-                group: "IAM",
-                name: "oidp::token.actions.githubusercontent.com",
-              })}`,
-            },
           },
         ],
-        Version: "2012-10-17",
       },
       AttachedPolicies: [
         {
@@ -725,16 +751,16 @@ systemctl start nginx
     properties: ({}) => ({
       RoleName: "lattice-ecs-testing-auto-scaling-role",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       AttachedPolicies: [
         {
@@ -751,16 +777,16 @@ systemctl start nginx
     properties: ({}) => ({
       RoleName: "lattice-ecs-testing-execution-role",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
       AttachedPolicies: [
         {
@@ -777,16 +803,16 @@ systemctl start nginx
     properties: ({}) => ({
       RoleName: "lattice-ecs-testing-task-role",
       AssumeRolePolicyDocument: {
+        Version: "2008-10-17",
         Statement: [
           {
-            Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
               Service: "ecs-tasks.amazonaws.com",
             },
+            Action: "sts:AssumeRole",
           },
         ],
-        Version: "2008-10-17",
       },
     }),
   },

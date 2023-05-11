@@ -69,26 +69,76 @@ exports.createResources = () => [
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "target-group-web",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "target-group-web",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 80,
       Protocol: "HTTP",
       Tags: [{ Key: "mykey1", Value: "value" }],
     }),
     dependencies: () => ({
       loadBalancer: "load-balancer",
-      targetGroup: "target-group-web",
+      targetGroups: ["target-group-web"],
     }),
   },
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "target-group-web",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "target-group-web",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 443,
       Protocol: "HTTPS",
     }),
     dependencies: () => ({
       loadBalancer: "load-balancer",
-      targetGroup: "target-group-rest",
+      targetGroups: ["target-group-rest"],
       certificate: "grucloud.org",
     }),
   },

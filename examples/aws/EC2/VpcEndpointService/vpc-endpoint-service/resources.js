@@ -3,13 +3,13 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "InternetGateway", group: "EC2", name: "wafv2-igw" },
+  { type: "InternetGateway", group: "EC2", name: "my-vpc-igw" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
     dependencies: ({}) => ({
-      vpc: "wafv2-vpc",
-      internetGateway: "wafv2-igw",
+      vpc: "my-vpc-vpc",
+      internetGateway: "my-vpc-igw",
     }),
   },
   {
@@ -19,76 +19,79 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      ig: "wafv2-igw",
-      routeTable: "wafv2-vpc::wafv2-rtb-public",
+      ig: "my-vpc-igw",
+      routeTable: "my-vpc-vpc::my-vpc-rtb-public",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "wafv2-rtb-public",
+    name: "my-vpc-rtb-public",
     dependencies: ({}) => ({
-      vpc: "wafv2-vpc",
+      vpc: "my-vpc-vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "wafv2-vpc::wafv2-rtb-public",
-      subnet: `wafv2-vpc::wafv2-subnet-public1-${config.region}a`,
+      routeTable: "my-vpc-vpc::my-vpc-rtb-public",
+      subnet: `my-vpc-vpc::my-vpc-subnet-public1-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "wafv2-vpc::wafv2-rtb-public",
-      subnet: `wafv2-vpc::wafv2-subnet-public2-${config.region}b`,
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::wafv2-vpc::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "wafv2-vpc",
+      routeTable: "my-vpc-vpc::my-vpc-rtb-public",
+      subnet: `my-vpc-vpc::my-vpc-subnet-public2-${config.region}b`,
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `wafv2-subnet-public1-${config.region}a`,
+    name: ({ config }) => `my-vpc-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
       NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
-      vpc: "wafv2-vpc",
+      vpc: "my-vpc-vpc",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `wafv2-subnet-public2-${config.region}b`,
+    name: ({ config }) => `my-vpc-subnet-public2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
       NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
-      vpc: "wafv2-vpc",
+      vpc: "my-vpc-vpc",
     }),
   },
   {
     type: "Vpc",
     group: "EC2",
-    name: "wafv2-vpc",
+    name: "my-vpc-vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
       DnsHostnames: true,
+    }),
+  },
+  {
+    type: "VpcEndpointService",
+    group: "EC2",
+    name: "my-vpc-endpoint-service",
+    properties: ({}) => ({
+      AcceptanceRequired: true,
+      SupportedIpAddressTypes: ["ipv4"],
+    }),
+    dependencies: ({}) => ({
+      networkLoadBalancers: ["nlb"],
     }),
   },
   {
@@ -103,89 +106,61 @@ exports.createResources = () => [
                 TargetGroupArn: `${getId({
                   type: "TargetGroup",
                   group: "ElasticLoadBalancingV2",
-                  name: "tg1",
+                  name: "tg",
                 })}`,
-                Weight: 1,
               },
             ],
-            TargetGroupStickinessConfig: {
-              Enabled: false,
-            },
           },
+          Order: 1,
           TargetGroupArn: `${getId({
             type: "TargetGroup",
             group: "ElasticLoadBalancingV2",
-            name: "tg1",
+            name: "tg",
           })}`,
           Type: "forward",
         },
       ],
       Port: 80,
-      Protocol: "HTTP",
+      Protocol: "TCP",
     }),
     dependencies: ({}) => ({
-      loadBalancer: "alb",
-      targetGroups: ["tg1"],
+      loadBalancer: "nlb",
+      targetGroups: ["tg"],
     }),
   },
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "alb",
+      Name: "nlb",
       Scheme: "internet-facing",
-      Type: "application",
+      Type: "network",
       IpAddressType: "ipv4",
     }),
     dependencies: ({ config }) => ({
       subnets: [
-        `wafv2-vpc::wafv2-subnet-public1-${config.region}a`,
-        `wafv2-vpc::wafv2-subnet-public2-${config.region}b`,
+        `my-vpc-vpc::my-vpc-subnet-public1-${config.region}a`,
+        `my-vpc-vpc::my-vpc-subnet-public2-${config.region}b`,
       ],
-      securityGroups: ["sg::wafv2-vpc::default"],
     }),
   },
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      HealthCheckPort: "traffic-port",
-      HealthCheckProtocol: "HTTP",
-      Name: "tg1",
+      Name: "tg",
+      Protocol: "TCP",
       Port: 80,
-      Protocol: "HTTP",
-      ProtocolVersion: "HTTP1",
-      TargetType: "ip",
+      HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
+      HealthCheckTimeoutSeconds: 6,
+      Matcher: {
+        HttpCode: "200-399",
+      },
+      TargetType: "alb",
     }),
     dependencies: ({}) => ({
-      vpc: "wafv2-vpc",
-    }),
-  },
-  {
-    type: "WebACL",
-    group: "WAFv2",
-    properties: ({}) => ({
-      Capacity: 0,
-      DefaultAction: {
-        Allow: {},
-      },
-      ManagedByFirewallManager: false,
-      Name: "my-webacl",
-      Rules: [],
-      Scope: "REGIONAL",
-      VisibilityConfig: {
-        CloudWatchMetricsEnabled: true,
-        MetricName: "my-webacl",
-        SampledRequestsEnabled: true,
-      },
-    }),
-  },
-  {
-    type: "WebACLAssociation",
-    group: "WAFv2",
-    dependencies: ({}) => ({
-      webAcl: "my-webacl",
-      loadBalancer: "alb",
+      vpc: "my-vpc-vpc",
     }),
   },
 ];

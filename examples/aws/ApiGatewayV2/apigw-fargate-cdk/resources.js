@@ -37,7 +37,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "ApigwFargate",
-      listener: "listener::CdkSt-MyFar-RZX6AW5H3B08::HTTP::80",
+      listener: "listener::CdkSt-MyFar-OCHRAIQDW7A4::HTTP::80",
       vpcLink: "V2 VPC Link",
     }),
   },
@@ -50,7 +50,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       api: "ApigwFargate",
       integration:
-        "integration::ApigwFargate::listener::CdkSt-MyFar-RZX6AW5H3B08::HTTP::80",
+        "integration::ApigwFargate::listener::CdkSt-MyFar-OCHRAIQDW7A4::HTTP::80",
     }),
   },
   {
@@ -82,18 +82,18 @@ exports.createResources = () => [
     group: "CloudWatchLogs",
     properties: ({}) => ({
       logGroupName:
-        "CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-0cga6xIMrwPR",
+        "CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-4poohb97upG7",
     }),
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet1",
+    name: "CdkStack/MyVpc/PublicSubnet1",
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet2",
+    name: "CdkStack/MyVpc/PublicSubnet2",
   },
   { type: "InternetGateway", group: "EC2", name: "CdkStack/MyVpc" },
   {
@@ -107,25 +107,25 @@ exports.createResources = () => [
   {
     type: "NatGateway",
     group: "EC2",
-    name: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet1",
+    name: "CdkStack/MyVpc/PublicSubnet1",
     properties: ({}) => ({
-      PrivateIpAddressIndex: 8305,
+      PrivateIpAddressIndex: 4190,
     }),
     dependencies: ({}) => ({
       subnet: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet1",
-      eip: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet1",
+      eip: "CdkStack/MyVpc/PublicSubnet1",
     }),
   },
   {
     type: "NatGateway",
     group: "EC2",
-    name: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet2",
+    name: "CdkStack/MyVpc/PublicSubnet2",
     properties: ({}) => ({
-      PrivateIpAddressIndex: 3461,
+      PrivateIpAddressIndex: 3525,
     }),
     dependencies: ({}) => ({
       subnet: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet2",
-      eip: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet2",
+      eip: "CdkStack/MyVpc/PublicSubnet2",
     }),
   },
   {
@@ -135,7 +135,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      natGateway: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet1",
+      natGateway: "CdkStack/MyVpc/PublicSubnet1",
       routeTable: "CdkStack/MyVpc::CdkStack/MyVpc/PrivateSubnet1",
     }),
   },
@@ -146,7 +146,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      natGateway: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet2",
+      natGateway: "CdkStack/MyVpc/PublicSubnet2",
       routeTable: "CdkStack/MyVpc::CdkStack/MyVpc/PrivateSubnet2",
     }),
   },
@@ -241,7 +241,7 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       GroupName:
-        "CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
+        "CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-1XGGZRPK0REHQ",
       Description:
         "Automatically created Security Group for ELB CdkStackMyFargateServiceLBE7D87832",
     }),
@@ -253,7 +253,7 @@ exports.createResources = () => [
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
-      GroupName: "CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
+      GroupName: "CdkStack-MyFargateServiceSecurityGroup7016792A-FXWG4MFWT4IB",
       Description: "CdkStack/MyFargateService/Service/SecurityGroup",
     }),
     dependencies: ({}) => ({
@@ -276,7 +276,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-1XGGZRPK0REHQ",
     }),
   },
   {
@@ -289,9 +289,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceSecurityGroup7016792A-FXWG4MFWT4IB",
       securityGroupFrom: [
-        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-1XGGZRPK0REHQ",
       ],
     }),
   },
@@ -305,9 +305,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-1XGGZRPK0REHQ",
       securityGroupFrom: [
-        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceSecurityGroup7016792A-FXWG4MFWT4IB",
       ],
     }),
   },
@@ -378,7 +378,7 @@ exports.createResources = () => [
     type: "Cluster",
     group: "ECS",
     properties: ({}) => ({
-      clusterName: "CdkStack-MyCluster4C1BA579-fZi4x9tf2fSV",
+      clusterName: "CdkStack-MyCluster4C1BA579-Ca3ghlIXp91U",
     }),
   },
   {
@@ -405,7 +405,7 @@ exports.createResources = () => [
           targetGroupArn: `${getId({
             type: "TargetGroup",
             group: "ElasticLoadBalancingV2",
-            name: "CdkSt-MyFar-JZPHMT1E0V5K",
+            name: "CdkSta-MyFar-PXR6LQDWSIIJ",
           })}`,
         },
       ],
@@ -417,19 +417,19 @@ exports.createResources = () => [
       platformFamily: "Linux",
       platformVersion: "LATEST",
       schedulingStrategy: "REPLICA",
-      serviceName: "CdkStack-MyFargateServiceF490C034-ChqvqbMg0Rkx",
+      serviceName: "CdkStack-MyFargateServiceF490C034-lTQybhmxxdlq",
     }),
     dependencies: ({}) => ({
-      cluster: "CdkStack-MyCluster4C1BA579-fZi4x9tf2fSV",
+      cluster: "CdkStack-MyCluster4C1BA579-Ca3ghlIXp91U",
       taskDefinition: "CdkStackMyFargateServiceTaskDef846A07DE",
       subnets: [
         "CdkStack/MyVpc::CdkStack/MyVpc/PrivateSubnet1",
         "CdkStack/MyVpc::CdkStack/MyVpc/PrivateSubnet2",
       ],
       securityGroups: [
-        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceSecurityGroup7016792A-FXWG4MFWT4IB",
       ],
-      targetGroups: ["CdkSt-MyFar-JZPHMT1E0V5K"],
+      targetGroups: ["CdkSta-MyFar-PXR6LQDWSIIJ"],
     }),
   },
   {
@@ -449,7 +449,7 @@ exports.createResources = () => [
             logDriver: "awslogs",
             options: {
               "awslogs-group":
-                "CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-0cga6xIMrwPR",
+                "CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-4poohb97upG7",
               "awslogs-region": `${config.region}`,
               "awslogs-stream-prefix": "MyFargateService",
             },
@@ -472,28 +472,53 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       taskRole:
-        "CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-1ESH968PSU9BX",
+        "CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-1LT728SNSTMAI",
       executionRole:
-        "CdkStack-MyFargateServiceTaskDefExecutionRoleD6305-1DPVFNV7DEJTX",
+        "CdkStack-MyFargateServiceTaskDefExecutionRoleD6305-1VI1B7HLSW8C4",
     }),
   },
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "CdkSta-MyFar-PXR6LQDWSIIJ",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "CdkSta-MyFar-PXR6LQDWSIIJ",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 80,
       Protocol: "HTTP",
     }),
     dependencies: ({}) => ({
-      loadBalancer: "CdkSt-MyFar-RZX6AW5H3B08",
-      targetGroup: "CdkSt-MyFar-JZPHMT1E0V5K",
+      loadBalancer: "CdkSt-MyFar-OCHRAIQDW7A4",
+      targetGroups: ["CdkSta-MyFar-PXR6LQDWSIIJ"],
     }),
   },
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "CdkSt-MyFar-RZX6AW5H3B08",
+      Name: "CdkSt-MyFar-OCHRAIQDW7A4",
       Scheme: "internal",
       Type: "application",
       IpAddressType: "ipv4",
@@ -504,7 +529,7 @@ exports.createResources = () => [
         "CdkStack/MyVpc::CdkStack/MyVpc/PrivateSubnet2",
       ],
       securityGroups: [
-        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-1XGGZRPK0REHQ",
       ],
     }),
   },
@@ -512,11 +537,12 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "CdkSt-MyFar-JZPHMT1E0V5K",
-      Protocol: "HTTP",
-      Port: 80,
-      HealthCheckProtocol: "HTTP",
       HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "CdkSta-MyFar-PXR6LQDWSIIJ",
+      Port: 80,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({
@@ -528,7 +554,7 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({ config }) => ({
       RoleName:
-        "CdkStack-MyFargateServiceTaskDefExecutionRoleD6305-1DPVFNV7DEJTX",
+        "CdkStack-MyFargateServiceTaskDefExecutionRoleD6305-1VI1B7HLSW8C4",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -544,6 +570,7 @@ exports.createResources = () => [
       Policies: [
         {
           PolicyDocument: {
+            Version: "2012-10-17",
             Statement: [
               {
                 Action: [
@@ -551,27 +578,26 @@ exports.createResources = () => [
                   "ecr:GetDownloadUrlForLayer",
                   "ecr:BatchGetImage",
                 ],
-                Effect: "Allow",
                 Resource: `arn:aws:ecr:${
                   config.region
                 }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${
                   config.region
                 }`,
+                Effect: "Allow",
               },
               {
                 Action: "ecr:GetAuthorizationToken",
-                Effect: "Allow",
                 Resource: "*",
+                Effect: "Allow",
               },
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-                Effect: "Allow",
                 Resource: `arn:aws:logs:${
                   config.region
-                }:${config.accountId()}:log-group:CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-0cga6xIMrwPR:*`,
+                }:${config.accountId()}:log-group:CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-4poohb97upG7:*`,
+                Effect: "Allow",
               },
             ],
-            Version: "2012-10-17",
           },
           PolicyName:
             "MyFargateServiceTaskDefExecutionRoleDefaultPolicyEC22B20F",
@@ -584,7 +610,7 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({}) => ({
       RoleName:
-        "CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-1ESH968PSU9BX",
+        "CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-1LT728SNSTMAI",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

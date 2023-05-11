@@ -7,15 +7,15 @@ skinparam monochrome true
 ++++ Application (1)
 ++++ DeploymentGroup (1)
 +++ EC2
-++++ Vpc (1)
 ++++ InternetGateway (1)
 ++++ InternetGatewayAttachment (1)
-++++ Subnet (2)
+++++ Route (1)
 ++++ RouteTable (1)
 ++++ RouteTableAssociation (2)
-++++ Route (1)
 ++++ SecurityGroup (3)
 ++++ SecurityGroupRuleIngress (4)
+++++ Subnet (2)
+++++ Vpc (1)
 +++ ECS
 ++++ Cluster (1)
 ++++ Service (1)

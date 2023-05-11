@@ -64,9 +64,6 @@ const decorate = ({ endpoint }) =>
         pick(["TargetGroupArn"]),
         endpoint().describeTargetHealth,
         get("TargetHealthDescriptions"),
-        tap((params) => {
-          assert(true);
-        }),
       ]),
     }),
   ]);
@@ -116,7 +113,7 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
     UnhealthyThresholdCount: 2,
     Matcher: { HttpCode: "200" },
     TargetType: "instance",
-    ProtocolVersion: "HTTP1",
+    //ProtocolVersion: "HTTP1", // You cannot specify the protocol version for a target group with the 'TCP' protocol
     IpAddressType: "ipv4",
   },
   omitProperties: [
@@ -125,22 +122,8 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
     "LoadBalancerArns",
     "UnhealthyThresholdCount",
     "HealthyThresholdCount",
+    "VpcId",
   ],
-  filterLive: () =>
-    pick([
-      "Name",
-      "Protocol",
-      "Port",
-      "HealthCheckProtocol",
-      "HealthCheckPort",
-      "HealthCheckEnabled",
-      "HealthCheckIntervalSeconds",
-      "HealthCheckTimeoutSeconds",
-      "HealthCheckPath",
-      "Matcher",
-      "TargetType",
-      "ProtocolVersion",
-    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#getTargetGroup-property
   getById: {
     pickId: ({ TargetGroupArn, Names }) => ({

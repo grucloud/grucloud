@@ -4,9 +4,9 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ Vpc (1)
-++++ Subnet (2)
 ++++ SecurityGroup (1)
+++++ Subnet (2)
+++++ Vpc (1)
 +++ ElasticLoadBalancingV2
 ++++ Listener (1)
 ++++ LoadBalancer (1)

@@ -6,18 +6,18 @@ skinparam monochrome true
 +++ CloudWatchLogs
 ++++ LogGroup (1)
 +++ EC2
-++++ Vpc (1)
+++++ ElasticIpAddress (2)
 ++++ InternetGateway (1)
 ++++ InternetGatewayAttachment (1)
 ++++ NatGateway (2)
-++++ Subnet (4)
+++++ Route (4)
 ++++ RouteTable (4)
 ++++ RouteTableAssociation (4)
-++++ Route (4)
 ++++ SecurityGroup (3)
 ++++ SecurityGroupRuleIngress (2)
 ++++ SecurityGroupRuleEgress (1)
-++++ ElasticIpAddress (2)
+++++ Subnet (4)
+++++ Vpc (1)
 +++ ECS
 ++++ Cluster (1)
 ++++ Service (1)

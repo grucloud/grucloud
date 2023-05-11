@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, or, omit } = require("rubico");
+const { pipe, tap, get, pick, map, assign, or, omit } = require("rubico");
 const {
   defaultsDeep,
   first,
@@ -11,7 +11,7 @@ const {
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { hasDependency } = require("@grucloud/core/generatorUtils");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags, hasKeyInTags } = require("../AwsCommon");
@@ -37,35 +37,8 @@ const certificateProperties = ({ certificate }) =>
     })
   )();
 
-const targetGroupProperties = ({ targetGroup }) =>
-  when(
-    () => targetGroup,
-    () => ({
-      DefaultActions: [
-        {
-          Type: "forward",
-          TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
-          Order: 1,
-          ForwardConfig: {
-            TargetGroups: [
-              {
-                TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
-                Weight: 100,
-              },
-            ],
-            TargetGroupStickinessConfig: {
-              DurationSeconds: 3600,
-              Enabled: false,
-            },
-          },
-        },
-      ],
-    })
-  )();
-
 const assignTags = ({ endpoint }) =>
-  unless(
-    isEmpty,
+  pipe([
     assign({
       Tags: pipe([
         ({ ListenerArn }) => ({ ResourceArns: [ListenerArn] }),
@@ -74,8 +47,8 @@ const assignTags = ({ endpoint }) =>
         first,
         get("Tags"),
       ]),
-    })
-  );
+    }),
+  ]);
 
 const decorate = ({ endpoint }) =>
   pipe([
@@ -83,6 +56,7 @@ const decorate = ({ endpoint }) =>
       assert(endpoint);
     }),
     assignTags({ endpoint }),
+    omitIfEmpty(["AlpnPolicy", "Certificates"]),
   ]);
 
 const managedByOther = () =>
@@ -96,11 +70,6 @@ const managedByOther = () =>
   ]);
 
 const ignoreErrorCodes = ["ListenerNotFound", "ListenerNotFoundException"];
-
-// const findNamespace = findNamespaceInTagsOrEksCluster({
-//   config,
-//   key: "elbv2.k8s.aws/cluster",
-// });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html
 exports.ElasticLoadBalancingV2Listener = ({ compare }) => ({
@@ -154,9 +123,10 @@ exports.ElasticLoadBalancingV2Listener = ({ compare }) => ({
       parent: true,
       dependencyId: ({ lives, config }) => get("LoadBalancerArn"),
     },
-    targetGroup: {
+    targetGroups: {
       type: "TargetGroup",
       group: "ElasticLoadBalancingV2",
+      list: true,
       dependencyIds: ({ lives, config }) =>
         pipe([get("DefaultActions"), pluck("TargetGroupArn")]),
     },
@@ -167,39 +137,74 @@ exports.ElasticLoadBalancingV2Listener = ({ compare }) => ({
         pipe([get("Certificates"), pluck("CertificateArn")]),
     },
   },
-  omitProperties: ["ListenerArn", "SslPolicy"],
-  managedByOther:
-    ({ lives, config }) =>
-    (live) =>
-      pipe([
-        () => live,
-        get("LoadBalancerArn"),
-        lives.getById({
-          type: "LoadBalancer",
-          group: "ElasticLoadBalancingV2",
-          providerName: config.providerName,
-        }),
-        get("managedByOther"),
-      ])(),
+  omitProperties: [
+    "ListenerArn",
+    "SslPolicy",
+    "LoadBalancerArn",
+    "Certificates",
+  ],
+  managedByOther: ({ lives, config }) =>
+    pipe([
+      get("LoadBalancerArn"),
+      lives.getById({
+        type: "LoadBalancer",
+        group: "ElasticLoadBalancingV2",
+        providerName: config.providerName,
+      }),
+      get("managedByOther"),
+    ]),
   filterLive: pipe([
-    ({ resource }) =>
-      (live) =>
-        pipe([
-          () => live,
-          when(
-            () =>
-              hasDependency({
-                type: "TargetGroup",
-                group: "ElasticLoadBalancingV2",
-              })(resource),
-            omit(["DefaultActions"])
-          ),
-          pick(["Port", "Protocol", "DefaultActions"]),
-        ])(),
+    ({ providerConfig, lives }) =>
+      pipe([
+        assign({
+          DefaultActions: pipe([
+            get("DefaultActions"),
+            map(
+              pipe([
+                when(
+                  get("ForwardConfig.TargetGroups"),
+                  assign({
+                    ForwardConfig: pipe([
+                      get("ForwardConfig"),
+                      assign({
+                        TargetGroups: pipe([
+                          get("TargetGroups"),
+                          map(
+                            assign({
+                              TargetGroupArn: pipe([
+                                get("TargetGroupArn"),
+                                replaceWithName({
+                                  groupType:
+                                    "ElasticLoadBalancingV2::TargetGroup",
+                                  path: "id",
+                                  providerConfig,
+                                  lives,
+                                }),
+                              ]),
+                            })
+                          ),
+                        ]),
+                      }),
+                    ]),
+                  })
+                ),
+                assign({
+                  TargetGroupArn: pipe([
+                    get("TargetGroupArn"),
+                    replaceWithName({
+                      groupType: "ElasticLoadBalancingV2::TargetGroup",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                }),
+              ])
+            ),
+          ]),
+        }),
+      ]),
   ]),
-  compare: compare({
-    filterLive: () => pipe([omitIfEmpty(["AlpnPolicy", "Certificates"])]),
-  }),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#getListener-property
   getById: {
     pickId: pipe([
@@ -227,30 +232,13 @@ exports.ElasticLoadBalancingV2Listener = ({ compare }) => ({
           method: "describeListeners",
           getParam: "Listeners",
           decorate: ({ lives, parent }) =>
-            pipe([
-              assign({
-                Tags: pipe([
-                  ({ ListenerArn }) => ({ ResourceArns: [ListenerArn] }),
-                  endpoint().describeTags,
-                  get("TagDescriptions"),
-                  first,
-                  get("Tags"),
-                ]),
-              }),
-            ]),
+            pipe([decorate({ endpoint, config })]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticLoadBalancingV2.html#createListener-property
   create: {
     method: "createListener",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("Listeners"),
-        first,
-      ]),
+    pickCreated: ({ payload }) => pipe([get("Listeners"), first]),
     config: { retryCount: 60 * 10, retryDelay: 10e3 },
   },
   update: {
@@ -259,9 +247,6 @@ exports.ElasticLoadBalancingV2Listener = ({ compare }) => ({
       pipe([
         () => payload,
         defaultsDeep({ ListenerArn: live.ListenerArn }),
-        tap((params) => {
-          assert(true);
-        }),
         omit(["Tags"]),
       ])(),
   },
@@ -276,7 +261,7 @@ exports.ElasticLoadBalancingV2Listener = ({ compare }) => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { loadBalancer, certificate, targetGroup },
+    dependencies: { loadBalancer, certificate },
     config,
   }) =>
     pipe([
@@ -285,7 +270,6 @@ exports.ElasticLoadBalancingV2Listener = ({ compare }) => ({
       }),
       () => ({}),
       defaultsDeep(certificateProperties({ certificate })),
-      defaultsDeep(targetGroupProperties({ targetGroup })),
       defaultsDeep(otherProps),
       defaultsDeep({
         LoadBalancerArn: getField(loadBalancer, "LoadBalancerArn"),

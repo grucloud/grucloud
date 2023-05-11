@@ -4,19 +4,19 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ Vpc (2)
+++++ ElasticIpAddress (2)
+++++ Instance (1)
 ++++ InternetGateway (2)
 ++++ InternetGatewayAttachment (2)
 ++++ NatGateway (2)
-++++ Subnet (5)
+++++ Route (4)
 ++++ RouteTable (4)
 ++++ RouteTableAssociation (5)
-++++ Route (4)
 ++++ SecurityGroup (5)
 ++++ SecurityGroupRuleIngress (6)
 ++++ SecurityGroupRuleEgress (2)
-++++ ElasticIpAddress (2)
-++++ Instance (1)
+++++ Subnet (5)
+++++ Vpc (2)
 +++ ECS
 ++++ Cluster (1)
 ++++ Service (1)
@@ -26,8 +26,8 @@ skinparam monochrome true
 ++++ LoadBalancer (1)
 ++++ TargetGroup (1)
 +++ IAM
-++++ OpenIDConnectProvider (1)
 ++++ InstanceProfile (1)
+++++ OpenIDConnectProvider (1)
 ++++ Role (5)
 +++ VpcLattice
 ++++ Listener (1)

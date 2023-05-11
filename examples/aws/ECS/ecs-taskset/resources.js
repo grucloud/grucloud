@@ -1026,25 +1026,75 @@ nohup ./startup.sh &
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "appmes-RubyT-HRLNYR1HFN6J",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "appmes-RubyT-HRLNYR1HFN6J",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 80,
       Protocol: "HTTP",
     }),
     dependencies: ({}) => ({
       loadBalancer: "ExtLB-appmesh-workshop",
-      targetGroup: "appmes-RubyT-HRLNYR1HFN6J",
+      targetGroups: ["appmes-RubyT-HRLNYR1HFN6J"],
     }),
   },
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "appmes-Cryst-XSTMVZJTLVER",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "appmes-Cryst-XSTMVZJTLVER",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 3000,
       Protocol: "HTTP",
     }),
     dependencies: ({}) => ({
       loadBalancer: "IntLB-appmesh-workshop",
-      targetGroup: "appmes-Cryst-XSTMVZJTLVER",
+      targetGroups: ["appmes-Cryst-XSTMVZJTLVER"],
     }),
   },
   {
@@ -1091,13 +1141,14 @@ nohup ./startup.sh &
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "appmes-Cryst-XSTMVZJTLVER",
-      Protocol: "HTTP",
-      Port: 3000,
-      HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
       HealthCheckIntervalSeconds: 10,
       HealthCheckPath: "/health",
+      HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "appmes-Cryst-XSTMVZJTLVER",
+      Port: 3000,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({
@@ -1108,16 +1159,17 @@ nohup ./startup.sh &
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "appmes-RubyT-HRLNYR1HFN6J",
-      Protocol: "HTTP",
-      Port: 3000,
-      HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
       HealthCheckIntervalSeconds: 10,
       HealthCheckPath: "/health",
+      HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
       Matcher: {
         HttpCode: "200-299",
       },
+      Name: "appmes-RubyT-HRLNYR1HFN6J",
+      Port: 3000,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
     }),
     dependencies: ({}) => ({
       vpc: "VPC-appmesh-workshop",

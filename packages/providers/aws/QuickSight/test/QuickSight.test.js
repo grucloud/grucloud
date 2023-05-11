@@ -143,6 +143,16 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("TemplateAlias", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::TemplateAlias",
+        livesNotFound: ({ config }) => [
+          { TemplateId: "e123", AwsAccountId: config.accountId() },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("RefreshSchedule", () =>
     pipe([
       () => ({
@@ -157,6 +167,7 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
+
   it("Theme", () =>
     pipe([
       () => ({
@@ -174,6 +185,14 @@ describe("QuickSight", async function () {
         livesNotFound: ({ config }) => [
           { UserName: "e123", AwsAccountId: config.accountId() },
         ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("VpcConnection", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::VpcConnection",
+        livesNotFound: ({ config }) => [{ AwsAccountId: config.accountId() }],
       }),
       awsResourceTest,
     ])());
