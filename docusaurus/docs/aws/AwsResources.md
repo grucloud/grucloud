@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 755 resources in 160 services for provider aws:
+List of 757 resources in 160 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -229,7 +229,7 @@ List of 755 resources in 160 services for provider aws:
 * Organisations: 
 [Account](./resources/Organisations/Account.md), [Policy](./resources/Organisations/Policy.md), [PolicyAttachment](./resources/Organisations/PolicyAttachment.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md), [Root](./resources/Organisations/Root.md)
 * Pinpoint: 
-[App](./resources/Pinpoint/App.md)
+[App](./resources/Pinpoint/App.md), [EmailChannel](./resources/Pinpoint/EmailChannel.md), [EventStream](./resources/Pinpoint/EventStream.md)
 * Pipes: 
 [Pipe](./resources/Pipes/Pipe.md)
 * QLDB: 

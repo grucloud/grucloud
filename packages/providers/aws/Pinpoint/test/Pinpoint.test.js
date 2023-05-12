@@ -12,11 +12,59 @@ describe("Pinpoint", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("EmailChannel", () =>
+  it.skip("Campaign", () =>
+    pipe([
+      () => ({
+        groupType: "Pinpoint::Campaign",
+        livesNotFound: ({ config }) => [{ ApplicationId: "a1234567" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("EmailChannel", () =>
     pipe([
       () => ({
         groupType: "Pinpoint::EmailChannel",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ApplicationId: "a1234567" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("EmailTemplate", () =>
+    pipe([
+      () => ({
+        groupType: "Pinpoint::EmailTemplate",
+        livesNotFound: ({ config }) => [{ ApplicationId: "a1234567" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("EventStream", () =>
+    pipe([
+      () => ({
+        groupType: "Pinpoint::EventStream",
+        livesNotFound: ({ config }) => [{ ApplicationId: "a1234567" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("VoiceChannel", () =>
+    pipe([
+      () => ({
+        groupType: "Pinpoint::SMSTemplate",
+        livesNotFound: ({ config }) => [{ ApplicationId: "a1234567" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("Segment", () =>
+    pipe([
+      () => ({
+        groupType: "Pinpoint::Segment",
+        livesNotFound: ({ config }) => [{ ApplicationId: "a1234567" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("SMSTemplate", () =>
+    pipe([
+      () => ({
+        groupType: "Pinpoint::SMSTemplate",
+        livesNotFound: ({ config }) => [{ ApplicationId: "a1234567" }],
       }),
       awsResourceTest,
     ])());
