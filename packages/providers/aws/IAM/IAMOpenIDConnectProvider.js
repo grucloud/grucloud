@@ -96,6 +96,7 @@ const decorate = ({ endpoint, live }) =>
       assert(live.OpenIDConnectProviderArn);
     }),
     pick(["ClientIDList", "ThumbprintList", "Url", "CreateDate"]),
+    // TODO order ClientIDList
     assign({
       OpenIDConnectProviderArn: () => live.OpenIDConnectProviderArn,
     }),
