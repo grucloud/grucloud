@@ -18,6 +18,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    defaultsDeep({ AwsAccountId: config.accountId() }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html
@@ -101,7 +102,7 @@ exports.QuickSightUser = () => ({
   }) =>
     pipe([
       () => otherProps,
-      defaultsDeep({}),
+      defaultsDeep({ AwsAccountId: config.accountId() }),
       when(
         () => iamRole,
         defaultsDeep({

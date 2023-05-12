@@ -138,7 +138,10 @@ describe("QuickSight", async function () {
       () => ({
         groupType: "QuickSight::Template",
         livesNotFound: ({ config }) => [
-          { TemplateId: "e123", AwsAccountId: config.accountId() },
+          {
+            TemplateId: "e123",
+            AwsAccountId: config.accountId(),
+          },
         ],
       }),
       awsResourceTest,
@@ -148,7 +151,11 @@ describe("QuickSight", async function () {
       () => ({
         groupType: "QuickSight::TemplateAlias",
         livesNotFound: ({ config }) => [
-          { TemplateId: "e123", AwsAccountId: config.accountId() },
+          {
+            AliasName: "a123",
+            TemplateId: "e123",
+            AwsAccountId: config.accountId(),
+          },
         ],
       }),
       awsResourceTest,
@@ -192,7 +199,9 @@ describe("QuickSight", async function () {
     pipe([
       () => ({
         groupType: "QuickSight::VpcConnection",
-        livesNotFound: ({ config }) => [{ AwsAccountId: config.accountId() }],
+        livesNotFound: ({ config }) => [
+          { VPCConnectionId: "v-12345", AwsAccountId: config.accountId() },
+        ],
       }),
       awsResourceTest,
     ])());

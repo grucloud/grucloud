@@ -28,7 +28,9 @@ const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
+      assert(config);
     }),
+    defaultsDeep({ AwsAccountId: config.accountId() }),
     assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
@@ -38,7 +40,7 @@ exports.QuickSightTheme = () => ({
   package: "quicksight",
   client: "QuickSight",
   propertiesDefault: {},
-  omitProperties: ["Arn", "CreatedTime", "LastUpdatedTime"],
+  omitProperties: ["AwsAccountId", "Arn", "CreatedTime", "LastUpdatedTime"],
   inferName: () =>
     pipe([
       get("Name"),

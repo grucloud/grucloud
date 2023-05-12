@@ -29,6 +29,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    defaultsDeep({ AwsAccountId: config.accountId() }),
     assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 

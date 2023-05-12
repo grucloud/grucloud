@@ -27,8 +27,10 @@ const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
+      assert(config);
     }),
     assignTags({ buildArn: buildArn(config), endpoint }),
+    defaultsDeep({ AwsAccountId: config.accountId() }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html

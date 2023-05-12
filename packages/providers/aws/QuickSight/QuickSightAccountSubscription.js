@@ -29,7 +29,7 @@ exports.QuickSightAccountSubscription = () => ({
   package: "quicksight",
   client: "QuickSight",
   propertiesDefault: {},
-  omitProperties: ["AccountSubscriptionStatus"],
+  omitProperties: ["AwsAccountId", "AccountSubscriptionStatus"],
   inferName: findName,
   findName,
   findId: findName,
