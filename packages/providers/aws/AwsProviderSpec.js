@@ -162,6 +162,7 @@ const GROUPS = [
   ["RDS", "rds"],
   ["ResourceExplorer2", "resource-explorer-2"],
   ["ResourceGroups", "resource-groups"],
+  ["RolesAnywhere", "rolesanywhere"],
   ["Route53Resolver", "route53resolver"],
   ["Route53RecoveryControlConfig", "route53-recovery-control-config"],
   ["RUM", "rum"],

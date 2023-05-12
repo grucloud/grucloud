@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 752 resources in 159 services for provider aws:
+List of 755 resources in 160 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -254,6 +254,8 @@ List of 752 resources in 159 services for provider aws:
 [Index](./resources/ResourceExplorer2/Index.md), [View](./resources/ResourceExplorer2/View.md)
 * ResourceGroups: 
 [Group](./resources/ResourceGroups/Group.md)
+* RolesAnywhere: 
+[CRL](./resources/RolesAnywhere/CRL.md), [Profile](./resources/RolesAnywhere/Profile.md), [TrustAnchor](./resources/RolesAnywhere/TrustAnchor.md)
 * Route53: 
 [CidrCollection](./resources/Route53/CidrCollection.md), [DelegationSet](./resources/Route53/DelegationSet.md), [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
 * Route53Domains: 

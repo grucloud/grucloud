@@ -11594,6 +11594,9 @@ importers:
       '@aws-sdk/client-resource-groups':
         specifier: 3.321.1
         version: 3.321.1
+      '@aws-sdk/client-rolesanywhere':
+        specifier: 3.321.1
+        version: 3.321.1
       '@aws-sdk/client-route-53':
         specifier: 3.321.1
         version: 3.321.1
@@ -18029,6 +18032,49 @@ packages:
 
   /@aws-sdk/client-resource-groups@3.321.1:
     resolution: {integrity: sha512-1REduOxFOUefFrOpPM11izzc4SzV4ghxXXJOGhvuyFWMT0wJMBXcZmmD20vqbCEquCi091mf40zx1BCXzu+1Lw==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@aws-crypto/sha256-browser': 3.0.0
+      '@aws-crypto/sha256-js': 3.0.0
+      '@aws-sdk/client-sts': 3.321.1
+      '@aws-sdk/config-resolver': 3.310.0
+      '@aws-sdk/credential-provider-node': 3.321.1
+      '@aws-sdk/fetch-http-handler': 3.310.0
+      '@aws-sdk/hash-node': 3.310.0
+      '@aws-sdk/invalid-dependency': 3.310.0
+      '@aws-sdk/middleware-content-length': 3.310.0
+      '@aws-sdk/middleware-endpoint': 3.310.0
+      '@aws-sdk/middleware-host-header': 3.310.0
+      '@aws-sdk/middleware-logger': 3.310.0
+      '@aws-sdk/middleware-recursion-detection': 3.310.0
+      '@aws-sdk/middleware-retry': 3.310.0
+      '@aws-sdk/middleware-serde': 3.310.0
+      '@aws-sdk/middleware-signing': 3.310.0
+      '@aws-sdk/middleware-stack': 3.310.0
+      '@aws-sdk/middleware-user-agent': 3.319.0
+      '@aws-sdk/node-config-provider': 3.310.0
+      '@aws-sdk/node-http-handler': 3.321.1
+      '@aws-sdk/protocol-http': 3.310.0
+      '@aws-sdk/smithy-client': 3.316.0
+      '@aws-sdk/types': 3.310.0
+      '@aws-sdk/url-parser': 3.310.0
+      '@aws-sdk/util-base64': 3.310.0
+      '@aws-sdk/util-body-length-browser': 3.310.0
+      '@aws-sdk/util-body-length-node': 3.310.0
+      '@aws-sdk/util-defaults-mode-browser': 3.316.0
+      '@aws-sdk/util-defaults-mode-node': 3.316.0
+      '@aws-sdk/util-endpoints': 3.319.0
+      '@aws-sdk/util-retry': 3.310.0
+      '@aws-sdk/util-user-agent-browser': 3.310.0
+      '@aws-sdk/util-user-agent-node': 3.310.0
+      '@aws-sdk/util-utf8': 3.310.0
+      tslib: 2.5.0
+    transitivePeerDependencies:
+      - aws-crt
+    dev: false
+
+  /@aws-sdk/client-rolesanywhere@3.321.1:
+    resolution: {integrity: sha512-OtVeWi16hJn7/XWTNipHO8oTvKSpnoDP8wia8GyMKWawVglGBjdUHJJYwd3XyGoeepF630ZlWJB17CbUqzsIcw==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0

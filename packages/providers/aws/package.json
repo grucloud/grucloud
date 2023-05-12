@@ -262,6 +262,7 @@
     "@aws-sdk/client-resiliencehub": "3.321.1",
     "@aws-sdk/client-resource-explorer-2": "3.321.1",
     "@aws-sdk/client-resource-groups": "3.321.1",
+    "@aws-sdk/client-rolesanywhere": "3.321.1",
     "@aws-sdk/client-route-53": "3.321.1",
     "@aws-sdk/client-route-53-domains": "3.321.1",
     "@aws-sdk/client-route53-recovery-control-config": "3.321.1",

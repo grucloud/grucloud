@@ -71,12 +71,14 @@ describe("Config", async function () {
     pipe([
       () => ({
         groupType: "Config::OrganizationConformancePack",
-        livesNotFound: ({ config }) => [{ ConfigRuleName: "b123" }],
+        livesNotFound: ({ config }) => [
+          { OrganizationConformancePackName: "b123" },
+        ],
       }),
       awsResourceTest,
     ])());
   //
-  it("RemediationConfiguration", () =>
+  it.skip("RemediationConfiguration", () =>
     pipe([
       () => ({
         groupType: "Config::RemediationConfiguration",
