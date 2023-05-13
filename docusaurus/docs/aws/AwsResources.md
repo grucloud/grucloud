@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 757 resources in 160 services for provider aws:
+List of 758 resources in 161 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -112,6 +112,8 @@ List of 757 resources in 160 services for provider aws:
 [ConditionalForwarder](./resources/DirectoryService/ConditionalForwarder.md), [Directory](./resources/DirectoryService/Directory.md), [Region](./resources/DirectoryService/Region.md), [SharedDirectory](./resources/DirectoryService/SharedDirectory.md), [Trust](./resources/DirectoryService/Trust.md)
 * DMS: 
 [Certificate](./resources/DMS/Certificate.md), [Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
+* DocDBElastic: 
+[Cluster](./resources/DocDBElastic/Cluster.md)
 * DynamoDB: 
 [Table](./resources/DynamoDB/Table.md), [TableItem](./resources/DynamoDB/TableItem.md), [KinesisStreamingDestination](./resources/DynamoDB/KinesisStreamingDestination.md)
 * EC2: 

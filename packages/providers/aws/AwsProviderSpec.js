@@ -92,6 +92,7 @@ const GROUPS = [
   ["DeviceFarm", "devicefarm"],
   ["DirectConnect", "directconnect"],
   ["DMS", "dms"],
+  ["DocDBElastic", "docdb"],
   ["DynamoDB", "dynamodb"],
   ["EC2", "ec2"],
   ["ECR", "ecr"],

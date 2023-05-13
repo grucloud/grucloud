@@ -188,6 +188,8 @@
     "@aws-sdk/client-device-farm": "3.321.1",
     "@aws-sdk/client-direct-connect": "3.323.0",
     "@aws-sdk/client-directory-service": "3.321.1",
+    "@aws-sdk/client-docdb": "3.321.1",
+    "@aws-sdk/client-docdb-elastic": "3.321.1",
     "@aws-sdk/client-dynamodb": "3.321.1",
     "@aws-sdk/client-ec2": "3.322.0",
     "@aws-sdk/client-ecr": "3.321.1",
