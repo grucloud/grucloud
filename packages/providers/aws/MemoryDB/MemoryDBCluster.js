@@ -18,7 +18,7 @@ const pickId = pipe([
 const buildArn = () =>
   pipe([
     get("ARN"),
-    tap(({ ARN }) => {
+    tap((ARN) => {
       assert(ARN);
     }),
   ]);
@@ -28,12 +28,22 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(true);
     }),
+    assign({
+      SecurityGroupIds: pipe([get("SecurityGroups"), pluck("SecurityGroupId")]),
+    }),
     ({ NumberOfShards, ...other }) => ({ NumShards: NumberOfShards, ...other }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
     tap((params) => {
       assert(true);
     }),
-    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
+
+const filterPayload = pipe([
+  ({ Name, ...other }) => ({
+    ClusterName: Name,
+    ...other,
+  }),
+]);
 
 exports.MemoryDBCluster = ({}) => ({
   type: "Cluster",
@@ -71,10 +81,9 @@ exports.MemoryDBCluster = ({}) => ({
     "ClusterEndpoint",
     "ParameterGroupStatus",
     "SnsTopicStatus",
-    "SnsTopicArn",
     "SubnetGroupName",
-    "SecurityGroupIds",
     "NumberOfShards",
+    "SecurityGroups",
   ],
   dependencies: {
     acl: {
@@ -86,6 +95,7 @@ exports.MemoryDBCluster = ({}) => ({
     kmsKey: {
       type: "Key",
       group: "KMS",
+      excludeDefaultDependencies: true,
       dependencyId: ({ lives, config }) => get("KmsKeyId"),
     },
     parameterGroup: {
@@ -98,12 +108,13 @@ exports.MemoryDBCluster = ({}) => ({
       type: "SecurityGroup",
       group: "EC2",
       list: true,
-      dependencyIds: ({ lives, config }) =>
-        pipe([get("SecurityGroups"), pluck("SecurityGroupId")]),
+      pathId: "SecurityGroupIds",
+      dependencyIds: ({ lives, config }) => pipe([get("SecurityGroupIds")]),
     },
     snsTopic: {
       type: "Topic",
       group: "SNS",
+      pathId: "SnsTopicArn",
       dependencyId: ({ lives, config }) => get("SnsTopicArn"),
     },
     subnetGroup: {
@@ -128,21 +139,23 @@ exports.MemoryDBCluster = ({}) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#createCluster-property
   create: {
     method: "createCluster",
-    filterPayload: pipe([
-      ({ Name, ...other }) => ({
-        ClusterName: Name,
-        ...other,
-      }),
-    ]),
+    filterPayload,
     pickCreated: ({ payload }) => pipe([get("Cluster")]),
     isInstanceUp: pipe([get("Status"), isIn(["available"])]),
     configIsUp: { retryCount: 60 * 10, retryDelay: 5e3 },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#updateCluster-property
+  update: {
+    method: "updateCluster",
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, filterPayload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#deleteCluster-property
   destroy: {
     method: "deleteCluster",
     pickId,
     shouldRetryOnExceptionCodes: ["InvalidClusterStateFault"],
+    configIsDown: { retryCount: 45 * 10, retryDelay: 5e3 },
   },
   getByName: ({ getList, endpoint, getById }) =>
     pipe([
@@ -155,16 +168,6 @@ exports.MemoryDBCluster = ({}) => ({
     Tagger({
       buildArn: buildArn({ config }),
     }),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#modifyCluster-property
-  update:
-    ({ endpoint }) =>
-    async ({ pickId, payload, diff, live }) =>
-      pipe([
-        tap((params) => {
-          assert(endpoint);
-        }),
-        () => diff,
-      ])(),
   configDefault: ({
     name,
     namespace,

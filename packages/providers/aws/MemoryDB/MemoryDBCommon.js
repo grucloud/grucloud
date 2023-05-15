@@ -14,6 +14,10 @@ exports.Tagger = createTagger({
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#listTags-property
 exports.assignTags = ({ buildArn, endpoint }) =>
   pipe([
+    tap((params) => {
+      assert(buildArn);
+      assert(endpoint);
+    }),
     assign({
       Tags: tryCatch(
         pipe([

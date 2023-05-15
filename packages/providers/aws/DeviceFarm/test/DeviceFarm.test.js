@@ -6,6 +6,15 @@ const { awsResourceTest } = require("../../AwsResourceTester");
 let config = () => ({ region: "us-west-2" });
 
 describe("DeviceFarm", async function () {
+  it.skip("InstanceProfile", () =>
+    pipe([
+      () => ({
+        config,
+        groupType: "DeviceFarm::InstanceProfile",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("Project", () =>
     pipe([
       () => ({

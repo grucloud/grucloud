@@ -28,4 +28,13 @@ describe("Iot", async function () {
       }),
       awsResourceTest,
     ])());
+  it("FleetMetric", () =>
+    pipe([
+      () => ({
+        groupType: "IoT::FleetMetric",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  //
 });

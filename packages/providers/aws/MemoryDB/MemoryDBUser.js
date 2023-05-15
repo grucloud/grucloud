@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, omit } = require("rubico");
+const { pipe, tap, get, eq, omit, not } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
@@ -12,6 +12,18 @@ const managedByOther = () => pipe([eq(get("Name"), "default")]);
 
 const buildArn = () => pipe([get("ARN")]);
 
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    ({ Authentication, ...other }) => ({
+      AuthenticationMode: Authentication,
+      ...other,
+    }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
+  ]);
+
 exports.MemoryDBUser = ({ compare }) => ({
   type: "User",
   package: "memorydb",
@@ -22,18 +34,14 @@ exports.MemoryDBUser = ({ compare }) => ({
   managedByOther,
   cannotBeDeleted: managedByOther,
   ignoreErrorCodes: ["UserNotFoundFault"],
-  omitProperties: [
-    "Authentication",
-    "ACLNames",
-    "ARN",
-    "MinimumEngineVersion",
-    "Status",
-  ],
+  omitProperties: ["ACLNames", "ARN", "MinimumEngineVersion", "Status"],
   environmentVariables: [
     {
       path: "AuthenticationMode.Passwords",
       suffix: "MEMORYDB_USER_PASSWORDS",
       array: true,
+      rejectEnvironmentVariable: () =>
+        pipe([not(eq(get("AuthenticationMode.Type"), "password"))]),
     },
   ],
   compare: compare({
@@ -44,12 +52,13 @@ exports.MemoryDBUser = ({ compare }) => ({
     method: "describeUsers",
     getField: "Users",
     pickId,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#describeUsers-property
   getList: {
     method: "describeUsers",
     getParam: "Users",
-    decorate: assignTags,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#createUser-property
   create: {

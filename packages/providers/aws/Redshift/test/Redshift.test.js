@@ -61,6 +61,14 @@ describe("Redshift", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("ScheduleAction", () =>
+    pipe([
+      () => ({
+        groupType: "Redshift::ScheduleAction",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("UsageLimit", () =>
     pipe([
       () => ({

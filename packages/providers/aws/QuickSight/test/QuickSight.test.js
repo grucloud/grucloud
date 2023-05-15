@@ -174,7 +174,22 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
-
+  it.skip("Topic", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::Topic",
+        livesNotFound: ({ config }) => [{ AwsAccountId: config.accountId() }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("TopicPermission", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::TopicPermission",
+        livesNotFound: ({ config }) => [{ AwsAccountId: config.accountId() }],
+      }),
+      awsResourceTest,
+    ])());
   it("Theme", () =>
     pipe([
       () => ({

@@ -18,7 +18,7 @@ const managedByOther = () =>
 const buildArn = () =>
   pipe([
     get("ARN"),
-    tap(({ ARN }) => {
+    tap((ARN) => {
       assert(ARN);
     }),
   ]);
