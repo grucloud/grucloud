@@ -77,11 +77,18 @@ describe("Config", async function () {
       }),
       awsResourceTest,
     ])());
-  //
-  it.skip("RemediationConfiguration", () =>
+  it("RemediationConfiguration", () =>
     pipe([
       () => ({
         groupType: "Config::RemediationConfiguration",
+        livesNotFound: ({ config }) => [{ ConfigRuleName: "b123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("RemediationException", () =>
+    pipe([
+      () => ({
+        groupType: "Config::RemediationException",
         livesNotFound: ({ config }) => [{ ConfigRuleName: "b123" }],
       }),
       awsResourceTest,

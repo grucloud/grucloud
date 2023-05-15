@@ -4,6 +4,33 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "ConfigRule",
+    group: "Config",
+    name: "api-gw-execution-logging-enabled",
+    readOnly: true,
+    properties: ({}) => ({
+      ConfigRuleName: "api-gw-execution-logging-enabled",
+      Description:
+        "Checks that all methods in Amazon API Gateway stage has logging enabled. The rule is NON_COMPLIANT if logging is not enabled. The rule is NON_COMPLIANT if loggingLevel is neither ERROR nor INFO.",
+      EvaluationModes: [
+        {
+          Mode: "DETECTIVE",
+        },
+      ],
+      InputParameters: '{"loggingLevel":"ERROR,INFO"}',
+      Scope: {
+        ComplianceResourceTypes: [
+          "AWS::ApiGateway::Stage",
+          "AWS::ApiGatewayV2::Stage",
+        ],
+      },
+      Source: {
+        Owner: "AWS",
+        SourceIdentifier: "API_GW_EXECUTION_LOGGING_ENABLED",
+      },
+    }),
+  },
+  {
     type: "ConfigurationRecorder",
     group: "Config",
     properties: ({ config }) => ({
@@ -140,6 +167,39 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       configurationRecorder: "default",
       s3Bucket: `config-bucket-${config.accountId()}`,
+    }),
+  },
+  {
+    type: "RemediationConfiguration",
+    group: "Config",
+    properties: ({}) => ({
+      Automatic: false,
+      ConfigRuleName: "api-gw-execution-logging-enabled",
+      MaximumAutomaticAttempts: 5,
+      Parameters: {
+        AutomationAssumeRole: {
+          StaticValue: {
+            Values: [],
+          },
+        },
+        Message: {
+          StaticValue: {
+            Values: ["not compliant"],
+          },
+        },
+        TopicArn: {
+          ResourceValue: {
+            Value: "RESOURCE_ID",
+          },
+        },
+      },
+      RetryAttemptSeconds: 60,
+      TargetId: "AWS-PublishSNSNotification",
+      TargetType: "SSM_DOCUMENT",
+      TargetVersion: "1",
+    }),
+    dependencies: ({}) => ({
+      configRule: "api-gw-execution-logging-enabled",
     }),
   },
   {

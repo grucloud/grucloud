@@ -45,7 +45,7 @@ exports.ConfigOrganizationConfigRule = () => ({
     ]),
   findId: () =>
     pipe([
-      get("OrganizationConfigRuleArn"),
+      get("OrganizationConfigRuleName"),
       tap((id) => {
         assert(id);
       }),
