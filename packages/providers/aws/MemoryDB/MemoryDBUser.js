@@ -34,7 +34,13 @@ exports.MemoryDBUser = ({ compare }) => ({
   managedByOther,
   cannotBeDeleted: managedByOther,
   ignoreErrorCodes: ["UserNotFoundFault"],
-  omitProperties: ["ACLNames", "ARN", "MinimumEngineVersion", "Status"],
+  omitProperties: [
+    "ACLNames",
+    "ARN",
+    "MinimumEngineVersion",
+    "Status",
+    "AuthenticationMode.PasswordCount",
+  ],
   environmentVariables: [
     {
       path: "AuthenticationMode.Passwords",
