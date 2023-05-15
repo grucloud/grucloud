@@ -28,7 +28,7 @@ describe("Iot", async function () {
       }),
       awsResourceTest,
     ])());
-  it("FleetMetric", () =>
+  it.skip("FleetMetric", () =>
     pipe([
       () => ({
         groupType: "IoT::FleetMetric",

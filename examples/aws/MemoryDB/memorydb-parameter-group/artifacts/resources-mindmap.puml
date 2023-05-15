@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project memorydb-parameter-group
+skinparam monochrome true
++ Infra
+++ aws
++++ MemoryDB
+++++ ParameterGroup (2)
+@endmindmap

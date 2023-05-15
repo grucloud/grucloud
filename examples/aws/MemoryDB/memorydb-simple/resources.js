@@ -115,7 +115,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description: " ",
       Family: "memorydb_redis6",
-      Name: "param-group",
+      ParameterGroupName: "param-group",
+      Parameters: [],
     }),
   },
   {
@@ -136,10 +137,11 @@ exports.createResources = () => [
     group: "MemoryDB",
     properties: ({}) => ({
       AccessString: "on ~* &* +@all",
-      Name: "my-user",
       AuthenticationMode: {
+        Type: "password",
         Passwords: JSON.parse(process.env.MY_USER_MEMORYDB_USER_PASSWORDS),
       },
+      Name: "my-user",
     }),
   },
 ];
