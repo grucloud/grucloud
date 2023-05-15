@@ -15,7 +15,15 @@ const pickId = pipe([
   ({ Name }) => ({ ClusterName: Name }),
 ]);
 
-const decorate = ({ endpoint }) =>
+const buildArn = () =>
+  pipe([
+    get("ARN"),
+    tap(({ ARN }) => {
+      assert(ARN);
+    }),
+  ]);
+
+const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
       assert(true);
@@ -24,10 +32,8 @@ const decorate = ({ endpoint }) =>
     tap((params) => {
       assert(true);
     }),
-    assignTags({ endpoint }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
-
-const buildArn = () => pipe([get("ARN")]);
 
 exports.MemoryDBCluster = ({}) => ({
   type: "Cluster",

@@ -1,0 +1,32 @@
+@startmindmap
+title Resources for project docdb-global-cluster
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ DocDB
+++++ DBCluster (1)
+++++ DBClusterParameterGroup (1)
+++++ DBInstance (2)
+++++ DBSubnetGroup (1)
+++++ EventSubscription (1)
+++++ GlobalCluster (1)
++++ EC2
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+++++ Subnet (2)
+++++ Vpc (1)
++++ SNS
+++++ Topic (1)
+-- aws-secondary
+--- DocDB
+---- DBCluster (1)
+---- DBInstance (2)
+---- DBSubnetGroup (1)
+--- EC2
+---- RouteTable (2)
+---- RouteTableAssociation (2)
+---- Subnet (2)
+---- Vpc (1)
+--- KMS
+---- Key (1)
+@endmindmap

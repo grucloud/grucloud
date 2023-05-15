@@ -87,7 +87,6 @@ exports.MyModuleMyResource = () => ({
       }),
     ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#getMyResource-property
   getById: {
     method: "getMyResource",

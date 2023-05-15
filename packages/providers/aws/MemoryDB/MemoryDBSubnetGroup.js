@@ -8,9 +8,28 @@ const { buildTags } = require("../AwsCommon");
 
 const { Tagger, assignTags } = require("./MemoryDBCommon");
 
-const pickId = pipe([({ Name }) => ({ SubnetGroupName: Name })]);
+const pickId = pipe([
+  tap(({ Name }) => {
+    assert(Name);
+  }),
+  ({ Name }) => ({ SubnetGroupName: Name }),
+]);
 
-const buildArn = () => pipe([get("ARN")]);
+const buildArn = () =>
+  pipe([
+    get("ARN"),
+    tap(({ ARN }) => {
+      assert(ARN);
+    }),
+  ]);
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
+  ]);
 
 exports.MemoryDBSubnetGroup = ({}) => ({
   type: "SubnetGroup",
@@ -35,12 +54,13 @@ exports.MemoryDBSubnetGroup = ({}) => ({
     method: "describeSubnetGroups",
     getField: "SubnetGroups",
     pickId,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#describeSubnetGroups-property
   getList: {
     method: "describeSubnetGroups",
     getParam: "SubnetGroups",
-    decorate: assignTags,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#createSubnetGroup-property
   create: {
@@ -82,6 +102,9 @@ exports.MemoryDBSubnetGroup = ({}) => ({
     config,
   }) =>
     pipe([
+      tap(() => {
+        assert(subnets);
+      }),
       () => otherProps,
       defaultsDeep({
         Tags: buildTags({

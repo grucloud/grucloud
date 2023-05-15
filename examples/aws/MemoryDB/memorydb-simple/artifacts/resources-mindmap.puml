@@ -4,11 +4,11 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ Vpc (1)
-++++ Subnet (2)
 ++++ RouteTable (2)
 ++++ RouteTableAssociation (2)
 ++++ SecurityGroup (1)
+++++ Subnet (2)
+++++ Vpc (1)
 +++ MemoryDB
 ++++ ACL (1)
 ++++ Cluster (1)

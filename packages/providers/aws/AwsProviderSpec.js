@@ -7,6 +7,7 @@ const {
   get,
   map,
   switchCase,
+  assign,
 } = require("rubico");
 const {
   find,
@@ -92,6 +93,7 @@ const GROUPS = [
   ["DeviceFarm", "devicefarm"],
   ["DirectConnect", "directconnect"],
   ["DMS", "dms"],
+  ["DocDB", "docdb"],
   ["DocDBElastic", "docdb"],
   ["DynamoDB", "dynamodb"],
   ["EC2", "ec2"],
@@ -255,6 +257,25 @@ const excludeGroups = ({ config: { includeGroups = [] } }) =>
     ]),
   ]);
 
+const excludeResources = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    filterOut(
+      pipe([
+        get("groupType"),
+        tap((groupType) => {
+          assert(groupType);
+        }),
+        isIn(config.excludeResources),
+      ])
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
 exports.fnSpecs = (config) =>
   pipe([
     tap(() => {
@@ -282,5 +303,21 @@ exports.fnSpecs = (config) =>
         excludeGroups({ config }),
         callProp("sort", (a, b) => a.localeCompare(b)),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
+        tap((params) => {
+          assert(true);
+        }),
+        map(
+          assign({
+            groupType: ({ type, group }) =>
+              pipe([
+                tap((params) => {
+                  assert(type);
+                  assert(group);
+                }),
+                () => `${group}::${type}`,
+              ])(),
+          })
+        ),
+        excludeResources({ config }),
       ])(),
   ])();

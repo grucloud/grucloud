@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 758 resources in 161 services for provider aws:
+List of 765 resources in 162 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -112,6 +112,8 @@ List of 758 resources in 161 services for provider aws:
 [ConditionalForwarder](./resources/DirectoryService/ConditionalForwarder.md), [Directory](./resources/DirectoryService/Directory.md), [Region](./resources/DirectoryService/Region.md), [SharedDirectory](./resources/DirectoryService/SharedDirectory.md), [Trust](./resources/DirectoryService/Trust.md)
 * DMS: 
 [Certificate](./resources/DMS/Certificate.md), [Endpoint](./resources/DMS/Endpoint.md), [EventSubscription](./resources/DMS/EventSubscription.md), [ReplicationInstance](./resources/DMS/ReplicationInstance.md), [ReplicationSubnetGroup](./resources/DMS/ReplicationSubnetGroup.md), [ReplicationTask](./resources/DMS/ReplicationTask.md)
+* DocDB: 
+[DBCluster](./resources/DocDB/DBCluster.md), [DBClusterParameterGroup](./resources/DocDB/DBClusterParameterGroup.md), [DBClusterSnapshot](./resources/DocDB/DBClusterSnapshot.md), [DBInstance](./resources/DocDB/DBInstance.md), [DBSubnetGroup](./resources/DocDB/DBSubnetGroup.md), [EventSubscription](./resources/DocDB/EventSubscription.md), [GlobalCluster](./resources/DocDB/GlobalCluster.md)
 * DocDBElastic: 
 [Cluster](./resources/DocDBElastic/Cluster.md)
 * DynamoDB: 

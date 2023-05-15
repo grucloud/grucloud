@@ -8,7 +8,8 @@ const { DocDBElasticCluster } = require("./DocDBElasticCluster");
 
 const GROUP = "DocDBElastic";
 
-const compare = compareAws({});
+const tagsKey = "tags";
+const compare = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
@@ -18,7 +19,7 @@ module.exports = pipe([
   map(
     pipe([
       createAwsService,
-      defaultsDeep({ group: GROUP, compare: compare({}) }),
+      defaultsDeep({ group: GROUP, compare: compare({}), tagsKey }),
     ])
   ),
 ]);

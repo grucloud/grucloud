@@ -125,7 +125,6 @@ exports.DocDBElasticCluster = () => ({
         "INACCESSIBLE_ENCRYPTION_CREDS",
       ]),
     ]),
-    // getErrorMessage: pipe([get("StateChangeReason.Message", "FAILED")]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DocDBElastic.html#updateCluster-property
   update: {
@@ -153,7 +152,7 @@ exports.DocDBElasticCluster = () => ({
     pipe([
       () => otherProps,
       defaultsDeep({
-        tags: buildTagsObject({ name, config, namespace, UserTags: tags }),
+        tags: buildTagsObject({ name, config, namespace, userTags: tags }),
       }),
       when(
         () => kmsKey,

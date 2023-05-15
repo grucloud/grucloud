@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project docdb-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ DocDB
+++++ DBCluster (1)
+++++ DBInstance (2)
+++++ DBSubnetGroup (1)
++++ EC2
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+++++ Subnet (2)
+++++ Vpc (1)
+@endmindmap

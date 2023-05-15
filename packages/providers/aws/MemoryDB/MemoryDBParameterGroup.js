@@ -1,24 +1,62 @@
 const assert = require("assert");
-const { pipe, tap, get } = require("rubico");
+const { pipe, tap, get, map, pick, assign } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
 const { buildTags } = require("../AwsCommon");
 
 const { Tagger, assignTags } = require("./MemoryDBCommon");
 
-const pickId = pipe([({ Name }) => ({ ParameterGroupName: Name })]);
+const pickId = pipe([
+  tap(({ Name }) => {
+    assert(Name);
+  }),
+  ({ Name }) => ({ ParameterGroupName: Name }),
+]);
 
 const managedByOther = () =>
   pipe([get("Name"), callProp("startsWith", "default")]);
 
-const buildArn = () => pipe([get("ARN")]);
+const buildArn = () =>
+  pipe([
+    get("ARN"),
+    tap(({ ARN }) => {
+      assert(ARN);
+    }),
+  ]);
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+    }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
+    assign({
+      Parameters: pipe([
+        pickId,
+        endpoint().describeParameters,
+        get("Parameters"),
+        tap((params) => {
+          assert(true);
+        }),
+        map(pick(["Name", "Value"])),
+      ]),
+    }),
+  ]);
+
+const findName = () =>
+  pipe([
+    get("Name"),
+    tap((Name) => {
+      assert(Name);
+    }),
+  ]);
 
 exports.MemoryDBParameterGroup = ({}) => ({
   type: "ParameterGroup",
   package: "memorydb",
   client: "MemoryDB",
-  inferName: () => get("Name"),
-  findName: () => pipe([get("Name")]),
-  findId: () => pipe([get("Name")]),
+  inferName: findName,
+  findName,
+  findId: findName,
   managedByOther,
   cannotBeDeleted: managedByOther,
   omitProperties: ["ARN"],
@@ -28,12 +66,13 @@ exports.MemoryDBParameterGroup = ({}) => ({
     method: "describeParameterGroups",
     getField: "ParameterGroups",
     pickId,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#describeParameterGroups-property
   getList: {
     method: "describeParameterGroups",
     getParam: "ParameterGroups",
-    decorate: assignTags,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#createParameterGroup-property
   create: {
