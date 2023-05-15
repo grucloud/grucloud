@@ -246,7 +246,14 @@ exports.DocDBDBCluster = ({ compare }) => ({
             get("GlobalClusterIdentifier"),
             tryCatch(
               pipe([
-                pick(["DbClusterIdentifier", "GlobalClusterIdentifier"]),
+                ({ DBClusterArn, GlobalClusterIdentifier }) => ({
+                  DbClusterIdentifier: DBClusterArn,
+                  GlobalClusterIdentifier,
+                }),
+                tap(({ DbClusterIdentifier }) => {
+                  assert(DbClusterIdentifier);
+                }),
+                // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DocDB.html#removeFromGlobalCluster-property
                 endpoint().removeFromGlobalCluster,
               ]),
               (error) => {
