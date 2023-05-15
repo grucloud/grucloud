@@ -152,6 +152,7 @@ const GROUPS = [
   ["OAM", "oam"],
   ["OpenSearchServerless", "opensearchserverless"],
   ["Organisations", "organizations"],
+  ["OSIS", "osis"],
   ["Pipes", "pipes"],
   ["Pinpoint", "pinpoint"],
   ["QLDB", "qldb"],

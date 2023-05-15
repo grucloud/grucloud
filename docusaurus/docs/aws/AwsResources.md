@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 765 resources in 162 services for provider aws:
+List of 766 resources in 163 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -232,6 +232,8 @@ List of 765 resources in 162 services for provider aws:
 [AccessPolicy](./resources/OpenSearchServerless/AccessPolicy.md), [Collection](./resources/OpenSearchServerless/Collection.md), [SecurityConfig](./resources/OpenSearchServerless/SecurityConfig.md), [SecurityPolicy](./resources/OpenSearchServerless/SecurityPolicy.md), [VpcEndpoint](./resources/OpenSearchServerless/VpcEndpoint.md)
 * Organisations: 
 [Account](./resources/Organisations/Account.md), [Policy](./resources/Organisations/Policy.md), [PolicyAttachment](./resources/Organisations/PolicyAttachment.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md), [Root](./resources/Organisations/Root.md)
+* OSIS: 
+[Pipeline](./resources/OSIS/Pipeline.md)
 * Pinpoint: 
 [App](./resources/Pinpoint/App.md), [EmailChannel](./resources/Pinpoint/EmailChannel.md), [EventStream](./resources/Pinpoint/EventStream.md)
 * Pipes: 
