@@ -4,11 +4,18 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("WAFv2", async function () {
-  it.skip("IpSet", () =>
+  it("IPSet", () =>
     pipe([
       () => ({
-        groupType: "WAFv2::IpSet",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "WAFv2::IPSet",
+        livesNotFound: ({ config }) => [
+          {
+            Id: "6041b115-b84b-47db-b0ca-47039e3b5279",
+            LockToken: "57768011-a86a-4f07-b145-5767ec55d963",
+            Name: "sss",
+            Scope: "REGIONAL",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

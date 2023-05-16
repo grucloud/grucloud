@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, tryCatch, flatMap, map } = require("rubico");
-const { defaultsDeep, isEmpty, filterOut } = require("rubico/x");
+const { pipe, tap, get, pick, flatMap, tryCatch, map } = require("rubico");
+const { defaultsDeep, filterOut, isEmpty } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
@@ -45,8 +45,8 @@ const decorate = ({ endpoint, config, live }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html
-exports.WAFV2RegexPatternSet = () => ({
-  type: "RegexPatternSet",
+exports.WAFV2IPSet = () => ({
+  type: "IPSet",
   package: "wafv2",
   client: "WAFV2",
   propertiesDefault: {},
@@ -67,23 +67,26 @@ exports.WAFV2RegexPatternSet = () => ({
     ]),
   findId,
   ignoreErrorCodes: ["WAFNonexistentItemException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#getRegexPatternSet-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#getIPSet-property
   getById: {
-    method: "getRegexPatternSet",
-    getField: "RegexPatternSet",
+    method: "getIPSet",
+    getField: "IPSet",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#listRegexPatternSets-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#listIPSets-property
   getList: ({ endpoint, getById }) =>
     pipe([
       () => ["CLOUDFRONT", "REGIONAL"],
       flatMap((Scope) =>
         tryCatch(
           pipe([
+            tap((params) => {
+              assert(true);
+            }),
             () => ({ Scope }),
-            endpoint().listRegexPatternSets,
-            get("RegexPatternSets"),
+            endpoint().listIPSets,
+            get("IPSets"),
             map(pipe([defaultsDeep({ Scope }), getById({})])),
           ]),
           (error) =>
@@ -95,22 +98,25 @@ exports.WAFV2RegexPatternSet = () => ({
             ])()
         )()
       ),
+      tap((params) => {
+        assert(true);
+      }),
       filterOut(isEmpty),
     ]),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#createRegexPatternSet-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#createIPSet-property
   create: {
-    method: "createRegexPatternSet",
+    method: "createIPSet",
     pickCreated: ({ payload }) => pipe([get("Summary"), defaultsDeep(payload)]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#updateRegexPatternSet-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#updateIPSet-property
   update: {
-    method: "updateRegexPatternSet",
+    method: "updateIPSet",
     filterParams: ({ payload, diff, live }) =>
       pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#deleteRegexPatternSet-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#deleteIPSet-property
   destroy: {
-    method: "deleteRegexPatternSet",
+    method: "deleteIPSet",
     pickId,
   },
   getByName: getByNameCore,

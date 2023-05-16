@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project waf-ipset
+skinparam monochrome true
++ Infra
+++ aws
++++ WAFv2
+++++ IPSet (1)
+++++ RegexPatternSet (1)
+@endmindmap
