@@ -1,26 +1,42 @@
 const assert = require("assert");
-const { map, pipe, tap, get, or, pick, assign } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  get,
+  or,
+  pick,
+  assign,
+  not,
+  filter,
+} = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
   callProp,
   unless,
   prepend,
+  includes,
 } = require("rubico/x");
 
 const { hasKeyInTags, buildTags, findValueInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
-const {
-  createAutoScaling,
-  tagResource,
-  untagResource,
-} = require("./AutoScalingCommon");
+const { tagResource, untagResource, compare } = require("./AutoScalingCommon");
 
 const ResourceType = "auto-scaling-group";
 
-const findId = () => get("AutoScalingGroupARN");
+const filterTags = filter((tag) =>
+  pipe([() => ["AmazonECSManaged"], not(includes(tag.Key))])()
+);
+
+const findId = () =>
+  pipe([
+    get("AutoScalingGroupARN"),
+    tap((AutoScalingGroupARN) => {
+      assert(AutoScalingGroupARN);
+    }),
+  ]);
 
 const pickId = pipe([
   pick(["AutoScalingGroupName"]),
@@ -57,13 +73,6 @@ const managedByOther = () =>
     }),
   ]);
 
-// const findNamespace = pipe([
-//   findNamespaceInTagsOrEksCluster({
-//     config,
-//     key: "eks:cluster-name",
-//   }),
-// ]);
-
 const decorate = () =>
   pipe([
     assign({
@@ -77,61 +86,158 @@ const decorate = () =>
     omitIfEmpty(["TrafficSources"]),
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
-exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
-  const autoScaling = createAutoScaling(config);
-  const client = AwsClient({ spec, config })(autoScaling);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
-  const getList = client.getList({
-    method: "describeAutoScalingGroups",
-    getParam: "AutoScalingGroups",
-    decorate,
-  });
-
-  const getById = client.getById({
-    pickId: ({ AutoScalingGroupName }) => ({
-      AutoScalingGroupNames: [AutoScalingGroupName],
-    }),
+exports.AutoScalingAutoScalingGroup = ({}) => ({
+  type: "AutoScalingGroup",
+  package: "auto-scaling",
+  client: "AutoScaling",
+  findName,
+  findId,
+  managedByOther,
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  dependencies: {
+    subnets: {
+      type: "Subnet",
+      group: "EC2",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([get("VPCZoneIdentifier"), callProp("split", ",")]),
+    },
+    launchTemplate: {
+      type: "LaunchTemplate",
+      group: "EC2",
+      dependencyIds:
+        ({ lives, config }) =>
+        (live) =>
+          [
+            pipe([() => live, get("LaunchTemplate.LaunchTemplateId")])(),
+            pipe([
+              () => live,
+              get(
+                "MixedInstancesPolicy.LaunchTemplate.LaunchTemplateSpecification.LaunchTemplateId"
+              ),
+            ])(),
+          ],
+    },
+    launchConfiguration: {
+      type: "LaunchConfiguration",
+      group: "AutoScaling",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("LaunchConfigurationName"),
+          lives.getByName({
+            providerName: config.providerName,
+            type: "LaunchConfiguration",
+            group: "AutoScaling",
+          }),
+          get("id"),
+        ]),
+    },
+    serviceLinkedRole: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          unless(
+            includes("AWSServiceRoleForAutoScaling"),
+            get("ServiceLinkedRoleARN")
+          ),
+        ]),
+    },
+  },
+  omitProperties: [
+    "AutoScalingGroupARN",
+    "AvailabilityZones",
+    "Instances",
+    "CreatedTime",
+    "SuspendedProcesses",
+    "EnabledMetrics", //TODO
+    "TerminationPolicies", //TODO
+    "NewInstancesProtectedFromScaleIn", //TODO
+    "LaunchTemplate.LaunchTemplateName",
+    "TargetGroupARNs",
+    "ServiceLinkedRoleARN",
+    "VPCZoneIdentifier",
+    "TrafficSources",
+  ],
+  propertiesDefault: {
+    HealthCheckType: "EC2",
+    DefaultCooldown: 300,
+    HealthCheckGracePeriod: 300,
+  },
+  compare: compare({
+    filterLive: () =>
+      pipe([
+        omitIfEmpty(["LoadBalancerNames"]),
+        assign({ Tags: pipe([get("Tags"), filterTags]) }),
+      ]),
+  }),
+  filterLive: () =>
+    pick([
+      "MinSize",
+      "MaxSize",
+      "DesiredCapacity",
+      "DefaultCooldown",
+      "HealthCheckType",
+      "HealthCheckGracePeriod",
+    ]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#getAutoScalingGroup-property
+  getById: {
+    pickId: pipe([
+      tap(({ AutoScalingGroupName }) => {
+        assert(AutoScalingGroupName);
+      }),
+      ({ AutoScalingGroupName }) => ({
+        AutoScalingGroupNames: [AutoScalingGroupName],
+      }),
+    ]),
     method: "describeAutoScalingGroups",
     getField: "AutoScalingGroups",
     decorate,
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
+  getList: {
+    method: "describeAutoScalingGroups",
+    getParam: "AutoScalingGroups",
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createAutoScalingGroup-property
-  const create = client.create({
+  create: {
     method: "createAutoScalingGroup",
-    getById,
     pickCreated:
       ({ payload }) =>
       () =>
         payload,
     shouldRetryOnExceptionMessages: ["Invalid IAM Instance Profile ARN"],
-  });
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
-  const update = client.update({
+  update: {
     pickId,
     method: "updateAutoScalingGroup",
     filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
-    getById,
-  });
-
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property
-  const destroy = client.destroy({
-    pickId,
-    extraParam: {
-      ForceDelete: true,
-    },
+  destroy: {
+    pickId: pipe([
+      pickId,
+      defaultsDeep({
+        ForceDelete: true,
+      }),
+    ]),
     method: "deleteAutoScalingGroup",
-    getById,
     ignoreErrorMessages: ["AutoScalingGroup name not found"],
     config: { retryCount: 12 * 15, retryDelay: 5e3 },
-  });
-
-  const configDefault = ({
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) => ({
+    tagResource: tagResource({
+      ResourceType,
+      property: "AutoScalingGroupName",
+    }),
+    untagResource: untagResource({
+      ResourceType,
+      property: "AutoScalingGroupName",
+    }),
+  }),
+  configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
@@ -178,30 +284,5 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
         ])(),
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
-    ])();
-
-  return {
-    spec,
-    findId,
-    findName,
-    getByName,
-    getById,
-    findName,
-    create,
-    update,
-    destroy,
-    getList,
-    configDefault,
-    managedByOther,
-    tagResource: tagResource({
-      autoScaling,
-      ResourceType,
-      property: "AutoScalingGroupName",
-    }),
-    untagResource: untagResource({
-      autoScaling,
-      ResourceType,
-      property: "AutoScalingGroupName",
-    }),
-  };
-};
+    ])(),
+});

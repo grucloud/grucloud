@@ -5,14 +5,17 @@ skinparam monochrome true
 ++ aws
 +++ AutoScaling
 ++++ AutoScalingGroup (1)
+++++ Notification (1)
 +++ EC2
 ++++ KeyPair (1)
-++++ Vpc (1)
-++++ Subnet (2)
+++++ LaunchTemplate (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (1)
-++++ LaunchTemplate (1)
+++++ Subnet (2)
+++++ Vpc (1)
 +++ IAM
-++++ Role (1)
 ++++ InstanceProfile (1)
+++++ Role (1)
++++ SNS
+++++ Topic (1)
 @endmindmap

@@ -45,7 +45,7 @@ describe("AutoScaling", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Notification", () =>
+  it("Notification", () =>
     pipe([
       () => ({
         groupType: "AutoScaling::Notification",

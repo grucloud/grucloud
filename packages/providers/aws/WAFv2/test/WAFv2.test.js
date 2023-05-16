@@ -4,6 +4,14 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("WAFv2", async function () {
+  it.skip("IpSet", () =>
+    pipe([
+      () => ({
+        groupType: "WAFv2::IpSet",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("RegexPatternSet", () =>
     pipe([
       () => ({
@@ -58,6 +66,15 @@ describe("WAFv2", async function () {
             ResourceArn: `arn:aws:apigateway:${config.region}::/restapis/j9zcm72xm6/stages/dev`,
           },
         ],
+        skipGetById: true,
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("WebACLLoggingConfiguration", () =>
+    pipe([
+      () => ({
+        groupType: "WAFv2::WebACLLoggingConfiguration",
+        livesNotFound: ({ config }) => [{}],
         skipGetById: true,
       }),
       awsResourceTest,

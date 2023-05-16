@@ -1,26 +1,30 @@
 const assert = require("assert");
-const { tap, get, pipe, map } = require("rubico");
-const { defaultsDeep, first, includes } = require("rubico/x");
-const { retryCall } = require("@grucloud/core/Retry");
+const { tap, get, pipe, map, pick } = require("rubico");
+const { defaultsDeep, first, find, unless, isEmpty } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "AutoScalingAttachment",
-});
-
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
-const { createAutoScaling } = require("./AutoScalingCommon");
+
+const { compare } = require("./AutoScalingCommon");
 
 const ignoreErrorMessages = ["not found"];
 
-const findId = () => get("TargetGroupARN");
+const findId = () =>
+  pipe([
+    get("TargetGroupARN"),
+    tap((TargetGroupARN) => {
+      assert(TargetGroupARN);
+    }),
+  ]);
 
 const findName =
   ({ lives, config }) =>
   (live) =>
     pipe([
+      tap(() => {
+        assert(live.AutoScalingGroupName);
+        assert(live.TargetGroupARN);
+      }),
       () => live,
       get("TargetGroupARN"),
       lives.getById({
@@ -29,10 +33,8 @@ const findName =
         group: "ElasticLoadBalancingV2",
       }),
       get("name", live.TargetGroupARN),
-      tap((targetGroupName) => {
-        assert(targetGroupName);
-      }),
-      (targetGroupName) => `attachment::${live.name}::${targetGroupName}`,
+      (targetGroupName) =>
+        `attachment::${live.AutoScalingGroupName}::${targetGroupName}`,
     ])();
 
 const managedByOther =
@@ -54,102 +56,144 @@ const managedByOther =
       get("managedByOther"),
     ])();
 
-exports.AutoScalingAttachment = ({ spec, config }) => {
-  const autoScaling = createAutoScaling(config);
+const filterPayload = pipe([
+  tap(({ TargetGroupARN }) => {
+    assert(TargetGroupARN);
+  }),
+  ({ TargetGroupARN, ...other }) => ({
+    TargetGroupARNs: [TargetGroupARN],
+    ...other,
+  }),
+]);
 
-  const client = AwsClient({ spec, config })(autoScaling);
-
-  const getList = client.getListWithParent({
-    parent: { type: "AutoScalingGroup", group: "AutoScaling" },
-    config,
-    decorate: ({
-      name,
-      parent: {
-        TargetGroupARNs = [],
-        AutoScalingGroupName,
-        AutoScalingGroupARN,
-      },
-    }) =>
+exports.AutoScalingAttachment = ({}) => ({
+  type: "AutoScalingAttachment",
+  package: "auto-scaling",
+  client: "AutoScaling",
+  propertiesDefault: {},
+  inferName:
+    ({ dependenciesSpec: { autoScalingGroup, targetGroup } }) =>
+    () =>
       pipe([
-        () => TargetGroupARNs,
-        map((TargetGroupARN) => ({
-          TargetGroupARN,
-          name,
-          AutoScalingGroupName,
-          AutoScalingGroupARN,
+        tap(() => {
+          assert(autoScalingGroup);
+          assert(targetGroup);
+        }),
+        () => `attachment::${autoScalingGroup}::${targetGroup}`,
+      ])(),
+  findName,
+  findId,
+  compare: compare({
+    filterTarget: () => pipe([pick([])]),
+    filterLive: () => pipe([pick([])]),
+  }),
+  filterLive: () => pipe([pick([])]),
+  managedByOther,
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  dependencies: {
+    autoScalingGroup: {
+      type: "AutoScalingGroup",
+      group: "AutoScaling",
+      parent: true,
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("AutoScalingGroupARN"),
+          tap((AutoScalingGroupARN) => {
+            assert(AutoScalingGroupARN);
+          }),
+        ]),
+    },
+    targetGroup: {
+      type: "TargetGroup",
+      group: "ElasticLoadBalancingV2",
+      required: true,
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("TargetGroupARN"),
+          tap((TargetGroupARN) => {
+            assert(TargetGroupARN);
+          }),
+        ]),
+    },
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
+  getById: {
+    filterPayload,
+    method: "describeAutoScalingGroups",
+    pickId: pipe([
+      tap(({ AutoScalingGroupName }) => {
+        assert(AutoScalingGroupName);
+      }),
+      ({ AutoScalingGroupName }) => ({
+        AutoScalingGroupNames: [AutoScalingGroupName],
+      }),
+    ]),
+    decorate: ({ live }) =>
+      pipe([
+        tap(() => {
+          assert(live.TargetGroupARN);
+          assert(live.AutoScalingGroupName);
+        }),
+        get("AutoScalingGroups"),
+        first,
+        find(eq(get("TargetGroupARNs"), live.TargetGroupARN)),
+        unless(isEmpty, () => ({
+          AutoScalingGroupName: live.AutoScalingGroupName,
+          TargetGroupARN: live.TargetGroupARN,
         })),
       ]),
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-  //TODO
-  // const getById = client.getById({
-  //   pickId: ({ AutoScalingGroupName }) => ({
-  //     AutoScalingGroupNames: [AutoScalingGroupName],
-  //   }),
-  //   method: "describeAutoScalingGroups",
-  //   getField: "AutoScalingGroups",
-  //   decorate: () => pipe([get("TargetGroupARNs"), includes(TargetGroupARN)]),
-  // });
-
-  const isUpById = ({ TargetGroupARN, AutoScalingGroupName }) =>
-    pipe([
-      tap(() => {
-        logger.debug(
-          `isUpById ${JSON.stringify({ AutoScalingGroupName, TargetGroupARN })}`
-        );
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
+  getList: ({ client, config }) =>
+    client.getListWithParent({
+      parent: { type: "AutoScalingGroup", group: "AutoScaling" },
+      config,
+      decorate: ({
+        name,
+        parent: {
+          TargetGroupARNs = [],
+          AutoScalingGroupName,
+          AutoScalingGroupARN,
+        },
+      }) =>
+        pipe([
+          () => TargetGroupARNs,
+          map((TargetGroupARN) => ({
+            TargetGroupARN,
+            name,
+            AutoScalingGroupName,
+            AutoScalingGroupARN,
+          })),
+        ]),
+    }),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#attachLoadBalancerTargetGroups-property
+  create: {
+    method: "attachLoadBalancerTargetGroups",
+    pickCreated: ({ payload }) => pipe([() => payload]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingAttachment-property
+  // update: {
+  //   method: "updateAutoScalingAttachment",
+  //   filterParams: ({ payload, diff, live }) =>
+  //     pipe([() => payload, defaultsDeep(pickId(live))])(),
+  // },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#detachLoadBalancerTargetGroups-property
+  destroy: {
+    pickId: pipe([
+      tap(({ TargetGroupARN, AutoScalingGroupName }) => {
         assert(TargetGroupARN);
         assert(AutoScalingGroupName);
       }),
-      () => ({ AutoScalingGroupNames: [AutoScalingGroupName] }),
-      autoScaling().describeAutoScalingGroups,
-      get("AutoScalingGroups"),
-      first,
-      get("TargetGroupARNs"),
-      includes(TargetGroupARN),
-    ])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#attachLoadBalancerTargetGroups-property
-  //TODO create
-  const create = ({ payload, name, dependencies, lives }) =>
-    pipe([
-      tap(() => {
-        logger.info(`attachLoadBalancerTargetGroups ${tos({ payload })}`);
+      ({ TargetGroupARN, AutoScalingGroupName }) => ({
+        AutoScalingGroupName,
+        TargetGroupARNs: [TargetGroupARN],
       }),
-      () => payload,
-      autoScaling().attachLoadBalancerTargetGroups,
-      tap((result) => {
-        logger.debug(`attached ${JSON.stringify({ payload, result })}`);
-      }),
-      tap(() =>
-        retryCall({
-          name: `isUpById AutoScalingAttachment: ${name}`,
-          fn: pipe([
-            () => ({
-              AutoScalingGroupName: payload.AutoScalingGroupName,
-              TargetGroupARN: payload.TargetGroupARNs[0],
-            }),
-            isUpById,
-          ]),
-          config,
-        })
-      ),
-      tap(() => dependencies().autoScalingGroup.getLive({ lives })),
-    ])();
-
-  //TODO ignoreErrorCodes
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#detachLoadBalancerTargetGroups-property
-  const destroy = client.destroy({
-    pickId: ({ TargetGroupARN, AutoScalingGroupName }) => ({
-      AutoScalingGroupName,
-      TargetGroupARNs: [TargetGroupARN],
-    }),
+    ]),
     method: "detachLoadBalancerTargetGroups",
-    config,
     ignoreErrorMessages,
-  });
-
-  const configDefault = ({
+  },
+  getByName: getByNameCore,
+  configDefault: ({
     name,
     namespace,
     properties = {},
@@ -168,23 +212,11 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
       }),
       () => properties,
       defaultsDeep({
-        TargetGroupARNs: [getField(targetGroup, "TargetGroupArn")],
+        TargetGroupARN: getField(targetGroup, "TargetGroupArn"),
         AutoScalingGroupName: getField(
           autoScalingGroup,
           "AutoScalingGroupName"
         ),
       }),
-    ])();
-
-  return {
-    spec,
-    findId,
-    managedByOther,
-    findName,
-    getByName,
-    getList,
-    create,
-    destroy,
-    configDefault,
-  };
-};
+    ])(),
+});
