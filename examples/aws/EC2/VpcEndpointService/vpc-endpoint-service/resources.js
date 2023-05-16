@@ -148,15 +148,15 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "tg",
-      Protocol: "TCP",
-      Port: 80,
-      HealthCheckProtocol: "HTTP",
       HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
       HealthCheckTimeoutSeconds: 6,
       Matcher: {
         HttpCode: "200-399",
       },
+      Name: "tg",
+      Port: 80,
+      Protocol: "TCP",
       TargetType: "alb",
     }),
     dependencies: ({}) => ({

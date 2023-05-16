@@ -7,6 +7,8 @@ const {
   values,
   pluck,
   flatten,
+  when,
+  isEmpty,
 } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -88,17 +90,11 @@ exports.AutoScalingNotification = () => ({
           group: "SNS",
           providerName: config.providerName,
         }),
-        get("name"),
-        tap((name) => {
-          assert(name);
-        }),
+        get("name", TopicARN),
         prepend(`${AutoScalingGroupName}::`),
       ])(),
   findId: () =>
     pipe([
-      tap((id) => {
-        assert(id);
-      }),
       get("AutoScalingGroupName"),
       tap((id) => {
         assert(id);
@@ -150,7 +146,8 @@ exports.AutoScalingNotification = () => ({
         AutoScalingGroupNames: [AutoScalingGroupName],
       }),
     ]),
-    decorate: () => pipe([formatNotificationConfigurations]),
+    decorate: () =>
+      pipe([formatNotificationConfigurations, when(isEmpty, () => undefined)]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeNotificationConfigurations-property
   getList: ({ endpoint }) =>

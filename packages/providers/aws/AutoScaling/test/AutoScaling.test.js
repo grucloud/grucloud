@@ -60,7 +60,7 @@ describe("AutoScaling", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Policy", () =>
+  it("Policy", () =>
     pipe([
       () => ({
         groupType: "AutoScaling::Policy",

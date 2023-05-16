@@ -39,6 +39,25 @@ exports.createResources = () => [
       snsTopic: "autoscaling-topic",
     }),
   },
+  {
+    type: "Policy",
+    group: "AutoScaling",
+    properties: ({}) => ({
+      Enabled: true,
+      PolicyName: "Target Tracking Policy",
+      PolicyType: "TargetTrackingScaling",
+      TargetTrackingConfiguration: {
+        DisableScaleIn: false,
+        PredefinedMetricSpecification: {
+          PredefinedMetricType: "ASGAverageCPUUtilization",
+        },
+        TargetValue: 50,
+      },
+    }),
+    dependencies: ({}) => ({
+      autoScalingGroup: "asg",
+    }),
+  },
   { type: "KeyPair", group: "EC2", name: "kp-ecs" },
   {
     type: "LaunchTemplate",

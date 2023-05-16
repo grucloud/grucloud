@@ -6,6 +6,7 @@ skinparam monochrome true
 +++ AutoScaling
 ++++ AutoScalingGroup (1)
 ++++ Notification (1)
+++++ Policy (1)
 +++ EC2
 ++++ KeyPair (1)
 ++++ LaunchTemplate (1)
