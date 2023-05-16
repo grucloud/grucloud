@@ -10,6 +10,7 @@ const { WAFV2WebACL } = require("./WAFV2WebAcl");
 const { WAFV2WebACLCloudFront } = require("./WAFV2WebACLCloudFront");
 
 const { WAFV2WebACLAssociation } = require("./WAFV2WebAclAssociation");
+const { WAFV2LoggingConfiguration } = require("./WAFV2LoggingConfiguration");
 
 const GROUP = "WAFv2";
 
@@ -25,6 +26,7 @@ module.exports = pipe([
     WAFV2WebACL({ compare }),
     WAFV2WebACLCloudFront({ compare }),
     WAFV2WebACLAssociation({ compare }),
+    WAFV2LoggingConfiguration({ compare }),
   ],
   map(
     pipe([

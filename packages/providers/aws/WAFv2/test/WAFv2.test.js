@@ -77,11 +77,17 @@ describe("WAFv2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("WebACLLoggingConfiguration", () =>
+  it("LoggingConfiguration", () =>
     pipe([
       () => ({
-        groupType: "WAFv2::WebACLLoggingConfiguration",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "WAFv2::LoggingConfiguration",
+        livesNotFound: ({ config }) => [
+          {
+            ResourceArn: `arn:aws:wafv2:${
+              config.region
+            }:${config.accountId()}:regional/webacl/my-webacl/ce01e085-5737-4092-80c3-224fd26843ed`,
+          },
+        ],
         skipGetById: true,
       }),
       awsResourceTest,
