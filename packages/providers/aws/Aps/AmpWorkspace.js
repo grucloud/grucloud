@@ -25,38 +25,38 @@ const pickId = pipe([
 ]);
 
 // AlertManagerDefinition
-const pickAlertManagerDefinition = pipe([
-  tap(({ data, workspaceId }) => {
-    assert(data);
-    assert(workspaceId);
-  }),
-  pick(["data", "workspaceId"]),
-]);
+// const pickAlertManagerDefinition = pipe([
+//   tap(({ data, workspaceId }) => {
+//     assert(data);
+//     assert(workspaceId);
+//   }),
+//   pick(["data", "workspaceId"]),
+// ]);
 
-const assignAlertManagerDefinition =
-  ({ endpoint, config }) =>
-  (live) =>
-    pipe([
-      () => live,
-      tryCatch(
-        pipe([
-          pickId,
-          endpoint().describeAlertManagerDefinition,
-          get("loggingConfiguration.data"),
-          (alertManagerDefinition) => ({ ...live, alertManagerDefinition }),
-        ]),
-        () => live
-      ),
-    ])();
+// const assignAlertManagerDefinition =
+//   ({ endpoint, config }) =>
+//   (live) =>
+//     pipe([
+//       () => live,
+//       tryCatch(
+//         pipe([
+//           pickId,
+//           endpoint().describeAlertManagerDefinition,
+//           get("loggingConfiguration.data"),
+//           (alertManagerDefinition) => ({ ...live, alertManagerDefinition }),
+//         ]),
+//         () => live
+//       ),
+//     ])();
 
-const createAlertManagerDefinition = ({ endpoint, config }) =>
-  pipe([pickAlertManagerDefinition, endpoint().createAlertManagerDefinition]);
+// const createAlertManagerDefinition = ({ endpoint, config }) =>
+//   pipe([pickAlertManagerDefinition, endpoint().createAlertManagerDefinition]);
 
-const putAlertManagerDefinition = ({ endpoint, config }) =>
-  pipe([pickAlertManagerDefinition, endpoint().putAlertManagerDefinition]);
+// const putAlertManagerDefinition = ({ endpoint, config }) =>
+//   pipe([pickAlertManagerDefinition, endpoint().putAlertManagerDefinition]);
 
-const deleteAlertManagerDefinition = ({ endpoint, config }) =>
-  pipe([pickId, endpoint().deleteAlertManagerDefinition]);
+// const deleteAlertManagerDefinition = ({ endpoint, config }) =>
+//   pipe([pickId, endpoint().deleteAlertManagerDefinition]);
 
 // LoggingConfiguration
 const pickLoggingConfiguration = pipe([
@@ -99,7 +99,7 @@ const decorate = ({ endpoint, config }) =>
       assert(true);
     }),
     assignLogGroupArn({ endpoint, config }),
-    assignAlertManagerDefinition({ endpoint, config }),
+    // assignAlertManagerDefinition({ endpoint, config }),
     tap((params) => {
       assert(true);
     }),
@@ -181,10 +181,10 @@ exports.AmpWorkspace = () => ({
             get("logGroupArn"),
             pipe([createLoggingConfiguration({ endpoint, live })])
           ),
-          tap.if(
-            get("alertManagerDefinition"),
-            pipe([createAlertManagerDefinition({ endpoint, live })])
-          ),
+          // tap.if(
+          //   get("alertManagerDefinition"),
+          //   pipe([createAlertManagerDefinition({ endpoint, live })])
+          // ),
         ])(),
   },
   // Update
@@ -199,13 +199,13 @@ exports.AmpWorkspace = () => ({
           onAdded: createLoggingConfiguration,
           onUpdated: updateLoggingConfiguration,
         }),
-        () => ({ payload, live, diff, endpoint }),
-        updateResourceObject({
-          path: "alertManagerDefinition",
-          onDeleted: deleteAlertManagerDefinition,
-          onAdded: createAlertManagerDefinition,
-          onUpdated: putAlertManagerDefinition,
-        }),
+        // () => ({ payload, live, diff, endpoint }),
+        // updateResourceObject({
+        //   path: "alertManagerDefinition",
+        //   onDeleted: deleteAlertManagerDefinition,
+        //   onAdded: createAlertManagerDefinition,
+        //   onUpdated: putAlertManagerDefinition,
+        // }),
       ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amp.html#deleteWorkspace-property
   destroy: {

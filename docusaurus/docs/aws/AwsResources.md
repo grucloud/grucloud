@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 767 resources in 163 services for provider aws:
+List of 768 resources in 163 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -37,7 +37,7 @@ List of 767 resources in 163 services for provider aws:
 * AppSync: 
 [DataSource](./resources/AppSync/DataSource.md), [Function](./resources/AppSync/Function.md), [GraphqlApi](./resources/AppSync/GraphqlApi.md), [Resolver](./resources/AppSync/Resolver.md)
 * Aps: 
-[RuleGroupsNamespace](./resources/Aps/RuleGroupsNamespace.md), [Workspace](./resources/Aps/Workspace.md)
+[AlertManagerDefinition](./resources/Aps/AlertManagerDefinition.md), [RuleGroupsNamespace](./resources/Aps/RuleGroupsNamespace.md), [Workspace](./resources/Aps/Workspace.md)
 * Athena: 
 [Database](./resources/Athena/Database.md), [DataCatalog](./resources/Athena/DataCatalog.md), [NamedQuery](./resources/Athena/NamedQuery.md), [PreparedStatement](./resources/Athena/PreparedStatement.md), [WorkGroup](./resources/Athena/WorkGroup.md)
 * AuditManager: 

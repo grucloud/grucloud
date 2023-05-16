@@ -4,6 +4,37 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "AlertManagerDefinition",
+    group: "Aps",
+    properties: ({}) => ({
+      data: `alertmanager_config: |
+  route:
+    receiver: 'default'
+  receivers:
+    - name: 'default'
+`,
+    }),
+    dependencies: ({}) => ({
+      workspace: "my-workspace",
+    }),
+  },
+  {
+    type: "RuleGroupsNamespace",
+    group: "Aps",
+    properties: ({}) => ({
+      data: `groups:
+  - name: test
+    rules:
+      - record: metric:recording_rule
+        expr: avg(rate(container_cpu_usage_seconds_total[5m]))
+`,
+      name: "rule-group-namespace",
+    }),
+    dependencies: ({}) => ({
+      workspace: "my-workspace",
+    }),
+  },
+  {
     type: "Workspace",
     group: "Aps",
     properties: ({}) => ({

@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Aps", async function () {
-  it.skip("AlertManagerDefinition", () =>
+  it("AlertManagerDefinition", () =>
     pipe([
       () => ({
         groupType: "Aps::AlertManagerDefinition",

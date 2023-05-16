@@ -4,5 +4,7 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ Aps
+++++ AlertManagerDefinition (1)
+++++ RuleGroupsNamespace (1)
 ++++ Workspace (1)
 @endmindmap

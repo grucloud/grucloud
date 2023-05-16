@@ -4,6 +4,14 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("EC2", async function () {
+  it.skip("CarrierGateway", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::CarrierGateway",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("ClientVpnAuthorizationRule", () =>
     pipe([
       () => ({
