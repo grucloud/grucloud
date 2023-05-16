@@ -65,6 +65,19 @@ describe("CloudFront", async function () {
         skipGetById: true,
       }),
     ])());
+  it.skip("OriginAccessControl", () =>
+    pipe([
+      () => ({
+        groupType: "CloudFront::OriginAccessIdentity",
+        livesNotFound: ({ config }) => [
+          {
+            ETag: "ETVPDKIKX0DER",
+            Id: "a123s",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("OriginAccessIdentity", () =>
     pipe([
       () => ({

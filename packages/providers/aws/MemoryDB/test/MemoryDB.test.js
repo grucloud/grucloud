@@ -24,7 +24,9 @@ describe("MemoryDB", async function () {
     pipe([
       () => ({
         groupType: "MemoryDB::ParameterGroup",
-        livesNotFound: ({ config }) => [{ Name: "parameterGroup-12345" }],
+        livesNotFound: ({ config }) => [
+          { ParameterGroupName: "parameterGroup-12345" },
+        ],
       }),
       awsResourceTest,
     ])());

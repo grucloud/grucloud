@@ -25,7 +25,9 @@ describe("AutoScaling", async function () {
         livesNotFound: ({ config }) => [
           {
             AutoScalingGroupName: "TOTO",
-            TargetGroupARN: `arn:aws:elasticloadbalancing:us-east-1:${config.accountId()}:targetgroup/target-group-rest/ba26c2aeba8e7da0`,
+            TargetGroupARN: `arn:aws:elasticloadbalancing:${
+              config.region
+            }:${config.accountId()}:targetgroup/target-group-rest/ba26c2aeba8e7da0`,
           },
         ],
       }),
@@ -38,6 +40,34 @@ describe("AutoScaling", async function () {
         livesNotFound: ({ config }) => [
           {
             LaunchConfigurationName: "lc-12345",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("Notification", () =>
+    pipe([
+      () => ({
+        groupType: "AutoScaling::Notification",
+        livesNotFound: ({ config }) => [
+          {
+            AutoScalingGroupName: "lc-12345",
+            TopicARN: `arn:aws:sns:${
+              config.region
+            }:${config.accountId()}:my-sns-topic`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("Policy", () =>
+    pipe([
+      () => ({
+        groupType: "AutoScaling::Policy",
+        livesNotFound: ({ config }) => [
+          {
+            AutoScalingGroupName: "lc-12345",
+            PolicyName: "p123",
           },
         ],
       }),

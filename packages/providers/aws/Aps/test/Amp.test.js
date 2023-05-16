@@ -4,6 +4,14 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Aps", async function () {
+  it.skip("AlertManagerDefinition", () =>
+    pipe([
+      () => ({
+        groupType: "Aps::AlertManagerDefinition",
+        livesNotFound: ({ config }) => [{ workspaceId: "idonotexist" }],
+      }),
+      awsResourceTest,
+    ])());
   it("RuleGroupsNamespace", () =>
     pipe([
       () => ({

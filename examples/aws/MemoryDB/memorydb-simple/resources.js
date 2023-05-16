@@ -116,7 +116,7 @@ exports.createResources = () => [
       Description: " ",
       Family: "memorydb_redis6",
       ParameterGroupName: "param-group",
-      Parameters: [],
+      ParameterNameValues: [],
     }),
   },
   {
