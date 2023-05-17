@@ -480,6 +480,30 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("TrafficMirrorFilter", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::TrafficMirrorFilter",
+        livesNotFound: ({ config }) => [],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("TrafficMirrorSession", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::TrafficMirrorSession",
+        livesNotFound: ({ config }) => [],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("TrafficMirrorTarget", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::TrafficMirrorTarget",
+        livesNotFound: ({ config }) => [],
+      }),
+      awsResourceTest,
+    ])());
   it("TransitGatewayRoute", () =>
     pipe([
       () => ({

@@ -15,6 +15,14 @@ IotThingTypeState
  */
 
 describe("Iot", async function () {
+  it.skip("AccountAuditConfiguration", () =>
+    pipe([
+      () => ({
+        groupType: "IoT::AccountAuditConfiguration",
+        livesNotFound: ({ config }) => [{ authorizerName: "a123" }],
+      }),
+      awsResourceTest,
+    ])());
   it("Authorizer", () =>
     pipe([
       () => ({
@@ -43,6 +51,14 @@ describe("Iot", async function () {
     pipe([
       () => ({
         groupType: "IoT::CACertificate",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("CustomMetric", () =>
+    pipe([
+      () => ({
+        groupType: "IoT::CustomMetric",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
@@ -100,6 +116,14 @@ describe("Iot", async function () {
     pipe([
       () => ({
         groupType: "IoT::RoleAlias",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("ScheduledAudit", () =>
+    pipe([
+      () => ({
+        groupType: "IoT::ScheduledAudit",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,

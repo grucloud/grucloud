@@ -30,4 +30,20 @@ describe("DeviceFarm", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("TestGridProject", () =>
+    pipe([
+      () => ({
+        config,
+        groupType: "DeviceFarm::TestGridProject",
+        livesNotFound: ({ config }) => [
+          {
+            // arn: `arn:aws:devicefarm:${
+            //   config.region
+            // }:${config.accountId()}:project:EXAMPLE-GUID-123-456`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  //
 });

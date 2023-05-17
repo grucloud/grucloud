@@ -4,6 +4,14 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Pinpoint", async function () {
+  it.skip("ApplicationSettings", () =>
+    pipe([
+      () => ({
+        groupType: "Pinpoint::ApplicationSettings",
+        livesNotFound: ({ config }) => [{ ApplicationId: "a1234567" }],
+      }),
+      awsResourceTest,
+    ])());
   it("App", () =>
     pipe([
       () => ({

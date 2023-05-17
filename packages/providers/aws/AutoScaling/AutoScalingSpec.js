@@ -13,6 +13,7 @@ const {
 } = require("./AutoScalingLaunchConfiguration");
 const { AutoScalingNotification } = require("./AutoScalingNotification");
 const { AutoScalingPolicy } = require("./AutoScalingPolicy");
+//const { AutoScalingWarmPool } = require("./AutoScalingWarmPool");
 
 const GROUP = "AutoScaling";
 
@@ -25,6 +26,7 @@ module.exports = pipe([
     AutoScalingLaunchConfiguration({}),
     AutoScalingNotification({}),
     AutoScalingPolicy({}),
+    //AutoScalingWarmPool({})
   ],
   map(
     pipe([

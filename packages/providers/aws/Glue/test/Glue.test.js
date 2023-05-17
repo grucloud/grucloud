@@ -76,6 +76,15 @@ describe("Glue", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("MLTransform", () =>
+    pipe([
+      () => ({
+        groupType: "Glue::MLTransform",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  //
   it("Partition", () =>
     pipe([
       () => ({

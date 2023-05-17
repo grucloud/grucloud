@@ -19,4 +19,13 @@ describe("KinesisVideo", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("SignalingChannel", () =>
+    pipe([
+      () => ({
+        groupType: "SignalingChannel::Stream",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  //
 });

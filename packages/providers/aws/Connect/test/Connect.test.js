@@ -60,4 +60,12 @@ describe("Connect", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("PhoneNumber", () =>
+    pipe([
+      () => ({
+        groupType: "Connect::PhoneNumber",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
 });

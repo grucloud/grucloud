@@ -73,4 +73,16 @@ describe("AutoScaling", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("WarmPool", () =>
+    pipe([
+      () => ({
+        groupType: "AutoScaling::WarmPool",
+        livesNotFound: ({ config }) => [
+          {
+            AutoScalingGroupName: "d123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });
