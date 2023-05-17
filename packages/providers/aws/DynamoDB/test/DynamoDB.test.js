@@ -4,6 +4,18 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("DynamoDB", async function () {
+  it.skip("GlobalTable", () =>
+    pipe([
+      () => ({
+        groupType: "DynamoDB::GlobalTable",
+        livesNotFound: ({ config }) => [
+          {
+            //TableName: "12345",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Table", () =>
     pipe([
       () => ({

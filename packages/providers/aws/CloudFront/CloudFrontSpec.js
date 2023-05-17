@@ -4,6 +4,11 @@ const { pipe, tap, assign, map } = require("rubico");
 const { createAwsService } = require("../AwsService");
 
 const { compareAws } = require("../AwsCommon");
+
+const {
+  CloudFrontContinuousDeploymentPolicy,
+} = require("./CloudFrontContinuousDeploymentPolicy");
+
 const { CloudFrontDistribution } = require("./CloudFrontDistribution");
 const {
   CloudFrontOriginAccessIdentity,
@@ -15,6 +20,9 @@ const { CloudFrontKeyGroup } = require("./CloudFrontKeyGroup");
 const {
   CloudFrontMonitoringSubscription,
 } = require("./CloudFrontMonitoringSubscription");
+const {
+  CloudFrontOriginAccessControl,
+} = require("./CloudFrontOriginAccessControl");
 
 const {
   CloudFrontOriginRequestPolicy,
@@ -32,11 +40,13 @@ const compare = compareAws({});
 
 module.exports = pipe([
   () => [
+    CloudFrontContinuousDeploymentPolicy({ compare }),
     CloudFrontCachePolicy({ compare }),
     CloudFrontDistribution({ compare }),
     CloudFrontFunction({ compare }),
     CloudFrontKeyGroup({ compare }),
     CloudFrontMonitoringSubscription({ compare }),
+    CloudFrontOriginAccessControl({ compare }),
     CloudFrontOriginRequestPolicy({ compare }),
     CloudFrontOriginAccessIdentity({ compare }),
     CloudFrontPublicKey({ compare }),

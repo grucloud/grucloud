@@ -4,5 +4,6 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ CloudFront
+++++ OriginAccessControl (1)
 ++++ OriginAccessIdentity (1)
 @endmindmap

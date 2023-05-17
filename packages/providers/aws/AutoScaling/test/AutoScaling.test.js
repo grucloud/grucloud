@@ -45,6 +45,18 @@ describe("AutoScaling", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("LifecycleHook", () =>
+    pipe([
+      () => ({
+        groupType: "AutoScaling::LifecycleHook",
+        livesNotFound: ({ config }) => [
+          {
+            AutoScalingGroupName: "d123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Notification", () =>
     pipe([
       () => ({
@@ -68,6 +80,18 @@ describe("AutoScaling", async function () {
           {
             AutoScalingGroupName: "lc-12345",
             PolicyName: "p123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("ScheduleAction", () =>
+    pipe([
+      () => ({
+        groupType: "AutoScaling::ScheduleAction",
+        livesNotFound: ({ config }) => [
+          {
+            AutoScalingGroupName: "d123",
           },
         ],
       }),
