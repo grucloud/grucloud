@@ -15,6 +15,47 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "RuleGroup",
+    group: "WAFv2",
+    properties: ({ getId }) => ({
+      Capacity: 1,
+      Description: "my rule group",
+      Name: "my-rule-group",
+      Rules: [
+        {
+          Action: {
+            Block: {},
+          },
+          Name: "my-rule",
+          Priority: 0,
+          Statement: {
+            IPSetReferenceStatement: {
+              ARN: `${getId({
+                type: "IPSet",
+                group: "WAFv2",
+                name: "my-ipset",
+              })}`,
+            },
+          },
+          VisibilityConfig: {
+            CloudWatchMetricsEnabled: true,
+            MetricName: "my-rule",
+            SampledRequestsEnabled: true,
+          },
+        },
+      ],
+      VisibilityConfig: {
+        CloudWatchMetricsEnabled: true,
+        MetricName: "my-rule-group",
+        SampledRequestsEnabled: true,
+      },
+      Scope: "REGIONAL",
+    }),
+    dependencies: ({}) => ({
+      ipSets: ["my-ipset"],
+    }),
+  },
+  {
     type: "RegexPatternSet",
     group: "WAFv2",
     properties: ({}) => ({
