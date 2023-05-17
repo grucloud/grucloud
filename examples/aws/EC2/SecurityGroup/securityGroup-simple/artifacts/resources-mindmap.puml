@@ -4,8 +4,8 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ Vpc (1)
 ++++ SecurityGroup (2)
 ++++ SecurityGroupRuleIngress (2)
 ++++ SecurityGroupRuleEgress (1)
+++++ Vpc (1)
 @endmindmap

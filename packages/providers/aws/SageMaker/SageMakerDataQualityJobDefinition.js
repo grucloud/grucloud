@@ -89,6 +89,8 @@ exports.SageMakerDataQualityJobDefinition = () => ({
       group: "IAM",
       dependencyId: ({ lives, config }) => get("RoleArn"),
     },
+    // TODO SageMaker endpoint via data_quality_job_input
+    // TOSO S3Bucket via data_quality_job_output_config monitoring_outputs s3_output
     subnets: {
       type: "Subnet",
       group: "EC2",

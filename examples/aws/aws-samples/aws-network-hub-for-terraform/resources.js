@@ -2579,7 +2579,6 @@ exports.createResources = () => [
     type: "ResourceShare",
     group: "RAM",
     properties: ({}) => ({
-      allowExternalPrincipals: false,
       featureSet: "STANDARD",
       name: "ipam-org-share",
     }),
@@ -2588,7 +2587,6 @@ exports.createResources = () => [
     type: "ResourceShare",
     group: "RAM",
     properties: ({}) => ({
-      allowExternalPrincipals: false,
       featureSet: "STANDARD",
       name: "r53r-org-share",
     }),
@@ -2597,7 +2595,6 @@ exports.createResources = () => [
     type: "ResourceShare",
     group: "RAM",
     properties: ({}) => ({
-      allowExternalPrincipals: false,
       featureSet: "STANDARD",
       name: "tgw-org-share",
     }),

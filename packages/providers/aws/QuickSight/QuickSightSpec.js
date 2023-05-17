@@ -26,6 +26,7 @@ const { QuickSightTemplate } = require("./QuickSightTemplate");
 //const { QuickSightTemplateAlias } = require("./QuickSightTemplateAlias");
 const { QuickSightTheme } = require("./QuickSightTheme");
 const { QuickSightUser } = require("./QuickSightUser");
+//const { QuickSightVPCConnection } = require("./QuickSightVPCConnection");
 
 const GROUP = "QuickSight";
 
@@ -50,6 +51,7 @@ module.exports = pipe([
     //QuickSightTemplateAlias({}),
     QuickSightTheme({}),
     QuickSightUser({}),
+    // QuickSightVPCConnection({})
   ],
   map(
     pipe([

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -7,12 +7,27 @@ const { buildTags } = require("../AwsCommon");
 
 const { Tagger } = require("./SESV2Common");
 
-const buildArn =
-  ({ config }) =>
-  ({ ConfigurationSetName }) =>
-    `arn:aws:ses:${
-      config.region
-    }:${config.accountId()}:configuration-set/${ConfigurationSetName}`;
+const buildArn = () =>
+  pipe([
+    get("Arn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const assignArn = ({ config }) =>
+  pipe([
+    tap(({ ConfigurationSetName }) => {
+      assert(ConfigurationSetName);
+      assert(config);
+    }),
+    assign({
+      Arn: ({ ConfigurationSetName }) =>
+        `arn:aws:ses:${
+          config.region
+        }:${config.accountId()}:configuration-set/${ConfigurationSetName}`,
+    }),
+  ]);
 
 const pickId = pipe([
   tap(({ ConfigurationSetName }) => {
@@ -21,11 +36,12 @@ const pickId = pipe([
   pick(["ConfigurationSetName"]),
 ]);
 
-const decorate = ({ endpoint }) =>
+const decorate = ({ endpoint, config }) =>
   pipe([
     tap((params) => {
-      assert(endpoint);
+      assert(config);
     }),
+    assignArn({ config }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html
@@ -34,7 +50,7 @@ exports.SESV2ConfigurationSet = ({ compare }) => ({
   package: "sesv2",
   client: "SESv2",
   propertiesDefault: {},
-  omitProperties: [],
+  omitProperties: ["Arn"],
   inferName: () =>
     pipe([
       get("ConfigurationSetName"),

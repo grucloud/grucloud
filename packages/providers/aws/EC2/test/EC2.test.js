@@ -4,6 +4,14 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("EC2", async function () {
+  it.skip("CarrierGateway", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::CarrierGateway",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("ClientVpnAuthorizationRule", () =>
     pipe([
       () => ({
@@ -224,11 +232,13 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Fleet", () =>
+  it("Fleet", () =>
     pipe([
       () => ({
         groupType: "EC2::Fleet",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { FleetId: "fleet-12a34b55-67cd-8ef9-ba9b-9208d" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -470,6 +480,30 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("TrafficMirrorFilter", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::TrafficMirrorFilter",
+        livesNotFound: ({ config }) => [],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("TrafficMirrorSession", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::TrafficMirrorSession",
+        livesNotFound: ({ config }) => [],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("TrafficMirrorTarget", () =>
+    pipe([
+      () => ({
+        groupType: "EC2::TrafficMirrorTarget",
+        livesNotFound: ({ config }) => [],
+      }),
+      awsResourceTest,
+    ])());
   it("TransitGatewayRoute", () =>
     pipe([
       () => ({
@@ -641,11 +675,11 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("VpcEndpointService", () =>
+  it("VpcEndpointService", () =>
     pipe([
       () => ({
         groupType: "EC2::VpcEndpointService",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ ServiceId: "vpce-svc-123456789" }],
       }),
       awsResourceTest,
     ])());

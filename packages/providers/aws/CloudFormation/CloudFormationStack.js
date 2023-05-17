@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, omit, map } = require("rubico");
+const { pipe, tap, get, pick, eq, assign, omit, map, or } = require("rubico");
 const { defaultsDeep, callProp, when, isIn } = require("rubico/x");
 const yaml = require("js-yaml");
 
@@ -29,7 +29,13 @@ const findId = () =>
   ]);
 
 const managedByOther = () =>
-  pipe([get("StackName"), callProp("startsWith", "awsconfigconforms-")]);
+  pipe([
+    get("StackName"),
+    or([
+      callProp("startsWith", "awsconfigconforms-"),
+      callProp("startsWith", "CDK"),
+    ]),
+  ]);
 
 const pickId = pipe([
   pick(["StackName"]),

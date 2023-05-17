@@ -4,6 +4,22 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("CloudWatchLogs", async function () {
+  it.skip("Destination", () =>
+    pipe([
+      () => ({
+        groupType: "CloudWatchLogs::Destination",
+        livesNotFound: ({ config }) => [{ destinationName: "lg-124" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("DestinationPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "CloudWatchLogs::DestinationPolicy",
+        livesNotFound: ({ config }) => [{ logGroupName: "lg-124" }],
+      }),
+      awsResourceTest,
+    ])());
   it("LogGroup", () =>
     pipe([
       () => ({
@@ -23,6 +39,24 @@ describe("CloudWatchLogs", async function () {
             }:${config.accountId()}:log-group:testlambdatest-:*:sss`,
           },
         ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("MetricFilter", () =>
+    pipe([
+      () => ({
+        groupType: "CloudWatchLogs::MetricFilter",
+        livesNotFound: ({ config }) => [
+          { filterName: "f123", logGroupName: "lg-124" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("QueryDefinition", () =>
+    pipe([
+      () => ({
+        groupType: "CloudWatchLogs::QueryDefinition",
+        livesNotFound: ({ config }) => [{ queryDefinitionId: "q-124" }],
       }),
       awsResourceTest,
     ])());

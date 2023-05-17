@@ -14,6 +14,14 @@ const managedByOther = () => pipe([eq(get("Name"), "open-access")]);
 
 const buildArn = () => pipe([get("ARN")]);
 
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
+  ]);
+
 exports.MemoryDBACL = ({}) => ({
   package: "memorydb",
   client: "MemoryDB",
@@ -50,12 +58,13 @@ exports.MemoryDBACL = ({}) => ({
     method: "describeACLs",
     getField: "ACLs",
     pickId,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#describeACLs-property
   getList: {
     method: "describeACLs",
     getParam: "ACLs",
-    decorate: assignTags,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#createACL-property
   create: {

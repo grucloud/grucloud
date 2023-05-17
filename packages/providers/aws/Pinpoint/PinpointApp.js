@@ -60,7 +60,7 @@ exports.PinpointApp = () => ({
     ]),
   findId: () =>
     pipe([
-      get("Arn"),
+      get("ApplicationId"),
       tap((id) => {
         assert(id);
       }),

@@ -57,15 +57,7 @@ exports.createResources = () => [
       targetGroup: "target-group-web",
     }),
   },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "VPC",
-    properties: ({}) => ({
-      CidrBlock: "192.168.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
+  { type: "ElasticIpAddress", group: "EC2", name: "NATIP" },
   { type: "InternetGateway", group: "EC2", name: "InternetGateway" },
   {
     type: "InternetGatewayAttachment",
@@ -73,6 +65,75 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       vpc: "VPC",
       internetGateway: "InternetGateway",
+    }),
+  },
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
+    name: "eksctl-my-cluster-nodegroup-ng-1",
+    properties: ({}) => ({
+      LaunchTemplateData: {
+        BlockDeviceMappings: [
+          {
+            DeviceName: "/dev/xvda",
+            Ebs: {
+              Iops: 3000,
+              Throughput: 125,
+              VolumeSize: 80,
+              VolumeType: "gp3",
+            },
+          },
+        ],
+        MetadataOptions: {
+          HttpPutResponseHopLimit: 2,
+          HttpTokens: "optional",
+        },
+      },
+    }),
+  },
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
+    name: "lt-ng-1",
+    readOnly: true,
+    properties: ({}) => ({
+      LaunchTemplateData: {
+        BlockDeviceMappings: [
+          {
+            DeviceName: "/dev/xvda",
+            Ebs: {
+              Iops: 3000,
+              Throughput: 125,
+              VolumeSize: 80,
+              VolumeType: "gp3",
+            },
+          },
+        ],
+        Image: {
+          Description:
+            "EKS Kubernetes Worker AMI with AmazonLinux2 image, (k8s: 1.26.2, containerd: 1.6.*)",
+        },
+        MetadataOptions: {
+          HttpPutResponseHopLimit: 2,
+          HttpTokens: "optional",
+        },
+        UserData: `MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="//"
+
+--//
+Content-Type: text/x-shellscript; charset="us-ascii"
+#!/bin/bash
+set -ex
+B64_CLUSTER_CA=LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJek1EVXhNVEl5TkRZd01sb1hEVE16TURVd09ESXlORFl3TWxvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTmtEClNPL2ZteDhreXUyNkk1RGdBL01UZ0NEazMwdXJGTGcrUFQ3LzhSM0FIUmdRME9TVCtOM3FVQ1Q5T0dqRWxVcmUKWUJpd0pmei9iRVZVeDg0Ymx0YStORnIvUGpwVUtZKzludGtNVTF5NHByay90Wi91Z2tzRFgvSjR3MmNqdmhBRgo2YzlNeFk5aGRueEdLQWcvTStpWGVzQlE2TEFqa1UvYWpabkRtV3B5TjY4MFNjdGZuSXZMSHpZSU43b0VDYmNsCndkV0lnVDFIVm14WEhCNjFqKzFYNXpwTmVONDNUa3BERnA5a2kycUJEbUdPdG5NTHh1QTl3dnIzZHhkcEVES0UKajZhNzRreE9vM2kzSE90L0xqeWExckd5UGRkK05oQ1RxVlZqbWZmL1RXRHUrallPSTIrU1pNbXlaQmtCNmZJTgpqcEhwWHhXbUtQaDJ1enpqQnRrQ0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZFRDczV1JhdFNUaWtHTGtnS052Nms4a1puRzFNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBQjUxb0pzZ2h2Um52TUJ6RWoxUQoxb0FXRlhTMTNVUVlZSEEvS2QrMjJvTkNUa0NlUmJwN1pYQTVPS2tXOFFTcFNFVnpXdlg3czJyZjRWS3cwODFSCnJ4U0tHTHpKVXJaMkE3Wm1hejZIOGpqOXM2ajJaZGVJN202ZEx4azJ3ektrSVFwRUZOVTMzYzZoMjNGbjhBVEQKdEUvZWhraWplbTl4Z1dxQmNIRkJHWEc5amplK1FROGJacnA1dTN5SVdUdnBNbEwwUzhGRHk4NGZrQzZoWkpSQwpiTG1TYXpmL1JPa3BjT1N5a3YzczdSanpxM0xiM2ZSUDZxS0F1ZzlTeVhOVGJ4UzZCREJKaXRuOVJOeTFSWGZnCkZ5bml5NHU1SDdLVTJTR3pwT0QyUW5rRUlsVzJsQVgyaWlHVHlwQXZtWEgwRTNDUU8xdkZDUDM1aWRuVTJLUjIKT0RNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+API_SERVER_URL=https://2FC8329EAFF8EA4F0E7C800E2362038C.gr7.us-east-1.eks.amazonaws.com
+K8S_CLUSTER_DNS_IP=10.100.0.10
+/etc/eks/bootstrap.sh my-cluster --kubelet-extra-args '--node-labels=eks.amazonaws.com/sourceLaunchTemplateVersion=1,alpha.eksctl.io/cluster-name=my-cluster,alpha.eksctl.io/nodegroup-name=ng-1,eks.amazonaws.com/nodegroup-image=ami-0f114867066b78822,eks.amazonaws.com/capacityType=ON_DEMAND,eks.amazonaws.com/nodegroup=ng-1,eks.amazonaws.com/sourceLaunchTemplateId=lt-0de1bfcf1aee60df2 --max-pods=17' --b64-cluster-ca $B64_CLUSTER_CA --apiserver-endpoint $API_SERVER_URL --dns-cluster-ip $K8S_CLUSTER_DNS_IP --use-max-pods false
+
+--//--`,
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroups: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {
@@ -88,81 +149,36 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "SubnetPrivateUSEAST1D",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}d`,
-      Tags: [
-        {
-          Key: "kubernetes.io/role/internal-elb",
-          Value: "1",
-        },
-      ],
-      NewBits: 3,
-      NetworkNumber: 3,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "VPC",
+      natGateway: "NATGateway",
+      routeTable: "VPC::PrivateRouteTableUSEAST1D",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "SubnetPrivateUSEAST1F",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}f`,
-      Tags: [
-        {
-          Key: "kubernetes.io/role/internal-elb",
-          Value: "1",
-        },
-      ],
-      NewBits: 3,
-      NetworkNumber: 2,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "VPC",
+      natGateway: "NATGateway",
+      routeTable: "VPC::PrivateRouteTableUSEAST1F",
     }),
   },
   {
-    type: "Subnet",
+    type: "Route",
     group: "EC2",
-    name: "SubnetPublicUSEAST1D",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}d`,
-      MapPublicIpOnLaunch: true,
-      Tags: [
-        {
-          Key: "kubernetes.io/role/elb",
-          Value: "1",
-        },
-      ],
-      NewBits: 3,
-      NetworkNumber: 1,
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      vpc: "VPC",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "SubnetPublicUSEAST1F",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}f`,
-      MapPublicIpOnLaunch: true,
-      Tags: [
-        {
-          Key: "kubernetes.io/role/elb",
-          Value: "1",
-        },
-      ],
-      NewBits: 3,
-      NetworkNumber: 0,
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC",
+      ig: "InternetGateway",
+      routeTable: "VPC::PublicRouteTable",
     }),
   },
   {
@@ -219,39 +235,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       routeTable: "VPC::PublicRouteTable",
       subnet: "VPC::SubnetPublicUSEAST1F",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "NATGateway",
-      routeTable: "VPC::PrivateRouteTableUSEAST1D",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      natGateway: "NATGateway",
-      routeTable: "VPC::PrivateRouteTableUSEAST1F",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "InternetGateway",
-      routeTable: "VPC::PublicRouteTable",
     }),
   },
   {
@@ -358,74 +341,91 @@ exports.createResources = () => [
       securityGroup: "sg::VPC::load-balancer",
     }),
   },
-  { type: "ElasticIpAddress", group: "EC2", name: "NATIP" },
   {
-    type: "LaunchTemplate",
+    type: "Subnet",
     group: "EC2",
-    name: "eksctl-my-cluster-nodegroup-ng-1",
-    properties: ({}) => ({
-      LaunchTemplateData: {
-        BlockDeviceMappings: [
-          {
-            DeviceName: "/dev/xvda",
-            Ebs: {
-              Iops: 3000,
-              VolumeSize: 80,
-              VolumeType: "gp3",
-              Throughput: 125,
-            },
-          },
-        ],
-        MetadataOptions: {
-          HttpTokens: "optional",
-          HttpPutResponseHopLimit: 2,
+    name: "SubnetPrivateUSEAST1D",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}d`,
+      Tags: [
+        {
+          Key: "kubernetes.io/role/internal-elb",
+          Value: "1",
         },
-      },
+      ],
+      NewBits: 3,
+      NetworkNumber: 3,
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC",
     }),
   },
   {
-    type: "LaunchTemplate",
+    type: "Subnet",
     group: "EC2",
-    name: "lt-ng-1",
-    readOnly: true,
-    properties: ({}) => ({
-      LaunchTemplateData: {
-        BlockDeviceMappings: [
-          {
-            DeviceName: "/dev/xvda",
-            Ebs: {
-              Iops: 3000,
-              VolumeSize: 80,
-              VolumeType: "gp3",
-              Throughput: 125,
-            },
-          },
-        ],
-        UserData: `MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="//"
-
---//
-Content-Type: text/x-shellscript; charset="us-ascii"
-#!/bin/bash
-set -ex
-B64_CLUSTER_CA=LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJek1ERXlNREV6TlRVd05sb1hEVE16TURFeE56RXpOVFV3Tmxvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBS2pyCjc1ZEcrL2FBWWQ5Q2d4MXdmWU5wNXZ4M2tPTlJMZjN0eFhYckZSZUhWK2M1VTN3clVnZVZqZ1RTT2phTEV0dCsKUENyTCttQ2ZLMUFJaGtIVVN4Mk01cnpyc1FPc2thUkxEM1RmSXU3eE9DOS9VMi9sRC83OFFMV2xFV3JCTXBVWgowSmpiQnFMYWJKRjVDMjVkbHUzODl0U1ZzSkVZTVFOU3FvS2RYeGlCZTBtM3JId1U2Ti9GYzkxQWNwTCtzZWdOCnJwYVNvbzdVQk1ZSi96a2cxUit2UVBLNGl0eEFQZmo1SGhFME9td2ZyY3RWU0xremZpTC9nZjc0ZC9YcWhrMncKNzFybzZkemRkaGRJYWJJM2xQSFVjTjVVQ25VNkR2RVljcTFObFhKWTFYNDFBSUx4ak1HNzZQUzdEZ05TaDBuWgo5MjdhS0k3NjBWeFdGTlQ4TUFrQ0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZEZDVaMUpMQnkyRktSRHkvU0xSNm9oOWY3M0hNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBQVBLSkNqTnhtcEt5YXl2NS9EWQpjWUtSakFFY3lZYVZzd0JSQzRtSDhiSXhlNFI4a2VEYTVyblBBQlptMWRrSjdSbmhCT3Vsb25JS3JlV0dMcHB4CmxXL1RDSFNDL2pheHhDaDhLTjU1dktnSVhBczUrZnpnUDVnU0NsVXF0RmNSNWhSNEZqVENuNGNYVExGTXF0YnQKcmZ2RU9EbTNrcnRremlYdWIxdEhrUzhRVUdLTW1MbDhRcCtWU3VVQk9oWVpxc0MvY0pFUWt4aDZBVDJDbytlRQpRZURuSWcrTFhZdnpDQkhkSnhtUWZCTzBTZ2NYT3dKQTY5K1hraXVURU9udlVzMHNQb3Bqa01idHJxaXJLMElpCmVZa25GYVRUVjFtT1NwNGhsaDV6Zmt5M1NtQVNmS0luek1JWTV1OW9VNmlVWnVtSkliV0dQL2NKWEpTcWJMc1YKNCtrPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
-API_SERVER_URL=https://148C03762CF5CC468315CB09FFA1F9C4.gr7.us-east-1.eks.amazonaws.com
-K8S_CLUSTER_DNS_IP=10.100.0.10
-/etc/eks/bootstrap.sh my-cluster --kubelet-extra-args '--node-labels=eks.amazonaws.com/sourceLaunchTemplateVersion=1,alpha.eksctl.io/cluster-name=my-cluster,alpha.eksctl.io/nodegroup-name=ng-1,eks.amazonaws.com/nodegroup-image=ami-0eb3216fe26784e21,eks.amazonaws.com/capacityType=ON_DEMAND,eks.amazonaws.com/nodegroup=ng-1,eks.amazonaws.com/sourceLaunchTemplateId=lt-007b4560f2a4954d2 --max-pods=17' --b64-cluster-ca $B64_CLUSTER_CA --apiserver-endpoint $API_SERVER_URL --dns-cluster-ip $K8S_CLUSTER_DNS_IP --use-max-pods false
-
---//--`,
-        MetadataOptions: {
-          HttpTokens: "optional",
-          HttpPutResponseHopLimit: 2,
+    name: "SubnetPrivateUSEAST1F",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}f`,
+      Tags: [
+        {
+          Key: "kubernetes.io/role/internal-elb",
+          Value: "1",
         },
-        Image: {
-          Description:
-            "EKS Kubernetes Worker AMI with AmazonLinux2 image, (k8s: 1.23.13, docker: 20.10.17-1.amzn2.0.1, containerd: 1.6.6-1.amzn2.0.2)",
-        },
-      },
+      ],
+      NewBits: 3,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
-      securityGroups: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "SubnetPublicUSEAST1D",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}d`,
+      MapPublicIpOnLaunch: true,
+      Tags: [
+        {
+          Key: "kubernetes.io/role/elb",
+          Value: "1",
+        },
+      ],
+      NewBits: 3,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "SubnetPublicUSEAST1F",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}f`,
+      MapPublicIpOnLaunch: true,
+      Tags: [
+        {
+          Key: "kubernetes.io/role/elb",
+          Value: "1",
+        },
+      ],
+      NewBits: 3,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "VPC",
+    properties: ({}) => ({
+      CidrBlock: "192.168.0.0/16",
+      DnsHostnames: true,
     }),
   },
   {
@@ -433,7 +433,7 @@ K8S_CLUSTER_DNS_IP=10.100.0.10
     group: "EKS",
     properties: ({}) => ({
       addonName: "coredns",
-      addonVersion: "v1.8.7-eksbuild.2",
+      addonVersion: "v1.9.3-eksbuild.2",
     }),
     dependencies: ({}) => ({
       cluster: "my-cluster",
@@ -480,6 +480,81 @@ K8S_CLUSTER_DNS_IP=10.100.0.10
     }),
   },
   {
+    type: "Listener",
+    group: "ElasticLoadBalancingV2",
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "target-group-web",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "target-group-web",
+          })}`,
+          Type: "forward",
+        },
+      ],
+      Port: 80,
+      Protocol: "HTTP",
+    }),
+    dependencies: ({}) => ({
+      loadBalancer: "load-balancer",
+      targetGroups: ["target-group-web"],
+    }),
+  },
+  {
+    type: "Listener",
+    group: "ElasticLoadBalancingV2",
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "target-group-web",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "target-group-web",
+          })}`,
+          Type: "forward",
+        },
+      ],
+      Port: 443,
+      Protocol: "HTTPS",
+    }),
+    dependencies: ({}) => ({
+      loadBalancer: "load-balancer",
+      targetGroups: ["target-group-web"],
+      certificate: "grucloud.org",
+    }),
+  },
+  {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
@@ -491,58 +566,6 @@ K8S_CLUSTER_DNS_IP=10.100.0.10
     dependencies: ({}) => ({
       subnets: ["VPC::SubnetPublicUSEAST1D", "VPC::SubnetPublicUSEAST1F"],
       securityGroups: ["sg::VPC::load-balancer"],
-    }),
-  },
-  {
-    type: "TargetGroup",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Name: "target-group-rest",
-      Protocol: "HTTP",
-      Port: 30020,
-      HealthCheckProtocol: "HTTP",
-      HealthCheckPath: "/api/v1/version",
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC",
-    }),
-  },
-  {
-    type: "TargetGroup",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Name: "target-group-web",
-      Protocol: "HTTP",
-      Port: 30010,
-      HealthCheckProtocol: "HTTP",
-    }),
-    dependencies: ({}) => ({
-      vpc: "VPC",
-    }),
-  },
-  {
-    type: "Listener",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Port: 80,
-      Protocol: "HTTP",
-    }),
-    dependencies: ({}) => ({
-      loadBalancer: "load-balancer",
-      targetGroup: "target-group-web",
-    }),
-  },
-  {
-    type: "Listener",
-    group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
-      Port: 443,
-      Protocol: "HTTPS",
-    }),
-    dependencies: ({}) => ({
-      loadBalancer: "load-balancer",
-      targetGroup: "target-group-web",
-      certificate: "grucloud.org",
     }),
   },
   {
@@ -558,16 +581,16 @@ K8S_CLUSTER_DNS_IP=10.100.0.10
       ],
       Actions: [
         {
-          Type: "redirect",
           Order: 1,
           RedirectConfig: {
-            Protocol: "HTTPS",
-            Port: "443",
             Host: "#{host}",
             Path: "/#{path}",
+            Port: "443",
+            Protocol: "HTTPS",
             Query: "#{query}",
             StatusCode: "HTTP_301",
           },
+          Type: "redirect",
         },
       ],
     }),
@@ -607,6 +630,37 @@ K8S_CLUSTER_DNS_IP=10.100.0.10
     dependencies: ({}) => ({
       listener: "listener::load-balancer::HTTPS::443",
       targetGroup: "target-group-web",
+    }),
+  },
+  {
+    type: "TargetGroup",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      HealthCheckPath: "/api/v1/version",
+      HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "target-group-rest",
+      Port: 30020,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+    }),
+  },
+  {
+    type: "TargetGroup",
+    group: "ElasticLoadBalancingV2",
+    properties: ({}) => ({
+      HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "target-group-web",
+      Port: 30010,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
+    }),
+    dependencies: ({}) => ({
+      vpc: "VPC",
     }),
   },
   {
@@ -660,12 +714,12 @@ K8S_CLUSTER_DNS_IP=10.100.0.10
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEKSClusterPolicy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+          PolicyName: "AmazonEKSClusterPolicy",
         },
         {
-          PolicyName: "AmazonEKSVPCResourceController",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+          PolicyName: "AmazonEKSVPCResourceController",
         },
       ],
     }),
@@ -690,21 +744,21 @@ K8S_CLUSTER_DNS_IP=10.100.0.10
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2ContainerRegistryReadOnly",
           PolicyArn:
             "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+          PolicyName: "AmazonEC2ContainerRegistryReadOnly",
         },
         {
-          PolicyName: "AmazonEKS_CNI_Policy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+          PolicyName: "AmazonEKS_CNI_Policy",
         },
         {
-          PolicyName: "AmazonEKSWorkerNodePolicy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+          PolicyName: "AmazonEKSWorkerNodePolicy",
         },
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+          PolicyName: "AmazonSSMManagedInstanceCore",
         },
       ],
     }),
@@ -723,11 +777,11 @@ K8S_CLUSTER_DNS_IP=10.100.0.10
     type: "Record",
     group: "Route53",
     properties: ({}) => ({
-      Name: "grucloud.org.",
-      Type: "A",
       AliasTarget: {
         EvaluateTargetHealth: true,
       },
+      Name: "grucloud.org.",
+      Type: "A",
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",

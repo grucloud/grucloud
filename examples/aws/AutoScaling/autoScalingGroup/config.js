@@ -1,4 +1,4 @@
 module.exports = ({ stage }) => ({
   projectName: "example-grucloud-autoscaling-group",
-  includeGroups: ["AutoScaling", "EC2"],
+  includeGroups: ["AutoScaling", "EC2", "SNS"],
 });

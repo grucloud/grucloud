@@ -21,11 +21,12 @@ const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const {
   EC2EgressOnlyInternetGateway,
 } = require("./EC2EgressOnlyInternetGateway");
-const { EC2KeyPair } = require("./EC2KeyPair");
+const { EC2Fleet } = require("./EC2Fleet");
 const { EC2InternetGateway } = require("./EC2InternetGateway");
 const {
   EC2InternetGatewayAttachment,
 } = require("./EC2InternetGatewayAttachment");
+const { EC2KeyPair } = require("./EC2KeyPair");
 
 const { EC2LaunchTemplate } = require("./EC2LaunchTemplate");
 //const { EC2LocalGatewayRoute } = require("./EC2LocalGatewayRoute");
@@ -110,7 +111,7 @@ const { EC2Volume } = require("./EC2Volume");
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { EC2Vpc } = require("./EC2Vpc");
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
-//const { VpcEndpointService } = require("./VpcEndpointService");
+const { EC2VpcEndpointService } = require("./EC2VpcEndpointService");
 const { EC2VpnGateway } = require("./EC2VpnGateway");
 const { EC2VpnGatewayAttachment } = require("./EC2VpnGatewayAttachment");
 const {
@@ -133,6 +134,7 @@ module.exports = pipe([
     createAwsService(EC2EgressOnlyInternetGateway({})),
     createAwsService(EC2ElasticIpAddress({ compare: compareEC2 })),
     createAwsService(EC2ElasticIpAddressAssociation({ compare: compareEC2 })),
+    createAwsService(EC2Fleet({ compare: compareEC2 })),
     createAwsService(EC2FlowLogs({ compare: compareEC2 })),
     createAwsService(EC2Instance({ compare: compareEC2 })),
     createAwsService(EC2InternetGateway({ compare: compareEC2 })),
@@ -371,7 +373,7 @@ module.exports = pipe([
     createAwsService(EC2VolumeAttachment({ compare: compareEC2 })),
     createAwsService(EC2Vpc({ compare: compareEC2 })),
     createAwsService(EC2VpcEndpoint({ compare: compareEC2 })),
-    //createAwsService(VpcEndpointService({ compare: compareEC2 })),
+    createAwsService(EC2VpcEndpointService({ compare: compareEC2 })),
     createAwsService(EC2VpcIpv4CidrBlockAssociation({ compare: compareEC2 })),
     createAwsService(EC2VpcPeeringConnection({ compare: compareEC2 })),
     createAwsService(EC2VpcPeeringConnectionAccepter({ compare: compareEC2 })),

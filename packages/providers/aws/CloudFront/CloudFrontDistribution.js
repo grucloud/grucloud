@@ -30,6 +30,7 @@ const {
   callProp,
   includes,
   isIn,
+  append,
 } = require("rubico/x");
 const {
   getByNameCore,
@@ -116,11 +117,12 @@ const findId = () =>
     }),
   ]);
 
-const findName = () =>
+const findName = () => (live) =>
   pipe([
     tap((params) => {
       assert(true);
     }),
+    () => live,
     get("Origins.Items"),
     first,
     get("Id"),
@@ -128,7 +130,8 @@ const findName = () =>
       assert(Id);
       logger.debug(`Distribution findName ${Id}`);
     }),
-  ]);
+    when(() => live.Staging, append("::staging")),
+  ])();
 
 const filterLiveCacheBehavior = ({ providerConfig, lives }) =>
   pipe([
@@ -318,19 +321,7 @@ exports.CloudFrontDistribution = ({ compare }) => ({
   type: "Distribution",
   package: "cloudfront",
   client: "CloudFront",
-  inferName: () =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      get("Origins.Items"),
-      first,
-      get("Id"),
-      tap((Id) => {
-        assert(Id);
-        logger.debug(`CloudFrontDistribution inferName ${Id}`);
-      }),
-    ]),
+  inferName: findName,
   findName,
   findId,
   ignoreErrorCodes: [
@@ -605,6 +596,7 @@ exports.CloudFrontDistribution = ({ compare }) => ({
     "ActiveTrustedKeyGroups",
     "ActiveTrustedSigners",
     "AliasICPRecordals",
+    "ContinuousDeploymentPolicyId",
   ],
   filterLive: ({ lives, providerConfig }) =>
     pipe([

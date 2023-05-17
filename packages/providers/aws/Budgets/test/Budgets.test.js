@@ -17,4 +17,17 @@ describe("Budgets", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("Budget", () =>
+    pipe([
+      () => ({
+        groupType: "Budgets::Action",
+        livesNotFound: ({ config }) => [
+          {
+            BudgetName: "b123",
+            AccountId: config.accountId(),
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });

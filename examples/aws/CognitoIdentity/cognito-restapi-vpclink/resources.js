@@ -182,7 +182,6 @@ exports.createResources = () => [
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
     properties: ({}) => ({
-      PoolName: "sam-app-AuthStack-13YXJ9N8JXLZE-Serverless Pattern User Pool",
       AdminCreateUserConfig: {
         AllowAdminCreateUserOnly: true,
         InviteMessageTemplate: {
@@ -202,6 +201,7 @@ exports.createResources = () => [
           RequireUppercase: false,
         },
       },
+      PoolName: "sam-app-AuthStack-13YXJ9N8JXLZE-Serverless Pattern User Pool",
     }),
   },
   {
@@ -238,41 +238,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       userPool: "sam-app-AuthStack-13YXJ9N8JXLZE-Serverless Pattern User Pool",
-    }),
-  },
-  {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc",
-    properties: ({}) => ({
-      CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private1-${config.region}a`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      NewBits: 4,
-      NetworkNumber: 8,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: ({ config }) => `subnet-private2-${config.region}b`,
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      NewBits: 4,
-      NetworkNumber: 9,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
     }),
   },
   {
@@ -428,12 +393,47 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  {
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.execute-api`,
       PrivateDnsEnabled: true,
+      ServiceName: `com.amazonaws.${config.region}.execute-api`,
+      VpcEndpointType: "Interface",
     }),
     dependencies: ({ config }) => ({
       vpc: "vpc",
@@ -542,13 +542,38 @@ exports.createResources = () => [
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "sam-ap-LoadB-HXOLLYZKA1FE",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "sam-ap-LoadB-HXOLLYZKA1FE",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 80,
       Protocol: "HTTP",
     }),
     dependencies: ({}) => ({
       loadBalancer: "sam-a-Appli-1R39T0MPT5BPC",
-      targetGroup: "sam-ap-LoadB-HXOLLYZKA1FE",
+      targetGroups: ["sam-ap-LoadB-HXOLLYZKA1FE"],
     }),
   },
   {
@@ -591,11 +616,12 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "sam-ap-LoadB-HXOLLYZKA1FE",
-      Protocol: "HTTP",
-      Port: 80,
-      HealthCheckProtocol: "HTTP",
       HealthCheckPort: "traffic-port",
+      HealthCheckProtocol: "HTTP",
+      Name: "sam-ap-LoadB-HXOLLYZKA1FE",
+      Port: 80,
+      Protocol: "HTTP",
+      ProtocolVersion: "HTTP1",
       TargetType: "ip",
     }),
     dependencies: ({}) => ({
@@ -676,9 +702,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -722,9 +748,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),
@@ -755,9 +781,9 @@ exports.createResources = () => [
           "Create custom security group with NLB IP addresses as source",
         Environment: {
           Variables: {
+            StackName: "sam-app-NetworkStack-1M5QLCZMYZA9T",
             VpcId: "vpc-0c60fd6ea2ea2be40",
             WhiteList: "10.0.136.209, 10.0.151.29",
-            StackName: "sam-app-NetworkStack-1M5QLCZMYZA9T",
           },
         },
         FunctionName:

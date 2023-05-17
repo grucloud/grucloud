@@ -18,4 +18,18 @@ describe("CodeStarConnections", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("Host", () =>
+    pipe([
+      () => ({
+        groupType: "CodeStarConnections::Host",
+        livesNotFound: ({ config }) => [
+          {
+            // ConnectionArn: `arn:aws:codestar-connections:${
+            //   config.region
+            // }:${config.accountId()}:connection/6ba9de29-73f2-436c-82e2-4ef7de54f061`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });

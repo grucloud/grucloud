@@ -1,9 +1,21 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, filter, not } = require("rubico");
-const { defaultsDeep, first } = require("rubico/x");
-const { buildTags } = require("../AwsCommon");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  eq,
+  filter,
+  not,
+  assign,
+  map,
+} = require("rubico");
+const { defaultsDeep, first, pluck, when } = require("rubico/x");
 
-const { Tagger } = require("./RAMCommon");
+const { replaceWithName, omitIfEmpty } = require("@grucloud/core/Common");
+
+const { buildTags } = require("../AwsCommon");
+const { Tagger, managedByOtherAccount } = require("./RAMCommon");
 
 const buildArn = () =>
   pipe([
@@ -13,14 +25,61 @@ const buildArn = () =>
     }),
   ]);
 
+const pickId = pipe([
+  pick(["resourceShareArn"]),
+  tap(({ resourceShareArn }) => {
+    assert(resourceShareArn);
+  }),
+]);
+const isDeleted = pipe([eq(get("status"), "DELETED")]);
+
+const decorate = ({ endpoint, config }) =>
+  pipe([
+    tap(({ resourceShareArn }) => {
+      assert(endpoint);
+      assert(config);
+      assert(resourceShareArn);
+    }),
+    assign({
+      permissionArns: pipe([
+        pickId,
+        endpoint().listResourceSharePermissions,
+        get("permissions"),
+        filter(eq(get("permissionType"), "CUSTOMER_MANAGED")),
+        pluck("arn"),
+      ]),
+    }),
+    omitIfEmpty(["permissionArns"]),
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
 exports.RAMResourceShare = ({}) => ({
   type: "ResourceShare",
   package: "ram",
   client: "RAM",
-  inferName: () => get("name"),
-  findName: () => pipe([get("name")]),
-  findId: () => pipe([get("resourceShareArn")]),
+  inferName: () =>
+    pipe([
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findName: () =>
+    pipe([
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("resourceShareArn"),
+      tap((resourceShareArn) => {
+        assert(resourceShareArn);
+      }),
+    ]),
+  managedByOther: managedByOtherAccount,
+  cannotBeDeleted: managedByOtherAccount,
   ignoreErrorCodes: ["UnknownResourceException"],
   omitProperties: [
     "creationTime",
@@ -29,47 +88,61 @@ exports.RAMResourceShare = ({}) => ({
     "resourceShareArn",
     "status",
   ],
+  propertiesDefault: { allowExternalPrincipals: false },
+  dependencies: {
+    permissions: {
+      type: "Permissions",
+      group: "RAM",
+      list: true,
+      dependencyIds: ({ lives, config }) => pipe([get("permissionArns")]),
+    },
+  },
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      when(
+        get("permissionArns"),
+        assign({
+          permissionArns: pipe([
+            get("permissionArns"),
+            map(
+              replaceWithName({
+                groupType: "RAM::Permission",
+                path: "id",
+                providerConfig,
+                lives,
+              })
+            ),
+          ]),
+        })
+      ),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#getResourceShares-property
   getById: {
     method: "getResourceShares",
     getField: "resourceShares",
     pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       tap(({ resourceShareArn }) => {
         assert(resourceShareArn);
       }),
-      ({ resourceShareArn, owningAccountId }) => ({
+      ({ resourceShareArn }) => ({
         resourceShareArns: [resourceShareArn],
         resourceOwner: "SELF",
       }),
     ]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#getResourceShares-property
   getList: {
-    extraParam: { resourceOwner: "SELF" },
+    enhanceParams: () => () => ({ resourceOwner: "SELF" }),
     method: "getResourceShares",
     getParam: "resourceShares",
-    transformListPre: () => pipe([filter(not(eq(get("status"), "DELETED")))]),
-    decorate: ({ endpoint }) =>
-      pipe([
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#listResourceShareIpAddresses-property
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
+    transformListPre: () => pipe([filter(not(isDeleted))]),
+    decorate: ({ endpoint, config }) => pipe([decorate({ endpoint, config })]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#createResourceShare-property
   create: {
     method: "createResourceShare",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("resourceShare"),
-      ]),
+    pickCreated: ({ payload }) => pipe([get("resourceShare")]),
     isInstanceUp: pipe([eq(get("status"), "ACTIVE")]),
     isInstanceError: pipe([eq(get("status"), "FAILED")]),
     getErrorMessage: get("statusMessage", "error"),
@@ -77,13 +150,14 @@ exports.RAMResourceShare = ({}) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#updateResourceShare-property
   update: {
     method: "updateResourceShare",
-    //TODO
+    filterParams: ({ payload, diff, live }) =>
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#deleteResourceShare-property
   destroy: {
     method: "deleteResourceShare",
-    pickId: pipe([pick(["resourceShareArn"])]),
-    isInstanceDown: pipe([eq(get("status"), "DELETED")]),
+    pickId,
+    isInstanceDown: isDeleted,
   },
   getByName: ({ getList, endpoint }) =>
     pipe([
@@ -94,8 +168,6 @@ exports.RAMResourceShare = ({}) => ({
       }),
       endpoint().getResourceShares,
       get("resourceShares"),
-      //TODO
-      // getList,
       first,
     ]),
   tagger: ({ config }) =>

@@ -42,6 +42,15 @@ describe("EKS", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("IdentityProviderConfig", () =>
+    pipe([
+      () => ({
+        groupType: "EKS::IdentityProviderConfig",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  //
   it("NodeGroup", () =>
     pipe([
       () => ({

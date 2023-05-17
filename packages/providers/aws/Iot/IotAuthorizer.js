@@ -6,10 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 
-const {
-  Tagger,
-  //assignTags,
-} = require("./IotCommon");
+const { Tagger, assignTags } = require("./IotCommon");
 
 const buildArn = () =>
   pipe([
@@ -31,6 +28,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Iot.html

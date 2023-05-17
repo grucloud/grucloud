@@ -18,6 +18,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    defaultsDeep({ AwsAccountId: config.accountId() }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html
@@ -131,6 +132,7 @@ exports.QuickSightGroupMembership = () => ({
         assert(group);
       }),
       () => otherProps,
+      defaultsDeep({ AwsAccountId: config.accountId() }),
       defaultsDeep({
         GroupName: user.config.GroupName,
         MemberName: user.config.UserName,

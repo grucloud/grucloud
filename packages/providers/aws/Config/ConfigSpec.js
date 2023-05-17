@@ -32,6 +32,9 @@ const {
 const {
   ConfigOrganizationConformancePack,
 } = require("./ConfigOrganizationConformancePack");
+const {
+  ConfigRemediationConfiguration,
+} = require("./ConfigRemediationConfiguration");
 
 module.exports = pipe([
   () => [
@@ -44,6 +47,7 @@ module.exports = pipe([
     ConfigDeliveryChannel({}),
     ConfigOrganizationConfigRule({}),
     ConfigOrganizationConformancePack({}),
+    ConfigRemediationConfiguration({}),
   ],
   map(
     pipe([

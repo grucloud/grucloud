@@ -1,0 +1,5 @@
+alertmanager_config: |
+  route:
+    receiver: 'default'
+  receivers:
+    - name: 'default'

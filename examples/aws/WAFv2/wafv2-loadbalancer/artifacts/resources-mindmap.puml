@@ -4,14 +4,14 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ Vpc (1)
 ++++ InternetGateway (1)
 ++++ InternetGatewayAttachment (1)
-++++ Subnet (2)
+++++ Route (1)
 ++++ RouteTable (1)
 ++++ RouteTableAssociation (2)
-++++ Route (1)
 ++++ SecurityGroup (1)
+++++ Subnet (2)
+++++ Vpc (1)
 +++ ElasticLoadBalancingV2
 ++++ Listener (1)
 ++++ LoadBalancer (1)

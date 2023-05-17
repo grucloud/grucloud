@@ -1,8 +1,9 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, pick, omit } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, assign, pick, omit, map } = require("rubico");
+const { defaultsDeep, pluck, when } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -54,6 +55,74 @@ const decorate =
   ({ endpoint }) =>
     pipe([assignTags({ endpoint, findId }), defaultsDeep({ Scope })]);
 
+const dependenciesRuleGroup = {
+  ipSets: {
+    type: "IPSet",
+    group: "WAFv2",
+    list: true,
+    optional: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([get("Rules"), pluck("Statement.IPSetReferenceStatement.ARN")]),
+  },
+  regexPatternSet: {
+    type: "RegexPatternSet",
+    group: "WAFv2",
+    list: true,
+    optional: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([
+        get("Rules"),
+        pluck("Statement.RegexPatternSetReferenceStatement.ARN"),
+      ]),
+  },
+};
+
+exports.dependenciesRuleGroup = dependenciesRuleGroup;
+
+const filterLiveRuleGroup = ({ providerConfig, lives }) =>
+  pipe([
+    when(
+      get("IPSetReferenceStatement"),
+      assign({
+        IPSetReferenceStatement: pipe([
+          get("IPSetReferenceStatement"),
+          assign({
+            ARN: pipe([
+              get("ARN"),
+              replaceWithName({
+                groupType: "WAFv2::IPSet",
+                path: "id",
+                providerConfig,
+                lives,
+              }),
+            ]),
+          }),
+        ]),
+      })
+    ),
+    when(
+      get("RegexPatternSetReferenceStatement"),
+      assign({
+        RegexPatternSetReferenceStatement: pipe([
+          get("RegexPatternSetReferenceStatement"),
+          assign({
+            ARN: pipe([
+              get("ARN"),
+              replaceWithName({
+                groupType: "WAFv2::RegexPatternSet",
+                path: "id",
+                providerConfig,
+                lives,
+              }),
+            ]),
+          }),
+        ]),
+      })
+    ),
+  ]);
+
+exports.filterLiveRuleGroup = filterLiveRuleGroup;
+
 exports.createModelWebAcls = ({ compare, type, region, Scope }) => ({
   type,
   package: "wafv2",
@@ -66,8 +135,55 @@ exports.createModelWebAcls = ({ compare, type, region, Scope }) => ({
   compare: compare({
     filterLive: () => pipe([filterDescription]),
   }),
-  filterLive: () => pipe([filterDescription]),
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      filterDescription,
+      assign({
+        Rules: pipe([
+          get("Rules"),
+          map(
+            assign({
+              Statement: pipe([
+                get("Statement"),
+                filterLiveRuleGroup({ providerConfig, lives }),
+                when(
+                  get("RuleGroupReferenceStatement"),
+                  assign({
+                    RuleGroupReferenceStatement: pipe([
+                      get("RuleGroupReferenceStatement"),
+                      assign({
+                        ARN: pipe([
+                          get("ARN"),
+                          replaceWithName({
+                            groupType: "WAFv2::RuleGroup",
+                            path: "id",
+                            providerConfig,
+                            lives,
+                          }),
+                        ]),
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
+        ]),
+      }),
+    ]),
   ignoreErrorCodes: ["WAFNonexistentItemException"],
+  dependencies: {
+    ruleGroups: {
+      type: "RuleGroup",
+      group: "WAFv2",
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("Rules"),
+          pluck("Statement.RuleGroupReferenceStatement.ARN"),
+        ]),
+    },
+    ...dependenciesRuleGroup,
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#getWebACL-property
   getById: {
     method: "getWebACL",

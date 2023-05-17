@@ -17,6 +17,7 @@ const decorate = ({ endpoint, config }) =>
       assert(endpoint);
     }),
     defaultsDeep({ Namespace: "default" }),
+    defaultsDeep({ AwsAccountId: config.accountId() }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html

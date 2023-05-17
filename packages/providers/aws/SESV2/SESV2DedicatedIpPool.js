@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
@@ -26,10 +26,12 @@ const assignArn = ({ config }) =>
     tap(({ PoolName }) => {
       assert(PoolName);
     }),
-    ({ PoolName }) =>
-      `arn:aws:ses:${
-        config.region
-      }:${config.accountId()}:dedicated-ip-pool/${PoolName}`,
+    assign({
+      Arn: ({ PoolName }) =>
+        `arn:aws:ses:${
+          config.region
+        }:${config.accountId()}:dedicated-ip-pool/${PoolName}`,
+    }),
   ]);
 
 const decorate = ({ endpoint, config }) =>

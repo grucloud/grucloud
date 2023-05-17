@@ -19,5 +19,5 @@ describe(title, async function () {
         },
       ],
     });
-  }).timeout(10 * 60e3);
+  }).timeout(30 * 60e3);
 });

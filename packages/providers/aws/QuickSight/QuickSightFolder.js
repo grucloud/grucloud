@@ -28,6 +28,7 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    defaultsDeep({ AwsAccountId: config.accountId() }),
     assignTags({ buildArn: buildArn(config), endpoint }),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#describeFolderPermissions-property
     assign({

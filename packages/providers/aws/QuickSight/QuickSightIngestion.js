@@ -20,6 +20,7 @@ const decorate = ({ endpoint, config, live }) =>
       assert(live.DataSetId);
     }),
     defaultsDeep({ DataSetId: live.DataSetId }),
+    defaultsDeep({ AwsAccountId: config.accountId() }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html

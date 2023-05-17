@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project ec2-fleet
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ LaunchTemplate (1)
+++++ Route (1)
+++++ RouteTable (1)
+++++ RouteTableAssociation (2)
+++++ SecurityGroup (1)
+++++ Subnet (2)
+++++ Vpc (1)
++++ IAM
+++++ Role (1)
+@endmindmap

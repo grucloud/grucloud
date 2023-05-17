@@ -2,9 +2,12 @@ const assert = require("assert");
 const { map, pipe, tap, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { compareAws } = require("../AwsCommon");
+const { WAFV2IPSet } = require("./WAFV2IPSet");
+const { WAFV2LoggingConfiguration } = require("./WAFV2LoggingConfiguration");
 
 const { WAFV2RegexPatternSet } = require("./WAFV2RegexPatternSet");
+const { WAFV2RuleGroup } = require("./WAFV2RuleGroup");
 const { WAFV2WebACL } = require("./WAFV2WebAcl");
 const { WAFV2WebACLCloudFront } = require("./WAFV2WebACLCloudFront");
 
@@ -19,6 +22,9 @@ const { createAwsService } = require("../AwsService");
 
 module.exports = pipe([
   () => [
+    WAFV2IPSet({ compare }),
+    WAFV2LoggingConfiguration({ compare }),
+    WAFV2RuleGroup({}),
     WAFV2RegexPatternSet({ compare }),
     WAFV2WebACL({ compare }),
     WAFV2WebACLCloudFront({ compare }),
@@ -29,7 +35,6 @@ module.exports = pipe([
       createAwsService,
       defaultsDeep({
         group: GROUP,
-        isOurMinion,
         tagsKey,
         compare: compare({}),
       }),

@@ -185,6 +185,7 @@ const managedByOther = ({ lives, config }) =>
     hasKeyInTags({
       key: "aws:autoscaling:groupName",
     }),
+    get("SpotInstanceRequestId"),
   ]);
 
 // const findNamespace = findNamespaceInTagsOrEksCluster({

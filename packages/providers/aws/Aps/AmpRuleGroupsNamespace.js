@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
-const { defaultsDeep, append, identity } = require("rubico/x");
+const { pipe, tap, get, pick, eq, assign } = require("rubico");
+const { defaultsDeep, append, identity, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -32,9 +32,27 @@ const decorate = ({ endpoint, live }) =>
     tap((params) => {
       assert(live.workspaceId);
     }),
+    when(
+      get("data"),
+      assign({
+        data: pipe([get("data"), (data) => Buffer.from(data).toString()]),
+      })
+    ),
     defaultsDeep({ workspaceId: live.workspaceId }),
     toName,
   ]);
+
+const filterPayload = pipe([
+  assign({
+    data: pipe([
+      get("data"),
+      tap((data) => {
+        assert(data);
+      }),
+      (data) => Buffer.from(data),
+    ]),
+  }),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amp.html
 exports.AmpRuleGroupsNamespace = () => ({
@@ -59,6 +77,7 @@ exports.AmpRuleGroupsNamespace = () => ({
       pipe([
         tap((params) => {
           assert(workspaceId);
+          assert(name);
         }),
         () => workspaceId,
         lives.getById({
@@ -102,23 +121,35 @@ exports.AmpRuleGroupsNamespace = () => ({
     decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amp.html#listRuleGroupsNamespaces-property
-  getList: ({ client, config }) =>
+  getList: ({ client, config, getById }) =>
     pipe([
       () =>
         client.getListWithParent({
           parent: { type: "Workspace", group: "Aps" },
-          pickKey: pipe([toName, pickId]),
+          pickKey: pipe([
+            pick(["workspaceId"]),
+            tap(({ workspaceId }) => {
+              assert(workspaceId);
+            }),
+          ]),
           method: "listRuleGroupsNamespaces",
           getParam: "ruleGroupsNamespaces",
           config,
           decorate: ({ endpoint, config, parent }) =>
-            pipe([decorate({ endpoint, config, live: parent })]),
+            pipe([
+              tap((params) => {
+                assert(parent.workspaceId);
+              }),
+              defaultsDeep({ workspaceId: parent.workspaceId }),
+              getById({}),
+            ]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amp.html#createRuleGroupsNamespace-property
   create: {
+    filterPayload,
     method: "createRuleGroupsNamespace",
-    pickCreated: ({ payload }) => pipe([identity]),
+    pickCreated: ({ payload }) => pipe([() => payload]),
     isInstanceUp: eq(get("status.statusCode"), "ACTIVE"),
     isInstanceError: eq(get("status.statusCode"), "CREATION_FAILED"),
   },
@@ -126,7 +157,7 @@ exports.AmpRuleGroupsNamespace = () => ({
   update: {
     method: "putRuleGroupsNamespace",
     filterParams: ({ payload, diff, live }) =>
-      pipe([() => payload, defaultsDeep(pickId(live))])(),
+      pipe([() => payload, filterPayload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amp.html#deleteRuleGroupsNamespace-property
   destroy: {

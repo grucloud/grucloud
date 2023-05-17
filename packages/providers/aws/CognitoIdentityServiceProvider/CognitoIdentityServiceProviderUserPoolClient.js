@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -45,6 +45,7 @@ exports.CognitoIdentityServiceProviderUserPoolClient = () => ({
     "UserPoolId",
     "CreationDate",
     "LastModifiedDate",
+    "AnalyticsConfiguration.ApplicationArn",
   ],
   propertiesDefault: {
     AccessTokenValidity: 60,
@@ -62,6 +63,20 @@ exports.CognitoIdentityServiceProviderUserPoolClient = () => ({
     AuthSessionValidity: 3,
   },
   dependencies: {
+    pinpointApp: {
+      type: "App",
+      group: "Pinpoint",
+      optional: true,
+      pathId: "AnalyticsConfiguration.ApplicationId",
+      dependencyId: () => get("AnalyticsConfiguration.ApplicationId"),
+    },
+    pinpointIamRole: {
+      type: "Role",
+      group: "IAM",
+      optional: true,
+      pathId: "AnalyticsConfiguration.RoleArn",
+      dependencyId: () => get("AnalyticsConfiguration.RoleArn"),
+    },
     userPool: {
       type: "UserPool",
       group: "CognitoIdentityServiceProvider",
@@ -90,7 +105,6 @@ exports.CognitoIdentityServiceProviderUserPoolClient = () => ({
           decorate: () => pipe([getById({})]),
         }),
     ])(),
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPoolClient-property
   create: {
     method: "createUserPoolClient",
@@ -108,12 +122,11 @@ exports.CognitoIdentityServiceProviderUserPoolClient = () => ({
     pickId,
   },
   getByName: getByNameCore,
-
   configDefault: ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { userPool },
+    dependencies: { userPool, pinpointApp, pinpointIamRole },
     config,
   }) =>
     pipe([
@@ -124,5 +137,21 @@ exports.CognitoIdentityServiceProviderUserPoolClient = () => ({
       defaultsDeep({
         UserPoolId: getField(userPool, "Id"),
       }),
+      when(
+        () => pinpointApp,
+        defaultsDeep({
+          AnalyticsConfiguration: {
+            ApplicationId: getField(pinpointApp, "ApplicationId"),
+          },
+        })
+      ),
+      when(
+        () => pinpointIamRole,
+        defaultsDeep({
+          AnalyticsConfiguration: {
+            RoleArn: getField(pinpointIamRole, "Arn"),
+          },
+        })
+      ),
     ])(),
 });

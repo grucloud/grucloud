@@ -49,7 +49,7 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
+      AvailabilityZone: `${config.region}a`,
       NewBits: 4,
       NetworkNumber: 8,
     }),
@@ -62,7 +62,7 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}c`,
+      AvailabilityZone: `${config.region}b`,
       NewBits: 4,
       NetworkNumber: 9,
     }),
@@ -115,7 +115,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description: " ",
       Family: "memorydb_redis6",
-      Name: "param-group",
+      ParameterGroupName: "param-group",
+      ParameterNameValues: [],
     }),
   },
   {
@@ -136,10 +137,11 @@ exports.createResources = () => [
     group: "MemoryDB",
     properties: ({}) => ({
       AccessString: "on ~* &* +@all",
-      Name: "my-user",
       AuthenticationMode: {
+        Type: "password",
         Passwords: JSON.parse(process.env.MY_USER_MEMORYDB_USER_PASSWORDS),
       },
+      Name: "my-user",
     }),
   },
 ];

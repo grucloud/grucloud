@@ -23,6 +23,41 @@ exports.createResources = () => [
       launchTemplate: "lt-ec2-micro",
     }),
   },
+  {
+    type: "Notification",
+    group: "AutoScaling",
+    properties: ({}) => ({
+      NotificationTypes: [
+        "autoscaling:EC2_INSTANCE_LAUNCH",
+        "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+        "autoscaling:EC2_INSTANCE_TERMINATE",
+        "autoscaling:EC2_INSTANCE_TERMINATE_ERROR",
+      ],
+    }),
+    dependencies: ({}) => ({
+      autoScalingGroup: "asg",
+      snsTopic: "autoscaling-topic",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "AutoScaling",
+    properties: ({}) => ({
+      Enabled: true,
+      PolicyName: "Target Tracking Policy",
+      PolicyType: "TargetTrackingScaling",
+      TargetTrackingConfiguration: {
+        DisableScaleIn: false,
+        PredefinedMetricSpecification: {
+          PredefinedMetricType: "ASGAverageCPUUtilization",
+        },
+        TargetValue: 50,
+      },
+    }),
+    dependencies: ({}) => ({
+      autoScalingGroup: "asg",
+    }),
+  },
   { type: "KeyPair", group: "EC2", name: "kp-ecs" },
   {
     type: "LaunchTemplate",
@@ -137,4 +172,5 @@ exports.createResources = () => [
       },
     }),
   },
+  { type: "Topic", group: "SNS", name: "autoscaling-topic" },
 ];

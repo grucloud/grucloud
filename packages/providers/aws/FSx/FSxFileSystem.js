@@ -9,6 +9,7 @@ const { findNameInTagsOrId } = require("../AwsCommon");
 
 const { Tagger } = require("./FSxCommon");
 
+// TODO managedByOther OwnerId
 const buildArn = () =>
   pipe([
     get("ResourceARN"),
@@ -70,7 +71,6 @@ exports.FSxFileSystem = () => ({
     "OntapConfiguration.EndpointIpAddressRange",
     "OntapConfiguration.Endpoints",
     "OntapConfiguration.PreferredSubnetId",
-    "OntapConfiguration.RouteTableIds",
     "OpenZFSConfiguration.RootVolumeId",
     "LustreConfiguration.MountName",
     "WindowsConfiguration.ActiveDirectoryId",
@@ -98,6 +98,14 @@ exports.FSxFileSystem = () => ({
       group: "CloudWatchLogs",
       dependencyId: ({ lives, config }) =>
         pipe([get("LustreConfiguration.LogConfiguration.Destination")]),
+    },
+    routeTablesOnTap: {
+      type: "RouteTable",
+      group: "EC2",
+      list: true,
+      pathId: "OntapConfiguration.RouteTableIds",
+      dependencyIds: ({ lives, config }) =>
+        get("OntapConfiguration.RouteTableIds"),
     },
     subnets: {
       type: "Subnet",
@@ -187,7 +195,13 @@ exports.FSxFileSystem = () => ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { directory, kmsKey, subnets, securityGroups },
+    dependencies: {
+      directory,
+      kmsKey,
+      routeTablesOnTap,
+      subnets,
+      securityGroups,
+    },
     config,
   }) =>
     pipe([
@@ -207,6 +221,17 @@ exports.FSxFileSystem = () => ({
         () => kmsKey,
         defaultsDeep({
           KmsKeyId: getField(kmsKey, "Arn"),
+        })
+      ),
+      when(
+        () => routeTablesOnTap,
+        defaultsDeep({
+          OntapConfiguration: {
+            RouteTableIds: pipe([
+              () => routeTablesOnTap,
+              map((rt) => getField(rt, "RouteTableId")),
+            ])(),
+          },
         })
       ),
       when(

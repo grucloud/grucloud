@@ -33,6 +33,31 @@ describe("Playground", function () {
     const result = differenceWith(isDeepEqual, ["a", "b"])(["b", "a"]);
     assert(isEmpty(result));
   });
+  it("differenceWith ", async function () {
+    const result = differenceWith(isDeepEqual, [
+      {
+        Name: "acllog-max-len",
+        Value: "128",
+      },
+      {
+        Name: "activedefrag",
+        Value: "no",
+      },
+    ])([
+      {
+        Name: "acllog-max-len",
+        Value: "128",
+      },
+    ]);
+    assert(
+      isDeepEqual(result, [
+        {
+          Name: "activedefrag",
+          Value: "no",
+        },
+      ])
+    );
+  });
   it("defaultsDeep", async function () {
     const result = defaultsDeep({ size: 10 })({ size: 20 });
     assert(isDeepEqual(result, { size: 20 }));

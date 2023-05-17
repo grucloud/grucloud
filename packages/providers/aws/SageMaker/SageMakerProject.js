@@ -67,13 +67,7 @@ exports.SageMakerProject = () => ({
       }),
     ]),
   ignoreErrorCodes: ["ValidationException"],
-  dependencies: {
-    iamRole: {
-      type: "Role",
-      group: "IAM",
-      dependencyId: ({ lives, config }) => get("RoleArn"),
-    },
-  },
+  dependencies: {},
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SageMaker.html#describeProject-property
   getById: {
     method: "describeProject",

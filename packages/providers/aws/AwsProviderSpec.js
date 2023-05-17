@@ -7,6 +7,7 @@ const {
   get,
   map,
   switchCase,
+  assign,
 } = require("rubico");
 const {
   find,
@@ -62,6 +63,8 @@ const GROUPS = [
   ["Budgets", "budgets"],
   ["CodeArtifact", "codeartifact"],
   ["CodeBuild", "codebuild"],
+  // TODO
+  //["CodeCatalyst", "codecatalyst"],
   ["CodeCommit", "codecommit"],
   ["CodeDeploy", "codedeploy"],
   ["CodePipeline", "codepipeline"],
@@ -90,6 +93,8 @@ const GROUPS = [
   ["DeviceFarm", "devicefarm"],
   ["DirectConnect", "directconnect"],
   ["DMS", "dms"],
+  ["DocDB", "docdb"],
+  ["DocDBElastic", "docdb"],
   ["DynamoDB", "dynamodb"],
   ["EC2", "ec2"],
   ["ECR", "ecr"],
@@ -147,6 +152,7 @@ const GROUPS = [
   ["OAM", "oam"],
   ["OpenSearchServerless", "opensearchserverless"],
   ["Organisations", "organizations"],
+  ["OSIS", "osis"],
   ["Pipes", "pipes"],
   ["Pinpoint", "pinpoint"],
   ["QLDB", "qldb"],
@@ -160,6 +166,7 @@ const GROUPS = [
   ["RDS", "rds"],
   ["ResourceExplorer2", "resource-explorer-2"],
   ["ResourceGroups", "resource-groups"],
+  ["RolesAnywhere", "rolesanywhere"],
   ["Route53Resolver", "route53resolver"],
   ["Route53RecoveryControlConfig", "route53-recovery-control-config"],
   ["RUM", "rum"],
@@ -251,6 +258,25 @@ const excludeGroups = ({ config: { includeGroups = [] } }) =>
     ]),
   ]);
 
+const excludeResources = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    filterOut(
+      pipe([
+        get("groupType"),
+        tap((groupType) => {
+          assert(groupType);
+        }),
+        isIn(config.excludeResources),
+      ])
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
 exports.fnSpecs = (config) =>
   pipe([
     tap(() => {
@@ -278,5 +304,21 @@ exports.fnSpecs = (config) =>
         excludeGroups({ config }),
         callProp("sort", (a, b) => a.localeCompare(b)),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
+        tap((params) => {
+          assert(true);
+        }),
+        map(
+          assign({
+            groupType: ({ type, group }) =>
+              pipe([
+                tap((params) => {
+                  assert(type);
+                  assert(group);
+                }),
+                () => `${group}::${type}`,
+              ])(),
+          })
+        ),
+        excludeResources({ config }),
       ])(),
   ])();

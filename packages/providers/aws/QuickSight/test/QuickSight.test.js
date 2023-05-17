@@ -138,7 +138,24 @@ describe("QuickSight", async function () {
       () => ({
         groupType: "QuickSight::Template",
         livesNotFound: ({ config }) => [
-          { TemplateId: "e123", AwsAccountId: config.accountId() },
+          {
+            TemplateId: "e123",
+            AwsAccountId: config.accountId(),
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("TemplateAlias", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::TemplateAlias",
+        livesNotFound: ({ config }) => [
+          {
+            AliasName: "a123",
+            TemplateId: "e123",
+            AwsAccountId: config.accountId(),
+          },
         ],
       }),
       awsResourceTest,
@@ -154,6 +171,22 @@ describe("QuickSight", async function () {
             AwsAccountId: config.accountId(),
           },
         ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("Topic", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::Topic",
+        livesNotFound: ({ config }) => [{ AwsAccountId: config.accountId() }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("TopicPermission", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::TopicPermission",
+        livesNotFound: ({ config }) => [{ AwsAccountId: config.accountId() }],
       }),
       awsResourceTest,
     ])());
@@ -173,6 +206,16 @@ describe("QuickSight", async function () {
         groupType: "QuickSight::User",
         livesNotFound: ({ config }) => [
           { UserName: "e123", AwsAccountId: config.accountId() },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("VpcConnection", () =>
+    pipe([
+      () => ({
+        groupType: "QuickSight::VpcConnection",
+        livesNotFound: ({ config }) => [
+          { VPCConnectionId: "v-12345", AwsAccountId: config.accountId() },
         ],
       }),
       awsResourceTest,

@@ -8,7 +8,8 @@ const { createAwsService } = require("../AwsService");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Pinpoint.html
 
 const { PinpointApp } = require("./PinpointApp");
-// const { PinpointEmailChannel } = require("./PinpointEmailChannel");
+const { PinpointEmailChannel } = require("./PinpointEmailChannel");
+const { PinpointEventStream } = require("./PinpointEventStream");
 
 const GROUP = "Pinpoint";
 
@@ -19,7 +20,8 @@ module.exports = pipe([
   () => [
     //
     PinpointApp({}),
-    // PinpointEmailChannel({}),
+    PinpointEmailChannel({}),
+    PinpointEventStream({}),
   ],
   map(
     pipe([

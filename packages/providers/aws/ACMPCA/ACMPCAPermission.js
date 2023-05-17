@@ -71,6 +71,7 @@ exports.ACMPCAPermission = ({ compare }) => ({
         }),
       ])(),
   managedByOther: managedByOtherAccount,
+  cannotBeDeleted: managedByOtherAccount,
   ignoreErrorCodes: ["ResourceNotFoundException"],
   dependencies: {
     certificateAuthority: {

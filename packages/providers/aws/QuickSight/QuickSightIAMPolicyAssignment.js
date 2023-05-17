@@ -28,7 +28,12 @@ exports.QuickSightIAMPolicyAssignment = () => ({
   package: "quicksight",
   client: "QuickSight",
   propertiesDefault: {},
-  omitProperties: ["AssignmentId", "AssignmentStatus", "PolicyArn"],
+  omitProperties: [
+    "AwsAccountId",
+    "AssignmentId",
+    "AssignmentStatus",
+    "PolicyArn",
+  ],
   inferName: () =>
     pipe([
       get("AssignmentName"),

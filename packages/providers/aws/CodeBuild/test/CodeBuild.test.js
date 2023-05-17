@@ -16,4 +16,52 @@ describe("CodeBuild", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("ReportGroup", () =>
+    pipe([
+      () => ({
+        groupType: "CodeBuild::ReportGroup",
+        livesNotFound: ({ config }) => [
+          {
+            name: "123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("ResourcePolicy", () =>
+    pipe([
+      () => ({
+        groupType: "CodeBuild::ResourcePolicy",
+        livesNotFound: ({ config }) => [
+          {
+            name: "123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("SourceCredential", () =>
+    pipe([
+      () => ({
+        groupType: "CodeBuild::SourceCredential",
+        livesNotFound: ({ config }) => [
+          {
+            name: "123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("Webhook", () =>
+    pipe([
+      () => ({
+        groupType: "CodeBuild::Webhook",
+        livesNotFound: ({ config }) => [
+          {
+            name: "123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });

@@ -142,13 +142,38 @@ exports.createResources = () => [
   {
     type: "Listener",
     group: "ElasticLoadBalancingV2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      DefaultActions: [
+        {
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: `${getId({
+                  type: "TargetGroup",
+                  group: "ElasticLoadBalancingV2",
+                  name: "AlbLam-MyLoa-L5ONUHVSP4YQ",
+                })}`,
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              Enabled: false,
+            },
+          },
+          TargetGroupArn: `${getId({
+            type: "TargetGroup",
+            group: "ElasticLoadBalancingV2",
+            name: "AlbLam-MyLoa-L5ONUHVSP4YQ",
+          })}`,
+          Type: "forward",
+        },
+      ],
       Port: 80,
       Protocol: "HTTP",
     }),
     dependencies: ({}) => ({
       loadBalancer: "AlbLa-MyLoa-FULXT8UVTYSQ",
-      targetGroup: "AlbLam-MyLoa-L5ONUHVSP4YQ",
+      targetGroups: ["AlbLam-MyLoa-L5ONUHVSP4YQ"],
     }),
   },
   {
@@ -174,9 +199,9 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
-      Name: "AlbLam-MyLoa-L5ONUHVSP4YQ",
       HealthCheckIntervalSeconds: 35,
       HealthCheckTimeoutSeconds: 30,
+      Name: "AlbLam-MyLoa-L5ONUHVSP4YQ",
       TargetType: "lambda",
     }),
   },

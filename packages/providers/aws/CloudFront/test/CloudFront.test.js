@@ -4,6 +4,20 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("CloudFront", async function () {
+  it("ContinuousDeploymentPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "CloudFront::ContinuousDeploymentPolicy",
+        livesNotFound: ({ config }) => [
+          {
+            Id: "A123456789",
+            ETag: "E123456",
+          },
+        ],
+        skipDelete: true,
+      }),
+      awsResourceTest,
+    ])());
   it("Distribution", () =>
     pipe([
       () => ({
@@ -64,6 +78,19 @@ describe("CloudFront", async function () {
         livesNotFound: ({ config }) => [{ DistributionId: "d12345" }],
         skipGetById: true,
       }),
+    ])());
+  it("OriginAccessControl", () =>
+    pipe([
+      () => ({
+        groupType: "CloudFront::OriginAccessIdentity",
+        livesNotFound: ({ config }) => [
+          {
+            ETag: "ETVPDKIKX0DER",
+            Id: "a123s",
+          },
+        ],
+      }),
+      awsResourceTest,
     ])());
   it("OriginAccessIdentity", () =>
     pipe([

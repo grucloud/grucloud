@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, tryCatch, map } = require("rubico");
+const { pipe, tap, get, pick, tryCatch, flatMap, map } = require("rubico");
 const { defaultsDeep, isEmpty, filterOut } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -33,12 +33,15 @@ const pickId = pipe([
   pick(["Id", "LockToken", "Name", "Scope"]),
 ]);
 
-const decorate = ({ endpoint, config }) =>
+const decorate = ({ endpoint, config, live }) =>
   pipe([
     tap((params) => {
       assert(endpoint);
+      assert(live.LockToken);
+      assert(live.Scope);
     }),
     assignTags({ endpoint, findId }),
+    defaultsDeep({ LockToken: live.LockToken, Scope: live.Scope }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html
@@ -72,15 +75,16 @@ exports.WAFV2RegexPatternSet = () => ({
     decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#listRegexPatternSets-property
-  getList: ({ endpoint }) =>
+  getList: ({ endpoint, getById }) =>
     pipe([
       () => ["CLOUDFRONT", "REGIONAL"],
-      map(
+      flatMap((Scope) =>
         tryCatch(
           pipe([
-            (Scope) => ({ Scope }),
+            () => ({ Scope }),
             endpoint().listRegexPatternSets,
             get("RegexPatternSets"),
+            map(pipe([defaultsDeep({ Scope }), getById({})])),
           ]),
           (error) =>
             pipe([
@@ -89,14 +93,14 @@ exports.WAFV2RegexPatternSet = () => ({
               }),
               () => undefined,
             ])()
-        )
+        )()
       ),
       filterOut(isEmpty),
     ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#createRegexPatternSet-property
   create: {
     method: "createRegexPatternSet",
-    pickCreated: ({ payload }) => pipe([get("Summary")]),
+    pickCreated: ({ payload }) => pipe([get("Summary"), defaultsDeep(payload)]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#updateRegexPatternSet-property
   update: {
