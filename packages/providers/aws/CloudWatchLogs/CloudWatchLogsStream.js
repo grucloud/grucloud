@@ -54,7 +54,7 @@ const managedByOther = () =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html
-exports.CloudWatchLogStream = ({ compare }) => ({
+exports.CloudWatchLogsStream = ({ compare }) => ({
   type: "LogStream",
   package: "cloudwatch-logs",
   client: "CloudWatchLogs",
@@ -164,6 +164,8 @@ exports.CloudWatchLogStream = ({ compare }) => ({
         assert(cloudWatchLogGroup);
       }),
       () => otherProps,
-      defaultsDeep({ logGroupName: cloudWatchLogGroup.config.logGroupName }),
+      defaultsDeep({
+        logGroupName: cloudWatchLogGroup.config.logGroupName,
+      }),
     ])(),
 });

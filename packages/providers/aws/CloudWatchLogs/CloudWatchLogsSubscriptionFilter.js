@@ -53,7 +53,7 @@ const SubscriptionFilterDependencies = {
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html
-exports.CloudWatchSubscriptionFilter = ({ compare }) => ({
+exports.CloudWatchLogsSubscriptionFilter = ({ compare }) => ({
   type: "SubscriptionFilter",
   package: "cloudwatch-logs",
   client: "CloudWatchLogs",
@@ -152,7 +152,9 @@ exports.CloudWatchSubscriptionFilter = ({ compare }) => ({
         assert(cloudWatchLogGroup);
       }),
       () => otherProps,
-      defaultsDeep({ logGroupName: cloudWatchLogGroup.config.logGroupName }),
+      defaultsDeep({
+        logGroupName: cloudWatchLogGroup.config.logGroupName,
+      }),
       when(
         () => role,
         defaultsDeep({

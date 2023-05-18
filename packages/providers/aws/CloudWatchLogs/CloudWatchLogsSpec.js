@@ -1,19 +1,23 @@
 const assert = require("assert");
-const { pipe, get, map, tap, pick } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
-const { isOurMinionObject } = require("../AwsCommon");
+const { pipe, map, tap } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 
 const { createAwsService } = require("../AwsService");
 
-const { CloudWatchLogGroup } = require("./CloudWatchLogsGroup");
-const { CloudWatchLogStream } = require("./CloudWatchLogStream");
+const { CloudWatchLogsDestination } = require("./CloudWatchLogsDestination");
+const { CloudWatchLogsLogGroup } = require("./CloudWatchLogsLogGroup");
+const { CloudWatchLogsMetricFilter } = require("./CloudWatchLogsMetricFilter");
+const { CloudWatchLogsStream } = require("./CloudWatchLogsStream");
 const {
   CloudWatchLogsResourcePolicy,
 } = require("./CloudWatchLogsResourcePolicy");
 const {
-  CloudWatchSubscriptionFilter,
-} = require("./CloudWatchSubscriptionFilter");
+  CloudWatchLogsQueryDefinition,
+} = require("./CloudWatchLogsQueryDefinition");
+const {
+  CloudWatchLogsSubscriptionFilter,
+} = require("./CloudWatchLogsSubscriptionFilter");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html
 const GROUP = "CloudWatchLogs";
@@ -21,15 +25,15 @@ const tagsKey = "tags";
 
 const compare = compareAws({ tagsKey });
 
-const isOurMinion = ({ live, config }) =>
-  isOurMinionObject({ tags: live.tags, config });
-
 module.exports = pipe([
   () => [
-    CloudWatchLogGroup({ compare }),
-    CloudWatchLogStream({ compare }),
+    CloudWatchLogsDestination({ compare }),
+    CloudWatchLogsLogGroup({ compare }),
+    CloudWatchLogsMetricFilter({ compare }),
+    CloudWatchLogsQueryDefinition({ compare }),
     CloudWatchLogsResourcePolicy({ compare }),
-    CloudWatchSubscriptionFilter({ compare }),
+    CloudWatchLogsStream({ compare }),
+    CloudWatchLogsSubscriptionFilter({ compare }),
   ],
   map(
     pipe([
@@ -37,7 +41,6 @@ module.exports = pipe([
       defaultsDeep({
         group: GROUP,
         tagsKey,
-        isOurMinion,
         compare: compare({}),
       }),
     ])

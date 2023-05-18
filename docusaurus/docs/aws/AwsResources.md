@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 778 resources in 163 services for provider aws:
+List of 781 resources in 163 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -67,7 +67,7 @@ List of 778 resources in 163 services for provider aws:
 * CloudWatchEvents: 
 [ApiDestination](./resources/CloudWatchEvents/ApiDestination.md), [Connection](./resources/CloudWatchEvents/Connection.md), [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
-[LogGroup](./resources/CloudWatchLogs/LogGroup.md), [LogStream](./resources/CloudWatchLogs/LogStream.md), [ResourcePolicy](./resources/CloudWatchLogs/ResourcePolicy.md), [SubscriptionFilter](./resources/CloudWatchLogs/SubscriptionFilter.md)
+[Destination](./resources/CloudWatchLogs/Destination.md), [LogGroup](./resources/CloudWatchLogs/LogGroup.md), [MetricFilter](./resources/CloudWatchLogs/MetricFilter.md), [QueryDefinition](./resources/CloudWatchLogs/QueryDefinition.md), [ResourcePolicy](./resources/CloudWatchLogs/ResourcePolicy.md), [LogStream](./resources/CloudWatchLogs/LogStream.md), [SubscriptionFilter](./resources/CloudWatchLogs/SubscriptionFilter.md)
 * CodeArtifact: 
 [Domain](./resources/CodeArtifact/Domain.md), [DomainPermissionsPolicy](./resources/CodeArtifact/DomainPermissionsPolicy.md), [Repository](./resources/CodeArtifact/Repository.md), [RepositoryPermissionsPolicy](./resources/CodeArtifact/RepositoryPermissionsPolicy.md)
 * CodeBuild: 
