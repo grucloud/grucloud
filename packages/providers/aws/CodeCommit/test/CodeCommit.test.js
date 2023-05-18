@@ -4,8 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("CodeCommit", async function () {
-  //approval_rule_template
-  it.skip("ApprovalRuleTemplate", () =>
+  it("ApprovalRuleTemplate", () =>
     pipe([
       () => ({
         groupType: "CodeCommit::ApprovalRuleTemplate",
@@ -13,11 +12,13 @@ describe("CodeCommit", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ApprovalRuleTemplateAssociation", () =>
+  it("ApprovalRuleTemplateAssociation", () =>
     pipe([
       () => ({
         groupType: "CodeCommit::ApprovalRuleTemplateAssociation",
-        livesNotFound: ({ config }) => [{ approvalRuleTemplateName: "a123" }],
+        livesNotFound: ({ config }) => [
+          { approvalRuleTemplateName: "a123", repositoryName: "r123" },
+        ],
       }),
       awsResourceTest,
     ])());
