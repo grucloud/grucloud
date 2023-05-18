@@ -12,7 +12,7 @@ describe("CloudWatchLogs", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("DestinationPolicy", () =>
+  it("DestinationPolicy", () =>
     pipe([
       () => ({
         groupType: "CloudWatchLogs::DestinationPolicy",

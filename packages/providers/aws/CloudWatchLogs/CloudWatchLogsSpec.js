@@ -6,6 +6,9 @@ const { compareAws } = require("../AwsCommon");
 const { createAwsService } = require("../AwsService");
 
 const { CloudWatchLogsDestination } = require("./CloudWatchLogsDestination");
+const {
+  CloudWatchLogsDestinationPolicy,
+} = require("./CloudWatchLogsDestinationPolicy");
 const { CloudWatchLogsLogGroup } = require("./CloudWatchLogsLogGroup");
 const { CloudWatchLogsMetricFilter } = require("./CloudWatchLogsMetricFilter");
 const { CloudWatchLogsStream } = require("./CloudWatchLogsStream");
@@ -28,6 +31,7 @@ const compare = compareAws({ tagsKey });
 module.exports = pipe([
   () => [
     CloudWatchLogsDestination({ compare }),
+    CloudWatchLogsDestinationPolicy({ compare }),
     CloudWatchLogsLogGroup({ compare }),
     CloudWatchLogsMetricFilter({ compare }),
     CloudWatchLogsQueryDefinition({ compare }),

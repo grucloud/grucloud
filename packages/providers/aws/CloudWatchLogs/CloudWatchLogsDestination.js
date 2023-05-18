@@ -69,7 +69,7 @@ exports.CloudWatchLogsDestination = () => ({
     ]),
   findId: () =>
     pipe([
-      get("arn"),
+      get("destinationName"),
       tap((id) => {
         assert(id);
       }),
