@@ -85,13 +85,14 @@ describe("AutoScaling", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ScheduleAction", () =>
+  it("ScheduledAction", () =>
     pipe([
       () => ({
-        groupType: "AutoScaling::ScheduleAction",
+        groupType: "AutoScaling::ScheduledAction",
         livesNotFound: ({ config }) => [
           {
             AutoScalingGroupName: "d123",
+            ScheduledActionName: "s123",
           },
         ],
       }),

@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 782 resources in 163 services for provider aws:
+List of 783 resources in 163 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -43,7 +43,7 @@ List of 782 resources in 163 services for provider aws:
 * AuditManager: 
 [AccountRegistration](./resources/AuditManager/AccountRegistration.md), [Assessment](./resources/AuditManager/Assessment.md), [AssessmentDelegation](./resources/AuditManager/AssessmentDelegation.md), [AssessmentReport](./resources/AuditManager/AssessmentReport.md), [Control](./resources/AuditManager/Control.md), [AssessmentFramework](./resources/AuditManager/AssessmentFramework.md), [AssessmentFrameworkShare](./resources/AuditManager/AssessmentFrameworkShare.md), [Settings](./resources/AuditManager/Settings.md), [OrganizationAdminAccount](./resources/AuditManager/OrganizationAdminAccount.md)
 * AutoScaling: 
-[AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md), [Notification](./resources/AutoScaling/Notification.md), [Policy](./resources/AutoScaling/Policy.md)
+[AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md), [Notification](./resources/AutoScaling/Notification.md), [Policy](./resources/AutoScaling/Policy.md), [ScheduledAction](./resources/AutoScaling/ScheduledAction.md)
 * AutoScalingPlans: 
 [ScalingPlan](./resources/AutoScalingPlans/ScalingPlan.md)
 * Backup: 
