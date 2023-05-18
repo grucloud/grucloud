@@ -1,0 +1,25 @@
+@startmindmap
+title Resources for project traffic-mirror-ec2
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Instance (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NetworkInterface (1)
+++++ Route (1)
+++++ RouteTable (3)
+++++ RouteTableAssociation (3)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
+++++ Subnet (3)
+++++ TrafficMirrorFilter (1)
+++++ TrafficMirrorSession (1)
+++++ TrafficMirrorTarget (1)
+++++ Vpc (2)
++++ ElasticLoadBalancingV2
+++++ Listener (1)
+++++ LoadBalancer (1)
+++++ TargetGroup (1)
+@endmindmap
