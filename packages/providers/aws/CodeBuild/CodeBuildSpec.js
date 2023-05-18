@@ -6,6 +6,7 @@ const { createAwsService } = require("../AwsService");
 
 const { compareAws } = require("../AwsCommon");
 const { CodeBuildProject } = require("./CodeBuildProject");
+const { CodeBuildReportGroup } = require("./CodeBuildReportGroup");
 
 const GROUP = "CodeBuild";
 
@@ -22,6 +23,7 @@ module.exports = pipe([
   () => [
     //
     CodeBuildProject({ compare }),
+    CodeBuildReportGroup({ compare }),
   ],
   map(
     pipe([

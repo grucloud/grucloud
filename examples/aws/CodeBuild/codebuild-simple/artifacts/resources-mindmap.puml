@@ -5,7 +5,10 @@ skinparam monochrome true
 ++ aws
 +++ CodeBuild
 ++++ Project (1)
+++++ ReportGroup (1)
 +++ IAM
-++++ Role (1)
 ++++ Policy (1)
+++++ Role (1)
++++ S3
+++++ Bucket (1)
 @endmindmap
