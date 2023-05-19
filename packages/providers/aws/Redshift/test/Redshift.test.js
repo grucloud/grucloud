@@ -46,6 +46,14 @@ describe("Redshift", async function () {
       }),
       awsResourceTest,
     ])());
+  it("EventSubscription", () =>
+    pipe([
+      () => ({
+        groupType: "Redshift::EventSubscription",
+        livesNotFound: ({ config }) => [{ SubscriptionName: "s123" }],
+      }),
+      awsResourceTest,
+    ])());
   it("Partner", () =>
     pipe([
       () => ({

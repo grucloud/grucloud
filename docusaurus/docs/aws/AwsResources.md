@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 790 resources in 163 services for provider aws:
+List of 791 resources in 163 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -249,7 +249,7 @@ List of 790 resources in 163 services for provider aws:
 * RDS: 
 [DBCluster](./resources/RDS/DBCluster.md), [DBClusterEndpoint](./resources/RDS/DBClusterEndpoint.md), [DBClusterParameterGroup](./resources/RDS/DBClusterParameterGroup.md), [DBClusterSnapshot](./resources/RDS/DBClusterSnapshot.md), [DBEngineVersion](./resources/RDS/DBEngineVersion.md), [DBInstance](./resources/RDS/DBInstance.md), [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSnapshot](./resources/RDS/DBSnapshot.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [EventSubscription](./resources/RDS/EventSubscription.md), [ExportTask](./resources/RDS/ExportTask.md), [GlobalCluster](./resources/RDS/GlobalCluster.md), [OptionGroup](./resources/RDS/OptionGroup.md)
 * Redshift: 
-[Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md), [EndpointAccess](./resources/Redshift/EndpointAccess.md), [EndpointAuthorization](./resources/Redshift/EndpointAuthorization.md), [Partner](./resources/Redshift/Partner.md), [UsageLimit](./resources/Redshift/UsageLimit.md)
+[Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md), [EndpointAccess](./resources/Redshift/EndpointAccess.md), [EndpointAuthorization](./resources/Redshift/EndpointAuthorization.md), [EventSubscription](./resources/Redshift/EventSubscription.md), [Partner](./resources/Redshift/Partner.md), [UsageLimit](./resources/Redshift/UsageLimit.md)
 * RedshiftServerless: 
 [EndpointAccess](./resources/RedshiftServerless/EndpointAccess.md), [Namespace](./resources/RedshiftServerless/Namespace.md), [Snapshot](./resources/RedshiftServerless/Snapshot.md), [ResourcePolicy](./resources/RedshiftServerless/ResourcePolicy.md), [UsageLimit](./resources/RedshiftServerless/UsageLimit.md), [Workgroup](./resources/RedshiftServerless/Workgroup.md)
 * Rekognition: 
