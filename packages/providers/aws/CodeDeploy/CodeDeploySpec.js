@@ -6,6 +6,7 @@ const { createAwsService } = require("../AwsService");
 
 const { compareAws } = require("../AwsCommon");
 const { CodeDeployApplication } = require("./CodeDeployApplication");
+const { CodeDeployDeploymentConfig } = require("./CodeDeployDeploymentConfig");
 const { CodeDeployDeploymentGroup } = require("./CodeDeployDeploymentGroup");
 
 const GROUP = "CodeDeploy";
@@ -19,6 +20,7 @@ module.exports = pipe([
   () => [
     //
     CodeDeployApplication({ compare }),
+    CodeDeployDeploymentConfig({}),
     CodeDeployDeploymentGroup({ compare }),
   ],
   map(

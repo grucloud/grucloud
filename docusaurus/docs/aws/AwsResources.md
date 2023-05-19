@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 787 resources in 163 services for provider aws:
+List of 788 resources in 163 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -75,7 +75,7 @@ List of 787 resources in 163 services for provider aws:
 * CodeCommit: 
 [ApprovalRuleTemplate](./resources/CodeCommit/ApprovalRuleTemplate.md), [ApprovalRuleTemplateAssociation](./resources/CodeCommit/ApprovalRuleTemplateAssociation.md), [Repository](./resources/CodeCommit/Repository.md), [RepositoryTriggers](./resources/CodeCommit/RepositoryTriggers.md)
 * CodeDeploy: 
-[Application](./resources/CodeDeploy/Application.md), [DeploymentGroup](./resources/CodeDeploy/DeploymentGroup.md)
+[Application](./resources/CodeDeploy/Application.md), [DeploymentConfig](./resources/CodeDeploy/DeploymentConfig.md), [DeploymentGroup](./resources/CodeDeploy/DeploymentGroup.md)
 * CodeGuruReviewer: 
 [RepositoryAssociation](./resources/CodeGuruReviewer/RepositoryAssociation.md)
 * CodePipeline: 
