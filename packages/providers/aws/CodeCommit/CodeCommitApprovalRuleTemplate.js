@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -16,7 +16,22 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assign({
+      approvalRuleTemplateContent: pipe([
+        get("approvalRuleTemplateContent"),
+        JSON.parse,
+      ]),
+    }),
   ]);
+
+const filterPayload = pipe([
+  assign({
+    approvalRuleTemplateContent: pipe([
+      get("approvalRuleTemplateContent"),
+      JSON.stringify,
+    ]),
+  }),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeCommit.html
 exports.CodeCommitApprovalRuleTemplate = () => ({
@@ -72,6 +87,7 @@ exports.CodeCommitApprovalRuleTemplate = () => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeCommit.html#createApprovalRuleTemplate-property
   create: {
+    filterPayload,
     method: "createApprovalRuleTemplate",
     pickCreated: ({ payload }) => pipe([() => payload]),
   },
@@ -81,6 +97,7 @@ exports.CodeCommitApprovalRuleTemplate = () => ({
     filterParams: ({ payload, diff, live }) =>
       pipe([
         () => payload,
+        filterPayload,
         ({ approvalRuleTemplateContent, ...other }) => ({
           newRuleContent: approvalRuleTemplateContent,
           ...other,
