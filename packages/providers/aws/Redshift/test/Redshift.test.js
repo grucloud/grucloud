@@ -77,6 +77,22 @@ describe("Redshift", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("SnapshotSchedule", () =>
+    pipe([
+      () => ({
+        groupType: "Redshift::SnapshotSchedule",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("SnapshotScheduleAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "Redshift::SnapshotScheduleAssociation",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("UsageLimit", () =>
     pipe([
       () => ({

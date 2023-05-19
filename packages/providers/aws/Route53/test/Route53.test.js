@@ -14,11 +14,31 @@ describe("Route53", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("CidrLocation", () =>
+    pipe([
+      () => ({
+        groupType: "Route53::CidrCollection",
+        livesNotFound: ({ config }) => [
+          { Id: "12345678-1234-1234-1234-123456789012" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("DelegationSet", () =>
     pipe([
       () => ({
         groupType: "Route53::DelegationSet",
         livesNotFound: ({ config }) => [{ Id: "a-12345" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("KeySigningKey", () =>
+    pipe([
+      () => ({
+        groupType: "Route53::KeySigningKey",
+        livesNotFound: ({ config }) => [{ Id: "QS1234567" }],
+        skipGetByName: true,
+        skipGetById: true,
       }),
       awsResourceTest,
     ])());
@@ -34,6 +54,26 @@ describe("Route53", async function () {
     pipe([
       () => ({
         groupType: "Route53::HostedZone",
+        livesNotFound: ({ config }) => [{ Id: "QS1234567" }],
+        skipGetByName: true,
+        skipGetById: true,
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("HostedZoneDnSec", () =>
+    pipe([
+      () => ({
+        groupType: "Route53::HostedZoneDnSec",
+        livesNotFound: ({ config }) => [{ Id: "QS1234567" }],
+        skipGetByName: true,
+        skipGetById: true,
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("QueryLog", () =>
+    pipe([
+      () => ({
+        groupType: "Route53::QueryLog",
         livesNotFound: ({ config }) => [{ Id: "QS1234567" }],
         skipGetByName: true,
         skipGetById: true,

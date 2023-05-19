@@ -46,14 +46,14 @@ describe("Athena", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("View", () =>
-    pipe([
-      () => ({
-        groupType: "Athena::View",
-        livesNotFound: ({ config }) => [{ NamedQueryId: "n123" }],
-      }),
-      awsResourceTest,
-    ])());
+  // it.skip("View", () =>
+  //   pipe([
+  //     () => ({
+  //       groupType: "Athena::View",
+  //       livesNotFound: ({ config }) => [{ NamedQueryId: "n123" }],
+  //     }),
+  //     awsResourceTest,
+  //   ])());
   it("WorkGroup", () =>
     pipe([
       () => ({

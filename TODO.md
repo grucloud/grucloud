@@ -2,7 +2,7 @@
 
 ## Aws
 
-osis
+aws_ssoadmin_permissions_boundary_attachment
 aws_emrcontainers_virtual_cluster
 aws_serverlessapplicationrepository_cloudformation_stack
 MetricAlarm with APIGateway, example ApiGatewayV2/apigw-lambda-observability
