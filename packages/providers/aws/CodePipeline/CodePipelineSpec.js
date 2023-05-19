@@ -9,6 +9,7 @@ const {
   CodePipelineCustomActionType,
 } = require("./CodePipelineCustomActionType");
 const { CodePipelinePipeline } = require("./CodePipelinePipeline");
+const { CodePipelineWebhook } = require("./CodePipelineWebhook");
 
 const GROUP = "CodePipeline";
 const tagsKey = "tags";
@@ -19,6 +20,7 @@ module.exports = pipe([
     //
     CodePipelineCustomActionType({}),
     CodePipelinePipeline({}),
+    CodePipelineWebhook({}),
   ],
   map(
     pipe([
