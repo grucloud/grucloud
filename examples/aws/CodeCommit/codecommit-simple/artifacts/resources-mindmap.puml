@@ -7,4 +7,7 @@ skinparam monochrome true
 ++++ ApprovalRuleTemplate (1)
 ++++ ApprovalRuleTemplateAssociation (1)
 ++++ Repository (1)
+++++ RepositoryTriggers (1)
++++ SNS
+++++ Topic (1)
 @endmindmap

@@ -12,6 +12,9 @@ const {
   CodeCommitApprovalRuleTemplateAssociation,
 } = require("./CodeCommitApprovalRuleTemplateAssociation");
 const { CodeCommitRepository } = require("./CodeCommitRepository");
+const {
+  CodeCommitRepositoryTriggers,
+} = require("./CodeCommitRepositoryTriggers");
 
 const GROUP = "CodeCommit";
 
@@ -28,6 +31,7 @@ module.exports = pipe([
     CodeCommitApprovalRuleTemplate({}),
     CodeCommitApprovalRuleTemplateAssociation({}),
     CodeCommitRepository({ compare }),
+    CodeCommitRepositoryTriggers({}),
   ],
   map(
     pipe([

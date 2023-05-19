@@ -36,4 +36,36 @@ exports.createResources = () => [
       repositoryName: "my-repo-test",
     }),
   },
+  {
+    type: "RepositoryTriggers",
+    group: "CodeCommit",
+    properties: ({ getId }) => ({
+      triggers: [
+        {
+          branches: [],
+          destinationArn: `${getId({
+            type: "Topic",
+            group: "SNS",
+            name: "topic-code-commit",
+          })}`,
+          events: ["all"],
+          name: "my-sns-trigger",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      repository: "my-repo-test",
+      snsTopics: ["topic-code-commit"],
+    }),
+  },
+  {
+    type: "Topic",
+    group: "SNS",
+    name: "topic-code-commit",
+    properties: ({}) => ({
+      Attributes: {
+        TracingConfig: "PassThrough",
+      },
+    }),
+  },
 ];
