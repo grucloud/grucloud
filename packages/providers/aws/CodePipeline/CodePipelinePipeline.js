@@ -15,7 +15,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags, replaceAccountAndRegion } = require("../AwsCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
 
-const { Tagger } = require("./CodePipelineCommon");
+const { Tagger, assignTags } = require("./CodePipelineCommon");
 
 const buildArn = () =>
   pipe([
@@ -25,17 +25,12 @@ const buildArn = () =>
     }),
   ]);
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodePipeline.html#listTagsForResource-property
-const assignTags = ({ endpoint }) =>
+const decorate = ({ endpoint, config }) =>
   pipe([
-    assign({
-      tags: pipe([
-        get("metadata.pipelineArn"),
-        (resourceArn) => ({ resourceArn }),
-        endpoint().listTagsForResource,
-        get("tags"),
-      ]),
+    tap((params) => {
+      assert(endpoint);
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodePipeline.html
@@ -43,9 +38,21 @@ exports.CodePipelinePipeline = ({}) => ({
   type: "Pipeline",
   package: "codepipeline",
   client: "CodePipeline",
-  inferName: () => pipe([get("pipeline.name")]),
+  inferName: () =>
+    pipe([
+      get("pipeline.name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
   findName: () => pipe([get("pipeline.name")]),
-  findId: () => pipe([get("metadata.pipelineArn")]),
+  findId: () =>
+    pipe([
+      get("metadata.pipelineArn"),
+      tap((pipelineArn) => {
+        assert(pipelineArn);
+      }),
+    ]),
   ignoreErrorCodes: ["PipelineNotFoundException", "ResourceNotFoundException"],
   dependencies: {
     role: {
@@ -222,7 +229,7 @@ exports.CodePipelinePipeline = ({}) => ({
   getById: {
     method: "getPipeline",
     pickId: pipe([get("pipeline"), pick(["name"])]),
-    decorate: ({ endpoint }) => pipe([assignTags({ endpoint })]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodePipeline.html#listPipelines-property
   getList: {

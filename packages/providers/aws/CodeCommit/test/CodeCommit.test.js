@@ -30,10 +30,10 @@ describe("CodeCommit", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("RepositoryTrigger", () =>
+  it("RepositoryTriggers", () =>
     pipe([
       () => ({
-        groupType: "CodeCommit::RepositoryTrigger",
+        groupType: "CodeCommit::RepositoryTriggers",
         livesNotFound: ({ config }) => [
           { repositoryName: "r123", triggers: [] },
         ],

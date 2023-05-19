@@ -4,6 +4,10 @@ const { defaultsDeep } = require("rubico/x");
 const { createAwsService } = require("../AwsService");
 
 const { compareAws } = require("../AwsCommon");
+
+const {
+  CodePipelineCustomActionType,
+} = require("./CodePipelineCustomActionType");
 const { CodePipelinePipeline } = require("./CodePipelinePipeline");
 
 const GROUP = "CodePipeline";
@@ -13,6 +17,7 @@ const compare = compareAws({ tagsKey, key: "key" });
 module.exports = pipe([
   () => [
     //
+    CodePipelineCustomActionType({}),
     CodePipelinePipeline({}),
   ],
   map(
