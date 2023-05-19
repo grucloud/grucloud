@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep, isIn } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -9,6 +9,25 @@ const { buildTags } = require("../AwsCommon");
 const { Tagger } = require("./RedshiftCommon");
 
 // TODO CustomerAwsId managedByOther
+
+const assignArn = ({ config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    assign({
+      Arn: pipe([
+        tap(({ SubscriptionName }) => {
+          assert(SubscriptionName);
+        }),
+        ({ SubscriptionName }) =>
+          `arn:aws:redshift:${
+            config.region
+          }:${config.accountId()}:eventsubscription:${SubscriptionName}`,
+      ]),
+    }),
+  ]);
+
 const buildArn = () =>
   pipe([
     get("Arn"),
@@ -40,6 +59,7 @@ const decorate = ({ endpoint, config }) =>
       assert(endpoint);
     }),
     toServiceIdentifier,
+    assignArn({ config }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html
@@ -48,7 +68,12 @@ exports.RedshiftEventSubscription = () => ({
   package: "redshift",
   client: "Redshift",
   propertiesDefault: {},
-  omitProperties: ["Status", "CustomerAwsId", "SubscriptionCreationTime"],
+  omitProperties: [
+    "Arn",
+    "Status",
+    "CustomerAwsId",
+    "SubscriptionCreationTime",
+  ],
   inferName: () =>
     pipe([
       get("SubscriptionName"),

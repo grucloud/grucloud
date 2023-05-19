@@ -23,7 +23,7 @@ const {
 } = require("./RedshiftEndpointAuthorization");
 const { RedshiftEventSubscription } = require("./RedshiftEventSubscription");
 const { RedshiftPartner } = require("./RedshiftPartner");
-
+const { RedshiftScheduledAction } = require("./RedshiftScheduledAction");
 const { RedshiftUsageLimit } = require("./RedshiftUsageLimit");
 
 //
@@ -36,6 +36,7 @@ module.exports = pipe([
     RedshiftEndpointAuthorization({}),
     RedshiftEventSubscription({}),
     RedshiftPartner({}),
+    RedshiftScheduledAction({}),
     RedshiftUsageLimit({}),
   ],
   map(

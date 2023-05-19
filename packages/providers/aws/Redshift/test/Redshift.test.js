@@ -69,11 +69,11 @@ describe("Redshift", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ScheduleAction", () =>
+  it("ScheduledAction", () =>
     pipe([
       () => ({
-        groupType: "Redshift::ScheduleAction",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "Redshift::ScheduledAction",
+        livesNotFound: ({ config }) => [{ ScheduledActionName: "s123" }],
       }),
       awsResourceTest,
     ])());
