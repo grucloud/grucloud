@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 793 resources in 163 services for provider aws:
+List of 794 resources in 163 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -127,7 +127,7 @@ List of 793 resources in 163 services for provider aws:
 * EFS: 
 [FileSystem](./resources/EFS/FileSystem.md), [FileSystemPolicy](./resources/EFS/FileSystemPolicy.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
-[Addon](./resources/EKS/Addon.md), [Cluster](./resources/EKS/Cluster.md), [FargateProfile](./resources/EKS/FargateProfile.md), [NodeGroup](./resources/EKS/NodeGroup.md)
+[Addon](./resources/EKS/Addon.md), [Cluster](./resources/EKS/Cluster.md), [FargateProfile](./resources/EKS/FargateProfile.md), [IdentityProviderConfig](./resources/EKS/IdentityProviderConfig.md), [NodeGroup](./resources/EKS/NodeGroup.md)
 * ElastiCache: 
 [CacheCluster](./resources/ElastiCache/CacheCluster.md), [CacheParameterGroup](./resources/ElastiCache/CacheParameterGroup.md), [CacheSubnetGroup](./resources/ElastiCache/CacheSubnetGroup.md), [GlobalReplicationGroup](./resources/ElastiCache/GlobalReplicationGroup.md), [ReplicationGroup](./resources/ElastiCache/ReplicationGroup.md), [User](./resources/ElastiCache/User.md), [UserGroup](./resources/ElastiCache/UserGroup.md)
 * ElasticBeanstalk: 

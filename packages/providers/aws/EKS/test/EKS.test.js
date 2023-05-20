@@ -42,11 +42,13 @@ describe("EKS", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("IdentityProviderConfig", () =>
+  it("IdentityProviderConfig", () =>
     pipe([
       () => ({
         groupType: "EKS::IdentityProviderConfig",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { clusterName: "c123", oidc: { identityProviderConfigName: "i123" } },
+        ],
       }),
       awsResourceTest,
     ])());
