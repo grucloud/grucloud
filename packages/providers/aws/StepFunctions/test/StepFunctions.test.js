@@ -4,15 +4,15 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("StepFunctions", async function () {
-  it.skip("Activity", () =>
+  it("Activity", () =>
     pipe([
       () => ({
         groupType: "StepFunctions::Activity",
         livesNotFound: ({ config }) => [
           {
-            // stateMachineArn: `arn:aws:states:${
-            //   config.region
-            // }:${config.accountId()}:stateMachine:test-test`,
+            activityArn: `arn:aws:states:${
+              config.region
+            }:${config.accountId()}:activity:test-test`,
           },
         ],
       }),
