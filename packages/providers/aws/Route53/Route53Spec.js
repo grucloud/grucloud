@@ -49,6 +49,7 @@ const {
 
 const { Route53DelegationSet } = require("./Route53DelegationSet");
 const { Route53HealthCheck } = require("./Route53HealthCheck");
+const { Route53QueryLog } = require("./Route53QueryLog");
 
 const {
   Route53Record,
@@ -235,6 +236,7 @@ module.exports = pipe([
           }),
         ]),
     },
+    createAwsService(Route53QueryLog({ compare })),
     {
       type: "Record",
       dependencies: {

@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 794 resources in 163 services for provider aws:
+List of 795 resources in 163 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -263,7 +263,7 @@ List of 794 resources in 163 services for provider aws:
 * RolesAnywhere: 
 [CRL](./resources/RolesAnywhere/CRL.md), [Profile](./resources/RolesAnywhere/Profile.md), [TrustAnchor](./resources/RolesAnywhere/TrustAnchor.md)
 * Route53: 
-[CidrCollection](./resources/Route53/CidrCollection.md), [DelegationSet](./resources/Route53/DelegationSet.md), [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
+[CidrCollection](./resources/Route53/CidrCollection.md), [DelegationSet](./resources/Route53/DelegationSet.md), [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [QueryLog](./resources/Route53/QueryLog.md), [Record](./resources/Route53/Record.md), [TrafficPolicy](./resources/Route53/TrafficPolicy.md), [TrafficPolicyInstance](./resources/Route53/TrafficPolicyInstance.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md)
 * Route53Domains: 
 [Domain](./resources/Route53Domains/Domain.md)
 * Route53RecoveryControlConfig: 

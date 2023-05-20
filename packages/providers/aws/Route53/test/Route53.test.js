@@ -70,13 +70,11 @@ describe("Route53", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("QueryLog", () =>
+  it("QueryLog", () =>
     pipe([
       () => ({
         groupType: "Route53::QueryLog",
         livesNotFound: ({ config }) => [{ Id: "QS1234567" }],
-        skipGetByName: true,
-        skipGetById: true,
       }),
       awsResourceTest,
     ])());
