@@ -477,8 +477,12 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
+      HealthCheckPath: "/",
       HealthCheckPort: "traffic-port",
       HealthCheckProtocol: "HTTP",
+      Matcher: {
+        HttpCode: "200",
+      },
       Name: "CdkSta-MyFar-NUW0IUOKU6VV",
       Port: 80,
       Protocol: "HTTP",

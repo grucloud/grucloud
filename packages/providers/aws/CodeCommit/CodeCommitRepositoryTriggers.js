@@ -9,7 +9,13 @@ const {
   switchCase,
   map,
 } = require("rubico");
-const { defaultsDeep, pluck, callProp } = require("rubico/x");
+const {
+  defaultsDeep,
+  pluck,
+  callProp,
+  isEmpty,
+  filterOut,
+} = require("rubico/x");
 
 const { replaceWithName } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -167,6 +173,8 @@ exports.CodeCommitRepositoryTriggers = () => ({
                 repositoryName: parent.repositoryName,
               }),
             ]),
+          transformListPost: () =>
+            pipe([filterOut(pipe([get("triggers"), isEmpty]))]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeCommit.html#associateApprovalRuleTemplateWithRepository-property

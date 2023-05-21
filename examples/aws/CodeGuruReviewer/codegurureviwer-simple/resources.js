@@ -14,6 +14,16 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "RepositoryTriggers",
+    group: "CodeCommit",
+    properties: ({}) => ({
+      triggers: [],
+    }),
+    dependencies: ({}) => ({
+      repository: "my-repo",
+    }),
+  },
+  {
     type: "RepositoryAssociation",
     group: "CodeGuruReviewer",
     properties: ({}) => ({
@@ -23,6 +33,9 @@ exports.createResources = () => [
           Name: "my-repo",
         },
       },
+    }),
+    dependencies: ({}) => ({
+      codeCommitRepository: "my-repo",
     }),
   },
 ];
