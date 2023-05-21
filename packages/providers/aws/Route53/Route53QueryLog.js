@@ -176,12 +176,10 @@ exports.Route53QueryLog = () => ({
   }) =>
     pipe([
       tap(() => {
-        // assert(cloudWatchLogGroup);
         assert(hostedZone);
       }),
       () => otherProps,
       defaultsDeep({
-        //CloudWatchLogsLogGroupArn: getField(cloudWatchLogGroup, "arn"),
         HostedZoneId: getField(hostedZone, "HostedZoneId"),
       }),
     ])(),

@@ -32,11 +32,13 @@ describe("Route53", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("KeySigningKey", () =>
+  it("KeySigningKey", () =>
     pipe([
       () => ({
         groupType: "Route53::KeySigningKey",
-        livesNotFound: ({ config }) => [{ Id: "QS1234567" }],
+        livesNotFound: ({ config }) => [
+          { Name: "QS1234567", HostedZoneId: "h1234567" },
+        ],
         skipGetByName: true,
         skipGetById: true,
       }),
@@ -60,11 +62,11 @@ describe("Route53", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("HostedZoneDnSec", () =>
+  it("DNSSEC", () =>
     pipe([
       () => ({
-        groupType: "Route53::HostedZoneDnSec",
-        livesNotFound: ({ config }) => [{ Id: "QS1234567" }],
+        groupType: "Route53::DNSSEC",
+        livesNotFound: ({ config }) => [{ HostedZoneId: "QS1234567" }],
         skipGetByName: true,
         skipGetById: true,
       }),
