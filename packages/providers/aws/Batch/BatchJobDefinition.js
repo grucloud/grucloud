@@ -35,6 +35,8 @@ const decorate = () =>
       "containerProperties.secrets",
       "containerProperties.ulimits",
       "containerProperties.volumes",
+      "containerProperties.networkConfiguration.interfaceConfigurations",
+      "containerProperties.networkConfiguration",
       "parameters",
     ]),
   ]);
