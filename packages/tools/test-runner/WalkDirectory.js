@@ -280,6 +280,7 @@ const ExcludeDirsDefault = [
   "terraform-backend-s3-dynamodb",
   "verified-access-simple",
   "kms-replica-key",
+  "config-organization-custom-rule",
 ];
 
 const fileExist = pipe([
