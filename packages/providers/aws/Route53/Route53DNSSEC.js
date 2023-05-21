@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, map, switchCase } = require("rubico");
-const { defaultsDeep, isIn } = require("rubico/x");
+const { defaultsDeep, isIn, filterOut } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -117,6 +117,8 @@ exports.Route53DNSSEC = () => ({
           config,
           decorate: ({ parent }) =>
             pipe([decorate({ endpoint, config, live: parent })]),
+          transformListPost: () =>
+            pipe([filterOut(eq(get("Status.ServeSignature"), "NOT_SIGNING"))]),
         }),
     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createDNSSEC-property
