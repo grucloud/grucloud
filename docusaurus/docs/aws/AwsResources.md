@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 797 resources in 163 services for provider aws:
+List of 800 resources in 163 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -157,7 +157,7 @@ List of 797 resources in 163 services for provider aws:
 * GlobalAccelerator: 
 [Accelerator](./resources/GlobalAccelerator/Accelerator.md), [CustomRoutingAccelerator](./resources/GlobalAccelerator/CustomRoutingAccelerator.md), [CustomRoutingEndpointGroup](./resources/GlobalAccelerator/CustomRoutingEndpointGroup.md), [CustomRoutingListener](./resources/GlobalAccelerator/CustomRoutingListener.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
 * Glue: 
-[Classifier](./resources/Glue/Classifier.md), [Connection](./resources/Glue/Connection.md), [Crawler](./resources/Glue/Crawler.md), [Database](./resources/Glue/Database.md), [DevEndpoint](./resources/Glue/DevEndpoint.md), [Job](./resources/Glue/Job.md), [Partition](./resources/Glue/Partition.md), [Registry](./resources/Glue/Registry.md), [ResourcePolicy](./resources/Glue/ResourcePolicy.md), [Schema](./resources/Glue/Schema.md), [SecurityConfiguration](./resources/Glue/SecurityConfiguration.md), [Table](./resources/Glue/Table.md), [Trigger](./resources/Glue/Trigger.md), [UserDefinedFunction](./resources/Glue/UserDefinedFunction.md), [Workflow](./resources/Glue/Workflow.md)
+[Classifier](./resources/Glue/Classifier.md), [Connection](./resources/Glue/Connection.md), [Crawler](./resources/Glue/Crawler.md), [Database](./resources/Glue/Database.md), [DevEndpoint](./resources/Glue/DevEndpoint.md), [Job](./resources/Glue/Job.md), [MLTransform](./resources/Glue/MLTransform.md), [Partition](./resources/Glue/Partition.md), [Registry](./resources/Glue/Registry.md), [ResourcePolicy](./resources/Glue/ResourcePolicy.md), [Schema](./resources/Glue/Schema.md), [SecurityConfiguration](./resources/Glue/SecurityConfiguration.md), [Table](./resources/Glue/Table.md), [Trigger](./resources/Glue/Trigger.md), [UserDefinedFunction](./resources/Glue/UserDefinedFunction.md), [Workflow](./resources/Glue/Workflow.md)
 * Grafana: 
 [Workspace](./resources/Grafana/Workspace.md)
 * GuardDuty: 
@@ -241,7 +241,7 @@ List of 797 resources in 163 services for provider aws:
 * QLDB: 
 [Ledger](./resources/QLDB/Ledger.md), [Stream](./resources/QLDB/Stream.md)
 * QuickSight: 
-[AccountSubscription](./resources/QuickSight/AccountSubscription.md), [Analysis](./resources/QuickSight/Analysis.md), [Dashboard](./resources/QuickSight/Dashboard.md), [DataSet](./resources/QuickSight/DataSet.md), [DataSource](./resources/QuickSight/DataSource.md), [Folder](./resources/QuickSight/Folder.md), [FolderMembership](./resources/QuickSight/FolderMembership.md), [IAMPolicyAssignment](./resources/QuickSight/IAMPolicyAssignment.md), [Ingestion](./resources/QuickSight/Ingestion.md), [Group](./resources/QuickSight/Group.md), [GroupMembership](./resources/QuickSight/GroupMembership.md), [RefreshSchedule](./resources/QuickSight/RefreshSchedule.md), [Template](./resources/QuickSight/Template.md), [Theme](./resources/QuickSight/Theme.md), [User](./resources/QuickSight/User.md)
+[AccountSubscription](./resources/QuickSight/AccountSubscription.md), [Analysis](./resources/QuickSight/Analysis.md), [Dashboard](./resources/QuickSight/Dashboard.md), [DataSet](./resources/QuickSight/DataSet.md), [DataSource](./resources/QuickSight/DataSource.md), [Folder](./resources/QuickSight/Folder.md), [FolderMembership](./resources/QuickSight/FolderMembership.md), [IAMPolicyAssignment](./resources/QuickSight/IAMPolicyAssignment.md), [Ingestion](./resources/QuickSight/Ingestion.md), [Group](./resources/QuickSight/Group.md), [GroupMembership](./resources/QuickSight/GroupMembership.md), [RefreshSchedule](./resources/QuickSight/RefreshSchedule.md), [Template](./resources/QuickSight/Template.md), [TemplateAlias](./resources/QuickSight/TemplateAlias.md), [Theme](./resources/QuickSight/Theme.md), [User](./resources/QuickSight/User.md), [VPCConnection](./resources/QuickSight/VPCConnection.md)
 * RAM: 
 [Permission](./resources/RAM/Permission.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md), [ResourceShare](./resources/RAM/ResourceShare.md)
 * Rbin: 

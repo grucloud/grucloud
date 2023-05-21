@@ -65,7 +65,10 @@ exports.QuickSightTemplateAlias = () => ({
         assert(id);
       }),
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: [
+    "ResourceNotFoundException",
+    "UnsupportedUserEditionException",
+  ],
   dependencies: {
     template: {
       type: "Template",
@@ -80,10 +83,10 @@ exports.QuickSightTemplateAlias = () => ({
         ]),
     },
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#getTemplateAlias-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/QuickSight.html#describeTemplateAlias-property
   getById: {
-    method: "getTemplateAlias",
-    getField: "TemplateAlias",
+    method: "describeTemplateAlias",
+    getField: "DescribeTemplateAliasResponse",
     pickId,
     decorate,
   },

@@ -23,10 +23,13 @@ const { QuickSightGroup } = require("./QuickSightGroup");
 const { QuickSightGroupMembership } = require("./QuickSightGroupMembership");
 const { QuickSightRefreshSchedule } = require("./QuickSightRefreshSchedule");
 const { QuickSightTemplate } = require("./QuickSightTemplate");
-//const { QuickSightTemplateAlias } = require("./QuickSightTemplateAlias");
+const { QuickSightTemplateAlias } = require("./QuickSightTemplateAlias");
 const { QuickSightTheme } = require("./QuickSightTheme");
+//const { QuickSightTopic } = require("./QuickSightTopic");
+//const { QuickSightTopicPermission } = require("./QuickSightTopicPermission");
+
 const { QuickSightUser } = require("./QuickSightUser");
-//const { QuickSightVPCConnection } = require("./QuickSightVPCConnection");
+const { QuickSightVPCConnection } = require("./QuickSightVPCConnection");
 
 const GROUP = "QuickSight";
 
@@ -48,10 +51,13 @@ module.exports = pipe([
     QuickSightGroupMembership({}),
     QuickSightRefreshSchedule({}),
     QuickSightTemplate({}),
-    //QuickSightTemplateAlias({}),
+    QuickSightTemplateAlias({}),
     QuickSightTheme({}),
+    //QuickSightTopic({}),
+    //QuickSightTopicPermission({}),
+
     QuickSightUser({}),
-    // QuickSightVPCConnection({})
+    QuickSightVPCConnection({}),
   ],
   map(
     pipe([

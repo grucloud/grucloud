@@ -12,6 +12,7 @@ const { GlueCrawler } = require("./GlueCrawler");
 const { GlueDatabase } = require("./GlueDatabase");
 const { GlueDevEndpoint } = require("./GlueDevEndpoint");
 const { GlueJob } = require("./GlueJob");
+const { GlueMLTransform } = require("./GlueMLTransform");
 const { GluePartition } = require("./GluePartition");
 const { GlueRegistry } = require("./GlueRegistry");
 const { GlueResourcePolicy } = require("./GlueResourcePolicy");
@@ -36,6 +37,7 @@ module.exports = pipe([
     GlueDatabase({ compare }),
     GlueDevEndpoint({ compare }),
     GlueJob({ compare }),
+    GlueMLTransform({ compare }),
     GluePartition({ compare }),
     GlueRegistry({ compare }),
     GlueResourcePolicy({ compare }),
