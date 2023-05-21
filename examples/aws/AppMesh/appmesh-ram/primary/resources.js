@@ -112,15 +112,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "ResourceShare",
-    group: "RAM",
-    properties: ({}) => ({
-      allowExternalPrincipals: true,
-      featureSet: "STANDARD",
-      name: "share-mesh",
-    }),
-  },
-  {
     type: "PrincipalAssociation",
     group: "RAM",
     properties: ({}) => ({
@@ -140,6 +131,15 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceShare: "share-mesh",
       appMesh: "my-mesh",
+    }),
+  },
+  {
+    type: "ResourceShare",
+    group: "RAM",
+    properties: ({}) => ({
+      allowExternalPrincipals: true,
+      featureSet: "STANDARD",
+      name: "share-mesh",
     }),
   },
 ];
