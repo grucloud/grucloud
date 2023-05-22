@@ -132,7 +132,7 @@ const decorate = ({ endpoint, config }) =>
     assignDataProtectionPolicy({ endpoint }),
   ]);
 
-exports.CloudWatchLogGroup = ({ compare }) => ({
+exports.CloudWatchLogsLogGroup = ({ compare }) => ({
   type: "LogGroup",
   package: "cloudwatch-logs",
   client: "CloudWatchLogs",

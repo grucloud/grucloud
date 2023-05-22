@@ -203,7 +203,12 @@ exports.EKSNodeGroup = ({ compare }) => ({
       () =>
         client.getListWithParent({
           parent: { type: "Cluster", group: "EKS" },
-          pickKey: ({ name }) => ({ clusterName: name }),
+          pickKey: pipe([
+            tap(({ name }) => {
+              assert(name);
+            }),
+            ({ name }) => ({ clusterName: name }),
+          ]),
           method: "listNodegroups",
           getParam: "nodegroups",
           config,

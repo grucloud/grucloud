@@ -411,6 +411,9 @@ exports.EC2Subnet = ({ compare }) => ({
     config,
   }) =>
     pipe([
+      tap(() => {
+        assert(vpc);
+      }),
       () => otherProps,
       defaultsDeep({
         VpcId: getField(vpc, "VpcId"),

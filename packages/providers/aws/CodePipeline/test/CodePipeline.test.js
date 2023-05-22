@@ -4,12 +4,12 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("CodePipeline", async function () {
-  it.skip("CustomActionType", () =>
+  it("CustomActionType", () =>
     pipe([
       () => ({
         groupType: "CodePipeline::CustomActionType",
         livesNotFound: ({ config }) => [
-          { category: "Source", provider: "p123", version: 1 },
+          { category: "Source", provider: "p123", version: "1" },
         ],
       }),
       awsResourceTest,
@@ -22,11 +22,11 @@ describe("CodePipeline", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Webhook", () =>
+  it("Webhook", () =>
     pipe([
       () => ({
         groupType: "CodePipeline::Webhook",
-        livesNotFound: ({ config }) => [{ pipeline: { name: "123" } }],
+        livesNotFound: ({ config }) => [{ webhook: { name: "123" } }],
       }),
       awsResourceTest,
     ])());

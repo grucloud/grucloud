@@ -14,7 +14,6 @@ const {
   not,
 } = require("rubico");
 const {
-  isObject,
   append,
   prepend,
   isEmpty,
@@ -48,7 +47,10 @@ const {
 } = require("./Route53HostedZone");
 
 const { Route53DelegationSet } = require("./Route53DelegationSet");
+const { Route53DNSSEC } = require("./Route53DNSSEC");
 const { Route53HealthCheck } = require("./Route53HealthCheck");
+const { Route53KeySigningKey } = require("./Route53KeySigningKey");
+const { Route53QueryLog } = require("./Route53QueryLog");
 
 const {
   Route53Record,
@@ -145,8 +147,8 @@ module.exports = pipe([
   () => [
     createAwsService(Route53CidrCollection({ compare })),
     //createAwsService(Route53CidrLocation({ compare })),
-
     createAwsService(Route53DelegationSet({ compare })),
+    createAwsService(Route53DNSSEC({ compare })),
     createAwsService(Route53HealthCheck({ compare })),
     {
       type: "HostedZone",
@@ -235,6 +237,8 @@ module.exports = pipe([
           }),
         ]),
     },
+    createAwsService(Route53KeySigningKey({ compare })),
+    createAwsService(Route53QueryLog({ compare })),
     {
       type: "Record",
       dependencies: {

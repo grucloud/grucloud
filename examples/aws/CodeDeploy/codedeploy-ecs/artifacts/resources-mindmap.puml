@@ -5,6 +5,7 @@ skinparam monochrome true
 ++ aws
 +++ CodeDeploy
 ++++ Application (1)
+++++ DeploymentConfig (1)
 ++++ DeploymentGroup (1)
 +++ EC2
 ++++ InternetGateway (1)

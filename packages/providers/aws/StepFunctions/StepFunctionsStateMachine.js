@@ -31,21 +31,24 @@ const { cloneDeepWith } = require("lodash/fp");
 const { flattenObject } = require("@grucloud/core/Common");
 
 const { replaceWithName } = require("@grucloud/core/Common");
+const { Tagger, assignTags } = require("./StepFunctionsCommon");
 
 const pickId = pick(["stateMachineArn"]);
 
-const decorate = ({ endpoint }) =>
+const buildArn = () =>
+  pipe([
+    get("stateMachineArn"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
+
+const decorate = ({ endpoint, config }) =>
   pipe([
     assign({
       definition: pipe([get("definition"), JSON.parse]),
-      tags: pipe([
-        ({ stateMachineArn }) => ({
-          resourceArn: stateMachineArn,
-        }),
-        endpoint().listTagsForResource,
-        get("tags"),
-      ]),
     }),
+    assignTags({ buildArn: buildArn(config), endpoint }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/StepFunctions.html
@@ -310,8 +313,10 @@ exports.StepFunctionsStateMachine = () => ({
   update: { method: "updateStateMachine" },
   destroy: { method: "deleteStateMachine", pickId },
   getByName: getByNameCore,
-  tagger: () => ({ tagResource: tagResource, untagResource: untagResource }),
-
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
   configDefault: ({
     name,
     namespace,

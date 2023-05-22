@@ -308,6 +308,31 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "IdentityProviderConfig",
+    group: "EKS",
+    properties: ({ getId }) => ({
+      clusterName: "my-cluster",
+      oidc: {
+        clientId: `${getId({
+          type: "Cluster",
+          group: "EKS",
+          name: "my-cluster",
+          path: "live.identity.oidc.clientId",
+        })}`,
+        identityProviderConfigName: "my-oicd",
+        issuerUrl: `${getId({
+          type: "Cluster",
+          group: "EKS",
+          name: "my-cluster",
+          path: "live.identity.oidc.issuer",
+        })}`,
+      },
+    }),
+    dependencies: ({}) => ({
+      cluster: "my-cluster",
+    }),
+  },
+  {
     type: "NodeGroup",
     group: "EKS",
     properties: ({}) => ({

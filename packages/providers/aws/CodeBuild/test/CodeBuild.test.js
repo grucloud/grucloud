@@ -16,13 +16,15 @@ describe("CodeBuild", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ReportGroup", () =>
+  it("ReportGroup", () =>
     pipe([
       () => ({
         groupType: "CodeBuild::ReportGroup",
         livesNotFound: ({ config }) => [
           {
-            name: "123",
+            arn: `arn:aws:codebuild:${
+              config.region
+            }:${config.accountId()}:report-group/r123`,
           },
         ],
       }),

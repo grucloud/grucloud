@@ -105,13 +105,13 @@ exports.ElasticLoadBalancingV2TargetGroup = () => ({
     //TODO autoScalingGroup
   },
   propertiesDefault: {
-    HealthCheckPath: "/",
+    //HealthCheckPath: "/",
     HealthCheckEnabled: true,
     HealthCheckIntervalSeconds: 30,
     HealthCheckTimeoutSeconds: 5,
     HealthyThresholdCount: 5,
     UnhealthyThresholdCount: 2,
-    Matcher: { HttpCode: "200" },
+    //Matcher: { HttpCode: "200" },
     TargetType: "instance",
     //ProtocolVersion: "HTTP1", // You cannot specify the protocol version for a target group with the 'TCP' protocol
     IpAddressType: "ipv4",

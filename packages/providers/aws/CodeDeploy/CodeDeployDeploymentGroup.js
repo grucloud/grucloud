@@ -10,9 +10,6 @@ const { replaceWithName } = require("@grucloud/core/Common");
 const { Tagger } = require("./CodeDeployCommon");
 
 const pickId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   tap(({ applicationName, deploymentGroupName }) => {
     assert(applicationName);
     assert(deploymentGroupName);
@@ -100,6 +97,11 @@ exports.CodeDeployDeploymentGroup = ({ compare }) => ({
       type: "Role",
       group: "IAM",
       dependencyId: ({ lives, config }) => get("serviceRoleArn"),
+    },
+    deploymentConfig: {
+      type: "DeploymentConfig",
+      group: "CodeDeploy",
+      dependencyId: ({ lives, config }) => get("deploymentConfigName"),
     },
     autoScalingGroups: {
       type: "AutoScalingGroup",
@@ -305,9 +307,6 @@ exports.CodeDeployDeploymentGroup = ({ compare }) => ({
                 deploymentGroupName,
               }),
               getById({}),
-              tap((params) => {
-                assert(true);
-              }),
             ]),
           config,
         }),
@@ -359,10 +358,13 @@ exports.CodeDeployDeploymentGroup = ({ compare }) => ({
     namespace,
     properties: { tags, ...otherProps },
     //TODO add other dependencies
-    dependencies: { serviceRole, autoScalingGroups },
+    dependencies: { autoScalingGroups, deploymentConfig, serviceRole },
     config,
   }) =>
     pipe([
+      tap((params) => {
+        assert(serviceRole);
+      }),
       () => otherProps,
       defaultsDeep({
         serviceRoleArn: getField(serviceRole, "Arn"),
@@ -383,6 +385,15 @@ exports.CodeDeployDeploymentGroup = ({ compare }) => ({
               getField(autoScalingGroup, "AutoScalingGroupName")
             ),
           ]),
+        })
+      ),
+      when(
+        () => deploymentConfig,
+        defaultsDeep({
+          deploymentConfigName: getField(
+            deploymentConfig,
+            "deploymentConfigName"
+          ),
         })
       ),
     ])(),

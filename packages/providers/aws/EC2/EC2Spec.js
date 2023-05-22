@@ -47,6 +47,11 @@ const { EC2RouteTable } = require("./EC2RouteTable");
 const { EC2RouteTableAssociation } = require("./EC2RouteTableAssociation");
 const { EC2Route } = require("./EC2Route");
 const { EC2Subnet } = require("./EC2Subnet");
+const { EC2TrafficMirrorFilter } = require("./EC2TrafficMirrorFilter");
+// const { EC2TrafficMirrorFilterRule } = require("./EC2TrafficMirrorFilterRule");
+const { EC2TrafficMirrorSession } = require("./EC2TrafficMirrorSession");
+const { EC2TrafficMirrorTarget } = require("./EC2TrafficMirrorTarget");
+
 const { EC2SecurityGroup } = require("./EC2SecurityGroup");
 const {
   EC2SecurityGroupRuleIngress,
@@ -348,6 +353,12 @@ module.exports = pipe([
     createAwsService(EC2SecurityGroupRuleIngress({ compare: compareEC2 })),
     createAwsService(EC2SecurityGroupRuleEgress({ compare: compareEC2 })),
     createAwsService(EC2Subnet({ compare: compareEC2 })),
+
+    createAwsService(EC2TrafficMirrorFilter({ compare: compareEC2 })),
+    // createAwsService(EC2TrafficMirrorFilterRule({ compare: compareEC2 })),
+    createAwsService(EC2TrafficMirrorSession({ compare: compareEC2 })),
+    createAwsService(EC2TrafficMirrorTarget({ compare: compareEC2 })),
+
     createAwsService(EC2TransitGateway({ compare: compareEC2 })),
     createAwsService(EC2TransitGatewayAttachment({ compare: compareEC2 })),
     createAwsService(

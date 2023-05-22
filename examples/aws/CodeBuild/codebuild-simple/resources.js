@@ -47,6 +47,26 @@ phases:
     }),
   },
   {
+    type: "ReportGroup",
+    group: "CodeBuild",
+    properties: ({ config }) => ({
+      exportConfig: {
+        exportConfigType: "S3",
+        s3Destination: {
+          bucket: "gc-codebuild-report-group",
+          bucketOwner: config.accountId(),
+          encryptionDisabled: false,
+          packaging: "NONE",
+        },
+      },
+      name: "my-report-group",
+      type: "TEST",
+    }),
+    dependencies: ({}) => ({
+      s3Bucket: "gc-codebuild-report-group",
+    }),
+  },
+  {
     type: "Policy",
     group: "IAM",
     properties: ({ config }) => ({
@@ -123,6 +143,23 @@ phases:
     }),
     dependencies: ({ config }) => ({
       policies: [`CodeBuildBasePolicy-my-project-${config.region}`],
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "gc-codebuild-report-group",
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+            BucketKeyEnabled: true,
+          },
+        ],
+      },
     }),
   },
 ];

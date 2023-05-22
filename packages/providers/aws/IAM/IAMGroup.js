@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, assign, pick, omit, map, tryCatch } = require("rubico");
-const { defaultsDeep, forEach, pluck } = require("rubico/x");
+const { defaultsDeep, pluck } = require("rubico/x");
 const { updateResourceArray } = require("@grucloud/core/updateResourceArray");
 
 const { getByNameCore } = require("@grucloud/core/Common");

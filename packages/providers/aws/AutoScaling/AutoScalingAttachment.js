@@ -1,8 +1,7 @@
 const assert = require("assert");
-const { tap, get, pipe, map, pick } = require("rubico");
-const { defaultsDeep, first, find, unless, isEmpty } = require("rubico/x");
+const { tap, get, pipe, map, pick, switchCase, fork } = require("rubico");
+const { defaultsDeep, first, includes, callProp } = require("rubico/x");
 
-const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { compare } = require("./AutoScalingCommon");
@@ -33,8 +32,7 @@ const findName =
         group: "ElasticLoadBalancingV2",
       }),
       get("name", live.TargetGroupARN),
-      (targetGroupName) =>
-        `attachment::${live.AutoScalingGroupName}::${targetGroupName}`,
+      (targetGroupName) => `${live.AutoScalingGroupName}::${targetGroupName}`,
     ])();
 
 const managedByOther =
@@ -71,6 +69,7 @@ exports.AutoScalingAttachment = ({}) => ({
   package: "auto-scaling",
   client: "AutoScaling",
   propertiesDefault: {},
+  omitProperties: [],
   inferName:
     ({ dependenciesSpec: { autoScalingGroup, targetGroup } }) =>
     () =>
@@ -79,7 +78,7 @@ exports.AutoScalingAttachment = ({}) => ({
           assert(autoScalingGroup);
           assert(targetGroup);
         }),
-        () => `attachment::${autoScalingGroup}::${targetGroup}`,
+        () => `${autoScalingGroup}::${targetGroup}`,
       ])(),
   findName,
   findId,
@@ -118,7 +117,6 @@ exports.AutoScalingAttachment = ({}) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
   getById: {
-    filterPayload,
     method: "describeAutoScalingGroups",
     pickId: pipe([
       tap(({ AutoScalingGroupName }) => {
@@ -130,17 +128,24 @@ exports.AutoScalingAttachment = ({}) => ({
     ]),
     decorate: ({ live }) =>
       pipe([
-        tap(() => {
+        tap((params) => {
           assert(live.TargetGroupARN);
           assert(live.AutoScalingGroupName);
         }),
         get("AutoScalingGroups"),
         first,
-        find(eq(get("TargetGroupARNs"), live.TargetGroupARN)),
-        unless(isEmpty, () => ({
-          AutoScalingGroupName: live.AutoScalingGroupName,
-          TargetGroupARN: live.TargetGroupARN,
-        })),
+        get("TargetGroupARNs"),
+        switchCase([
+          includes(live.TargetGroupARN),
+          () => ({
+            AutoScalingGroupName: live.AutoScalingGroupName,
+            TargetGroupARN: live.TargetGroupARN,
+          }),
+          () => undefined,
+        ]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
@@ -168,15 +173,10 @@ exports.AutoScalingAttachment = ({}) => ({
     }),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#attachLoadBalancerTargetGroups-property
   create: {
+    filterPayload,
     method: "attachLoadBalancerTargetGroups",
     pickCreated: ({ payload }) => pipe([() => payload]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingAttachment-property
-  // update: {
-  //   method: "updateAutoScalingAttachment",
-  //   filterParams: ({ payload, diff, live }) =>
-  //     pipe([() => payload, defaultsDeep(pickId(live))])(),
-  // },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#detachLoadBalancerTargetGroups-property
   destroy: {
     pickId: pipe([
@@ -192,7 +192,17 @@ exports.AutoScalingAttachment = ({}) => ({
     method: "detachLoadBalancerTargetGroups",
     ignoreErrorMessages,
   },
-  getByName: getByNameCore,
+  getByName: ({ getById }) =>
+    pipe([
+      get("resolvedDependencies"),
+      fork({
+        AutoScalingGroupName: pipe([
+          get("autoScalingGroup.live.AutoScalingGroupName"),
+        ]),
+        TargetGroupARN: pipe([get("targetGroup.live.TargetGroupArn")]),
+      }),
+      getById({}),
+    ]),
   configDefault: ({
     name,
     namespace,

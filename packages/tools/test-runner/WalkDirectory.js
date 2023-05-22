@@ -278,6 +278,9 @@ const ExcludeDirsDefault = [
   "aws-samples",
   "aws-cdk-examples",
   "terraform-backend-s3-dynamodb",
+  "verified-access-simple",
+  "kms-replica-key",
+  "config-organization-custom-rule",
 ];
 
 const fileExist = pipe([
@@ -386,7 +389,7 @@ exports.walkDirectory =
       () => readdir(directory, { withFileTypes: true }),
       filter(callProp("isDirectory")),
       filterExcludeFiles({ excludeDirs }),
-      //filterIncludeDir({ IncludeList }),
+      filterIncludeDir({ IncludeList }),
       //filterIncludeDir({ IncludeList: IncludeListExpensive }),
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])

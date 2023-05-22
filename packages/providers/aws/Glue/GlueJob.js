@@ -26,6 +26,9 @@ const findId = () =>
 
 const assignArn = ({ config }) =>
   pipe([
+    tap(({ Name }) => {
+      assert(Name);
+    }),
     assign({
       Arn: pipe([
         ({ Name }) =>

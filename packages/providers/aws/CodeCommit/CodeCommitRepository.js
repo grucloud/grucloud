@@ -56,7 +56,7 @@ exports.CodeCommitRepository = () => ({
     ]),
   findId: () =>
     pipe([
-      get("Arn"),
+      get("repositoryName"),
       tap((id) => {
         assert(id);
       }),

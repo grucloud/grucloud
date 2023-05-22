@@ -200,7 +200,11 @@ exports.createResources = () => [
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       HealthCheckIntervalSeconds: 35,
+      HealthCheckPath: "/",
       HealthCheckTimeoutSeconds: 30,
+      Matcher: {
+        HttpCode: "200",
+      },
       Name: "AlbLam-MyLoa-L5ONUHVSP4YQ",
       TargetType: "lambda",
     }),

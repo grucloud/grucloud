@@ -5,16 +5,12 @@ const { defaultsDeep } = require("rubico/x");
 const { createAwsService } = require("../AwsService");
 
 const { compareAws } = require("../AwsCommon");
-const { isOurMinionObject } = require("../AwsCommon");
 
 const { EKSAddon } = require("./EKSAddon");
 const { EKSCluster } = require("./EKSCluster");
 const { EKSFargateProfile } = require("./EKSFargateProfile");
-
+const { EKSIdentityProviderConfig } = require("./EKSIdentityProviderConfig");
 const { EKSNodeGroup } = require("./EKSNodeGroup");
-
-const isOurMinion = ({ live, config }) =>
-  isOurMinionObject({ tags: live.tags, config });
 
 const GROUP = "EKS";
 const tagsKey = "tags";
@@ -26,6 +22,7 @@ module.exports = pipe([
     EKSAddon({ compare }),
     EKSCluster({ compare }),
     EKSFargateProfile({ compare }),
+    EKSIdentityProviderConfig({ compare }),
     EKSNodeGroup({ compare }),
   ],
   map(
@@ -34,7 +31,6 @@ module.exports = pipe([
       defaultsDeep({
         group: GROUP,
         tagsKey,
-        isOurMinion,
         compare: compare({}),
       }),
     ])

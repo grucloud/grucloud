@@ -24,5 +24,8 @@ exports.createResources = () => [
         },
       },
     }),
+    dependencies: ({}) => ({
+      codeCommitRepository: "my-repo",
+    }),
   },
 ];

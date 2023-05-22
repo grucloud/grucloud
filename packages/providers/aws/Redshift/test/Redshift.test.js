@@ -46,6 +46,14 @@ describe("Redshift", async function () {
       }),
       awsResourceTest,
     ])());
+  it("EventSubscription", () =>
+    pipe([
+      () => ({
+        groupType: "Redshift::EventSubscription",
+        livesNotFound: ({ config }) => [{ SubscriptionName: "s123" }],
+      }),
+      awsResourceTest,
+    ])());
   it("Partner", () =>
     pipe([
       () => ({
@@ -61,10 +69,26 @@ describe("Redshift", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ScheduleAction", () =>
+  it("ScheduledAction", () =>
     pipe([
       () => ({
-        groupType: "Redshift::ScheduleAction",
+        groupType: "Redshift::ScheduledAction",
+        livesNotFound: ({ config }) => [{ ScheduledActionName: "s123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("SnapshotSchedule", () =>
+    pipe([
+      () => ({
+        groupType: "Redshift::SnapshotSchedule",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("SnapshotScheduleAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "Redshift::SnapshotScheduleAssociation",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,

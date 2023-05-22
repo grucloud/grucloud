@@ -12,13 +12,11 @@ describe("CodeDeploy", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("DeploymentConfig", () =>
+  it("DeploymentConfig", () =>
     pipe([
       () => ({
         groupType: "CodeDeploy::DeploymentConfig",
-        livesNotFound: ({ config }) => [
-          { applicationName: "my-app", deploymentGroupName: "aaaa" },
-        ],
+        livesNotFound: ({ config }) => [{ deploymentConfigName: "aaaa" }],
       }),
       awsResourceTest,
     ])());

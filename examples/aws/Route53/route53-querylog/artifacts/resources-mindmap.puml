@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project route53-querylog
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
+++++ ResourcePolicy (1)
++++ Route53
+++++ HostedZone (1)
+++++ QueryLog (1)
+@endmindmap

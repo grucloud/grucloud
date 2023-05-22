@@ -66,6 +66,9 @@ exports.ApplicationInsightsApplication = () => ({
     "ConfigurationHistoryEventErrorCount",
     "ConfigurationHistoryEventInfoCount",
     "ConfigurationHistoryEventWarnCount",
+    "HighSeverityProblemsCount",
+    "LowSeverityProblemsCount",
+    "MediumSeverityProblemsCount",
   ],
   inferName: () =>
     pipe([

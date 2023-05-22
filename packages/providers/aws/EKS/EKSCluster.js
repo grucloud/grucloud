@@ -1,6 +1,17 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, map, not, omit } = require("rubico");
-const { defaultsDeep, pluck, when, find } = require("rubico/x");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  eq,
+  assign,
+  map,
+  not,
+  omit,
+  set,
+} = require("rubico");
+const { defaultsDeep, callProp, last, when, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { tos } = require("@grucloud/core/tos");
@@ -37,6 +48,13 @@ const decorate = ({ endpoint, config }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    when(
+      get("identity.oidc.issuer"),
+      set(
+        "identity.oidc.clientId",
+        pipe([get("identity.oidc.issuer"), callProp("split", "/id/"), last])
+      )
+    ),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html

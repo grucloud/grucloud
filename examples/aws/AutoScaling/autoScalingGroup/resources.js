@@ -58,6 +58,21 @@ exports.createResources = () => [
       autoScalingGroup: "asg",
     }),
   },
+  {
+    type: "ScheduledAction",
+    group: "AutoScaling",
+    properties: ({}) => ({
+      DesiredCapacity: 1,
+      MaxSize: 1,
+      MinSize: 1,
+      Recurrence: "0 0 * * *",
+      ScheduledActionName: "my-scheduled-action",
+      TimeZone: "Etc/UTC",
+    }),
+    dependencies: ({}) => ({
+      autoScalingGroup: "asg",
+    }),
+  },
   { type: "KeyPair", group: "EC2", name: "kp-ecs" },
   {
     type: "LaunchTemplate",

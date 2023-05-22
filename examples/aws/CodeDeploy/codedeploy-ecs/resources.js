@@ -12,6 +12,21 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "DeploymentConfig",
+    group: "CodeDeploy",
+    properties: ({}) => ({
+      computePlatform: "Lambda",
+      deploymentConfigName: "my-deployment-config",
+      trafficRoutingConfig: {
+        timeBasedLinear: {
+          linearInterval: 1,
+          linearPercentage: 50,
+        },
+        type: "TimeBasedLinear",
+      },
+    }),
+  },
+  {
     type: "DeploymentGroup",
     group: "CodeDeploy",
     properties: ({ getId }) => ({
@@ -480,8 +495,12 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
+      HealthCheckPath: "/",
       HealthCheckPort: "traffic-port",
       HealthCheckProtocol: "HTTP",
+      Matcher: {
+        HttpCode: "200",
+      },
       Name: "EC2Co-Defau-MMUISWY3DEAQ",
       Port: 80,
       Protocol: "HTTP",
@@ -502,8 +521,12 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
+      HealthCheckPath: "/",
       HealthCheckPort: "traffic-port",
       HealthCheckProtocol: "HTTP",
+      Matcher: {
+        HttpCode: "200",
+      },
       Name: "tg-cluste-api-2",
       Port: 80,
       Protocol: "HTTP",
@@ -518,8 +541,12 @@ exports.createResources = () => [
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
+      HealthCheckPath: "/",
       HealthCheckPort: "traffic-port",
       HealthCheckProtocol: "HTTP",
+      Matcher: {
+        HttpCode: "200",
+      },
       Name: "tg2",
       Port: 80,
       Protocol: "HTTP",

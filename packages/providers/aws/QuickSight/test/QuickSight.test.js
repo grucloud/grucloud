@@ -146,7 +146,7 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("TemplateAlias", () =>
+  it("TemplateAlias", () =>
     pipe([
       () => ({
         groupType: "QuickSight::TemplateAlias",
@@ -210,10 +210,10 @@ describe("QuickSight", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("VpcConnection", () =>
+  it("VPCConnection", () =>
     pipe([
       () => ({
-        groupType: "QuickSight::VpcConnection",
+        groupType: "QuickSight::VPCConnection",
         livesNotFound: ({ config }) => [
           { VPCConnectionId: "v-12345", AwsAccountId: config.accountId() },
         ],
