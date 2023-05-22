@@ -650,8 +650,12 @@ systemctl start nginx
     group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       HealthCheckIntervalSeconds: 10,
+      HealthCheckPath: "/",
       HealthCheckPort: "traffic-port",
       HealthCheckProtocol: "HTTP",
+      Matcher: {
+        HttpCode: "200",
+      },
       Name: "lattice-ecs-testing-target-group",
       Port: 80,
       Protocol: "HTTP",
