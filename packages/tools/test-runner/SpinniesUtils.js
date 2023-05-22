@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, tap, assign } = require("rubico");
 const Spinnies = require("spinnies");
 
-const onDoneDefault = ({ uri, displayText, state, spinnies, spinnerMap }) => {
+const onDoneDefault = ({ uri, displayText, spinnies, spinnerMap }) => {
   assert(uri);
   assert(spinnies);
   assert(spinnerMap);

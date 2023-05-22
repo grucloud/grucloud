@@ -1042,6 +1042,7 @@ const planDestroy = ({
                     providerGru.planQueryDestroy({
                       onStateChange,
                       options: commandOptions,
+                      // TODO remove
                       providers,
                     }),
                     defaultsDeep({ start }),

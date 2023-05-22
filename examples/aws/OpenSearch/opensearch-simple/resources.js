@@ -8,19 +8,19 @@ exports.createResources = () => [
     group: "OpenSearch",
     properties: ({ config }) => ({
       AccessPolicies: {
-        Version: "2012-10-17",
         Statement: [
           {
+            Action: "es:*",
             Effect: "Deny",
             Principal: {
               AWS: "*",
             },
-            Action: "es:*",
             Resource: `arn:aws:es:${
               config.region
             }:${config.accountId()}:domain/my-domain/*`,
           },
         ],
+        Version: "2012-10-17",
       },
       AdvancedSecurityOptions: {
         AnonymousAuthEnabled: false,
@@ -38,6 +38,7 @@ exports.createResources = () => [
         DedicatedMasterEnabled: false,
         InstanceCount: 3,
         InstanceType: "t3.small.search",
+        MultiAZWithStandbyEnabled: false,
         WarmEnabled: false,
         ZoneAwarenessEnabled: false,
       },

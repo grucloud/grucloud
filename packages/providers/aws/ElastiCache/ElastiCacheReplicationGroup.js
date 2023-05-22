@@ -101,6 +101,7 @@ exports.ElastiCacheReplicationGroup = () => ({
     IpDiscovery: "ipv4",
     NetworkType: "ipv4",
     Engine: "redis",
+    ClusterMode: "disabled",
   },
   omitProperties: [
     "ARN",

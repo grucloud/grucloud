@@ -178,6 +178,7 @@ exports.RDSDBCluster = ({ compare }) => ({
     "EarliestBacktrackTime",
     "ReaderEndpoint",
     "ActivityStreamKmsKeyId",
+    "PendingModifiedValues",
   ],
   propertiesDefault: {
     MultiAZ: false,

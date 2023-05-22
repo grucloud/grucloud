@@ -1,0 +1,32 @@
+{
+  "name": "gc-aws-nuke",
+  "version": "1.0.0",
+  "description": "Destroy AWS resources",
+  "public": true,
+  "homepage": "https://www.grucloud.com",
+  "main": "GcAwsNuke.js",
+  "bin": {
+    "gc-aws-nuke": "./GcAwsNuke.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grucloud/grucloud"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "author": "Frederic Heem",
+  "license": "ISC",
+  "keywords": [
+    "destroy",
+    "nuke",
+    "AWS"
+  ],
+  "dependencies": {
+    "commander": "10.0.1",
+    "@grucloud/core": "^12.0.1",
+    "@grucloud/provider-aws": "^12.0.1",
+    "rubico": "1.9.6",
+    "spinnies": "0.5.1"
+  }
+}

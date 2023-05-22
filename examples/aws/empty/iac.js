@@ -5,7 +5,7 @@ const region = "us-east-1";
 const includeGroups = ["ECR", "S3", "S3Control"];
 const profiles = [
   //
-  "default",
+  //"default",
   "e2e-alpha",
   "e2e-bravo",
   "e2e-charly",

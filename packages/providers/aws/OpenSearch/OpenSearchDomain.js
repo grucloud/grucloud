@@ -67,6 +67,9 @@ exports.OpenSearchDomain = ({ compare }) => ({
   package: "opensearch",
   client: "OpenSearch",
   propertiesDefault: {
+    AutoTuneOptions: {
+      UseOffPeakWindow: false,
+    },
     AdvancedOptions: {
       "indices.fielddata.cache.size": "20",
       "indices.query.bool.max_clause_count": "1024",
