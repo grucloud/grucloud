@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/test-runner",
-  "version": "12.0.1",
+  "version": "12.1.0",
   "description": "GruCloud Test Runner",
   "main": "index.js",
   "private": true,

@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-google-iac-policy",
-  "version": "12.0.1",
+  "version": "12.1.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -22,8 +22,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.0.1",
-    "@grucloud/provider-google": "^12.0.1"
+    "@grucloud/core": "^12.1.0",
+    "@grucloud/provider-google": "^12.1.0"
   },
   "devDependencies": {
     "mocha": "10.2.0",
