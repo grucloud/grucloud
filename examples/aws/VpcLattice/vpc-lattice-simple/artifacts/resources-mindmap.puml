@@ -4,18 +4,17 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ Vpc (1)
-++++ Subnet (2)
 ++++ RouteTable (2)
 ++++ RouteTableAssociation (2)
 ++++ SecurityGroup (3)
 ++++ SecurityGroupRuleIngress (2)
 ++++ SecurityGroupRuleEgress (1)
+++++ Subnet (2)
+++++ Vpc (1)
 +++ IAM
 ++++ Role (2)
 +++ Lambda
 ++++ Function (2)
-++++ Permission (1)
 +++ VpcLattice
 ++++ Listener (1)
 ++++ Service (1)

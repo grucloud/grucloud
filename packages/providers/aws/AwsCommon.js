@@ -434,6 +434,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
                   "EPROTO",
                   "ENOTFOUND",
                   "EHOSTUNREACH",
+                  "ERR_SOCKET_CONNECTION_TIMEOUT",
                 ],
                 includes(error.code),
               ]),
