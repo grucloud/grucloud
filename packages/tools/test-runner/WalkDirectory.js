@@ -30,6 +30,8 @@ const fs = require("fs").promises;
 
 const IncludeListExpensive = [
   //"EMR", //TODO
+  "DMS",
+  "DAX",
   "EMRServerless",
   "ElastiCache",
   "FSx",
@@ -44,6 +46,7 @@ const IncludeListExpensive = [
   "OpenSearchServerless",
   "Redshift",
   "RedshiftServerless",
+  "RDS",
   "Transfer",
   "VpcLattice",
   "WAFv2",
@@ -264,7 +267,9 @@ const ExcludeDirsDefault = [
   "dynamodb-kinesis", // Table is not in a valid state to enable Kinesis Streaming Destination: KinesisStreamingDestination must be ACTIVE to perform DISABLE operation.
   "ec2-credit", // "This account cannot launch T2 instances with Unlimited enabled. Please contact AWS Support to enable this feature.",
   "fsx-openzfs", // Volume "1 validation error detected: Value null at 'openZFSConfiguration.parentVolumeId' failed to satisfy constraint: Member must not be null",
-
+  "s3-object-lambda", //TODO
+  "s3-s3-replication-cdk", //TODO
+  "ecs-simple", //TODO update
   "graphql",
   "auth0", //run as default profile due to certificate
   "http-lambda", //run as default profile due to certificate
@@ -280,6 +285,7 @@ const ExcludeDirsDefault = [
   "terraform-backend-s3-dynamodb",
   "verified-access-simple",
   "kms-replica-key",
+  "config-simple",
   "config-organization-custom-rule",
 ];
 
@@ -389,8 +395,8 @@ exports.walkDirectory =
       () => readdir(directory, { withFileTypes: true }),
       filter(callProp("isDirectory")),
       filterExcludeFiles({ excludeDirs }),
-      filterIncludeDir({ IncludeList }),
-      //filterIncludeDir({ IncludeList: IncludeListExpensive }),
+      //filterIncludeDir({ IncludeList }),
+      filterIncludeDir({ IncludeList: IncludeListExpensive }),
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])
       ),

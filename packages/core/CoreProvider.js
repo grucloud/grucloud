@@ -39,6 +39,7 @@ const {
   groupBy,
   prepend,
   values,
+  filterOut,
 } = require("rubico/x");
 const { memoize } = require("lodash");
 const util = require("util");
@@ -1101,11 +1102,12 @@ function CoreProvider({
           })
         ),
         start,
-        validate,
-        tap(() =>
+        tap(validate),
+        tap((result) =>
           onStateChange({
             context: contextFromProviderInit({ providerName }),
             nextState: "DONE",
+            result,
           })
         ),
         () => createResources,
@@ -1257,7 +1259,7 @@ function CoreProvider({
       assign({
         results: pipe([
           get("results"),
-          filter(or([get("error"), pipe([get("resources"), not(isEmpty)])])),
+          filterOut(or([get("error"), pipe([get("resources"), isEmpty])])),
           callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
           map(
             when(

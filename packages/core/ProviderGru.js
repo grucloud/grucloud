@@ -110,11 +110,11 @@ const buildDependsOnReverse = (stacks) =>
   ])();
 
 exports.ProviderGru = ({
-  mapGloblalNameToResource,
+  mapGloblalNameToResource = new Map(),
   hookGlobal,
   stacks,
   lives = createLives(),
-  programOptions,
+  programOptions = {},
 }) => {
   assert(Array.isArray(stacks));
   assert(mapGloblalNameToResource);
@@ -291,7 +291,13 @@ exports.ProviderGru = ({
       }),
     ])();
 
-  const getProviders = pipe([() => stacks, pluck("provider")]);
+  const getProviders = pipe([
+    tap(() => {
+      assert(stacks);
+    }),
+    () => stacks,
+    pluck("provider"),
+  ]);
 
   const getSpecs = pipe([
     getProviders,

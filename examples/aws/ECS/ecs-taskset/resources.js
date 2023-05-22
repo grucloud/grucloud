@@ -4,6 +4,14 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "AutoScalingAttachment",
+    group: "AutoScaling",
+    dependencies: ({}) => ({
+      autoScalingGroup: "Ruby-AutoScalingGroup-appmesh-workshop",
+      targetGroup: "appmes-RubyT-HRLNYR1HFN6J",
+    }),
+  },
+  {
     type: "AutoScalingGroup",
     group: "AutoScaling",
     name: "Ruby-AutoScalingGroup-appmesh-workshop",
@@ -19,14 +27,6 @@ exports.createResources = () => [
         "VPC-appmesh-workshop::PublicTwo-appmesh-workshop",
       ],
       launchTemplate: "Ruby-EC2Instance-LaunchTemplate-appmesh-workshop",
-    }),
-  },
-  {
-    type: "AutoScalingAttachment",
-    group: "AutoScaling",
-    dependencies: ({}) => ({
-      autoScalingGroup: "Ruby-AutoScalingGroup-appmesh-workshop",
-      targetGroup: "appmes-RubyT-HRLNYR1HFN6J",
     }),
   },
   { type: "ElasticIpAddress", group: "EC2", name: "NatGatewayOneAttachment" },
@@ -1145,6 +1145,9 @@ nohup ./startup.sh &
       HealthCheckPath: "/health",
       HealthCheckPort: "traffic-port",
       HealthCheckProtocol: "HTTP",
+      Matcher: {
+        HttpCode: "200",
+      },
       Name: "appmes-Cryst-XSTMVZJTLVER",
       Port: 3000,
       Protocol: "HTTP",
