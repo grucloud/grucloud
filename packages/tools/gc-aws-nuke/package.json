@@ -26,6 +26,7 @@
     "@grucloud/core": "^12.1.0",
     "@grucloud/provider-aws": "^12.1.0",
     "commander": "10.0.1",
+    "prompts": "2.4.2",
     "rubico": "1.9.6",
     "spinnies": "0.5.1"
   }
