@@ -11,7 +11,7 @@ const {
   get,
   and,
 } = require("rubico");
-const { identity } = require("rubico/x");
+const { identity, isIn } = require("rubico/x");
 const {
   retryWhen,
   repeatWhen,
@@ -22,7 +22,6 @@ const {
   catchError,
 } = require("rxjs/operators");
 const logger = require("./logger")({ prefix: "Retry" });
-const { tos } = require("./tos");
 const { convertError } = require("./Common");
 
 const retryCall = async ({
@@ -97,7 +96,6 @@ const retryCall = async ({
           ])
         )
       ),
-
       repeatWhen((result) =>
         result.pipe(delay(repeatDelay), take(repeatCount))
       ),
@@ -132,16 +130,18 @@ const retryCall = async ({
 };
 exports.retryCall = retryCall;
 
-//TODO common error with Aws
-const shouldRetryOnExceptionDefault = ({ error }) =>
-  [
+const shouldRetryOnExceptionDefault = pipe([
+  get("error.code"),
+  isIn([
     "ECONNABORTED",
     "ECONNRESET",
     "ENOTFOUND",
     "ENETDOWN",
     "EHOSTUNREACH",
     "ERR_BAD_RESPONSE", //"maxContentLength size of -1 exceeded "
-  ].includes(error.code);
+    "ERR_SOCKET_CONNECTION_TIMEOUT",
+  ]),
+]);
 
 exports.retryCallOnError = ({
   name,
