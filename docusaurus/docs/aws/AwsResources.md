@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 800 resources in 163 services for provider aws:
+List of 809 resources in 166 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -174,6 +174,8 @@ List of 800 resources in 163 services for provider aws:
 [Monitor](./resources/InternetMonitor/Monitor.md)
 * IoT: 
 [Authorizer](./resources/IoT/Authorizer.md)
+* IVS: 
+[Channel](./resources/IVS/Channel.md), [PlaybackKeyPair](./resources/IVS/PlaybackKeyPair.md), [RecordingConfiguration](./resources/IVS/RecordingConfiguration.md)
 * Ivschat: 
 [Room](./resources/Ivschat/Room.md), [LoggingConfiguration](./resources/Ivschat/LoggingConfiguration.md)
 * Kendra: 
@@ -204,6 +206,8 @@ List of 800 resources in 163 services for provider aws:
 [Account](./resources/Macie2/Account.md), [AllowList](./resources/Macie2/AllowList.md), [ClassificationExportConfiguration](./resources/Macie2/ClassificationExportConfiguration.md), [ClassificationJob](./resources/Macie2/ClassificationJob.md), [CustomDataIdentifier](./resources/Macie2/CustomDataIdentifier.md), [FindingsFilter](./resources/Macie2/FindingsFilter.md), [InvitationAccepter](./resources/Macie2/InvitationAccepter.md), [Member](./resources/Macie2/Member.md), [OrganizationAdminAccount](./resources/Macie2/OrganizationAdminAccount.md)
 * MediaConnect: 
 [Flow](./resources/MediaConnect/Flow.md)
+* MediaConvert: 
+[JobTemplate](./resources/MediaConvert/JobTemplate.md), [Preset](./resources/MediaConvert/Preset.md), [Queue](./resources/MediaConvert/Queue.md)
 * MediaLive: 
 [Channel](./resources/MediaLive/Channel.md), [Input](./resources/MediaLive/Input.md), [InputSecurityGroup](./resources/MediaLive/InputSecurityGroup.md), [Multiplex](./resources/MediaLive/Multiplex.md), [MultiplexProgram](./resources/MediaLive/MultiplexProgram.md)
 * MediaPackage: 
@@ -298,6 +302,8 @@ List of 800 resources in 163 services for provider aws:
 [ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [ConfigurationSetEventDestination](./resources/SESV2/ConfigurationSetEventDestination.md), [ContactList](./resources/SESV2/ContactList.md), [DedicatedIpPool](./resources/SESV2/DedicatedIpPool.md), [DedicatedIp](./resources/SESV2/DedicatedIp.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md), [EmailTemplate](./resources/SESV2/EmailTemplate.md)
 * Shield: 
 [Protection](./resources/Shield/Protection.md), [ProtectionGroup](./resources/Shield/ProtectionGroup.md), [ProtectionHealthCheckAssociation](./resources/Shield/ProtectionHealthCheckAssociation.md)
+* Signer: 
+[SigningJob](./resources/Signer/SigningJob.md), [SigningProfile](./resources/Signer/SigningProfile.md), [SigningProfilePermission](./resources/Signer/SigningProfilePermission.md)
 * SNS: 
 [PlatformApplication](./resources/SNS/PlatformApplication.md), [Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 

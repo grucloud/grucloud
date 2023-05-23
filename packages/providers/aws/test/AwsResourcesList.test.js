@@ -10,7 +10,7 @@ describe("AwsResourcesList", async function () {
     pipe([
       () =>
         AwsProvider({
-          config: () => ({ region: "us-east-1" }),
+          config: () => ({ region: "us-east-1", includeAllResources: true }),
         }),
       callProp("resourcesList", {
         commandOptions: {

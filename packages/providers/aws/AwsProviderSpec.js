@@ -18,20 +18,22 @@ const {
   isEmpty,
   isIn,
   filterOut,
+  identity,
 } = require("rubico/x");
 
 const assert = require("assert");
 const AwsServicesAvailability = require("./AwsServicesAvailability.json");
 
 const defaultExcludes = [
-  //"ACMPCA",
-  //"Appflow",
+  "ACMPCA",
+  "Appflow",
   //"AppMesh",
-  //"CloudHSMV2",
+  "CloudHSMV2",
   "IVS",
   "Isvchat",
   "MediaConvert",
   "Signer",
+  "TimestreamWrite",
 ];
 
 const defaultIncludes = ["IAM", "CloudWatchLogs"];
@@ -246,12 +248,16 @@ const findServicesPerRegion = ({ region = "us-east-1" }) =>
     }),
   ])();
 
-const excludeGroups = ({ config: { includeGroups = [] } }) =>
+const excludeGroups = ({
+  config: { includeGroups = [], includeAllResources },
+}) =>
   pipe([
     tap((params) => {
       assert(true);
     }),
     switchCase([
+      () => includeAllResources,
+      identity,
       () => isEmpty(includeGroups),
       filterOut(isIn(defaultExcludes)),
       filter(isIn([...defaultIncludes, ...includeGroups])),
