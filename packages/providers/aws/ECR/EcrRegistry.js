@@ -27,8 +27,6 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "EcrRegistry" });
 const { throwIfNotAwsError } = require("../AwsCommon");
 
-const { Tagger } = require("./ECRCommon");
-
 const managedByOther = () =>
   pipe([not(and([get("policyText"), get("replicationConfiguration")]))]);
 
@@ -208,6 +206,7 @@ exports.ECRRegistry = ({ compare }) => ({
   findId,
   ignoreErrorCodes: ["ResourceNotFoundException"],
   managedByOther,
+  cannotBeDeleted: managedByOther,
   filterLive: () => pipe([pick(["policyText", "replicationConfiguration"])]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#describeRegistry-property
   getById: {
