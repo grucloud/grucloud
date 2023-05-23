@@ -5,7 +5,7 @@
   "description": "link a service account to an AWS role",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "node test/iac.test.js",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
     "e2e": "gc d-f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
@@ -17,9 +17,5 @@
     "@grucloud/provider-aws": "^12.1.0",
     "@grucloud/provider-k8s": "^12.1.0",
     "rubico": "1.9.6"
-  },
-  "devDependencies": {
-    "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0"
   }
 }

@@ -1,3 +1,4 @@
+const { describe, it } = require("node:test");
 const assert = require("assert");
 const path = require("path");
 const { testEnd2End } = require("@grucloud/core/qa");
@@ -7,12 +8,18 @@ const config = require("../config");
 const title = "Gcp Storate simple";
 
 describe(title, async function () {
-  it("run", async function () {
-    await testEnd2End({
-      title,
-      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
-      outputDir: "artifacts",
-      steps: [{ createStack, configs: [config] }],
-    });
-  }).timeout(35 * 60e3);
+  it(
+    "run",
+    {
+      timeout: 35 * 60e3,
+    },
+    async function () {
+      await testEnd2End({
+        title,
+        programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+        outputDir: "artifacts",
+        steps: [{ createStack, configs: [config] }],
+      });
+    }
+  );
 });

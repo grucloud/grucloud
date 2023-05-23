@@ -1,3 +1,4 @@
+const { describe, it } = require("node:test");
 const pkg = require("../package.json");
 const path = require("path");
 const { testEnd2End } = require("@grucloud/core/qa");

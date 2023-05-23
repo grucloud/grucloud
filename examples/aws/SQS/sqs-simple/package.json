@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "node test/iac.test.js",
     "graph-target": "gc graph",
     "list": "gc list --graph -t SQS::Queue",
     "gencode": "gc gencode",
@@ -19,9 +19,5 @@
     "@grucloud/core": "^12.1.0",
     "@grucloud/provider-aws": "^12.1.0",
     "rubico": "1.9.6"
-  },
-  "devDependencies": {
-    "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0"
   }
 }

@@ -17,7 +17,7 @@
     "destroy": "gc destroy -f",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
-    "test": "mocha"
+    "test": "node test/iac.test.js"
   },
   "author": "",
   "license": "ISC",
@@ -27,9 +27,5 @@
     "ping": "0.4.1",
     "rubico": "1.9.6",
     "ssh2": "1.3.0"
-  },
-  "devDependencies": {
-    "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0"
   }
 }

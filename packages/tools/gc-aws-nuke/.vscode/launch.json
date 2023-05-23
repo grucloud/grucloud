@@ -13,7 +13,7 @@
             "internalConsoleOptions": "openOnSessionStart",
             "console": "integratedTerminal",
             "cwd": "${workspaceRoot}",
-          }
+           },
         {
             "name": "Test",
             "type": "node",
