@@ -1,28 +1,58 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Run",
-            "type": "node",
-            "request": "launch",
-            "runtimeExecutable": "node",
-            "runtimeArgs": ["GcAwsNuke.js"],
-            "internalConsoleOptions": "openOnSessionStart",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceRoot}",
-           },
-        {
-            "name": "Test",
-            "type": "node",
-            "request": "launch",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": ["test"],
-            "internalConsoleOptions": "openOnSessionStart",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceRoot}",
-          }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["gc-aws-nuke.js"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Run Wrong Region",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["gc-aws-nuke.js", "-r", "ffff"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Run with profile",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["gc-aws-nuke.js", "-p", "e2e-alpha"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Run Wrong Profile",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["gc-aws-nuke.js", "-p", "fffffff"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Test",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["test"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}"
+    }
+  ]
 }

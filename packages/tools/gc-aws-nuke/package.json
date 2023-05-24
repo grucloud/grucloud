@@ -4,9 +4,9 @@
   "description": "Destroy AWS resources",
   "public": true,
   "homepage": "https://www.grucloud.com",
-  "main": "GcAwsNuke.js",
+  "main": "gc-aws-nuke.js",
   "bin": {
-    "gc-aws-nuke": "./GcAwsNuke.js"
+    "gc-aws-nuke": "./gc-aws-nuke.js"
   },
   "repository": {
     "type": "git",

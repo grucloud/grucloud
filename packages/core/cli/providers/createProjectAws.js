@@ -25,23 +25,25 @@ const awsExecCommand =
 
 exports.awsExecCommand = awsExecCommand;
 
-const isAwsPresent = pipe([
-  () => "--version",
-  tryCatch(
-    pipe([
-      awsExecCommand(),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
-    (error) => {
-      console.error(
-        "The aws CLI is not installed.\nVisit https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html to install the aws CLI\n"
-      );
-      process.exit(-1);
-    }
-  ),
-]);
+const isAwsPresent = tap(
+  pipe([
+    () => "--version",
+    tryCatch(
+      pipe([
+        awsExecCommand(),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      (error) => {
+        console.error(
+          "The aws CLI is not installed.\nVisit https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html to install the aws CLI\n"
+        );
+        process.exit(-1);
+      }
+    ),
+  ])
+);
 
 exports.isAwsPresent = isAwsPresent;
 

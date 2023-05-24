@@ -276,7 +276,7 @@ const displayListError = (input) =>
 const displayError = ({ name, error }) => {
   assert(error);
   assert(name);
-  console.error(`ERROR running command '${name}'`);
+  console.error(`ERROR running command '${name}', See grucloud-error.log`);
   error.stack && console.error(error.stack);
 
   displayErrorResults({ name, results: error.results });
@@ -297,7 +297,7 @@ const displayError = ({ name, error }) => {
 
   if (!results) {
     const convertedError = convertError({ error });
-    console.log(YAML.stringify(util.inspect(convertedError, { depth: 5 })));
+    //console.log(YAML.stringify(util.inspect(convertedError, { depth: 5 })));
   }
 };
 

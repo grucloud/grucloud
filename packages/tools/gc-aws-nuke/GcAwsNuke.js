@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const assert = require("assert");
 const {
   pipe,
@@ -55,6 +54,11 @@ const getCurrentRegion = pipe([
   ),
 ]);
 
+const promptOnCancel = (prompt) => {
+  console.log("Canceled, quit now");
+  process.exit(-2);
+};
+
 const confirmMoreRegion = pipe([
   tap(({ currentRegion }) => {
     assert(currentRegion);
@@ -65,7 +69,7 @@ const confirmMoreRegion = pipe([
     message: `Current region is ${currentRegion}, Choose other or additional regions ?`,
     initial: false,
   }),
-  prompts,
+  (question) => prompts(question, { onCancel: promptOnCancel }),
   get("moreRegions"),
 ]);
 
@@ -101,7 +105,7 @@ const selectRegions = ({ regionsAvailable, currentRegion }) =>
       optionsPerPage: 60,
       hint: "- Space to select. Return to submit",
     }),
-    prompts,
+    (question) => prompts(question, { onCancel: promptOnCancel }),
     tap((params) => {
       assert(true);
     }),
@@ -144,7 +148,7 @@ const promptRegion = pipe([
   }),
 ]);
 
-const createStack = ({ regions, includeGroups }) =>
+const createStack = ({ regions, includeGroups, profile = "default" }) =>
   pipe([
     tap(() => {
       assert(regions);
@@ -161,6 +165,7 @@ const createStack = ({ regions, includeGroups }) =>
             projectName: "aws-nuke",
             region,
             includeGroups,
+            credentials: { profile },
           }),
         }),
       ])()
@@ -168,7 +173,7 @@ const createStack = ({ regions, includeGroups }) =>
     (stacks) => ({ stacks }),
   ]);
 
-const main = pipe([
+const planDestroy = pipe([
   tap((params) => {
     assert(true);
   }),
@@ -186,36 +191,38 @@ const main = pipe([
   }),
 ]);
 
-pipe([
-  tryCatch(
-    pipe([
-      () => ({
-        options: pipe([
-          () => ({ version: pkg.version, argv: process.argv }),
-          createProgram,
-          callProp("opts"),
-        ]),
-      }),
-      isAwsPresent,
-      isAuthenticated,
-      tap((params) => {
-        assert(true);
-      }),
-      when(
-        pipe([get("options.regions"), isEmpty]),
-        set("options.regions", pipe([promptRegion]))
-      ),
-      when(pipe([get("options.regions"), isEmpty]), () => process.exit(-1)),
-      tap((params) => {
-        assert(true);
-      }),
-      main,
-      tap((param) => {}),
-    ]),
-    (error) => {
-      console.error("Error");
-      console.error(error);
-      throw error;
-    }
-  ),
-])();
+exports.GcAwsNuke = ({ argv }) =>
+  pipe([
+    tryCatch(
+      pipe([
+        () => ({}),
+        assign({
+          options: pipe([
+            () => ({ version: pkg.version, argv }),
+            createProgram,
+            callProp("opts"),
+          ]),
+        }),
+        isAwsPresent,
+        assign({
+          sts: pipe([isAuthenticated]),
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+        when(
+          pipe([get("options.regions"), isEmpty]),
+          set("options.regions", pipe([promptRegion]))
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        planDestroy,
+        tap((param) => {}),
+      ]),
+      (error) => {
+        console.error("aws nuke ended with errors");
+        error.message && console.error(error.message);
+      }
+    ),
+  ])();
