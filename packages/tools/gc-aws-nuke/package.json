@@ -1,5 +1,5 @@
 {
-  "name": "gc-aws-nuke",
+  "name": "@grucloud/aws-nuke",
   "version": "12.1.0",
   "description": "Destroy AWS resources",
   "public": true,
@@ -19,7 +19,7 @@
   "license": "ISC",
   "keywords": [
     "destroy",
-    "nuke",
+    "aws-nuke",
     "AWS"
   ],
   "dependencies": {
