@@ -3,6 +3,7 @@
   "version": "12.2.0",
   "description": "Mock a Cloud Provider",
   "main": "MockServerRun.js",
+  "private": true,
   "directories": {
     "test": "test"
   },

@@ -1,6 +1,7 @@
 {
   "name": "@grucloud/provider-scaleway",
   "version": "12.2.0",
+  "private": true,
   "description": "The GruCloud Scaleway provider",
   "main": "ScalewayProvider.js",
   "scripts": {
