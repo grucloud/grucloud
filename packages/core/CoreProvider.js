@@ -1223,7 +1223,7 @@ function CoreProvider({
               providerName: spec.providerName,
             }),
             tap.if(get("error"), ({ error, resources }) => {
-              assert(error);
+              //assert(error);
             }),
             tap((resourcesPerType) => {
               assert(resourcesPerType);
@@ -1259,7 +1259,9 @@ function CoreProvider({
       assign({
         results: pipe([
           get("results"),
-          filterOut(or([get("error"), pipe([get("resources"), isEmpty])])),
+          filterOut(
+            and([not(get("error")), pipe([get("resources"), isEmpty])])
+          ),
           callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
           map(
             when(

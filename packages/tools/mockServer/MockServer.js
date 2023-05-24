@@ -4,10 +4,9 @@ const Router = require("@koa/router");
 const shortid = require("shortid");
 const chance = require("chance")();
 const Promise = require("bluebird");
-const koaBody = require("koa-body");
+const { koaBody } = require("koa-body");
 const logger = require("./logger")({ prefix: "MockServer" });
 const { map } = require("rubico");
-
 const portDefault = 7089;
 
 exports.portDefault = portDefault;
