@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-aws",
-  "version": "12.1.0",
+  "version": "12.2.0",
   "description": "The GruCloud AWS provider",
   "main": "AwsProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/aws",
@@ -306,7 +306,7 @@
     "@aws-sdk/credential-providers": "3.332.0",
     "@aws-sdk/node-config-provider": "3.329.0",
     "@aws-sdk/s3-request-presigner": "3.332.0",
-    "@grucloud/core": "^12.1.0",
+    "@grucloud/core": "^12.2.0",
     "adm-zip": "http://github.com/FredericHeem/adm-zip.git#156162dfddf35545e23be28868fd7c52e04bb679",
     "axios": "1.4.0",
     "chance": "1.1.11",

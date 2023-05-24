@@ -1,6 +1,6 @@
 {
   "name": "record-alias-s3",
-  "version": "12.1.0",
+  "version": "12.2.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.1.0",
-    "@grucloud/provider-aws": "^12.1.0",
+    "@grucloud/core": "^12.2.0",
+    "@grucloud/provider-aws": "^12.2.0",
     "rubico": "1.9.6"
   }
 }
