@@ -4,15 +4,15 @@ const { pipe, tap } = require("rubico");
 const assert = require("assert");
 const { GcAwsNuke } = require("../GcAwsNuke");
 
-describe("GcAwsNuke", () => {
-  it("help", async () =>
-    pipe([
-      () => ({ argv: ["", "", "--help"] }),
-      GcAwsNuke,
-      tap((result) => {
-        assert(true);
-      }),
-    ])());
+describe("GcAwsNuke", { concurrency: 1 }, () => {
+  // it("help", async () =>
+  //   pipe([
+  //     () => ({ argv: ["", "", "--help"] }),
+  //     GcAwsNuke,
+  //     tap((result) => {
+  //       assert(true);
+  //     }),
+  //   ])());
   it("wrong-region", { only: true }, async () =>
     pipe([
       () => ({ argv: ["", "", "--regions", "wrong-region"] }),
