@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-multi",
-  "version": "12.2.0",
+  "version": "12.2.1",
   "private": true,
   "description": "Run multiple GruCloud examples",
   "main": "iac.js",
@@ -18,7 +18,7 @@
     "@grucloud/provider-azure": "^12.2.0",
     "@grucloud/provider-google": "^12.2.0",
     "@grucloud/provider-k8s": "^12.2.0",
-    "@grucloud/provider-scaleway": "^12.2.0"
+    "@grucloud/provider-scaleway": "^12.2.1"
   },
   "devDependencies": {
     "mocha": "10.2.0"

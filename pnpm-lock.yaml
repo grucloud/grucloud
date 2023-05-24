@@ -6940,7 +6940,7 @@ importers:
         specifier: ^12.2.0
         version: link:../../packages/providers/k8s
       "@grucloud/provider-scaleway":
-        specifier: ^12.2.0
+        specifier: ^12.2.1
         version: link:../../packages/providers/scaleway
     devDependencies:
       mocha:
@@ -6953,7 +6953,7 @@ importers:
         specifier: ^12.2.0
         version: link:../../../packages/core
       "@grucloud/provider-openstack":
-        specifier: ^12.2.0
+        specifier: ^12.2.1
         version: link:../../../packages/providers/openstack
       rubico:
         specifier: 1.9.6

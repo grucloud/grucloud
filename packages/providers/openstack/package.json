@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-openstack",
-  "version": "12.2.0",
+  "version": "12.2.1",
   "private": true,
   "description": "The GruCloud OpenStack provider",
   "main": "OpenStackProvider.js",
