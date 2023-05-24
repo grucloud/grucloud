@@ -17,7 +17,7 @@
     "onDestroyed": "gc run --onDestroyed",
     "info": "gc info",
     "init": "gc init",
-    "test": "mocha"
+    "test": "node test/iac.test.js"
   },
   "author": "",
   "license": "ISC",
@@ -28,9 +28,5 @@
     "mime-types": "2.1.35",
     "rubico": "1.9.6",
     "shelljs": "0.8.5"
-  },
-  "devDependencies": {
-    "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0"
   }
 }

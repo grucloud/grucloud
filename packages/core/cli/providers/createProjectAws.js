@@ -8,8 +8,8 @@ const {
   when,
   includes,
   callProp,
-  first,
   identity,
+  unless,
 } = require("rubico/x");
 const prompts = require("prompts");
 const shell = require("shelljs");
@@ -23,23 +23,29 @@ const awsExecCommand =
       execCommandShell({ transform: append(" --output json"), displayText }),
     ])();
 
-const isAwsPresent = pipe([
-  () => "--version",
-  tryCatch(
-    pipe([
-      awsExecCommand(),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
-    (error) => {
-      console.error(
-        "The aws CLI is not installed.\nVisit https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html to install the aws CLI\n"
-      );
-      process.exit(-1);
-    }
-  ),
-]);
+exports.awsExecCommand = awsExecCommand;
+
+const isAwsPresent = tap(
+  pipe([
+    () => "--version",
+    tryCatch(
+      pipe([
+        awsExecCommand(),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      (error) => {
+        console.error(
+          "The aws CLI is not installed.\nVisit https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html to install the aws CLI\n"
+        );
+        process.exit(-1);
+      }
+    ),
+  ])
+);
+
+exports.isAwsPresent = isAwsPresent;
 
 const promptAccessKeyId = pipe([
   () => ({
@@ -67,6 +73,9 @@ const promptSecretKey = pipe([
 
 const initialRegionIndex = ({ currentRegion, regions }) =>
   pipe([
+    tap((params) => {
+      assert(regions);
+    }),
     () => regions,
     findIndex(eq(get("RegionName"), currentRegion)),
     when(eq(identity, -1), () => 0),
@@ -119,11 +128,14 @@ const promptRegion = pipe([
         assert(true);
       }),
       get("region"),
-      tap((region) =>
-        pipe([
-          () => `configure set region ${region} --profile ${profile}`,
-          awsExecCommand(),
-        ])()
+      unless(
+        isEmpty,
+        tap((region) =>
+          pipe([
+            () => `configure set region ${region} --profile ${profile}`,
+            awsExecCommand(),
+          ])()
+        )
       ),
     ])(),
 ]);
@@ -191,6 +203,8 @@ const isAuthenticated = ({ profile = "default" }) =>
         ])()
     ),
   ])();
+
+exports.isAuthenticated = isAuthenticated;
 
 exports.createProjectAws = ({}) =>
   pipe([

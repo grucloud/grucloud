@@ -1,3 +1,4 @@
+const { describe, it } = require("node:test");
 const pkg = require("../package.json");
 const path = require("path");
 const { testEnd2End } = require("@grucloud/core/qa");
@@ -13,5 +14,5 @@ describe(title, async function () {
       title,
       steps: [{ createStack, configs: [config] }],
     });
-  }).timeout(30 * 60e3);
+  });
 });

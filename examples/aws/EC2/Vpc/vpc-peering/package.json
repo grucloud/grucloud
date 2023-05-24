@@ -16,7 +16,7 @@
     "destroy-regionB": "gc destroy -f -p aws-secondary",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
-    "test": "mocha",
+    "test": "node test/iac.test.js",
     "init": "gc init"
   },
   "author": "",
@@ -25,9 +25,5 @@
     "@grucloud/core": "^12.1.0",
     "@grucloud/provider-aws": "^12.1.0",
     "rubico": "1.9.6"
-  },
-  "devDependencies": {
-    "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0"
   }
 }

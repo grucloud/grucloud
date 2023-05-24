@@ -11,10 +11,6 @@
     "express": "^4.17.1"
   },
   "scripts": {
-    "test": "mocha tests/unit/"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "10.2.0"
+    "test": "node test/iac.test.js"
   }
 }

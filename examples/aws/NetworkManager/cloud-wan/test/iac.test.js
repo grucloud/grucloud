@@ -1,3 +1,4 @@
+const { describe, it } = require("node:test");
 const pkg = require("../package.json");
 const path = require("path");
 const { testEnd2End } = require("@grucloud/core/qa");
@@ -7,19 +8,25 @@ const config = require("../config");
 const title = pkg.name;
 
 describe(title, async function () {
-  it("run", async function () {
-    await testEnd2End({
-      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
-      title,
-      steps: [
-        { createStack, configs: [config] },
-        // TODO
-        // {
-        //   createStack,
-        //   createResources: require("./resourcesUpdate1").createResources,
-        //   configs: [config],
-        // },
-      ],
-    });
-  }).timeout(45 * 60e3);
+  it(
+    "run",
+    {
+      timeout: 45 * 60e3,
+    },
+    async function () {
+      await testEnd2End({
+        programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+        title,
+        steps: [
+          { createStack, configs: [config] },
+          // TODO
+          // {
+          //   createStack,
+          //   createResources: require("./resourcesUpdate1").createResources,
+          //   configs: [config],
+          // },
+        ],
+      });
+    }
+  );
 });

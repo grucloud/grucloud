@@ -17,7 +17,7 @@
     "onDestroyed": "gc run --onDestroyed",
     "info": "gc info",
     "init": "gc init",
-    "test": "mocha"
+    "test": "node test/iac.test.js"
   },
   "author": "",
   "license": "ISC",
@@ -26,9 +26,5 @@
     "@grucloud/provider-google": "^12.1.0",
     "axios": "1.3.6",
     "rubico": "1.9.6"
-  },
-  "devDependencies": {
-    "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0"
   }
 }

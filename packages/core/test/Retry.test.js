@@ -1,5 +1,4 @@
 const assert = require("assert");
-const Promise = require("bluebird");
 
 const { retryCall } = require("../Retry");
 

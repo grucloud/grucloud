@@ -69,7 +69,7 @@ const testGetByName = ({ client, provider, nameNotFound }) =>
 
 exports.awsResourceTest = ({
   groupType,
-  config,
+  config = () => ({ includeAllResources: true }),
   livesNotFound,
   nameNotFound = "idonotexist",
   skipDelete,

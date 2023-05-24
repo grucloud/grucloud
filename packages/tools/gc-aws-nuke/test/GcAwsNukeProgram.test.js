@@ -15,4 +15,18 @@ describe("GcAwsNukeProgram", () => {
       callProp("opts"),
       ({ regions }) => assert(isDeepEqual(regions, ["us-east-1", "us-west-2"])),
     ])());
+  it("help", () =>
+    pipe([
+      () => ({
+        argv: ["", "", "help"],
+      }),
+      createProgram,
+      tap((params) => {
+        assert(true);
+      }),
+      callProp("opts"),
+      tap((params) => {
+        assert(true);
+      }),
+    ])());
 });

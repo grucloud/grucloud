@@ -4,79 +4,60 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Service",
-    group: "run",
-    properties: ({ config }) => ({
-      apiVersion: "serving.knative.dev/v1",
-      kind: "Service",
-      metadata: {
-        name: "starhackit-server",
-      },
-      spec: {
-        template: {
-          metadata: {
-            name: "starhackit-server-00005-rud",
-            annotations: {
-              "autoscaling.knative.dev/maxScale": "100",
-            },
-          },
-          spec: {
-            containerConcurrency: 80,
-            timeoutSeconds: 300,
-            serviceAccountName: `${config.projectNumber()}-compute@developer.gserviceaccount.com`,
-            containers: [
-              {
-                image: "gcr.io/google-samples/hello-app:1.0",
-                resources: {
-                  limits: {
-                    cpu: "2000m",
-                    memory: "512Mi",
-                  },
-                },
-                ports: [
-                  {
-                    name: "http1",
-                    containerPort: 8080,
-                  },
-                ],
-                startupProbe: {
-                  timeoutSeconds: 240,
-                  periodSeconds: 240,
-                  failureThreshold: 1,
-                  tcpSocket: {
-                    port: 8080,
-                  },
-                },
-              },
-            ],
-          },
+    type: "Firewall",
+    group: "compute",
+    properties: ({}) => ({
+      name: "firewall",
+      description: "Managed By GruCloud",
+      priority: 1000,
+      allowed: [
+        {
+          IPProtocol: "tcp",
+          ports: ["22", "80", "433"],
         },
-        traffic: [
-          {
-            percent: 100,
-            latestRevision: true,
-          },
-        ],
+      ],
+      direction: "INGRESS",
+      logConfig: {
+        enable: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      network: "vpc",
+    }),
+  },
+  {
+    type: "Network",
+    group: "compute",
+    properties: ({}) => ({
+      description: "Managed By GruCloud",
+      autoCreateSubnetworks: false,
+      name: "network",
+      routingConfig: {
+        routingMode: "REGIONAL",
       },
     }),
   },
   {
-    type: "ServiceIamMember",
-    group: "run",
-    properties: ({ config }) => ({
-      location: config.region,
-      policy: {
-        version: 1,
-        bindings: [
-          {
-            role: "roles/run.invoker",
-            members: ["allUsers"],
-          },
-        ],
+    type: "Network",
+    group: "compute",
+    properties: ({}) => ({
+      description: "Managed By GruCloud",
+      autoCreateSubnetworks: false,
+      name: "vpc",
+      routingConfig: {
+        routingMode: "REGIONAL",
       },
     }),
+  },
+  {
+    type: "TargetVpnGateway",
+    group: "compute",
+    properties: ({}) => ({
+      name: "vpn-1",
+      description: "",
+    }),
     dependencies: ({}) => ({
-      service: "starhackit-server",
+      network: "network",
     }),
   },
 ];

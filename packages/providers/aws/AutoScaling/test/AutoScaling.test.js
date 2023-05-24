@@ -20,8 +20,7 @@ describe("AutoScaling", async function () {
     pipe([
       () => ({
         groupType: "AutoScaling::AutoScalingAttachment",
-        //TODO
-        skipGetById: true,
+        skipGetByName: true,
         livesNotFound: ({ config }) => [
           {
             AutoScalingGroupName: "TOTO",
