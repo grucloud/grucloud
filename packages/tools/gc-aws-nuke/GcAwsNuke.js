@@ -19,7 +19,6 @@ const {
 } = require("rubico/x");
 const prompts = require("prompts");
 
-const path = require("path");
 const { EOL } = require("os");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { AwsProvider } = require("@grucloud/provider-aws");
@@ -32,8 +31,6 @@ const {
 const pkg = require("./package.json");
 
 const { createProgram } = require("./GcAwsNukeProgram");
-
-console.log("GcAwsNuke", pkg.version);
 
 const includeGroups = ["IAM", "RDS"];
 
@@ -218,11 +215,12 @@ exports.GcAwsNuke = ({ argv }) =>
           assert(true);
         }),
         planDestroy,
-        tap((param) => {}),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
       (error) => {
-        console.error("aws nuke ended with errors");
-        error.message && console.error(error.message);
+        return { error };
       }
     ),
   ])();
