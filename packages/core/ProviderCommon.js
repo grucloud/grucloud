@@ -406,7 +406,7 @@ const setCompleted = ({ state, uri, spinnies, spinnerMap, displayText }) => {
   const newState = { ...state, completed };
   spinnies.update(uri, {
     text: displayText(newState),
-    color: "blue",
+    color: "cyanBright",
     status: "spinning",
   });
 

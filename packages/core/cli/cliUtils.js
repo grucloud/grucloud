@@ -109,7 +109,7 @@ const runAsyncCommand = async ({ text, command }) => {
           );
           spinnies.update(uri, {
             text: displayText(spinner.state),
-            color: "blue",
+            color: "cyanBright",
             status: "spinning",
           });
         }
