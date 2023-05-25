@@ -527,7 +527,7 @@ const getLaunchTemplateVersionFromTags = pipe([
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2Instance = () => ({
   type: "Instance",
-  package: "EC2",
+  package: "ec2",
   client: "EC2",
   findName,
   findId,
