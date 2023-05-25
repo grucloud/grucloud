@@ -13,7 +13,6 @@ const {
   includes,
 } = require("rubico/x");
 const path = require("path");
-const prompts = require("prompts");
 const os = require("os");
 const fs = require("fs").promises;
 
@@ -43,7 +42,7 @@ const NamespacesDefault = [
   "Microsoft.Web",
 ];
 
-const { execCommandShell } = require("./createProjectCommon");
+const { execCommandShell, myPrompts } = require("./createProjectCommon");
 
 const isAzPresent = pipe([
   () => "az version",
@@ -98,7 +97,7 @@ const promptSubscribtionId = (params) =>
           choices,
           initial: findIndex(get("isDefault"))(accounts),
         }),
-        prompts,
+        myPrompts,
         get("subscriptionId"),
         (subscriptionId) =>
           pipe([
@@ -123,7 +122,7 @@ const fetchAppIdPassword = pipe([
     validate: (servicePrincipal) =>
       isEmpty(servicePrincipal) ? `should not be empty` : true,
   }),
-  prompts,
+  myPrompts,
   get("servicePrincipal"),
   unless(
     isEmpty,
@@ -278,7 +277,7 @@ const promptLocation = ({ config = {} }) =>
       choices,
       initial: findDefaultLocation({ config, choices }),
     }),
-    prompts,
+    myPrompts,
     get("location"),
   ])();
 

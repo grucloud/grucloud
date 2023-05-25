@@ -2,11 +2,20 @@ const assert = require("assert");
 const { pipe, get, tap, switchCase, eq, tryCatch } = require("rubico");
 const { identity, isFunction, append } = require("rubico/x");
 const shell = require("shelljs");
+const prompts = require("prompts");
 
 const Spinnies = require("spinnies");
 
 const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 const spinner = { interval: 300, frames };
+
+const promptOnCancel = (prompt) => {
+  console.log("Canceled, quit now");
+  process.exit(-2);
+};
+
+exports.myPrompts = (question) =>
+  prompts(question, { onCancel: promptOnCancel });
 
 const execCommand =
   ({ textStart, textEnd, textError }) =>
@@ -29,7 +38,9 @@ const execCommand =
             pipe([
               asyncCommand,
               tap((result) => {
-                spinnies.succeed(textStart);
+                spinnies.succeed(textStart, {
+                  text: textEnd ? textEnd({ textStart, result }) : textStart,
+                });
               }),
             ]),
             pipe([
@@ -49,7 +60,7 @@ const execCommand =
 exports.execCommand = execCommand;
 
 exports.execCommandShell =
-  ({ transform = identity } = {}) =>
+  ({ transform = identity, textEnd } = {}) =>
   (command) =>
     pipe([
       () => () =>
@@ -76,7 +87,7 @@ exports.execCommandShell =
               ])()
           );
         }),
-      execCommand({ textStart: command }),
+      execCommand({ textStart: command, textEnd }),
     ])();
 
 exports.createConfig = ({}) =>

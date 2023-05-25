@@ -1,28 +1,40 @@
-const { describe, it, test } = require("node:test");
 const { pipe, tap } = require("rubico");
 
 const assert = require("assert");
 const { GcAwsNuke } = require("../GcAwsNuke");
 
-describe("GcAwsNuke", { concurrency: 1 }, () => {
-  // it("help", async () =>
-  //   pipe([
-  //     () => ({ argv: ["", "", "--help"] }),
-  //     GcAwsNuke,
-  //     tap((result) => {
-  //       assert(true);
-  //     }),
-  //   ])());
-  it("wrong-region", { only: true }, async () =>
+describe("GcAwsNuke", () => {
+  it("list groups", async () =>
     pipe([
-      () => ({ argv: ["", "", "--regions", "wrong-region"] }),
+      tap((result) => {
+        assert(true);
+      }),
+      () => ({ argv: ["", "", "groups"] }),
       GcAwsNuke,
       tap((result) => {
         assert(true);
-        assert(result.error.message.includes("no service for region"));
       }),
-    ])()
-  );
+    ])());
+  it("list all groups", async () =>
+    pipe([
+      tap((result) => {
+        assert(true);
+      }),
+      () => ({ argv: ["", "", "groups", "--all"] }),
+      GcAwsNuke,
+      tap((result) => {
+        assert(true);
+      }),
+    ])());
+  it("wrong-region", async () =>
+    pipe([
+      () => ({ argv: ["", "", "--regions", "wrong-region"] }),
+      GcAwsNuke,
+      tap(({ error }) => {
+        assert(error);
+        assert(error.message.includes("no service for region"));
+      }),
+    ])());
   it("wrong-profile", async () =>
     pipe([
       () => ({
@@ -30,11 +42,11 @@ describe("GcAwsNuke", { concurrency: 1 }, () => {
       }),
       GcAwsNuke,
       tap(({ error }) => {
-        assert(error.error.start.error);
-        assert.equal(
-          error.error.start.results[0].error.name,
-          "CredentialsProviderError"
-        );
+        assert(error.message.includes("could not be found"));
+        // assert.equal(
+        //   error.error.start.results[0].error.name,
+        //   "CredentialsProviderError"
+        // );
       }),
     ])());
 });
