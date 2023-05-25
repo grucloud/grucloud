@@ -91,7 +91,6 @@ const defaultExcludes = [
   "NetworkManager",
   "MWAA",
   "OSIS",
-  "OpsWork",
   "OAM",
   "OpenSearch",
   "OpenSearchServerless",
