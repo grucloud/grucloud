@@ -8,7 +8,7 @@ const { createEndpoint } = require("../AwsCommon");
 const { createTagger } = require("../AwsTagger");
 const {
   AutoScalingAutoScalingGroup,
-} = require("../Autoscaling/AutoScalingAutoScalingGroup");
+} = require("../AutoScaling/AutoScalingAutoScalingGroup");
 
 exports.Tagger = createTagger({
   methodTagResource: "tagResource",

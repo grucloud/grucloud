@@ -2,6 +2,7 @@
 
 ## Aws
 
+firehose delivery stream deps with redshit and opensearch
 aws_ssoadmin_permissions_boundary_attachment
 aws_emrcontainers_virtual_cluster
 aws_serverlessapplicationrepository_cloudformation_stack
