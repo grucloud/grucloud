@@ -2,7 +2,10 @@
   "packages": [
     "packages/**/*",
     "examples/**/*",
-    "!examples/aws/website-https/svelte-app"
+    "!examples/aws/website-https/svelte-app",
+    "!packages/providers/scaleway",
+    "!packages/providers/openstack",
+    "!packages/providers/mock"
   ],
   "npmClient": "pnpm",
   "useWorkspaces": true,
