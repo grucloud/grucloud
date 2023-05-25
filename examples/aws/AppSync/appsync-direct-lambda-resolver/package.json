@@ -1,6 +1,6 @@
 {
   "name": "appsync-direct-lambda-resolver",
-  "version": "12.2.7",
+  "version": "12.2.8",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^12.2.2",
-    "@grucloud/provider-aws": "^12.2.7",
+    "@grucloud/provider-aws": "^12.2.8",
     "rubico": "1.9.6"
   }
 }
