@@ -4,7 +4,7 @@ const { defaultsDeep, append, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { ignoreErrorCodes } = require("./ApiGatewayCommon");
+const { ignoreErrorCodes } = require("./APIGatewayCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
 

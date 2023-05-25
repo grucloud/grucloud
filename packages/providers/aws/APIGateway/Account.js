@@ -4,7 +4,7 @@ const { defaultsDeep, isEmpty, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { diffToPatch } = require("./ApiGatewayCommon");
+const { diffToPatch } = require("./APIGatewayCommon");
 const { differenceObject } = require("@grucloud/core/Common");
 
 const findName = () => () => "default";

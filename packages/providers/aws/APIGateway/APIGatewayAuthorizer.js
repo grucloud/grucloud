@@ -4,7 +4,7 @@ const { defaultsDeep, when, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { ignoreErrorCodes } = require("./ApiGatewayCommon");
+const { ignoreErrorCodes } = require("./APIGatewayCommon");
 const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const findId = () =>

@@ -58,7 +58,7 @@ const {
   ignoreErrorCodes,
   Tagger,
   filterPayloadRestApiPolicy,
-} = require("./ApiGatewayCommon");
+} = require("./APIGatewayCommon");
 
 const buildArn = () =>
   pipe([

@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, map, assign } = require("rubico");
 const { defaultsDeep, unless, isEmpty, callProp } = require("rubico/x");
 
-const { Tagger } = require("./ApiGatewayCommon");
+const { Tagger } = require("./APIGatewayCommon");
 const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
 
 const { replaceWithName } = require("@grucloud/core/Common");

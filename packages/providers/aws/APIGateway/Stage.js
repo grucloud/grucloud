@@ -24,7 +24,7 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
+const { ignoreErrorCodes, Tagger } = require("./APIGatewayCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
 

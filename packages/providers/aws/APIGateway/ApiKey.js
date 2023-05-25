@@ -3,7 +3,7 @@ const { pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
+const { ignoreErrorCodes, Tagger } = require("./APIGatewayCommon");
 
 const findName = () => get("name");
 const findId = () => get("id");

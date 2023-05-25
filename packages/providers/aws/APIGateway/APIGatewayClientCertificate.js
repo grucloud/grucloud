@@ -4,7 +4,7 @@ const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
+const { ignoreErrorCodes, Tagger } = require("./APIGatewayCommon");
 
 const findName = () =>
   pipe([
