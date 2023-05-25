@@ -50,7 +50,7 @@ const isAwsPresent = tap(
         awsExecCommand({
           textEnd: pipe([
             ({ textStart, result = "" }) =>
-              `${textStart}\n${result.replace("\n", "")}`,
+              `${textStart}\n${result.replace(EOL, "")}`,
           ]),
         }),
         tap((params) => {

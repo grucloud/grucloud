@@ -12,6 +12,7 @@ const pkg = require("./package.json");
 
 const { createProgram } = require("./GcAwsNukeProgram");
 const { promptRegion } = require("./GcAwsNukePromptRegion");
+const { getContactInformation } = require("./GcAwsNukeContactInformation");
 
 const createStack = ({
   regions,
@@ -58,6 +59,9 @@ const commands = {
         }),
         when(get("sts.error"), ({ sts }) => {
           throw Error(sts.error);
+        }),
+        assign({
+          account: pipe([get("options"), getContactInformation]),
         }),
         when(
           pipe([get("options.regions"), isEmpty]),

@@ -1,14 +1,5 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  tryCatch,
-  map,
-  assign,
-  get,
-  switchCase,
-  set,
-} = require("rubico");
+const { pipe, tap, tryCatch, map, assign, get, switchCase } = require("rubico");
 const { callProp, when, includes, defaultsDeep, pluck } = require("rubico/x");
 const prompts = require("prompts");
 const { EOL } = require("os");
