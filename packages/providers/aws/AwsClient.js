@@ -211,6 +211,7 @@ const AwsClient =
           "PermanentRedirect",
           "InvalidAction",
           "BadRequest",
+          "ForbiddenException",
         ],
         getById,
         noSortKey = false,

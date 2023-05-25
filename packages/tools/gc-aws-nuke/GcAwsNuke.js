@@ -18,7 +18,6 @@ const {
   isEmpty,
 } = require("rubico/x");
 const prompts = require("prompts");
-
 const { EOL } = require("os");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { AwsProvider } = require("@grucloud/provider-aws");
@@ -31,8 +30,6 @@ const {
 const pkg = require("./package.json");
 
 const { createProgram } = require("./GcAwsNukeProgram");
-
-const includeGroups = ["IAM", "RDS"];
 
 // TODO exclude resources
 
@@ -145,7 +142,12 @@ const promptRegion = pipe([
   }),
 ]);
 
-const createStack = ({ regions, includeGroups, profile = "default" }) =>
+const createStack = ({
+  regions,
+  includeGroups,
+  profile = "default",
+  includeAllResources,
+}) =>
   pipe([
     tap(() => {
       assert(regions);
@@ -162,6 +164,7 @@ const createStack = ({ regions, includeGroups, profile = "default" }) =>
             projectName: "aws-nuke",
             region,
             includeGroups,
+            includeAllResources,
             credentials: { profile },
           }),
         }),
@@ -170,51 +173,61 @@ const createStack = ({ regions, includeGroups, profile = "default" }) =>
     (stacks) => ({ stacks }),
   ]);
 
-const planDestroy = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  ({ options }) => ({
-    programOptions: {},
-    createStack: createStack(options),
-  }),
-  Cli,
-  tap((params) => {
-    assert(true);
-  }),
-  callProp("planDestroy", {}),
-  tap((params) => {
-    assert(true);
-  }),
-]);
-
-exports.GcAwsNuke = ({ argv }) =>
-  pipe([
+const commands = {
+  destroyResources: ({ program, commandOptions }) =>
     tryCatch(
       pipe([
-        () => ({}),
-        assign({
-          options: pipe([
-            () => ({ version: pkg.version, argv }),
-            createProgram,
-            callProp("opts"),
-          ]),
+        tap(() => {
+          assert(program);
         }),
+        () => ({ options: program.opts() }),
         isAwsPresent,
         assign({
           sts: pipe([isAuthenticated]),
-        }),
-        tap((params) => {
-          assert(true);
         }),
         when(
           pipe([get("options.regions"), isEmpty]),
           set("options.regions", pipe([promptRegion]))
         ),
-        tap((params) => {
-          assert(true);
+        ({ options }) => ({
+          commandOptions,
+          programOptions: options,
+          createStack: createStack(options),
         }),
-        planDestroy,
+        Cli,
+        callProp("planDestroy", { commandOptions: { all: true } }),
+      ]),
+      (error) => {
+        throw error;
+      }
+    )(),
+  //
+  listGroups: ({ program, commandOptions = {} }) =>
+    pipe([
+      tap(() => {
+        assert(commandOptions);
+      }),
+      () => ({
+        config: () => ({
+          region: "us-east-1",
+          includeAllResources: commandOptions.all,
+        }),
+      }),
+      AwsProvider,
+      callProp("servicesList", {}),
+      tap((content) => {
+        console.log(content);
+      }),
+    ])(),
+};
+
+exports.GcAwsNuke = ({ argv }) =>
+  pipe([
+    tryCatch(
+      pipe([
+        () => ({ version: pkg.version, argv, commands }),
+        createProgram,
+        callProp("parseAsync", argv),
         tap((params) => {
           assert(true);
         }),

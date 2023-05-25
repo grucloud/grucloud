@@ -5,11 +5,21 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run",
+      "name": "Nuke",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "node",
       "runtimeArgs": ["gc-aws-nuke.js"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Nuke All",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["gc-aws-nuke.js", "-a"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}"
@@ -40,6 +50,26 @@
       "request": "launch",
       "runtimeExecutable": "node",
       "runtimeArgs": ["gc-aws-nuke.js", "-p", "fffffff"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "List All Services",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["gc-aws-nuke.js", "--groups", "--all"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Destroy --includeGroups",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["gc-aws-nuke.js", "--includeGroups", "EC2", "SSM"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}"

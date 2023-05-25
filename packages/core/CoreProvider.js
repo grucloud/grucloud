@@ -40,10 +40,13 @@ const {
   prepend,
   values,
   filterOut,
+  uniq,
 } = require("rubico/x");
 const { memoize } = require("lodash");
 const util = require("util");
 const fs = require("fs").promises;
+const { EOL } = require("os");
+
 const logger = require("./logger")({ prefix: "CoreProvider" });
 const { tos } = require("./tos");
 const { createSpec } = require("./SpecDefault");
@@ -1235,7 +1238,7 @@ function CoreProvider({
         assert(true);
       }),
       Lister({
-        poolSize: 5,
+        poolSize: 10,
         onStateChange: ({ key, meta, result, error, ...other }) => {
           assert(key);
           const spec = meta;
@@ -1688,6 +1691,9 @@ function CoreProvider({
       append(`${type}.md`),
     ])();
 
+  const servicesList = ({}) =>
+    pipe([getSpecs, pluck("group"), uniq, callProp("join", EOL)])();
+
   const resourcesList = ({ commandOptions }) =>
     pipe([
       tap(() => {
@@ -1744,6 +1750,7 @@ ${content}`,
     displayName,
     dependencies,
     type: toType,
+    servicesList,
     resourcesList,
     getResourceFromLive,
     spinnersStopProvider,

@@ -20,6 +20,8 @@ const decorate = ({ endpoint, config }) =>
     }),
   ]);
 
+const cannotBeDeleted = () => () => true;
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/LicenseManager.html
 exports.LicenseManagerGrantAccepter = () => ({
   type: "GrantAccepter",
@@ -58,6 +60,7 @@ exports.LicenseManagerGrantAccepter = () => ({
       }),
     ]),
   ignoreErrorCodes,
+  cannotBeDeleted,
   dependencies: {
     grant: {
       type: "Grant",

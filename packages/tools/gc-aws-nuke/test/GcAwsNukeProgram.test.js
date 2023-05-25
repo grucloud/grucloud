@@ -8,25 +8,17 @@ const { createProgram } = require("../GcAwsNukeProgram");
 describe("GcAwsNukeProgram", () => {
   it("region simple", () =>
     pipe([
-      () => ({
-        argv: ["", "", "--regions", "us-east-1", "us-west-2"],
-      }),
-      createProgram,
-      callProp("opts"),
-      ({ regions }) => assert(isDeepEqual(regions, ["us-east-1", "us-west-2"])),
-    ])());
-  it("help", () =>
-    pipe([
-      () => ({
-        argv: ["", "", "help"],
-      }),
-      createProgram,
-      tap((params) => {
-        assert(true);
-      }),
-      callProp("opts"),
-      tap((params) => {
-        assert(true);
-      }),
+      () => ["", "", "--regions", "us-east-1", "us-west-2"],
+      (argv) =>
+        pipe([
+          () => ({
+            argv,
+          }),
+          createProgram,
+          callProp("parse", argv),
+          callProp("opts"),
+          ({ regions }) =>
+            assert(isDeepEqual(regions, ["us-east-1", "us-west-2"])),
+        ]),
     ])());
 });

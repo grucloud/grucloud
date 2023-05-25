@@ -5,21 +5,35 @@ const assert = require("assert");
 const { GcAwsNuke } = require("../GcAwsNuke");
 
 describe("GcAwsNuke", { concurrency: 1 }, () => {
-  // it("help", async () =>
-  //   pipe([
-  //     () => ({ argv: ["", "", "--help"] }),
-  //     GcAwsNuke,
-  //     tap((result) => {
-  //       assert(true);
-  //     }),
-  //   ])());
+  it("list groups", async () =>
+    pipe([
+      tap((result) => {
+        assert(true);
+      }),
+      () => ({ argv: ["", "", "groups"] }),
+      GcAwsNuke,
+      tap((result) => {
+        assert(true);
+      }),
+    ])());
+  it("list all groups", async () =>
+    pipe([
+      tap((result) => {
+        assert(true);
+      }),
+      () => ({ argv: ["", "", "groups", "--all"] }),
+      GcAwsNuke,
+      tap((result) => {
+        assert(true);
+      }),
+    ])());
   it("wrong-region", { only: true }, async () =>
     pipe([
       () => ({ argv: ["", "", "--regions", "wrong-region"] }),
       GcAwsNuke,
-      tap((result) => {
-        assert(true);
-        assert(result.error.message.includes("no service for region"));
+      tap(({ error }) => {
+        assert(error);
+        assert(error.message.includes("no service for region"));
       }),
     ])()
   );
