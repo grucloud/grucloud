@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/aws-nuke",
-  "version": "12.2.4",
+  "version": "12.2.5",
   "description": "Destroy AWS resources",
   "public": true,
   "homepage": "https://www.grucloud.com",
