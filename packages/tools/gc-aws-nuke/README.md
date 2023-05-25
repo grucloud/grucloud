@@ -259,3 +259,7 @@ Commands:
   nuke                         Destroy the resources
   help [command]               display help for command
 ```
+
+## Contribution
+
+Head over the [GruCloud's GitHub](https://github.com/grucloud/grucloud) to report a bug or a feature.
