@@ -1,4 +1,3 @@
-const { describe, it } = require("node:test");
 const assert = require("assert");
 const { pipe, tap, tryCatch, map } = require("rubico");
 const { callProp, isDeepEqual } = require("rubico/x");

@@ -13,7 +13,7 @@
     "url": "https://github.com/grucloud/grucloud"
   },
   "scripts": {
-    "test": "node --test"
+    "test": "mocha test"
   },
   "author": "Frederic Heem",
   "license": "ISC",
@@ -29,5 +29,8 @@
     "prompts": "2.4.2",
     "rubico": "1.9.6",
     "spinnies": "0.5.1"
+  },
+  "devDependencies": {
+    "mocha": "10.2.0"
   }
 }

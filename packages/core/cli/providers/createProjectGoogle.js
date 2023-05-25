@@ -19,9 +19,8 @@ const {
   includes,
   callProp,
 } = require("rubico/x");
-const prompts = require("prompts");
 
-const { execCommandShell } = require("./createProjectCommon");
+const { execCommandShell, myPrompts } = require("./createProjectCommon");
 
 const gcloudExecCommand =
   ({} = {}) =>
@@ -120,7 +119,7 @@ const promptGoogleProjectId = pipe([
         choices,
         initial: initialProjectIndex({ projectCurrent, choices }),
       }),
-      prompts,
+      myPrompts,
       get("projectId"),
     ])(),
 ]);
@@ -160,7 +159,7 @@ const promptRegion = pipe([
         choices,
         initial: initialRegionIndex({ regionCurrent, regions }),
       }),
-      prompts,
+      myPrompts,
       get("region"),
     ])(),
 ]);
@@ -209,7 +208,7 @@ const promptZone = pipe([
         choices,
         initial: initialZoneIndex({ zoneCurrent, zones }),
       }),
-      prompts,
+      myPrompts,
       get("zone"),
     ])(),
 ]);

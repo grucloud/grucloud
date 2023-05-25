@@ -1,10 +1,9 @@
-const { describe, it, test } = require("node:test");
 const { pipe, tap } = require("rubico");
 
 const assert = require("assert");
 const { GcAwsNuke } = require("../GcAwsNuke");
 
-describe("GcAwsNuke", { concurrency: 1 }, () => {
+describe("GcAwsNuke", () => {
   it("list groups", async () =>
     pipe([
       tap((result) => {
@@ -27,7 +26,7 @@ describe("GcAwsNuke", { concurrency: 1 }, () => {
         assert(true);
       }),
     ])());
-  it("wrong-region", { only: true }, async () =>
+  it("wrong-region", async () =>
     pipe([
       () => ({ argv: ["", "", "--regions", "wrong-region"] }),
       GcAwsNuke,
@@ -35,8 +34,7 @@ describe("GcAwsNuke", { concurrency: 1 }, () => {
         assert(error);
         assert(error.message.includes("no service for region"));
       }),
-    ])()
-  );
+    ])());
   it("wrong-profile", async () =>
     pipe([
       () => ({
@@ -44,11 +42,11 @@ describe("GcAwsNuke", { concurrency: 1 }, () => {
       }),
       GcAwsNuke,
       tap(({ error }) => {
-        assert(error.error.start.error);
-        assert.equal(
-          error.error.start.results[0].error.name,
-          "CredentialsProviderError"
-        );
+        assert(error.message.includes("could not be found"));
+        // assert.equal(
+        //   error.error.start.results[0].error.name,
+        //   "CredentialsProviderError"
+        // );
       }),
     ])());
 });

@@ -1,6 +1,15 @@
 const assert = require("assert");
 const { EOL } = require("os");
-const { pipe, get, tap, assign, eq, map, tryCatch } = require("rubico");
+const {
+  pipe,
+  get,
+  tap,
+  assign,
+  eq,
+  map,
+  tryCatch,
+  switchCase,
+} = require("rubico");
 const {
   append,
   isEmpty,
@@ -11,16 +20,24 @@ const {
   identity,
   unless,
 } = require("rubico/x");
-const prompts = require("prompts");
+
 const shell = require("shelljs");
-const { execCommandShell, createConfig } = require("./createProjectCommon");
+const {
+  execCommandShell,
+  createConfig,
+  myPrompts,
+} = require("./createProjectCommon");
 
 const awsExecCommand =
-  ({ displayText } = {}) =>
+  ({ displayText, textEnd } = {}) =>
   (command) =>
     pipe([
       () => `aws ${command}`,
-      execCommandShell({ transform: append(" --output json"), displayText }),
+      execCommandShell({
+        transform: append(" --output json"),
+        displayText,
+        textEnd,
+      }),
     ])();
 
 exports.awsExecCommand = awsExecCommand;
@@ -30,7 +47,12 @@ const isAwsPresent = tap(
     () => "--version",
     tryCatch(
       pipe([
-        awsExecCommand(),
+        awsExecCommand({
+          textEnd: pipe([
+            ({ textStart, result = "" }) =>
+              `${textStart}\n${result.replace("\n", "")}`,
+          ]),
+        }),
         tap((params) => {
           assert(true);
         }),
@@ -55,7 +77,7 @@ const promptAccessKeyId = pipe([
     validate: (AWSAccessKeyId) =>
       isEmpty(AWSAccessKeyId) ? `should not be empty` : true,
   }),
-  prompts,
+  myPrompts,
   get("AWSAccessKeyId"),
 ]);
 
@@ -67,7 +89,7 @@ const promptSecretKey = pipe([
     validate: (AWSSecretKey) =>
       isEmpty(AWSSecretKey) ? `should not be empty` : true,
   }),
-  prompts,
+  myPrompts,
   get("AWSSecretKey"),
 ]);
 
@@ -123,7 +145,7 @@ const promptRegion = pipe([
         choices,
         initial: initialRegionIndex({ regions, currentRegion }),
       }),
-      prompts,
+      myPrompts,
       tap((params) => {
         assert(true);
       }),
@@ -153,7 +175,7 @@ const execAwsConfigure = ({ profile = "default" }) =>
       message: `Open https://console.aws.amazon.com/iam/home#/security_credentials`,
       initial: true,
     }),
-    prompts,
+    myPrompts,
     tap.if(get("confirmOpen"), () => {
       shell.exec(
         "open https://console.aws.amazon.com/iam/home#/security_credentials"
@@ -188,19 +210,23 @@ const isAuthenticated = ({ profile = "default" }) =>
     () => `sts get-caller-identity --region us-east-1 --profile ${profile}`,
     tryCatch(
       pipe([
-        awsExecCommand(),
-        tap((params) => {
-          assert(true);
+        awsExecCommand({
+          textEnd: pipe([
+            ({ textStart, result }) =>
+              `${textStart}\nAWS Account is ${result.Account}`,
+          ]),
         }),
       ]),
-      (error) =>
-        pipe([
-          tap((params) => {
-            assert(error);
-          }),
-          execAwsConfigure({ profile }),
-          () => isAuthenticated({ profile }),
-        ])()
+      pipe([
+        switchCase([
+          includes("could not be found"),
+          (error) => ({ error }),
+          pipe([
+            execAwsConfigure({ profile }),
+            () => isAuthenticated({ profile }),
+          ]),
+        ]),
+      ])
     ),
   ])();
 
