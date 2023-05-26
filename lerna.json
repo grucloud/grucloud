@@ -9,15 +9,19 @@
   ],
   "npmClient": "pnpm",
   "useWorkspaces": true,
-  "version": "12.2.10",
+  "version": "12.2.11",
   "command": {
     "command": {
       "bootstrap": {
-        "npmClientArgs": ["--no-audit"]
+        "npmClientArgs": [
+          "--no-audit"
+        ]
       }
     },
     "publish": {
-      "ignoreChanges": ["@grucloud/example-*"],
+      "ignoreChanges": [
+        "@grucloud/example-*"
+      ],
       "create-release": "github",
       "conventional-commits": true
     },

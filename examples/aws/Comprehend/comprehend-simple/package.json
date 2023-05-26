@@ -1,6 +1,6 @@
 {
   "name": "comprehend-simple",
-  "version": "12.2.10",
+  "version": "12.2.11",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^12.2.2",
-    "@grucloud/provider-aws": "^12.2.10",
+    "@grucloud/provider-aws": "^12.2.11",
     "rubico": "1.9.6"
   }
 }
