@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-let config = () => ({ region: "us-west-2" });
+let config = () => ({ region: "us-west-2", includeGroups: ["DeviceFarm"] });
 
 describe("DeviceFarm", async function () {
   it.skip("DevicePool", () =>

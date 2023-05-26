@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-let config = () => ({ region: "us-west-2" });
+let config = () => ({ region: "us-west-2", includeGroups: ["NetworkManager"] });
 
 describe("NetworkManager", async function () {
   it("CoreNetwork", () =>
