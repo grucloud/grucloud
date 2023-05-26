@@ -5,7 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
-const { Tagger } = require("./ResiliencehubCommon");
+const { Tagger } = require("./ResilienceHubCommon");
 
 const buildArn = () =>
   pipe([
