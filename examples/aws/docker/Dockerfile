@@ -45,5 +45,5 @@ COPY --from=dependencies /app/prod_node_modules ./node_modules
 COPY src .
 
 RUN  mkdir /root/.aws && touch /root/.aws/credentials && touch /root/.aws/config
-ENTRYPOINT ["./node_modules/.bin/gc"]
+ENTRYPOINT ["/app/node_modules/.bin/gc"]
 
