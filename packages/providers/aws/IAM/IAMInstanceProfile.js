@@ -114,7 +114,7 @@ const decorate = ({ endpoint }) =>
 
 exports.IAMInstanceProfile = ({ compare }) => ({
   type: "InstanceProfile",
-  package: "IAM",
+  package: "iam",
   client: "IAM",
   propertiesDefault: {},
   omitProperties: ["InstanceProfileId", "Arn", "CreateDate", "Roles"],
