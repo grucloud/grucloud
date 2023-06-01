@@ -9,6 +9,7 @@ start
 :""gc new"";
 : Select AWS;
 : Enter the project's name;
+: Enter the AWS profile;
 
 
 partition "Is the aws CLI installed ?" {

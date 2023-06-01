@@ -181,7 +181,7 @@ exports.createProject =
       }),
       assign({
         dirs: writeDirectory({ commandOptions, programOptions }),
-        profile: () => "default",
+        profile: () => commandOptions.profile ?? "default",
       }),
       tap((params) => {
         assert(true);

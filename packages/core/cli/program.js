@@ -133,6 +133,11 @@ exports.createProgram = () => {
   program
     .command("new")
     .description("Create a new project")
+    .option(
+      "-p, --profile <string>",
+      "AWS only: The AWS profile",
+      process.env.AWS_PROFILE ?? "default"
+    )
     .action(createProject({ programOptions: program.opts() }));
 
   program

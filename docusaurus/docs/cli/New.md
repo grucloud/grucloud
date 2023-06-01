@@ -17,7 +17,8 @@ Usage: gc new [options]
 Create a new project
 
 Options:
-  -h, --help  display help for command
+  -p, --profile <string>  AWS only: The AWS profile (default: "default")
+  -h, --help              display help for command
 ```
 
 ## Providers
