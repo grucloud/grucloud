@@ -103,6 +103,21 @@ const initialRegionIndex = ({ currentRegion, regions }) =>
     when(eq(identity, -1), () => 0),
   ])();
 
+const promptProfile = pipe([
+  tap(({ profile }) => {
+    assert(profile);
+  }),
+  ({ profile }) => ({
+    type: "text",
+    name: "profile",
+    message: "The AWS profile",
+    initial: profile,
+    validate: (profile) => (isEmpty(profile) ? `should not be empty` : true),
+  }),
+  myPrompts,
+  get("profile"),
+]);
+
 const promptRegion = pipe([
   tap((params) => {
     assert(true);
@@ -161,7 +176,6 @@ const promptRegion = pipe([
       ),
     ])(),
 ]);
-
 const execAwsConfigure = ({ profile = "default" }) =>
   pipe([
     tap((params) => {
@@ -234,15 +248,15 @@ exports.isAuthenticated = isAuthenticated;
 
 exports.createProjectAws = ({}) =>
   pipe([
-    tap(({ profile, dirs }) => {
-      assert(true);
+    tap(({ dirs }) => {
       dirs.providerDirectory &&
         console.log(
           `Initializing AWS provider in directory: ${dirs.providerDirectory}`
         );
-      console.log(`Using AWS profile: ${profile}`);
     }),
+
     tap(isAwsPresent),
+    assign({ profile: promptProfile }),
     tap(isAuthenticated),
     assign({ region: promptRegion }),
     assign({ config: createConfig }),

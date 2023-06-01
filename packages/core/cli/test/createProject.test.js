@@ -32,13 +32,15 @@ describe("createProject", function () {
     }
   });
   it("createProject aws", async function () {
-    await runProject({ injects: ["aws", "aws-project-test", "us-east-1"] });
+    await runProject({
+      injects: ["aws", "aws-project-test", "default", "us-east-1"],
+    });
   });
   it("createProject aws wrong profile", async function () {
     try {
       await runProject({
-        commandOptions: { profile: "wrong-profile" },
-        injects: ["aws", "aws-project-test"],
+        commandOptions: {},
+        injects: ["aws", "aws-project-test", "wrong-profile"],
       });
       assert(false, "shoud not be here");
     } catch (error) {
