@@ -338,8 +338,8 @@ const findServicesPerRegion = ({ region = "us-east-1" }) =>
     }),
   ])();
 
-const excludeGroups = ({
-  config: { includeGroups = [], includeAllResources },
+const doExcludeGroups = ({
+  config: { includeGroups = [], includeAllResources, excludeGroups = [] },
 }) =>
   pipe([
     tap((params) => {
@@ -352,6 +352,7 @@ const excludeGroups = ({
       filterOut(isIn(defaultExcludes)),
       filter(isIn([...defaultIncludes, ...includeGroups])),
     ]),
+    filterOut(isIn(excludeGroups)),
   ]);
 
 const excludeResources = ({ config }) =>
@@ -397,7 +398,7 @@ exports.fnSpecs = (config) =>
         tap((params) => {
           assert(true);
         }),
-        excludeGroups({ config }),
+        doExcludeGroups({ config }),
         callProp("sort", (a, b) => a.localeCompare(b)),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
         tap((params) => {
