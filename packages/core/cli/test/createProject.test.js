@@ -8,7 +8,7 @@ const fs = require("fs").promises;
 
 assert(process.env.AZURE_SUBSCRIPTION_ID);
 
-const runProject = ({ injects }) =>
+const runProject = ({ injects, commandOptions = {} }) =>
   tryCatch(
     pipe([
       tap(() => prompts.inject(injects)),
@@ -18,7 +18,7 @@ const runProject = ({ injects }) =>
           programOptions: {
             workingDirectory: tempPath,
           },
-        })({}),
+        })(commandOptions),
     ]),
     (error) => {
       throw error;
@@ -33,6 +33,19 @@ describe("createProject", function () {
   });
   it("createProject aws", async function () {
     await runProject({ injects: ["aws", "aws-project-test", "us-east-1"] });
+  });
+  it("createProject aws wrong profile", async function () {
+    try {
+      await runProject({
+        commandOptions: { profile: "wrong-profile" },
+        injects: ["aws", "aws-project-test"],
+      });
+      assert(false, "shoud not be here");
+    } catch (error) {
+      assert(
+        error.includes("The config profile (wrong-profile) could not be found")
+      );
+    }
   });
   it("createProject azure", async function () {
     await runProject({
