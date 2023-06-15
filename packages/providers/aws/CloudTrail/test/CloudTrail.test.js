@@ -34,10 +34,10 @@ describe("CloudTrail", async function () {
         groupType: "CloudTrail::EventDataStore",
         livesNotFound: ({ config }) => [
           {
-            EventDataStoreArn: `arn:aws:cloudtrail:${
+            EventDataStoreArn: `arn:${config.partition}:cloudtrail:${
               config.region
             }:${config.accountId()}:eventdatastore/ee54-4813-92d5-999ae`,
-            nameNotFound: `arn:aws:cloudtrail:${
+            nameNotFound: `arn:${config.partition}:cloudtrail:${
               config.region
             }:${config.accountId()}:eventdatastore/ee54-4813-92d5-999ae`,
           },

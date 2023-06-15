@@ -22,7 +22,7 @@ describe("Comprehend", async function () {
         groupType: "Comprehend::DocumentClassifier",
         livesNotFound: ({ config }) => [
           {
-            DocumentClassifierArn: `arn:aws:comprehend:${
+            DocumentClassifierArn: `arn:${config.partition}:comprehend:${
               config.region
             }:${config.accountId()}:document-classifier/m1`,
           },
@@ -55,7 +55,7 @@ describe("Comprehend", async function () {
         groupType: "Comprehend::EntityRecognizer",
         livesNotFound: ({ config }) => [
           {
-            EntityRecognizerArn: `arn:aws:comprehend:${
+            EntityRecognizerArn: `arn:${config.partition}:comprehend:${
               config.region
             }:${config.accountId()}:entity-recognizer/m1`,
           },

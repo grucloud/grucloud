@@ -45,7 +45,7 @@ const WebAclDependencies = {
     buildArn:
       ({ config }) =>
       ({ restApiId, stageName }) =>
-        `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`,
+        `arn:${config.partition}:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`,
   },
   cognitoUserPool: {
     type: "UserPool",
@@ -61,7 +61,7 @@ const WebAclDependencies = {
   //   buildArn:
   //     ({ config }) =>
   //     ({ ApiId, StageName }) =>
-  //       `arn:aws:apigateway:${config.region}::/apis/${ApiId}/stages/${StageName}`,
+  //       `arn:${config.partition}:apigateway:${config.region}::/apis/${ApiId}/stages/${StageName}`,
   // },
   graphql: {
     type: "GraphqlApi",

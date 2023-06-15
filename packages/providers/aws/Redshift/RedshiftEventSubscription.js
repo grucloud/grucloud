@@ -21,7 +21,7 @@ const assignArn = ({ config }) =>
           assert(SubscriptionName);
         }),
         ({ SubscriptionName }) =>
-          `arn:aws:redshift:${
+          `arn:${config.partition}:redshift:${
             config.region
           }:${config.accountId()}:eventsubscription:${SubscriptionName}`,
       ]),

@@ -25,7 +25,7 @@ describe("WAFv2", async function () {
         groupType: "WAFv2::LoggingConfiguration",
         livesNotFound: ({ config }) => [
           {
-            ResourceArn: `arn:aws:wafv2:${
+            ResourceArn: `arn:${config.partition}:wafv2:${
               config.region
             }:${config.accountId()}:regional/webacl/my-webacl/ce01e085-5737-4092-80c3-224fd26843ed`,
           },
@@ -101,7 +101,7 @@ describe("WAFv2", async function () {
         groupType: "WAFv2::WebACLAssociation",
         livesNotFound: ({ config }) => [
           {
-            ResourceArn: `arn:aws:apigateway:${config.region}::/restapis/j9zcm72xm6/stages/dev`,
+            ResourceArn: `arn:${config.partition}:apigateway:${config.region}::/restapis/j9zcm72xm6/stages/dev`,
           },
         ],
         skipGetById: true,

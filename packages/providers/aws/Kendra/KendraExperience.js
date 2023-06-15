@@ -14,7 +14,7 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         ({ IndexId, Id }) =>
-          `arn:aws:kendra:${
+          `arn:${config.partition}:kendra:${
             config.region
           }:${config.accountId()}:index/${IndexId}/experience/${Id}`,
       ]),

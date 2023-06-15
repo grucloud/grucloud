@@ -46,7 +46,7 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         ({ DetectorId }) =>
-          `arn:aws:guardduty:${
+          `arn:${config.partition}:guardduty:${
             config.region
           }:${config.accountId()}:detector/${DetectorId}`,
       ]),

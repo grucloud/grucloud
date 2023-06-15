@@ -19,7 +19,9 @@ const assignArn = ({ config }) =>
           assert(botId);
         }),
         ({ botId }) =>
-          `arn:aws:lex:${config.region}:${config.accountId()}:bot/${botId}`,
+          `arn:${config.partition}:lex:${
+            config.region
+          }:${config.accountId()}:bot/${botId}`,
       ]),
     }),
   ]);

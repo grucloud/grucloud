@@ -19,7 +19,7 @@ const subscriptionToProduct = ({ config }) =>
   pipe([
     callProp("split", "product-subscription/"),
     last,
-    prepend(`arn:aws:securityhub:${config.region}::product/`),
+    prepend(`arn:${config.partition}:securityhub:${config.region}::product/`),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html

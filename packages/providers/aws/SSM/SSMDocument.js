@@ -19,7 +19,9 @@ const assignArn = ({ config }) =>
           assert(Name);
         }),
         ({ Name }) =>
-          `arn:aws:ssm:${config.region}:${config.accountId()}:document/${Name}`,
+          `arn:${config.partition}:ssm:${
+            config.region
+          }:${config.accountId()}:document/${Name}`,
       ]),
     }),
   ]);

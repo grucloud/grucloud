@@ -10,7 +10,7 @@ const { replaceWithName } = require("@grucloud/core/Common");
 const buildArn =
   ({ config }) =>
   ({ id }) =>
-    `arn:aws:apigateway:${config.region}::/usageplans/${id}`;
+    `arn:${config.partition}:apigateway:${config.region}::/usageplans/${id}`;
 
 const pickId = pipe([({ id }) => ({ usagePlanId: id })]);
 
@@ -68,7 +68,7 @@ exports.UsagePlan = ({ compare }) => ({
           map(({ apiId, stage }) =>
             pipe([
               () =>
-                `arn:aws:apigateway:${config.region}::/restapis/${apiId}/stages/${stage}`,
+                `arn:${config.partition}:apigateway:${config.region}::/restapis/${apiId}/stages/${stage}`,
               lives.getById({
                 type: "Stage",
                 group: "APIGateway",

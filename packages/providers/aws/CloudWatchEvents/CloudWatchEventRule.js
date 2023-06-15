@@ -24,7 +24,10 @@ const assignArn = ({ config }) =>
       Arn: pipe([
         ({ Name, EventBusName }) =>
           pipe([
-            () => `arn:aws:events:${config.region}:${config.accountId()}:rule/`,
+            () =>
+              `arn:${config.partition}:events:${
+                config.region
+              }:${config.accountId()}:rule/`,
             unless(
               () => EventBusName === "default",
               append(`${EventBusName}/`)

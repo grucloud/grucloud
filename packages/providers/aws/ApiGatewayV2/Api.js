@@ -23,7 +23,8 @@ const assignArn = ({ config }) =>
         tap(({ ApiId }) => {
           assert(ApiId);
         }),
-        ({ ApiId }) => `arn:aws:apigateway:${config.region}::/apis/${ApiId}`,
+        ({ ApiId }) =>
+          `arn:${config.partition}:apigateway:${config.region}::/apis/${ApiId}`,
       ]),
     }),
   ]);
@@ -36,7 +37,9 @@ const assignArnV2 = ({ config }) =>
           assert(ApiId);
         }),
         ({ ApiId }) =>
-          `arn:aws:execute-api:${config.region}:${config.accountId()}:${ApiId}`,
+          `arn:${config.partition}:execute-api:${
+            config.region
+          }:${config.accountId()}:${ApiId}`,
       ]),
     }),
   ]);

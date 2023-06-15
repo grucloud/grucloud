@@ -40,7 +40,7 @@ describe("DeviceFarm", async function () {
         groupType: "DeviceFarm::Project",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:devicefarm:${
+            arn: `arn:${config.partition}:devicefarm:${
               config.region
             }:${config.accountId()}:project:EXAMPLE-GUID-123-456`,
           },
@@ -55,7 +55,7 @@ describe("DeviceFarm", async function () {
         groupType: "DeviceFarm::TestGridProject",
         livesNotFound: ({ config }) => [
           {
-            // arn: `arn:aws:devicefarm:${
+            // arn: `arn:${config.partition}:devicefarm:${
             //   config.region
             // }:${config.accountId()}:project:EXAMPLE-GUID-123-456`,
           },
@@ -70,7 +70,7 @@ describe("DeviceFarm", async function () {
         groupType: "DeviceFarm::VPCEConfiguration",
         livesNotFound: ({ config }) => [
           {
-            // arn: `arn:aws:devicefarm:${
+            // arn: `arn:${config.partition}:devicefarm:${
             //   config.region
             // }:${config.accountId()}:project:EXAMPLE-GUID-123-456`,
           },

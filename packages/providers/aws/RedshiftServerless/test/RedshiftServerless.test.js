@@ -26,7 +26,7 @@ describe("RedshiftServerless", async function () {
         groupType: "RedshiftServerless::ResourcePolicy",
         livesNotFound: ({ config }) => [
           {
-            resourceArn: `arn:aws:redshift-serverless:${
+            resourceArn: `arn:${config.partition}:redshift-serverless:${
               config.region
             }:${config.accountId()}:snapshot/b6e29843-fee3-4b39-84cc-33e51a87dd60`,
           },

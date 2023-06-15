@@ -24,7 +24,7 @@ describe("AutoScaling", async function () {
         livesNotFound: ({ config }) => [
           {
             AutoScalingGroupName: "TOTO",
-            TargetGroupARN: `arn:aws:elasticloadbalancing:${
+            TargetGroupARN: `arn:${config.partition}:elasticloadbalancing:${
               config.region
             }:${config.accountId()}:targetgroup/target-group-rest/ba26c2aeba8e7da0`,
           },
@@ -63,7 +63,7 @@ describe("AutoScaling", async function () {
         livesNotFound: ({ config }) => [
           {
             AutoScalingGroupName: "lc-12345",
-            TopicARN: `arn:aws:sns:${
+            TopicARN: `arn:${config.partition}:sns:${
               config.region
             }:${config.accountId()}:my-sns-topic`,
           },

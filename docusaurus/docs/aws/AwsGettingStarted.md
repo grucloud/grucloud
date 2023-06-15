@@ -191,6 +191,8 @@ gc destroy
 
 ## Next Steps
 
+- More information about the [configuration](./AwsConfig.md) of this AWS provider.
+
 - Browse the various [examples](https://github.com/grucloud/grucloud/tree/main/examples/aws) which helps to find out how to use this software.
 
-- Available [Aws Resources](./AwsResources.md)
+- 800+ Available [Aws Resources](./AwsResources.md)

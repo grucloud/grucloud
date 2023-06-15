@@ -17,7 +17,7 @@ const assignArn = ({ config }) =>
           assert(Id);
         }),
         ({ Id }) =>
-          `arn:aws:route53:${
+          `arn:${config.partition}:route53:${
             config.region
           }:${config.accountId()}:queryloggingconfig/${Id}`,
       ]),

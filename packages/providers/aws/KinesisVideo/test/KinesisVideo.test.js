@@ -11,7 +11,7 @@ describe("KinesisVideo", async function () {
         livesNotFound: ({ config }) => [
           {
             // arn:aws:kinesisvideo:us-east-1:840541460064:stream/input-video-stream/1676469240353
-            StreamARN: `arn:aws:kinesisvideo:${
+            StreamARN: `arn:${config.partition}:kinesisvideo:${
               config.region
             }:${config.accountId()}:stream/input-video-stream/1676469240352`,
           },

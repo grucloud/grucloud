@@ -40,7 +40,9 @@ const decorate = ({ endpoint }) =>
 const buildArn = ({ accountId, region }) =>
   pipe([
     ({ ParameterGroupName }) =>
-      `arn:aws:redshift:${region}:${accountId()}:parametergroup:${ParameterGroupName}`,
+      `arn:${
+        config.partition
+      }:redshift:${region}:${accountId()}:parametergroup:${ParameterGroupName}`,
   ]);
 
 exports.RedshiftClusterParameterGroup = ({ compare }) => ({

@@ -58,7 +58,9 @@ describe("Location", async function () {
         groupType: "Location::TrackerAssociation",
         livesNotFound: ({ config }) => [
           {
-            ConsumerArn: `arn:aws:geo::${config.accountId()}:geofence-collection:geo-a6c366c3b3db7df6de6aaec566d10a54`,
+            ConsumerArn: `arn:${
+              config.partition
+            }:geo::${config.accountId()}:geofence-collection:geo-a6c366c3b3db7df6de6aaec566d10a54`,
             TrackerName: "t123",
           },
         ],

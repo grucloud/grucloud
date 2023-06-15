@@ -10,7 +10,9 @@ describe("ACM", async function () {
         groupType: "ACM::Certificate",
         livesNotFound: ({ config }) => [
           {
-            CertificateArn: `arn:aws:acm:us-east-1:${config.accountId()}:certificate/1ef2da5d-bcf6-4dcd-94c1-1532a8d64eff`,
+            CertificateArn: `arn:${
+              config.partition
+            }:acm:us-east-1:${config.accountId()}:certificate/1ef2da5d-bcf6-4dcd-94c1-1532a8d64eff`,
           },
         ],
       }),

@@ -185,7 +185,8 @@ const decorate =
           tap(({ HostedZoneId }) => {
             assert(HostedZoneId);
           }),
-          ({ HostedZoneId }) => `arn:aws:route53:::hostedzone/${HostedZoneId}`,
+          ({ HostedZoneId }) =>
+            `arn:${config.partition}:route53:::hostedzone/${HostedZoneId}`,
         ]),
       }),
     ])();

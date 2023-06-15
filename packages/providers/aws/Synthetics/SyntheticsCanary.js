@@ -48,7 +48,7 @@ const assignArn = ({ config }) =>
           assert({ Name });
         }),
         ({ Name }) =>
-          `arn:aws:synthetics:${
+          `arn:${config.partition}:synthetics:${
             config.region
           }:${config.accountId()}:canary:${Name}`,
       ]),

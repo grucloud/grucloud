@@ -23,7 +23,7 @@ const assignArn = ({ config }) =>
     }),
     assign({
       Arn: ({ ConfigurationSetName }) =>
-        `arn:aws:ses:${
+        `arn:${config.partition}:ses:${
           config.region
         }:${config.accountId()}:configuration-set/${ConfigurationSetName}`,
     }),

@@ -10,7 +10,9 @@ describe("EFS", async function () {
         groupType: "EFS::FileSystem",
         livesNotFound: ({ config }) => [
           {
-            FileSystemId: `arn:aws:elasticfilesystem:us-east-1:${config.accountId()}:file-system/fs-0aaaf7b0715648e5a`,
+            FileSystemId: `arn:${
+              config.partition
+            }:elasticfilesystem:us-east-1:${config.accountId()}:file-system/fs-0aaaf7b0715648e5a`,
           },
         ],
       }),
@@ -22,7 +24,9 @@ describe("EFS", async function () {
         groupType: "EFS::FileSystemPolicy",
         livesNotFound: ({ config }) => [
           {
-            FileSystemId: `arn:aws:elasticfilesystem:us-east-1:${config.accountId()}:file-system/fs-0aaaf7b0715648e5a`,
+            FileSystemId: `arn:${
+              config.partition
+            }:elasticfilesystem:us-east-1:${config.accountId()}:file-system/fs-0aaaf7b0715648e5a`,
           },
         ],
       }),
@@ -34,7 +38,9 @@ describe("EFS", async function () {
         groupType: "EFS::AccessPoint",
         livesNotFound: ({ config }) => [
           {
-            AccessPointId: `arn:aws:elasticfilesystem:us-east-1:${config.accountId()}:access-point/fsap-0b3ae155f60ccbb8a`,
+            AccessPointId: `arn:${
+              config.partition
+            }:elasticfilesystem:us-east-1:${config.accountId()}:access-point/fsap-0b3ae155f60ccbb8a`,
           },
         ],
       }),

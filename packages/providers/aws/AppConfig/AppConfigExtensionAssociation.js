@@ -41,7 +41,7 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         ({ ExtensionAssociationId }) =>
-          `arn:aws:appconfig:${
+          `arn:${config.partition}:appconfig:${
             config.region
           }:${config.accountId()}:extensionassociation/${ExtensionAssociationId}`,
       ]),

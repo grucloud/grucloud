@@ -10,7 +10,9 @@ describe("GlobalAccelerator", async function () {
         groupType: "GlobalAccelerator::Accelerator",
         livesNotFound: ({ config }) => [
           {
-            AcceleratorArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/123`,
+            AcceleratorArn: `arn:${
+              config.partition
+            }:globalaccelerator::${config.accountId()}:accelerator/123`,
           },
         ],
       }),
@@ -22,7 +24,9 @@ describe("GlobalAccelerator", async function () {
         groupType: "GlobalAccelerator::CustomRoutingAccelerator",
         livesNotFound: ({ config }) => [
           {
-            AcceleratorArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/123`,
+            AcceleratorArn: `arn:${
+              config.partition
+            }:globalaccelerator::${config.accountId()}:accelerator/123`,
           },
         ],
       }),
@@ -34,7 +38,9 @@ describe("GlobalAccelerator", async function () {
         groupType: "GlobalAccelerator::CustomRoutingEndpointGroup",
         livesNotFound: ({ config }) => [
           {
-            EndpointGroupArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/310c604a-5013-416e-b940-e53d61b2da2d/listener/686088c5/endpoint-group/98de4326d002`,
+            EndpointGroupArn: `arn:${
+              config.partition
+            }:globalaccelerator::${config.accountId()}:accelerator/310c604a-5013-416e-b940-e53d61b2da2d/listener/686088c5/endpoint-group/98de4326d002`,
           },
         ],
       }),
@@ -46,7 +52,9 @@ describe("GlobalAccelerator", async function () {
         groupType: "GlobalAccelerator::CustomRoutingListener",
         livesNotFound: ({ config }) => [
           {
-            ListenerArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/a74affc1-eae0-427b-9011-0b04fadaf8e1/listener/f13b08ab`,
+            ListenerArn: `arn:${
+              config.partition
+            }:globalaccelerator::${config.accountId()}:accelerator/a74affc1-eae0-427b-9011-0b04fadaf8e1/listener/f13b08ab`,
           },
         ],
       }),
@@ -58,7 +66,9 @@ describe("GlobalAccelerator", async function () {
         groupType: "GlobalAccelerator::EndpointGroup",
         livesNotFound: ({ config }) => [
           {
-            EndpointGroupArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/310c604a-5013-416e-b940-e53d61b2da2d/listener/686088c5/endpoint-group/98de4326d002`,
+            EndpointGroupArn: `arn:${
+              config.partition
+            }:globalaccelerator::${config.accountId()}:accelerator/310c604a-5013-416e-b940-e53d61b2da2d/listener/686088c5/endpoint-group/98de4326d002`,
           },
         ],
       }),
@@ -70,7 +80,9 @@ describe("GlobalAccelerator", async function () {
         groupType: "GlobalAccelerator::Listener",
         livesNotFound: ({ config }) => [
           {
-            ListenerArn: `arn:aws:globalaccelerator::${config.accountId()}:accelerator/a74affc1-eae0-427b-9011-0b04fadaf8e1/listener/f13b08ab`,
+            ListenerArn: `arn:${
+              config.partition
+            }:globalaccelerator::${config.accountId()}:accelerator/a74affc1-eae0-427b-9011-0b04fadaf8e1/listener/f13b08ab`,
           },
         ],
       }),

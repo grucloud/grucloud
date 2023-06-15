@@ -10,7 +10,7 @@ describe("StorageGateway", async function () {
         groupType: "StorageGateway::Cache",
         livesNotFound: ({ config }) => [
           {
-            GatewayARN: `arn:aws:storagegateway:${
+            GatewayARN: `arn:${config.partition}:storagegateway:${
               config.region
             }:${config.accountId()}:gateway/sgw-12A3456B`,
           },
@@ -25,7 +25,7 @@ describe("StorageGateway", async function () {
         groupType: "StorageGateway::Gateway",
         livesNotFound: ({ config }) => [
           {
-            GatewayARN: `arn:aws:storagegateway:${
+            GatewayARN: `arn:${config.partition}:storagegateway:${
               config.region
             }:${config.accountId()}:gateway/sgw-12A3456B`,
           },
@@ -39,7 +39,7 @@ describe("StorageGateway", async function () {
         groupType: "StorageGateway::TapePool",
         livesNotFound: ({ config }) => [
           {
-            PoolARN: `arn:aws:storagegateway:${
+            PoolARN: `arn:${config.partition}:storagegateway:${
               config.region
             }:${config.accountId()}:gateway/sgw-12A3456B/tapepool/tp-1122AABB`,
           },
@@ -53,7 +53,7 @@ describe("StorageGateway", async function () {
         groupType: "StorageGateway::Volume",
         livesNotFound: ({ config }) => [
           {
-            VolumeARN: `arn:aws:storagegateway:${
+            VolumeARN: `arn:${config.partition}:storagegateway:${
               config.region
             }:${config.accountId()}:gateway/sgw-12A3456B/volume/vol-1122AABB`,
           },

@@ -10,7 +10,7 @@ describe("DataSync", async function () {
         groupType: "DataSync::LocationEfs",
         livesNotFound: ({ config }) => [
           {
-            LocationArn: `arn:aws:datasync:${
+            LocationArn: `arn:${config.partition}:datasync:${
               config.region
             }:${config.accountId()}:location/loc-026c1169c918b0fd9`,
           },
@@ -24,7 +24,7 @@ describe("DataSync", async function () {
         groupType: "DataSync::LocationFsxLustre",
         livesNotFound: ({ config }) => [
           {
-            LocationArn: `arn:aws:datasync:${
+            LocationArn: `arn:${config.partition}:datasync:${
               config.region
             }:${config.accountId()}:location/loc-026c1169c918b0fd9`,
           },
@@ -38,7 +38,7 @@ describe("DataSync", async function () {
         groupType: "DataSync::LocationFsxOpenZfs",
         livesNotFound: ({ config }) => [
           {
-            LocationArn: `arn:aws:datasync:${
+            LocationArn: `arn:${config.partition}:datasync:${
               config.region
             }:${config.accountId()}:location/loc-026c1169c918b0fd9`,
           },
@@ -52,7 +52,7 @@ describe("DataSync", async function () {
         groupType: "DataSync::LocationFsxWindows",
         livesNotFound: ({ config }) => [
           {
-            LocationArn: `arn:aws:datasync:${
+            LocationArn: `arn:${config.partition}:datasync:${
               config.region
             }:${config.accountId()}:location/loc-026c1169c918b0fd9`,
           },
@@ -66,7 +66,7 @@ describe("DataSync", async function () {
         groupType: "DataSync::LocationS3",
         livesNotFound: ({ config }) => [
           {
-            LocationArn: `arn:aws:datasync:${
+            LocationArn: `arn:${config.partition}:datasync:${
               config.region
             }:${config.accountId()}:location/loc-026c1169c918b0fd9`,
           },
@@ -80,7 +80,7 @@ describe("DataSync", async function () {
         groupType: "DataSync::Task",
         livesNotFound: ({ config }) => [
           {
-            TaskArn: `arn:aws:datasync:${
+            TaskArn: `arn:${config.partition}:datasync:${
               config.region
             }:${config.accountId()}:task/task-072ca67ac80607381`,
           },

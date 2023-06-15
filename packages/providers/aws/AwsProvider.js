@@ -182,6 +182,7 @@ exports.AwsProvider = async ({
             }),
           ]),
           region,
+          partition: "aws",
         },
         config,
         configs,

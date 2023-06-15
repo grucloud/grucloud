@@ -23,7 +23,7 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         ({ ContactListName }) =>
-          `arn:aws:ses:${
+          `arn:${config.partition}:ses:${
             config.region
           }:${config.accountId()}:contact-list:${ContactListName}`,
       ]),

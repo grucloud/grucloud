@@ -35,7 +35,7 @@ const decorate = ({ endpoint, config }) =>
     assign({
       arn: pipe([
         ({ lagId }) =>
-          `arn:aws:directconnect:${
+          `arn:${config.partition}:directconnect:${
             config.region
           }:${config.accountId()}:dxlag/${lagId}`,
       ]),

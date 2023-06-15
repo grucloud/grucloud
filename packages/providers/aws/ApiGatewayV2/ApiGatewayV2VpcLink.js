@@ -13,7 +13,7 @@ const pickId = pipe([pick(["VpcLinkId"])]);
 const buildArn =
   ({ config }) =>
   ({ VpcLinkId }) =>
-    `arn:aws:apigateway:${config.region}::/vpclinks/${VpcLinkId}`;
+    `arn:${config.partition}:apigateway:${config.region}::/vpclinks/${VpcLinkId}`;
 
 exports.ApiGatewayV2VpcLink = ({ spec, config }) => ({
   type: "VpcLink",

@@ -37,7 +37,7 @@ const assignArn = ({ config }) =>
           assert(ServiceId);
         }),
         ({ ServiceId }) =>
-          `arn:aws:ec2:${
+          `arn:${config.partition}:ec2:${
             config.region
           }:${config.accountId()}:vpc-endpoint-service/${ServiceId}`,
       ]),

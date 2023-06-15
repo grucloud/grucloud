@@ -10,7 +10,7 @@ describe("NetworkFirewall", async function () {
         groupType: "NetworkFirewall::Firewall",
         livesNotFound: ({ config }) => [
           {
-            FirewallArn: `arn:aws:network-firewall:${
+            FirewallArn: `arn:${config.partition}:network-firewall:${
               config.region
             }:${config.accountId()}:firewall/blabla`,
           },
@@ -24,7 +24,7 @@ describe("NetworkFirewall", async function () {
         groupType: "NetworkFirewall::LoggingConfiguration",
         livesNotFound: ({ config }) => [
           {
-            FirewallArn: `arn:aws:network-firewall:${
+            FirewallArn: `arn:${config.partition}:network-firewall:${
               config.region
             }:${config.accountId()}:firewall/blabla`,
             LoggingConfiguration: { LogDestinationConfigs: {} },
@@ -39,7 +39,7 @@ describe("NetworkFirewall", async function () {
         groupType: "NetworkFirewall::Policy",
         livesNotFound: ({ config }) => [
           {
-            FirewallPolicyArn: `arn:aws:network-firewall:${
+            FirewallPolicyArn: `arn:${config.partition}:network-firewall:${
               config.region
             }:${config.accountId()}:firewall-policy/blabla`,
           },
@@ -53,7 +53,7 @@ describe("NetworkFirewall", async function () {
         groupType: "NetworkFirewall::RuleGroup",
         livesNotFound: ({ config }) => [
           {
-            RuleGroupArn: `arn:aws:network-firewall:${
+            RuleGroupArn: `arn:${config.partition}:network-firewall:${
               config.region
             }:${config.accountId()}:stateful-rulegroup/blabla`,
           },

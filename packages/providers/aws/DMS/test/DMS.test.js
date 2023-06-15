@@ -10,7 +10,7 @@ describe("DMS", async function () {
         groupType: "DMS::Certificate",
         livesNotFound: ({ config }) => [
           {
-            CertificateArn: `arn:aws:dms:${
+            CertificateArn: `arn:${config.partition}:dms:${
               config.region
             }:${config.accountId()}:cert:HDKU4NY5ETEZGOZZRMVURZALVJVWBSRJMUQHIIA`,
           },
@@ -24,7 +24,7 @@ describe("DMS", async function () {
         groupType: "DMS::Endpoint",
         livesNotFound: ({ config }) => [
           {
-            EndpointArn: `arn:aws:dms:${
+            EndpointArn: `arn:${config.partition}:dms:${
               config.region
             }:${config.accountId()}:endpoint:HDKU4NY5ETEZGOZZRMVURZALVJVWBSRJMUQHIIA`,
           },
@@ -46,7 +46,7 @@ describe("DMS", async function () {
         groupType: "DMS::ReplicationInstance",
         livesNotFound: ({ config }) => [
           {
-            ReplicationInstanceArn: `arn:aws:dms:${
+            ReplicationInstanceArn: `arn:${config.partition}:dms:${
               config.region
             }:${config.accountId()}:rep:6UTDJGBOUS3VI3SUWA66XFJCJA`,
           },
@@ -70,7 +70,7 @@ describe("DMS", async function () {
         groupType: "DMS::ReplicationTask",
         livesNotFound: ({ config }) => [
           {
-            ReplicationTaskArn: `arn:aws:dms:${
+            ReplicationTaskArn: `arn:${config.partition}:dms:${
               config.region
             }:${config.accountId()}:task:OEAMB3NXSTZ6LFYZFEPPBBXPYM`,
           },

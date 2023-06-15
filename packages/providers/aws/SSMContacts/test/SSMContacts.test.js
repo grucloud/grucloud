@@ -10,7 +10,7 @@ describe("SSMContacts", async function () {
         groupType: "SSMContacts::Contact",
         livesNotFound: ({ config }) => [
           {
-            ContactId: `arn:aws:ssm-contacts:${
+            ContactId: `arn:${config.partition}:ssm-contacts:${
               config.region
             }:${config.accountId()}:contacts/q1234`,
           },
@@ -24,7 +24,7 @@ describe("SSMContacts", async function () {
         groupType: "SSMContacts::ContactChannel",
         livesNotFound: ({ config }) => [
           {
-            ContactChannelArn: `arn:aws:ssm-contacts:${
+            ContactChannelArn: `arn:${config.partition}:ssm-contacts:${
               config.region
             }:${config.accountId()}:c/dd`,
           },
@@ -38,7 +38,7 @@ describe("SSMContacts", async function () {
         groupType: "SSMContacts::Plan",
         livesNotFound: ({ config }) => [
           {
-            ContactId: `arn:aws:ssm-contacts:${
+            ContactId: `arn:${config.partition}:ssm-contacts:${
               config.region
             }:${config.accountId()}:contact/sq1234`,
           },

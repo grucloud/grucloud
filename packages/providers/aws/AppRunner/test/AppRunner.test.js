@@ -10,7 +10,7 @@ describe("AppRunner", async function () {
         groupType: "AppRunner::AutoScalingConfiguration",
         livesNotFound: ({ config }) => [
           {
-            AutoScalingConfigurationArn: `arn:aws:apprunner:${
+            AutoScalingConfigurationArn: `arn:${config.partition}:apprunner:${
               config.region
             }:${config.accountId()}:autoscalingconfiguration/DefaultConfigurationko/1/00000000000000000000000000000001`,
           },
@@ -25,7 +25,7 @@ describe("AppRunner", async function () {
         livesNotFound: ({ config }) => [
           {
             ConnectionName: "conn1",
-            ConnectionArn: `arn:aws:apprunner:${
+            ConnectionArn: `arn:${config.partition}:apprunner:${
               config.region
             }:${config.accountId()}:connection/mock-server/4d97761b3685416bb95d7debd86ca5a8`,
           },
@@ -40,7 +40,7 @@ describe("AppRunner", async function () {
         livesNotFound: ({ config }) => [
           {
             DomainName: "runner.grucloud.org",
-            ServiceArn: `arn:aws:apprunner:${
+            ServiceArn: `arn:${config.partition}:apprunner:${
               config.region
             }:${config.accountId()}:service/mock-server/4d97761b3685416bb95d7debd86ca5a8`,
           },
@@ -54,7 +54,7 @@ describe("AppRunner", async function () {
         groupType: "AppRunner::ObservabilityConfiguration",
         livesNotFound: ({ config }) => [
           {
-            ObservabilityConfigurationArn: `arn:aws:apprunner:${
+            ObservabilityConfigurationArn: `arn:${config.partition}:apprunner:${
               config.region
             }:${config.accountId()}:observabilityconfiguration/DefaultConfigurationKO/1/00000000000000000000000000000001`,
           },
@@ -68,7 +68,7 @@ describe("AppRunner", async function () {
         groupType: "AppRunner::Service",
         livesNotFound: ({ config }) => [
           {
-            ServiceArn: `arn:aws:apprunner:${
+            ServiceArn: `arn:${config.partition}:apprunner:${
               config.region
             }:${config.accountId()}:service/mock-server/4d97761b3685416bb95d7debd86ca5a8`,
           },
@@ -82,7 +82,7 @@ describe("AppRunner", async function () {
         groupType: "AppRunner::VpcConnector",
         livesNotFound: ({ config }) => [
           {
-            VpcConnectorArn: `arn:aws:apprunner:${
+            VpcConnectorArn: `arn:${config.partition}:apprunner:${
               config.region
             }:${config.accountId()}:vpcconnector/connector/1/89fea545a5da460c843c8329e21f7daf`,
           },
@@ -96,7 +96,7 @@ describe("AppRunner", async function () {
         groupType: "AppRunner::VpcIngressConnection",
         livesNotFound: ({ config }) => [
           {
-            VpcIngressConnectionArn: `arn:aws:apprunner:${
+            VpcIngressConnectionArn: `arn:${config.partition}:apprunner:${
               config.region
             }:${config.accountId()}:vpcingressconnection/connector/1/89fea545a5da460c843c8329e21f7daf`,
           },

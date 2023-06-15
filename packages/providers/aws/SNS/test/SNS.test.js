@@ -11,7 +11,7 @@ describe("SNS", async function () {
         livesNotFound: ({ config }) => [
           {
             Attributes: {
-              TopicArn: `arn:aws:sns:${
+              TopicArn: `arn:${config.partition}:sns:${
                 config.region
               }:${config.accountId()}:idnonotexist`,
             },
@@ -26,7 +26,7 @@ describe("SNS", async function () {
         groupType: "SNS::PlatformApplication",
         livesNotFound: ({ config }) => [
           {
-            PlatformApplicationArn: `arn:aws:sns:${
+            PlatformApplicationArn: `arn:${config.partition}:sns:${
               config.region
             }:${config.accountId()}:app/GCM/ddddd`,
           },

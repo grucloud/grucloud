@@ -22,7 +22,9 @@ const buildArn = ({ accountId, region }) =>
       assert(region);
     }),
     ({ ClusterIdentifier }) =>
-      `arn:aws:redshift:${region}:${accountId()}:cluster:${ClusterIdentifier}`,
+      `arn:${
+        config.partition
+      }:redshift:${region}:${accountId()}:cluster:${ClusterIdentifier}`,
   ]);
 
 const decorate = ({ endpoint, config }) =>

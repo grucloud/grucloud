@@ -24,7 +24,9 @@ const pickId = pipe([
 const buildArn =
   ({ config: { region, accountId } }) =>
   ({ ApplicationId, EnvironmentId, DeploymentNumber }) =>
-    `arn:aws:appconfig:${region}:${accountId()}:application/${ApplicationId}/environment/${EnvironmentId}/deployment/${DeploymentNumber}`;
+    `arn:${
+      config.partition
+    }:appconfig:${region}:${accountId()}:application/${ApplicationId}/environment/${EnvironmentId}/deployment/${DeploymentNumber}`;
 
 const decorate = ({ endpoint, config }) =>
   pipe([

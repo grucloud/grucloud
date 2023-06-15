@@ -29,7 +29,7 @@ const assignArn = ({ config }) =>
           assert(Id);
         }),
         ({ Id }) =>
-          `arn:aws:appconfig:${
+          `arn:${config.partition}:appconfig:${
             config.region
           }:${config.accountId()}:application/${Id}`,
       ]),

@@ -103,7 +103,8 @@ const assignArn = ({ config }) =>
         tap(({ id }) => {
           assert(id);
         }),
-        ({ id }) => `arn:aws:apigateway:${config.region}::/restapis/${id}`,
+        ({ id }) =>
+          `arn:${config.partition}:apigateway:${config.region}::/restapis/${id}`,
       ]),
     }),
   ]);
@@ -113,7 +114,9 @@ const assignArnV2 = ({ config }) =>
     assign({
       arnv2: pipe([
         ({ id }) =>
-          `arn:aws:execute-api:${config.region}:${config.accountId()}:${id}`,
+          `arn:${config.partition}:execute-api:${
+            config.region
+          }:${config.accountId()}:${id}`,
       ]),
     }),
   ]);
@@ -647,7 +650,7 @@ const setPrivatePolicyDefault = ({ endpoint, config, live }) =>
                   AWS: "*",
                 },
                 Action: "execute-api:Invoke",
-                Resource: `arn:aws:execute-api:${
+                Resource: `arn:${config.partition}:execute-api:${
                   config.region
                 }:${config.accountId()}:${live.id}/*/*/*`,
               },

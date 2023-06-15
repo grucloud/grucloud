@@ -12,7 +12,7 @@ const { Tagger, ignoreErrorCodes } = require("./ApiGatewayV2Common");
 const buildArn =
   ({ config }) =>
   ({ DomainName }) =>
-    `arn:aws:apigateway:${config.region}::/domainnames/${DomainName}`;
+    `arn:${config.partition}:apigateway:${config.region}::/domainnames/${DomainName}`;
 
 const pickId = pipe([
   tap(({ DomainName }) => {

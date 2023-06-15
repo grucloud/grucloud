@@ -31,7 +31,7 @@ const assignArn = ({ config }) =>
           assert(ResourceGroupName);
         }),
         ({ ResourceGroupName }) =>
-          `arn:aws:applicationinsights:${
+          `arn:${config.partition}:applicationinsights:${
             config.region
           }:${config.accountId()}:application/resource-group/${ResourceGroupName}`,
       ]),

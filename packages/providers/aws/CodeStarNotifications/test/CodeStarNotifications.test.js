@@ -10,7 +10,7 @@ describe("CodeStarNotifications", async function () {
         groupType: "CodeStarNotifications::NotificationRule",
         livesNotFound: ({ config }) => [
           {
-            Arn: `arn:aws:codestar-notifications:${
+            Arn: `arn:${config.partition}:codestar-notifications:${
               config.region
             }:${config.accountId()}:notificationrule/6ba9de29-73f2-436c-82e2-4ef7de54f061`,
           },

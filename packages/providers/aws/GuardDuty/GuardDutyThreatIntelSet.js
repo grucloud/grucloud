@@ -30,7 +30,7 @@ const assignArn = ({ config }) =>
           assert(ThreatIntelSetId);
         }),
         ({ DetectorId, ThreatIntelSetId }) =>
-          `arn:aws:guardduty:${
+          `arn:${config.partition}:guardduty:${
             config.region
           }:${config.accountId()}:detector/${DetectorId}/threatintelset/${ThreatIntelSetId}`,
       ]),

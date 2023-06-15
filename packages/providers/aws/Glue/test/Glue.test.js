@@ -104,7 +104,7 @@ describe("Glue", async function () {
         groupType: "Glue::Registry",
         livesNotFound: ({ config }) => [
           {
-            RegistryArn: `arn:aws:glue:${
+            RegistryArn: `arn:${config.partition}:glue:${
               config.region
             }:${config.accountId()}:registry/r123`,
           },

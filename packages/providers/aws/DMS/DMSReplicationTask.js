@@ -46,7 +46,7 @@ const decorate = ({ endpoint, config }) =>
     assign({
       Arn: pipe([
         ({ ReplicationTaskIdentifier }) =>
-          `arn:aws:dms:${
+          `arn:${config.partition}:dms:${
             config.region
           }:${config.accountId()}:task:${ReplicationTaskIdentifier}`,
       ]),

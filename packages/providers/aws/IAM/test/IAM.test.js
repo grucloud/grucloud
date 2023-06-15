@@ -47,7 +47,9 @@ describe("IAM", async function () {
         groupType: "IAM::OpenIDConnectProvider",
         livesNotFound: ({ config }) => [
           {
-            OpenIDConnectProviderArn: `arn:aws:iam::${config.accountId()}:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2`,
+            OpenIDConnectProviderArn: `arn:${
+              config.partition
+            }:iam::${config.accountId()}:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2`,
           },
         ],
       }),
@@ -83,7 +85,9 @@ describe("IAM", async function () {
         groupType: "IAM::SAMLProvider",
         livesNotFound: ({ config }) => [
           {
-            SAMLProviderArn: `arn:aws:iam::${config.accountId()}:saml-provider/s123`,
+            SAMLProviderArn: `arn:${
+              config.partition
+            }:iam::${config.accountId()}:saml-provider/s123`,
           },
         ],
       }),
@@ -157,7 +161,9 @@ describe("IAM", async function () {
         groupType: "IAM::VirtualMFADevice",
         livesNotFound: ({ config }) => [
           {
-            SerialNumber: `arn:aws:iam::${config.accountId()}:mfa/ExampleName`,
+            SerialNumber: `arn:${
+              config.partition
+            }:iam::${config.accountId()}:mfa/ExampleName`,
           },
         ],
       }),

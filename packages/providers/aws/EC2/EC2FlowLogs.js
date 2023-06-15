@@ -314,7 +314,10 @@ exports.EC2FlowLogs = ({ compare }) => ({
         () => s3Bucket,
         defaultsDeep({
           LogDestinationType: "s3",
-          LogDestination: `arn:aws:s3:::${getField(s3Bucket, "Name")}`,
+          LogDestination: `arn:${config.partition}:s3:::${getField(
+            s3Bucket,
+            "Name"
+          )}`,
         }),
         () => cloudWatchLogGroup,
         defaultsDeep({

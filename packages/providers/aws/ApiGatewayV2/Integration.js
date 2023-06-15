@@ -92,7 +92,7 @@ const lambdaRemovePermission = ({ endpoint, config }) =>
             get("IntegrationUri"),
             callProp(
               "replace",
-              `arn:aws:apigateway:${config.region}:lambda:path/2015-03-31/functions/`,
+              `arn:${config.partition}:apigateway:${config.region}:lambda:path/2015-03-31/functions/`,
               ""
             ),
             callProp("replace", `/invocations`, ""),
@@ -455,7 +455,7 @@ exports.ApiGatewayV2Integration = ({}) => ({
       when(
         () => lambdaFunction,
         defaultsDeep({
-          IntegrationUri: `arn:aws:apigateway:${
+          IntegrationUri: `arn:${config.partition}:apigateway:${
             config.region
           }:lambda:path/2015-03-31/functions/${getField(
             lambdaFunction,

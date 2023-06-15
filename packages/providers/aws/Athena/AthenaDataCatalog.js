@@ -12,7 +12,9 @@ const ignoreErrorMessages = ["was not found"];
 const buildArn =
   ({ region, accountId }) =>
   ({ Name }) =>
-    `arn:aws:athena:${region}:${accountId()}:datacatalog/${Name}`;
+    `arn:${
+      config.partition
+    }:athena:${region}:${accountId()}:datacatalog/${Name}`;
 
 const pickId = pipe([
   tap(({ Name }) => {

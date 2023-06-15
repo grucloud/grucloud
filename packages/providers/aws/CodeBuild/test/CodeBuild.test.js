@@ -22,7 +22,7 @@ describe("CodeBuild", async function () {
         groupType: "CodeBuild::ReportGroup",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:codebuild:${
+            arn: `arn:${config.partition}:codebuild:${
               config.region
             }:${config.accountId()}:report-group/r123`,
           },

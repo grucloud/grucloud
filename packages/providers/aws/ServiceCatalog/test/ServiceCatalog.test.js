@@ -83,7 +83,9 @@ describe("ServiceCatalog", async function () {
         livesNotFound: ({ config }) => [
           {
             PortfolioId: "pt123",
-            PrincipalARN: `arn:aws:iam::${config.accountId()}:role/zzzzzzz`,
+            PrincipalARN: `arn:${
+              config.partition
+            }:iam::${config.accountId()}:role/zzzzzzz`,
           },
         ],
       }),

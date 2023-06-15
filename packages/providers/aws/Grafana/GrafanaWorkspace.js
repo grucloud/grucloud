@@ -38,7 +38,7 @@ const assignArn = ({ config }) =>
           assert(workspaceName);
         }),
         ({ workspaceName }) =>
-          `arn:aws:grafana:${
+          `arn:${config.partition}:grafana:${
             config.region
           }:${config.accountId()}:workspace/${workspaceName}`,
       ]),

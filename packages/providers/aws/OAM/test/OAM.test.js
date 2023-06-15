@@ -10,7 +10,7 @@ describe("OAM", async function () {
         groupType: "OAM::Link",
         livesNotFound: ({ config }) => [
           {
-            Identifier: `arn:aws:oam:${
+            Identifier: `arn:${config.partition}:oam:${
               config.region
             }:${config.accountId()}:link/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
           },
@@ -24,7 +24,7 @@ describe("OAM", async function () {
         groupType: "OAM::Sink",
         livesNotFound: ({ config }) => [
           {
-            Identifier: `arn:aws:oam:${
+            Identifier: `arn:${config.partition}:oam:${
               config.region
             }:${config.accountId()}:sink/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
           },
@@ -38,7 +38,7 @@ describe("OAM", async function () {
         groupType: "OAM::SinkPolicy",
         livesNotFound: ({ config }) => [
           {
-            SinkIdentifier: `arn:aws:oam:${
+            SinkIdentifier: `arn:${config.partition}:oam:${
               config.region
             }:${config.accountId()}:sink/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
           },

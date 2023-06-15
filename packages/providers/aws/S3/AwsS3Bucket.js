@@ -405,7 +405,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                 () => params,
                 fork({
                   Name: () => name,
-                  Arn: () => `arn:aws:s3:::${name}`,
+                  Arn: () => `arn:${config.partition}:s3:::${name}`,
                   ...(getTags && { Tags: getBucketTagging(params) }),
                   ...(deep && {
                     AccelerateConfiguration: getAccelerateConfiguration({

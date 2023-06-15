@@ -21,7 +21,7 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         ({ Name }) =>
-          `arn:aws:rum:${
+          `arn:${config.partition}:rum:${
             config.region
           }:${config.accountId()}:appmonitor/${Name}`,
       ]),

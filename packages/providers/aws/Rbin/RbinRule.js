@@ -22,7 +22,7 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         ({ Identifier }) =>
-          `arn:aws:rbin:${
+          `arn:${config.partition}:rbin:${
             config.region
           }:${config.accountId()}:rule/${Identifier}`,
       ]),

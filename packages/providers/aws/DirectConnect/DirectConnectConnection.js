@@ -37,7 +37,7 @@ const decorate = ({ endpoint, config }) =>
     assign({
       arn: pipe([
         ({ connectionId }) =>
-          `arn:aws:directconnect:${
+          `arn:${config.partition}:directconnect:${
             config.region
           }:${config.accountId()}:dxcon/${connectionId}`,
       ]),

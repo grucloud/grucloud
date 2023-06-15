@@ -45,7 +45,7 @@ const assignArn = ({ config }) =>
           assert({ clientCertificateId });
         }),
         ({ clientCertificateId }) =>
-          `arn:aws:apigateway:${config.region}::/clientcertificates/${clientCertificateId}`,
+          `arn:${config.partition}:apigateway:${config.region}::/clientcertificates/${clientCertificateId}`,
       ]),
     }),
   ]);

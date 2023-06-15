@@ -51,7 +51,7 @@ const pickId = pick(["restApiId", "stageName"]);
 const buildArn =
   ({ config }) =>
   ({ restApiId, stageName }) =>
-    `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`;
+    `arn:${config.partition}:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`;
 
 const createPatchOperations = pipe([
   get("methodSettings", {}),

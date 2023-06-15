@@ -10,7 +10,7 @@ const pickId = pick(["applicationName"]);
 const buildArn =
   ({ config }) =>
   ({ applicationName }) =>
-    `arn:aws:codedeploy:${
+    `arn:${config.partition}:codedeploy:${
       config.region
     }:${config.accountId()}:application:${applicationName}`;
 

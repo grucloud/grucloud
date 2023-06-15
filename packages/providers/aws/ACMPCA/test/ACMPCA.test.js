@@ -18,7 +18,7 @@ describe("ACMPCA", async function () {
         groupType: "ACMPCA::CertificateAuthority",
         livesNotFound: ({ config }) => [
           {
-            CertificateAuthorityArn: `arn:aws:acm-pca:${
+            CertificateAuthorityArn: `arn:${config.partition}:acm-pca:${
               config.region
             }:${config.accountId()}:certificate-authority/12345678-1234-1234-1234-123456789012`,
           },
@@ -40,7 +40,7 @@ describe("ACMPCA", async function () {
         groupType: "ACMPCA::Permission",
         livesNotFound: ({ config }) => [
           {
-            CertificateAuthorityArn: `arn:aws:acm-pca:${
+            CertificateAuthorityArn: `arn:${config.partition}:acm-pca:${
               config.region
             }:${config.accountId()}:certificate-authority/12345678-1234-1234-1234-123456789012`,
             Principal: "acm.amazonaws.com",
@@ -55,7 +55,7 @@ describe("ACMPCA", async function () {
         groupType: "ACMPCA::Policy",
         livesNotFound: ({ config }) => [
           {
-            ResourceArn: `arn:aws:acm-pca:${
+            ResourceArn: `arn:${config.partition}:acm-pca:${
               config.region
             }:${config.accountId()}:certificate-authority/12345678-1234-1234-1234-123456789012`,
           },
