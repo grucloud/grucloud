@@ -9,7 +9,6 @@ start
 :""gc new"";
 : Select AWS;
 : Enter the project's name;
-: Enter the AWS profile;
 
 
 partition "Is the aws CLI installed ?" {
@@ -18,6 +17,9 @@ backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
 repeat while (version >= 2 ?) is (no) 
 ->yes;
 }
+
+: Enter the AWS partition;
+: Enter the AWS profile;
 
 partition "Is Authenticated ? " {
   
