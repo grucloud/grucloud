@@ -10,7 +10,7 @@ describe("SSMIncidents", async function () {
         groupType: "SSMIncidents::ReplicationSet",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:ssm-incidents:${
+            arn: `arn:${config.partition}:ssm-incidents:${
               config.region
             }:${config.accountId()}/replication-set/q1234`,
           },
@@ -24,7 +24,7 @@ describe("SSMIncidents", async function () {
         groupType: "SSMIncidents::ResponsePlan",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:ssm-incidents:${
+            arn: `arn:${config.partition}:ssm-incidents:${
               config.region
             }:${config.accountId()}/response-plan/q1234`,
           },

@@ -47,7 +47,7 @@ describe("VpcLattice", async function () {
         groupType: "VpcLattice::ResourcePolicy",
         livesNotFound: ({ config }) => [
           {
-            resourceArn: `arn:aws:vpc:${
+            resourceArn: `arn:${config.partition}:vpc:${
               config.region
             }:${config.accountId()}:svc-12345678901234567`,
           },

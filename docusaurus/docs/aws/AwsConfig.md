@@ -5,34 +5,25 @@ title: Configuration
 
 By default, credentials and config are obtained through files managed by the AWS CLI. These credentials and config can be overidden.
 
-## Environment file
-
-Create **default.env** and set the correct values:
-
-```sh
-AWSAccessKeyId=
-AWSSecretKey=
-```
-
 ## Config file
 
-Edit **config.js** and set region and zone:
+Edit **config.js** and set region and zone, and eventually the profile and the partition for US gov cloud:
 
 ```js
 module.exports = () => ({
   region: "eu-west-2",
   zone: "eu-west-2a",
+  credentials: { profile: "default" },
+  //partition: "aws-us-gov"
 });
 ```
 
-To find out the list of regions:
+## Environment file
 
-```
-aws ec2 describe-regions
-```
+The AWS access and secret can also be set through environment variable.
+Create **default.env** and set the correct values.
 
-Choose a region close to your location, at this point select a zone name in the given region:
-
-```
-aws ec2 describe-availability-zones --region eu-west-2
+```sh
+AWSAccessKeyId=
+AWSSecretKey=
 ```

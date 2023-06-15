@@ -22,10 +22,10 @@ describe("Kinesis", async function () {
         groupType: "Kinesis::StreamConsumer",
         livesNotFound: ({ config }) => [
           {
-            StreamARN: `arn:aws:kinesis:${
+            StreamARN: `arn:${config.partition}:kinesis:${
               config.region
             }:${config.accountId()}:stream/32no4tl70Fmr`,
-            ConsumerARN: `arn:aws:kinesis:${
+            ConsumerARN: `arn:${config.partition}:kinesis:${
               config.region
             }:${config.accountId()}:stream/32no4tl70Fmr/consumer/123456789:1`,
           },

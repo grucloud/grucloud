@@ -24,7 +24,7 @@ const assignArn = ({ config }) =>
           assert(WorkspaceId);
         }),
         ({ WorkspaceId }) =>
-          `arn:aws:workspaces:${
+          `arn:${config.partition}:workspaces:${
             config.region
           }:${config.accountId()}:workspace/${WorkspaceId}`,
       ]),

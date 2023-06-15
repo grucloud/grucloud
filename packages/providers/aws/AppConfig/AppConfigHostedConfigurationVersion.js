@@ -56,7 +56,7 @@ const assignArn = ({ config }) =>
       Arn: pipe([
         pickId,
         ({ VersionNumber, ApplicationId, ConfigurationProfileId }) =>
-          `arn:aws:appconfig:${
+          `arn:${config.partition}:appconfig:${
             config.region
           }:${config.accountId()}:application/${ApplicationId}/configurationprofile/${ConfigurationProfileId}/hostedconfigurationversion/${VersionNumber}`,
       ]),

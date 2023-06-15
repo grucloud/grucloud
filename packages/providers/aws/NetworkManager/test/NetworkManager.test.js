@@ -70,7 +70,9 @@ describe("NetworkManager", async function () {
         livesNotFound: ({ config }) => [
           {
             GlobalNetworkId: "global-network-004d81c3933d7e5a1",
-            TransitGatewayArn: `arn:aws:ec2:us-west-2:${config.accountId()}:transit-gateway/tgw-0ddc701209bc2fe6f`,
+            TransitGatewayArn: `arn:${
+              config.partition
+            }:ec2:us-west-2:${config.accountId()}:transit-gateway/tgw-0ddc701209bc2fe6f`,
           },
         ],
       }),

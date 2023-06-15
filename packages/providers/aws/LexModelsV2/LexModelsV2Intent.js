@@ -15,7 +15,7 @@ const assignArn = ({ config }) =>
           assert(intentId);
         }),
         ({ intentId }) =>
-          `arn:aws:lex:${
+          `arn:${config.partition}:lex:${
             config.region
           }:${config.accountId()}:intent/${intentId}`,
       ]),

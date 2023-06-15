@@ -144,7 +144,7 @@ describe("DirectConnect", async function () {
         livesNotFound: ({ config }) => [
           {
             connectionId: "dxcon-ffabc123",
-            secretARN: `arn:aws:secretsmanager:${
+            secretARN: `arn:${config.partition}:secretsmanager:${
               config.region
             }:${config.accountId()}:secret:demordsservice-demostage-credentials-G7IcAQ`,
           },

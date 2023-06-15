@@ -32,7 +32,7 @@ const assignArn = ({ config }) =>
           assert(Name);
         }),
         ({ Name }) =>
-          `arn:aws:events:${
+          `arn:${config.partition}:events:${
             config.region
           }:${config.accountId()}:event-bus/${Name}`,
       ]),

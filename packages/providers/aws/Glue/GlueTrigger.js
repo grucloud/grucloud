@@ -31,7 +31,9 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         ({ Name }) =>
-          `arn:aws:glue:${config.region}:${config.accountId()}:trigger/${Name}`,
+          `arn:${config.partition}:glue:${
+            config.region
+          }:${config.accountId()}:trigger/${Name}`,
       ]),
     }),
   ]);

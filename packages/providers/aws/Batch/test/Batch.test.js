@@ -22,7 +22,9 @@ describe("Batch", async function () {
         groupType: "Batch::JobDefinition",
         livesNotFound: ({ config }) => [
           {
-            jobDefinitionArn: `arn:aws:batch:us-east-1:${config.accountId()}:job-definition/job-definition:1`,
+            jobDefinitionArn: `arn:${
+              config.partition
+            }:batch:us-east-1:${config.accountId()}:job-definition/job-definition:1`,
           },
         ],
         skipDelete: true,
@@ -48,7 +50,9 @@ describe("Batch", async function () {
         groupType: "Batch::SchedulingPolicy",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:batch:us-east-1:${config.accountId()}:scheduling-policy/a123`,
+            arn: `arn:${
+              config.partition
+            }:batch:us-east-1:${config.accountId()}:scheduling-policy/a123`,
           },
         ],
       }),

@@ -43,7 +43,7 @@ const assignArn = ({ config }) =>
           assert(restApiId);
         }),
         ({ restApiId, id }) =>
-          `arn:aws:execute-api:${
+          `arn:${config.partition}:execute-api:${
             config.region
           }:${config.accountId()}:${restApiId}/authorizers/${id}`,
       ]),

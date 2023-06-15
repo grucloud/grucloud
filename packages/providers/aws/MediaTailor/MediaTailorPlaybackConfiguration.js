@@ -18,7 +18,7 @@ const assignArn = ({ config }) =>
           assert(Name);
         }),
         ({ Name }) =>
-          `arn:aws:mediatailor:${
+          `arn:${config.partition}:mediatailor:${
             config.region
           }:${config.accountId()}:playbackConfiguration/${Name}`,
       ]),

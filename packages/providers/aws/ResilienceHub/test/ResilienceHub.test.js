@@ -10,7 +10,7 @@ describe("ResilienceHub", async function () {
         groupType: "ResilienceHub::App",
         livesNotFound: ({ config }) => [
           {
-            appArn: `arn:aws:resiliencehub:${
+            appArn: `arn:${config.partition}:resiliencehub:${
               config.region
             }:${config.accountId()}:app/b6e29843-fee3-4b39-84cc-33e51a87dd60`,
           },
@@ -24,7 +24,7 @@ describe("ResilienceHub", async function () {
         groupType: "ResilienceHub::ResiliencyPolicy",
         livesNotFound: ({ config }) => [
           {
-            policyArn: `arn:aws:resiliencehub:${
+            policyArn: `arn:${config.partition}:resiliencehub:${
               config.region
             }:${config.accountId()}:resiliency-policy/b6e29843-fee3-4b39-84cc-33e51a87dd60`,
           },

@@ -30,7 +30,9 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         ({ Name }) =>
-          `arn:aws:glue:${config.region}:${config.accountId()}:crawler/${Name}`,
+          `arn:${config.partition}:glue:${
+            config.region
+          }:${config.accountId()}:crawler/${Name}`,
       ]),
     }),
   ]);

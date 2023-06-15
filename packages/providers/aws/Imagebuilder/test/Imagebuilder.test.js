@@ -10,7 +10,7 @@ describe("Imagebuilder", async function () {
         groupType: "Imagebuilder::Component",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:imagebuilder:${
+            arn: `arn:${config.partition}:imagebuilder:${
               config.region
             }:${config.accountId()}:component/myimportedcomponent/1.0.0/1`,
           },
@@ -24,7 +24,7 @@ describe("Imagebuilder", async function () {
         groupType: "Imagebuilder::ContainerRecipe",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:imagebuilder:${
+            arn: `arn:${config.partition}:imagebuilder:${
               config.region
             }:${config.accountId()}:container-recipe/my-repo/1.0.0`,
           },
@@ -38,7 +38,7 @@ describe("Imagebuilder", async function () {
         groupType: "Imagebuilder::DistributionConfiguration",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:imagebuilder:${
+            arn: `arn:${config.partition}:imagebuilder:${
               config.region
             }:${config.accountId()}:distribution-configuration/my-pipeline-46d4672f-d8ff-49d5-9474-a961f4b4f72a`,
           },
@@ -52,7 +52,7 @@ describe("Imagebuilder", async function () {
         groupType: "Imagebuilder::Image",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:imagebuilder:${
+            arn: `arn:${config.partition}:imagebuilder:${
               config.region
             }:${config.accountId()}:image/-9e6pj-a4i-yio-suowxez4wnse94ma0mxledfuw-b8sfoo2d/9582574101122192693379095400736515105.x.x`,
           },
@@ -66,7 +66,7 @@ describe("Imagebuilder", async function () {
         groupType: "Imagebuilder::ImagePipeline",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:imagebuilder:${
+            arn: `arn:${config.partition}:imagebuilder:${
               config.region
             }:${config.accountId()}:image-pipeline/my-pipeline-ko`,
           },
@@ -80,7 +80,7 @@ describe("Imagebuilder", async function () {
         groupType: "Imagebuilder::ImageRecipe",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:imagebuilder:${
+            arn: `arn:${config.partition}:imagebuilder:${
               config.region
             }:${config.accountId()}:image-recipe/my-recipe/1.0.0`,
           },
@@ -94,7 +94,7 @@ describe("Imagebuilder", async function () {
         groupType: "Imagebuilder::InfrastructureConfiguration",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:imagebuilder:${
+            arn: `arn:${config.partition}:imagebuilder:${
               config.region
             }:${config.accountId()}:infrastructure-configuration/my-pipeline-46d4672f-d8ff-49d5-9474-a961f4b4f72a`,
           },

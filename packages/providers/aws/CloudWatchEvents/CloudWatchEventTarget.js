@@ -141,7 +141,8 @@ const EventTargetDependencies = {
     buildArn: () =>
       pipe([
         get("id"),
-        (id) => `arn:aws:apigateway:${config.region}::/restapis/${id}`,
+        (id) =>
+          `arn:${config.partition}:apigateway:${config.region}::/restapis/${id}`,
       ]),
     dependencyId: findTargetDependency({
       type: "RestApi",

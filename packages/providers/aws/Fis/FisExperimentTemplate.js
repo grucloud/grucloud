@@ -99,7 +99,7 @@ const assignArn = ({ config }) =>
           assert(id);
         }),
         ({ id }) =>
-          `arn:aws:fis:${
+          `arn:${config.partition}:fis:${
             config.region
           }:${config.accountId()}:experiment-template/${id}`,
       ]),

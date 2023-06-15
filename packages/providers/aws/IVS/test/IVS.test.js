@@ -13,7 +13,7 @@ describe("IVS", async function () {
         groupType: "IVS::Channel",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:ivs:${
+            arn: `arn:${config.partition}:ivs:${
               config.region
             }:${config.accountId()}:channel/32no4tl70Fmr`,
           },
@@ -28,7 +28,7 @@ describe("IVS", async function () {
         groupType: "IVS::PlaybackKeyPair",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:ivs:${
+            arn: `arn:${config.partition}:ivs:${
               config.region
             }:${config.accountId()}:playbackkeypair/z1UlkAz4Rlt3`,
           },
@@ -43,7 +43,7 @@ describe("IVS", async function () {
         groupType: "IVS::RecordingConfiguration",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:ivs:${
+            arn: `arn:${config.partition}:ivs:${
               config.region
             }:${config.accountId()}:recording-configuration/z1UlkAz4Rlt3`,
           },

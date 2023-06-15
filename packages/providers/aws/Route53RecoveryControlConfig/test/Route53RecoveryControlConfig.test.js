@@ -10,7 +10,9 @@ describe("Route53RecoveryControlConfig", async function () {
         groupType: "Route53RecoveryControlConfig::Cluster",
         livesNotFound: ({ config }) => [
           {
-            ClusterArn: `arn:aws:route53-recovery-control::${config.accountId()}:cluster/3011f1ab-0558-4627-a890-cad5e8e7ae8a`,
+            ClusterArn: `arn:${
+              config.partition
+            }:route53-recovery-control::${config.accountId()}:cluster/3011f1ab-0558-4627-a890-cad5e8e7ae8a`,
           },
         ],
       }),
@@ -22,7 +24,9 @@ describe("Route53RecoveryControlConfig", async function () {
         groupType: "Route53RecoveryControlConfig::ControlPanel",
         livesNotFound: ({ config }) => [
           {
-            ControlPanelArn: `arn:aws:route53-recovery-control::${config.accountId()}:controlpanel/a5fccd99254446b4b3d85a6071013c8a`,
+            ControlPanelArn: `arn:${
+              config.partition
+            }:route53-recovery-control::${config.accountId()}:controlpanel/a5fccd99254446b4b3d85a6071013c8a`,
           },
         ],
       }),
@@ -34,7 +38,9 @@ describe("Route53RecoveryControlConfig", async function () {
         groupType: "Route53RecoveryControlConfig::RoutingControl",
         livesNotFound: ({ config }) => [
           {
-            RoutingControlArn: `arn:aws:route53-recovery-control::${config.accountId()}:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/routingcontrol/21d6c872221c4961`,
+            RoutingControlArn: `arn:${
+              config.partition
+            }:route53-recovery-control::${config.accountId()}:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/routingcontrol/21d6c872221c4961`,
           },
         ],
       }),
@@ -47,7 +53,9 @@ describe("Route53RecoveryControlConfig", async function () {
         livesNotFound: ({ config }) => [
           {
             AssertionRule: {
-              SafetyRuleArn: `arn:aws:route53-recovery-control::${config.accountId()}:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/safetyrule/3004465f9a384eab`,
+              SafetyRuleArn: `arn:${
+                config.partition
+              }:route53-recovery-control::${config.accountId()}:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/safetyrule/3004465f9a384eab`,
             },
           },
         ],

@@ -28,7 +28,7 @@ const assignArn = ({ config }) =>
     }),
     assign({
       Arn: ({ PoolName }) =>
-        `arn:aws:ses:${
+        `arn:${config.partition}:ses:${
           config.region
         }:${config.accountId()}:dedicated-ip-pool/${PoolName}`,
     }),

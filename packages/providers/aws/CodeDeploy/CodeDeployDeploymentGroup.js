@@ -38,7 +38,7 @@ const sortAutoRollbackConfigurationEvents = assign({
 const buildArn =
   ({ config }) =>
   ({ applicationName, deploymentGroupName }) =>
-    `arn:aws:codedeploy:${
+    `arn:${config.partition}:codedeploy:${
       config.region
     }:${config.accountId()}:deploymentgroup:${applicationName}/${deploymentGroupName}`;
 

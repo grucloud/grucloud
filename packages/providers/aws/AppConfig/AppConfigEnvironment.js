@@ -26,7 +26,7 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         ({ Id, ApplicationId }) =>
-          `arn:aws:appconfig:${
+          `arn:${config.partition}:appconfig:${
             config.region
           }:${config.accountId()}:application/${ApplicationId}/environment/${Id}`,
       ]),

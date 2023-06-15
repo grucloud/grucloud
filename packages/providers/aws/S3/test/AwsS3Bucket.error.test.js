@@ -47,7 +47,7 @@ describe.skip("AwsS3BucketErrors", async function () {
   //         TopicConfigurations: [
   //           {
   //             Events: ["s3:ObjectCreated:*"],
-  //             TopicArn: `arn:aws:sns:${region}:123456789012:s3-notification-topic`,
+  //             TopicArn: `arn:${config.partition}:sns:${region}:123456789012:s3-notification-topic`,
   //           },
   //         ],
   //       },
@@ -65,11 +65,11 @@ describe.skip("AwsS3BucketErrors", async function () {
 
   //     properties: () => ({
   //       ReplicationConfiguration: {
-  //         Role: `arn:aws:iam::1234567890:role/examplerole`,
+  //         Role: `arn:${config.partition}:iam::1234567890:role/examplerole`,
   //         Rules: [
   //           {
   //             Destination: {
-  //               Bucket: `arn:aws:s3:::${s3BucketReplicationDestination.name}`,
+  //               Bucket: `arn:${config.partition}:s3:::${s3BucketReplicationDestination.name}`,
   //             },
   //             Prefix: "",
   //             Status: "Enabled",

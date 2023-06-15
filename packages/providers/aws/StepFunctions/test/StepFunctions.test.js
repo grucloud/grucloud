@@ -10,7 +10,7 @@ describe("StepFunctions", async function () {
         groupType: "StepFunctions::Activity",
         livesNotFound: ({ config }) => [
           {
-            activityArn: `arn:aws:states:${
+            activityArn: `arn:${config.partition}:states:${
               config.region
             }:${config.accountId()}:activity:test-test`,
           },
@@ -24,7 +24,7 @@ describe("StepFunctions", async function () {
         groupType: "StepFunctions::StateMachine",
         livesNotFound: ({ config }) => [
           {
-            stateMachineArn: `arn:aws:states:${
+            stateMachineArn: `arn:${config.partition}:states:${
               config.region
             }:${config.accountId()}:stateMachine:test-test`,
           },

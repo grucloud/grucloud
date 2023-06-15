@@ -55,7 +55,7 @@ const assignArn = ({ config }) =>
           assert(StackId);
         }),
         ({ StackId }) =>
-          `arn:aws:cloudformation:${
+          `arn:${config.partition}:cloudformation:${
             config.region
           }:${config.accountId()}:stack/${StackId}`,
       ]),

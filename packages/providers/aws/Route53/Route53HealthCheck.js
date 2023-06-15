@@ -24,7 +24,7 @@ const assignArn = ({ config }) =>
         tap(({ Id }) => {
           assert(Id);
         }),
-        ({ Id }) => `arn:aws:route53:::healthcheck/${Id}`,
+        ({ Id }) => `arn:${config.partition}:route53:::healthcheck/${Id}`,
       ]),
     }),
   ]);

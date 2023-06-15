@@ -20,7 +20,7 @@ const decorate = ({ endpoint, lives, config }) =>
     assign({
       Arn: pipe([
         ({ AllocationId }) =>
-          `arn:aws:ec2:${
+          `arn:${config.partition}:ec2:${
             config.region
           }:${config.accountId()}:eip-allocation/${AllocationId}`,
       ]),

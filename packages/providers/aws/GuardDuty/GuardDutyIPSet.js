@@ -30,7 +30,7 @@ const assignArn = ({ config }) =>
           assert(IpSetId);
         }),
         ({ DetectorId, IpSetId }) =>
-          `arn:aws:guardduty:${
+          `arn:${config.partition}:guardduty:${
             config.region
           }:${config.accountId()}:detector/${DetectorId}/ipset/${IpSetId}`,
       ]),

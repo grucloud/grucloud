@@ -237,7 +237,7 @@ const assignArn = ({ config }) =>
           assert(InstanceId);
         }),
         ({ InstanceId }) =>
-          `arn:aws:ec2:${
+          `arn:${config.partition}:ec2:${
             config.region
           }:${config.accountId()}:instance/${InstanceId}`,
       ]),

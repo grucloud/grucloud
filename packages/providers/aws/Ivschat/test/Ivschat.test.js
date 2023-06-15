@@ -13,7 +13,7 @@ describe("IvschatRoom", async function () {
         groupType: "Ivschat::LoggingConfiguration",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:ivschat:${
+            arn: `arn:${config.partition}:ivschat:${
               config.region
             }:${config.accountId()}:logging-configuration/y47bQ0MmtKmd`,
           },
@@ -28,7 +28,7 @@ describe("IvschatRoom", async function () {
         groupType: "Ivschat::Room",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:ivschat:${
+            arn: `arn:${config.partition}:ivschat:${
               config.region
             }:${config.accountId()}:room/32no4tl70Fmr`,
           },

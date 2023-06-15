@@ -10,7 +10,7 @@ describe("ResourceGroups", async function () {
         groupType: "ResourceGroups::Group",
         livesNotFound: ({ config }) => [
           {
-            GroupArn: `arn:aws:resource-groups:${
+            GroupArn: `arn:${config.partition}:resource-groups:${
               config.region
             }:${config.accountId()}:group/g123`,
           },

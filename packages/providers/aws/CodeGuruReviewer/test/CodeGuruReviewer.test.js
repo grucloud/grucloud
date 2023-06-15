@@ -10,7 +10,7 @@ describe("CodeGuruReviewer", async function () {
         groupType: "CodeGuruReviewer::RepositoryAssociation",
         livesNotFound: ({ config }) => [
           {
-            AssociationArn: `arn:aws:codeguru-reviewer:${
+            AssociationArn: `arn:${config.partition}:codeguru-reviewer:${
               config.region
             }:${config.accountId()}:association:3ff47938-9aff-4c64-99da-13a0ac87ab31`,
           },

@@ -10,7 +10,7 @@ describe("DocDBElastic", async function () {
         groupType: "DocDBElastic::Cluster",
         livesNotFound: ({ config }) => [
           {
-            clusterArn: `arn:aws:docdb-elastic:${
+            clusterArn: `arn:${config.partition}:docdb-elastic:${
               config.region
             }:${config.accountId()}:cluster/c123`,
           },

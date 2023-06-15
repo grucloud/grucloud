@@ -10,7 +10,7 @@ const { Tagger } = require("./SESV2Common");
 const buildArn =
   ({ config }) =>
   ({ EmailIdentity }) =>
-    `arn:aws:ses:${
+    `arn:${config.partition}:ses:${
       config.region
     }:${config.accountId()}:identity/${EmailIdentity}`;
 

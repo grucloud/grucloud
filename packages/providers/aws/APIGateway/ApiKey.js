@@ -17,7 +17,7 @@ const pickId = pipe([
 const buildArn =
   ({ config }) =>
   ({ id }) =>
-    `arn:aws:apigateway:${config.region}::/apikeys/${id}`;
+    `arn:${config.partition}:apigateway:${config.region}::/apikeys/${id}`;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
 

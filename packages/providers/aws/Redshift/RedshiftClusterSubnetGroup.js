@@ -22,7 +22,9 @@ const managedByOther = () =>
 const buildArn = ({ accountId, region }) =>
   pipe([
     ({ ClusterSubnetGroupName }) =>
-      `arn:aws:redshift:${region}:${accountId()}:subnetgroup:${ClusterSubnetGroupName}`,
+      `arn:${
+        config.partition
+      }:redshift:${region}:${accountId()}:subnetgroup:${ClusterSubnetGroupName}`,
   ]);
 
 exports.RedshiftClusterSubnetGroup = ({ compare }) => ({

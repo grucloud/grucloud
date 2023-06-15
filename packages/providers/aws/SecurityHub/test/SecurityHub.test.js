@@ -18,7 +18,7 @@ describe("SecurityHub", async function () {
         groupType: "SecurityHub::ActionTarget",
         livesNotFound: ({ config }) => [
           {
-            ActionTargetArn: `arn:aws:securityhub:${
+            ActionTargetArn: `arn:${config.partition}:securityhub:${
               config.region
             }:${config.accountId()}:action/custom/Remediation`,
           },
@@ -32,7 +32,7 @@ describe("SecurityHub", async function () {
         groupType: "SecurityHub::FindingAggregator",
         livesNotFound: ({ config }) => [
           {
-            FindingAggregatorArn: `arn:aws:securityhub:${
+            FindingAggregatorArn: `arn:${config.partition}:securityhub:${
               config.region
             }:${config.accountId()}:finding-aggregator/123e4567-e89b-12d3-a456-426652340000`,
           },
@@ -46,7 +46,7 @@ describe("SecurityHub", async function () {
         groupType: "SecurityHub::Insight",
         livesNotFound: ({ config }) => [
           {
-            InsightArn: `arn:aws:securityhub:${
+            InsightArn: `arn:${config.partition}:securityhub:${
               config.region
             }:${config.accountId()}:insight/123456789012/custom/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111`,
           },
@@ -94,8 +94,8 @@ describe("SecurityHub", async function () {
         groupType: "SecurityHub::ProductSubscription",
         livesNotFound: ({ config }) => [
           {
-            ProductArn: `arn:aws:securityhub:${config.region}::product/blabla/myproduct`,
-            ProductSubscriptionArn: `arn:aws:securityhub:${
+            ProductArn: `arn:${config.partition}:securityhub:${config.region}::product/blabla/myproduct`,
+            ProductSubscriptionArn: `arn:${config.partition}:securityhub:${
               config.region
             }:${config.accountId()}:product-subscription/blabla/myproduct`,
           },
@@ -109,10 +109,10 @@ describe("SecurityHub", async function () {
         groupType: "SecurityHub::StandardsControl",
         livesNotFound: ({ config }) => [
           {
-            StandardsSubscriptionArn: `arn:aws:securityhub:${
+            StandardsSubscriptionArn: `arn:${config.partition}:securityhub:${
               config.region
             }:${config.accountId()}:subscription/cis-aws-foundations-benchmark-ko/v/1.2.0`,
-            StandardsControlArn: `arn:aws:securityhub:${
+            StandardsControlArn: `arn:${config.partition}:securityhub:${
               config.region
             }:${config.accountId()}:control/cis-aws-foundations-benchmark/v/1.2.0/1.10`,
           },
@@ -127,7 +127,7 @@ describe("SecurityHub", async function () {
         groupType: "SecurityHub::StandardsSubscription",
         livesNotFound: ({ config }) => [
           {
-            StandardsSubscriptionArn: `arn:aws:securityhub:${
+            StandardsSubscriptionArn: `arn:${config.partition}:securityhub:${
               config.region
             }:${config.accountId()}:subscription/cis-aws-foundations-benchmark-ko/v/1.2.0`,
           },

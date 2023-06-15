@@ -52,7 +52,7 @@ const assignArn = ({ config }) =>
     assign({
       Arn: pipe([
         ({ IdentityPoolId }) =>
-          `arn:aws:cognito-identity:${
+          `arn:${config.partition}:cognito-identity:${
             config.region
           }:${config.accountId()}:identitypool/${IdentityPoolId}`,
       ]),

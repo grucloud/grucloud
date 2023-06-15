@@ -10,7 +10,7 @@ describe("AppStream", async function () {
         groupType: "AppStream::AppBlock",
         livesNotFound: ({ config }) => [
           {
-            Arn: `arn:aws:appstream:${
+            Arn: `arn:${config.partition}:appstream:${
               config.region
             }:${config.accountId()}:app-block/myappblockko`,
             Name: "b123",
@@ -25,7 +25,7 @@ describe("AppStream", async function () {
         groupType: "AppStream::Application",
         livesNotFound: ({ config }) => [
           {
-            Arn: `arn:aws:appstream:${
+            Arn: `arn:${config.partition}:appstream:${
               config.region
             }:${config.accountId()}:application/myappblockko`,
             Name: "b123",
@@ -73,7 +73,7 @@ describe("AppStream", async function () {
         livesNotFound: ({ config }) => [
           {
             Name: "f123",
-            Arn: `arn:aws:appstream:${
+            Arn: `arn:${config.partition}:appstream:${
               config.region
             }:${config.accountId()}:stack/stackko`,
           },

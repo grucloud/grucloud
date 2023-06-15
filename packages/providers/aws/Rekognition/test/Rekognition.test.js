@@ -19,7 +19,7 @@ describe("Rekognition", async function () {
         livesNotFound: ({ config }) => [
           {
             ProjectName: "p1234",
-            ProjectArn: `arn:aws:rekognition:${
+            ProjectArn: `arn:${config.partition}:rekognition:${
               config.region
             }:${config.accountId()}:project/qnzC51EnBACHk3oTTh.oTB9WxH2eMHE/762093524950321420860781117375238604510212472218043533303676583042196901597683897`,
           },

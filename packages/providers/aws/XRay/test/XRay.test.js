@@ -20,7 +20,7 @@ describe("XRay", async function () {
         groupType: "XRay::Group",
         livesNotFound: ({ config }) => [
           {
-            GroupARN: `arn:aws:xray:${
+            GroupARN: `arn:${config.partition}:xray:${
               config.region
             }:${config.accountId()}:group/idonotexist`,
           },
@@ -44,7 +44,7 @@ describe("XRay", async function () {
         groupType: "XRay::SamplingRule",
         livesNotFound: ({ config }) => [
           {
-            RuleARN: `arn:aws:xray:${
+            RuleARN: `arn:${config.partition}:xray:${
               config.region
             }:${config.accountId()}:sampling-rule/idonotexist`,
           },

@@ -20,7 +20,7 @@ const buildArn = ({ config }) =>
       assert(StageName);
     }),
     ({ ApiId, StageName }) =>
-      `arn:aws:apigateway:${config.region}::/apis/${ApiId}/stages/${StageName}`,
+      `arn:${config.partition}:apigateway:${config.region}::/apis/${ApiId}/stages/${StageName}`,
   ]);
 
 const findName =

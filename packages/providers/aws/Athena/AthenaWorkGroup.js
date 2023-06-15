@@ -12,7 +12,9 @@ const ignoreErrorMessages = ["not found"];
 const buildArn =
   ({ region, accountId }) =>
   ({ WorkGroup }) =>
-    `arn:aws:athena:${region}:${accountId()}:workgroup/${WorkGroup}`;
+    `arn:${
+      config.partition
+    }:athena:${region}:${accountId()}:workgroup/${WorkGroup}`;
 
 const pickId = pipe([
   tap(({ WorkGroup }) => {

@@ -37,7 +37,7 @@ const assignArn = ({ config }) =>
           assert(version);
         }),
         ({ category, provider, version }) =>
-          `arn:aws:codepipeline:${
+          `arn:${config.partition}:codepipeline:${
             config.region
           }:${config.accountId()}:actiontype:Custom/${category}/${provider}/${version}`,
       ]),

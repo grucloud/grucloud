@@ -15,7 +15,7 @@ const buildArn = ({ config }) =>
       assert(config.region);
     }),
     ({ Id }) =>
-      `arn:aws:appconfig:${
+      `arn:${config.partition}:appconfig:${
         config.region
       }:${config.accountId()}:deploymentstrategy/${Id}`,
   ]);

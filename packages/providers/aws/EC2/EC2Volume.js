@@ -187,7 +187,7 @@ const assignArn = ({ config }) =>
           assert(VolumeId);
         }),
         ({ VolumeId }) =>
-          `arn:aws:ec2:${
+          `arn:${config.partition}:ec2:${
             config.region
           }:${config.accountId()}:volume/${VolumeId}`,
       ]),

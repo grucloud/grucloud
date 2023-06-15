@@ -10,7 +10,7 @@ describe("Detective", async function () {
         groupType: "Detective::Graph",
         livesNotFound: ({ config }) => [
           {
-            GraphArn: `arn:aws:detective:${
+            GraphArn: `arn:${config.partition}:detective:${
               config.region
             }:${config.accountId()}:graph/7ea40abc165723333fb7f3f08c8e6465`,
           },
@@ -24,7 +24,7 @@ describe("Detective", async function () {
         groupType: "Detective::InvitationAccepter",
         livesNotFound: ({ config }) => [
           {
-            GraphArn: `arn:aws:detective:${
+            GraphArn: `arn:${config.partition}:detective:${
               config.region
             }:${config.accountId()}:graph:7ea40abc165723333fb7f3f08c8e6465`,
           },
@@ -38,7 +38,7 @@ describe("Detective", async function () {
         groupType: "Detective::Member",
         livesNotFound: ({ config }) => [
           {
-            GraphArn: `arn:aws:detective:${
+            GraphArn: `arn:${config.partition}:detective:${
               config.region
             }:${config.accountId()}:graph/7ea40abc165723333fb7f3f08c8e6465`,
             AccountId: "1234567890",
@@ -53,7 +53,7 @@ describe("Detective", async function () {
         groupType: "Detective::OrganizationAdminAccount",
         livesNotFound: ({ config }) => [
           {
-            GraphArn: `arn:aws:detective:${
+            GraphArn: `arn:${config.partition}:detective:${
               config.region
             }:${config.accountId()}:graph/7ea40abc165723333fb7f3f08c8e6465`,
             AccountId: "1234567890",
@@ -68,7 +68,7 @@ describe("Detective", async function () {
         groupType: "Detective::OrganizationConfiguration",
         livesNotFound: ({ config }) => [
           {
-            GraphArn: `arn:aws:detective:${
+            GraphArn: `arn:${config.partition}:detective:${
               config.region
             }:${config.accountId()}:graph/7ea40abc165723333fb7f3f08c8e6465`,
           },

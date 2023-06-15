@@ -35,7 +35,7 @@ describe("CloudWatchLogs", async function () {
         groupType: "CloudWatchLogs::LogStream",
         livesNotFound: ({ config }) => [
           {
-            arn: `arn:aws:logs:${
+            arn: `arn:${config.partition}:logs:${
               config.region
             }:${config.accountId()}:log-group:testlambdatest-:*:sss`,
           },

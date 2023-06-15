@@ -49,7 +49,9 @@ describe("DynamoDB", async function () {
         livesNotFound: ({ config }) => [
           {
             TableName: "12345",
-            StreamArn: `arn:aws:kinesis:us-east-1:${config.accountId()}:stream/sam-app-KinesisStream-i22fijDM7MAY`,
+            StreamArn: `arn:${
+              config.partition
+            }:kinesis:us-east-1:${config.accountId()}:stream/sam-app-KinesisStream-i22fijDM7MAY`,
           },
         ],
         skipGetById: true,

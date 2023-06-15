@@ -139,7 +139,10 @@ exports.LakeFormationResource = () => ({
         assert(s3Bucket);
       }),
       defaultsDeep({
-        ResourceArn: `arn:aws:s3:::${getField(s3Bucket, "Name")}`,
+        ResourceArn: `arn:${config.partition}:s3:::${getField(
+          s3Bucket,
+          "Name"
+        )}`,
         RoleArn: getField(iamRole, "Arn"),
       }),
     ])(),

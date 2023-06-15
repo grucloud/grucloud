@@ -43,7 +43,7 @@ const assignArn = ({ config }) =>
     assign({
       arn: pipe([
         ({ logGroupName }) =>
-          `arn:aws:logs:${
+          `arn:${config.partition}:logs:${
             config.region
           }:${config.accountId()}:log-group:${logGroupName}`,
       ]),
