@@ -1,6 +1,6 @@
 {
   "name": "dhcp-options",
-  "version": "12.3.0",
+  "version": "12.4.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^12.3.0",
-    "@grucloud/provider-aws": "^12.3.0",
+    "@grucloud/provider-aws": "^12.4.0",
     "rubico": "1.9.6"
   }
 }
