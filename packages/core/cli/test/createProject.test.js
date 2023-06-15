@@ -33,7 +33,7 @@ describe("createProject", function () {
   });
   it("createProject aws", async function () {
     await runProject({
-      injects: ["aws", "aws-project-test", "partition", "default", "us-east-1"],
+      injects: ["aws", "aws-project-test", "aws", "default", "us-east-1"],
     });
   });
   it("createProject aws wrong profile", async function () {
