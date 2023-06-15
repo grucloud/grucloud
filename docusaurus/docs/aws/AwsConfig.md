@@ -12,7 +12,6 @@ Edit **config.js** and set region and zone, and eventually the profile and the p
 ```js
 module.exports = () => ({
   region: "eu-west-2",
-  zone: "eu-west-2a",
   credentials: { profile: "default" },
   //partition: "aws-us-gov"
 });

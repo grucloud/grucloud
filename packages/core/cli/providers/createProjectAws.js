@@ -28,6 +28,12 @@ const {
   myPrompts,
 } = require("./createProjectCommon");
 
+const PARTITIONS = [
+  { title: "aws", description: "Public AWS partition" },
+  { title: "aws-us-gov", description: "AWS US GovCloud" },
+  { title: "aws-cn", description: " AWS China." },
+];
+
 const awsExecCommand =
   ({ displayText, textEnd } = {}) =>
   (command) =>
@@ -118,14 +124,32 @@ const promptProfile = pipe([
   get("profile"),
 ]);
 
+const promptPartition = pipe([
+  () => PARTITIONS,
+  map(({ description, title }) => ({
+    title,
+    description,
+    value: title,
+  })),
+  (choices) => ({
+    type: "select",
+    name: "partition",
+    message: "Select a partition",
+    choices,
+    initial: 0,
+  }),
+  myPrompts,
+  get("partition"),
+]);
+
 const promptRegion = pipe([
   tap((params) => {
     assert(true);
   }),
   assign({
     regions: pipe([
-      ({ profile }) =>
-        `ec2 describe-regions --region us-east-1 --profile ${profile}`,
+      ({ profile, regionMain }) =>
+        `ec2 describe-regions --region ${regionMain} --profile ${profile}`,
       awsExecCommand(),
       get("Regions"),
     ]),
@@ -219,9 +243,9 @@ const execAwsConfigure = ({ profile = "default" }) =>
     ),
   ]);
 
-const isAuthenticated = ({ profile = "default" }) =>
+const isAuthenticated = ({ profile = "default", regionMain = "us-east-1" }) =>
   pipe([
-    () => `sts get-caller-identity --region us-east-1 --profile ${profile}`,
+    () => `sts get-caller-identity --region ${regionMain} --profile ${profile}`,
     tryCatch(
       pipe([
         awsExecCommand({
@@ -246,6 +270,16 @@ const isAuthenticated = ({ profile = "default" }) =>
 
 exports.isAuthenticated = isAuthenticated;
 
+const inferRegionMainFromPartition = pipe([
+  switchCase([
+    eq(get("partition"), "aws-us-gov"),
+    () => "us-gov-west-1",
+    eq(get("partition"), "aws-cn"),
+    () => "cn-north-1",
+    () => "us-east-1",
+  ]),
+]);
+
 exports.createProjectAws = ({}) =>
   pipe([
     tap(({ dirs }) => {
@@ -256,6 +290,10 @@ exports.createProjectAws = ({}) =>
     }),
 
     tap(isAwsPresent),
+    assign({ partition: promptPartition }),
+    assign({
+      regionMain: inferRegionMainFromPartition,
+    }),
     assign({ profile: promptProfile }),
     tap(isAuthenticated),
     assign({ region: promptRegion }),
