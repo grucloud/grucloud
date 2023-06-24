@@ -108,9 +108,9 @@ Visualize your current infrastructure with the [list](../cli/List.md) command:
 gc list --graph
 ```
 
-The following diagram is taken from the [ec2-vpc example](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2/ec2-vpc)
+The following diagram is taken from the [ec2-vpc example](https://github.com/grucloud/grucloud/tree/main/examples/aws/EC2/Instance/ec2-vpc)
 
-![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/diagram-live.svg)
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/EC2/Instance/ec2-vpc/artifacts/diagram-live.svg)
 
 ### `gc gencode` Generate the code
 
@@ -134,7 +134,7 @@ The [graph](../cli/Graph.md) command creates a dependency graph of the target re
 gc graph
 ```
 
-![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/diagram-target.svg)
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/EC2/Instance/ec2-vpc/artifacts/diagram-target.svg)
 
 > The `graph` command requires [graphviz](https://graphviz.org/) to convert the generated `artifacts/diagram-target.dot` into an image such as `artifacts/diagram-target.svg`
 
@@ -146,7 +146,7 @@ Given the target resources defined in _resources.js_, let's generate a mindmap o
 gc tree
 ```
 
-![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/resources-mindmap.svg)
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/EC2/Instance/ec2-vpc/artifacts/resources-mindmap.svg)
 
 ### `gc apply` Update
 

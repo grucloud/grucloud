@@ -44,6 +44,10 @@ const config = {
           title: "Community",
           items: [
             {
+              label: "Github",
+              href: "https://github.com/grucloud/grucloud",
+            },
+            {
               label: "Twitter",
               href: "https://twitter.com/grucloud_iac",
             },
@@ -54,10 +58,6 @@ const config = {
             {
               label: "Stack Overflow",
               href: "https://stackoverflow.com/questions/tagged/grucloud",
-            },
-            {
-              label: "Discord",
-              href: "https://discord.com/channels/803645280359546920/803645355606147082",
             },
           ],
         },
