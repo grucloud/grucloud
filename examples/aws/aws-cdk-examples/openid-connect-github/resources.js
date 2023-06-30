@@ -16,6 +16,8 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({ getId }) => ({
       RoleName: "exampleGitHubDeployRole",
+      Description:
+        "This role is used via GitHub Actions to deploy with AWS CDK or Terraform on the target AWS account",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -30,18 +32,27 @@ exports.createResources = () => [
             },
             Action: "sts:AssumeRoleWithWebIdentity",
             Condition: {
-              StringEquals: {
+              StringLike: {
                 [`${getId({
                   type: "OpenIDConnectProvider",
                   group: "IAM",
                   name: "oidp::token.actions.githubusercontent.com",
                   path: "live.Url",
-                })}:aud`]: "sts.amazonaws.com",
+                })}:sub`]: [
+                  "repo:dannysteenman/aws-cdk-examples:*",
+                  "repo:dannysteenman/aws-toolbox:main",
+                ],
               },
             },
           },
         ],
       },
+      AttachedPolicies: [
+        {
+          PolicyArn: "arn:aws:iam::aws:policy/AdministratorAccess",
+          PolicyName: "AdministratorAccess",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       openIdConnectProvider: "oidp::token.actions.githubusercontent.com",
@@ -52,7 +63,7 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({}) => ({
       RoleName:
-        "GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-ZLQBGMP1PWSP",
+        "GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-1BLXJG12N1Q77",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -88,9 +99,9 @@ exports.createResources = () => [
       ],
       AttachedPolicies: [
         {
-          PolicyName: "AWSLambdaBasicExecutionRole",
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          PolicyName: "AWSLambdaBasicExecutionRole",
         },
       ],
     }),

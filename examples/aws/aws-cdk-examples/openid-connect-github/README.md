@@ -1,3 +1,3 @@
-# Aws deploymemt
+# Aws OpenId Connect with GitHub
 
-Boilerplate to deploy infrastructure on Aws with GruCloud.
+This example is taken from the project https://github.com/dannysteenman/aws-cdk-examples/tree/main/openid-connect-github
