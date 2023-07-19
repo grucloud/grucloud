@@ -26,8 +26,6 @@ const decorate = ({ endpoint, live }) =>
     defaultsDeep({ instanceName: live.instanceName }),
   ]);
 
-const model = ({ config }) => ({});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
 exports.LightsailInstancePublicPorts = ({ compare }) => ({
   type: "InstancePublicPorts",

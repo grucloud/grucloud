@@ -48,8 +48,6 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const model = ({ config }) => ({});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
 exports.LightsailDiskAttachment = ({ compare }) => ({
   type: "DiskAttachment",
