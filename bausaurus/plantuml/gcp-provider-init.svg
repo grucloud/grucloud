@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="993px" preserveAspectRatio="none" style="width:771px;height:993px;background:#FFFFFF;" version="1.1" viewBox="0 0 771 993" width="771px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="981.7124" style="stroke:#000000;stroke-width:2.0;" width="758" x="6" y="6"/><line style="stroke:#000000;stroke-width:2.0;" x1="6" x2="764" y1="27.0146" y2="27.0146"/><text fill="#000000" font-family="Verdana" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="49" x="286.5" y="22.0752">gc init</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="143" x="340.5" y="22.0752">for the GCP Provider</text><ellipse cx="180" cy="53.0146" fill="#000000" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="328" x="16" y="98.0146"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="308" x="26" y="117.0615">gcloud auth print-access-token --format json</text><polygon fill="#FFFFFF" points="158.5,226.0146,201.5,226.0146,213.5,238.0146,201.5,250.0146,158.5,250.0146,146.5,238.0146,158.5,226.0146" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="43" x="158.5" y="242.3894">exists ?</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="213.5" y="235.7051">no</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="143" x="368" y="156.7227"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="382" y="178.7871"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="119" x="382" y="178.3535">gcloud auth login</text><path d="M252,302.7756 L252,311.6753 L232,315.6753 L252,319.6753 L252,328.575 A0,0 0 0 0 252,328.575 L566,328.575 A0,0 0 0 0 566,328.575 L566,312.7756 L556,302.7756 L252,302.7756 A0,0 0 0 0 252,302.7756 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M556,302.7756 L556,312.7756 L566,312.7756 L556,302.7756 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="122" x="258" y="320.8455">From the property</text><text fill="#000000" font-family="Courier" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="72" x="385" y="320.3757">projectId</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="12" x="462" y="320.8455">in</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="72" x="479" y="320.3757">config.js</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="104" x="128" y="298.3833"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="84" x="138" y="320.4478">Create Project</text><path d="M282.5,367.9673 L282.5,394.9673 L262.5,398.9673 L282.5,402.9673 L282.5,429.9673 A0,0 0 0 0 282.5,429.9673 L596.5,429.9673 A0,0 0 0 0 596.5,429.9673 L596.5,377.9673 L586.5,367.9673 L282.5,367.9673 A0,0 0 0 0 282.5,367.9673 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M586.5,367.9673 L586.5,377.9673 L596.5,377.9673 L586.5,367.9673 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><ellipse cx="294" cy="378.4673" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="216" x="301.5" y="382.7681">cloudbilling.googleapis.com</text><ellipse cx="294" cy="391.4673" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="280" x="301.5" y="395.7681">cloudresourcemanager.googleapis.com</text><ellipse cx="294" cy="404.4673" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="144" x="301.5" y="408.7681">iam.googleapis.com</text><ellipse cx="294" cy="417.4673" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="216" x="301.5" y="421.7681">serviceusage.googleapis.com</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="165" x="97.5" y="381.6753"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="145" x="107.5" y="403.7397">Enable Basic Service API</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="99" x="130.5" y="464.9673"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="79" x="140.5" y="487.0317">Enable Billing</text><path d="M279,540.3433 L279,547.8433 L259,551.8433 L279,555.8433 L279,563.3433 A0,0 0 0 0 279,563.3433 L684,563.3433 A0,0 0 0 0 684,563.3433 L684,550.3433 L674,540.3433 L279,540.3433 A0,0 0 0 0 279,540.3433 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M674,540.3433 L674,550.3433 L684,550.3433 L674,540.3433 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="72" x="285" y="555.144">grucloud@</text><text fill="#000000" font-family="Courier" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="120" x="357" y="555.144">your-project-id</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="192" x="477" y="555.144">.iam.gserviceaccount.com</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="158" x="101" y="534.5513"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="138" x="111" y="556.6157">Create Service Account</text><path d="M325,609.9272 L325,617.4272 L305,621.4272 L325,625.4272 L325,632.9272 A0,0 0 0 0 325,632.9272 L754,632.9272 A0,0 0 0 0 754,632.9272 L754,619.9272 L744,609.9272 L325,609.9272 A0,0 0 0 0 325,609.9272 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M744,609.9272 L744,619.9272 L754,619.9272 L744,609.9272 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="48" x="331" y="624.728">/home/</text><text fill="#000000" font-family="Courier" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="72" x="379" y="624.728">your-home</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="128" x="451" y="624.728">/.config/gcloud/</text><text fill="#000000" font-family="Courier" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="120" x="579" y="624.728">your-project-id</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="40" x="699" y="624.728">.json</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="250" x="55" y="604.1353"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="226" x="69" y="626.1997">Create Service Account Credential File</text><path d="M312,673.7192 L312,753.7158 L292,757.7158 L312,761.7158 L312,841.7124 A0,0 0 0 0 312,841.7124 L599,841.7124 A0,0 0 0 0 599,841.7124 L599,683.7192 L589,673.7192 L312,673.7192 A0,0 0 0 0 312,673.7192 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M589,673.7192 L589,683.7192 L599,683.7192 L589,673.7192 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="42" x="318" y="691.7891">Roles:</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="8" x="323" y="707.5884">*</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="184" x="336" y="707.1187">iam.serviceAccountAdmin</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="8" x="323" y="723.3877">*</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="104" x="336" y="722.918">compute.admin</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="8" x="323" y="739.187">*</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="104" x="336" y="738.7173">storage.admin</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="8" x="323" y="754.9863">*</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="152" x="336" y="754.5166">storage.objectAdmin</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="8" x="323" y="770.7856">*</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="72" x="336" y="770.3159">dns.admin</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="8" x="323" y="786.585">*</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="104" x="336" y="786.1152">domains.admin</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="8" x="323" y="802.3843">*</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="48" x="336" y="801.9146">editor</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="8" x="323" y="818.1836">*</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="248" x="336" y="817.7139">resourcemanager.projectIamAdmin</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="0" x="323" y="833.9829"/><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="224" x="68" y="740.4238"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="200" x="82" y="762.4883">Bind Roles to the Service Account</text><path d="M281.5,876.7124 L281.5,890.7124 L261.5,894.7124 L281.5,898.7124 L281.5,912.7124 A0,0 0 0 0 281.5,912.7124 L491.5,912.7124 A0,0 0 0 0 491.5,912.7124 L491.5,886.7124 L481.5,876.7124 L281.5,876.7124 A0,0 0 0 0 281.5,876.7124 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M481.5,876.7124 L481.5,886.7124 L491.5,886.7124 L481.5,876.7124 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><ellipse cx="293" cy="887.2124" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="176" x="300.5" y="891.5132">compute.googleapis.com</text><ellipse cx="293" cy="900.2124" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="144" x="300.5" y="904.5132">dns.googleapis.com</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="163" x="98.5" y="877.4204"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="143" x="108.5" y="899.4849">Enable Main Service API</text><ellipse cx="180" cy="957.7124" fill="#FFFFFF" rx="10" ry="10" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:2.5;" x1="173.8128" x2="186.1872" y1="951.5252" y2="963.8996"/><line style="stroke:#000000;stroke-width:2.5;" x1="186.1872" x2="173.8128" y1="951.5252" y2="963.8996"/><line style="stroke:#000000;stroke-width:1.5;" x1="180" x2="180" y1="130.0146" y2="226.0146"/><polygon fill="#000000" points="176,216.0146,180,226.0146,184,216.0146,180,220.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="213.5" x2="439.5" y1="238.0146" y2="238.0146"/><line style="stroke:#000000;stroke-width:1.5;" x1="439.5" x2="439.5" y1="191.3066" y2="238.0146"/><polygon fill="#000000" points="435.5,201.3066,439.5,191.3066,443.5,201.3066,439.5,197.3066" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="439.5" x2="439.5" y1="114.0146" y2="156.7227"/><line style="stroke:#000000;stroke-width:1.5;" x1="439.5" x2="344" y1="114.0146" y2="114.0146"/><polygon fill="#000000" points="354,110.0146,344,114.0146,354,118.0146,350,114.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="180" x2="180" y1="63.0146" y2="98.0146"/><polygon fill="#000000" points="176,88.0146,180,98.0146,184,88.0146,180,92.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="180" x2="180" y1="250.0146" y2="298.3833"/><polygon fill="#000000" points="176,288.3833,180,298.3833,184,288.3833,180,292.3833" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="184" y="278.5737">yes</text><line style="stroke:#000000;stroke-width:1.5;" x1="180" x2="180" y1="332.9673" y2="381.6753"/><polygon fill="#000000" points="176,371.6753,180,381.6753,184,371.6753,180,375.6753" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="180" x2="180" y1="416.2593" y2="464.9673"/><polygon fill="#000000" points="176,454.9673,180,464.9673,184,454.9673,180,458.9673" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="180" x2="180" y1="499.5513" y2="534.5513"/><polygon fill="#000000" points="176,524.5513,180,534.5513,184,524.5513,180,528.5513" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="180" x2="180" y1="569.1353" y2="604.1353"/><polygon fill="#000000" points="176,594.1353,180,604.1353,184,594.1353,180,598.1353" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="180" x2="180" y1="638.7192" y2="740.4238"/><polygon fill="#000000" points="176,730.4238,180,740.4238,184,730.4238,180,734.4238" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="180" x2="180" y1="775.0078" y2="877.4204"/><polygon fill="#000000" points="176,867.4204,180,877.4204,184,867.4204,180,871.4204" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="180" x2="180" y1="912.0044" y2="947.7124"/><polygon fill="#000000" points="176,937.7124,180,947.7124,184,937.7124,180,941.7124" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[db2ddd81c27a2e1c92965eecacb4fb13]
+@startuml gcp-provider-init
+!theme plain
+
+card "<b>gc init</b> for the GCP Provider" {
+
+start
+repeat :""gcloud auth print-access-token - -format json"";
+backward: ""gcloud auth login"";
+repeat while (exists ?) is (no) 
+->yes;
+
+:Create Project;
+note right
+ From the property <b>""projectId""</b> in ""config.js""
+end note 
+:Enable Basic Service API;
+note right
+* ""cloudbilling.googleapis.com""
+* ""cloudresourcemanager.googleapis.com""
+* ""iam.googleapis.com""
+* ""serviceusage.googleapis.com""
+end note 
+
+:Enable Billing;
+:Create Service Account;
+note right
+ ""grucloud@<b>your-project-id</b>.iam.gserviceaccount.com""
+end note 
+
+: Create Service Account Credential File; 
+note right
+ ""/home/<b>your-home</b>/.config/gcloud/<b>your-project-id</b>.json""
+end note  
+
+: Bind Roles to the Service Account;
+note right
+Roles:
+ * ""iam.serviceAccountAdmin""
+ * ""compute.admin""
+ * ""storage.admin""
+ * ""storage.objectAdmin""
+ * ""dns.admin""
+ * ""domains.admin""
+ * ""editor""
+ * ""resourcemanager.projectIamAdmin""
+ 
+end note  
+:Enable Main Service API;
+note right
+* ""compute.googleapis.com""
+* ""dns.googleapis.com""
+end note 
+
+end
+}
+
+@enduml
+
+@startuml gcp-provider-init
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+
+card "<b>gc init</b> for the GCP Provider" {
+
+start
+repeat :""gcloud auth print-access-token - -format json"";
+backward: ""gcloud auth login"";
+repeat while (exists ?) is (no) 
+->yes;
+
+:Create Project;
+note right
+ From the property <b>""projectId""</b> in ""config.js""
+end note 
+:Enable Basic Service API;
+note right
+* ""cloudbilling.googleapis.com""
+* ""cloudresourcemanager.googleapis.com""
+* ""iam.googleapis.com""
+* ""serviceusage.googleapis.com""
+end note 
+
+:Enable Billing;
+:Create Service Account;
+note right
+ ""grucloud@<b>your-project-id</b>.iam.gserviceaccount.com""
+end note 
+
+: Create Service Account Credential File; 
+note right
+ ""/home/<b>your-home</b>/.config/gcloud/<b>your-project-id</b>.json""
+end note  
+
+: Bind Roles to the Service Account;
+note right
+Roles:
+ * ""iam.serviceAccountAdmin""
+ * ""compute.admin""
+ * ""storage.admin""
+ * ""storage.objectAdmin""
+ * ""dns.admin""
+ * ""domains.admin""
+ * ""editor""
+ * ""resourcemanager.projectIamAdmin""
+ 
+end note  
+:Enable Main Service API;
+note right
+* ""compute.googleapis.com""
+* ""dns.googleapis.com""
+end note 
+
+end
+}
+
+@enduml
+
+PlantUML version 1.2021.7(Sun May 23 14:40:07 CEST 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

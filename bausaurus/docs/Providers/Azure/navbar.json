@@ -1,0 +1,17 @@
+{
+  "children": [
+    {
+      "data": { "name": "index.md" },
+      "index": true
+    },
+    {
+      "data": { "name": "AzureGettingStarted.md" }
+    },
+    {
+      "data": { "name": "AzureResources.md" }
+    },
+    {
+      "data": { "name": "AzureRequirements.md" }
+    }
+  ]
+}

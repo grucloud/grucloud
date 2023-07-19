@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="701px" preserveAspectRatio="none" style="width:383px;height:701px;background:#FFFFFF;" version="1.1" viewBox="0 0 383 701" width="383px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="689.2559" style="stroke:#000000;stroke-width:2.0;" width="370.5" x="6" y="6"/><line style="stroke:#000000;stroke-width:2.0;" x1="6" x2="376.5" y1="27.0146" y2="27.0146"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="79" x="151.75" y="22.0752">gc gencode</text><ellipse cx="181.5" cy="53.0146" fill="#000000" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="94" x="134.5" y="98.0146"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="148.5" y="120.0791"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="70" x="148.5" y="119.6455">gc gencode</text><rect fill="#FFFFFF" height="49.168" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="198" x="82.5" y="167.5986"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="142" x="96.5" y="189.6631">Fetch the live resources</text><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="178" x="92.5" y="204.2471">from the cloud provider's APIs</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="331" x="16" y="251.7666"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="109" x="30" y="273.8311">Create in-memory</text><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="77" x="143" y="273.3975">resource.js</text><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="113" x="224" y="273.8311">from live resources</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="201" x="81" y="370.0349"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="181" x="91" y="392.0994">Display a "diff" to the terminal</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="173" x="95" y="488.3032"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="61" x="109" y="510.3677">Write new</text><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="84" x="174" y="509.9341">resources.js</text><polygon fill="#FFFFFF" points="114.5,439.6189,248.5,439.6189,260.5,451.6189,248.5,463.6189,114.5,463.6189,102.5,451.6189,114.5,439.6189" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="185.5" y="474.678">yes</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="134" x="114.5" y="455.9937">User accepts changes ?</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="260.5" y="449.3093">no</text><polygon fill="#FFFFFF" points="181.5,547.5715,193.5,559.5715,181.5,571.5715,169.5,559.5715,181.5,547.5715" style="stroke:#000000;stroke-width:1.5;"/><polygon fill="#FFFFFF" points="29.5,321.3506,333.5,321.3506,345.5,333.3506,333.5,345.3506,29.5,345.3506,17.5,333.3506,29.5,321.3506" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="185.5" y="356.4097">no</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="300" x="29.5" y="337.7253">in-memory resource.js equals to current resource.js</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="345.5" y="331.041">yes</text><polygon fill="#FFFFFF" points="181.5,596.2559,193.5,608.2559,181.5,620.2559,169.5,608.2559,181.5,596.2559" style="stroke:#000000;stroke-width:1.5;"/><ellipse cx="181.5" cy="665.2559" fill="#FFFFFF" rx="10" ry="10" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:2.5;" x1="175.3128" x2="187.6872" y1="659.0687" y2="671.443"/><line style="stroke:#000000;stroke-width:2.5;" x1="187.6872" x2="175.3128" y1="659.0687" y2="671.443"/><line style="stroke:#000000;stroke-width:1.5;" x1="181.5" x2="181.5" y1="63.0146" y2="98.0146"/><polygon fill="#000000" points="177.5,88.0146,181.5,98.0146,185.5,88.0146,181.5,92.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="181.5" x2="181.5" y1="132.5986" y2="167.5986"/><polygon fill="#000000" points="177.5,157.5986,181.5,167.5986,185.5,157.5986,181.5,161.5986" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="181.5" x2="181.5" y1="216.7666" y2="251.7666"/><polygon fill="#000000" points="177.5,241.7666,181.5,251.7666,185.5,241.7666,181.5,245.7666" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="181.5" x2="181.5" y1="463.6189" y2="488.3032"/><polygon fill="#000000" points="177.5,478.3032,181.5,488.3032,185.5,478.3032,181.5,482.3032" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="260.5" x2="278" y1="451.6189" y2="451.6189"/><polygon fill="#000000" points="274,495.5952,278,505.5952,282,495.5952,278,499.5952" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="278" x2="278" y1="451.6189" y2="559.5715"/><line style="stroke:#000000;stroke-width:1.5;" x1="278" x2="193.5" y1="559.5715" y2="559.5715"/><polygon fill="#000000" points="203.5,555.5715,193.5,559.5715,203.5,563.5715,199.5,559.5715" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="181.5" x2="181.5" y1="522.8872" y2="547.5715"/><polygon fill="#000000" points="177.5,537.5715,181.5,547.5715,185.5,537.5715,181.5,541.5715" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="181.5" x2="181.5" y1="404.6189" y2="439.6189"/><polygon fill="#000000" points="177.5,429.6189,181.5,439.6189,185.5,429.6189,181.5,433.6189" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="181.5" x2="181.5" y1="345.3506" y2="370.0349"/><polygon fill="#000000" points="177.5,360.0349,181.5,370.0349,185.5,360.0349,181.5,364.0349" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="345.5" x2="357.5" y1="333.3506" y2="333.3506"/><polygon fill="#000000" points="353.5,460.8032,357.5,470.8032,361.5,460.8032,357.5,464.8032" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="357.5" x2="357.5" y1="333.3506" y2="608.2559"/><line style="stroke:#000000;stroke-width:1.5;" x1="357.5" x2="193.5" y1="608.2559" y2="608.2559"/><polygon fill="#000000" points="203.5,604.2559,193.5,608.2559,203.5,612.2559,199.5,608.2559" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="181.5" x2="181.5" y1="571.5715" y2="596.2559"/><polygon fill="#000000" points="177.5,586.2559,181.5,596.2559,185.5,586.2559,181.5,590.2559" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="181.5" x2="181.5" y1="286.3506" y2="321.3506"/><polygon fill="#000000" points="177.5,311.3506,181.5,321.3506,185.5,311.3506,181.5,315.3506" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="181.5" x2="181.5" y1="620.2559" y2="655.2559"/><polygon fill="#000000" points="177.5,645.2559,181.5,655.2559,185.5,645.2559,181.5,649.2559" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[716c54d55218b46aa99139e0ee29188e]
+@startuml gc-gencode
+!theme plain
+skinparam svgLinkTarget _blank
+
+card "gc gencode"{
+start 
+
+: ""gc gencode"";
+: Fetch the live resources
+from the cloud provider's APIs;
+: Create in-memory ""resource.js"" from live resources;
+if (in-memory resource.js equals to current resource.js ) then (yes)
+else (no)
+  :Display a "diff" to the terminal;
+  if (User accepts changes ?) then (yes)
+  : Write new ""resources.js"";
+else (no)
+endif
+endif
+
+end
+}
+@enduml
+
+@startuml gc-gencode
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Object {
+  BorderColor black
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+skinparam svgLinkTarget _blank
+
+card "gc gencode"{
+start 
+
+: ""gc gencode"";
+: Fetch the live resources
+from the cloud provider's APIs;
+: Create in-memory ""resource.js"" from live resources;
+if (in-memory resource.js equals to current resource.js ) then (yes)
+else (no)
+  :Display a "diff" to the terminal;
+  if (User accepts changes ?) then (yes)
+  : Write new ""resources.js"";
+else (no)
+endif
+endif
+
+end
+}
+@enduml
+
+PlantUML version 1.2021.16(Wed Dec 08 12:25:22 COT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

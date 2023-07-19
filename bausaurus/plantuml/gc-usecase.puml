@@ -1,0 +1,25 @@
+@startuml
+
+!theme plain
+left to right direction
+actor "DevOps User" as d
+
+package "GruCloud use cases" {
+  usecase "Display diagrams from live resources" as UC1
+  usecase "Generate infrastructure code from live resources" as UC2
+  usecase "Deploy resources to various phases" as UC3
+  usecase "Update resources" as UC4
+  usecase "Destroy resources" as UC5
+}
+
+note right of UC3
+prod, test, etc ...
+end note
+
+d --> UC1
+d --> UC2
+d --> UC3
+d --> UC4
+d --> UC5
+
+@enduml

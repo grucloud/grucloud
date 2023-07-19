@@ -1,0 +1,63 @@
+@startuml gc-new-workflow
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "GruCloud Workflow for new project" {
+start
+: ""npm install -g @grucloud/core"";
+note right
+Install ""gc"" globally
+end note 
+
+: ""gc new"";
+    note right
+    Create a new empty project 
+  end note 
+: ""cd my-new-project"";
+: ""gc init"";
+note right
+Initialize the provider:
+* authentication
+* service account/principal
+* region/zone
+end note 
+: ""gc list --graph"";
+note right
+List the current live infrastructure
+end note 
+: ""gc gencode"";
+  note right
+    Generate ""resources.js""
+  end note 
+
+: ""gc graph"";
+note right
+List the target infrastructure from ""resource.js""
+end note 
+
+: ""gc tree"";
+note right
+Target infrastructure mindmap from ""resource.js""
+end note 
+if (Update infra) then (Update with the \nprovider's tools)
+  :Modify the infra with\nweb portal or CLI;
+  :""gc gencode"";
+  note right
+Generate ""resources.js""
+end note 
+else (Directly update the code)
+  : Edit ""resource.js"";
+endif
+: ""gc apply"";
+note right
+Update  the infrastructure
+end note 
+: ""gc destroy"";
+note right
+Destroy  the infrastructure
+end note 
+end
+
+}
+@enduml

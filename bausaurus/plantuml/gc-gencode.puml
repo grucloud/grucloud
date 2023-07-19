@@ -1,0 +1,23 @@
+@startuml gc-gencode
+!theme plain
+skinparam svgLinkTarget _blank
+
+card "gc gencode"{
+start 
+
+: ""gc gencode"";
+: Fetch the live resources
+from the cloud provider's APIs;
+: Create in-memory ""resource.js"" from live resources;
+if (in-memory resource.js equals to current resource.js ) then (yes)
+else (no)
+  :Display a "diff" to the terminal;
+  if (User accepts changes ?) then (yes)
+  : Write new ""resources.js"";
+else (no)
+endif
+endif
+
+end
+}
+@enduml

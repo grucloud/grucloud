@@ -1,0 +1,20 @@
+{
+  "children": [
+    {
+      "data": { "name": "index.md" },
+      "index": true
+    },
+    {
+      "data": { "name": "K8sGettingStarted.md" }
+    },
+    {
+      "data": { "name": "K8sModules.md" }
+    },
+    {
+      "data": { "name": "K8sExamples.md" }
+    },
+    {
+      "data": { "name": "K8sRequirements.md" }
+    }
+  ]
+}
