@@ -8,77 +8,58 @@ const { Tagger, filterLiveDefault } = require("./LightsailCommon");
 
 const buildArn = () =>
   pipe([
-    get("relationalDatabaseName"),
+    get("relationalDatabaseSnapshotName"),
     tap((arn) => {
       assert(arn);
     }),
   ]);
 
 const pickId = pipe([
-  tap(({ relationalDatabaseName }) => {
-    assert(relationalDatabaseName);
+  tap(({ relationalDatabaseSnapshotName }) => {
+    assert(relationalDatabaseSnapshotName);
   }),
-  pick(["relationalDatabaseName"]),
+  pick(["relationalDatabaseSnapshotName"]),
 ]);
 
 const decorate = ({ endpoint }) =>
   pipe([
+    tap((arn) => {
+      assert(arn);
+    }),
     ({ name, location, ...other }) => ({
-      relationalDatabaseName: name,
+      relationalDatabaseSnapshotName: name,
       availabilityZone: location.availabilityZone,
       ...other,
     }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
-exports.LightsailDatabase = ({ compare }) => ({
-  type: "Database",
+exports.LightsailDatabaseSnapshot = ({ compare }) => ({
+  type: "DatabaseSnapshot",
   package: "lightsail",
   client: "Lightsail",
-  propertiesDefault: {
-    publiclyAccessible: false,
-    backupRetentionEnabled: true,
-  },
-  omitProperties: [
-    "arn",
-    "supportCode",
-    "resourceType",
-    "createdAt",
-    "state",
-    "masterEndpoint",
-    "pendingMaintenanceActions",
-    "caCertificateIdentifier",
-    "masterUserPassword",
-    "parameterApplyStatus",
-    "pendingModifiedValues",
-    "latestRestorableTime",
-  ],
-  inferName: () => get("relationalDatabaseName"),
-  environmentVariables: [
-    { path: "masterUsername", suffix: "MASTER_USERNAME" },
-    { path: "masterUserPassword", suffix: "MASTER_USER_PASSWORD" },
-  ],
-  compare: compare({
-    filterTarget: () => pipe([omit(["masterUserPassword"])]),
-    filterAll: () => pipe([omit(["engineVersion"])]),
-  }),
-  filterLive: filterLiveDefault,
+  propertiesDefault: {},
+  omitProperties: ["arn", "supportCode", "createdAt", "resourceType", "state"],
+  inferName: () => get("relationalDatabaseSnapshotName"),
+  ignoreResource: () => () => true,
   findName: () =>
     pipe([
-      get("relationalDatabaseName"),
+      get("relationalDatabaseSnapshotName"),
       tap((name) => {
         assert(name);
       }),
     ]),
   findId: () =>
     pipe([
-      get("relationalDatabaseName"),
+      tap((id) => {
+        assert(id);
+      }),
+      get("relationalDatabaseSnapshotName"),
       tap((id) => {
         assert(id);
       }),
     ]),
-  getByName: ({ getById }) =>
-    pipe([({ name }) => ({ relationalDatabaseName: name }), getById({})]),
+  filterLive: filterLiveDefault,
   tagger: ({ config }) =>
     Tagger({
       buildArn: buildArn({ config }),
@@ -104,27 +85,25 @@ exports.LightsailDatabase = ({ compare }) => ({
         }),
       }),
     ])(),
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getRelationalDatabase-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getRelationalDatabaseSnapshot-property
   getById: {
-    method: "getRelationalDatabase",
-    getField: "relationalDatabase",
+    method: "getRelationalDatabaseSnapshot",
+    getField: "relationalDatabaseSnapshot",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getRelationalDatabases-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#getRelationalDatabaseSnapshots-property
   getList: {
-    method: "getRelationalDatabases",
-    getParam: "relationalDatabases",
+    method: "getRelationalDatabaseSnapshots",
+    getParam: "relationalDatabaseSnapshots",
     decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#createRelationalDatabase-property
   create: {
-    method: "createRelationalDatabase",
+    method: "createRelationalDatabaseSnapshot",
     pickCreated: ({ payload }) => pipe([() => payload]),
     isInstanceUp: pipe([eq(get("state"), "available")]),
     isInstanceError: pipe([eq(get("state"), "error")]),
-    // getErrorMessage: get("StatusMessage", "error"),
   },
   // TODO update
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#updateRelationalDatabase-property
@@ -133,13 +112,17 @@ exports.LightsailDatabase = ({ compare }) => ({
     method: "updateRelationalDatabase",
     filterParams: ({ payload, diff, live }) => pipe([() => payload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#deleteRelationalDatabase-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html#deleteRelationalDatabaseSnapshot-property
   destroy: {
-    //TODO skipFinalSnapshot:true and finalRelationalDatabaseSnapshotName
-    method: "deleteRelationalDatabase",
+    method: "deleteRelationalDatabaseSnapshot",
     pickId,
     shouldRetryOnExceptionMessages: [
-      "Sorry, you can't delete a relational database in backing-up state; please try again later",
+      "Sorry, you cannot delete a snapshot while the snapshot is in the state creating. Please try again late",
     ],
   },
+  getByName: ({ getById }) =>
+    pipe([
+      ({ name }) => ({ relationalDatabaseSnapshotName: name }),
+      getById({}),
+    ]),
 });

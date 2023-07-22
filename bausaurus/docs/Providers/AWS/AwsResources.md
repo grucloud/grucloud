@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 809 resources in 166 services for provider aws:
+List of 810 resources in 166 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
@@ -199,7 +199,7 @@ List of 809 resources in 166 services for provider aws:
 * LicenseManager: 
 [Association](./resources/LicenseManager/Association.md), [Grant](./resources/LicenseManager/Grant.md), [GrantAccepter](./resources/LicenseManager/GrantAccepter.md), [License](./resources/LicenseManager/License.md), [LicenseConfiguration](./resources/LicenseManager/LicenseConfiguration.md)
 * Lightsail: 
-[Bucket](./resources/Lightsail/Bucket.md), [Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
+[Bucket](./resources/Lightsail/Bucket.md), [Certificate](./resources/Lightsail/Certificate.md), [ContainerService](./resources/Lightsail/ContainerService.md), [Database](./resources/Lightsail/Database.md), [DatabaseSnapshot](./resources/Lightsail/DatabaseSnapshot.md), [Disk](./resources/Lightsail/Disk.md), [DiskAttachment](./resources/Lightsail/DiskAttachment.md), [Instance](./resources/Lightsail/Instance.md), [InstancePublicPorts](./resources/Lightsail/InstancePublicPorts.md), [KeyPair](./resources/Lightsail/KeyPair.md), [LoadBalancer](./resources/Lightsail/LoadBalancer.md), [LoadBalancerAttachment](./resources/Lightsail/LoadBalancerAttachment.md), [LoadBalancerCertificate](./resources/Lightsail/LoadBalancerCertificate.md), [LoadBalancerCertificateAttachment](./resources/Lightsail/LoadBalancerCertificateAttachment.md), [StaticIp](./resources/Lightsail/StaticIp.md), [StaticIpAttachment](./resources/Lightsail/StaticIpAttachment.md)
 * Location: 
 [GeofenceCollection](./resources/Location/GeofenceCollection.md), [Map](./resources/Location/Map.md), [PlaceIndex](./resources/Location/PlaceIndex.md), [RouteCalculator](./resources/Location/RouteCalculator.md), [Tracker](./resources/Location/Tracker.md), [TrackerAssociation](./resources/Location/TrackerAssociation.md)
 * Macie2: 

@@ -16,7 +16,7 @@ describe("AzResourcesList", async function () {
         commandOptions: {
           output: path.resolve(
             __filename,
-            "../../../../../docusaurus/docs/azure/AzureResources.md"
+            "../../../../../bausaurus/docs/Providers/Azure/AzureResources.md"
           ),
         },
       }),

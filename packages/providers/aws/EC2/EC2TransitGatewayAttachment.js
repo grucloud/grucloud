@@ -86,8 +86,6 @@ exports.EC2TransitGatewayAttachment = ({}) => ({
   client: "EC2",
   findName: findNameInTagsOrId({ findId: findNameInDependency }),
   findId,
-  // TODO remove this
-  //ignoreResource: () => true,
   omitProperties: [
     "TransitGatewayOwnerId",
     "ResourceOwnerId",

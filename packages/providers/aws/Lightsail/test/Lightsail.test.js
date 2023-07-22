@@ -44,6 +44,16 @@ describe("Lightsail", async function () {
       }),
       awsResourceTest,
     ])());
+  it("DatabaseSnapshot", () =>
+    pipe([
+      () => ({
+        groupType: "Lightsail::DatabaseSnapshot",
+        livesNotFound: ({ config }) => [
+          { relationalDatabaseSnapshotName: "db123" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Disk", () =>
     pipe([
       () => ({
