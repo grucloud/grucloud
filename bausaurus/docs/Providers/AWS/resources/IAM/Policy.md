@@ -1,0 +1,227 @@
+---
+id: Policy
+title: Policy
+---
+
+Provides an Iam Policy.
+
+The examples below create or reference a policy, and add it to a role, a user or a group.
+
+### Attach a policy to a role
+
+Let's create a policy and a user, the policy is attached to the user via the _dependencies_ field:
+
+```js
+exports.createResources = () => [
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "policy-allow-ec2",
+    properties: ({}) => ({
+      PolicyName: "policy-allow-ec2",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["sqs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  },
+];
+```
+
+### Attach a read only policy to a role
+
+```js
+exports.createResources = () => [
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "service-role/AmazonEC2ContainerServiceforEC2Role",
+    readOnly: true,
+    properties: ({}) => ({
+      Arn: "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+    }),
+  },
+];
+```
+
+### Attach a policy to a user
+
+Let's create a policy and attach it to the user:
+
+```js
+exports.createResources = () => [
+  {
+    type: "User",
+    group: "IAM",
+    name: "Alice",
+    properties: ({}) => ({
+      Path: "/",
+    }),
+    dependencies: () => ({
+      policies: ["myPolicy-to-user"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "myPolicy-to-user",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  },
+];
+```
+
+### Attach a policy to a group
+
+Let's create a policy and attach it to the group:
+
+```js
+exports.createResources = () => [
+  {
+    type: "Group",
+    group: "IAM",
+    name: "Admin",
+    properties: ({}) => ({
+      Path: "/",
+    }),
+    dependencies: () => ({
+      policies: ["myPolicy-to-group"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "myPolicy-to-group",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  },
+];
+```
+
+### Examples
+
+- [Policies attached to a role](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam-policy/)
+- [Policies attached to roles, users and groups](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam)
+
+### Properties
+
+- [CreatePolicyCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-iam/interfaces/createpolicycommandinput.html)
+
+### Used By
+
+- [Iam Role](./Role.md)
+- [Iam User](./User.md)
+- [Iam Group](./Group.md)
+
+### List
+
+```sh
+gc l -t Policy
+```
+
+```txts
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 1/1
+┌──────────────────────────────────────────────────────────────────┐
+│ 1 IAM::Policy from aws                                           │
+├──────────────────────────────────────────────────────────────────┤
+│ name: policy-allow-ec2                                           │
+│ managedByUs: Yes                                                 │
+│ live:                                                            │
+│   PolicyName: policy-allow-ec2                                   │
+│   PolicyId: ANPA4HNBM2ZQAGCMR7RQ7                                │
+│   Arn: arn:aws:iam::840541460064:policy/policy-allow-ec2         │
+│   Path: /                                                        │
+│   DefaultVersionId: v1                                           │
+│   AttachmentCount: 1                                             │
+│   PermissionsBoundaryUsageCount: 0                               │
+│   IsAttachable: true                                             │
+│   Description: Allow ec2:Describe                                │
+│   CreateDate: 2022-03-09T03:27:14.000Z                           │
+│   UpdateDate: 2022-03-09T03:27:14.000Z                           │
+│   Tags:                                                          │
+│     - Key: gc-created-by-provider                                │
+│       Value: aws                                                 │
+│     - Key: gc-managed-by                                         │
+│       Value: grucloud                                            │
+│     - Key: gc-project-name                                       │
+│       Value: @grucloud/example-aws-iam-policy                    │
+│     - Key: gc-stage                                              │
+│       Value: dev                                                 │
+│     - Key: Name                                                  │
+│       Value: policy-allow-ec2                                    │
+│   Versions:                                                      │
+│     -                                                            │
+│       VersionId: v1                                              │
+│       IsDefaultVersion: true                                     │
+│       CreateDate: 2022-03-09T03:27:14.000Z                       │
+│   EntitiesForPolicy:                                             │
+│     PolicyGroups: []                                             │
+│     PolicyUsers: []                                              │
+│     PolicyRoles:                                                 │
+│       - RoleName: role-4-policies                                │
+│         RoleId: AROA4HNBM2ZQKH7QZEALS                            │
+│   PolicyDocument:                                                │
+│     Version: 2012-10-17                                          │
+│     Statement:                                                   │
+│       - Action:                                                  │
+│           - "s3:*"                                               │
+│         Effect: Allow                                            │
+│         Resource: *                                              │
+│       - Action:                                                  │
+│           - "sqs:*"                                              │
+│         Effect: Allow                                            │
+│         Resource: *                                              │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌─────────────────────────────────────────────────────────────────┐
+│ aws                                                             │
+├─────────────┬───────────────────────────────────────────────────┤
+│ IAM::Policy │ policy-allow-ec2                                  │
+└─────────────┴───────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t Policy" executed in 5s, 143 MB
+```

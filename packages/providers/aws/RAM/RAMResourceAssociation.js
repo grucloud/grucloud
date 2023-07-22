@@ -164,8 +164,6 @@ const associatedEntityArn = ({ resourceDependencies }) =>
       getField(resource, RamResourceDependencies[resourceKey].arnKey),
   ])();
 
-const model = ({ config }) => ({});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
 exports.RAMResourceAssociation = ({}) => ({
   type: "ResourceAssociation",

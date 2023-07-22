@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="1841px" preserveAspectRatio="none" style="width:758px;height:1841px;background:#FFFFFF;" version="1.1" viewBox="0 0 758 1841" width="758px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="1829.5591" style="stroke:#000000;stroke-width:2.0;" width="745.5" x="6" y="6"/><line style="stroke:#000000;stroke-width:2.0;" x1="6" x2="751.5" y1="27.0146" y2="27.0146"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="107" x="325.25" y="22.0752">gc new for GCP</text><ellipse cx="301.5" cy="53.0146" fill="#000000" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="62" x="270.5" y="98.0146"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="42" x="280.5" y="117.0615">gc new</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="88" x="257.5" y="165.0146"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="64" x="271.5" y="187.0791">Select GCP</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="173" x="215" y="234.5986"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="149" x="229" y="256.6631">Enter the project's name</text><rect fill="#FFFFFF" height="209.0146" style="stroke:#000000;stroke-width:2.0;" width="509" x="232.5" y="304.1826"/><path d="M440.5,304.1826 L440.5,314.1973 L430.5,324.1973 L232.5,324.1973 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="198" x="235.5" y="319.2578">Is the gcloud CLI installed ?</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="118" x="242.5" y="341.1973"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="98" x="252.5" y="360.2441">gcloud version</text><polygon fill="#FFFFFF" points="266.5,469.1973,336.5,469.1973,348.5,481.1973,336.5,493.1973,266.5,493.1973,254.5,481.1973,266.5,469.1973" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="70" x="266.5" y="485.572">is installed ?</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="348.5" y="478.8877">no</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="347" x="384.5" y="399.9053"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="25" x="402.5" y="421.9697">Visit</text><a href="https://https://cloud.google.com/sdk/docs/install" target="_blank" title="https://https://cloud.google.com/sdk/docs/install" xlink:actuate="onRequest" xlink:href="https://https://cloud.google.com/sdk/docs/install" xlink:show="new" xlink:title="https://https://cloud.google.com/sdk/docs/install" xlink:type="simple"><text fill="#0000FF" font-family="Verdana" font-size="12" lengthAdjust="spacing" text-decoration="underline" textLength="290" x="431.5" y="421.9697">https://https://cloud.google.com/sdk/docs/install</text></a><rect fill="#FFFFFF" height="209.0146" style="stroke:#000000;stroke-width:2.0;" width="316" x="225.5" y="561.5659"/><path d="M370.5,561.5659 L370.5,571.5806 L360.5,581.5806 L225.5,581.5806 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="130" x="228.5" y="576.6411">Is Authenticated ?</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="132" x="235.5" y="598.5806"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="112" x="245.5" y="617.6274">gcloud auth list</text><polygon fill="#FFFFFF" points="251.5,726.5806,351.5,726.5806,363.5,738.5806,351.5,750.5806,251.5,750.5806,239.5,738.5806,251.5,726.5806" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="100" x="251.5" y="742.9553">is authenticated ?</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="363.5" y="736.271">no</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="140" x="391.5" y="657.2886"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="409.5" y="679.353"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="112" x="409.5" y="678.9194">gloud auth login</text><rect fill="#FFFFFF" height="210.5986" style="stroke:#000000;stroke-width:2.0;" width="473" x="65" y="805.5806"/><path d="M196,805.5806 L196,815.5952 L186,825.5952 L65,825.5952 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="116" x="68" y="820.6558">Select Project Id</text><rect fill="#000000" height="6" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="453" x="75" y="842.5952"/><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="160" x="89" y="868.5952"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="140" x="99" y="887.6421">gcloud projects list</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="237" x="277" y="868.5952"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="217" x="287" y="887.6421">gcloud config get-value project</text><rect fill="#000000" height="6" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="453" x="75" y="920.5952"/><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="185" x="209" y="961.5952"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="161" x="223" y="983.6597">Prompt for project from list</text><rect fill="#FFFFFF" height="210.5986" style="stroke:#000000;stroke-width:2.0;" width="571" x="16" y="1051.1792"/><path d="M127,1051.1792 L127,1061.1938 L117,1071.1938 L16,1071.1938 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="96" x="19" y="1066.2544">Select Region</text><rect fill="#000000" height="6" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="551" x="26" y="1088.1938"/><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="209" x="40" y="1114.1938"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="189" x="50" y="1133.2407">gcloud compute regions list</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="286" x="277" y="1114.1938"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="266" x="287" y="1133.2407">gcloud config get-value compute/region</text><rect fill="#000000" height="6" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="551" x="26" y="1166.1938"/><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="181" x="211" y="1207.1938"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="157" x="225" y="1229.2583">Prompt for region from list</text><rect fill="#FFFFFF" height="210.5986" style="stroke:#000000;stroke-width:2.0;" width="543" x="30" y="1296.7778"/><path d="M128,1296.7778 L128,1306.7925 L118,1316.7925 L30,1316.7925 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="83" x="33" y="1311.853">Select Zone</text><rect fill="#000000" height="6" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="523" x="40" y="1333.7925"/><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="195" x="54" y="1359.7925"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="175" x="64" y="1378.8394">gcloud compute zones list</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="272" x="277" y="1359.7925"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="252" x="287" y="1378.8394">gcloud config get-value compute/zone</text><rect fill="#000000" height="6" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="523" x="40" y="1411.7925"/><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="172" x="215.5" y="1452.7925"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="148" x="229.5" y="1474.8569">Prompt for zone from list</text><path d="M361.5,1542.3765 L361.5,1583.7761 L341.5,1587.7761 L361.5,1591.7761 L361.5,1633.1758 A0,0 0 0 0 361.5,1633.1758 L491.5,1633.1758 A0,0 0 0 0 491.5,1633.1758 L491.5,1552.3765 L481.5,1542.3765 L361.5,1542.3765 A0,0 0 0 0 361.5,1542.3765 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M481.5,1542.3765 L481.5,1552.3765 L491.5,1552.3765 L481.5,1542.3765 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><ellipse cx="373" cy="1552.8765" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="72" x="380.5" y="1557.1772">config.js</text><ellipse cx="373" cy="1565.8765" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="64" x="380.5" y="1570.1772">auth.env</text><ellipse cx="373" cy="1578.8765" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="48" x="380.5" y="1583.1772">iac.js</text><ellipse cx="373" cy="1591.8765" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="96" x="380.5" y="1596.1772">resources.js</text><ellipse cx="373" cy="1604.8765" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="96" x="380.5" y="1609.1772">package.json</text><ellipse cx="373" cy="1620.6758" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="40" x="380.5" y="1625.4463">etc ...</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="80" x="261.5" y="1570.4841"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="56" x="275.5" y="1592.5486">Save files</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="101" x="251" y="1668.1758"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="265" y="1690.2402"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="77" x="265" y="1689.8066">npm install</text><path d="M331.5,1737.7598 L331.5,1772.6594 L311.5,1776.6594 L331.5,1780.6594 L331.5,1815.5591 A0,0 0 0 0 331.5,1815.5591 L445.5,1815.5591 A0,0 0 0 0 445.5,1815.5591 L445.5,1747.7598 L435.5,1737.7598 L331.5,1737.7598 A0,0 0 0 0 331.5,1737.7598 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M435.5,1737.7598 L435.5,1747.7598 L445.5,1747.7598 L435.5,1737.7598 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="79" x="337.5" y="1755.8296">Next Steps:</text><ellipse cx="343" cy="1764.0591" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="56" x="350.5" y="1768.3599">gc list</text><ellipse cx="343" cy="1777.0591" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="80" x="350.5" y="1781.3599">gc gencode</text><ellipse cx="343" cy="1790.0591" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="80" x="350.5" y="1794.3599">gc destroy</text><ellipse cx="343" cy="1803.0591" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="64" x="350.5" y="1807.3599">gc apply</text><ellipse cx="301.5" cy="1776.6594" fill="#FFFFFF" rx="10" ry="10" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:2.5;" x1="295.3128" x2="307.6872" y1="1770.4722" y2="1782.8466"/><line style="stroke:#000000;stroke-width:2.5;" x1="307.6872" x2="295.3128" y1="1770.4722" y2="1782.8466"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="63.0146" y2="98.0146"/><polygon fill="#000000" points="297.5,88.0146,301.5,98.0146,305.5,88.0146,301.5,92.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="130.0146" y2="165.0146"/><polygon fill="#000000" points="297.5,155.0146,301.5,165.0146,305.5,155.0146,301.5,159.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="199.5986" y2="234.5986"/><polygon fill="#000000" points="297.5,224.5986,301.5,234.5986,305.5,224.5986,301.5,228.5986" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="373.1973" y2="469.1973"/><polygon fill="#000000" points="297.5,459.1973,301.5,469.1973,305.5,459.1973,301.5,463.1973" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="348.5" x2="558" y1="481.1973" y2="481.1973"/><line style="stroke:#000000;stroke-width:1.5;" x1="558" x2="558" y1="434.4893" y2="481.1973"/><polygon fill="#000000" points="554,444.4893,558,434.4893,562,444.4893,558,440.4893" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="558" x2="558" y1="357.1973" y2="399.9053"/><line style="stroke:#000000;stroke-width:1.5;" x1="558" x2="360.5" y1="357.1973" y2="357.1973"/><polygon fill="#000000" points="370.5,353.1973,360.5,357.1973,370.5,361.1973,366.5,357.1973" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="269.1826" y2="341.1973"/><polygon fill="#000000" points="297.5,331.1973,301.5,341.1973,305.5,331.1973,301.5,335.1973" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="630.5806" y2="726.5806"/><polygon fill="#000000" points="297.5,716.5806,301.5,726.5806,305.5,716.5806,301.5,720.5806" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="363.5" x2="461.5" y1="738.5806" y2="738.5806"/><line style="stroke:#000000;stroke-width:1.5;" x1="461.5" x2="461.5" y1="691.8726" y2="738.5806"/><polygon fill="#000000" points="457.5,701.8726,461.5,691.8726,465.5,701.8726,461.5,697.8726" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="461.5" x2="461.5" y1="614.5806" y2="657.2886"/><line style="stroke:#000000;stroke-width:1.5;" x1="461.5" x2="367.5" y1="614.5806" y2="614.5806"/><polygon fill="#000000" points="377.5,610.5806,367.5,614.5806,377.5,618.5806,373.5,614.5806" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="493.1973" y2="598.5806"/><polygon fill="#000000" points="297.5,588.5806,301.5,598.5806,305.5,588.5806,301.5,592.5806" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="305.5" y="550.2637">yes</text><line style="stroke:#000000;stroke-width:1.5;" x1="169" x2="169" y1="848.5952" y2="868.5952"/><polygon fill="#000000" points="165,858.5952,169,868.5952,173,858.5952,169,862.5952" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="395.5" x2="395.5" y1="848.5952" y2="868.5952"/><polygon fill="#000000" points="391.5,858.5952,395.5,868.5952,399.5,858.5952,395.5,862.5952" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="169" x2="169" y1="900.5952" y2="920.5952"/><polygon fill="#000000" points="165,910.5952,169,920.5952,173,910.5952,169,914.5952" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="395.5" x2="395.5" y1="900.5952" y2="920.5952"/><polygon fill="#000000" points="391.5,910.5952,395.5,920.5952,399.5,910.5952,395.5,914.5952" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="926.5952" y2="961.5952"/><polygon fill="#000000" points="297.5,951.5952,301.5,961.5952,305.5,951.5952,301.5,955.5952" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="750.5806" y2="842.5952"/><polygon fill="#000000" points="297.5,832.5952,301.5,842.5952,305.5,832.5952,301.5,836.5952" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="144.5" x2="144.5" y1="1094.1938" y2="1114.1938"/><polygon fill="#000000" points="140.5,1104.1938,144.5,1114.1938,148.5,1104.1938,144.5,1108.1938" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="420" x2="420" y1="1094.1938" y2="1114.1938"/><polygon fill="#000000" points="416,1104.1938,420,1114.1938,424,1104.1938,420,1108.1938" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="144.5" x2="144.5" y1="1146.1938" y2="1166.1938"/><polygon fill="#000000" points="140.5,1156.1938,144.5,1166.1938,148.5,1156.1938,144.5,1160.1938" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="420" x2="420" y1="1146.1938" y2="1166.1938"/><polygon fill="#000000" points="416,1156.1938,420,1166.1938,424,1156.1938,420,1160.1938" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="1172.1938" y2="1207.1938"/><polygon fill="#000000" points="297.5,1197.1938,301.5,1207.1938,305.5,1197.1938,301.5,1201.1938" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="996.1792" y2="1088.1938"/><polygon fill="#000000" points="297.5,1078.1938,301.5,1088.1938,305.5,1078.1938,301.5,1082.1938" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="151.5" x2="151.5" y1="1339.7925" y2="1359.7925"/><polygon fill="#000000" points="147.5,1349.7925,151.5,1359.7925,155.5,1349.7925,151.5,1353.7925" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="413" x2="413" y1="1339.7925" y2="1359.7925"/><polygon fill="#000000" points="409,1349.7925,413,1359.7925,417,1349.7925,413,1353.7925" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="151.5" x2="151.5" y1="1391.7925" y2="1411.7925"/><polygon fill="#000000" points="147.5,1401.7925,151.5,1411.7925,155.5,1401.7925,151.5,1405.7925" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="413" x2="413" y1="1391.7925" y2="1411.7925"/><polygon fill="#000000" points="409,1401.7925,413,1411.7925,417,1401.7925,413,1405.7925" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="1417.7925" y2="1452.7925"/><polygon fill="#000000" points="297.5,1442.7925,301.5,1452.7925,305.5,1442.7925,301.5,1446.7925" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="1241.7778" y2="1333.7925"/><polygon fill="#000000" points="297.5,1323.7925,301.5,1333.7925,305.5,1323.7925,301.5,1327.7925" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="1487.3765" y2="1570.4841"/><polygon fill="#000000" points="297.5,1560.4841,301.5,1570.4841,305.5,1560.4841,301.5,1564.4841" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="1605.0681" y2="1668.1758"/><polygon fill="#000000" points="297.5,1658.1758,301.5,1668.1758,305.5,1658.1758,301.5,1662.1758" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="301.5" x2="301.5" y1="1702.7598" y2="1766.6594"/><polygon fill="#000000" points="297.5,1756.6594,301.5,1766.6594,305.5,1756.6594,301.5,1760.6594" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[5716e4964905af9e689e1762f5f863fb]
+@startuml gc-new-google
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "gc new for GCP" {
+start
+
+:""gc new"";
+: Select GCP;
+: Enter the project's name;
+
+
+partition "Is the gcloud CLI installed ?" {
+repeat :""gcloud version"";
+backward:  Visit [[https://https://cloud.google.com/sdk/docs/install]];
+repeat while (is installed ?) is (no) 
+->yes;
+}
+
+partition "Is Authenticated ? " {
+
+repeat :""gcloud auth list"";
+backward:  ""gloud auth login"";
+repeat while (is authenticated ?) is (no) 
+
+}
+
+partition "Select Project Id " {
+ 
+fork
+  :""gcloud projects list"";
+fork again
+  :""gcloud config get-value project"";
+end fork
+: Prompt for project from list;
+}
+
+partition "Select Region " {
+fork
+  :""gcloud compute regions list"";
+fork again
+  :""gcloud config get-value compute/region"";
+end fork
+: Prompt for region from list;
+}
+
+partition "Select Zone " {
+ fork
+  :""gcloud compute zones list"";
+fork again
+  :""gcloud config get-value compute/zone"";
+end fork
+: Prompt for zone from list;
+}
+
+: Save files; 
+note right
+* ""config.js""
+* ""auth.env""
+* ""iac.js""
+* ""resources.js""
+* ""package.json""
+* etc ...
+end note 
+
+: ""npm install"";
+end
+
+note right
+Next Steps:
+* ""gc list""
+* ""gc gencode""
+* ""gc destroy""
+* ""gc apply""
+end note 
+}
+@enduml
+
+@startuml gc-new-google
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+
+skinparam svgLinkTarget _blank
+
+card "gc new for GCP" {
+start
+
+:""gc new"";
+: Select GCP;
+: Enter the project's name;
+
+
+partition "Is the gcloud CLI installed ?" {
+repeat :""gcloud version"";
+backward:  Visit [[https://https://cloud.google.com/sdk/docs/install]];
+repeat while (is installed ?) is (no) 
+->yes;
+}
+
+partition "Is Authenticated ? " {
+
+repeat :""gcloud auth list"";
+backward:  ""gloud auth login"";
+repeat while (is authenticated ?) is (no) 
+
+}
+
+partition "Select Project Id " {
+ 
+fork
+  :""gcloud projects list"";
+fork again
+  :""gcloud config get-value project"";
+end fork
+: Prompt for project from list;
+}
+
+partition "Select Region " {
+fork
+  :""gcloud compute regions list"";
+fork again
+  :""gcloud config get-value compute/region"";
+end fork
+: Prompt for region from list;
+}
+
+partition "Select Zone " {
+ fork
+  :""gcloud compute zones list"";
+fork again
+  :""gcloud config get-value compute/zone"";
+end fork
+: Prompt for zone from list;
+}
+
+: Save files; 
+note right
+* ""config.js""
+* ""auth.env""
+* ""iac.js""
+* ""resources.js""
+* ""package.json""
+* etc ...
+end note 
+
+: ""npm install"";
+end
+
+note right
+Next Steps:
+* ""gc list""
+* ""gc gencode""
+* ""gc destroy""
+* ""gc apply""
+end note 
+}
+@enduml
+
+PlantUML version 1.2021.7(Sun May 23 09:40:07 BRT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

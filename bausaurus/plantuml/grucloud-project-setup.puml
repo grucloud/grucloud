@@ -1,0 +1,23 @@
+@startuml grucloud-project-setup
+!theme plain
+skinparam svgLinkTarget _blank
+
+card "Get a source code example and install the dependencies" {
+start 
+
+:""git clone https://github.com/grucloud/grucloud.git"";
+note right
+Clone the [[https://github.com/grucloud/grucloud source code]] containing the examples
+end note
+:""cd grucloud/examples/<provider>/<my-example>"";
+note right
+Change to the [[https://github.com/grucloud/grucloud/tree/main/examples examples directory]]
+end note
+:""npm install "";
+note right
+Install the dependencies with ""npm""
+end note
+end
+}
+
+@enduml

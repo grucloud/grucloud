@@ -40,8 +40,6 @@ const decorate = ({ endpoint }) =>
 
 const cannotBeDeleted = () => pipe([eq(get("Name"), "default")]);
 
-const model = ({ config }) => ({});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ScheduleGroupr.html
 exports.SchedulerScheduleGroup = ({ compare }) => ({
   type: "ScheduleGroup",

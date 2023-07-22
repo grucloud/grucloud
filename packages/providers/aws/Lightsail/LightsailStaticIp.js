@@ -18,8 +18,6 @@ const decorate = ({ endpoint }) =>
     ({ name, ...other }) => ({ staticIpName: name, ...other }),
   ]);
 
-const model = ({ config }) => ({});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
 exports.LightsailStaticIp = () => ({
   type: "StaticIp",

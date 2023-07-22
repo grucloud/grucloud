@@ -16,7 +16,7 @@ describe("K8sResourcesList", async function () {
         commandOptions: {
           output: path.resolve(
             __filename,
-            "../../../../../docusaurus/docs/k8s/K8sResources.md"
+            "../../../../../bausaurus/docs/Providers/k8s/K8sResources.md"
           ),
         },
       }),

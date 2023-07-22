@@ -1,0 +1,14 @@
+{
+  "children": [
+    { "data": { "name": "index.md" }, "index": true },
+    {
+      "data": { "name": "GoogleGettingStarted.md" }
+    },
+    {
+      "data": { "name": "GcpResources.md" }
+    },
+    {
+      "data": { "name": "GoogleRequirements.md" }
+    }
+  ]
+}

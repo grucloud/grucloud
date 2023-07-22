@@ -14,6 +14,7 @@ const { LightsailBucket } = require("./LightsailBucket");
 const { LightsailCertificate } = require("./LightsailCertificate");
 const { LightsailContainerService } = require("./LightsailContainerService");
 const { LightsailDatabase } = require("./LightsailDatabase");
+const { LightsailDatabaseSnapshot } = require("./LightsailDatabaseSnapshot");
 const { LightsailDisk } = require("./LightsailDisk");
 const { LightsailDiskAttachment } = require("./LightsailDiskAttachment");
 const { LightsailDomain } = require("./LightsailDomain");
@@ -46,6 +47,7 @@ module.exports = pipe([
     LightsailCertificate({ compare }),
     LightsailContainerService({ compare }),
     LightsailDatabase({ compare }),
+    LightsailDatabaseSnapshot({ compare }),
     LightsailDisk({ compare }),
     LightsailDiskAttachment({ compare }),
     //LightsailDomain({ compare }),

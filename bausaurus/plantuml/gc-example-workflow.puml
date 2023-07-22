@@ -1,0 +1,62 @@
+@startuml gc-example-workflow
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "GruCloud Example Workflow" {
+start
+: ""npm install -g @grucloud/core"";
+note right
+Install ""gc"" globally
+end note 
+
+: ""git clone https://github.com/grucloud/grucloud.git"";
+: ""cd examples/the/example/in/question"";
+: ""npm install"";
+note right
+Install the project's dependency
+defined in ""package.json""
+end note 
+
+: ""gc init"";
+note right
+Initialize the provider:
+* authentication
+* service account/principal
+* region/zone
+end note 
+
+: ""gc graph"";
+note right
+List the target infrastructure
+end note 
+
+: ""gc apply"";
+note right
+Deploy the infrastructure defined in ""resources.js""
+end note 
+: ""gc list"";
+note right
+List the live infrastructure
+end note 
+if (Update infra) then (Update with the \nprovider's tools)
+  :Modify the infra with\nweb portal or CLI;
+  :""gc gencode"";
+  note right
+Generate ""resources.js""
+end note 
+else (Directly update the code)
+  : Edit ""resource.js"";
+endif
+: ""gc apply"";
+note right
+Update  the infrastructure
+end note 
+: ""gc destroy"";
+note right
+Destroy  the infrastructure
+end note 
+end
+
+}
+@enduml

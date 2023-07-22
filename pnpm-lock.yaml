@@ -4076,6 +4076,18 @@ importers:
         specifier: 1.9.6
         version: 1.9.6
 
+  examples/aws/Lightsail/lightsail-database:
+    dependencies:
+      '@grucloud/core':
+        specifier: ^12.5.0
+        version: link:../../../../packages/core
+      '@grucloud/provider-aws':
+        specifier: ^12.5.0
+        version: link:../../../../packages/providers/aws
+      rubico:
+        specifier: 1.9.6
+        version: 1.9.6
+
   examples/aws/Lightsail/lightsail-wordpress:
     dependencies:
       '@grucloud/core':

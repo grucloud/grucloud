@@ -1,0 +1,14 @@
+
+digraph {
+    labelloc=t;
+    fontname=Helvetica;
+    label="Target and Live Infrastructure";
+    rankdir=LR;
+    node [shape=box  fontname=Helvetica]
+    target [label="Target Infrastructure\n defined in resources.js"]; 
+    live [label="Live Infrastructure\non AWS, GCP or Azure"]; 
+    
+    live->target [ label="gc gencode" ];
+    target->live [ label="gc apply/destroy" ];
+    
+}

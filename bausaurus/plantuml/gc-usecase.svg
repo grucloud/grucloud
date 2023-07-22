@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="498px" preserveAspectRatio="none" style="width:732px;height:498px;background:#FFFFFF;" version="1.1" viewBox="0 0 732 498" width="732px" zoomAndPan="magnify"><defs/><g><!--MD5=[d3c612a64d8a6b00494b41ce9d4dace7]
+cluster GruCloud use cases--><polygon fill="#FFFFFF" points="145,12.1191,395,12.1191,402,44.8564,545,44.8564,545,491.1191,145,491.1191,145,12.1191" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.0;" x1="145" x2="402" y1="44.8564" y2="44.8564"/><text fill="#000000" font-family="Verdana" font-size="22" font-weight="bold" lengthAdjust="spacing" textLength="244" x="149" y="36.2373">GruCloud use cases</text><ellipse cx="345.0198" cy="89.0231" fill="#FFFFFF" rx="145.0198" ry="31.404" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="259" x="215.5198" y="92.591">Display diagrams from live resources</text><ellipse cx="345.0673" cy="195.3326" fill="#FFFFFF" rx="184.0673" ry="39.2135" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="340" x="175.0673" y="198.9005">Generate infrastructure code from live resources</text><ellipse cx="344.8321" cy="299.2856" fill="#FFFFFF" rx="138.8321" ry="30.1664" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="246" x="221.8321" y="302.8534">Deploy resources to various phases</text><ellipse cx="344.9406" cy="382.9073" fill="#FFFFFF" rx="81.9406" ry="18.7881" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="121" x="284.4406" y="386.4751">Update resources</text><ellipse cx="345.1326" cy="456.2457" fill="#FFFFFF" rx="83.6326" ry="19.1265" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="125" x="282.6326" y="459.8135">Destroy resources</text><!--MD5=[011db1d27274c86691871bc51b12beb8]
+entity d--><ellipse cx="56" cy="269.1191" fill="#FFFFFF" rx="8" ry="8" style="stroke:#000000;stroke-width:1.0;"/><path d="M56,277.1191 L56,304.1191 M43,285.1191 L69,285.1191 M56,304.1191 L43,319.1191 M56,304.1191 L69,319.1191 " fill="none" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="90" x="11" y="335.1943">DevOps User</text><path d="M589,286.1191 L589,295.1191 L484.23,299.1191 L589,303.1191 L589,311.9185 A0,0 0 0 0 589,311.9185 L725,311.9185 A0,0 0 0 0 725,311.9185 L725,296.1191 L715,286.1191 L589,286.1191 A0,0 0 0 0 589,286.1191 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M715,286.1191 L715,296.1191 L725,296.1191 L715,286.1191 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="115" x="595" y="304.189">prod, test, etc ...</text><!--MD5=[594dfd29bb785146d042e46ba670b1f1]
+link d to UC1--><path d="M66.22,259.8791 C76.96,222.9291 98.38,168.7791 137,138.1191 C157.4,121.9191 182.28,110.9291 207.62,103.4991 " fill="none" id="d-to-UC1" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="212.69,102.0591,202.9385,100.6779,207.8813,103.429,205.1302,108.3718,212.69,102.0591" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[9a70ab9004695bf286c2ec865db5bc47]
+link d to UC2--><path d="M101.12,269.6991 C112.49,262.9491 124.93,256.2591 137,251.1191 C160.85,240.9691 187.03,232.1991 212.51,224.8091 " fill="none" id="d-to-UC2" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="217.6,223.3491,207.8437,222.0024,212.7962,224.736,210.0626,229.6885,217.6,223.3491" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[6dff1289d57ecc3c3df513c6fdd03424]
+link d to UC3--><path d="M101.21,299.1191 C128.19,299.1191 164.35,299.1191 200.51,299.1191 " fill="none" id="d-to-UC3" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="205.84,299.1191,196.84,295.1191,200.84,299.1191,196.84,303.1191,205.84,299.1191" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[d10c5a33fa212c95f17c34d8746e7225]
+link d to UC4--><path d="M101.31,328.8791 C112.57,335.3891 124.91,341.6491 137,346.1191 C177.31,361.0191 224.32,370.0391 263.34,375.4391 " fill="none" id="d-to-UC4" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="268.54,376.1391,260.1603,370.9641,263.5855,375.4661,259.0835,378.8913,268.54,376.1391" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[aa2bf64e1d61247a2da878c2422fc9c8]
+link d to UC5--><path d="M73.05,338.2991 C86.2,365.3391 107.47,399.7791 137,419.1191 C171.93,441.9991 216.96,451.8191 256.1,455.6791 " fill="none" id="d-to-UC5" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="261.33,456.1691,252.7465,451.3397,256.3522,455.6985,251.9934,459.3042,261.33,456.1691" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[76bddd1e71620d5bcade07e7b22df809]
+@startuml
+
+!theme plain
+left to right direction
+actor "DevOps User" as d
+
+package "GruCloud use cases" {
+  usecase "Display diagrams from live resources" as UC1
+  usecase "Generate infrastructure code from live resources" as UC2
+  usecase "Deploy resources to various phases" as UC3
+  usecase "Update resources" as UC4
+  usecase "Destroy resources" as UC5
+}
+
+note right of UC3
+prod, test, etc ...
+end note
+
+d - -> UC1
+d - -> UC2
+d - -> UC3
+d - -> UC4
+d - -> UC5
+
+@enduml
+
+@startuml
+
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Object {
+  BorderColor black
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+left to right direction
+actor "DevOps User" as d
+
+package "GruCloud use cases" {
+  usecase "Display diagrams from live resources" as UC1
+  usecase "Generate infrastructure code from live resources" as UC2
+  usecase "Deploy resources to various phases" as UC3
+  usecase "Update resources" as UC4
+  usecase "Destroy resources" as UC5
+}
+
+note right of UC3
+prod, test, etc ...
+end note
+
+d - -> UC1
+d - -> UC2
+d - -> UC3
+d - -> UC4
+d - -> UC5
+
+@enduml
+
+PlantUML version 1.2021.14(Fri Nov 12 11:46:50 COT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

@@ -1,0 +1,16 @@
+@startuml gcp-requirements-compute
+!theme plain
+
+skinparam svgLinkTarget _blank
+!include gcp-requirements.puml
+
+partition "Region and Zone" {
+start
+: [[https://cloud.google.com/compute/docs/regions-zones Find region and zone]];
+: ""gcloud config set compute/region eu-west4"";
+: ""gcloud config set compute/zone eu-west4-a"";
+: ""gcloud info"";
+end
+}
+
+@enduml

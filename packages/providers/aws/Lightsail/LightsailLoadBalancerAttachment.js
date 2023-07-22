@@ -19,8 +19,6 @@ const pickId = pipe([
   }),
 ]);
 
-const model = ({ config }) => ({});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lightsail.html
 exports.LightsailLoadBalancerAttachment = ({ compare }) => ({
   type: "LoadBalancerAttachment",

@@ -1,0 +1,57 @@
+@startuml gcp-provider-init
+!theme plain
+
+card "<b>gc init</b> for the GCP Provider" {
+
+start
+repeat :""gcloud auth print-access-token --format json"";
+backward: ""gcloud auth login"";
+repeat while (exists ?) is (no) 
+->yes;
+
+:Create Project;
+note right
+ From the property <b>""projectId""</b> in ""config.js""
+end note 
+:Enable Basic Service API;
+note right
+* ""cloudbilling.googleapis.com""
+* ""cloudresourcemanager.googleapis.com""
+* ""iam.googleapis.com""
+* ""serviceusage.googleapis.com""
+end note 
+
+:Enable Billing;
+:Create Service Account;
+note right
+ ""grucloud@<b>your-project-id</b>.iam.gserviceaccount.com""
+end note 
+
+: Create Service Account Credential File; 
+note right
+ ""/home/<b>your-home</b>/.config/gcloud/<b>your-project-id</b>.json""
+end note  
+
+: Bind Roles to the Service Account;
+note right
+Roles:
+ * ""iam.serviceAccountAdmin""
+ * ""compute.admin""
+ * ""storage.admin""
+ * ""storage.objectAdmin""
+ * ""dns.admin""
+ * ""domains.admin""
+ * ""editor""
+ * ""resourcemanager.projectIamAdmin""
+ 
+end note  
+:Enable Main Service API;
+note right
+* ""compute.googleapis.com""
+* ""dns.googleapis.com""
+end note 
+
+end
+}
+
+@enduml

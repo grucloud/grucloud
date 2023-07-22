@@ -1,0 +1,14 @@
+{
+  "children": [
+    { "data": { "name": "index.md" }, "index": true },
+    {
+      "data": { "name": "AwsGettingStarted.md" }
+    },
+    {
+      "data": { "name": "AwsResources.md" }
+    },
+    {
+      "data": { "name": "AwsConfig.md" }
+    }
+  ]
+}

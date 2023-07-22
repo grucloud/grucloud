@@ -59,7 +59,7 @@ exports.LightsailDatabase = ({ compare }) => ({
     { path: "masterUserPassword", suffix: "MASTER_USER_PASSWORD" },
   ],
   compare: compare({
-    filterTarget: () => pipe([omit(["commasterUserPasswordpare"])]),
+    filterTarget: () => pipe([omit(["masterUserPassword"])]),
     filterAll: () => pipe([omit(["engineVersion"])]),
   }),
   filterLive: filterLiveDefault,

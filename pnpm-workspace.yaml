@@ -3,6 +3,8 @@ packages:
   - "packages/**/*"
   # all packages in subdirs of components/
   - "examples/**/*"
+  - "bausaurus/**/*"
+
   # exclude packages that are inside test directories
   - "!examples/aws/CloudFront/website-https/svelte-app"
   - "!examples/aws/Lambda/lambda-web-adapter-cdk/LambdaAdapterCdkStack-lambdaAdapterFunction*"
