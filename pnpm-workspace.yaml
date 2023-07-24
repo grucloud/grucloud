@@ -3,7 +3,7 @@ packages:
   - "packages/**/*"
   # all packages in subdirs of components/
   - "examples/**/*"
-  - "bausaurus/**/*"
+  - "bausaurus/**"
 
   # exclude packages that are inside test directories
   - "!examples/aws/CloudFront/website-https/svelte-app"

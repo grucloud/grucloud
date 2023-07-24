@@ -2,8 +2,7 @@ import highlightContainer from "./highlightContainer";
 
 export default function (context) {
   const { bau, css } = context;
-  const { article, a, code, div, em, h1, h2, iframe, img, p, section, pre } =
-    bau.tags;
+  const { article, a, code, div, em, h2, img, p, section, pre } = bau.tags;
 
   const HighlightContainer = highlightContainer(context);
   const className = css`
@@ -16,7 +15,7 @@ export default function (context) {
       section(
         h2("Generate code from a live infrastructure."),
         p(
-          "Manually writing infrastructure code is time consuming and require expertise. The code generation feature frees you from this tedious task."
+          "Manually writing infrastructure code is time-consuming and requires expertise. The code generation feature frees you from this tedious task."
         ),
         p(
           "The ",
@@ -46,7 +45,7 @@ export default function (context) {
         p(
           "The ",
           code("gc tree"),
-          " command displays a mindmap resources types.  "
+          " command displays mindmap resources types.  "
         ),
         div(
           img({
@@ -77,7 +76,7 @@ export default function (context) {
             { href: "mailto:hello@grucloud.com?subject=Demo request" },
             "hello@grucloud.com"
           ),
-          " for more information about a personal demo"
+          " for more information about a personal demo."
         )
       )
     );

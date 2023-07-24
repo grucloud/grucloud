@@ -54,7 +54,7 @@ export default function ({ bau, css }) {
     justify-content: center;
     align-items: center;
     color: var(--font-color-secondary);
-    box-shadow: var(--global-shadow-lw);
+    box-shadow: var(--shadow-s);
     & ul {
       padding-left: 0;
       & li {

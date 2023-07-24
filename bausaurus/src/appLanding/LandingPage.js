@@ -20,7 +20,7 @@ export default function (context) {
       title: "Features",
       Content: () => [
         p("Generate code from live infrastructures."),
-        p("Deploy, destroy and list resources on various clouds."),
+        p("Deploy, destroy, and list resources on various clouds."),
         p("Share and compose infrastructure."),
         p("Automatic resource dependencies management."),
       ],
@@ -28,10 +28,10 @@ export default function (context) {
     {
       title: "Benefit",
       Content: () => [
-        p("Skip manually coding your infrastructure."),
-        p("Stop paying for ununsed resources. Re-deploy them when necessary."),
+        p("Avoid hand-coding your infrastructure."),
+        p("Stop paying for unused resources. Re-deploy them when necessary."),
         p("Predictable deployment."),
-        p("Create various deployment stages: production, uat, test, etc ..."),
+        p("Create various deployment stages: production, test, etc ..."),
       ],
     },
     {
@@ -41,7 +41,7 @@ export default function (context) {
           "Use Javascript, a true programming language, no more YAML or Domain Specific language."
         ),
         p("Easy to add new resources or new cloud providers."),
-        p("Robust against cloud service providers API failures"),
+        p("Robust against cloud service provider's API failures."),
         p("Open Source."),
       ],
     },

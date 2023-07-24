@@ -2,6 +2,7 @@
   "packages": [
     "packages/**/*",
     "examples/**/*",
+    "bausaurus/**/*",
     "!examples/aws/website-https/svelte-app",
     "!packages/providers/scaleway",
     "!packages/providers/openstack",
@@ -13,15 +14,11 @@
   "command": {
     "command": {
       "bootstrap": {
-        "npmClientArgs": [
-          "--no-audit"
-        ]
+        "npmClientArgs": ["--no-audit"]
       }
     },
     "publish": {
-      "ignoreChanges": [
-        "@grucloud/example-*"
-      ],
+      "ignoreChanges": ["@grucloud/example-*"],
       "create-release": "github",
       "conventional-commits": true
     },
