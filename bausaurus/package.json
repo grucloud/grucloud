@@ -15,6 +15,7 @@
     "@grucloud/bau-ui": "^0.30.0",
     "@grucloud/bausaurus-core": "^0.30.0",
     "@grucloud/bausaurus-theme-classic": "^0.30.5",
+    "highlight.js": "11.8.0",
     "gh-pages": "5.0.0",
     "rubico": "2.0.1"
   },

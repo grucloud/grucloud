@@ -144,7 +144,7 @@ const GettingStarted = () => (
             ".";
         }
         > a {
-          margin: 0.5rem 0 0.5rem 0;
+          padding: 0.5rem 0 0.5rem 0;
           width: 375;
         }
       `}

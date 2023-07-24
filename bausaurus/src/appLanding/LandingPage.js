@@ -1,11 +1,15 @@
 import hero from "./Hero";
 import features from "./Features";
+import gettingStarted from "./GettingStarted";
+import gcCommands from "./GcCommands";
 
 export default function (context) {
   const { bau, css } = context;
-  const { div, span, a } = bau.tags;
+  const { div, span, a, p } = bau.tags;
   const Hero = hero(context);
   const Features = features(context);
+  const GettingStarted = gettingStarted(context);
+  const GcCommands = gcCommands(context);
 
   const className = css`
     grid-area: main;
@@ -13,23 +17,33 @@ export default function (context) {
 
   const featuresContent = [
     {
-      title: "SSG",
-      Content: () =>
-        "Static Site Generation: build a static website from markdown content.",
+      title: "Features",
+      Content: () => [
+        p("Generate code from live infrastructures."),
+        p("Deploy, destroy and list resources on various clouds."),
+        p("Share and compose infrastructure."),
+        p("Automatic resource dependencies management."),
+      ],
     },
     {
-      title: "Flexible",
-      Content: () =>
-        "Customize everything: header, footer, navigation tree etc...",
+      title: "Benefit",
+      Content: () => [
+        p("Skip manually coding your infrastructure."),
+        p("Stop paying for ununsed resources. Re-deploy them when necessary."),
+        p("Predictable deployment."),
+        p("Create various deployment stages: production, uat, test, etc ..."),
+      ],
     },
     {
-      title: "Bau",
-      Content: () =>
-        span(
-          "Built with ",
-          a({ href: "https://github.com/grucloud/bau" }, "Bau"),
-          ", a lean library to build web interface."
+      title: "Tech",
+      Content: () => [
+        p(
+          "Use Javascript, a true programming language, no more YAML or Domain Specific language."
         ),
+        p("Easy to add new resources or new cloud providers."),
+        p("Robust against cloud service providers API failures"),
+        p("Open Source."),
+      ],
     },
   ];
 
@@ -43,7 +57,9 @@ export default function (context) {
         text: "Infrastructure as Generated Code",
         tagLine: "Bidirectional Infrastructure as Code Tool",
       }),
-      Features({ featuresContent })
+      Features({ featuresContent }),
+      GettingStarted(),
+      GcCommands()
     );
   };
 }

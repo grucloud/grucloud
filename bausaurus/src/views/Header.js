@@ -29,7 +29,7 @@ export default function (context) {
         height: 30,
       }),
       a({ class: "title", href: "/" }, tr("GruCloud")),
-      a({ href: `/docs/` }, tr("Docs"))
+      a({ href: `/docs/Introduction` }, tr("Docs"))
     );
 
   const NavBarRight = () =>

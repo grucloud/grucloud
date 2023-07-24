@@ -7,8 +7,7 @@ export default function (context) {
 
   const className = css`
     box-shadow: var(--global-shadow-lw);
-    margin: 1rem;
-    padding: 1rem;
+    padding: 0 1rem 1rem 1rem;
     & h1 {
       font-size: 56px;
       color: var(--color-primary);
