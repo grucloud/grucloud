@@ -8,9 +8,9 @@ export default function (context) {
 
   const Button = button(context);
 
-  const ButtonLogo = ({ href, svgHref, viewBox }) =>
+  const ButtonLogo = ({ href, svgHref, viewBox, ariaLabel }) =>
     Button(
-      { raised: true, href },
+      { raised: true, href, "aria-label": ariaLabel },
       svg({ width: "300px", height: "75px", viewBox }, use({ href: svgHref }))
     );
 
@@ -53,21 +53,25 @@ export default function (context) {
           `,
         },
         ButtonLogo({
+          ariaLabel: "AWS",
           href: "/docs/Providers/AWS/AwsGettingStarted",
           svgHref: `aws.svg#aws`,
           viewBox: "0 0 118 70",
         }),
         ButtonLogo({
+          ariaLabel: "Azure",
           href: "/docs/Providers/Azure/AzureGettingStarted",
           svgHref: `azure.svg#azure`,
           viewBox: "0 0 261 75",
         }),
         ButtonLogo({
+          ariaLabel: "Gcp",
           href: "/docs/Providers/Google/GoogleGettingStarted",
           svgHref: `gcp.svg#gcp`,
           viewBox: "0 0 473 75",
         }),
         ButtonLogo({
+          ariaLabel: "Kubernetes",
           href: "/docs/Providers/Kubernetes/K8sGettingStarted",
           svgHref: `k8s.svg#k8s`,
           viewBox: "0 0 397 68",

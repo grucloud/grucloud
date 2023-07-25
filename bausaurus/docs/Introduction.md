@@ -21,17 +21,17 @@ The next flowchart describes how to use the GruCloud CLI `gc` to manage your inf
 
 ## Getting Started
 
-- [AWS Getting Started](./Providers/aws/AwsGettingStarted.md)
-- [Google Cloud Getting Started](./Providers/google/GoogleGettingStarted.md)
-- [Microsoft Azure Getting Started](./Providers/azure/AzureGettingStarted.md)
-- [Kubernetes Getting Started](./Providers/k8s/K8sGettingStarted.md)
+- [AWS Getting Started](./Providers/AWS/AwsGettingStarted.md)
+- [Google Cloud Getting Started](./Providers/Google/GoogleGettingStarted.md)
+- [Microsoft Azure Getting Started](./Providers/Azure/AzureGettingStarted.md)
+- [Kubernetes Getting Started](./Providers/Kubernetes/K8sGettingStarted.md)
 
 ## Resources List
 
-- [AWS Resources](./Providers/aws/AwsResources.md)
-- [Google Cloud Resources](./Providers/google/GcpResources.md)
-- [Microsoft Azure Resources](./Providers/azure/AzureResources.md)
-- [Kubernetes Resources](./Providers/k8s/K8sResources.md)
+- [AWS Resources](./Providers/AWS/AwsResources.md)
+- [Google Cloud Resources](./Providers/Google/GcpResources.md)
+- [Microsoft Azure Resources](./Providers/Azure/AzureResources.md)
+- [Kubernetes Resources](./Providers/Kubernetes/K8sResources.md)
 
 ## Links
 

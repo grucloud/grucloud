@@ -1,6 +1,6 @@
 export default function (context) {
   const { bau, css } = context;
-  const { div, h4, p } = bau.tags;
+  const { div, h1, p } = bau.tags;
 
   const className = css`
     margin: 0.5rem;
@@ -15,6 +15,9 @@ export default function (context) {
       margin: 0.5rem;
       padding: 0.5rem;
       width: 30%;
+      & h1 {
+        font-size: 1.1rem;
+      }
       & p {
         color: var(--font-color-secondary);
       }
@@ -28,7 +31,7 @@ export default function (context) {
   `;
 
   const Feature = ({ title, Content }) =>
-    div({ className: "feature" }, h4(title), p(Content()));
+    div({ className: "feature" }, h1(title), p(Content()));
 
   return function Features({ featuresContent }) {
     return div(

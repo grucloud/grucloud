@@ -1,18 +1,10 @@
-import globalStyle from "@grucloud/bau-ui/globalStyle/globalStyle.js";
-
 import header from "../views/Header.js";
 import footer from "../views/Footer.js";
 import landingPage from "./LandingPage.js";
 
 export default function (context) {
-  const { bau, css, createGlobalStyles } = context;
+  const { bau, css } = context;
   const { div } = bau.tags;
-  globalStyle(context);
-
-  createGlobalStyles`
-img  {
-  max-width: 100%;
-}`;
 
   const className = css`
     display: grid;
