@@ -30,7 +30,11 @@ export default function (context) {
       h2(text),
       p(tagLine),
       Button(
-        { href: `${config.base}docs/`, primary: true, raised: true },
+        {
+          href: `${config.base}docs/Introduction`,
+          primary: true,
+          raised: true,
+        },
         "Visit Documentation"
       )
     );
