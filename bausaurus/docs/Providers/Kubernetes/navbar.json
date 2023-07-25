@@ -5,7 +5,7 @@
       "index": true
     },
     {
-      "data": { "name": "K8sGettingStarted.md" }
+      "data": { "name": "K8sGettingStarted.md", "label": "GettingStarted" }
     },
     {
       "data": { "name": "K8sModules.md" }

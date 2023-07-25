@@ -68,7 +68,7 @@ export default function (context) {
           viewBox: "0 0 473 75",
         }),
         ButtonLogo({
-          href: "/docs/Providers/k8s/K8sGettingStarted",
+          href: "/docs/Providers/Kubernetes/K8sGettingStarted",
           svgHref: `k8s.svg#k8s`,
           viewBox: "0 0 397 68",
         })

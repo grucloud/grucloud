@@ -1,6 +1,6 @@
 ---
 id: GoogleRequirements
-title: Google Requirements
+title: Requirements
 ---
 
 ## Gcloud

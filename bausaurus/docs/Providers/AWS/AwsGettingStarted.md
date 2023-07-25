@@ -1,6 +1,6 @@
 ---
 id: AwsGettingStarted
-title: Aws Getting Started
+title: Getting Started
 ---
 
 This document describes how to get started with GruCloud on AWS.

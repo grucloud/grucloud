@@ -1,6 +1,6 @@
 ---
 id: K8sExamples
-title: Kubernetes Examples
+title: Examples
 ---
 
 The quickest way to get started is to delve into a real work example:
