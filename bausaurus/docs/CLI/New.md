@@ -7,11 +7,11 @@ The **new** commands create an empty project for AWS, Azure and GCP.
 
 ## Command Options
 
-```
+```sh
 gc help new
 ```
 
-```
+```txt
 Usage: gc new [options]
 
 Create a new project

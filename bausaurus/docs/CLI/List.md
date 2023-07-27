@@ -55,11 +55,15 @@ Options:
 
 ### graph
 
-Produce a diagram depicting the lives resources and their associations.
+Produces a diagram depicting the lives resources and their associations.
 
 ```sh
 gc list --graph
 ```
+
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/EC2/Instance/ec2-vpc/artifacts/diagram-live.svg)
+
+> This command requires [graphviz](https://graphviz.org/) to convert the generated `artifacts/diagram-live.dot` into an image such as `artifacts/diagram-live.svg`
 
 ### all
 
@@ -103,7 +107,7 @@ gc list --types Server --types SecurityGroup
 
 The **--types-exclude** option excludes one or more types:
 
-```
+```sh
 gc list --graph  --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface
 ```
 
@@ -111,7 +115,7 @@ gc list --graph  --types-exclude Certificate --types-exclude Route53Domain --typ
 
 The **our** option only list resources deployed by this application
 
-```
+```sh
 gc list --our
 ```
 
@@ -119,7 +123,7 @@ gc list --our
 
 The **canBeDeleted** option only lists resources that can be deleted by this application. For instance, the default AWS VPC for instance cannot be deleted and will not show up with this option.
 
-```
+```sh
 gc list --canBeDeleted
 ```
 
@@ -127,7 +131,7 @@ gc list --canBeDeleted
 
 The **--default-exclude** option excludes the default resources such as VPC, subnet and security group.
 
-```
+```sh
 gc list --default-exclude
 ```
 
@@ -135,7 +139,7 @@ gc list --default-exclude
 
 The **provider** option only lists resources for a given provider
 
-```
+```sh
 gc list --provider=aws
 ```
 

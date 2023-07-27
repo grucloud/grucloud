@@ -24,11 +24,11 @@ gc run --onDeployedGlobal
 
 ## Command options
 
-```
+```sh
 gc run --help
 ```
 
-```
+```txt
 Usage: gc run|r [options]
 
 Run the hooks

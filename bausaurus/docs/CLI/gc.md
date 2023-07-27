@@ -31,7 +31,7 @@ Options:
 
 Commands:
   info [options]                 Get Information about the current project
-  new                            Create a new project
+  new [options]                  Create a new project
   init|i                         Initialise the cloud providers
   uninit|u                       Un-initialise the cloud providers
   plan|p [options]               Find out which resources need to be deployed or destroyed

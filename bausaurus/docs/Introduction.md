@@ -28,10 +28,10 @@ The next flowchart describes how to use the GruCloud CLI `gc` to manage your inf
 
 ## Resources List
 
-- [AWS Resources](./Providers/AWS/AwsResources.md)
-- [Google Cloud Resources](./Providers/Google/GcpResources.md)
-- [Microsoft Azure Resources](./Providers/Azure/AzureResources.md)
-- [Kubernetes Resources](./Providers/Kubernetes/K8sResources.md)
+- [AWS Resources](./Providers/AWS/Resources/AwsResources.md)
+- [Google Cloud Resources](./Providers/Google/Resources/GcpResources.md)
+- [Microsoft Azure Resources](./Providers/Azure/Resources/AzureResources.md)
+- [Kubernetes Resources](./Providers/Kubernetes/Resources/K8sResources.md)
 
 ## Links
 
