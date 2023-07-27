@@ -5,7 +5,7 @@ import gcCommands from "./GcCommands";
 
 export default function (context) {
   const { bau, css } = context;
-  const { div, span, a, p } = bau.tags;
+  const { div, p } = bau.tags;
   const Hero = hero(context);
   const Features = features(context);
   const GettingStarted = gettingStarted(context);
@@ -21,8 +21,8 @@ export default function (context) {
       Content: () => [
         p("Generate code from live infrastructures."),
         p("Deploy, destroy, and list resources on various clouds."),
+        p("Stateless."),
         p("Share and compose infrastructure."),
-        p("Automatic resource dependencies management."),
       ],
     },
     {

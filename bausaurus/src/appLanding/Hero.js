@@ -6,7 +6,6 @@ export default function (context) {
   const Button = button(context);
 
   const className = css`
-    box-shadow: var(--shadow-s);
     padding: 0 1rem 1rem 1rem;
     & h1 {
       font-size: 56px;
