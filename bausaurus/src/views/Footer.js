@@ -14,10 +14,6 @@ const footerLinks = [
         label: "YouTube",
         href: "https://www.youtube.com/channel/UC9gB2acQaqKFkZaZ5q4QfJQ",
       },
-      {
-        label: "Stack Overflow",
-        href: "https://stackoverflow.com/questions/tagged/grucloud",
-      },
     ],
   },
   {
@@ -25,19 +21,19 @@ const footerLinks = [
     items: [
       {
         label: "AWS",
-        href: "/docs/aws/AwsGettingStarted",
+        href: "/docs/Providers/aws/AwsGettingStarted",
       },
       {
         label: "Google Cloud",
-        href: "/docs/google/GoogleGettingStarted",
+        href: "/docs/Providers/Google/GoogleGettingStarted",
       },
       {
         label: "Microsoft Azure",
-        href: "/docs/azure/AzureGettingStarted",
+        href: "/docs/Providers/Azure/AzureGettingStarted",
       },
       {
         label: "Kubernetes",
-        href: "/docs/k8s/K8sGettingStarted",
+        href: "/docs/Providers/Kubernetes/K8sGettingStarted",
       },
     ],
   },

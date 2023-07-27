@@ -16,7 +16,7 @@ describe("GcpResourcesList", async function () {
         commandOptions: {
           output: path.resolve(
             __filename,
-            "../../../../../bausaurus/docs/Providers/Google/GcpResources.md"
+            "../../../../../bausaurus/docs/Providers/Google/Resources/GcpResources.md"
           ),
         },
       }),

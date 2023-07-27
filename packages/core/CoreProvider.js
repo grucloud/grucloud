@@ -1686,7 +1686,7 @@ function CoreProvider({
 
   const docPrefix = ({ providerName, group, type }) =>
     pipe([
-      () => `./resources/`,
+      () => `./`,
       when(() => group, append(`${group}/`)),
       append(`${type}.md`),
     ])();

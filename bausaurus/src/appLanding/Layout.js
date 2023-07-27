@@ -9,7 +9,7 @@ export default function (context) {
   const className = css`
     display: grid;
     justify-content: space-between;
-    grid-template-columns: minmax(15%, 300px) minmax(50%, 70%) minmax(
+    grid-template-columns: minmax(15%, 310px) minmax(50%, 70%) minmax(
         20%,
         350px
       );

@@ -6,4 +6,4 @@ title: AWS
 This is the documentation for the GruCloud AWS Provider.
 
 - [Getting Started](./AwsGettingStarted.md)
-- [Resources List](./AwsResources.md)
+- [Resources List](./Resources/AwsResources.md)

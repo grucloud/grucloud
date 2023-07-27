@@ -8,6 +8,9 @@
       "data": { "name": "K8sGettingStarted.md", "label": "GettingStarted" }
     },
     {
+      "data": { "name": "Resources", "href": "Resources/K8sResources.md" }
+    },
+    {
       "data": { "name": "K8sModules.md" }
     },
     {

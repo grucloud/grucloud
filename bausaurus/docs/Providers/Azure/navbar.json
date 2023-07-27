@@ -8,7 +8,7 @@
       "data": { "name": "AzureGettingStarted.md" }
     },
     {
-      "data": { "name": "AzureResources.md" }
+      "data": { "name": "Resources", "href": "Resources/AzureResources.md" }
     },
     {
       "data": { "name": "AzureRequirements.md" }

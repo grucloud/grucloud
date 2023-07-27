@@ -1,6 +1,6 @@
 ---
 id: Introduction
-title: Introduction To GruCloud
+title: Introduction
 ---
 
 ## What is GruCloud ?
