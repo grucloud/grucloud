@@ -119,7 +119,7 @@ gc gencode
 
 The following flowchart explains in more detail the process of generating the code from the live infrastructure.
 
-![gc-gencode.svg](../../plantuml/gc-gencode.svg)
+![gc-gencode.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-gencode.svg)
 
 At this point, the target infrastructure matches the live infrastructure.
 
