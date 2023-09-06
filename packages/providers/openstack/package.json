@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-openstack",
-  "version": "12.6.0",
+  "version": "12.6.1",
   "private": true,
   "description": "The GruCloud OpenStack provider",
   "main": "OpenStackProvider.js",
@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.6.0",
+    "@grucloud/core": "^12.6.1",
     "axios": "1.3.6",
     "rubico": "1.9.6"
   },
