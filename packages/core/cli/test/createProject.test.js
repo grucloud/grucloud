@@ -40,7 +40,7 @@ describe("createProject", function () {
     try {
       await runProject({
         commandOptions: {},
-        injects: ["aws", "aws-project-test", "wrong-profile"],
+        injects: ["aws", "aws-project-test", "aws", "wrong-profile"],
       });
       assert(false, "shoud not be here");
     } catch (error) {

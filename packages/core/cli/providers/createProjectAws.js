@@ -22,11 +22,27 @@ const {
 } = require("rubico/x");
 
 const shell = require("shelljs");
-const {
-  execCommandShell,
-  createConfig,
-  myPrompts,
-} = require("./createProjectCommon");
+const { execCommandShell, myPrompts } = require("./createProjectCommon");
+
+const createConfig = ({ profile, partition }) =>
+  pipe([
+    tap(() => {
+      assert(profile);
+      assert(partition);
+    }),
+    () => `const pkg = require("./package.json");
+module.exports = () => ({
+  projectName: pkg.name,
+  // includeGroups: ["EC2", "ECS", "IAM", "KMS", "RDS"],
+  // excludeGroups: [],
+  credentials: { profile: "${profile}" },
+  partition: "${partition}"
+});
+`,
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const PARTITIONS = [
   { title: "aws", description: "Public AWS partition" },

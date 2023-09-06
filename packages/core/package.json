@@ -9,7 +9,7 @@
   },
   "homepage": "https://www.grucloud.com",
   "scripts": {
-    "test": "dotenv -e ../../secrets/default.env --  mocha  './cli/**/*.test.js'  './test/**/*.test.js'",
+    "test": "node --env-file ../../secrets/default.env  node_modules/mocha/bin/_mocha  './cli/**/*.test.js'  './test/**/*.test.js'",
     "coverage": "nyc npm run test"
   },
   "keywords": [
@@ -23,8 +23,6 @@
   "author": "Frederic Heem",
   "license": "ISC",
   "devDependencies": {
-    "dotenv": "16.0.3",
-    "dotenv-cli": "7.2.1",
     "mocha": "10.2.0",
     "mocha-junit-reporter": "2.2.0",
     "nyc": "15.1.0",

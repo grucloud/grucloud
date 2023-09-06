@@ -90,19 +90,11 @@ exports.execCommandShell =
       execCommand({ textStart: command, textEnd }),
     ])();
 
-exports.createConfig = ({ profile, partition }) =>
+exports.createConfig = ({}) =>
   pipe([
-    tap(() => {
-      assert(profile);
-      assert(partition);
-    }),
     () => `const pkg = require("./package.json");
 module.exports = () => ({
   projectName: pkg.name,
-  // includeGroups: ["EC2", "ECS", "IAM", "KMS", "RDS"],
-  // excludeGroups: [],
-  credentials: { profile: "${profile}" },
-  partition: "${partition}"
 });
 `,
     tap((params) => {
