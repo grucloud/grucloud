@@ -6,9 +6,7 @@ export default function (context) {
   const Button = button(context);
 
   const className = css`
-    box-shadow: var(--global-shadow-lw);
-    margin: 1rem;
-    padding: 1rem;
+    padding: 0 1rem 1rem 1rem;
     & h1 {
       font-size: 56px;
       color: var(--color-primary);
@@ -31,7 +29,11 @@ export default function (context) {
       h2(text),
       p(tagLine),
       Button(
-        { href: `${config.base}docs/`, primary: true, raised: true },
+        {
+          href: `${config.base}docs/Introduction`,
+          color: "primary",
+          variant: "solid",
+        },
         "Visit Documentation"
       )
     );

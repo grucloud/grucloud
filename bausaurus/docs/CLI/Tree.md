@@ -12,7 +12,8 @@ gc tree
 ## Requirements
 
 The conversion from \*.puml to SVG/PNG is performed by [plantuml](https://plantuml.com/download).
-Do not forget to download the [plantuml.jar](https://plantuml.com/download).
+
+> Do not forget to download the [plantuml.jar](https://plantuml.com/download).
 
 ## Help
 
@@ -47,7 +48,7 @@ A kubernetes cluster running on AWS EKS:
 
 ### Full
 
-```
+```sh
 gc tree --full --pumlFile resources-all-mindmap.svg
 ```
 

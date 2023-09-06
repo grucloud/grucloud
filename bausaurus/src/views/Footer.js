@@ -14,10 +14,6 @@ const footerLinks = [
         label: "YouTube",
         href: "https://www.youtube.com/channel/UC9gB2acQaqKFkZaZ5q4QfJQ",
       },
-      {
-        label: "Stack Overflow",
-        href: "https://stackoverflow.com/questions/tagged/grucloud",
-      },
     ],
   },
   {
@@ -25,26 +21,26 @@ const footerLinks = [
     items: [
       {
         label: "AWS",
-        href: "/docs/aws/AwsGettingStarted",
+        href: "/docs/Providers/aws/AwsGettingStarted",
       },
       {
         label: "Google Cloud",
-        href: "/docs/google/GoogleGettingStarted",
+        href: "/docs/Providers/Google/GoogleGettingStarted",
       },
       {
         label: "Microsoft Azure",
-        href: "/docs/azure/AzureGettingStarted",
+        href: "/docs/Providers/Azure/AzureGettingStarted",
       },
       {
         label: "Kubernetes",
-        href: "/docs/k8s/K8sGettingStarted",
+        href: "/docs/Providers/Kubernetes/K8sGettingStarted",
       },
     ],
   },
 ];
 
 export default function ({ bau, css }) {
-  const { h4, footer, span, a, ul, li } = bau.tags;
+  const { h1, footer, span, a, ul, li } = bau.tags;
 
   const className = css`
     grid-area: footer;
@@ -54,6 +50,10 @@ export default function ({ bau, css }) {
     justify-content: center;
     align-items: center;
     color: var(--font-color-secondary);
+    box-shadow: var(--shadow-s);
+    & h1 {
+      font-size: 1.1rem;
+    }
     & ul {
       padding-left: 0;
       & li {
@@ -86,7 +86,7 @@ export default function ({ bau, css }) {
         },
         footerLinks.map((link) =>
           li(
-            h4(link.title),
+            h1(link.title),
             ul(
               {
                 class: css`

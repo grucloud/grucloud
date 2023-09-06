@@ -7,7 +7,7 @@ The **apply** commands effectively deploys the resources. It first finds out whi
 
 ## Command
 
-```
+```sh
 gc apply
 ```
 
@@ -26,32 +26,41 @@ gc apply
 
 ## Command options
 
-```
+```sh
 gc help apply
 ```
 
-```
+```txt
 Usage: gc apply|a [options]
 
 Apply the plan, a.k.a deploy the resources
 
 Options:
-  -f, --force  force deploy, will not prompt user
-  -h, --help   display help for command
+  -f, --force             force deploy, will not prompt user
+  -p, --provider <value>  Filter by provider, multiple values allowed
+  -h, --help              display help for command
 ```
 
 ### alias
 
 The command alias is _a_
 
-```
+```sh
 gc a
 ```
 
 ### force
 
-The **force** option to not prompt the user to apply the plan
+The **force** option do not prompt the user to apply the plan
 
-```
+```sh
 gc apply --force
+```
+
+### provider
+
+The **provider** option allows to apply for a specific set of providers
+
+```sh
+gc apply --provider aws
 ```

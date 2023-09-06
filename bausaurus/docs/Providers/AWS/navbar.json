@@ -5,7 +5,7 @@
       "data": { "name": "AwsGettingStarted.md" }
     },
     {
-      "data": { "name": "AwsResources.md" }
+      "data": { "name": "Resources", "href": "Resources/AwsResources.md" }
     },
     {
       "data": { "name": "AwsConfig.md" }

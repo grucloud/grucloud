@@ -1,6 +1,6 @@
 ---
 id: GoogleGettingStarted
-title: GCP Getting Started
+title: Getting Started
 ---
 
 This document describes how to get started with GruCloud on the Google Cloud Platform.

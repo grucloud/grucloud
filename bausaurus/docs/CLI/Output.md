@@ -5,17 +5,17 @@ title: gc output
 
 The **output** commands queries the current live resources information
 
-```
+```sh
 gc output --type Ip --name myip --field address
 ```
 
 ## Command options
 
-```
+```sh
 gc output --help
 ```
 
-```
+```txt
 Usage: gc output|o [options]
 
 Output the value of a resource

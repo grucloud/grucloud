@@ -1,7 +1,9 @@
 {
   "children": [
     { "data": { "name": "Introduction.md" } },
-    { "data": { "name": "Providers" }, "expanded": true },
+    {
+      "data": { "name": "Providers" }
+    },
     { "data": { "name": "CLI" } }
   ]
 }

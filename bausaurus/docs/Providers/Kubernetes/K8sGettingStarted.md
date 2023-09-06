@@ -1,6 +1,6 @@
 ---
 id: K8sGettingStarted
-title: Kubernetes Getting Started
+title: Getting Started
 ---
 
 ## Introduction

@@ -16,7 +16,7 @@ describe("AwsResourcesList", async function () {
         commandOptions: {
           output: path.resolve(
             __filename,
-            "../../../../../bausaurus/docs/Providers/AWS/AwsResources.md"
+            "../../../../../bausaurus/docs/Providers/AWS/Resources/AwsResources.md"
           ),
         },
       }),

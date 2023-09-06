@@ -6,7 +6,8 @@ export default ({ rootDir }) => {
     site: {
       rootDir,
       favicon: "/grucloud.svg",
-      base: "/docs/",
+      baseDoc: "docs/",
+      //base: "/docs/",
       outDir: "dist/docs",
       srcDir: "docs",
       title: "GruCloud",

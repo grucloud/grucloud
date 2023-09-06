@@ -5,7 +5,7 @@
       "data": { "name": "GoogleGettingStarted.md" }
     },
     {
-      "data": { "name": "GcpResources.md" }
+      "data": { "name": "Resources", "href": "Resources/GcpResources.md" }
     },
     {
       "data": { "name": "GoogleRequirements.md" }
