@@ -1,34 +1,22 @@
 {
   "name": "@grucloud/meta",
   "version": "12.0.0",
-  "description": "Infrastructure as Code",
+  "description": "Infrastructure as Generated Code",
   "private": true,
   "homepage": "https://www.grucloud.com",
   "scripts": {
-    "bootstrap": "lerna bootstrap --no-ci",
-    "download-manifest": "npm run download-manifest",
-    "gen-code": "npm run --workspace @grucloud/example-* gencode -- -- --no-inventory-fetch",
-    "gencode": "npm run  --workspace @grucloud/example-*   gencode",
-    "test:azure": "cd packages/providers/azure && npm test",
-    "test:k8s": "npm run  --workspace @grucloud/provider-k8s --workspace @grucloud/example-module-k8s* test",
-    "test:mock": "CONTINUOUS_INTEGRATION=1 npm run  --concurrency 1 --workspace @grucloud/core --workspace @grucloud/provider-mock test -- --reporter=mocha-junit-reporter",
-    "test:ci": "CONTINUOUS_INTEGRATION=1 dotenv -e secrets/default.env -- npm run test  --workspace @grucloud/core -- --reporter=mocha-junit-reporter",
-    "test:mocha": "npm run test",
-    "test": "CONTINUOUS_INTEGRATION=1 npm run test:mocha",
-    "test:example": "node test/testExamples.js",
-    "start:mock": "nodemon node packages/tools/mockServer/MockServerRun.js",
     "cpd": "jscpd -i resource.js -i hook.js -i 'packages/core/template/**' -i '**/node_modules/**'  -r console --format 'javascript,typescript' ./packages/core ./packages/providers",
     "cpd:core": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/core",
     "cpd:aws": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/providers/aws",
     "cpd:azure": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/providers/azure",
     "cpd:gcp": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/providers/google",
     "encrypt-data-ci": "dotenv -- sh secrets/encrypt-data-ci.sh",
-    "decrypt-data-ci": "dotenv -- sh secrets/decrypt-data-ci.sh",
-    "np": "np --test-script  test:mock"
+    "decrypt-data-ci": "dotenv -- sh secrets/decrypt-data-ci.sh"
   },
   "keywords": [
     "cloud",
-    "infra as code",
+    "Infrastructure as code",
+    "iac",
     "aws",
     "azure",
     "gcp"
@@ -38,9 +26,6 @@
   "devDependencies": {
     "jscpd": "3.5.4",
     "lerna": "6.6.1",
-    "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0",
-    "nyc": "15.1.0",
     "prettier": "2.8.8"
   },
   "dependencies": {
@@ -50,24 +35,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/grucloud/grucloud"
-  },
-  "nyc": {
-    "include": [
-      "src/**/*.js"
-    ],
-    "exclude": [
-      "packages/**/*.spec.js",
-      "packages/**/*test*.js"
-    ],
-    "extension": [
-      ".js"
-    ],
-    "reporter": [
-      "html",
-      "text",
-      "text-summary"
-    ],
-    "all": true
   },
   "np": {
     "yarn": false,
