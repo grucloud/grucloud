@@ -1,6 +1,6 @@
 {
   "name": "savePayloadAndStartStateMachine",
-  "version": "12.2.0",
+  "version": "12.6.0",
   "description": "",
   "main": "app.js",
   "private": true,

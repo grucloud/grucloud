@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/website",
-  "version": "0.0.0",
+  "version": "12.6.0",
   "private": true,
   "type": "module",
   "scripts": {
