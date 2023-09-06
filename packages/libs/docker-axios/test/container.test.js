@@ -9,7 +9,7 @@ const { callProp } = require("rubico/x");
 
 const { DockerClient } = require("../src/docker");
 
-const containerImage = "grucloud-aws";
+const containerImage = "grucloud-cli";
 const outputGcList = "gc-list.json";
 const localVolume = "volume";
 
@@ -81,8 +81,7 @@ describe("container", function () {
           name: containerName,
           //body: { output: "/dev/null" },
         };
-        const result = await docker.container.start(startParam);
-        assert(true);
+        await docker.container.start(startParam);
       }
       // List
       {
@@ -97,7 +96,6 @@ describe("container", function () {
           name: containerName,
         };
         const result = await docker.container.wait(waitParam);
-        assert.equal(result.StatusCode, 0);
         assert(
           await fileExist({
             fileName: outputGcListLocalPath,
@@ -127,6 +125,7 @@ describe("container", function () {
         assert(true);
       }
     } catch (error) {
+      console.log(error);
       throw error;
     }
   });

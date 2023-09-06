@@ -6,14 +6,14 @@
   "main": "index.js",
   "scripts": {
     "docker:build": "docker build -t grucloud-cli .",
-    "docker:tag": "docker tag grucloud-cli fredericheem/grucloud-cli:v1.39.0",
-    "docker:push": "docker push fredericheem/grucloud-cli:v1.39.0",
+    "docker:tag": "docker tag grucloud-cli fredericheem/grucloud-cli:v12.5.0",
+    "docker:push": "docker push fredericheem/grucloud-cli:v12.5.0",
     "gc:list:aws": "docker run -w /app/output  --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output --env-file=aws.env grucloud-cli --infra /app/input/iac_aws.js list --json gc-list.json --graph --all --dot-file gc.dot",
     "gc:info:aws": "docker run --env-file=aws.env grucloud-cli --infra iac_aws.js info",
     "gc:version:aws": "docker run --env-file=aws.env grucloud-cli --infra iac_aws.js --version",
-    "gc:info:gcp": "docker run --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli --infra iac_google.js  info --provider google --config input/config.js",
+    "gc:info:gcp": "docker run --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli --infra iac_google.js  info --provider google --config input/config_google.js",
     "gc:version:gcp": "docker run  grucloud-cli --version",
-    "gc:list:gcp": "docker run --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli --infra iac_google.js list -p google --config input/config.js --json output/gc-list.json --graph --all --dot-file output/gc.dot"
+    "gc:list:gcp": "docker run --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli --infra iac_google.js list -p google --config input/config_google.js --json output/gc-list.json --graph --all --dot-file output/gc.dot"
   },
   "author": "",
   "license": "ISC",

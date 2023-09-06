@@ -69,9 +69,7 @@ exports.GoogleProvider = ({
   ...other
 }) => {
   const gcloudConfig = getConfig();
-  if (gcloudConfig.error) {
-    throw Error(gcloudConfig.error.stderr);
-  }
+
   const mergeConfig = ({ config, configs }) =>
     pipe([
       () => [...configs, config],
@@ -118,7 +116,7 @@ exports.GoogleProvider = ({
     () => path.resolve(mergedConfig.credentialFile),
     () =>
       ApplicationCredentialsFile({
-        configDir: gcloudConfig.config?.paths.global_config_dir,
+        configDir: gcloudConfig?.config?.paths.global_config_dir,
         projectId: projectId(),
       }),
   ])();

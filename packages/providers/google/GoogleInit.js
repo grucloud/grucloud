@@ -74,7 +74,7 @@ exports.init = ({
   programOptions,
 }) =>
   switchCase([
-    () => gcloudConfig.config,
+    () => gcloudConfig?.config,
     tryCatch(
       pipe([
         tap(() => {
