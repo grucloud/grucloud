@@ -31,8 +31,8 @@ export default function (context) {
       Button(
         {
           href: `${config.base}docs/Introduction`,
-          primary: true,
-          raised: true,
+          color: "primary",
+          variant: "solid",
         },
         "Visit Documentation"
       )

@@ -10,16 +10,16 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@grucloud/bau": "^0.31.0",
-    "@grucloud/bau-css": "^0.31.0",
-    "@grucloud/bau-ui": "^0.31.1",
-    "@grucloud/bausaurus-core": "^0.31.1",
-    "@grucloud/bausaurus-theme-classic": "^0.31.1",
-    "gh-pages": "5.0.0",
+    "@grucloud/bau": "^0.43.0",
+    "@grucloud/bau-css": "^0.43.0",
+    "@grucloud/bau-ui": "^0.43.3",
+    "@grucloud/bausaurus-core": "^0.43.3",
+    "@grucloud/bausaurus-theme-classic": "^0.43.3",
+    "gh-pages": "6.0.0",
     "highlight.js": "11.8.0",
-    "rubico": "2.3.0"
+    "rubico": "2.3.1"
   },
   "devDependencies": {
-    "@grucloud/bausaurus": "^0.31.1"
+    "@grucloud/bausaurus": "^0.43.3"
   }
 }

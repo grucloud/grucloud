@@ -1,0 +1,11 @@
+{
+  "children": [
+    { "data": { "name": "Providers.md" }, "index": true },
+    {
+      "data": { "name": "AWS" }
+    },
+    { "data": { "name": "Azure" } },
+    { "data": { "name": "Google" } },
+    { "data": { "name": "Kubernetes" } }
+  ]
+}

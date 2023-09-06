@@ -10,7 +10,7 @@ export default function (context) {
 
   const ButtonLogo = ({ href, svgHref, viewBox, ariaLabel }) =>
     Button(
-      { raised: true, href, "aria-label": ariaLabel },
+      { color: "none", variant: "plain", href, "aria-label": ariaLabel },
       svg({ width: "300px", height: "75px", viewBox }, use({ href: svgHref }))
     );
 
