@@ -74,7 +74,7 @@ For all gc commands:
 Get the `gc` version from the image:
 
 ```sh
-npm run gc:version
+npm run gc:version:aws
 ```
 
 ### Info
@@ -82,7 +82,7 @@ npm run gc:version
 The command is a wrapper to the `docker run` command, and will execute `gc info`:
 
 ```sh
-npm run gc:info
+npm run gc:info:aws
 ```
 
 ### List
@@ -90,7 +90,7 @@ npm run gc:info
 Run `gc:list` inside the container:
 
 ```sh
-npm run gc:list
+npm run gc:list:aws
 ```
 
 The result of the list command is written in `volume/gc-list.json`.
