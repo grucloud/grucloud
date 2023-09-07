@@ -23,7 +23,6 @@ const {
   isString,
   isObject,
   defaultsDeep,
-  size,
   includes,
   isFunction,
   unless,
@@ -50,6 +49,8 @@ const showLive =
           ])(),
         pipe([get("groupType"), not(includes(options.typesExclude))]),
         (resource) => (options.defaultExclude ? !resource.isDefault : true),
+        (resource) =>
+          options.includeManagedByOther ? true : !resource.managedByOther,
         (resource) => (options.our ? resource.managedByUs : true),
         (resource) => (options.name ? resource.name === options.name : true),
         (resource) => (options.id ? resource.id === options.id : true),

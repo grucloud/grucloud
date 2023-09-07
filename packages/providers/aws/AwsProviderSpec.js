@@ -85,6 +85,7 @@ const defaultExcludes = [
   "MediaPackage",
   "MediaStore",
   "MediaTailor",
+  "MQ",
   "MSK",
   "Neptune",
   "NetworkFirewall",

@@ -213,6 +213,7 @@ exports.createProgram = () => {
     .option("-n, --name <value>", "List by name")
     .option("--id <value>", "List by id")
     .option("-o, --our", "List only our managed resources")
+    .option("--include-managed-by-other", "include resources managed by other.")
     .option(
       "--default-exclude",
       "Exclude the default resources, i.e VPC and Subnet"

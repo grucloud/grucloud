@@ -24,6 +24,7 @@ exports.BackupGlobalSettings = ({ spec, config }) => ({
   ignoreResource: () =>
     pipe([get("live"), eq(get("isCrossAccountBackupEnabled"), "false")]),
   cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
   ignoreErrorCodes: [],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#describeGlobalSettings-property
   getById: {

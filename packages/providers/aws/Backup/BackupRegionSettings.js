@@ -14,6 +14,8 @@ exports.BackupRegionSettings = ({}) => ({
   package: "backup",
   client: "Backup",
   cannotBeDeleted: () => () => true,
+  //TODO
+  managedByOther: () => () => true,
   inferName: () => () => "region",
   findName: () => pipe([() => "region"]),
   findId: () => pipe([() => "region"]),

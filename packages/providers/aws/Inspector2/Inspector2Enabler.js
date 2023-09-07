@@ -27,6 +27,7 @@ exports.Inspector2Enabler = ({ compare }) => ({
   }),
   omitProperties: ["state"],
   cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
   ignoreErrorCodes: ["ResourceNotFoundException"],
   getById: {
     method: "batchGetAccountStatus",
