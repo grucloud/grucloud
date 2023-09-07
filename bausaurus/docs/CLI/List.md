@@ -33,23 +33,25 @@ List the live resources
 Options:
   -j, --json <file>            write inventory to a file in json format (default:
                                "artifacts/inventory.json")
-  -g, --graph                  create an SVG representation of the live infrastructure
+  -g, --graph                  create an SVG representation of the live
+                               infrastructure
   -a, --all                    List also read-only resources
   -n, --name <value>           List by name
   --id <value>                 List by id
   -o, --our                    List only our managed resources
+  --include-managed-by-other   include resources managed by other.
   --default-exclude            Exclude the default resources, i.e VPC and Subnet
   -e, --types-exclude <value>  Exclude by type, multiple values allowed
-  -d, --canBeDeleted           display resources which can be deleted, a.k.a non default
-                               resources
+  -d, --canBeDeleted           display resources which can be deleted, a.k.a non
+                               default resources
   -p, --provider <value>       Filter by provider, multiple values allowed
-  --resource-group <value>     Azure only: Filter by resource groups, multiple values
-                               allowed
+  --resource-group <value>     Azure only: Filter by resource groups, multiple
+                               values allowed
   -t, --types <value>          Include by type, multiple values allowed
   --group <value>              Include by group, multiple values allowed
-  --dot-file <dotFile>         output 'dot' file name for the live diagram (default:
-                               "artifacts/diagram-live.dot")
-  --title <value>              diagram title (default: "aks-basic")
+  --dot-file <dotFile>         output 'dot' file name for the live diagram
+                               (default: "artifacts/diagram-live.dot")
+  --title <value>              diagram title (default: "empty")
   -h, --help                   display help for command
 ```
 

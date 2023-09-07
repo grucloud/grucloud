@@ -19,6 +19,7 @@ const pickId = pipe([
 ]);
 
 const cannotBeDeleted = () => () => true;
+const managedByOther = () => () => true;
 
 exports.AccountContactInformation = () => ({
   type: "ContactInformation",
@@ -27,6 +28,7 @@ exports.AccountContactInformation = () => ({
   ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
   propertiesDefault: {},
   omitProperties: [],
+  managedByOther,
   cannotBeDeleted,
   inferName: () =>
     pipe([

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, map, omit } = require("rubico");
+const { pipe, tap, get, pick, assign, map, omit, or } = require("rubico");
 const { defaultsDeep, append, when, unless } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -8,7 +8,7 @@ const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const { Tagger } = require("./CloudWatchEventCommon");
 
-const cannotBeDeleted = () => get("ManagedBy");
+const cannotBeDeleted = () => or([get("ManagedBy")]);
 
 const buildArn = () =>
   pipe([
