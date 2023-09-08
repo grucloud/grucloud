@@ -56,8 +56,8 @@ docker images grucloud-cli
 ```
 
 ```txt
-REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-grucloud-cli        latest              24fa2a869648        43 minutes ago      227MB
+REPOSITORY     TAG       IMAGE ID       CREATED         SIZE
+grucloud-cli   latest    94150be74e2f   2 minutes ago   670MB
 ```
 
 > The build process is multi-stage, which produces a lean image.
@@ -100,5 +100,5 @@ The result of the list command is written in `volume/gc-list.json`.
 Run a shell inside a container to inspect its content:
 
 ```sh
-docker run --entrypoint /bin/sh -it grucloud-cli
+docker run --mount type=bind,source=$PWD/output,target=/app/output --entrypoint /bin/sh -it grucloud-cli
 ```
