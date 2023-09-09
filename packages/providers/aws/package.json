@@ -307,7 +307,7 @@
     "@aws-sdk/node-config-provider": "3.329.0",
     "@aws-sdk/s3-request-presigner": "3.332.0",
     "@grucloud/core": "^12.6.2",
-    "adm-zip": "http://github.com/FredericHeem/adm-zip.git#156162dfddf35545e23be28868fd7c52e04bb679",
+    "adm-zip": "git+https://github.com/FredericHeem/adm-zip.git#156162dfddf35545e23be28868fd7c52e04bb679",
     "axios": "1.4.0",
     "chance": "1.1.11",
     "change-case": "4.1.2",
