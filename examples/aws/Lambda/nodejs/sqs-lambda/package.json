@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-lambda-sqs-nodejs",
-  "version": "12.6.2",
+  "version": "12.6.3",
   "description": "Lambda connected to SQS",
   "private": true,
   "main": "iac.js",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^12.6.2",
-    "@grucloud/provider-aws": "^12.6.2",
+    "@grucloud/provider-aws": "^12.6.3",
     "rubico": "1.9.6"
   }
 }

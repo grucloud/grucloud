@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/aws-nuke",
-  "version": "12.6.2",
+  "version": "12.6.3",
   "description": "Destroy AWS resources",
   "public": true,
   "homepage": "https://www.grucloud.com",
@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "@grucloud/core": "^12.6.2",
-    "@grucloud/provider-aws": "^12.6.2",
+    "@grucloud/provider-aws": "^12.6.3",
     "commander": "10.0.1",
     "prompts": "2.4.2",
     "rubico": "1.9.6",
