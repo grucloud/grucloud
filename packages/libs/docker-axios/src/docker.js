@@ -7,7 +7,7 @@ const { containersSpec, imagesSpec } = require("./specs");
 const configDefault = {
   baseURL: "http://localhost/v1.41",
   socketPath: "/var/run/docker.sock",
-  timeout: 15e3,
+  timeout: 10 * 60e3,
 };
 
 // Example of a spec:

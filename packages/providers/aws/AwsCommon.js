@@ -1171,7 +1171,9 @@ const replaceArnWithAccountAndRegion =
                 !Id.startsWith("arn:aws:states") &&
                 !Id.startsWith("arn:aws:ssm") &&
                 !Id.startsWith(
-                  `arn:${config.partition}:iam::${providerConfig.accountId()}`
+                  `arn:${
+                    providerConfig.partition
+                  }:iam::${providerConfig.accountId()}`
                 ) &&
                 !Id.startsWith("arn:aws:sns") &&
                 !Id.startsWith("arn:aws:s3"),
