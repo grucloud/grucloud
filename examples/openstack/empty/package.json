@@ -1,6 +1,6 @@
 {
   "name": "example-grucloud-infra-openstack",
-  "version": "12.6.2",
+  "version": "12.7.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.6.2",
-    "@grucloud/provider-openstack": "^12.6.2",
+    "@grucloud/core": "^12.7.0",
+    "@grucloud/provider-openstack": "^12.7.0",
     "rubico": "1.9.6"
   }
 }
