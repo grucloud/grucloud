@@ -1,6 +1,6 @@
 package-lock.json
 node_modules/
-.env
+*.env
 .nyc_output
 coverage
 *.log

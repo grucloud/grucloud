@@ -4,7 +4,7 @@
   "description": "Docker node client based on Axios",
   "main": "src/docker.js",
   "scripts": {
-    "test": "mocha 'test/*.test.js' --exit",
+    "test": "mocha 'test/*.test.js'",
     "test:watch": "mocha 'test/*.test.js' -w"
   },
   "author": "",
