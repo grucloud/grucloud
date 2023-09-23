@@ -6,11 +6,10 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
+      "runtimeArgs": ["run", "test"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/",
-      "port": 9229
+      "cwd": "${workspaceFolder}/"
     }
   ]
 }

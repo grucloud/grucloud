@@ -29,7 +29,8 @@ const opsFromSpec = ({ axios }) =>
       pipe([
         switchCase([
           eq(spec.method, "get"),
-          (params) => axios.get(spec.url(params)),
+          (params) =>
+            axios.get(spec.url(params), { responseType: spec.responseType }),
           (params) => axios[spec.method](spec.url(params), params.body),
         ]),
         get("data"),

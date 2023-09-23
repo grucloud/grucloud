@@ -104,6 +104,15 @@ const result = await docker.container.list({
 assert.equal(result.length, 1);
 ```
 
+### Get container detail
+
+Get a container details, options defined in [ContainerInspect](https://docs.docker.com/engine/api/v1.41/#operation/ContainerInspect)
+
+```js
+const result = await docker.container.get({ id: "container id" });
+assert(result.State.Status);
+```
+
 ### Retrieve container logs
 
 Obtaint the logs from the container by name. See all options at [ContainerLogs](https://docs.docker.com/engine/api/v1.41/#operation/ContainerLogs)
@@ -118,8 +127,12 @@ const logParam = {
     //follow: 0,
   },
 };
-const result = await docker.container.log(logParam);
-console.log(result);
+const stream = await docker.container.log(logParam);
+stream.on("data", (data) => {
+  console.log(data.toString());
+});
+stream.on("close", () => {});
+stream.on("error", () => {});
 ```
 
 ### Destroy a container

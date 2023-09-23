@@ -17,6 +17,11 @@ exports.containersSpec = () => ({
     method: "delete",
     url: ({ name }) => `/containers/${name}`,
   },
+  get: {
+    method: "get",
+    url: ({ id, options = {} }) =>
+      `/containers/${id}/json?${querystring.stringify(options)}`,
+  },
   list: {
     method: "get",
     url: (options = {}) => `/containers/json?${querystring.stringify(options)}`,
@@ -25,6 +30,7 @@ exports.containersSpec = () => ({
     method: "get",
     url: ({ name, options }) =>
       `/containers/${name}/logs?${querystring.stringify(options)}`,
+    responseType: "stream",
   },
 });
 
