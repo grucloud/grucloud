@@ -6,6 +6,7 @@ packages:
   - "bausaurus/**"
 
   # exclude packages that are inside test directories
+  - "!examples/aws/sst/**/*"
   - "!examples/aws/CloudFront/website-https/svelte-app"
   - "!examples/aws/Lambda/lambda-web-adapter-cdk/LambdaAdapterCdkStack-lambdaAdapterFunction*"
   - "!examples/aws/S3/s3-object-lambda/sam-app-ResizeFunction*"
