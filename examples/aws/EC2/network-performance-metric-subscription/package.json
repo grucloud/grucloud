@@ -1,6 +1,6 @@
 {
   "name": "network-performance-metric-subscription",
-  "version": "12.7.0",
+  "version": "12.7.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.7.0",
-    "@grucloud/provider-aws": "^12.7.0",
+    "@grucloud/core": "^12.7.1",
+    "@grucloud/provider-aws": "^12.7.1",
     "rubico": "1.9.6"
   }
 }
