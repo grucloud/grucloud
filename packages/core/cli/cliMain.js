@@ -29,11 +29,9 @@ exports.main = async ({ argv, onExit }) => {
     await onExit({ code: 0 });
     return 0;
   } catch (error) {
-    const { code = -1 } = error;
-    logger.error("main error:");
-    //TODO
-    //console.error(YAML.stringify(convertError({ error })));
-    error.stack && console.log(error.stack);
+    logger.error("Error:", error);
+    const code = 1;
+    error.stack && logger.error(error.stack);
     await onExit({ code, error });
     return code;
   }
