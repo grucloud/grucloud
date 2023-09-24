@@ -28,19 +28,6 @@ AZURE_CLIENT_SECRET=Fye-0irzz9xxmrcsq8enX2Y_aaaaaaaaa
 LOCATION=uksouth
 ```
 
-### OpenStack OVH configuration
-
-Create the file `openstack.env`:
-
-```sh
-OS_REGION_NAME=UK1
-OS_AUTH_URL=https://auth.cloud.ovh.net/v3
-OS_PROJECT_ID=
-OS_PROJECT_NAME=
-OS_USERNAME=
-OS_PASSWORD=
-```
-
 ## Build the docker image
 
 Build the image named `grucloud-cli`:
@@ -67,14 +54,14 @@ grucloud-cli   latest    94150be74e2f   2 minutes ago   670MB
 For all gc commands:
 
 - The environment is taken from the file `aws.env`
-- The `volume` directory is mounted where the results will be written.
+- The `output` directory is mounted where the results will be written.
 
 ### Version
 
 Get the `gc` version from the image:
 
 ```sh
-npm run gc:version:aws
+npm run gc:version
 ```
 
 ### Info
@@ -93,7 +80,7 @@ Run `gc:list` inside the container:
 npm run gc:list:aws
 ```
 
-The result of the list command is written in `volume/gc-list.json`.
+The result of the list command is written in `output/gc-list.json`.
 
 ### Troubleshooting
 
