@@ -531,7 +531,7 @@ exports.Route53Record = ({ spec, config }) => {
           ),
         ])(),
       tap((result) => {
-        logger.debug(`getByName result: ${tos(result)}`);
+        // logger.debug(`getByName result: ${tos(result)}`);
       }),
     ])();
 

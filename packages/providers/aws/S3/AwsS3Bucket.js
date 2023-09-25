@@ -24,6 +24,7 @@ const {
   unionWith,
   when,
   isIn,
+  filterOut,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "S3Bucket" });
@@ -41,18 +42,18 @@ const {
 
 const { createS3 } = require("./AwsS3Common");
 
-const rejectPrefixes = ["appstream" /*"cf-template"*/];
+const rejectPrefixes = ["appstream", "aws-cloudtrail" /*"cf-template"*/];
 
-const managedByOther =
-  () =>
-  ({ Name }) =>
-    pipe([
-      tap((params) => {
-        assert(Name);
-      }),
-      () => rejectPrefixes,
-      any((prefix) => Name.startsWith(prefix)),
-    ])();
+const ignorePrefixes = ({ Name }) =>
+  pipe([
+    tap((params) => {
+      assert(Name);
+    }),
+    () => rejectPrefixes,
+    any((prefix) => Name.startsWith(prefix)),
+  ])();
+
+const managedByOther = () => ignorePrefixes;
 
 const putBucketEncryption = ({
   endpoint,
@@ -367,6 +368,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       () => ({}),
       s3().listBuckets,
       get("Buckets", []),
+      filterOut(ignorePrefixes),
       tap((Buckets) => {
         logger.info(`getList #s3Bucket ${size(Buckets)}`);
       }),
