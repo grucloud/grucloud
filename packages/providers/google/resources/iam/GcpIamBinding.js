@@ -128,7 +128,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       getList,
       find(eq(get("role"), name)),
       tap((binding) => {
-        logger.debug(`getByName result: ${tos(binding)}`);
+        // logger.debug(`getByName result: ${tos(binding)}`);
       }),
     ])();
 

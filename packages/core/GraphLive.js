@@ -223,16 +223,16 @@ const associationIdString = ({
       assert(idTo);
       assert(nameFrom);
       assert(nameTo);
-      logger.debug(
-        `associationIdString ${JSON.stringify({
-          nameFrom,
-          nameTo,
-          type,
-          namespaceFrom,
-          idFrom,
-          idTo,
-        })}`
-      );
+      // logger.debug(
+      //   `associationIdString ${JSON.stringify({
+      //     nameFrom,
+      //     nameTo,
+      //     type,
+      //     namespaceFrom,
+      //     idFrom,
+      //     idTo,
+      //   })}`
+      // );
     }),
     () => resources,
     switchCase([
@@ -330,11 +330,11 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
       ({ providerName, type, group, namespace, id, name, dependencies }) =>
         pipe([
           tap(() => {
-            logger.debug(
-              `buildGraphAssociationLive ${providerName}, type ${type}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
-                dependencies
-              )}, id, ${id}`
-            );
+            // logger.debug(
+            //   `buildGraphAssociationLive ${providerName}, type ${type}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
+            //     dependencies
+            //   )}, id, ${id}`
+            // );
             assert(id);
             assert(name);
           }),
@@ -344,11 +344,11 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
               tap(() => {
                 assert(dependency.type);
                 assert(dependency.groupType);
-                logger.debug(
-                  `dependency type ${dependency.type}, #ids ${size(
-                    dependency.ids
-                  )}`
-                );
+                // logger.debug(
+                //   `dependency type ${dependency.type}, #ids ${size(
+                //     dependency.ids
+                //   )}`
+                // );
               }),
               () => dependency,
               get("ids", []),

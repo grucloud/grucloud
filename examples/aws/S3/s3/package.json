@@ -21,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^12.7.1",
-    "@grucloud/provider-aws": "^12.7.1"
+    "@grucloud/provider-aws": "^12.7.1",
+    "rubico": "1.9.6"
   }
 }

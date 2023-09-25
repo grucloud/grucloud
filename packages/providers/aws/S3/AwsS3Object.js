@@ -185,7 +185,6 @@ exports.AwsS3Object = ({ spec, config }) => {
                       `getSignedUrl error for ${JSON.stringify(bucket)}`
                     );
                     logger.error(error);
-                    logger.error(error.stack);
                   }),
                   () => ({
                     error,
@@ -232,7 +231,7 @@ exports.AwsS3Object = ({ spec, config }) => {
           ])()
       ),
       tap((result) => {
-        logger.debug(`getByName result: ${tos(result)}`);
+        // logger.debug(`getByName result: ${tos(result)}`);
       }),
     ])();
 
