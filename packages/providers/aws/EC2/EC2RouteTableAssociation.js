@@ -36,7 +36,7 @@ const findId = () =>
     }),
   ]);
 
-const isDefault = () => pipe([get("Associations"), any(get("Main"))]);
+const isDefault = () => pipe([get("Main")]);
 
 const findName =
   ({ lives, config }) =>
