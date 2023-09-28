@@ -189,7 +189,7 @@ const AwsClient =
             // logger.debug(
             //   `getById ${type} result: ${JSON.stringify(result, null, 4)}`
             // );
-            logger.debug(`getById ${groupType} has ${!!result}`);
+            //logger.debug(`getById ${groupType} has ${!!result}`);
           }),
         ])();
 

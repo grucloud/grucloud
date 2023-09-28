@@ -457,7 +457,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         () => undefined,
       ]),
       tap((s3Bucket) => {
-        logger.debug(`getByName ${name}: ${tos(s3Bucket)}`);
+        //logger.debug(`getByName ${name}: ${tos(s3Bucket)}`);
       }),
     ])();
 
