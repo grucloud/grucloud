@@ -9,6 +9,7 @@ const { Cli } = require("./cliCommands");
 const { createInfra } = require("./infra");
 const YAML = require("./json2yaml");
 const util = require("util");
+const { uploadDirToS3 } = require("./uploadDirToS3");
 
 const { createProject } = require("./createProject");
 
@@ -79,6 +80,8 @@ exports.createProgram = () => {
   program.option("-j, --json <file>", "write result to a file in json format");
   program.option("-d, --workingDirectory <file>", "The working directory.");
   program.option("--noOpen", "Do not open diagram");
+  program.option("--s3-bucket <bucket>", "The S3 bucket to store the result");
+  program.option("--s3-key <key>", "The S3 bucket key");
 
   const infraOptions = ({ infra, config, stage }) => ({
     infraFileName: infra,
@@ -119,6 +122,7 @@ exports.createProgram = () => {
                   commandOptions,
                   programOptions,
                 }),
+              () => uploadDirToS3(programOptions),
             ]),
             handleError
           )(),
