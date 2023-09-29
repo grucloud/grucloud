@@ -20,8 +20,7 @@
       "runtimeArgs": ["run", "graph"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
+      "cwd": "${workspaceRoot}"
     },
     {
       "name": "List",
@@ -31,8 +30,7 @@
       "runtimeArgs": ["run", "list"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
+      "cwd": "${workspaceRoot}"
     },
     {
       "name": "Plan",
@@ -42,8 +40,7 @@
       "runtimeArgs": ["run", "plan"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
+      "cwd": "${workspaceRoot}"
     },
     {
       "name": "Apply",
@@ -53,8 +50,7 @@
       "runtimeArgs": ["run", "apply"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
+      "cwd": "${workspaceRoot}"
     },
     {
       "name": "Destroy",
@@ -64,8 +60,7 @@
       "runtimeArgs": ["run", "destroy"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
+      "cwd": "${workspaceRoot}"
     },
     {
       "name": "onDeployed",
@@ -75,8 +70,7 @@
       "runtimeArgs": ["run", "onDeployed"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
+      "cwd": "${workspaceRoot}"
     },
     {
       "name": "onDestroyed",
@@ -86,8 +80,7 @@
       "runtimeArgs": ["run", "onDestroyed"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
+      "cwd": "${workspaceRoot}"
     },
     {
       "name": "E2E test",
@@ -97,8 +90,7 @@
       "runtimeArgs": ["test"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
+      "cwd": "${workspaceRoot}"
     }
   ]
 }

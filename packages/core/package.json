@@ -56,7 +56,8 @@
     "shelljs-live": "0.0.5",
     "spinnies": "0.5.1",
     "url-join": "4.0.1",
-    "winston": "3.8.2"
+    "winston": "3.8.2",
+    "ws": "8.14.2"
   },
   "repository": {
     "type": "git",

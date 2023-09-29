@@ -30,7 +30,7 @@ LOCATION=uksouth
 
 ## Build the docker image
 
-Build the image named `grucloud-cli`:
+Build the image named `grucloud/grucloud-cli`:
 
 ```sh
 npm run docker:build
@@ -39,12 +39,12 @@ npm run docker:build
 Verify the newly created images:
 
 ```sh
-docker images grucloud-cli
+docker images grucloud/grucloud-cli
 ```
 
 ```txt
-REPOSITORY     TAG       IMAGE ID       CREATED         SIZE
-grucloud-cli   latest    94150be74e2f   2 minutes ago   670MB
+REPOSITORY              TAG       IMAGE ID       CREATED       SIZE
+grucloud/grucloud-cli   latest    c9fd0a82fe56   9 hours ago   670MB
 ```
 
 > The build process is multi-stage, which produces a lean image.
@@ -87,5 +87,5 @@ The result of the list command is written in `output/gc-list.json`.
 Run a shell inside a container to inspect its content:
 
 ```sh
-docker run --mount type=bind,source=$PWD/output,target=/app/output --entrypoint /bin/sh -it grucloud-cli
+docker run --mount type=bind,source=$PWD/output,target=/app/output --entrypoint /bin/sh -it grucloud/grucloud-cli
 ```
