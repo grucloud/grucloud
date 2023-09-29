@@ -49,8 +49,8 @@ const showLive =
           ])(),
         pipe([get("groupType"), not(includes(options.typesExclude))]),
         (resource) => (options.defaultExclude ? !resource.isDefault : true),
-        (resource) =>
-          options.includeManagedByOther ? true : !resource.managedByOther,
+        // (resource) =>
+        //   options.includeManagedByOther ? true : !resource.managedByOther,
         (resource) => (options.our ? resource.managedByUs : true),
         (resource) => (options.name ? resource.name === options.name : true),
         (resource) => (options.id ? resource.id === options.id : true),
@@ -61,7 +61,7 @@ const showLive =
         (resource) => (options.canBeDeleted ? !resource.cannotBeDeleted : true),
       ]),
       tap((show) => {
-        //logger.debug(`showLive ${resource.name} show: ${show}`);
+        logger.debug(`showLive ${resource.name} show: ${show}`);
       }),
     ])();
 

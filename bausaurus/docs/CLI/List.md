@@ -39,7 +39,6 @@ Options:
   -n, --name <value>           List by name
   --id <value>                 List by id
   -o, --our                    List only our managed resources
-  --include-managed-by-other   include resources managed by other.
   --default-exclude            Exclude the default resources, i.e VPC and Subnet
   -e, --types-exclude <value>  Exclude by type, multiple values allowed
   -d, --canBeDeleted           display resources which can be deleted, a.k.a non
