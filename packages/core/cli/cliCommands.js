@@ -399,6 +399,7 @@ const planQuery = ({
   infra,
   commandOptions = {},
   programOptions = {},
+  ws,
 }) =>
   tryCatch(
     pipe([
@@ -410,7 +411,13 @@ const planQuery = ({
       }),
       doPlanQuery({ commandOptions, programOptions }),
       tap((result) =>
-        saveToJson({ command: "plan", commandOptions, programOptions, result })
+        saveToJson({
+          ws,
+          command: "plan",
+          commandOptions,
+          programOptions,
+          result,
+        })
       ),
       throwIfError,
       tap(
@@ -502,6 +509,7 @@ const planRunScript = ({
   mapGloblalNameToResource,
   commandOptions = {},
   programOptions = {},
+  ws,
 }) =>
   tryCatch(
     pipe([
@@ -556,6 +564,7 @@ const planRunScript = ({
       }),
       tap((result) =>
         saveToJson({
+          ws,
           command: "runScript",
           commandOptions,
           programOptions,
@@ -620,7 +629,7 @@ const displayDeploySuccess = pipe([
 ]);
 
 const doPlansDeploy =
-  ({ commandOptions, programOptions, providerGru }) =>
+  ({ commandOptions, programOptions, providerGru, ws }) =>
   ({ resultQuery }) =>
     pipe([
       tap(() => {
@@ -666,7 +675,13 @@ const doPlansDeploy =
             ])(),
         }),
       tap((result) =>
-        saveToJson({ command: "apply", commandOptions, programOptions, result })
+        saveToJson({
+          ws,
+          command: "apply",
+          commandOptions,
+          programOptions,
+          result,
+        })
       ),
       tap((xxx) => {
         logger.debug("doPlansDeploy");
@@ -917,6 +932,7 @@ const doPlansDestroy = ({
   programOptions,
   providerGru,
   resultQueryDestroy,
+  ws,
 }) =>
   pipe([
     tap(() => {
@@ -956,6 +972,7 @@ const doPlansDestroy = ({
       }),
     tap((result) =>
       saveToJson({
+        ws,
         command: "destroy",
         commandOptions,
         programOptions,
@@ -974,6 +991,7 @@ const processDestroyPlans = ({
   providerGru,
   commandOptions,
   programOptions,
+  ws,
   resultQueryDestroy,
 }) =>
   pipe([
@@ -986,6 +1004,7 @@ const processDestroyPlans = ({
       (plans) => commandOptions.force || promptConfirmDestroy(plans),
       () =>
         doPlansDestroy({
+          ws,
           commandOptions,
           programOptions,
           providerGru,
@@ -1002,6 +1021,7 @@ const planDestroy = ({
   mapGloblalNameToResource,
   commandOptions,
   programOptions,
+  ws,
 }) =>
   tryCatch(
     pipe([
@@ -1080,6 +1100,7 @@ const planDestroy = ({
                   find(pipe([get("plans"), not(isEmpty)])),
                   () =>
                     processDestroyPlans({
+                      ws,
                       providerGru,
                       commandOptions,
                       programOptions,
@@ -1211,8 +1232,12 @@ const listDoOk = ({
   mapGloblalNameToResource,
   commandOptions,
   programOptions,
+  ws,
 }) =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     setupProviders({
       mapGloblalNameToResource,
       commandOptions,
@@ -1224,6 +1249,7 @@ const listDoOk = ({
         (providers) =>
           pipe([
             () => ({
+              ws,
               text: displayCommandHeader({
                 providers,
                 verb: "Listing",
@@ -1289,6 +1315,7 @@ const listDoOk = ({
         assign({ error: any(get("error")) }),
         tap((result) =>
           saveToJson({
+            ws,
             command: "list",
             commandOptions,
             programOptions,
@@ -1305,9 +1332,10 @@ const list = ({
   infra,
   commandOptions = {},
   programOptions = {},
+  ws,
 }) =>
   tryCatch(
-    listDoOk({ mapGloblalNameToResource, commandOptions, programOptions }),
+    listDoOk({ ws, mapGloblalNameToResource, commandOptions, programOptions }),
     DisplayAndThrow({ name: "List" })
   )(infra);
 
@@ -1748,6 +1776,7 @@ exports.Cli = ({
   stage,
   promptsInject,
   mapGloblalNameToResource = new Map(),
+  ws,
 } = {}) =>
   pipe([
     tap(() => {
@@ -1828,6 +1857,7 @@ exports.Cli = ({
       list: ({ commandOptions, programOptions: programOptionsUser = {} }) =>
         pipe([
           () => ({
+            ws,
             infra,
             mapGloblalNameToResource,
             programOptions: defaultsDeep(programOptions)(programOptionsUser),
@@ -1846,6 +1876,7 @@ exports.Cli = ({
         ])(),
       planApply: ({ commandOptions } = {}) =>
         planApply({
+          ws,
           mapGloblalNameToResource,
           infra,
           programOptions,
@@ -1853,6 +1884,7 @@ exports.Cli = ({
         }),
       planQuery: ({ commandOptions } = {}) =>
         planQuery({
+          ws,
           mapGloblalNameToResource,
           infra,
           programOptions,
@@ -1860,6 +1892,7 @@ exports.Cli = ({
         }),
       planDestroy: ({ commandOptions } = {}) =>
         planDestroy({
+          ws,
           mapGloblalNameToResource,
           infra,
           programOptions,
@@ -1867,6 +1900,7 @@ exports.Cli = ({
         }),
       planRunScript: ({ commandOptions } = {}) =>
         planRunScript({
+          ws,
           mapGloblalNameToResource,
           infra,
           programOptions,
@@ -1874,6 +1908,7 @@ exports.Cli = ({
         }),
       info: ({ commandOptions } = {}) =>
         information({
+          ws,
           mapGloblalNameToResource,
           infra,
           programOptions,
@@ -1881,6 +1916,7 @@ exports.Cli = ({
         }),
       init: ({ commandOptions } = {}) =>
         init({
+          ws,
           mapGloblalNameToResource,
           infra,
           programOptions,
@@ -1888,6 +1924,7 @@ exports.Cli = ({
         }),
       unInit: ({ commandOptions } = {}) =>
         unInit({
+          ws,
           mapGloblalNameToResource,
           infra,
           programOptions,
@@ -1895,12 +1932,14 @@ exports.Cli = ({
         }),
       output: ({ commandOptions } = {}) =>
         output({
+          ws,
           mapGloblalNameToResource,
           infra,
           programOptions,
           commandOptions,
         }),
       graphTree: ({
+        ws,
         commandOptions,
         programOptions: programOptionsUser = {},
       } = {}) =>
@@ -1908,6 +1947,7 @@ exports.Cli = ({
           () => ({
             infra,
             mapGloblalNameToResource,
+            ws,
             programOptions: defaultsDeep(programOptions)(programOptionsUser),
             commandOptions: pipe([
               () => commandOptions,
@@ -1929,6 +1969,7 @@ exports.Cli = ({
           graphTree,
         ])(),
       graphTarget: ({
+        ws,
         commandOptions,
         programOptions: programOptionsUser = {},
       } = {}) =>
@@ -1979,6 +2020,7 @@ exports.Cli = ({
             mapGloblalNameToResource,
             programOptions,
             commandOptions,
+            ws,
           }),
           tap((params) => {
             assert(true);

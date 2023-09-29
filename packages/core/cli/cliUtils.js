@@ -12,7 +12,7 @@ const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "
 
 const spinner = { interval: 300, frames };
 
-const runAsyncCommand = async ({ text, command }) => {
+const runAsyncCommand = async ({ ws, text, command }) => {
   console.log(`${text}`);
   assert(text);
   assert(command);
@@ -29,6 +29,10 @@ const runAsyncCommand = async ({ text, command }) => {
     indent,
     ...other
   }) => {
+    ws &&
+      ws.send(
+        JSON.stringify({ action: "logs", data: { context, nextState, error } })
+      );
     // logger.info(
     //   `onStateChange: ${JSON.stringify({
     //     context,
@@ -264,6 +268,7 @@ exports.setupProviders =
     ])();
 
 exports.saveToJson = ({
+  ws,
   command,
   commandOptions = {},
   programOptions = {},
@@ -271,6 +276,10 @@ exports.saveToJson = ({
 }) =>
   pipe([
     tap(() => {
+      ws &&
+        ws.send(
+          JSON.stringify({ command: command, programOptions, data: result })
+        );
       assert(programOptions.workingDirectory);
     }),
     () => programOptions,

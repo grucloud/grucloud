@@ -9,9 +9,10 @@ const { Cli } = require("./cliCommands");
 const { createInfra } = require("./infra");
 const YAML = require("./json2yaml");
 const util = require("util");
+const { uploadDirToS3 } = require("./uploadDirToS3");
 
 const { createProject } = require("./createProject");
-
+const { connectToWebSocketServer } = require("./websocket");
 const collect = (value, previous = []) => previous.concat([value]);
 
 const optionFilteredByProvider = [
@@ -79,6 +80,13 @@ exports.createProgram = () => {
   program.option("-j, --json <file>", "write result to a file in json format");
   program.option("-d, --workingDirectory <file>", "The working directory.");
   program.option("--noOpen", "Do not open diagram");
+  program.option("--s3-bucket <bucket>", "The S3 bucket to store the result");
+  program.option("--s3-key <key>", "The S3 bucket key");
+  program.option(
+    "--ws-url <websocketUrl>",
+    "The websocket URL to send statuses"
+  );
+  program.option("--ws-room <websocketRoom>", "The websocket room");
 
   const infraOptions = ({ infra, config, stage }) => ({
     infraFileName: infra,
@@ -92,36 +100,44 @@ exports.createProgram = () => {
       pipe([
         () => program.opts(),
         (programOptions) =>
-          tryCatch(
-            pipe([
-              () => programOptions,
-              infraOptions,
-              createInfra({ commandOptions, programOptions }),
-              tap((params) => {
-                assert(true);
-              }),
-              ({ createStack, createResources, config, stage }) =>
-                Cli({
-                  createStack,
-                  createResources,
-                  config,
-                  stage,
-                  programOptions,
-                }),
-              tap((cli) => {
-                assert(
-                  cli[commandName],
-                  `command '${commandName}' not implemented`
-                );
-              }),
-              (cli) =>
-                cli[commandName]({
-                  commandOptions,
-                  programOptions,
-                }),
-            ]),
-            handleError
-          )(),
+          pipe([
+            () => programOptions,
+            connectToWebSocketServer,
+            (ws) =>
+              tryCatch(
+                pipe([
+                  () => programOptions,
+                  infraOptions,
+                  createInfra({ commandOptions, programOptions }),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  ({ createStack, createResources, config, stage }) =>
+                    Cli({
+                      createStack,
+                      createResources,
+                      config,
+                      stage,
+                      programOptions,
+                      ws,
+                    }),
+                  tap((cli) => {
+                    assert(
+                      cli[commandName],
+                      `command '${commandName}' not implemented`
+                    );
+                  }),
+                  (cli) =>
+                    cli[commandName]({
+                      commandOptions,
+                      programOptions,
+                      ws,
+                    }),
+                  () => uploadDirToS3(programOptions),
+                ]),
+                handleError
+              )(),
+          ])(),
       ])();
 
   program

@@ -24,7 +24,8 @@ COPY package.json .
 # ---- Dependencies ----
 FROM base AS dependencies
 # install production node packages
-RUN bun install --production
+# RUN bun install --production
+RUN bun install
 # copy production node_modules aside
 RUN cp -R node_modules prod_node_modules
 # install ALL node_modules, including 'devDependencies'
@@ -46,5 +47,7 @@ COPY --from=dependencies /app/prod_node_modules ./node_modules
 COPY src .
 
 RUN  mkdir /root/.aws && touch /root/.aws/credentials && touch /root/.aws/config
+RUN  mkdir artifacts
+
 ENTRYPOINT ["/app/node_modules/.bin/gc"]
 
