@@ -1,10 +1,10 @@
 #!/usr/bin/env node
+const { inspect } = require("node:util");
 const Duration = require("duration");
 const pkg = require("../package.json");
 const { createProgram } = require("./program");
 const logger = require("../logger")({ prefix: "CliMain" });
 const executableName = "gc";
-
 exports.main = async ({ argv, onExit }) => {
   const program = createProgram();
 
@@ -29,9 +29,9 @@ exports.main = async ({ argv, onExit }) => {
     await onExit({ code: 0 });
     return 0;
   } catch (error) {
-    logger.error("Error:", error);
+    logger.error(`Error: ${inspect(error, { depth: 10 })}`);
     const code = 1;
-    error.stack && logger.error(error.stack);
+    error?.stack && logger.error(error.stack);
     await onExit({ code, error });
     return code;
   }
