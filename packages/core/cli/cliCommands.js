@@ -5,7 +5,7 @@ const colors = require("colors/safe");
 const fs = require("fs").promises;
 const path = require("path");
 const shell = require("shelljs");
-const util = require("util");
+const util = require("node:util");
 
 const {
   map,

@@ -1,7 +1,7 @@
 const assert = require("assert");
 const fs = require("fs").promises;
 const path = require("path");
-const util = require("util");
+const util = require("node:util");
 
 const {
   map,

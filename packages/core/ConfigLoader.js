@@ -2,7 +2,7 @@ const { map, pipe, tap, tryCatch } = require("rubico");
 const assert = require("assert");
 const npath = require("path");
 const fs = require("fs");
-const util = require("util");
+const util = require("node:util");
 const logger = require("./logger")({ prefix: "ConfigLoader" });
 
 const checkFileExist = (fileName) => {

@@ -27,7 +27,7 @@ const {
   when,
   unless,
 } = require("rubico/x");
-const util = require("util");
+const util = require("node:util");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { deepReject } = require("@grucloud/core/deepReject");
