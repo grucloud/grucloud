@@ -45,7 +45,7 @@ const {
   last,
   filterOut,
 } = require("rubico/x");
-const util = require("util");
+const util = require("node:util");
 const { detailedDiff } = require("deep-object-diff");
 const Diff = require("diff");
 const shell = require("shelljs");

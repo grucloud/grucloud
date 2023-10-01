@@ -29,7 +29,7 @@ const {
   pluck,
   when,
 } = require("rubico/x");
-const util = require("util");
+const util = require("node:util");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { compareAws, throwIfNotAwsError, isAwsError } = require("../AwsCommon");

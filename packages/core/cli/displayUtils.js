@@ -1,5 +1,5 @@
 const assert = require("assert");
-const util = require("util");
+const util = require("node:util");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");

@@ -25,7 +25,7 @@ const {
   defaultsDeep,
   when,
 } = require("rubico/x");
-const util = require("util");
+const util = require("node:util");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const CoreClient = require("@grucloud/core/CoreClient");

@@ -38,7 +38,7 @@ const {
   values,
 } = require("rubico/x");
 const { v4: uuidv4 } = require("uuid");
-const util = require("util");
+const util = require("node:util");
 const Diff = require("diff");
 const { fromIni } = require("@aws-sdk/credential-providers");
 

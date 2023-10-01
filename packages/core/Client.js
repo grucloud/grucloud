@@ -28,7 +28,7 @@ const {
   unless,
 } = require("rubico/x");
 const { memoize } = require("lodash");
-const util = require("util");
+const util = require("node:util");
 const logger = require("./logger")({ prefix: "Client" });
 const { tos } = require("./tos");
 

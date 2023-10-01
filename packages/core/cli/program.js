@@ -8,7 +8,7 @@ const pkg = require("../package.json");
 const { Cli } = require("./cliCommands");
 const { createInfra } = require("./infra");
 const YAML = require("./json2yaml");
-const util = require("util");
+const util = require("node:util");
 const { uploadDirToS3 } = require("./uploadDirToS3");
 
 const { createProject } = require("./createProject");
