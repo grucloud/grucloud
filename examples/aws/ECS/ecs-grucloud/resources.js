@@ -4,11 +4,73 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Instance",
+    group: "EC2",
+    name: "grucloud-demo",
+    properties: ({ config, getId }) => ({
+      BootMode: "uefi",
+      CurrentInstanceBootMode: "uefi",
+      EbsOptimized: true,
+      Image: {
+        Description:
+          "Canonical, Ubuntu, 22.04 LTS, arm64 jammy image build on 2023-05-16",
+      },
+      InstanceType: "t4g.nano",
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-default::websocket-inside",
+            })}`,
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-default::ssh",
+            })}`,
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-default::default",
+            })}`,
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-default::http",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "vpc-default::subnet-default-a",
+          })}`,
+        },
+      ],
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+    }),
+    dependencies: ({}) => ({
+      subnets: ["vpc-default::subnet-default-a"],
+      keyPair: "kp-grucloud-console-dev",
+      iamInstanceProfile: "role-ec2-to-s3",
+      securityGroups: [
+        "sg::vpc-default::default",
+        "sg::vpc-default::http",
+        "sg::vpc-default::ssh",
+        "sg::vpc-default::websocket-inside",
+      ],
+    }),
+  },
+  {
     type: "InternetGateway",
     group: "EC2",
     name: "ig-default",
     isDefault: true,
   },
+  { type: "KeyPair", group: "EC2", name: "kp-grucloud-console-dev" },
   {
     type: "Route",
     group: "EC2",
@@ -87,6 +149,107 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "http",
+      Description: "http https",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "ssh",
+      Description: "ssh",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "websocket-inside",
+      Description: "websocket from task ",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 443,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-default::http",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-default::http",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 22,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-default::ssh",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 443,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-default::websocket-inside",
+    }),
+  },
+  {
     type: "SecurityGroupRuleEgress",
     group: "EC2",
     properties: ({}) => ({
@@ -101,6 +264,23 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-default::default",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleEgress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 443,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-default::websocket-inside",
     }),
   },
   {
@@ -207,6 +387,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-ec2-to-s3",
+    dependencies: ({}) => ({
+      roles: ["role-ec2-to-s3"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -229,6 +417,32 @@ exports.createResources = () => [
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
           PolicyName: "AmazonECSTaskExecutionRolePolicy",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "role-ec2-to-s3",
+      Description: "Allows EC2 instances to call AWS services on your behalf.",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
         },
       ],
     }),

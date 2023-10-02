@@ -82,6 +82,12 @@ exports.createProgram = () => {
   program.option("--noOpen", "Do not open diagram");
   program.option("--s3-bucket <bucket>", "The S3 bucket to store the result");
   program.option("--s3-key <key>", "The S3 bucket key");
+  program.option("--s3-bucket <bucket>", "The S3 bucket to store the result");
+  program.option(
+    "--s3-local-dir <key>",
+    "The local directory from where to upload",
+    "artifacts"
+  );
   program.option(
     "--ws-url <websocketUrl>",
     "The websocket URL to send statuses"

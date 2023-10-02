@@ -11,7 +11,7 @@ exports.main = async ({ argv, onExit }) => {
   logger.info(`GruCloud ${pkg.version}`);
   logger.info(new Date().toUTCString());
 
-  logger.info(`argv: ${argv}`);
+  logger.info(`argv: ${argv.join(" ")}, pwd: ${process.cwd()}`);
   const { STAGE } = process.env;
   logger.info(`stage: ${STAGE}`);
   try {
