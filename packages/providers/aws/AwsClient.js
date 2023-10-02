@@ -117,7 +117,7 @@ const AwsClient =
         pipe([
           tap(() => {
             assert(method);
-            logger.debug(`getById ${type}`);
+            //logger.debug(`getById ${type}`);
             //assert(lives);
           }),
           tryCatch(
@@ -126,7 +126,7 @@ const AwsClient =
               pickId,
               defaultsDeep(extraParams),
               tap((params) => {
-                logger.info(`getById ${type}`);
+                //logger.info(`getById ${type}`);
               }),
               (params) =>
                 endpoint(getEndpointConfig(getContext()))[method](params),
