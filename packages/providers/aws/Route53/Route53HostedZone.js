@@ -137,7 +137,7 @@ const findDnsServers = (live) =>
 exports.findDnsServers = findDnsServers;
 
 const decorate =
-  ({ endpoint }) =>
+  ({ endpoint, config }) =>
   ({ DelegationSet, HostedZone }) =>
     pipe([
       () => ({ ...HostedZone, DelegationSet }),

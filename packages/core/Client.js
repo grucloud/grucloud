@@ -14,9 +14,13 @@ const {
   pick,
   any,
   or,
+  eq,
+  flatMap,
+  all,
 } = require("rubico");
 
 const {
+  flatten,
   when,
   uniq,
   isEmpty,
@@ -26,6 +30,8 @@ const {
   includes,
   isFunction,
   unless,
+  pluck,
+  callProp,
 } = require("rubico/x");
 const { memoize } = require("lodash");
 const util = require("node:util");
@@ -36,6 +42,9 @@ const showLive =
   ({ options = {} } = {}) =>
   (resource) =>
     pipe([
+      tap(() => {
+        assert(resource);
+      }),
       () => resource,
       and([
         (resource) =>
@@ -49,8 +58,12 @@ const showLive =
           ])(),
         pipe([get("groupType"), not(includes(options.typesExclude))]),
         (resource) => (options.defaultExclude ? !resource.isDefault : true),
-        // (resource) =>
-        //   options.includeManagedByOther ? true : !resource.managedByOther,
+        not(
+          and([
+            get("managedByOther"),
+            pipe([callProp("usedBy"), all(get("managedByOther"))]),
+          ])
+        ),
         (resource) => (options.our ? resource.managedByUs : true),
         (resource) => (options.name ? resource.name === options.name : true),
         (resource) => (options.id ? resource.id === options.id : true),
@@ -73,6 +86,35 @@ const buildGroupType = switchCase([
 exports.buildGroupType = buildGroupType;
 
 const defaultMemoizeResolver = () => "k";
+
+const findUsedBy =
+  ({ lives, config }) =>
+  ({ id, groupType }) =>
+    pipe([
+      tap(() => {
+        assert(lives);
+        assert(config);
+        assert(id);
+        assert(groupType);
+      }),
+      () => config,
+      lives.getByProvider,
+      pluck("resources"),
+      flatten,
+      filter(
+        pipe([
+          get("dependencies"),
+          any(
+            and([
+              pipe([get("ids"), includes(id)]),
+              eq(get("groupType"), groupType),
+            ])
+          ),
+        ])
+      ),
+      flatMap((dep) => [dep, ...findUsedBy({ lives, config })(dep)]),
+      uniq,
+    ])();
 
 const decorateLive =
   ({ client, options, lives, config }) =>
@@ -139,11 +181,6 @@ const decorateLive =
           pipe([() => live, client.isDefault({ lives, config })]),
           defaultMemoizeResolver
         ),
-        //TODO
-        // memoFindNamespace: memoize(
-        //   pipe([() => live, client.findNamespace({ lives, config })]),
-        //   defaultMemoizeResolver
-        // ),
         memoDependencies: memoize(
           pipe([
             () =>
@@ -235,6 +272,19 @@ const decorateLive =
           defaultMemoizeResolver
         ),
       }),
+      assign({
+        memoUsedBy: ({ memoFindId }) =>
+          memoize(
+            pipe([
+              tap((params) => {
+                assert(memoFindId);
+              }),
+              () => ({ id: memoFindId(), groupType: client.spec.groupType }),
+              findUsedBy({ lives, config }),
+            ]),
+            defaultMemoizeResolver
+          ),
+      }),
       ({
         memoFindName,
         memoFindId,
@@ -242,6 +292,7 @@ const decorateLive =
         memoIsDefault,
         //memoFindNamespace,
         memoDependencies,
+        memoUsedBy,
       }) => ({
         groupType: client.spec.groupType,
         group: client.spec.group,
@@ -274,11 +325,12 @@ const decorateLive =
         get dependencies() {
           return memoDependencies();
         },
+        usedBy: memoUsedBy,
       }),
       tap((resource) =>
         Object.defineProperty(resource, "show", {
           enumerable: true,
-          get: () => showLive({ options })(resource),
+          get: () => showLive({ lives, options })(resource),
         })
       ),
       tap((resource) =>

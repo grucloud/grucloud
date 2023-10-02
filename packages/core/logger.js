@@ -17,11 +17,6 @@ const transportFiles = [
     format: formatTimestamp,
   },
   {
-    filename: "grucloud-info.log",
-    level: "info",
-    format: formatTimestamp,
-  },
-  {
     filename: "grucloud-debug.log",
     level: "debug",
     format: formatTimestamp,
