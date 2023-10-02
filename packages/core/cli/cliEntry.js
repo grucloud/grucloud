@@ -20,7 +20,13 @@ main({
   onExit: async ({ code }) => {
     logger.info(`onExit ${code}`);
 
-    setTimeout(() => logger.logger.end(), 1000);
+    setTimeout(() => {
+      try {
+        logger.logger.end();
+      } catch (error) {
+        console.error("error in logger.end()");
+      }
+    }, 1000);
 
     await new Promise(() => {
       logger.logger.on("finish", function () {

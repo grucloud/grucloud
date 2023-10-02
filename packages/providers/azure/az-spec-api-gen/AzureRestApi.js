@@ -40,7 +40,7 @@ const {
   identity,
   uniq,
 } = require("rubico/x");
-const util = require("util");
+
 const path = require("path");
 const fs = require("fs").promises;
 const { camelCase, snakeCase, pascalCase } = require("change-case");

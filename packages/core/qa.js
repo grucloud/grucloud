@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, map, tap, and, get, tryCatch } = require("rubico");
 const { isEmpty, first, callProp } = require("rubico/x");
-const util = require("util");
+const util = require("node:util");
 const logger = require("./logger")({ prefix: "ProviderGru" });
 
 process.on("uncaughtException", function (err) {

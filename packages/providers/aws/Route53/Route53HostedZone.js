@@ -29,7 +29,7 @@ const {
 } = require("rubico/x");
 
 const { AwsClient } = require("../AwsClient");
-const util = require("util");
+const util = require("node:util");
 
 const logger = require("@grucloud/core/logger")({ prefix: "HostedZone" });
 const { retryCall } = require("@grucloud/core/Retry");

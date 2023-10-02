@@ -1,8 +1,10 @@
 const assert = require("assert");
-const { pipe, tryCatch, tap, assign, switchCase } = require("rubico");
+const { pipe, tryCatch, tap, switchCase } = require("rubico");
 const WebSocket = require("ws");
 
-const logger = require("../logger")({ prefix: "CliEntry" });
+const logger = require("../logger")({ prefix: "websocket" });
+
+const websockerMock = { close: () => {}, send: (message) => {} };
 
 exports.connectToWebSocketServer = ({ wsUrl, wsRoom }) =>
   pipe([
@@ -13,29 +15,32 @@ exports.connectToWebSocketServer = ({ wsUrl, wsRoom }) =>
       () => wsUrl && wsRoom,
       pipe([
         () => new WebSocket(wsUrl),
-        (ws) =>
-          new Promise((resolve, reject) => {
-            ws.on("open", () => {
-              logger.debug("ws open");
-              ws.send(
-                JSON.stringify({
-                  command: "join",
-                  options: { room: wsRoom },
-                })
-              );
-              resolve(ws);
-            });
-            ws.on("close", () => {
-              logger.debug("ws closed");
-              ws.close();
-              reject();
-            });
-            ws.on("error", (error) => {
-              logger.error(error);
-              reject();
-            });
-          }),
+        tryCatch(
+          (ws) =>
+            new Promise((resolve, reject) => {
+              ws.on("open", () => {
+                logger.debug("ws open");
+                ws.send(
+                  JSON.stringify({
+                    command: "join",
+                    options: { room: wsRoom },
+                  })
+                );
+                resolve(ws);
+              });
+              ws.on("close", () => {
+                logger.debug("ws closed");
+                ws.close();
+                reject();
+              });
+              ws.on("error", (error) => {
+                logger.error(error);
+                reject(error);
+              });
+            }),
+          (error) => websockerMock
+        ),
       ]),
-      () => ({ close: () => {}, send: (message) => {} }),
+      () => websockerMock,
     ]),
   ])();

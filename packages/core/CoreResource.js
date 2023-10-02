@@ -37,7 +37,7 @@ const {
 } = require("rubico/x");
 const generator = require("generate-password");
 const { mergeWith } = require("lodash/fp");
-const util = require("util");
+const util = require("node:util");
 const { memoize } = require("lodash");
 
 const logger = require("./logger")({ prefix: "CoreResources" });

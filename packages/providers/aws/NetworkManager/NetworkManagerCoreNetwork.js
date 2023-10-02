@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, assign, tryCatch } = require("rubico");
 const { defaultsDeep, includes, when } = require("rubico/x");
-const util = require("util");
+const util = require("node:util");
 
 const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({ prefix: "CoreNetwork" });

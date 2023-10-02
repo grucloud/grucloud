@@ -49,6 +49,12 @@ if (process.env.CONTINUOUS_INTEGRATION) {
   );
 }
 
+logger.add(
+  new transports.Console({
+    level: "error",
+    format: formatTimestamp,
+  })
+);
 module.exports = ({ prefix = "" }) => {
   return {
     logger,

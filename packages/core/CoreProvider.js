@@ -43,7 +43,7 @@ const {
   uniq,
 } = require("rubico/x");
 const { memoize } = require("lodash");
-const util = require("util");
+const util = require("node:util");
 const fs = require("fs").promises;
 const { EOL } = require("os");
 

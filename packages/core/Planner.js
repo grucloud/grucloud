@@ -33,7 +33,7 @@ const {
   isDeepEqual,
   includes,
 } = require("rubico/x");
-const util = require("util");
+const util = require("node:util");
 
 const { logError, convertError } = require("./Common");
 const STATES = {

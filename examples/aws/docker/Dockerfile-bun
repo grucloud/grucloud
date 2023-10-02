@@ -49,5 +49,5 @@ COPY src .
 RUN  mkdir /root/.aws && touch /root/.aws/credentials && touch /root/.aws/config
 RUN  mkdir artifacts
 
-ENTRYPOINT ["/app/node_modules/.bin/gc"]
+ENTRYPOINT ["/usr/local/bin/bun", "/app/node_modules/.bin/gc"]
 
