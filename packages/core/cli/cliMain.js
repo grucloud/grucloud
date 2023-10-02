@@ -7,11 +7,11 @@ const logger = require("../logger")({ prefix: "CliMain" });
 const executableName = "gc";
 exports.main = async ({ argv, onExit }) => {
   const program = createProgram();
-
+  const argsStr = argv.join(" ");
   logger.info(`GruCloud ${pkg.version}`);
   logger.info(new Date().toUTCString());
 
-  logger.info(`argv: ${argv.join(" ")}, pwd: ${process.cwd()}`);
+  logger.info(`argv: ${argsStr}, pwd: ${process.cwd()}`);
   const { STAGE } = process.env;
   logger.info(`stage: ${STAGE}`);
   try {
@@ -21,9 +21,9 @@ exports.main = async ({ argv, onExit }) => {
     const used = Math.ceil(process.memoryUsage().heapUsed / 1024 / 1024);
     if (!["output", "new", "gencode"].includes(commmand.args[0])) {
       console.log(
-        `Command "${executableName} ${commmand.args.join(
-          " "
-        )}" executed in ${duration.toString(1, 1)}, ${used} MB`
+        `Command "${executableName} ${argv
+          .slice(2)
+          .join(" ")}" executed in ${duration.toString(1, 1)}, ${used} MB`
       );
     }
     await onExit({ code: 0 });

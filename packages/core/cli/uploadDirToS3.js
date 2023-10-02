@@ -9,7 +9,14 @@ const { walkDir } = require("./walkDir");
 const { PutObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 
 const { AWSAccessKeyId, AWSSecretKey, AWS_REGION } = process.env;
-const client = new S3Client({ region: AWS_REGION });
+
+const client = new S3Client({
+  region: AWS_REGION,
+  credentials: {
+    accessKeyId: AWSAccessKeyId,
+    secretAccessKey: AWSSecretKey,
+  },
+});
 const logger = require("../logger")({ prefix: "uploadDirToS3" });
 
 const uploadFileToS3 =
