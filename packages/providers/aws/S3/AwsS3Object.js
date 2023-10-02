@@ -1,11 +1,9 @@
 const assert = require("assert");
 const fs = require("fs").promises;
 const path = require("path");
-const util = require("node:util");
 
 const {
   map,
-  filter,
   pipe,
   not,
   tap,
@@ -13,8 +11,6 @@ const {
   switchCase,
   fork,
   get,
-  any,
-  eq,
   pick,
 } = require("rubico");
 const {
@@ -23,7 +19,6 @@ const {
   isEmpty,
   callProp,
   includes,
-  flatten,
   unless,
 } = require("rubico/x");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
@@ -41,7 +36,6 @@ const { AwsClient } = require("../AwsClient");
 const { tos } = require("@grucloud/core/tos");
 const {
   convertError,
-  mapPoolSize,
   md5FileBase64,
   md5FileHex,
 } = require("@grucloud/core/Common");
@@ -104,56 +98,19 @@ exports.AwsS3Object = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
-  const getList = ({ resources = [], lives } = {}) =>
+  const getList = ({ resources = [] } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList s3 #resources ${resources.length}`);
-        assert(lives);
       }),
-      lives.getByType({
-        type: "Bucket",
-        group: "S3",
-        providerName: config.providerName,
-      }),
-      map.pool(mapPoolSize, (bucket) =>
-        tryCatch(
-          pipe([
-            () => ({
-              Bucket: bucket.name,
-              MaxKeys: 1e3,
-            }),
-            s3().listObjectsV2,
-            get("Contents", []),
-            tap((params) => {
-              assert(true);
-            }),
-            map.pool(
-              mapPoolSize,
-              pipe([({ Key }) => ({ Key, Bucket: bucket.name }), getByKey])
-            ),
-          ]),
-          (error, bucket) =>
-            pipe([
-              tap((params) => {
-                logger.error(
-                  `listObjectsV2 bucket: ${bucket.name}, error: ${util.inspect(
-                    error
-                  )}`
-                );
-              }),
-              () => [{ error, bucket, config }],
-            ])()
-        )()
-      ),
-      flatten,
-      filter(not(isEmpty)),
-      filter(not(get("error"))),
+      () => resources,
+      map(getByName),
     ])();
 
   const getByKey = ({ Key, Bucket }) =>
     pipe([
       tap(() => {
-        logger.info(`getByName ${JSON.stringify({ Key, Bucket })}`);
+        logger.info(`getByKey ${JSON.stringify({ Key, Bucket })}`);
         assert(Key);
         assert(Bucket);
       }),
@@ -218,7 +175,7 @@ exports.AwsS3Object = ({ spec, config }) => {
                 pipe([
                   tap(() => {
                     logger.debug(
-                      `getByName error ${Bucket}/${Key}: ${tos(error)}`
+                      `getByKey error ${Bucket}/${Key}: ${tos(error)}`
                     );
                   }),
                   () => ({
@@ -231,7 +188,7 @@ exports.AwsS3Object = ({ spec, config }) => {
           ])()
       ),
       tap((result) => {
-        // logger.debug(`getByName result: ${tos(result)}`);
+        // logger.debug(`getByKey result: ${tos(result)}`);
       }),
     ])();
 
@@ -239,6 +196,8 @@ exports.AwsS3Object = ({ spec, config }) => {
     pipe([
       tap(() => {
         assert(config);
+        assert(dependencies);
+        assert(properties);
         logger.info(`getByName ${name}`);
       }),
       fork({
