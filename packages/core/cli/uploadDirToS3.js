@@ -3,6 +3,7 @@ const { pipe, tap, map, tryCatch, gt } = require("rubico");
 const { when, size } = require("rubico/x");
 const Path = require("path");
 const fs = require("fs").promises;
+const util = require("node:util");
 
 const { walkDir } = require("./walkDir");
 const { PutObjectCommand, S3Client } = require("@aws-sdk/client-s3");
@@ -28,13 +29,15 @@ const uploadFileToS3 =
           Bucket: s3Bucket,
           Key: Path.join(s3Key, filename),
         }),
-        tap((params) => {
+        tap(({ Key }) => {
           assert(true);
+          logger.debug(`uploadFileToS3 ${s3Bucket} ${Key}`);
         }),
         (input) => new PutObjectCommand(input),
         (command) => client.send(command),
       ]),
       (error) => {
+        logger.error(`uploadFileToS3 ${util.inspect(error)}`);
         console.log(error);
         return { error };
       }
@@ -64,7 +67,7 @@ exports.uploadDirToS3 = ({ s3Bucket, s3Key, s3LocalDir = "artifacts" }) =>
       }),
       map.pool(10, uploadFileToS3({ s3LocalDir, s3Bucket, s3Key })),
       tap((params) => {
-        assert(params);
+        logger.debug(`uploadDirToS3 done`);
       }),
     ])
   )();

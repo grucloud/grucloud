@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { uploadDirToS3 } = require("..//uploadDirToS3");
-
+const Path = require("node:path");
 describe("UploadDirToS3", function () {
   before(async function () {});
 
@@ -9,7 +9,7 @@ describe("UploadDirToS3", function () {
       await uploadDirToS3({
         s3Bucket: "grucloud-console-dev",
         s3Key: "test",
-        s3LocalDir: "cli/test",
+        s3LocalDir: Path.join(__dirname, "."),
       });
     } catch (error) {
       console.log(error);
