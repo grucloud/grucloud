@@ -34,6 +34,7 @@ const managedByOther = () =>
     or([
       callProp("startsWith", "awsconfigconforms-"),
       callProp("startsWith", "CDK"),
+      callProp("startsWith", "Infra-ECS-Cluster"),
     ]),
   ]);
 

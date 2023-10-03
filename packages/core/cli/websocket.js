@@ -22,6 +22,7 @@ exports.connectToWebSocketServer = ({ wsUrl, wsRoom }) =>
                 logger.debug("ws open");
                 ws.send(
                   JSON.stringify({
+                    origin: "grucloud-container",
                     command: "join",
                     options: { room: wsRoom },
                   })

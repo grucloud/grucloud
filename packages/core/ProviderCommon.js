@@ -361,11 +361,11 @@ exports.filterReadClient =
       filter(not(get("isHide"))),
       unless(() => all, filterByType({ types, groups, all, targetTypes })),
       tap((specs) => {
-        logger.info(
-          `filterReadClient types: ${types}, ${size(
-            targetTypes
-          )} targetTypes: ${targetTypes}`
-        );
+        // logger.info(
+        //   `filterReadClient types: ${types}, ${size(
+        //     targetTypes
+        //   )} targetTypes: ${targetTypes}`
+        // );
 
         logger.info(
           `filterReadClient #specs ${size(
