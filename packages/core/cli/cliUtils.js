@@ -31,7 +31,7 @@ const runAsyncCommand = async ({ ws, text, command }) => {
   }) => {
     ws &&
       ws.send(
-        JSON.stringify({ action: "logs", data: { context, nextState, error } })
+        JSON.stringify({ command: "logs", data: { context, nextState, error } })
       );
     // logger.info(
     //   `onStateChange: ${JSON.stringify({

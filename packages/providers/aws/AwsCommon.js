@@ -420,9 +420,9 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
               // logger.info(
               //   `shouldRetryOnException: ${name}, error: ${util.inspect(error)}`
               // );
-              logger.info(
-                `shouldRetryOnException: name: ${error.name}, code: ${error.code}, message: ${error.message}`
-              );
+              // logger.info(
+              //   `shouldRetryOnException: name: ${error.name}, code: ${error.code}, message: ${error.message}`
+              // );
             }),
             or([
               pipe([
