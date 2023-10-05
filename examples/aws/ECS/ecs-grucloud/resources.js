@@ -15,7 +15,7 @@ exports.createResources = () => [
         Description:
           "Canonical, Ubuntu, 22.04 LTS, arm64 jammy image build on 2023-05-16",
       },
-      InstanceType: "t4g.nano",
+      InstanceType: "t4g.small",
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -354,7 +354,7 @@ exports.createResources = () => [
         {
           cpu: 0,
           essential: true,
-          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.7.3",
+          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.9.4",
           logConfiguration: {
             logDriver: "awslogs",
             options: {
