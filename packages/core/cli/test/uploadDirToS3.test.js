@@ -9,7 +9,7 @@ describe("UploadDirToS3", function () {
       await uploadDirToS3({
         s3Bucket: "grucloud-console-dev",
         s3Key: "test",
-        s3LocalDir: Path.join(__dirname, "."),
+        s3LocalDir: Path.join(__dirname, "uploadDir"),
       });
     } catch (error) {
       console.log(error);
