@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-mock",
-  "version": "12.10.0",
+  "version": "12.10.1",
   "description": "The GruCloud Mock provider",
   "main": "MockProvider.js",
   "private": true,
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.10.0",
+    "@grucloud/core": "^12.10.1",
     "axios": "1.3.6",
     "axios-mock-adapter": "1.21.4",
     "rubico": "1.9.6",
