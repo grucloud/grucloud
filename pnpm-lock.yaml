@@ -7161,6 +7161,9 @@ importers:
       md5-file:
         specifier: 5.0.0
         version: 5.0.0
+      mime-types:
+        specifier: 2.1.35
+        version: 2.1.35
       netmask:
         specifier: 2.0.2
         version: 2.0.2

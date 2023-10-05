@@ -45,6 +45,7 @@
     "js-yaml": "4.1.0",
     "lodash": "4.17.21",
     "md5-file": "5.0.0",
+    "mime-types": "2.1.35",
     "netmask": "2.0.2",
     "pluralize": "8.0.0",
     "prettier": "2.8.8",
