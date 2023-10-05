@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, map, tryCatch, gt } = require("rubico");
-const { when, size } = require("rubico/x");
+const { pipe, tap, map, tryCatch, gt, assign, get } = require("rubico");
+const { when, size, callProp } = require("rubico/x");
 const Path = require("path");
 const fs = require("fs").promises;
 const util = require("node:util");
@@ -36,8 +36,11 @@ const uploadFileToS3 =
           Bucket: s3Bucket,
           Key: Path.join(s3Key, filename),
         }),
+        when(
+          pipe([get("Key"), callProp("endsWith", ".svg")]),
+          assign({ ContentType: () => "image/svg+xml" })
+        ),
         tap(({ Key }) => {
-          assert(true);
           logger.debug(`uploadFileToS3 ${s3Bucket} ${Key}`);
         }),
         (input) => new PutObjectCommand(input),
@@ -45,7 +48,6 @@ const uploadFileToS3 =
       ]),
       (error) => {
         logger.error(`uploadFileToS3 ${util.inspect(error)}`);
-        console.log(error);
         return { error };
       }
     )();

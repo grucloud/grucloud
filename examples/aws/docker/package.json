@@ -6,9 +6,9 @@
   "scripts": {
     "docker:build": "docker build -t grucloud/grucloud-cli .",
     "docker:build:bun": "docker build -f Dockerfile-bun -t grucloud/grucloud-cli .",
-    "docker:tag": "docker tag grucloud/grucloud-cli public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.9.4",
+    "docker:tag": "docker tag grucloud/grucloud-cli public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.10.0",
     "docker:login": "aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/a4o9b2p8",
-    "docker:push": "docker push public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.9.4",
+    "docker:push": "docker push public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.10.0",
     "gc:version": "docker run  grucloud/grucloud-cli --version",
     "gc:info:aws": "docker run --env-file=aws.env grucloud/grucloud-cli --infra iac_aws.js info",
     "gc:list:aws": "docker run -w /app/output  --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output --env-file=aws.env grucloud/grucloud-cli --infra /app/iac_aws.js list --json gc-list.json --config /app/input/config_aws.js --graph --all --dot-file gc.dot",
