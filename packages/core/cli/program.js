@@ -33,7 +33,7 @@ const optionFilteredByTypes = [
   collect,
 ];
 const optionFilteredByGroups = [
-  "--group <value>",
+  "--include-groups <value>",
   "Include by group, multiple values allowed",
   collect,
 ];
@@ -93,6 +93,7 @@ exports.createProgram = () => {
     "The websocket URL to send statuses"
   );
   program.option("--ws-room <websocketRoom>", "The websocket room");
+  program.option(...optionFilteredByGroups);
 
   const infraOptions = ({ infra, config, stage }) => ({
     infraFileName: infra,
@@ -208,7 +209,6 @@ exports.createProgram = () => {
     .option("-f, --force", "force destroy, will not prompt user")
     .option(...optionFilteredByProvider)
     .option(...optionFilteredByTypes)
-    .option(...optionFilteredByGroups)
     .option(...optionExcludesByTypes)
     .option(
       "-a, --all",
@@ -252,7 +252,6 @@ exports.createProgram = () => {
     .option(...optionFilteredByProvider)
     .option(...optionFilteredByResourceGroup)
     .option(...optionFilteredByTypes)
-    .option(...optionFilteredByGroups)
     .option(...optionDotFileLive)
     .option("--title <value>", "diagram title", defautTitle)
     .action(runCommand({ commandName: "list", program }));
@@ -302,7 +301,6 @@ exports.createProgram = () => {
     .description("Generate infrastruture code from deployed resources")
     .alias("c")
     .option(...optionFilteredByTypes)
-    .option(...optionFilteredByGroups)
     .option(...optionExcludesByTypes)
     .option(...optionFilteredByResourceGroup)
     .option(

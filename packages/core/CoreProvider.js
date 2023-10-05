@@ -124,10 +124,11 @@ const createResourceMakers = ({
     }),
   ])();
 
-const buildProviderConfig = ({ config = {}, providerName }) =>
+const buildProviderConfig = ({ config = {}, providerName, programOptions }) =>
   pipe([
     () => config,
     defaultsDeep({ providerName }),
+    defaultsDeep(programOptions),
     defaultsDeep(configProviderDefault),
   ])();
 
@@ -207,7 +208,7 @@ function CoreProvider({
   ]);
 
   const getProviderConfig = () =>
-    buildProviderConfig({ config: makeConfig(), providerName });
+    buildProviderConfig({ config: makeConfig(), providerName, programOptions });
 
   logger.debug(`CoreProvider name: ${providerName}, type ${type}`);
 
