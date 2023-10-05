@@ -1,6 +1,6 @@
 {
   "name": "s3-to-eventbridge-claim-check-pattern",
-  "version": "12.10.1",
+  "version": "12.10.2",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.10.1",
-    "@grucloud/provider-aws": "^12.10.1",
+    "@grucloud/core": "^12.10.2",
+    "@grucloud/provider-aws": "^12.10.2",
     "rubico": "1.9.6"
   }
 }

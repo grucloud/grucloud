@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-k8s-web-ui-dashboard",
-  "version": "12.10.1",
+  "version": "12.10.2",
   "description": "GruCloud Module for the Kubernetes Web Ui Dashboard",
   "main": "iac.js",
   "scripts": {
@@ -12,9 +12,9 @@
     "url": "git+ssh://git@github.com/grucloud/grucloud.git"
   },
   "dependencies": {
-    "@grucloud/core": "^12.10.1",
+    "@grucloud/core": "^12.10.2",
     "@grucloud/k8s-manifest2code": "^12.7.1",
-    "@grucloud/provider-k8s": "^12.10.1"
+    "@grucloud/provider-k8s": "^12.10.2"
   },
   "keywords": [
     "kubernetes",
