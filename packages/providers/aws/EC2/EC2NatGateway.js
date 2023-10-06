@@ -140,7 +140,7 @@ const disassociateAddress = ({ endpoint }) =>
               (error, address) =>
                 pipe([
                   tap(() => {
-                    logger.error(`error disassociateAddress  ${tos(error)}`);
+                    logger.info(`error disassociateAddress  ${tos(error)}`);
                   }),
                   () => ({ error, address }),
                 ])()
