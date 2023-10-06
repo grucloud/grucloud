@@ -236,14 +236,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      FromPort: 443,
+      FromPort: 9000,
       IpProtocol: "tcp",
       IpRanges: [
         {
-          CidrIp: "0.0.0.0/0",
+          CidrIp: "172.0.0.0/8",
         },
       ],
-      ToPort: 443,
+      ToPort: 9000,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-default::websocket-inside",
@@ -354,7 +354,7 @@ exports.createResources = () => [
         {
           cpu: 0,
           essential: true,
-          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.9.4",
+          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.10.2",
           logConfiguration: {
             logDriver: "awslogs",
             options: {
