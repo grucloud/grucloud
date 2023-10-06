@@ -1,31 +1,16 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  any,
-  assign,
-  eq,
-  switchCase,
-  or,
-  not,
-  and,
-  omit,
-} = require("rubico");
+const { map, pipe, tap, get, any, assign, eq, omit } = require("rubico");
 const {
   defaultsDeep,
-  first,
   pluck,
   flatten,
   includes,
   find,
   when,
-  identity,
-  callProp,
   unless,
-  isEmpty,
-  append,
+  groupBy,
+  first,
+  values,
 } = require("rubico/x");
 
 const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
@@ -126,12 +111,7 @@ exports.ECSTaskDefinition = ({ compare }) => ({
   package: "ecs",
   client: "ECS",
   inferName: () => pipe([get("family")]),
-  findName: () => (live) =>
-    pipe([
-      () => live,
-      get("family"),
-      unless(() => live.latest, append(`::${live.revision}`)),
-    ])(),
+  findName: () => (live) => pipe([() => live, get("family")])(),
   findId,
   ignoreErrorCodes,
   propertiesDefault: { requiresCompatibilities: ["EC2"] },
@@ -165,7 +145,6 @@ exports.ECSTaskDefinition = ({ compare }) => ({
           map(pipe([get("efsVolumeConfiguration.fileSystemId")])),
         ]),
     },
-
     executionRole: {
       type: "Role",
       group: "IAM",
@@ -201,10 +180,7 @@ exports.ECSTaskDefinition = ({ compare }) => ({
     "latest",
   ],
   compare: compare({}),
-  ignoreResource: () =>
-    pipe([
-      or([not(get("live.latest")), not(eq(get("live.status"), "ACTIVE"))]),
-    ]),
+  ignoreResource: () => pipe([not(eq(get("live.status"), "ACTIVE"))]),
   filterLive: ({ lives, providerConfig }) =>
     pipe([
       omitIfEmpty(["volumes", "placementConstraints"]),
@@ -335,15 +311,12 @@ exports.ECSTaskDefinition = ({ compare }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTaskDefinitions-property
   getList: {
-    enhanceParams: () => () => ({ sort: "ASC" }),
+    enhanceParams: () => () => ({ sort: "DESC" }),
     transformListPost: () =>
       pipe([
-        callProp("sort", (a, b) => b.revision - a.revision),
-        unless(isEmpty, ([latest, ...others]) => [
-          { ...latest, latest: true },
-          ...others,
-        ]),
-        callProp("reverse"),
+        groupBy("family"),
+        map.entries(([family, resources]) => [family, first(resources)]),
+        values,
       ]),
     method: "listTaskDefinitions",
     getParam: "taskDefinitionArns",
@@ -393,7 +366,7 @@ exports.ECSTaskDefinition = ({ compare }) => ({
   getByName:
     ({ getList }) =>
     ({ name }) =>
-      pipe([getList, find(and([eq(get("family"), name), get("latest")]))])(),
+      pipe([getList, find(eq(get("family"), name))])(),
   tagger: ({ config }) =>
     Tagger({
       buildArn: buildArn({ config }),
