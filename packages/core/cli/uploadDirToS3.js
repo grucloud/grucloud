@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, map, tryCatch, gt, assign, get } = require("rubico");
-const { when, size, callProp } = require("rubico/x");
+const { when, size } = require("rubico/x");
 const Path = require("path");
 const fs = require("fs").promises;
 const util = require("node:util");
@@ -9,13 +9,13 @@ const mime = require("mime-types");
 const { walkDir } = require("./walkDir");
 const { PutObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 
-const { AWSAccessKeyId, AWSSecretKey, AWS_REGION } = process.env;
+const { S3_AWSAccessKeyId, S3_AWSSecretKey, S3_AWS_REGION } = process.env;
 
 const client = new S3Client({
-  region: AWS_REGION,
+  region: S3_AWS_REGION,
   credentials: {
-    accessKeyId: AWSAccessKeyId,
-    secretAccessKey: AWSSecretKey,
+    accessKeyId: S3_AWSAccessKeyId,
+    secretAccessKey: S3_AWSSecretKey,
   },
 });
 const logger = require("../logger")({ prefix: "uploadDirToS3" });
@@ -59,9 +59,9 @@ exports.uploadDirToS3 = ({ s3Bucket, s3Key, s3LocalDir = "artifacts" }) =>
         assert(s3Bucket);
         assert(s3Key);
         assert(s3LocalDir);
-        assert(AWSAccessKeyId);
-        assert(AWSSecretKey);
-        assert(AWS_REGION);
+        assert(S3_AWSAccessKeyId);
+        assert(S3_AWSSecretKey);
+        assert(S3_AWS_REGION);
       }),
       () => "",
       walkDir({ baseDir: s3LocalDir }),

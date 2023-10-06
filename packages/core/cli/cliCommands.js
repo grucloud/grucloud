@@ -1537,7 +1537,6 @@ const dotToSvg = ({
   pipe([
     tap(() => {
       assert(dotFile);
-      logger.debug(`dotToSvg`);
     }),
     tap(() => fse.outputFile(path.resolve(workingDirectory, dotFile), result)),
     tap(() => {
@@ -1546,6 +1545,7 @@ const dotToSvg = ({
     tap(() => {
       const output = graphOutputFileName({ file: dotFile, type });
       const command = `dot -T${type} ${dotFile} -o ${output}`;
+      logger.debug(`dotToSvg '${command}'`);
 
       const { stdout, stderr, code } = shell.exec(command, {
         silent: true,
@@ -1585,7 +1585,7 @@ const graphTarget = ({
       () => infra,
       setupProviders({ mapGloblalNameToResource, commandOptions }),
       tap((input) => {
-        logger.debug(`graph`, config);
+        logger.debug(`graphTarget`);
         assert(input.providerGru);
       }),
       ({ providerGru }) =>
