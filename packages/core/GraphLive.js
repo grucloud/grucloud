@@ -144,7 +144,7 @@ const filterResources =
 const buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
   pipe([
     tap(() => {
-      logger.debug(`buildSubGraphLive`);
+      logger.debug(`buildSubGraphLive ${providerName}`);
       assert(providerName);
       assert(Array.isArray(resourcesPerType));
     }),
@@ -153,14 +153,10 @@ const buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
     flatten,
     filter(not(isEmpty)),
     tap((xxx) => {
-      logger.debug(`buildSubGraphLive`);
       //TODO check error
     }),
     filterResources(options),
     groupBy("namespace"),
-    tap((xxx) => {
-      logger.debug(`buildGraphNode`);
-    }),
     map.entries(([namespace, resources]) => [
       namespace,
       buildSubGraph({
@@ -180,7 +176,7 @@ const buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
       ]),
     ]),
     tap((result) => {
-      logger.debug(`buildSubGraphLive done`);
+      //logger.debug(`buildSubGraphLive done`);
     }),
   ])();
 
