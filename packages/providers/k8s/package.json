@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-k8s",
-  "version": "12.10.3",
+  "version": "12.10.4",
   "description": "The GruCloud Kubernetes provider",
   "main": "K8sProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/k8s",
@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.10.3",
+    "@grucloud/core": "^12.10.4",
     "deep-object-diff": "1.1.9",
     "diff": "5.1.0",
     "js-yaml": "4.1.0",
