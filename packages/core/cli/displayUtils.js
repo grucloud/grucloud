@@ -110,9 +110,9 @@ exports.displayListSummary = pipe([
             ])()
           ),
           tap(() => {
-            logger.debug("display table summary");
+            //logger.debug("display table summary");
             console.log(table.toString());
-            logger.debug("display table summary done");
+            //logger.debug("display table summary done");
           }),
         ])(),
     ])()

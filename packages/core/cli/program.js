@@ -101,6 +101,18 @@ exports.createProgram = () => {
     stage: stage || process.env.STAGE || "dev",
   });
 
+  const sendEndCommand = ({ ws }) =>
+    pipe([
+      () => ({
+        command: "end",
+        data: {
+          memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
+        },
+      }),
+      JSON.stringify,
+      (data) => ws.send(data),
+    ]);
+
   const runCommand =
     ({ commandName, program }) =>
     (commandOptions) =>
@@ -141,6 +153,7 @@ exports.createProgram = () => {
                       ws,
                     }),
                   () => uploadDirToS3(programOptions),
+                  sendEndCommand({ ws }),
                 ]),
                 handleError
               )(),
