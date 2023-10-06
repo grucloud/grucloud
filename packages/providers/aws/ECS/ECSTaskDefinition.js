@@ -311,7 +311,7 @@ exports.ECSTaskDefinition = ({ compare }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTaskDefinitions-property
   getList: {
-    enhanceParams: () => () => ({ sort: "DESC" }),
+    enhanceParams: () => () => ({ sort: "DESC", status: "ACTIVE" }),
     transformListPost: () =>
       pipe([
         groupBy("family"),
