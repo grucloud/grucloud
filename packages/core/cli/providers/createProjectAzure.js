@@ -233,8 +233,6 @@ const writeEnv = ({ dirs, app, account, objectId }) =>
 AZURE_SUBSCRIPTION_ID=${account.id}
 AZURE_CLIENT_ID=${app.appId}
 AZURE_CLIENT_SECRET=${app.password}
-AZURE_OBJECT_ID=${objectId}
-
 `,
       ]),
       filename: () => path.resolve(dirs.destination, "auth.env"),

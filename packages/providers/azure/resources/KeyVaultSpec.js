@@ -116,7 +116,7 @@ const findResourceByPrincipalId =
         assert(objectId);
       }),
       () => lives,
-      find(eq(get("live.identity.principalId"), objectId)),
+      find(eq(get("live.identity.principalId"), objectId())),
     ])();
 
 const assignObjectId =

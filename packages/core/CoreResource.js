@@ -532,9 +532,9 @@ exports.ResourceMaker = ({
             tryCatch(
               pipe([
                 tap(() => {
-                  logger.debug(
-                    `resolveDependencies ${toString()}, dep ${dependency.toString()}`
-                  );
+                  // logger.debug(
+                  //   `resolveDependencies ${toString()}, dep ${dependency.toString()}`
+                  // );
                 }),
                 () => dependency,
                 switchCase([
@@ -618,12 +618,12 @@ exports.ResourceMaker = ({
   const resolveConfig = ({ live, resolvedDependencies, deep = false } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(
-          `resolveConfig ${toString()}, ${JSON.stringify({
-            deep,
-            hasLive: !!live,
-          })}`
-        );
+        // logger.debug(
+        //   `resolveConfig ${toString()}, ${JSON.stringify({
+        //     deep,
+        //     hasLive: !!live,
+        //   })}`
+        // );
         if (!live) {
           assert(true);
         }
@@ -754,7 +754,7 @@ exports.ResourceMaker = ({
         if (!live) {
           assert(false, `no live after create ${getResourceName()}`);
         }
-        logger.info(`created: ${toString()}`);
+        //logger.info(`created: ${toString()}`);
         //logger.debug(`created: live: ${tos(live)}`);
       }),
     ])();

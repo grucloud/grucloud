@@ -39,6 +39,7 @@ const {
   AZURE_KEYVAULT_AUDIENCE,
   AZURE_STORAGE_AUDIENCE,
   createAxiosAzure,
+  AZURE_GRAPH_BASE_URL,
 } = require("./AzureCommon");
 const { AzAuthorize } = require("./AzAuthorize");
 const { checkEnv } = require("@grucloud/core/Utils");
@@ -46,7 +47,11 @@ const { generateCode } = require("./Az2gc");
 const { fnSpecs } = require("./AzureSpec");
 const logger = require("@grucloud/core/logger")({ prefix: "AzureProvider" });
 
-const AUDIENCES = [AZURE_MANAGEMENT_BASE_URL, AZURE_KEYVAULT_AUDIENCE];
+const AUDIENCES = [
+  AZURE_MANAGEMENT_BASE_URL,
+  AZURE_KEYVAULT_AUDIENCE,
+  AZURE_GRAPH_BASE_URL,
+];
 
 const ResourceInclusionList = [
   "ResourceGroup",
@@ -78,7 +83,7 @@ const getListHof = ({ getList, spec }) =>
     (liveParam) =>
       pipe([
         tap((param) => {
-          logger.debug(`getList ${spec.groupType}`);
+          //logger.debug(`getList ${spec.groupType}`);
         }),
         () => liveParam,
         getList,
@@ -89,7 +94,7 @@ const getListHof = ({ getList, spec }) =>
         filter(not(isEmpty)),
         (items) => ({ items, total: size(items) }),
         tap(({ total, items }) => {
-          logger.debug(`getList ${spec.groupType} total: ${total}`);
+          //logger.debug(`getList ${spec.groupType} total: ${total}`);
         }),
       ])(),
     (error) =>
@@ -118,6 +123,7 @@ exports.AzureProvider = ({
 
   const bearerTokenMap = {};
   let _livesTypes = [];
+  let _objectId;
 
   const axios = createAxiosAzure({
     baseURL: AZURE_MANAGEMENT_BASE_URL,
@@ -146,6 +152,24 @@ exports.AzureProvider = ({
     }),
   ]);
 
+  const fetchObjectId = () =>
+    pipe([
+      () =>
+        createAxiosAzure({
+          baseURL: AZURE_GRAPH_BASE_URL,
+          bearerToken: () => bearerTokenMap[AZURE_GRAPH_BASE_URL],
+        }),
+      callProp(
+        "get",
+        `v1.0/servicePrincipals(appId='${process.env.AZURE_CLIENT_ID}')`
+      ),
+      get("data.id"),
+      tap((id) => {
+        assert(id, "fetchObjectId");
+      }),
+      (id) => (_objectId = id),
+    ])();
+
   const start = pipe([
     tap(() => {
       checkEnv(mandatoryEnvs);
@@ -164,9 +188,9 @@ exports.AzureProvider = ({
         }),
       ])()
     ),
+    tap(fetchObjectId),
     listTypes,
   ]);
-
   const configProviderDefault = {
     bearerToken: pipe([
       (audience) => bearerTokenMap[audience],
@@ -179,7 +203,7 @@ exports.AzureProvider = ({
     subscriptionId: process.env.AZURE_SUBSCRIPTION_ID,
     tenantId: process.env.AZURE_TENANT_ID,
     appId: process.env.AZURE_CLIENT_ID,
-    objectId: process.env.AZURE_OBJECT_ID,
+    objectId: () => _objectId,
   };
 
   const makeConfig = () =>

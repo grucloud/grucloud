@@ -1,7 +1,7 @@
 const assert = require("assert");
 const path = require("path");
 const { Command } = require("commander");
-const { pipe, tryCatch, tap, assign } = require("rubico");
+const { pipe, tryCatch, tap } = require("rubico");
 const { last } = require("rubico/x");
 const os = require("os");
 const pkg = require("../package.json");
@@ -64,7 +64,7 @@ const handleError = (error) => {
   if (!error.error?.displayed) {
     console.error(YAML.stringify(util.inspect(error, { depth: 8 })));
   }
-  throw error;
+  return { error };
 };
 
 const defautTitle = last(process.cwd().split(path.sep));
@@ -123,40 +123,48 @@ exports.createProgram = () => {
             () => programOptions,
             connectToWebSocketServer,
             (ws) =>
-              tryCatch(
-                pipe([
-                  () => programOptions,
-                  infraOptions,
-                  createInfra({ commandOptions, programOptions }),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  ({ createStack, createResources, config, stage }) =>
-                    Cli({
-                      createStack,
-                      createResources,
-                      config,
-                      stage,
-                      programOptions,
-                      ws,
+              pipe([
+                tryCatch(
+                  pipe([
+                    () => programOptions,
+                    infraOptions,
+                    createInfra({ commandOptions, programOptions }),
+                    tap((params) => {
+                      assert(true);
                     }),
-                  tap((cli) => {
-                    assert(
-                      cli[commandName],
-                      `command '${commandName}' not implemented`
-                    );
-                  }),
-                  (cli) =>
-                    cli[commandName]({
-                      commandOptions,
-                      programOptions,
-                      ws,
+                    ({ createStack, createResources, config, stage }) =>
+                      Cli({
+                        createStack,
+                        createResources,
+                        config,
+                        stage,
+                        programOptions,
+                        ws,
+                      }),
+                    tap((cli) => {
+                      assert(cli[commandName]);
                     }),
-                  () => uploadDirToS3(programOptions),
-                  sendEndCommand({ ws }),
-                ]),
-                handleError
-              )(),
+                    (cli) =>
+                      cli[commandName]({
+                        commandOptions,
+                        programOptions,
+                        ws,
+                      }),
+                  ]),
+                  handleError
+                ),
+                ({ error }) =>
+                  pipe([
+                    () => uploadDirToS3(programOptions),
+                    sendEndCommand({ ws }),
+                    tap.if(
+                      () => error,
+                      () => {
+                        throw error;
+                      }
+                    ),
+                  ])(),
+              ])(),
           ])(),
       ])();
 

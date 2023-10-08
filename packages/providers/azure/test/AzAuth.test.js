@@ -22,8 +22,8 @@ describe("AzAuth", function () {
       assert(false);
     }
   });
-  it.skip(
-    "get ad users",
+  it(
+    "get objectId",
     tryCatch(
       pipe([
         () => ({
@@ -47,13 +47,13 @@ describe("AzAuth", function () {
         }),
         Axios.create,
         //callProp("get", `v1.0/users/`),
-        callProp("get", `v1.0/servicePrincipals/`),
+        callProp("get", `v1.0/servicePrincipals(appId='${AZURE_CLIENT_ID}')`),
         tap((result) => {
           assert(result);
         }),
-        get("data"),
-        tap((result) => {
-          assert(result);
+        get("data.id"),
+        tap((id) => {
+          assert(id);
         }),
       ]),
       (error) => {
