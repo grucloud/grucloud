@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-kops",
-  "version": "12.10.5",
+  "version": "12.10.6",
   "description": "Provision users, groups, S3 bucket, route53 records for kops",
   "main": "iac,js",
   "private": true,
@@ -22,8 +22,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.10.5",
-    "@grucloud/provider-aws": "^12.10.5",
+    "@grucloud/core": "^12.10.6",
+    "@grucloud/provider-aws": "^12.10.6",
     "rubico": "1.9.6",
     "shelljs": "0.8.5"
   }
