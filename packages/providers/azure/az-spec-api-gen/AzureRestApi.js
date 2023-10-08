@@ -4,7 +4,6 @@ const {
   tap,
   filter,
   map,
-  tryCatch,
   eq,
   or,
   get,
@@ -19,10 +18,7 @@ const {
   gte,
 } = require("rubico");
 const {
-  append,
   prepend,
-  groupBy,
-  pluck,
   when,
   callProp,
   find,

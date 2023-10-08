@@ -289,7 +289,7 @@ function CoreProvider({
       if (spec.listOnly) {
         return;
       }
-      logger.debug(`resource '${resourceKey}' already exists`);
+      // logger.debug(`resource '${resourceKey}' already exists`);
     }
 
     resourcesObj = set(
@@ -1603,7 +1603,7 @@ function CoreProvider({
       tap(() => {
         assert(live);
         assert(resource);
-        logger.debug(`destroyById: ${tos(resource.toString())}`);
+        //logger.debug(`destroyById: ${tos(resource.toString())}`);
       }),
       () => getClient(resource),
       tap((client) => {

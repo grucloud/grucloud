@@ -65,7 +65,7 @@ const shouldRetryOnExceptionAzure = pipe([
     data: get("error.response.data"),
   }),
   tap(({ status, data }) => {
-    logger.error(
+    logger.info(
       `shouldRetryOnExceptionCreate status: ${status}, data: ${JSON.stringify(
         data
       )}`

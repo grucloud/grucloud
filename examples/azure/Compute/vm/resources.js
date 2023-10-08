@@ -119,6 +119,7 @@ exports.createResources = () => [
           },
         ],
         enableIPForwarding: true,
+        auxiliaryMode: "None",
       },
     }),
     dependencies: ({}) => ({

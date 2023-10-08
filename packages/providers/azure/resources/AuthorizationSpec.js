@@ -44,11 +44,11 @@ const roleAssignmentFilterDep =
 const roleAssignmentManagedByOther = ({ lives, config }) =>
   pipe([
     tap((params) => {
-      assert(config.objectId);
+      assert(config.objectId());
       assert(lives);
     }),
     or([
-      not(eq(get("properties.principalId"), config.objectId)),
+      not(eq(get("properties.principalId"), config.objectId())),
       // and([
       //   eq(get("live.properties.principalType"), "ServicePrincipal"),
       //   not(get("live.properties.principalName")),
@@ -150,7 +150,7 @@ exports.fnSpecs = ({ config }) =>
         operations: {
           getAll: {
             queryParameters: () => ({
-              $filter: `principalId eq '{${config.objectId}}'`,
+              $filter: `principalId eq '{${config.objectId()}}'`,
             }),
           },
         },

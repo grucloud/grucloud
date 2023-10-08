@@ -153,7 +153,7 @@ module.exports = CoreClient = ({
             }),
             decorate({ axios, lives }),
             tap((data) => {
-              logger.debug(`getById result: ${tos(data)}`);
+              //logger.debug(`getById result: ${tos(data)}`);
             }),
           ]),
           switchCase([
@@ -169,7 +169,7 @@ module.exports = CoreClient = ({
       getList: tryCatch(
         pipe([
           tap((params) => {
-            logger.debug(`getList ${spec.groupType}`);
+            //logger.debug(`getList ${spec.groupType}`);
           }),
           pathList,
           tap((params) => {
@@ -194,7 +194,7 @@ module.exports = CoreClient = ({
               }),
               get("data"),
               tap((data) => {
-                logger.debug(`getList ${spec.groupType}, ${tos(data)}`);
+                // logger.debug(`getList ${spec.groupType}, ${tos(data)}`);
               }),
               onResponseList({ axios, lives, path }),
               switchCase([
@@ -242,9 +242,9 @@ module.exports = CoreClient = ({
           tryCatch(
             pipe([
               tap(() => {
-                logger.debug(
-                  `create ${type}/${name}, payload: ${tos(payload)}`
-                );
+                // logger.debug(
+                //   `create ${type}/${name}, payload: ${tos(payload)}`
+                // );
                 assert(name);
                 assert(payload);
                 assert(!spec.singleton);
@@ -270,11 +270,11 @@ module.exports = CoreClient = ({
                       config: { ...config, repeatCount: 0 },
                     }),
                   tap((result) => {
-                    logger.info(
-                      `created ${spec.type}/${name}, status: ${
-                        result.status
-                      }, data: ${tos(result.data)}`
-                    );
+                    // logger.info(
+                    //   `created ${spec.type}/${name}, status: ${
+                    //     result.status
+                    //   }, data: ${tos(result.data)}`
+                    // );
                   }),
                   switchCase([
                     eq(get("response.status"), 409),
@@ -382,7 +382,7 @@ module.exports = CoreClient = ({
           tryCatch(
             pipe([
               tap(() => {
-                logger.info(`destroy ${tos({ type, name, id })}`);
+                //logger.info(`destroy ${tos({ type, name, id })}`);
                 assert(!spec.singleton);
                 assert(!spec.listOnly);
                 assert(!isEmpty(id), `destroy ${type}: invalid id`);
@@ -408,9 +408,9 @@ module.exports = CoreClient = ({
                 })
               ),
               tap((data) => {
-                logger.info(
-                  `destroy ${tos({ name, type, id, data })} destroyed`
-                );
+                // logger.info(
+                //   `destroy ${tos({ name, type, id, data })} destroyed`
+                // );
               }),
             ]),
             (error) => {

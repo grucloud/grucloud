@@ -8,7 +8,6 @@ const config = require("../config");
 const title = "Azure VM simple";
 
 describe(title, async function () {
-  before(async function () {});
   it(
     "run",
     {
