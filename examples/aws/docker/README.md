@@ -25,7 +25,7 @@ AZURE_TENANT_ID=f5252b5d-13f4-45e9-ad17-aaaaaaaaa
 AZURE_SUBSCRIPTION_ID=8e0e234e-8384-438d-a652-aaaaaaaaa
 AZURE_CLIENT_ID=4c5c4428-e25a-42dd-9506-aaaaaaaaa
 AZURE_CLIENT_SECRET=Fye-0irzz9xxmrcsq8enX2Y_aaaaaaaaa
-LOCATION=uksouth
+AZURE_LOCATION=uksouth
 ```
 
 ## Build the docker image

@@ -173,6 +173,7 @@ exports.AzureProvider = ({
   const start = pipe([
     tap(() => {
       checkEnv(mandatoryEnvs);
+      logger.info(`start AZURE_LOCATION: '${process.env.AZURE_LOCATION}'`);
     }),
     () => AUDIENCES,
     map.pool(5, (resource) =>
@@ -203,6 +204,7 @@ exports.AzureProvider = ({
     subscriptionId: process.env.AZURE_SUBSCRIPTION_ID,
     tenantId: process.env.AZURE_TENANT_ID,
     appId: process.env.AZURE_CLIENT_ID,
+    location: process.env.AZURE_LOCATION,
     objectId: () => _objectId,
   };
 

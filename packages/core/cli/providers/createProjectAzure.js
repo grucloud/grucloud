@@ -218,14 +218,14 @@ const createRoleAssignments = ({ account: { id }, app: { appId } }) =>
     }),
   ])();
 
-const writeEnv = ({ dirs, app, account, objectId }) =>
+const writeEnv = ({ location, dirs, app, account }) =>
   pipe([
     tap(() => {
       assert(dirs);
       assert(dirs.destination);
       assert(app);
       assert(account);
-      assert(objectId);
+      assert(location);
     }),
     assign({
       content: pipe([
@@ -233,13 +233,14 @@ const writeEnv = ({ dirs, app, account, objectId }) =>
 AZURE_SUBSCRIPTION_ID=${account.id}
 AZURE_CLIENT_ID=${app.appId}
 AZURE_CLIENT_SECRET=${app.password}
+AZURE_LOCATION=${location}
 `,
       ]),
       filename: () => path.resolve(dirs.destination, "auth.env"),
     }),
     tap(({ filename }) => {
       console.log(
-        `Writing environment variables AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID, AZURE_CLIENT_ID and AZURE_CLIENT_SECRET to ${filename}`
+        `Writing environment variables AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET and AZURE_LOCATION to ${filename}`
       );
     }),
     ({ content, filename }) => fs.writeFile(filename, content),
@@ -279,16 +280,12 @@ const promptLocation = ({ config = {} }) =>
     get("location"),
   ])();
 
-const createConfig = ({ location }) =>
+const createConfig = ({}) =>
   pipe([
-    tap(() => {
-      assert(location);
-    }),
     () => "",
     append(`const pkg = require("./package.json");\n`),
     append(`module.exports = () => ({\n`),
     append("  projectName: pkg.name,\n"),
-    append(`  location: "${location}",\n`),
     append("});"),
     tap((params) => {
       assert(true);
