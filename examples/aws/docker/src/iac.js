@@ -24,7 +24,7 @@ exports.createStack = () => ({
       providerFactory: AzureProvider,
       name: "azure",
       createResources,
-      config: () => ({ location: process.env.LOCATION }),
+      config: () => ({ location: process.env.AZURE_LOCATION }),
     },
     {
       providerFactory: K8sProvider,
