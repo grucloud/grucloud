@@ -14,3 +14,4 @@ coverage
 *.svg
 *.pem
 mochawesome-report
+bun.lockb
