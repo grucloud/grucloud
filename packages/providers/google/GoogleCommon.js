@@ -107,7 +107,7 @@ const runGCloudCommand = tryCatch(
     return config;
   },
   (error) => {
-    logger.error(`runGCloudCommand: ${JSON.stringify(error)}`);
+    logger.info(`runGCloudCommand: ${JSON.stringify(error)}`);
     //throw error;
     return { error };
   }

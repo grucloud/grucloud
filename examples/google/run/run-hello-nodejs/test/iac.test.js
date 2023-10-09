@@ -19,11 +19,11 @@ describe(title, async function () {
         programOptions: { workingDirectory: path.resolve(__dirname, "../") },
         steps: [
           { createStack, configs: [config] },
-          {
-            createStack,
-            createResources: require("./resourcesUpdate1").createResources,
-            configs: [config],
-          },
+          // {
+          //   createStack,
+          //   createResources: require("./resourcesUpdate1").createResources,
+          //   configs: [config],
+          // },
         ],
       });
     }

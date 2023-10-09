@@ -56,7 +56,7 @@ module.exports = AxiosMaker = ({
         logger.info(`axios ${method} ${baseURL}${url}: 404`);
         logger.info(`axios response: ${error.response}`);
       } else {
-        logger.error(`axios error ${tos(convertError({ error }))}`);
+        logger.info(`axios error ${tos(convertError({ error }))}`);
         // logger.error(
         //   `raw error response ${util.inspect(error.response, { depth: 8 })}`
         // );

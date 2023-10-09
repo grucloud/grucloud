@@ -4,60 +4,78 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Firewall",
-    group: "compute",
+    type: "Service",
+    group: "run",
     properties: ({}) => ({
-      name: "firewall",
-      description: "Managed By GruCloud",
-      priority: 1000,
-      allowed: [
-        {
-          IPProtocol: "tcp",
-          ports: ["22", "80", "433"],
+      apiVersion: "serving.knative.dev/v1",
+      kind: "Service",
+      metadata: {
+        name: "hello-world-1",
+      },
+      spec: {
+        template: {
+          metadata: {
+            labels: {
+              "run.googleapis.com/startupProbeType": "Default",
+            },
+            annotations: {
+              "autoscaling.knative.dev/maxScale": "100",
+              "run.googleapis.com/startup-cpu-boost": "true",
+            },
+          },
+          spec: {
+            containerConcurrency: 80,
+            timeoutSeconds: 300,
+            serviceAccountName:
+              "grucloud@grucloud-test.iam.gserviceaccount.com",
+            containers: [
+              {
+                image:
+                  "southamerica-east1-docker.pkg.dev/grucloud-test/cloud-run-source-deploy/hello-world-1@sha256:c1adbae9f183d9208cd8f1c2f16ef077989561f4ca349761debaa245fccaf0ed",
+                resources: {
+                  limits: {
+                    cpu: "1000m",
+                    memory: "512Mi",
+                  },
+                },
+                ports: [
+                  {
+                    name: "http1",
+                    containerPort: 8080,
+                  },
+                ],
+                startupProbe: {
+                  timeoutSeconds: 240,
+                  periodSeconds: 240,
+                  failureThreshold: 1,
+                  tcpSocket: {
+                    port: 8080,
+                  },
+                },
+              },
+            ],
+          },
         },
-      ],
-      direction: "INGRESS",
-      logConfig: {
-        enable: false,
+        traffic: [
+          {
+            percent: 100,
+            latestRevision: true,
+          },
+        ],
+      },
+    }),
+  },
+  {
+    type: "ServiceIamMember",
+    group: "run",
+    properties: ({ config }) => ({
+      location: config.region,
+      policy: {
+        version: 1,
       },
     }),
     dependencies: ({}) => ({
-      network: "vpc",
-    }),
-  },
-  {
-    type: "Network",
-    group: "compute",
-    properties: ({}) => ({
-      description: "Managed By GruCloud",
-      autoCreateSubnetworks: false,
-      name: "network",
-      routingConfig: {
-        routingMode: "REGIONAL",
-      },
-    }),
-  },
-  {
-    type: "Network",
-    group: "compute",
-    properties: ({}) => ({
-      description: "Managed By GruCloud",
-      autoCreateSubnetworks: false,
-      name: "vpc",
-      routingConfig: {
-        routingMode: "REGIONAL",
-      },
-    }),
-  },
-  {
-    type: "TargetVpnGateway",
-    group: "compute",
-    properties: ({}) => ({
-      name: "vpn-1",
-      description: "",
-    }),
-    dependencies: ({}) => ({
-      network: "network",
+      service: "hello-world-1",
     }),
   },
 ];

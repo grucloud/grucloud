@@ -1,4 +1,4 @@
-const { map, pipe, tap, filter, switchCase } = require("rubico");
+const { map, pipe, tap, filter, switchCase, get } = require("rubico");
 const { isEmpty, forEach, when, callProp } = require("rubico/x");
 const assert = require("assert");
 const npath = require("path");
@@ -23,7 +23,13 @@ const envFromFile = (envFile) =>
     () => fs.readFileSync(envFile, "utf8"),
     callProp("split", /\r?\n/),
     filter((line) => !line.match(/^\s*#/)),
-    map(callProp("split", "=")),
+    map(
+      pipe([
+        callProp("match", /^(?<key>[^=]+)=(?<value>.+)/),
+        get("groups", {}),
+        ({ key, value }) => [key, value],
+      ])
+    ),
     filter(([key, value]) => !isEmpty(key) && !isEmpty(value)),
     map(([key, value]) => [
       // Remove surrounding spaces from key and value
