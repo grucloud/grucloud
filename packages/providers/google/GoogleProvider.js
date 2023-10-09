@@ -2,7 +2,7 @@ const assert = require("assert");
 const { readFileSync } = require("fs");
 const path = require("path");
 const os = require("os");
-
+const fs = require("fs").promises;
 const {
   map,
   pipe,
@@ -14,7 +14,7 @@ const {
   omit,
   reduce,
 } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, isEmpty, when } = require("rubico/x");
 
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
@@ -79,30 +79,33 @@ exports.GoogleProvider = ({
         managedByTag: "-managed-by-gru",
         managedByKey: "gc-managed-by",
         managedByValue: "grucloud",
-        ...computeDefault,
         accessToken: () => serviceAccountAccessToken,
         projectNumber: () => _projectNumber,
       }),
-      switchCase([
-        get("credentialFile"),
-        (config) =>
-          pipe([
-            tap(() => {
-              logger.debug(``);
-            }),
-            () => readFileSync(config.credentialFile, "utf-8"),
-            JSON.parse,
-            ({ project_id }) => ({ ...config, projectId: project_id }),
-          ])(),
-        (config) =>
+      when(get("credentialFile"), (config) =>
+        pipe([
+          () => readFileSync(config.credentialFile, "utf-8"),
+          JSON.parse,
+          ({ project_id }) => ({ ...config, projectId: project_id }),
+        ])()
+      ),
+      defaultsDeep({
+        region: process.env.GOOGLE_REGION,
+        zone: process.env.GOOGLE_ZONE,
+      }),
+      when(
+        () => gcloudConfig,
+        defaultsDeep(
           pipe([
             () => gcloudConfig,
             get("config.properties.compute", {}),
             pick(["region", "zone"]),
             map(get("value")),
             defaultsDeep(config),
-          ])(),
-      ]),
+          ])()
+        )
+      ),
+      defaultsDeep(computeDefault),
     ])();
 
   const mergedConfig = mergeConfig({ config, configs });
@@ -121,16 +124,29 @@ exports.GoogleProvider = ({
       }),
   ])();
 
+  const readCredentialsJson = pipe([
+    () => process.env.GOOGLE_CREDENTIALS,
+    switchCase([
+      isEmpty,
+      pipe([
+        () => fs.readFile(applicationCredentialsFile, "utf-8"),
+        JSON.parse,
+      ]),
+      pipe([JSON.parse]),
+    ]),
+  ]);
+
   let serviceAccountAccessToken;
   let _projectNumber;
 
   const start = async () => {
     if (!serviceAccountAccessToken) {
+      const credentials = await readCredentialsJson();
       serviceAccountAccessToken = await authorize({
         gcloudConfig,
         projectId: projectId(),
         projectName: projectName(),
-        applicationCredentialsFile,
+        credentials,
       });
     }
 

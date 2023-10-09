@@ -52,11 +52,11 @@ module.exports = () =>
 
           omit(["status"]),
           omitIfEmpty(["metadata.labels"]),
-          set(
-            "spec.template.spec.serviceAccountName",
-            () => () =>
-              "`${config.projectNumber()}-compute@developer.gserviceaccount.com`"
-          ),
+          // set(
+          //   "spec.template.spec.serviceAccountName",
+          //   () => () =>
+          //     "`${config.projectNumber()}-compute@developer.gserviceaccount.com`"
+          // ),
         ]),
       compare: compareGoogle({
         filterLive: () =>

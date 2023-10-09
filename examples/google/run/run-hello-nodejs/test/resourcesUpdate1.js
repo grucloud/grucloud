@@ -4,30 +4,35 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "run",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       apiVersion: "serving.knative.dev/v1",
       kind: "Service",
       metadata: {
-        name: "starhackit-server",
+        name: "hello-world-1",
       },
       spec: {
         template: {
           metadata: {
-            name: "starhackit-server-00006-rud",
+            labels: {
+              "run.googleapis.com/startupProbeType": "Default",
+            },
             annotations: {
               "autoscaling.knative.dev/maxScale": "100",
+              "run.googleapis.com/startup-cpu-boost": "true",
             },
           },
           spec: {
             containerConcurrency: 80,
-            timeoutSeconds: 300,
-            serviceAccountName: `${config.projectNumber()}-compute@developer.gserviceaccount.com`,
+            timeoutSeconds: 200,
+            serviceAccountName:
+              "grucloud@grucloud-test.iam.gserviceaccount.com",
             containers: [
               {
-                image: "gcr.io/google-samples/hello-app:1.0",
+                image:
+                  "southamerica-east1-docker.pkg.dev/grucloud-test/cloud-run-source-deploy/hello-world-1@sha256:c1adbae9f183d9208cd8f1c2f16ef077989561f4ca349761debaa245fccaf0ed",
                 resources: {
                   limits: {
-                    cpu: "2000m",
+                    cpu: "1000m",
                     memory: "512Mi",
                   },
                 },
@@ -37,6 +42,14 @@ exports.createResources = () => [
                     containerPort: 8080,
                   },
                 ],
+                startupProbe: {
+                  timeoutSeconds: 240,
+                  periodSeconds: 240,
+                  failureThreshold: 1,
+                  tcpSocket: {
+                    port: 8080,
+                  },
+                },
               },
             ],
           },
