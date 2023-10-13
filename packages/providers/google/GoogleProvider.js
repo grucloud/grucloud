@@ -68,6 +68,9 @@ exports.GoogleProvider = ({
   stage,
   ...other
 }) => {
+  logger.debug(
+    `GoogleProvider has GOOGLE_CREDENTIALS ${!!process.env.GOOGLE_CREDENTIALS}`
+  );
   const gcloudConfig = getConfig();
 
   const readCredentialsJson = pipe([
@@ -92,11 +95,11 @@ exports.GoogleProvider = ({
         projectNumber: () => _projectNumber,
       }),
       assign({
-        project_id: pipe([
+        projectId: pipe([
           readCredentialsJson,
           get("project_id"),
-          tap((project_id) => {
-            assert(project_id);
+          tap((projectId) => {
+            assert(projectId);
           }),
         ]),
       }),
