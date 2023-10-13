@@ -8,8 +8,6 @@ const logger = require("@grucloud/core/logger")({ prefix: "GoogleAutorize" });
 const { tos } = require("@grucloud/core/tos");
 const { init } = require("./GoogleInit");
 
-const ServiceAccountName = "grucloud";
-
 exports.authorize = async ({ credentials }) => {
   return pipe([
     tap((keys) => {

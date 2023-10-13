@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { readFileSync } = require("fs");
 const path = require("path");
 const os = require("os");
 const fs = require("fs").promises;
@@ -13,6 +12,7 @@ const {
   switchCase,
   omit,
   reduce,
+  assign,
 } = require("rubico");
 const { defaultsDeep, isEmpty, when } = require("rubico/x");
 
@@ -70,6 +70,15 @@ exports.GoogleProvider = ({
 }) => {
   const gcloudConfig = getConfig();
 
+  const readCredentialsJson = pipe([
+    () => process.env.GOOGLE_CREDENTIALS,
+    when(
+      isEmpty,
+      pipe([() => fs.readFile(applicationCredentialsFile, "utf-8")])
+    ),
+    JSON.parse,
+  ]);
+
   const mergeConfig = ({ config, configs }) =>
     pipe([
       () => [...configs, config],
@@ -82,13 +91,15 @@ exports.GoogleProvider = ({
         accessToken: () => serviceAccountAccessToken,
         projectNumber: () => _projectNumber,
       }),
-      when(get("credentialFile"), (config) =>
-        pipe([
-          () => readFileSync(config.credentialFile, "utf-8"),
-          JSON.parse,
-          ({ project_id }) => ({ ...config, projectId: project_id }),
-        ])()
-      ),
+      assign({
+        project_id: pipe([
+          readCredentialsJson,
+          get("project_id"),
+          tap((project_id) => {
+            assert(project_id);
+          }),
+        ]),
+      }),
       defaultsDeep({
         region: process.env.GOOGLE_REGION,
         zone: process.env.GOOGLE_ZONE,
@@ -110,7 +121,7 @@ exports.GoogleProvider = ({
 
   const mergedConfig = mergeConfig({ config, configs });
 
-  const projectId = () => get("projectId")(mergedConfig);
+  const projectId = pipe([readCredentialsJson, get("project_id")]);
   const projectName = () => get("projectName", projectId())(mergedConfig);
   const region = () => get("region")(mergedConfig);
 
@@ -123,18 +134,6 @@ exports.GoogleProvider = ({
         projectId: projectId(),
       }),
   ])();
-
-  const readCredentialsJson = pipe([
-    () => process.env.GOOGLE_CREDENTIALS,
-    switchCase([
-      isEmpty,
-      pipe([
-        () => fs.readFile(applicationCredentialsFile, "utf-8"),
-        JSON.parse,
-      ]),
-      pipe([JSON.parse]),
-    ]),
-  ]);
 
   let serviceAccountAccessToken;
   let _projectNumber;
@@ -152,7 +151,7 @@ exports.GoogleProvider = ({
 
     return pipe([
       tap((params) => {
-        assert(true);
+        assert(projectId(), "projectId");
       }),
       () => ({
         baseURL: `https://cloudresourcemanager.googleapis.com/v1/projects/${projectId()}`,

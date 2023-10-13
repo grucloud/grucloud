@@ -59,7 +59,6 @@ const substituteProjectRegionZone = ({ config }) =>
     callProp("replace", "{zone}", config.zone),
     // Google Cloud Run
     callProp("replace", "{namespacesId}", config.projectId),
-    callProp("replace", "{region}", config.region),
     callProp("replace", "{locationsId}", config.region),
   ]);
 

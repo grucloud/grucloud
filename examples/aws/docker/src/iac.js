@@ -18,7 +18,7 @@ exports.createStack = () => ({
       providerFactory: GoogleProvider,
       name: "google",
       createResources,
-      config: () => ({ region: process.env.GCP_REGION }),
+      config: () => ({}),
     },
     {
       providerFactory: AzureProvider,

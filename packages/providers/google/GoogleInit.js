@@ -46,7 +46,7 @@ const servicesApiMapBase = {
 };
 const servicesApiMapMain = {
   "compute.googleapis.com": {
-    url: ({ projectId, zone }) =>
+    url: ({ projectId }) =>
       `https://compute.googleapis.com/compute/v1/projects/${projectId}/global/images`,
   },
   "dns.googleapis.com": {
