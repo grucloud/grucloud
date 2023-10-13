@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/docker-cli",
-  "version": "12.10.8",
+  "version": "12.10.9",
   "private": true,
   "description": "",
   "scripts": {
@@ -23,7 +23,7 @@
     "@grucloud/core": "^12.10.7",
     "@grucloud/provider-aws": "^12.10.7",
     "@grucloud/provider-azure": "^12.10.7",
-    "@grucloud/provider-google": "^12.10.8",
+    "@grucloud/provider-google": "^12.10.9",
     "@grucloud/provider-k8s": "^12.10.7"
   }
 }
