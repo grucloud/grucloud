@@ -86,7 +86,7 @@ const {
   createGetResource,
 } = require("./ProviderCommon");
 const { ResourceMaker } = require("./CoreResource");
-const { createClient, decorateLive, buildGroupType } = require("./Client");
+const { createClient, buildGroupType } = require("./Client");
 const { createLives } = require("./Lives");
 
 const groupName = switchCase([isEmpty, () => "", pipe([append(".")])]);

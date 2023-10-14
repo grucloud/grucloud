@@ -24,7 +24,7 @@ const isOurMinionServiceAccount =
       () => live,
       eq(get("description"), config.managedByDescription),
       tap((isOur) => {
-        logger.info(`isOurMinionServiceAccount: name: ${live.email} ${isOur}`);
+        //logger.info(`isOurMinionServiceAccount: name: ${live.email} ${isOur}`);
       }),
     ])();
 
