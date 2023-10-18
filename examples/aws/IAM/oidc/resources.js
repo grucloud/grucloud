@@ -8,7 +8,7 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({}) => ({
       ClientIDList: ["grucloud", "https://demo.grucloud.com"],
-      Url: "demo.grucloud.com/oidc",
+      Url: "demo.grucloud.com",
     }),
   },
   {
@@ -25,7 +25,7 @@ exports.createResources = () => [
               Federated: `${getId({
                 type: "OpenIDConnectProvider",
                 group: "IAM",
-                name: "oidp::demo.grucloud.com/oidc",
+                name: "oidp::demo.grucloud.com",
               })}`,
             },
             Action: "sts:AssumeRoleWithWebIdentity",
@@ -34,7 +34,7 @@ exports.createResources = () => [
                 [`${getId({
                   type: "OpenIDConnectProvider",
                   group: "IAM",
-                  name: "oidp::demo.grucloud.com/oidc",
+                  name: "oidp::demo.grucloud.com",
                   path: "live.Url",
                 })}:aud`]: "https://demo.grucloud.com",
               },
@@ -42,7 +42,7 @@ exports.createResources = () => [
                 [`${getId({
                   type: "OpenIDConnectProvider",
                   group: "IAM",
-                  name: "oidp::demo.grucloud.com/oidc",
+                  name: "oidp::demo.grucloud.com",
                   path: "live.Url",
                 })}:sub`]: "organization:my-org:*",
               },
@@ -62,7 +62,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      openIdConnectProvider: "oidp::demo.grucloud.com/oidc",
+      openIdConnectProvider: "oidp::demo.grucloud.com",
     }),
   },
 ];

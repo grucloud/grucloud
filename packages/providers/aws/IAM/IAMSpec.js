@@ -103,9 +103,17 @@ module.exports = pipe([
       type: "Role",
       Client: IAMRole,
       inferName: () => get("RoleName"),
-      propertiesDefault: { Path: "/" },
+      propertiesDefault: { Path: "/", MaxSessionDuration: 3600 },
       compare: compare({
-        filterAll: () => pipe([pick(["AssumeRolePolicyDocument", "Policies"])]),
+        filterAll: () =>
+          pipe([
+            pick([
+              "AssumeRolePolicyDocument",
+              "Policies",
+              "Description",
+              "MaxSessionDuration",
+            ]),
+          ]),
       }),
       ignoreResource: ignoreResourceCdk,
       transformDependencies: ({ provider }) =>
@@ -150,6 +158,7 @@ module.exports = pipe([
           pick([
             "RoleName",
             "Description",
+            "MaxSessionDuration",
             "Path",
             "AssumeRolePolicyDocument",
             "Policies",
