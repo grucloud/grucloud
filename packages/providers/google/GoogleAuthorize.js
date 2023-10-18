@@ -1,12 +1,10 @@
 const assert = require("assert");
-const fs = require("fs").promises;
 
 const { pipe, tap } = require("rubico");
 const { JWT } = require("google-auth-library");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GoogleAutorize" });
 const { tos } = require("@grucloud/core/tos");
-const { init } = require("./GoogleInit");
 
 exports.authorize = async ({ credentials }) => {
   return pipe([

@@ -33,12 +33,10 @@ const {
 const moment = require("moment");
 const querystring = require("querystring");
 const logger = require("@grucloud/core/logger")({ prefix: "IamRole" });
-const {
-  buildTags,
-  findNamespaceInTags,
-  removeRoleFromInstanceProfile,
-} = require("../AwsCommon");
+const { buildTags, removeRoleFromInstanceProfile } = require("../AwsCommon");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
+const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
+
 const { AwsClient } = require("../AwsClient");
 const {
   createIAM,
@@ -249,6 +247,35 @@ const attachRoleAttachedPolicies = ({ endpoint, name }) =>
     })
   );
 
+const updateAssumeRolePolicyDocument = ({ endpoint, live }) =>
+  pipe([
+    tap((payload) => {
+      assert(payload);
+      assert(endpoint);
+      assert(live);
+    }),
+    get("AssumeRolePolicyDocument"),
+    tap((AssumeRolePolicyDocument) => {
+      assert(AssumeRolePolicyDocument);
+    }),
+    JSON.stringify,
+    (PolicyDocument) => ({ PolicyDocument }),
+    defaultsDeep(pickId(live)),
+    endpoint().updateAssumeRolePolicy,
+  ]);
+
+const updateRole = ({ endpoint, live }) =>
+  pipe([
+    tap((payload) => {
+      assert(payload);
+      assert(endpoint);
+      assert(live);
+    }),
+    pick(["Description", "MaxSessionDuration"]),
+    defaultsDeep(pickId(live)),
+    endpoint().updateRole,
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.IAMRole = ({ spec, config }) => {
   const iam = createIAM(config);
@@ -326,8 +353,29 @@ exports.IAMRole = ({ spec, config }) => {
       ]),
     config,
   });
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#updateAssumeRolePolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#updateRole-property
+  const update = (params) =>
+    pipe([
+      tap(() => {
+        assert(params);
+      }),
+      () => ({ ...params, endpoint: iam }),
+      updateResourceObject({
+        path: "AssumeRolePolicyDocument",
+        onDeleted: updateAssumeRolePolicyDocument,
+        onAdded: updateAssumeRolePolicyDocument,
+        onUpdated: updateAssumeRolePolicyDocument,
+      }),
+      () => ({ ...params, endpoint: iam }),
+      updateResourceObject({
+        path: "Description",
+        onDeleted: updateRole,
+        onAdded: updateRole,
+        onUpdated: updateRole,
+      }),
+    ])();
 
-  // TODO error: Cannot delete entity, must delete policies first.
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteRole-property
   const destroy = client.destroy({
     pickId,
@@ -412,7 +460,6 @@ exports.IAMRole = ({ spec, config }) => {
 
   return {
     spec,
-    findNamespace: findNamespaceInTags,
     findId,
     getByName,
     getById,
@@ -420,6 +467,7 @@ exports.IAMRole = ({ spec, config }) => {
     findName,
     create,
     destroy,
+    update,
     getList,
     configDefault,
     managedByOther,

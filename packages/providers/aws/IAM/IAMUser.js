@@ -10,7 +10,7 @@ const {
   pick,
   omit,
 } = require("rubico");
-const { defaultsDeep, forEach, pluck, size } = require("rubico/x");
+const { defaultsDeep, forEach, pluck } = require("rubico/x");
 
 const { throwIfNotAwsError, buildTags } = require("../AwsCommon");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");

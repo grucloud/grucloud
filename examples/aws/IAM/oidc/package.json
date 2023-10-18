@@ -1,14 +1,12 @@
 {
-  "name": "example-azure-vm",
+  "name": "oidc",
   "version": "12.10.7",
   "private": true,
   "description": "",
   "main": "index.js",
   "scripts": {
     "tree": "gc tree",
-    "tree-png": "gc tree -t png",
     "graph": "gc graph",
-    "graph-png": "gc graph -t png",
     "gencode": "gc gencode",
     "list": "gc list",
     "list-graph": "gc list -g",
@@ -17,16 +15,13 @@
     "destroy": "gc destroy -f",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
-    "info": "gc info",
     "test": "node test/iac.test.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^12.10.7",
-    "@grucloud/provider-azure": "^12.10.7",
-    "ping": "0.4.1",
-    "rubico": "1.9.6",
-    "ssh2": "1.3.0"
+    "@grucloud/provider-aws": "^12.10.7",
+    "rubico": "1.9.6"
   }
 }
