@@ -180,7 +180,6 @@ exports.ECSTaskDefinition = ({ compare }) => ({
     "latest",
   ],
   compare: compare({}),
-  ignoreResource: () => pipe([not(eq(get("live.status"), "ACTIVE"))]),
   filterLive: ({ lives, providerConfig }) =>
     pipe([
       omitIfEmpty(["volumes", "placementConstraints"]),

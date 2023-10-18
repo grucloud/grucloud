@@ -25,11 +25,17 @@ const { loadConfig } = require("@aws-sdk/node-config-provider");
 const path = require("path");
 
 const { STS } = require("@aws-sdk/client-sts");
+const {
+  AssumeRoleWithWebIdentityCommand,
+  STSClient,
+} = require("@aws-sdk/client-sts");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const { assignTagsSort, createEndpointOption } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
+const { getJwt } = require("@grucloud/core/getJwt");
+
 const {
   createProjectAws,
 } = require("@grucloud/core/cli/providers/createProjectAws");
@@ -79,7 +85,7 @@ exports.AwsProvider = async ({
   let accountId;
   let zone;
   let zones;
-
+  let _credentials;
   //TODO wrap for retry
   const fetchAccountId = (config) =>
     tryCatch(
@@ -173,6 +179,7 @@ exports.AwsProvider = async ({
     () =>
       mergeConfig({
         configDefault: {
+          credentials: _credentials,
           stage,
           zone: () => zone,
           accountId: pipe([
@@ -190,8 +197,70 @@ exports.AwsProvider = async ({
   ]);
 
   const getZone = ({ zones, config }) => config.zone() || first(zones);
-  //TODO refactor
+
+  const assumeRoleWebIdentity = ({ RoleArn, RoleSessionName }) =>
+    pipe([
+      tap((WebIdentityToken) => {
+        assert(WebIdentityToken);
+        assert(RoleArn);
+      }),
+      (WebIdentityToken) => ({
+        WebIdentityToken,
+        RoleSessionName,
+        RoleArn,
+      }),
+      (input) => new AssumeRoleWithWebIdentityCommand(input),
+      (command) =>
+        new STSClient({
+          region: "us-east-1",
+        }).send(command),
+      get("Credentials"),
+      ({ AccessKeyId, SecretAccessKey, SessionToken }) => ({
+        accessKeyId: AccessKeyId,
+        secretAccessKey: SecretAccessKey,
+        sessionToken: SessionToken,
+      }),
+    ]);
+
+  const getToken = async () => {
+    const {
+      GRUCLOUD_OAUTH_SERVER,
+      GRUCLOUD_CLIENT_SECRET,
+      GRUCLOUD_SUBJECT,
+      GRUCLOUD_OATH_TOKEN,
+    } = process.env;
+    if (GRUCLOUD_OAUTH_SERVER && GRUCLOUD_CLIENT_SECRET && GRUCLOUD_SUBJECT) {
+      logger.info(`fetch a jwt from ${GRUCLOUD_OAUTH_SERVER}`);
+      return getJwt({
+        tokenUrl: GRUCLOUD_OAUTH_SERVER,
+        subject: GRUCLOUD_SUBJECT,
+        client_secret: GRUCLOUD_CLIENT_SECRET,
+      });
+    } else if (GRUCLOUD_OATH_TOKEN) {
+      logger.info(`using GRUCLOUD_OATH_TOKEN`);
+      return GRUCLOUD_OATH_TOKEN;
+    } else {
+      throw Error(
+        "GRUCLOUD_OATH_TOKEN or (GRUCLOUD_OAUTH_SERVER, GRUCLOUD_CLIENT_SECRET, GRUCLOUD_SUBJECT) missing"
+      );
+    }
+  };
+
   const start = pipe([
+    () => process.env,
+    tap.if(
+      get("GRUCLOUD_ROLE_WEB_IDENTITY_ARN"),
+      pipe([
+        getToken,
+        assumeRoleWebIdentity({
+          RoleArn: process.env.GRUCLOUD_ROLE_WEB_IDENTITY_ARN,
+          RoleSessionName: "grucloud-session",
+        }),
+        tap((credentials) => {
+          _credentials = credentials;
+        }),
+      ])
+    ),
     tap(async (params) => {
       const merged = makeConfig();
       accountId = await fetchAccountId(

@@ -152,6 +152,17 @@ exports.createResources = () => [
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
+      GroupName: "ecs-task-out",
+      Description: "ecs-task-out",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
       GroupName: "http",
       Description: "http https",
     }),
@@ -395,6 +406,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "OpenIDConnectProvider",
+    group: "IAM",
+    properties: ({}) => ({
+      ClientIDList: ["https://demo.grucloud.com"],
+      Url: "demo.grucloud.com",
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -445,6 +464,65 @@ exports.createResources = () => [
           PolicyName: "AmazonS3FullAccess",
         },
       ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({ getId }) => ({
+      RoleName: "role-grucloud",
+      Description: "role to allow GruCloud to call AWS",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Federated: `${getId({
+                type: "OpenIDConnectProvider",
+                group: "IAM",
+                name: "oidp::demo.grucloud.com",
+              })}`,
+            },
+            Action: "sts:AssumeRoleWithWebIdentity",
+            Condition: {
+              StringEquals: {
+                [`${getId({
+                  type: "OpenIDConnectProvider",
+                  group: "IAM",
+                  name: "oidp::demo.grucloud.com",
+                  path: "live.Url",
+                })}:aud`]: "https://demo.grucloud.com",
+              },
+              StringLike: {
+                [`${getId({
+                  type: "OpenIDConnectProvider",
+                  group: "IAM",
+                  name: "oidp::demo.grucloud.com",
+                  path: "live.Url",
+                })}:sub`]: "organization:my-org:*",
+              },
+            },
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+          PolicyName: "AmazonS3ReadOnlyAccess",
+        },
+        {
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonVPCFullAccess",
+          PolicyName: "AmazonVPCFullAccess",
+        },
+        {
+          PolicyArn: "arn:aws:iam::aws:policy/IAMFullAccess",
+          PolicyName: "IAMFullAccess",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      openIdConnectProvider: "oidp::demo.grucloud.com",
     }),
   },
 ];
