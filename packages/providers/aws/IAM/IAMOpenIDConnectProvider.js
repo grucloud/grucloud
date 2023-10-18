@@ -10,6 +10,7 @@ const {
   last,
 } = require("rubico/x");
 const tls = require("tls");
+const { updateResourceArray } = require("@grucloud/core/updateResourceArray");
 
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
@@ -148,6 +149,28 @@ const findName =
       prepend("oidp::"),
     ])();
 
+const addClientID = ({ endpoint, live }) =>
+  pipe([
+    tap((ClientID) => {
+      assert(ClientID);
+      assert(live);
+    }),
+    (ClientID) => ({ ClientID }),
+    defaultsDeep(pickId(live)),
+    endpoint().addClientIDToOpenIDConnectProvider,
+  ]);
+
+const removeClientID = ({ endpoint, live }) =>
+  pipe([
+    tap((ClientID) => {
+      assert(ClientID);
+      assert(live);
+    }),
+    (ClientID) => ({ ClientID }),
+    defaultsDeep(pickId(live)),
+    endpoint().removeClientIDFromOpenIDConnectProvider,
+  ]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.IAMOpenIDConnectProvider = ({ compare }) => ({
   type: "OpenIDConnectProvider",
@@ -238,12 +261,20 @@ exports.IAMOpenIDConnectProvider = ({ compare }) => ({
       ])(),
     pickCreated: ({ payload }) => pipe([identity]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#updateOpenIDConnectProvider-property
-  update: {
-    method: "updateOpenIDConnectProvider",
-    filterParams: ({ payload, diff, live }) =>
-      pipe([() => payload, defaultsDeep(pickId(live))])(),
-  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#addClientIDToOpenIDConnectProvider-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#removeClientIDFromOpenIDConnectProvider-property
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        () => ({ payload, live, diff }),
+        updateResourceArray({
+          endpoint,
+          arrayPath: "ClientIDList",
+          onAdd: addClientID,
+          onRemove: removeClientID,
+        }),
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteOpenIDConnectProvider-property
   destroy: {
     pickId,
