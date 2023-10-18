@@ -1,5 +1,5 @@
 {
-  "name": "@grucloud/example-azure-vm",
+  "name": "example-azure-vm",
   "version": "12.10.7",
   "private": true,
   "description": "",

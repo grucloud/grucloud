@@ -7,6 +7,7 @@ const {
   prepend,
   callProp,
   identity,
+  last,
 } = require("rubico/x");
 const tls = require("tls");
 
@@ -48,8 +49,7 @@ const getLastCertificate = (certificate) => {
     typeof certificate === "object" &&
     !list.has(certificate)
   );
-  const last = certs[certs.length - 2];
-  return last;
+  return last(certs);
 };
 // https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
 const fetchThumbprint = ({ Url }) =>
