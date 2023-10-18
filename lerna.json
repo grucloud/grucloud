@@ -10,7 +10,7 @@
   ],
   "npmClient": "pnpm",
   "useWorkspaces": true,
-  "version": "12.10.9",
+  "version": "12.11.0",
   "command": {
     "command": {
       "bootstrap": {
