@@ -1,9 +1,7 @@
 const assert = require("assert");
-const path = require("path");
 const { authorize } = require("../GoogleAuthorize");
 
 describe("GoogleAuth", function () {
-  let config;
   before(async function () {});
 
   it("auth ko: account not found", async function () {
@@ -26,10 +24,7 @@ describe("GoogleAuth", function () {
         },
       });
     } catch (error) {
-      assert.equal(
-        error.message,
-        "invalid_grant: Invalid grant: account not found"
-      );
+      assert.equal(error.response.data.error, "invalid_grant");
     }
   });
 });

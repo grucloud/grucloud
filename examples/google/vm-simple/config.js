@@ -1,3 +1,3 @@
 module.exports = ({ stage }) => ({
-  projectId: "grucloud-vm-tuto-1",
+  projectId: "grucloud-test",
 });

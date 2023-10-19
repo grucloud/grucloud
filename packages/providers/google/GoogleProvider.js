@@ -12,7 +12,6 @@ const {
   switchCase,
   omit,
   reduce,
-  assign,
 } = require("rubico");
 const { defaultsDeep, isEmpty, when } = require("rubico/x");
 
@@ -35,10 +34,13 @@ const { fnSpecs } = require("./GoogleSpec");
 
 const ServiceAccountName = "grucloud";
 
-const ApplicationCredentialsFile = ({
-  configDir = path.resolve(os.homedir(), ".config/gcloud"),
-  projectId,
-}) => path.resolve(configDir, `${projectId}.json`);
+const ApplicationCredentialsFile = pipe([
+  tap(({ projectId }) => {
+    assert(projectId);
+  }),
+  ({ configDir = path.resolve(os.homedir(), ".config/gcloud"), projectId }) =>
+    path.resolve(configDir, `${projectId}.json`),
+]);
 
 const getConfig = () =>
   runGCloudCommand({ command: "gcloud info --format json" });
@@ -73,15 +75,6 @@ exports.GoogleProvider = ({
   );
   const gcloudConfig = getConfig();
 
-  const readCredentialsJson = pipe([
-    () => process.env.GOOGLE_CREDENTIALS,
-    when(
-      isEmpty,
-      pipe([() => fs.readFile(applicationCredentialsFile, "utf-8")])
-    ),
-    JSON.parse,
-  ]);
-
   const mergeConfig = ({ config, configs }) =>
     pipe([
       () => [...configs, config],
@@ -93,15 +86,6 @@ exports.GoogleProvider = ({
         managedByValue: "grucloud",
         accessToken: () => serviceAccountAccessToken,
         projectNumber: () => _projectNumber,
-      }),
-      assign({
-        projectId: pipe([
-          readCredentialsJson,
-          get("project_id"),
-          tap((projectId) => {
-            assert(projectId);
-          }),
-        ]),
       }),
       defaultsDeep({
         region: process.env.GOOGLE_REGION,
@@ -124,11 +108,11 @@ exports.GoogleProvider = ({
 
   const mergedConfig = mergeConfig({ config, configs });
 
-  const projectId = pipe([readCredentialsJson, get("project_id")]);
+  const projectId = pipe([() => mergedConfig, get("projectId")]);
   const projectName = () => get("projectName", projectId())(mergedConfig);
   const region = () => get("region")(mergedConfig);
 
-  const applicationCredentialsFile = switchCase([
+  const resolveApplicationCredentialsFile = switchCase([
     () => mergedConfig.credentialFile,
     () => path.resolve(mergedConfig.credentialFile),
     () =>
@@ -136,7 +120,17 @@ exports.GoogleProvider = ({
         configDir: gcloudConfig?.config?.paths.global_config_dir,
         projectId: projectId(),
       }),
-  ])();
+  ]);
+
+  const readCredentialsJson = () =>
+    pipe([
+      () => process.env.GOOGLE_CREDENTIALS,
+      when(
+        isEmpty,
+        pipe([() => fs.readFile(resolveApplicationCredentialsFile(), "utf-8")])
+      ),
+      JSON.parse,
+    ])();
 
   let serviceAccountAccessToken;
   let _projectNumber;
@@ -192,7 +186,7 @@ exports.GoogleProvider = ({
         gcloudConfig,
         projectName: projectName(),
         projectId: projectId(),
-        applicationCredentialsFile,
+        applicationCredentialsFile: resolveApplicationCredentialsFile(),
         serviceAccountName: ServiceAccountName,
       }),
     init: ({ options, programOptions } = {}) =>
@@ -203,7 +197,7 @@ exports.GoogleProvider = ({
         region: region(),
         projectName: projectName(),
         projectId: projectId(),
-        applicationCredentialsFile,
+        applicationCredentialsFile: resolveApplicationCredentialsFile(),
         serviceAccountName: ServiceAccountName,
       }),
     unInit: ({ options } = {}) =>
@@ -212,7 +206,7 @@ exports.GoogleProvider = ({
         gcloudConfig,
         projectName: projectName(),
         projectId: projectId(),
-        applicationCredentialsFile,
+        applicationCredentialsFile: resolveApplicationCredentialsFile(),
         serviceAccountName: ServiceAccountName,
       }),
     generateCode: ({ commandOptions, programOptions, providers }) =>
