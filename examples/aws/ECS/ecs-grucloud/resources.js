@@ -525,4 +525,68 @@ exports.createResources = () => [
       openIdConnectProvider: "oidp::demo.grucloud.com",
     }),
   },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "grucloud-console-demo",
+      CORSConfiguration: {
+        CORSRules: [
+          {
+            AllowedHeaders: ["*"],
+            AllowedMethods: ["GET"],
+            AllowedOrigins: ["*"],
+            ExposeHeaders: [
+              "x-amz-server-side-encryption",
+              "x-amz-request-id",
+              "x-amz-id-2",
+            ],
+            MaxAgeSeconds: 3000,
+          },
+        ],
+      },
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+            BucketKeyEnabled: true,
+          },
+        ],
+      },
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "grucloud-console-dev",
+      CORSConfiguration: {
+        CORSRules: [
+          {
+            AllowedHeaders: ["*"],
+            AllowedMethods: ["GET"],
+            AllowedOrigins: ["*"],
+            ExposeHeaders: [
+              "x-amz-server-side-encryption",
+              "x-amz-request-id",
+              "x-amz-id-2",
+            ],
+            MaxAgeSeconds: 3000,
+          },
+        ],
+      },
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+            BucketKeyEnabled: true,
+          },
+        ],
+      },
+    }),
+  },
 ];

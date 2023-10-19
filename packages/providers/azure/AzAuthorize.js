@@ -1,11 +1,12 @@
 const assert = require("assert");
 const Axios = require("axios");
-const qs = require("querystring");
-const { pipe, tap, get } = require("rubico");
+const Path = require("path");
+const { pipe, tap, get, switchCase, or } = require("rubico");
+const { getWebIdentityToken } = require("@grucloud/core/getJwt");
 
 const AZ_AUTHORIZATION_URL = "https://login.microsoftonline.com/";
 
-const AzAuthorize =
+const AzAuthorizeServicePrincipal =
   ({ resource = "https://management.azure.com/", scope }) =>
   ({ tenantId, appId, password }) =>
     pipe([
@@ -15,29 +16,60 @@ const AzAuthorize =
         assert(password, "missing password");
       }),
       () => ({
-        baseURL: AZ_AUTHORIZATION_URL,
-        header: { "Content-Type": "application/x-www-form-urlencoded" },
+        method: "POST",
+        url: Path.join(AZ_AUTHORIZATION_URL, tenantId, "oauth2/token"),
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        data: new URLSearchParams({
+          grant_type: "client_credentials",
+          client_id: appId,
+          client_secret: password,
+          resource,
+          scope,
+        }),
       }),
-      Axios.create,
-      (axios) =>
-        pipe([
-          () =>
-            axios.post(
-              `${tenantId}/oauth2/token`,
-              qs.stringify({
-                grant_type: "client_credentials",
-                client_id: appId,
-                client_secret: password,
-                resource,
-                scope,
-              })
-            ),
-          get("data.access_token"),
-          tap((bearerToken) => {
-            assert(bearerToken);
-          }),
-          (bearerToken) => ({ bearerToken }),
-        ])(),
+      Axios.request,
+      get("data.access_token"),
+      tap((bearerToken) => {
+        assert(bearerToken);
+      }),
     ])();
 
-exports.AzAuthorize = AzAuthorize;
+const AzAuthorizeFederated =
+  ({ resource }) =>
+  ({ tenantId, appId }) =>
+    pipe([
+      tap((params) => {
+        assert(tenantId, "missing tenantId");
+        assert(appId, "missing appId");
+      }),
+      getWebIdentityToken,
+      (WebIdentityToken) => ({
+        method: "POST",
+        url: Path.join(AZ_AUTHORIZATION_URL, tenantId, "oauth2/v2.0/token"),
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        data: new URLSearchParams({
+          grant_type: "client_credentials",
+          client_assertion_type:
+            "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+          client_assertion: WebIdentityToken,
+          client_id: appId,
+          scope: `${resource}/.default`,
+        }),
+      }),
+      Axios.request,
+      get("data.access_token"),
+      tap((access_token) => {
+        assert(access_token);
+      }),
+    ])();
+
+exports.AzAuthorize = pipe([
+  switchCase([
+    pipe([
+      () => process.env,
+      or([get("GRUCLOUD_OAUTH_SUBJECT"), get("GRUCLOUD_OAUTH_TOKEN")]),
+    ]),
+    AzAuthorizeFederated,
+    AzAuthorizeServicePrincipal,
+  ]),
+]);

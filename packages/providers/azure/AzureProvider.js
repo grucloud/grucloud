@@ -37,7 +37,6 @@ const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 const {
   AZURE_MANAGEMENT_BASE_URL,
   AZURE_KEYVAULT_AUDIENCE,
-  AZURE_STORAGE_AUDIENCE,
   createAxiosAzure,
   AZURE_GRAPH_BASE_URL,
 } = require("./AzureCommon");
@@ -118,7 +117,6 @@ exports.AzureProvider = ({
     "AZURE_TENANT_ID",
     "AZURE_SUBSCRIPTION_ID",
     "AZURE_CLIENT_ID",
-    "AZURE_CLIENT_SECRET",
   ];
 
   const bearerTokenMap = {};
@@ -130,14 +128,14 @@ exports.AzureProvider = ({
     bearerToken: () => bearerTokenMap[AZURE_MANAGEMENT_BASE_URL],
   });
 
-  const authorizeByResource = ({ resource }) =>
+  const authorizeByResource = (params) => (resource) =>
     pipe([
+      () => params,
       AzAuthorize({ resource }),
-      get("bearerToken"),
       tap((bearerToken) => {
         bearerTokenMap[resource] = bearerToken;
       }),
-    ]);
+    ])();
 
   const listTypes = pipe([
     () =>
@@ -176,18 +174,13 @@ exports.AzureProvider = ({
       logger.info(`start AZURE_LOCATION: '${process.env.AZURE_LOCATION}'`);
     }),
     () => AUDIENCES,
-    map.pool(5, (resource) =>
-      pipe([
-        () => ({
-          tenantId: process.env.AZURE_TENANT_ID,
-          appId: process.env.AZURE_CLIENT_ID,
-          password: process.env.AZURE_CLIENT_SECRET,
-        }),
-        //Change curry order
-        authorizeByResource({
-          resource,
-        }),
-      ])()
+    map.pool(
+      5,
+      authorizeByResource({
+        tenantId: process.env.AZURE_TENANT_ID,
+        appId: process.env.AZURE_CLIENT_ID,
+        password: process.env.AZURE_CLIENT_SECRET,
+      })
     ),
     tap(fetchObjectId),
     listTypes,
