@@ -11,7 +11,7 @@ describe("AzAuth", function () {
   assert(AZURE_TENANT_ID);
   it("AzAuthorize ok", async function () {
     try {
-      const { bearerToken } = await AzAuthorize({})({
+      const bearerToken = await AzAuthorize({})({
         tenantId: AZURE_TENANT_ID,
         appId: AZURE_CLIENT_ID,
         password: AZURE_CLIENT_SECRET,
@@ -34,7 +34,6 @@ describe("AzAuth", function () {
         AzAuthorize({
           resource: "https://graph.microsoft.com",
         }),
-        get("bearerToken"),
         tap((bearerToken) => {
           assert(bearerToken);
         }),
