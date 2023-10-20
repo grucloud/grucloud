@@ -54,7 +54,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -66,7 +66,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -78,7 +78,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -90,7 +90,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -102,7 +102,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -114,7 +114,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -126,7 +126,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -138,7 +138,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -150,7 +150,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -162,7 +162,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -174,7 +174,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -186,7 +186,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -198,7 +198,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -210,7 +210,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -222,7 +222,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -234,7 +234,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -246,7 +246,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -258,7 +258,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -270,7 +270,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -282,7 +282,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -294,7 +294,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -306,7 +306,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -318,7 +318,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -330,7 +330,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -342,7 +342,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -354,7 +354,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -366,7 +366,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       axios:
         specifier: 1.3.6
@@ -381,7 +381,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -393,7 +393,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -405,7 +405,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -417,7 +417,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -429,7 +429,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -441,7 +441,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -453,7 +453,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -465,7 +465,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -477,7 +477,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -489,7 +489,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -501,7 +501,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -513,7 +513,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -525,7 +525,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -537,7 +537,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -549,7 +549,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -561,7 +561,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -573,7 +573,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -585,7 +585,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -597,7 +597,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -609,7 +609,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -621,7 +621,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -633,7 +633,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       axios:
         specifier: 1.3.6
@@ -648,7 +648,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       axios:
         specifier: 1.3.6
@@ -663,7 +663,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -675,7 +675,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -687,7 +687,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -699,7 +699,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -711,7 +711,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -723,7 +723,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -735,7 +735,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -747,7 +747,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -759,7 +759,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -771,7 +771,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -783,7 +783,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -795,7 +795,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -807,7 +807,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -819,7 +819,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -831,7 +831,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -843,7 +843,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -855,7 +855,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -867,7 +867,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -879,7 +879,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -891,7 +891,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -903,7 +903,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       axios:
         specifier: 1.3.6
@@ -918,7 +918,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -930,7 +930,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -942,7 +942,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -954,7 +954,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -966,7 +966,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -978,7 +978,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -990,7 +990,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1002,7 +1002,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1014,7 +1014,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1026,7 +1026,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1038,7 +1038,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1050,7 +1050,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1062,7 +1062,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1074,7 +1074,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1086,7 +1086,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1098,7 +1098,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1110,7 +1110,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1122,7 +1122,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1134,7 +1134,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1146,7 +1146,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1158,7 +1158,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1170,7 +1170,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1182,7 +1182,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1194,7 +1194,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1206,7 +1206,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1218,7 +1218,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1230,7 +1230,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1242,7 +1242,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1254,7 +1254,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1266,7 +1266,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       axios:
         specifier: 1.3.6
@@ -1284,7 +1284,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1296,7 +1296,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1308,7 +1308,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1320,7 +1320,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1332,7 +1332,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1344,7 +1344,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1356,7 +1356,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1368,7 +1368,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1380,7 +1380,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1392,7 +1392,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1404,7 +1404,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1416,7 +1416,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1428,7 +1428,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1440,7 +1440,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1452,7 +1452,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1464,7 +1464,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1476,7 +1476,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1488,7 +1488,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1500,7 +1500,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1512,7 +1512,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1524,7 +1524,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1536,7 +1536,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1548,7 +1548,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1560,7 +1560,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1572,7 +1572,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1584,7 +1584,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1596,7 +1596,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1608,7 +1608,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1620,7 +1620,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1632,7 +1632,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1644,7 +1644,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1656,7 +1656,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1668,7 +1668,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1680,7 +1680,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1692,7 +1692,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1704,7 +1704,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1716,7 +1716,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1728,7 +1728,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1740,7 +1740,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1752,7 +1752,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1764,7 +1764,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1776,7 +1776,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1788,7 +1788,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1800,7 +1800,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1812,7 +1812,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1824,7 +1824,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1836,7 +1836,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1848,7 +1848,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1860,7 +1860,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1872,7 +1872,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1884,7 +1884,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1896,7 +1896,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1908,7 +1908,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1920,7 +1920,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1932,7 +1932,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1944,7 +1944,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1956,7 +1956,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1968,7 +1968,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1980,7 +1980,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -1992,7 +1992,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2004,7 +2004,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2016,7 +2016,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2028,7 +2028,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2040,7 +2040,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2052,7 +2052,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2064,7 +2064,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2076,7 +2076,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2088,7 +2088,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2100,7 +2100,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2112,7 +2112,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2124,7 +2124,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2136,7 +2136,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2148,7 +2148,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2160,7 +2160,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2172,7 +2172,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2184,7 +2184,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2196,7 +2196,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2208,7 +2208,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2220,7 +2220,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       ping:
         specifier: 0.4.1
@@ -2238,7 +2238,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2250,7 +2250,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2262,7 +2262,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2274,7 +2274,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       ping:
         specifier: 0.4.1
@@ -2292,7 +2292,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2304,7 +2304,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2316,7 +2316,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2328,7 +2328,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2340,7 +2340,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2352,7 +2352,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2364,7 +2364,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2376,7 +2376,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2388,7 +2388,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2400,7 +2400,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2412,7 +2412,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2424,7 +2424,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2436,7 +2436,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2448,7 +2448,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2460,7 +2460,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2472,7 +2472,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2484,7 +2484,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2496,7 +2496,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2508,7 +2508,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2520,7 +2520,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2532,7 +2532,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2544,7 +2544,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2556,7 +2556,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2568,7 +2568,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2580,7 +2580,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       ping:
         specifier: 0.4.1
@@ -2598,7 +2598,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2610,7 +2610,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2622,7 +2622,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2634,7 +2634,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2646,7 +2646,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2658,7 +2658,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2670,7 +2670,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2682,7 +2682,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2694,7 +2694,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2706,7 +2706,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2718,7 +2718,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2730,7 +2730,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2742,7 +2742,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2754,7 +2754,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2766,7 +2766,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2778,7 +2778,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2790,7 +2790,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2802,7 +2802,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2814,7 +2814,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       ping:
         specifier: 0.4.1
@@ -2832,7 +2832,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2844,7 +2844,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2856,7 +2856,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2868,7 +2868,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2880,7 +2880,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       ping:
         specifier: 0.4.1
@@ -2898,7 +2898,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2910,7 +2910,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2922,7 +2922,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       dotenv:
         specifier: ^16.3.1
@@ -2940,7 +2940,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2952,7 +2952,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2964,7 +2964,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2976,7 +2976,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -2988,7 +2988,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3000,7 +3000,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3012,7 +3012,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3024,7 +3024,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3036,7 +3036,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3048,7 +3048,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3060,7 +3060,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3072,7 +3072,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3084,7 +3084,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3096,7 +3096,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3108,7 +3108,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3120,7 +3120,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3132,7 +3132,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3144,7 +3144,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3156,7 +3156,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3168,7 +3168,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3180,7 +3180,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3192,7 +3192,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3204,7 +3204,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3216,7 +3216,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3228,7 +3228,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3240,7 +3240,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3252,7 +3252,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3264,7 +3264,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3276,7 +3276,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3288,7 +3288,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3300,7 +3300,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3312,7 +3312,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3324,7 +3324,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3336,7 +3336,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3348,7 +3348,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3360,7 +3360,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3372,7 +3372,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3384,7 +3384,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3396,7 +3396,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3408,7 +3408,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3420,7 +3420,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3432,7 +3432,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3444,7 +3444,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3456,7 +3456,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3468,7 +3468,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3480,7 +3480,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3492,7 +3492,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3504,7 +3504,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3516,7 +3516,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3528,7 +3528,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3540,7 +3540,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3552,7 +3552,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3564,7 +3564,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3576,7 +3576,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3588,7 +3588,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3600,7 +3600,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3612,7 +3612,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3624,7 +3624,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3636,7 +3636,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3648,7 +3648,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3660,7 +3660,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3672,7 +3672,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3684,7 +3684,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3696,7 +3696,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3708,7 +3708,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3720,7 +3720,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3732,7 +3732,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3744,7 +3744,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3756,7 +3756,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3768,7 +3768,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3780,7 +3780,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3792,7 +3792,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3804,7 +3804,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3816,7 +3816,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3830,7 +3830,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3842,7 +3842,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3854,7 +3854,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3866,7 +3866,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3878,7 +3878,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3890,7 +3890,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3902,7 +3902,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3914,7 +3914,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3926,7 +3926,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3938,7 +3938,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3950,7 +3950,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3962,7 +3962,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3974,7 +3974,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3986,7 +3986,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -3998,7 +3998,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4010,7 +4010,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4022,7 +4022,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4034,7 +4034,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4046,7 +4046,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4058,7 +4058,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4070,7 +4070,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4082,7 +4082,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4094,7 +4094,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4106,7 +4106,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4118,7 +4118,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4130,7 +4130,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4142,7 +4142,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4154,7 +4154,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4166,7 +4166,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4178,7 +4178,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4190,7 +4190,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4202,7 +4202,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4214,7 +4214,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4226,7 +4226,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4238,7 +4238,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4250,7 +4250,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4262,7 +4262,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4274,7 +4274,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4286,7 +4286,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4298,7 +4298,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4310,7 +4310,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4322,7 +4322,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4334,7 +4334,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4346,7 +4346,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4358,7 +4358,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4370,7 +4370,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4382,7 +4382,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4394,7 +4394,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4406,7 +4406,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4418,7 +4418,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4430,7 +4430,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4442,7 +4442,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4454,7 +4454,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4466,7 +4466,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4478,7 +4478,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4490,7 +4490,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4502,7 +4502,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4514,7 +4514,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4526,7 +4526,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4538,7 +4538,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4550,7 +4550,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4562,7 +4562,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4574,7 +4574,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4586,7 +4586,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4598,7 +4598,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4610,7 +4610,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4622,7 +4622,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4634,7 +4634,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4646,7 +4646,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4658,7 +4658,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4670,7 +4670,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       pg:
         specifier: ^8.6.0
@@ -4685,7 +4685,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4700,7 +4700,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4712,7 +4712,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4724,7 +4724,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4736,7 +4736,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4748,7 +4748,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4760,7 +4760,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4772,7 +4772,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4784,7 +4784,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4796,7 +4796,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4808,7 +4808,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4820,7 +4820,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4832,7 +4832,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4844,7 +4844,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4856,7 +4856,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4868,7 +4868,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4880,7 +4880,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4892,7 +4892,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4904,7 +4904,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4916,7 +4916,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4928,7 +4928,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4940,7 +4940,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4952,7 +4952,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4964,7 +4964,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4976,7 +4976,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -4988,7 +4988,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5000,7 +5000,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5012,7 +5012,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5024,7 +5024,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5036,7 +5036,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5048,7 +5048,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5060,7 +5060,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5072,7 +5072,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5084,7 +5084,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5096,7 +5096,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5108,7 +5108,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5120,7 +5120,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5132,7 +5132,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5144,7 +5144,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5156,7 +5156,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5168,7 +5168,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5180,7 +5180,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5192,7 +5192,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5204,7 +5204,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5216,7 +5216,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5228,7 +5228,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5240,7 +5240,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5252,7 +5252,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5264,7 +5264,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5276,7 +5276,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5288,7 +5288,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5300,7 +5300,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5312,7 +5312,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5324,7 +5324,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5336,7 +5336,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5348,7 +5348,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5360,7 +5360,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5372,7 +5372,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5384,7 +5384,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5396,7 +5396,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5408,7 +5408,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5420,7 +5420,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5432,7 +5432,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5444,7 +5444,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5456,7 +5456,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5468,7 +5468,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5480,7 +5480,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5492,7 +5492,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5504,7 +5504,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5516,7 +5516,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5528,7 +5528,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5540,7 +5540,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5552,7 +5552,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5564,7 +5564,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5576,7 +5576,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5588,7 +5588,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5600,7 +5600,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5612,7 +5612,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5624,7 +5624,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5636,7 +5636,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5648,7 +5648,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5660,7 +5660,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5672,7 +5672,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5684,7 +5684,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5696,7 +5696,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5708,7 +5708,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5720,7 +5720,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5741,7 +5741,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5753,7 +5753,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5765,7 +5765,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5777,7 +5777,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5789,7 +5789,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5801,7 +5801,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5813,7 +5813,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5825,7 +5825,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5837,7 +5837,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5849,7 +5849,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5861,7 +5861,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5873,7 +5873,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5885,7 +5885,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5897,7 +5897,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5909,7 +5909,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5921,7 +5921,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5933,7 +5933,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5945,7 +5945,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5957,7 +5957,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5969,7 +5969,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5981,7 +5981,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -5993,7 +5993,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6005,7 +6005,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6017,7 +6017,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6029,7 +6029,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6041,7 +6041,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6053,7 +6053,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6065,7 +6065,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6077,7 +6077,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6089,7 +6089,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6101,7 +6101,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6113,7 +6113,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6125,7 +6125,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6137,7 +6137,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6149,7 +6149,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6161,7 +6161,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6173,7 +6173,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6185,7 +6185,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6197,7 +6197,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6209,7 +6209,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../packages/providers/aws
       "@grucloud/provider-azure":
         specifier: ^12.12.1
@@ -6227,7 +6227,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6239,7 +6239,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6254,7 +6254,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6266,7 +6266,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../packages/providers/aws
       rubico:
         specifier: 1.9.6
@@ -6668,7 +6668,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../packages/providers/aws
       "@grucloud/provider-azure":
         specifier: ^12.12.1
@@ -6690,7 +6690,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../packages/providers/aws
       "@grucloud/provider-google":
         specifier: ^12.12.1
@@ -6902,7 +6902,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../packages/providers/aws
       "@grucloud/provider-k8s":
         specifier: ^12.12.1
@@ -7004,7 +7004,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../packages/providers/aws
       "@grucloud/provider-azure":
         specifier: ^12.12.1
@@ -7065,7 +7065,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../packages/providers/aws
       "@grucloud/provider-k8s":
         specifier: ^12.12.1
@@ -7087,7 +7087,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../packages/core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../packages/providers/aws
       "@grucloud/provider-k8s":
         specifier: ^12.12.1
@@ -7240,7 +7240,7 @@ importers:
         specifier: ^12.12.1
         version: link:../..
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../providers/aws
       rubico:
         specifier: 1.9.6
@@ -7311,7 +7311,7 @@ importers:
         specifier: ^12.12.1
         version: link:../cert-manager
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../providers/aws
       "@grucloud/provider-k8s":
         specifier: ^12.12.1
@@ -7333,7 +7333,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../../../core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../../../providers/aws
       "@grucloud/provider-k8s":
         specifier: ^12.12.1
@@ -8434,7 +8434,7 @@ importers:
         specifier: ^12.12.1
         version: link:../../core
       "@grucloud/provider-aws":
-        specifier: ^12.12.1
+        specifier: ^12.12.2
         version: link:../../providers/aws
       commander:
         specifier: 10.0.1
