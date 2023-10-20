@@ -79,15 +79,13 @@ const fetchThumbprint = ({ Url }) =>
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagOpenIDConnectProvider-property
 const tagResource = tagResourceIam({
-  propertyName: "OpenIDConnectProviderArn",
-  field: "Arn",
+  field: "OpenIDConnectProviderArn",
   method: "tagOpenIDConnectProvider",
 });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagOpenIDConnectProvider-property
 const untagResource = untagResourceIam({
-  propertyName: "OpenIDConnectProviderArn",
-  field: "Arn",
+  field: "OpenIDConnectProviderArn",
   method: "untagOpenIDConnectProvider",
 });
 

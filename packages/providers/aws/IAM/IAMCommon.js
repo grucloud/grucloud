@@ -451,6 +451,7 @@ exports.tagResourceIam =
   ({ live }) =>
     pipe([
       tap((params) => {
+        assert(live);
         assert(live[field]);
       }),
       (Tags) => ({
