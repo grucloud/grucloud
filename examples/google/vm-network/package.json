@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-google-vm-network",
-  "version": "12.12.0",
+  "version": "12.12.1",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -22,8 +22,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.12.0",
-    "@grucloud/provider-google": "^12.12.0",
+    "@grucloud/core": "^12.12.1",
+    "@grucloud/provider-google": "^12.12.1",
     "ping": "0.4.1",
     "rubico": "1.9.6",
     "ssh2": "1.3.0"
