@@ -1,9 +1,9 @@
 const assert = require("assert");
 const { tap, pipe, get } = require("rubico");
 const Axios = require("axios");
-const jose = require("jose");
+const { decodeJwt } = require("jose");
 
-const logger = require("@grucloud/core/logger")({ prefix: "JWT" });
+const logger = require("./logger")({ prefix: "JWT" });
 
 const requestJwt = ({ tokenUrl, subject, client_secret }) =>
   pipe([
@@ -31,7 +31,7 @@ const requestJwt = ({ tokenUrl, subject, client_secret }) =>
     }),
     tap(
       pipe([
-        jose.decodeJwt,
+        decodeJwt,
         tap((pcarams) => {
           assert(true);
         }),

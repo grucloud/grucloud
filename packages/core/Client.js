@@ -33,7 +33,7 @@ const {
   pluck,
   callProp,
 } = require("rubico/x");
-const { memoize } = require("lodash");
+const memoize = require("lodash/memoize");
 const util = require("node:util");
 const logger = require("./logger")({ prefix: "Client" });
 const { tos } = require("./tos");

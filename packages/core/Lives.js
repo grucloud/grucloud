@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, map, get, any, eq, filter, not, fork } = require("rubico");
+const { pipe, tap, map, get, any, eq, filter, fork } = require("rubico");
 const {
   size,
   isEmpty,
@@ -9,10 +9,9 @@ const {
   isString,
   values,
   groupBy,
-  pluck,
   flatten,
+  defaultsDeep,
 } = require("rubico/x");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const logger = require("./logger")({ prefix: "Lives" });
 

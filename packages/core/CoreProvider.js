@@ -42,7 +42,7 @@ const {
   filterOut,
   uniq,
 } = require("rubico/x");
-const { memoize } = require("lodash");
+const memoize = require("lodash/memoize");
 const util = require("node:util");
 const fs = require("fs").promises;
 const { EOL } = require("os");
