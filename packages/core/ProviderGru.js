@@ -9,7 +9,6 @@ const {
   get,
   assign,
   any,
-  omit,
   eq,
   not,
   flatMap,
@@ -34,8 +33,7 @@ const { Lister } = require("./Lister");
 const logger = require("./logger")({ prefix: "ProviderGru" });
 const { tos } = require("./tos");
 const { Planner, mapToGraph } = require("./Planner");
-const { convertError, TitleDeploying, TitleDestroying } = require("./Common");
-const { displayLive } = require("./cli/displayUtils");
+const { convertError, TitleDeploying } = require("./Common");
 const { buildGraphLive } = require("./GraphLive");
 const { buildGraphTarget } = require("./GraphTarget");
 const { buildGraphTree } = require("./GraphTree");
@@ -400,22 +398,6 @@ exports.ProviderGru = ({
       }),
       addErrorToResults,
     ]);
-
-  const displayLives = (lives) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`displayLive`);
-      }),
-      () => lives,
-      get("results"),
-      tap((results) => {
-        assert(results);
-      }),
-      forEach(({ results, providerName }) => {
-        displayLive({ providerName, resources: results });
-      }),
-    ])();
 
   const planQuery = ({ onStateChange = identity, providers } = {}) =>
     pipe([
@@ -1107,10 +1089,8 @@ exports.ProviderGru = ({
     planQueryDestroy,
     planDestroy,
     generateCode,
-    displayLives,
     getProvider,
     getProviders,
-
     runCommand,
     runCommandGlobal,
     buildGraphTarget: ({ options }) =>

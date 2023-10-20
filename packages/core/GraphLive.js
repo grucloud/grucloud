@@ -20,7 +20,6 @@ const {
   groupBy,
   values,
   find,
-  identity,
   isString,
   isObject,
   includes,

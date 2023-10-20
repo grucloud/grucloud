@@ -11,7 +11,6 @@ const {
   assign,
   any,
   reduce,
-  eq,
   not,
   and,
   or,
@@ -36,9 +35,9 @@ const {
   values,
 } = require("rubico/x");
 const generator = require("generate-password");
-const { mergeWith } = require("lodash/fp");
+const mergeWith = require("lodash/fp/mergeWith");
 const util = require("node:util");
-const { memoize } = require("lodash");
+const memoize = require("lodash/memoize");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
 const { tos } = require("./tos");

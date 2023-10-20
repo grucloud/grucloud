@@ -6,6 +6,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const shell = require("shelljs");
 const util = require("node:util");
+const { displayLive } = require("./displayUtils");
 
 const {
   map,
@@ -1213,6 +1214,23 @@ const filterShow = pipe([
     ]),
   }),
 ]);
+
+const displayLives = (lives) =>
+  pipe([
+    tap(() => {
+      assert(lives);
+      // logger.info(`displayLive`);
+    }),
+    () => lives,
+    get("results"),
+    tap((results) => {
+      assert(results);
+    }),
+    forEach(({ results, providerName }) => {
+      displayLive({ providerName, resources: results });
+    }),
+  ])();
+
 const displayListResult = pipe([
   tap((params) => {
     logger.debug(`displayListResult`);
@@ -1292,7 +1310,7 @@ const listDoOk = ({
                             });
                           }),
                           filterShow,
-                          tap(providerGru.displayLives),
+                          tap(displayLives),
                           tap(displayListResult),
                         ]),
                       }),

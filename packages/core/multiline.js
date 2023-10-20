@@ -1,8 +1,5 @@
 const assert = require("assert");
 
-const { pipe, tap } = require("rubico");
-const { isFunction } = require("rubico/x");
-
 // https://github.com/sindresorhus/multiline/blob/main/index.js
 
 const reCommentContents =
