@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/docker-cli",
-  "version": "12.12.2",
+  "version": "12.13.0",
   "private": true,
   "description": "",
   "scripts": {
@@ -20,10 +20,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.12.1",
-    "@grucloud/provider-aws": "^12.12.2",
-    "@grucloud/provider-azure": "^12.12.1",
-    "@grucloud/provider-google": "^12.12.1",
-    "@grucloud/provider-k8s": "^12.12.1"
+    "@grucloud/core": "^12.13.0",
+    "@grucloud/provider-aws": "^12.13.0",
+    "@grucloud/provider-azure": "^12.13.0",
+    "@grucloud/provider-google": "^12.13.0",
+    "@grucloud/provider-k8s": "^12.13.0"
   }
 }
