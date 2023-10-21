@@ -5,12 +5,13 @@ const { decodeJwt } = require("jose");
 
 const logger = require("./logger")({ prefix: "JWT" });
 
-const requestJwt = ({ tokenUrl, subject, client_secret }) =>
+const requestJwt = ({ tokenUrl, subject, client_secret, audience }) =>
   pipe([
     tap(() => {
       assert(tokenUrl);
       assert(subject);
       assert(client_secret);
+      assert(audience);
     }),
     () => ({
       method: "POST",
@@ -20,8 +21,7 @@ const requestJwt = ({ tokenUrl, subject, client_secret }) =>
         grant_type: "client_credentials",
         client_id: subject,
         client_secret,
-        resource: "uri:app",
-        scope: "openid",
+        aud: audience,
       }),
     }),
     Axios.request,
@@ -39,7 +39,9 @@ const requestJwt = ({ tokenUrl, subject, client_secret }) =>
     ),
   ])();
 
-exports.getWebIdentityToken = async () => {
+exports.getWebIdentityToken = async ({ audience }) => {
+  assert(audience);
+
   const {
     GRUCLOUD_OAUTH_SERVER,
     GRUCLOUD_OAUTH_CLIENT_SECRET,
@@ -56,6 +58,7 @@ exports.getWebIdentityToken = async () => {
       tokenUrl: GRUCLOUD_OAUTH_SERVER,
       subject: GRUCLOUD_OAUTH_SUBJECT,
       client_secret: GRUCLOUD_OAUTH_CLIENT_SECRET,
+      audience,
     });
   } else if (GRUCLOUD_OAUTH_TOKEN) {
     logger.info(`using GRUCLOUD_OAUTH_TOKEN`);

@@ -42,6 +42,10 @@ const AzAuthorizeFederated =
         assert(tenantId, "missing tenantId");
         assert(appId, "missing appId");
       }),
+      () => ({
+        audience:
+          process.env.AZURE_OAUTH_AUDIENCE ?? "api://AzureADTokenExchange",
+      }),
       getWebIdentityToken,
       (WebIdentityToken) => ({
         method: "POST",

@@ -69,6 +69,9 @@ const GoogleAuthorizeWorkloadIdentity = ({
       assert(service_account_impersonation_url);
       assert(token_url);
     }),
+    () => ({
+      audience: process.env.GOOGLE_OAUTH_AUDIENCE ?? "google.workload.identity",
+    }),
     getWebIdentityToken,
     (subjectToken) => ({
       method: "POST",
