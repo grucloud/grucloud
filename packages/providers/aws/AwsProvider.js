@@ -227,6 +227,9 @@ exports.AwsProvider = async ({
     tap.if(
       get("GRUCLOUD_ROLE_WEB_IDENTITY_ARN"),
       pipe([
+        () => ({
+          audience: process.env.AWS_OAUTH_AUDIENCE ?? "aws.workload.identity",
+        }),
         getWebIdentityToken,
         assumeRoleWebIdentity({
           RoleArn: process.env.GRUCLOUD_ROLE_WEB_IDENTITY_ARN,
