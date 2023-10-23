@@ -70,7 +70,8 @@ const GoogleAuthorizeWorkloadIdentity = ({
       assert(token_url);
     }),
     () => ({
-      audience: process.env.GOOGLE_OAUTH_AUDIENCE ?? "google.workload.identity",
+      audience:
+        process.env.GOOGLE_OAUTH_AUDIENCE ?? "https://demo.grucloud.com",
     }),
     getWebIdentityToken,
     (subjectToken) => ({

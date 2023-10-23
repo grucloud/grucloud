@@ -1,5 +1,6 @@
 const assert = require("assert");
-const { tap, pipe, get } = require("rubico");
+const { tap, pipe, get, assign } = require("rubico");
+const { when } = require("rubico/x");
 const Axios = require("axios");
 const { decodeJwt } = require("jose");
 
@@ -11,18 +12,18 @@ const requestJwt = ({ tokenUrl, subject, client_secret, audience }) =>
       assert(tokenUrl);
       assert(subject);
       assert(client_secret);
-      assert(audience);
     }),
     () => ({
+      grant_type: "client_credentials",
+      client_id: subject,
+      client_secret,
+    }),
+    when(() => audience, assign({ aud: () => audience })),
+    (data) => ({
       method: "POST",
       url: tokenUrl,
       headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: new URLSearchParams({
-        grant_type: "client_credentials",
-        client_id: subject,
-        client_secret,
-        aud: audience,
-      }),
+      data: new URLSearchParams(data),
     }),
     Axios.request,
     get("data.access_token"),
@@ -40,8 +41,6 @@ const requestJwt = ({ tokenUrl, subject, client_secret, audience }) =>
   ])();
 
 exports.getWebIdentityToken = async ({ audience }) => {
-  assert(audience);
-
   const {
     GRUCLOUD_OAUTH_SERVER,
     GRUCLOUD_OAUTH_CLIENT_SECRET,

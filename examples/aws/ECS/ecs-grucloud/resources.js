@@ -365,7 +365,7 @@ exports.createResources = () => [
         {
           cpu: 0,
           essential: true,
-          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.12.2",
+          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.13.0",
           logConfiguration: {
             logDriver: "awslogs",
             options: {
@@ -409,7 +409,7 @@ exports.createResources = () => [
     type: "OpenIDConnectProvider",
     group: "IAM",
     properties: ({}) => ({
-      ClientIDList: ["https://demo.grucloud.com"],
+      ClientIDList: ["aws.workload.identity"],
       Url: "demo.grucloud.com",
     }),
   },
@@ -492,7 +492,7 @@ exports.createResources = () => [
                   group: "IAM",
                   name: "oidp::demo.grucloud.com",
                   path: "live.Url",
-                })}:aud`]: "https://demo.grucloud.com",
+                })}:aud`]: "aws.workload.identity",
               },
               StringLike: {
                 [`${getId({
