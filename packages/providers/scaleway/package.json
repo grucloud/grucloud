@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-scaleway",
-  "version": "12.13.0",
+  "version": "12.13.1",
   "private": true,
   "description": "The GruCloud Scaleway provider",
   "main": "ScalewayProvider.js",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.13.0",
+    "@grucloud/core": "^12.13.1",
     "axios-mock-adapter": "1.21.4",
     "rubico": "1.9.6",
     "url-join": "4.0.1"
