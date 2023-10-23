@@ -90,6 +90,7 @@ exports.GoogleProvider = ({
       defaultsDeep({
         region: process.env.GOOGLE_REGION,
         zone: process.env.GOOGLE_ZONE,
+        projectId: process.env.GOOGLE_PROJECT_ID,
       }),
       when(
         () => gcloudConfig,
