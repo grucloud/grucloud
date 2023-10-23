@@ -16,3 +16,4 @@ cli/test/**test.js
 *.log
 gc.result.json
 *.dot
+cli/test/uploadDir
