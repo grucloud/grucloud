@@ -153,7 +153,7 @@ exports.createProgram = () => {
                   ]),
                   handleError
                 ),
-                ({ error }) =>
+                ({ error } = {}) =>
                   pipe([
                     () => uploadDirToS3(programOptions),
                     sendEndCommand({ ws }),

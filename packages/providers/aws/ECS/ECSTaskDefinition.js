@@ -268,22 +268,30 @@ exports.ECSTaskDefinition = ({ compare }) => ({
                             lives,
                           }),
                         ]),
-                        authorizationConfig: pipe([
-                          get("authorizationConfig"),
-                          assign({
-                            accessPointId: pipe([
-                              get("accessPointId"),
-                              replaceWithName({
-                                groupType: "EFS::AccessPoint",
-                                path: "live.AccessPointId",
-                                pathLive: "live.AccessPointId",
-                                providerConfig,
-                                lives,
-                              }),
-                            ]),
-                          }),
-                        ]),
                       }),
+                      when(
+                        get("authorizationConfig"),
+                        assign({
+                          authorizationConfig: pipe([
+                            get("authorizationConfig"),
+                            when(
+                              get("accessPointId"),
+                              assign({
+                                accessPointId: pipe([
+                                  get("accessPointId"),
+                                  replaceWithName({
+                                    groupType: "EFS::AccessPoint",
+                                    path: "live.AccessPointId",
+                                    pathLive: "live.AccessPointId",
+                                    providerConfig,
+                                    lives,
+                                  }),
+                                ]),
+                              })
+                            ),
+                          ]),
+                        })
+                      ),
                     ]),
                   })
                 ),
