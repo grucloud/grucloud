@@ -72,7 +72,7 @@ const DisplayAndThrow =
     displayError({ name, error });
     throw {
       code: 422,
-      error: { message: error.message, displayed: true },
+      error: { message: error.message, displayed: true, ...error },
     };
   };
 
