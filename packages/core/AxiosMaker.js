@@ -45,23 +45,13 @@ module.exports = AxiosMaker = ({
       const { config, status } = response;
       const { method, baseURL = "", url } = config;
       logger.debug(`axios response ${status}, ${method} ${baseURL}${url}`);
-      //logger.debug(tos(response.data));
       return response;
     },
-    // TODO rubico
     function (error) {
-      const { response } = error;
-      if (response?.status === 404) {
-        const { method, baseURL = "", url } = error.config;
-        logger.info(`axios ${method} ${baseURL}${url}: 404`);
-        logger.info(`axios response: ${error.response}`);
-      } else {
-        logger.info(`axios error ${tos(convertError({ error }))}`);
-        // logger.error(
-        //   `raw error response ${util.inspect(error.response, { depth: 8 })}`
-        // );
-      }
-
+      const { response, config } = error;
+      const { status } = response;
+      const { method, baseURL = "", url } = config;
+      logger.info(`axios response ${status}, ${method} ${baseURL}${url}`);
       return Promise.reject(error);
     }
   );
