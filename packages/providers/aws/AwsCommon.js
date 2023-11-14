@@ -501,11 +501,12 @@ const createEndpointOption = (config) =>
         },
       }),
       // from oauth2 with assumeRoleWebIdentity
-      () => config.credentials.accessKeyId,
+      pipe([() => config, get("credentials.accessKeyId")]),
       defaultsDeep({ credentials: config.credentials }),
       // from .aws/credentials
       () => config.credentials,
       defaultsDeep({ credentials: fromIni(config.credentials) }),
+      identity,
     ]),
     when(
       () => process.env.LOCALSTACK,
