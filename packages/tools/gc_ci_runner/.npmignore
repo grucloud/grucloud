@@ -1,0 +1,11 @@
+package-lock.json
+node_modules/
+*env
+*.log
+.vscode/
+.travis.yml
+.circleci
+.github
+**/test/*
+gc.result.json
+*.dot
