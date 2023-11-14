@@ -25,7 +25,7 @@ exports.CURReportDefinition = ({}) => ({
   inferName: () => get("ReportName"),
   findName: () => pipe([get("ReportName")]),
   findId: () => pipe([get("ReportName")]),
-  ignoreErrorCodes: ["NotFoundException"],
+  ignoreErrorCodes: ["NotFoundException", "ValidationException"],
   propertiesDefault: {},
   omitProperties: [],
   dependencies: {

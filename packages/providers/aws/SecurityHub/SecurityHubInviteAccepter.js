@@ -50,7 +50,11 @@ exports.SecurityHubInviteAccepter = () => ({
         assert(id);
       }),
     ]),
-  ignoreErrorCodes: ["ResourceNotFoundException", "BadRequestException"],
+  ignoreErrorCodes: [
+    "ResourceNotFoundException",
+    "BadRequestException",
+    "AccessDeniedException",
+  ],
   dependencies: {
     accountAdmin: {
       type: "Account",

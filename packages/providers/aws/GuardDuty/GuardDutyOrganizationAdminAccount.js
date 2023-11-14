@@ -9,6 +9,7 @@ const { ignoreErrorCodes } = require("./GuardDutyCommon");
 const ignoreErrorMessages = [
   "The request failed because a delegated administrator account has not been enabled",
   "The request failed because the delegated administrator account has already been disabled and/or GuardDuty protection has been disabled",
+  "The request failed because the 'accountId' was formatted incorrectly",
 ];
 
 const pickId = pipe([
