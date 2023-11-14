@@ -1,6 +1,6 @@
 {
   "name": "cloudwatch-logs-subscription-firehose-cdk",
-  "version": "12.14.0",
+  "version": "12.14.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.14.0",
-    "@grucloud/provider-aws": "^12.14.0",
+    "@grucloud/core": "^12.14.1",
+    "@grucloud/provider-aws": "^12.14.1",
     "rubico": "1.9.6"
   }
 }
