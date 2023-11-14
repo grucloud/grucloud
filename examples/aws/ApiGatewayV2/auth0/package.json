@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-api-gateway-auth0-autorizer",
-  "version": "12.14.1",
+  "version": "12.14.3",
   "description": "auth0 customer autorizer",
   "private": true,
   "main": "iac.js",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^12.14.1",
-    "@grucloud/provider-aws": "^12.14.1",
+    "@grucloud/provider-aws": "^12.14.3",
     "axios": "1.3.6",
     "rubico": "1.9.6"
   }

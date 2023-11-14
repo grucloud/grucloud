@@ -1,6 +1,6 @@
 {
   "name": "apigw-http-api-sqs-lambda-cdk",
-  "version": "12.14.1",
+  "version": "12.14.3",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^12.14.1",
-    "@grucloud/provider-aws": "^12.14.1",
+    "@grucloud/provider-aws": "^12.14.3",
     "rubico": "1.9.6"
   }
 }
