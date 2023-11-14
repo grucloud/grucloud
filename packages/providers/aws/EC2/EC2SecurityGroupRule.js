@@ -484,14 +484,12 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
         tryCatch(revokeSecurityGroup(), (error, params) =>
           pipe([
-            tap(() => {
-              logger.error(`destroy sg rule error ${tos({ error, params })}`);
-            }),
             () => error,
             switchCase([
               isAwsError("InvalidGroup.NotFound"),
               () => undefined,
               () => {
+                logger.error(`destroy sg rule error ${tos({ error, params })}`);
                 throw Error(error.message);
               },
             ]),

@@ -80,7 +80,10 @@ exports.ControlTowerControl = () => ({
         ]),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: [
+    "ResourceNotFoundException",
+    "AuthorizerConfigurationException",
+  ],
   filterLive: ({ lives, providerConfig }) =>
     pipe([
       assign({

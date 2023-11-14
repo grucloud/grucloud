@@ -42,6 +42,7 @@ exports.EC2CoipPool = () => ({
     "ResourceNotFoundException",
     "InvalidParameterValue",
     // TODO remove
+    "InvalidIpv4PoolCoipId.Malformed",
     "InvalidPoolID.Malformed",
   ],
   dependencies: {
