@@ -1,0 +1,32 @@
+{
+  "name": "gc_ci_runner",
+  "version": "1.0.0",
+  "description": "runs commands in a docker container",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file env index.js",
+    "test": "node --env-file env --test test/**.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grucloud/grucloud.git",
+    "directory": "packages/tools/gc_ci_runner"
+  },
+  "keywords": [
+    "grucloud",
+    "ci",
+    "cd",
+    "runner"
+  ],
+  "author": "Frederic Heem",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/grucloud/grucloud/issues"
+  },
+  "homepage": "https://github.com/grucloud/grucloud/packages/tools/gc_ci_runner",
+  "dependencies": {
+    "postgres": "3.3.5",
+    "rubico": "2.3.1"
+  }
+}
