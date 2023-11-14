@@ -1,5 +1,5 @@
 {
-  "name": "gc_ci_runner",
+  "name": "@grucloudg/ci_runner",
   "version": "1.0.0",
   "description": "runs commands in a docker container",
   "main": "index.js",
