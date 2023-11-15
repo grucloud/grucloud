@@ -26,6 +26,8 @@
   },
   "homepage": "https://github.com/grucloud/grucloud/packages/tools/gc_ci_runner",
   "dependencies": {
+    "@aws-sdk/client-s3": "3.332.0",
+    "@aws-sdk/lib-storage": "3.451.0",
     "postgres": "3.3.5",
     "rubico": "2.3.1"
   }

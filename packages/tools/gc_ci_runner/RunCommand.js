@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import Path from "node:path";
 
 export const runCommand =
-  ({ ws, sql, workingDirectory = "" }) =>
+  ({ ws, sql, stream, workingDirectory = "" }) =>
   (command) =>
     new Promise((resolve, reject) => {
       assert(command);
@@ -18,17 +18,21 @@ export const runCommand =
       child.stderr.on("data", (x) => {
         console.error(x.toString());
         result += x.toString();
+        stream.push(x);
       });
       child.stdout.on("data", (x) => {
         console.log(x.toString());
 
         result += x.toString();
+        stream.push(x);
       });
       child.on("error", (code) => {
         console.error("Error running", command, "code: ", code);
+        stream.end();
         reject({ code });
       });
       child.on("exit", (code) => {
+        stream.end();
         if (code !== 0) {
           reject({ code, result });
         } else {

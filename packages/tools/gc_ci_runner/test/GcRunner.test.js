@@ -14,19 +14,9 @@ const flowSimple = {
   },
   steps: [
     {
-      name: "git clone",
-      run: "git clone $GIT_REPO -b $GIT_BRANCH my_repo",
-      workingDirectory: "",
-    },
-    {
-      name: "npm install",
-      run: "npm install",
-      workingDirectory: "my_repo",
-    },
-    {
-      name: "gc list",
-      run: "gc list",
-      workingDirectory: "my_repo",
+      name: "ls",
+      run: "ls",
+      workingDirectory: "node_modules",
     },
   ],
 };
@@ -37,7 +27,7 @@ describe("GcRunner", () => {
       tap((result) => {
         assert(true);
       }),
-      () => ({ argv: [""], flow: flowSimple }),
+      () => ({ argv: [""], flow: flowSimple, Bucket: process.env.S3_BUCKET }),
       GcRunner,
       tap((result) => {
         assert(true);

@@ -11,7 +11,7 @@ const flow = {
 
 tryCatch(
   pipe([
-    () => ({ flow }),
+    () => ({ flow, Bucket: process.env.S3_BUCKET }),
     GcRunner,
     tap((result) => {
       assert(true);
