@@ -6,8 +6,9 @@
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/azure",
   "author": "",
   "scripts": {
-    "test": "dotenv -e ../../../secrets/default.env mocha '../../../examples/azure/**/iac.test.js' './test/**.test.js' ",
-    "coverage": "nyc npm run test"
+    "test": "dotenv -e ../../../secrets/default.env mocha './test/**.test.js' ",
+    "test-examples": "dotenv -e ../../../secrets/default.env mocha '../../../examples/azure/**/iac.test.js' ",
+    "coverage": "npx nyc npm run test"
   },
   "license": "ISC",
   "dependencies": {
@@ -23,14 +24,12 @@
   "devDependencies": {
     "dotenv": "16.0.3",
     "dotenv-cli": "7.2.1",
-    "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0",
-    "mochawesome": "7.1.3",
-    "nyc": "15.1.0"
+    "mocha": "10.2.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/grucloud/grucloud"
+    "url": "https://github.com/grucloud/grucloud",
+    "directory": "packages/providers/azure"
   },
   "keywords": [
     "Azure",
