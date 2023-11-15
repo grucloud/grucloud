@@ -37,7 +37,12 @@ describe("S3", () => {
         createS3Client,
         (s3Client) =>
           pipe([
-            () => ({ s3Client, stream, Bucket, Key: "stream-to-S3-test" }),
+            () => ({
+              s3Client,
+              stream,
+              Bucket,
+              Key: "test/stream-to-S3-test.txt",
+            }),
             createUploadStream,
             (uploadStream) =>
               pipe([

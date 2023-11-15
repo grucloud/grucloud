@@ -1,9 +1,12 @@
 {
-  "name": "@grucloud/ci_runner",
+  "name": "@grucloud/ci-runner",
   "version": "12.14.2",
   "description": "runs commands in a docker container",
   "main": "index.js",
   "type": "module",
+  "bin": {
+    "gc-runner": "./index.js"
+  },
   "scripts": {
     "start": "node --env-file env index.js",
     "test": "node --env-file env --test test/**.js"

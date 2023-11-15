@@ -6,12 +6,6 @@ import { describe, it } from "node:test";
 import GcRunner from "../GcRunner.js";
 
 const flowSimple = {
-  name: "Bau",
-  on: {
-    push: {
-      branches: ["*"],
-    },
-  },
   steps: [
     {
       name: "ls",
@@ -25,9 +19,15 @@ describe("GcRunner", () => {
   it("happy case", async () =>
     pipe([
       tap((result) => {
-        assert(true);
+        assert(process.env.S3_BUCKET);
+        assert(process.env.S3_BUCKET_KEY);
       }),
-      () => ({ argv: [""], flow: flowSimple, Bucket: process.env.S3_BUCKET }),
+      () => ({
+        argv: [""],
+        flow: flowSimple,
+        Bucket: process.env.S3_BUCKET,
+        Key: process.env.S3_BUCKET_KEY,
+      }),
       GcRunner,
       tap((result) => {
         assert(true);

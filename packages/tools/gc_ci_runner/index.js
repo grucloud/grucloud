@@ -4,14 +4,23 @@ const { pipe, tap, tryCatch } = rubico;
 
 import GcRunner from "./GcRunner.js";
 
-const flow = {
-  //  steps: [{ name: "", run: "git clone $GIT_REPO -b $GIT_BRANCH --depth 1" }],
-  steps: [{ name: "", run: "ls", workingDirectory: "node_modules" }],
-};
+assert(process.env.S3_BUCKET);
+assert(process.env.S3_BUCKET_KEY);
+assert(process.env.S3_AWSAccessKeyId);
+assert(process.env.S3_AWSSecretKey);
+assert(process.env.S3_AWS_REGION);
+
+assert(process.env.GC_FLOW);
 
 tryCatch(
   pipe([
-    () => ({ flow, Bucket: process.env.S3_BUCKET }),
+    () => process.env.GC_FLOW,
+    JSON.parse,
+    (flow) => ({
+      flow,
+      Bucket: process.env.S3_BUCKET,
+      Key: process.env.S3_BUCKET_KEY,
+    }),
     GcRunner,
     tap((result) => {
       assert(true);

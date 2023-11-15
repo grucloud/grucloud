@@ -11,3 +11,4 @@ packages:
   - "!examples/aws/Lambda/lambda-web-adapter-cdk/LambdaAdapterCdkStack-lambdaAdapterFunction*"
   - "!examples/aws/S3/s3-object-lambda/sam-app-ResizeFunction*"
   - "!examples/aws/StepFunctions/lambda-sfn/sam-app-LambdaProxy*"
+  - "!packages/providers/azure/az-spec-api-gen"

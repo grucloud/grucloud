@@ -9,7 +9,7 @@ const sql = createSql();
 
 const sqlConnect = () => sql`SELECT 1;`;
 
-const GcRunner = ({ flow, Bucket }) =>
+const GcRunner = ({ flow, Bucket, Key }) =>
   pipe([
     tap((params) => {
       assert(flow);
@@ -26,7 +26,7 @@ const GcRunner = ({ flow, Bucket }) =>
     }),
     tryCatch(
       //
-      map.series(createRunStep({ sql, Bucket })),
+      map.series(createRunStep({ sql, Bucket, Key })),
       (error) =>
         pipe([
           tap((params) => {
