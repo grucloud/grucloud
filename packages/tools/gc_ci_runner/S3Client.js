@@ -27,6 +27,7 @@ export async function createUploadStream({ s3Client, stream, Key, Bucket }) {
         Bucket,
         Key,
         Body: passThroughStream,
+        ContentType: "text/plain",
       },
       queueSize: 4,
       partSize: 1024 * 1024 * 5,
