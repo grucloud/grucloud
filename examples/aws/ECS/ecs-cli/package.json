@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-ecs-cli",
-  "version": "12.14.3",
+  "version": "12.15.2",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -22,7 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^12.14.1",
-    "@grucloud/provider-aws": "^12.14.3",
+    "@grucloud/provider-aws": "^12.15.2",
     "rubico": "1.9.6"
   }
 }
