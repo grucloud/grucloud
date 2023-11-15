@@ -1,6 +1,6 @@
 {
   "name": "load-balancer",
-  "version": "12.14.1",
+  "version": "12.15.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -22,7 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^12.14.1",
-    "@grucloud/provider-azure": "^12.14.1",
+    "@grucloud/provider-azure": "^12.15.1",
     "rubico": "1.9.6"
   }
 }

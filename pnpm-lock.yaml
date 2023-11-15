@@ -6215,7 +6215,7 @@ importers:
         specifier: ^12.14.3
         version: link:../../../packages/providers/aws
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../packages/providers/azure
       "@grucloud/provider-google":
         specifier: ^12.14.1
@@ -6281,7 +6281,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6293,7 +6293,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6305,7 +6305,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6317,7 +6317,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6329,7 +6329,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       ping:
         specifier: 0.4.1
@@ -6347,7 +6347,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6359,7 +6359,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6371,7 +6371,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6383,7 +6383,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6395,7 +6395,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6419,7 +6419,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6431,7 +6431,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6443,7 +6443,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6458,7 +6458,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6470,7 +6470,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6488,7 +6488,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6500,7 +6500,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6512,7 +6512,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6524,7 +6524,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6536,7 +6536,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6548,7 +6548,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6560,7 +6560,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6572,7 +6572,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6584,7 +6584,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6596,7 +6596,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       axios:
         specifier: 1.3.6
@@ -6611,7 +6611,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6623,7 +6623,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6635,7 +6635,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6647,7 +6647,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6659,7 +6659,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6674,7 +6674,7 @@ importers:
         specifier: ^12.14.3
         version: link:../../../packages/providers/aws
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../packages/providers/azure
       rubico:
         specifier: 1.9.6
@@ -6715,7 +6715,7 @@ importers:
         specifier: ^12.14.1
         version: link:../../../packages/core
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../packages/providers/azure
       "@grucloud/provider-google":
         specifier: ^12.14.1
@@ -7010,7 +7010,7 @@ importers:
         specifier: ^12.14.3
         version: link:../../packages/providers/aws
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../packages/providers/azure
       "@grucloud/provider-google":
         specifier: ^12.14.1
@@ -7255,7 +7255,7 @@ importers:
         specifier: ^12.14.1
         version: link:../..
       "@grucloud/provider-azure":
-        specifier: ^12.14.1
+        specifier: ^12.15.1
         version: link:../../../providers/azure
       rubico:
         specifier: 1.9.6
@@ -8165,15 +8165,6 @@ importers:
       mocha:
         specifier: 10.2.0
         version: 10.2.0
-      mocha-junit-reporter:
-        specifier: 2.2.0
-        version: 2.2.0(mocha@10.2.0)
-      mochawesome:
-        specifier: 7.1.3
-        version: 7.1.3(mocha@10.2.0)
-      nyc:
-        specifier: 15.1.0
-        version: 15.1.0
 
   packages/providers/google:
     dependencies:
