@@ -6,7 +6,7 @@ Visit the [Aws Requirements](https://grucloud.com/docs/aws/AwsRequirements) to p
 
 ### Resources
 
-The list of AWS resources implemented can be found [here](https://grucloud.com/docs/docs/aws/ResourcesList)
+The list of AWS resources implemented can be found [here](https://grucloud.com/docs/aws/ResourcesList)
 
 ### Examples
 

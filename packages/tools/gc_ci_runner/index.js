@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import assert from "assert";
 import rubico from "rubico";
 const { pipe, tap, tryCatch } = rubico;
