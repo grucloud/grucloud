@@ -5,7 +5,7 @@ ENV GIT_SSH_COMMAND "ssh -i ~/.ssh/id_ecdsa -o BatchMode=yes -o UserKnownHostsFi
 # RUN apk update && apk upgrade && \
 #     apk add --no-cache bash git openssh graphviz
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends graphviz \
+    && apt-get install -y --no-install-recommends graphviz git ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 

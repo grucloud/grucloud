@@ -7,8 +7,8 @@ export const runCommand =
   (command) =>
     new Promise((resolve, reject) => {
       assert(command);
-      let result = "";
       const cwd = Path.resolve(process.cwd(), workingDirectory);
+      console.log("runCommand", command, "cwd", cwd);
       const child = spawn(command, {
         cwd,
         shell: true,
@@ -17,26 +17,21 @@ export const runCommand =
       });
       child.stderr.on("data", (x) => {
         console.error(x.toString());
-        result += x.toString();
-        stream.push(x);
+        stream.write(x);
       });
       child.stdout.on("data", (x) => {
         console.log(x.toString());
-
-        result += x.toString();
-        stream.push(x);
+        stream.write(x);
       });
       child.on("error", (code) => {
         console.error("Error running", command, "code: ", code);
-        stream.end();
         reject({ code });
       });
       child.on("exit", (code) => {
-        stream.end();
         if (code !== 0) {
-          reject({ code, result });
+          reject({ code });
         } else {
-          resolve({ code, result });
+          resolve({ code });
         }
       });
     });

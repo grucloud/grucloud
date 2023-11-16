@@ -17,6 +17,11 @@ tryCatch(
   pipe([
     () => process.env.GC_FLOW,
     JSON.parse,
+    tap((result) => {
+      console.log("GC_FLOW", process.env.GC_FLOW);
+      console.log("S3_BUCKET", process.env.S3_BUCKET);
+      console.log("S3_BUCKET_KEY", process.env.S3_BUCKET_KEY);
+    }),
     (flow) => ({
       flow,
       Bucket: process.env.S3_BUCKET,
