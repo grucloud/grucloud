@@ -6206,7 +6206,7 @@ importers:
   examples/aws/docker:
     dependencies:
       "@grucloud/ci-runner":
-        specifier: ^12.15.2
+        specifier: ^12.15.3
         version: link:../../../packages/tools/gc_ci_runner
       "@grucloud/core":
         specifier: ^12.14.1
