@@ -1,6 +1,6 @@
 {
   "name": "maintenance-task-run-command",
-  "version": "12.15.2",
+  "version": "12.15.4",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.14.1",
-    "@grucloud/provider-aws": "^12.15.2",
+    "@grucloud/core": "^12.15.4",
+    "@grucloud/provider-aws": "^12.15.4",
     "rubico": "1.9.6"
   }
 }
