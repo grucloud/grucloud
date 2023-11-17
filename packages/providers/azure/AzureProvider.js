@@ -152,11 +152,11 @@ exports.AzureProvider = ({
 
   const fetchObjectId = () =>
     pipe([
-      () =>
-        createAxiosAzure({
-          baseURL: AZURE_GRAPH_BASE_URL,
-          bearerToken: () => bearerTokenMap[AZURE_GRAPH_BASE_URL],
-        }),
+      () => ({
+        baseURL: AZURE_GRAPH_BASE_URL,
+        bearerToken: () => bearerTokenMap[AZURE_GRAPH_BASE_URL],
+      }),
+      createAxiosAzure,
       callProp(
         "get",
         `v1.0/servicePrincipals(appId='${process.env.AZURE_CLIENT_ID}')`

@@ -4,7 +4,7 @@ The package implements the [GruCloud Azure provider](https://www.npmjs.com/packa
 
 ### Resources
 
-The list of Azure resources implemented can be found [here](https://grucloud.com/docs/docs/azure/ResourcesList)
+The list of Azure resources implemented can be found [here](https://grucloud.com/docs/azure/ResourcesList)
 
 ### Examples
 

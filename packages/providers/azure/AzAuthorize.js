@@ -69,10 +69,7 @@ const AzAuthorizeFederated =
 
 exports.AzAuthorize = pipe([
   switchCase([
-    pipe([
-      () => process.env,
-      or([get("GRUCLOUD_OAUTH_SUBJECT"), get("GRUCLOUD_OAUTH_TOKEN")]),
-    ]),
+    pipe([() => process.env.AZURE_USE_OAUTH]),
     AzAuthorizeFederated,
     AzAuthorizeServicePrincipal,
   ]),
