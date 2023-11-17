@@ -48,9 +48,10 @@ const {
 const { detailedDiff } = require("deep-object-diff");
 const Diff = require("diff");
 const shell = require("shelljs");
-const { deepOmit } = require("./deepOmit");
-const { deepPick } = require("./deepPick");
-const { deepDefaults } = require("./deepDefault");
+
+const { deepOmit } = require("./utils/deepOmit");
+const { deepPick } = require("./utils/deepPick");
+const { deepDefaults } = require("./utils/deepDefault");
 
 const logger = require("./logger")({ prefix: "Common" });
 const { tos } = require("./tos");

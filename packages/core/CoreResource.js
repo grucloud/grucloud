@@ -44,7 +44,7 @@ const { tos } = require("./tos");
 const { retryCall } = require("./Retry");
 const { convertError } = require("./Common");
 const { decorateLive } = require("./Client");
-const { deepDefaults } = require("./deepDefault");
+const { deepDefaults } = require("./utils/deepDefault");
 const { multiline } = require("./multiline");
 
 exports.ResourceMaker = ({

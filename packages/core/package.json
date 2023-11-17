@@ -23,8 +23,7 @@
   "author": "Frederic Heem",
   "license": "ISC",
   "devDependencies": {
-    "mocha": "10.2.0",
-    "sinon": "15.0.4"
+    "mocha": "10.2.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.332.0",
