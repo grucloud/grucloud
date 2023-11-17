@@ -45,7 +45,6 @@ const {
   last,
   filterOut,
 } = require("rubico/x");
-const util = require("node:util");
 const { detailedDiff } = require("deep-object-diff");
 const Diff = require("diff");
 const shell = require("shelljs");
@@ -379,7 +378,7 @@ exports.isDownByIdCore =
   };
 
 exports.logError = (prefix, error = {}) => {
-  logger.error(`${prefix} error:${util.inspect(error)}`);
+  //logger.error(`${prefix} error:${util.inspect(error)}`);
   error.stack && logger.error(error.stack);
 
   if (error.response) {

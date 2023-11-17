@@ -34,7 +34,6 @@ const {
   callProp,
 } = require("rubico/x");
 const memoize = require("lodash/memoize");
-const util = require("node:util");
 const logger = require("./logger")({ prefix: "Client" });
 const { tos } = require("./tos");
 
@@ -126,9 +125,7 @@ const decorateLive =
         assert(lives);
         assert(
           isObject(live),
-          `live is not an object, groupType: ${
-            client.spec.groupType
-          }, live: ${util.inspect(live)}`
+          `live is not an object, groupType: ${client.spec.groupType},`
         );
         if (isFunction(live)) {
           assert(true);

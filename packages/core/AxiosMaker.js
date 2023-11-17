@@ -1,8 +1,6 @@
 const assert = require("assert");
 const Axios = require("axios");
 const logger = require("./logger")({ prefix: "AxiosMaker" });
-const { tos } = require("./tos");
-const { convertError } = require("./Common");
 const { assign, pipe, tap } = require("rubico");
 const { retryCallOnError } = require("./Retry");
 
