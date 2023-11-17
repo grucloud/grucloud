@@ -1,15 +1,5 @@
 const assert = require("assert");
-const {
-  pipe,
-  map,
-  tap,
-  fork,
-  filter,
-  not,
-  tryCatch,
-  get,
-  switchCase,
-} = require("rubico");
+const { pipe, map, tap, fork, switchCase } = require("rubico");
 const {
   callProp,
   pluck,

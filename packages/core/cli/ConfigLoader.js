@@ -3,7 +3,7 @@ const assert = require("assert");
 const npath = require("path");
 const fs = require("fs");
 const util = require("node:util");
-const logger = require("./logger")({ prefix: "ConfigLoader" });
+const logger = require("../logger")({ prefix: "ConfigLoader" });
 
 const checkFileExist = (fileName) => {
   assert(fileName);

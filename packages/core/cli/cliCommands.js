@@ -55,7 +55,7 @@ const {
   saveToJson,
   defaultTitle,
 } = require("./cliUtils");
-const { ConfigLoader } = require("../ConfigLoader");
+const { ConfigLoader } = require("./ConfigLoader");
 const { createProviderMaker } = require("./infra");
 const {
   displayPlan,

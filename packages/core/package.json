@@ -10,7 +10,7 @@
   "homepage": "https://www.grucloud.com",
   "scripts": {
     "test": "node --env-file ../../secrets/default.env  node_modules/mocha/bin/_mocha  './cli/**/*.test.js'  './test/**/*.test.js'",
-    "coverage": "nyc npm run test"
+    "coverage": "npx nyc npm run test"
   },
   "keywords": [
     "cloud",
@@ -25,7 +25,6 @@
   "devDependencies": {
     "mocha": "10.2.0",
     "mocha-junit-reporter": "2.2.0",
-    "nyc": "15.1.0",
     "sinon": "15.0.4"
   },
   "dependencies": {

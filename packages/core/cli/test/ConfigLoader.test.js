@@ -3,7 +3,7 @@ const path = require("path");
 const { isDeepEqual } = require("rubico/x");
 
 const { ConfigLoader } = require("../ConfigLoader");
-const { envFromFile } = require("../EnvLoader");
+const { envFromFile } = require("../../EnvLoader");
 
 const envFile = path.join(__dirname, "./test.env");
 
