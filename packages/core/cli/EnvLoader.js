@@ -3,7 +3,7 @@ const { isEmpty, forEach, when, callProp } = require("rubico/x");
 const assert = require("assert");
 const npath = require("path");
 const fs = require("fs");
-const logger = require("./logger")({ prefix: "EnvLoader" });
+const logger = require("../logger")({ prefix: "EnvLoader" });
 
 const checkFileExist = (fileName) => {
   assert(fileName);

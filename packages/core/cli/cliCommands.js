@@ -43,9 +43,9 @@ const {
   callProp,
   when,
 } = require("rubico/x");
-const { envLoader } = require("../EnvLoader");
 const fse = require("fs-extra");
 const os = require("os");
+const { envLoader } = require("./EnvLoader");
 const logger = require("../logger")({ prefix: "CliCommands" });
 const YAML = require("./json2yaml");
 const {

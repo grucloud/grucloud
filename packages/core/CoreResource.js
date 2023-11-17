@@ -35,7 +35,7 @@ const {
   values,
 } = require("rubico/x");
 const generator = require("generate-password");
-const mergeWith = require("lodash/fp/mergeWith");
+const mergeWith = require("lodash/mergeWith");
 const util = require("node:util");
 const memoize = require("lodash/memoize");
 
@@ -609,10 +609,15 @@ exports.ResourceMaker = ({
     ])();
 
   const customizerMergeArray = (objValue, srcValue) =>
-    when(
-      () => Array.isArray(objValue),
-      () => srcValue
-    )();
+    pipe([
+      tap((result) => {
+        assert(true);
+      }),
+      when(
+        () => Array.isArray(objValue),
+        () => srcValue
+      ),
+    ])();
 
   const resolveConfig = ({ live, resolvedDependencies, deep = false } = {}) =>
     pipe([
@@ -685,8 +690,15 @@ exports.ResourceMaker = ({
                 meta,
                 namespace,
                 properties: pipe([
-                  () => properties,
-                  mergeWith(customizerMergeArray, spec.propertiesDefault),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  () =>
+                    mergeWith(
+                      properties,
+                      spec.propertiesDefault,
+                      customizerMergeArray
+                    ),
                   tap((params) => {
                     assert(true);
                   }),

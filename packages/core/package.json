@@ -24,7 +24,6 @@
   "license": "ISC",
   "devDependencies": {
     "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0",
     "sinon": "15.0.4"
   },
   "dependencies": {
@@ -43,7 +42,8 @@
     "generate-password": "1.7.0",
     "jose": "4.15.4",
     "js-yaml": "4.1.0",
-    "lodash": "4.17.21",
+    "lodash.memoize": "4.1.2",
+    "lodash.mergewith": "4.6.2",
     "md5-file": "5.0.0",
     "mime-types": "2.1.35",
     "netmask": "2.0.2",
