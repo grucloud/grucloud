@@ -2,7 +2,8 @@ const { tap, pipe, assign, map, get, pick, fork } = require("rubico");
 const { callProp } = require("rubico/x");
 const path = require("path");
 const assert = require("assert");
-const { md5FileBase64 } = require("@grucloud/core/Common");
+const { md5FileBase64 } = require("@grucloud/core/utils/md5");
+
 const GoogleTag = require("../../GoogleTag");
 const { compareGoogle } = require("../../GoogleCommon");
 

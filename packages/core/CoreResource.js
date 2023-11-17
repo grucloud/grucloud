@@ -695,8 +695,8 @@ exports.ResourceMaker = ({
                   }),
                   () =>
                     mergeWith(
+                      { ...spec.propertiesDefault },
                       properties,
-                      spec.propertiesDefault,
                       customizerMergeArray
                     ),
                   tap((params) => {

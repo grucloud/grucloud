@@ -52,10 +52,7 @@ exports.createResources = () => [
         staticWebsite: {
           enabled: true,
           indexDocument: "index.html",
-        },
-        deleteRetentionPolicy: {
-          enabled: true,
-          days: 7,
+          errorDocument404Path: "error.html",
         },
       },
     }),

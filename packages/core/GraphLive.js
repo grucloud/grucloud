@@ -9,7 +9,6 @@ const {
   get,
   not,
   eq,
-  any,
   switchCase,
 } = require("rubico");
 const {

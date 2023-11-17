@@ -34,11 +34,8 @@ const { findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const { tos } = require("@grucloud/core/tos");
-const {
-  convertError,
-  md5FileBase64,
-  md5FileHex,
-} = require("@grucloud/core/Common");
+const { md5FileBase64, md5FileHex } = require("@grucloud/core/utils/md5");
+const { convertError } = require("@grucloud/core/Common");
 const { createS3 } = require("./AwsS3Common");
 
 const tagsSerialize = pipe([

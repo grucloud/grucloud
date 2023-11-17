@@ -1,5 +1,4 @@
 const assert = require("assert");
-const md5File = require("md5-file");
 const {
   pipe,
   tap,
@@ -396,16 +395,6 @@ exports.logError = (prefix, error = {}) => {
   }
   //logger.error(`${prefix} stack:${error.stack}`);
 };
-
-exports.md5FileBase64 = pipe([
-  md5File,
-  (md5) => new Buffer.from(md5, "hex").toString("base64"),
-]);
-
-exports.md5FileHex = pipe([
-  md5File,
-  (md5) => new Buffer.from(md5, "hex").toString("hex"),
-]);
 
 exports.buildTagsObject = ({ name, namespace, config, userTags = {} }) => {
   const {
