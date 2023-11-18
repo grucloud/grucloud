@@ -188,7 +188,7 @@ const GROUPS = [
   ["DAX", "dax"],
   ["DataBrew", "databrew"],
   ["Detective", "detective"],
-  ["DeviceFarm", "devicefarm"],
+  ["DeviceFarm", "devicefarm", "device-farm"],
   ["DirectConnect", "directconnect", "direct-connect"],
   ["DirectoryService", "directory-service"],
   ["DMS", "dms", "database-migration-service"],
