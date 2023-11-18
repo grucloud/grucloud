@@ -200,7 +200,7 @@ const GROUPS = [
   ["ECS", "ecr"],
   ["EFS", "efs"],
   ["EKS", "eks"],
-  ["ElasticBeanstalk", "elasticbeanstalk"],
+  ["ElasticBeanstalk", "elasticbeanstalk", "elastic-beanstalk"],
   ["ElastiCache", "elasticache"],
   ["EMR", "emr"],
   ["EMRContainers", "emr-containers"],
