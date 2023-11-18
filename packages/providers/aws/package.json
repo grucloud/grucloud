@@ -132,6 +132,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-cloudwatch-logs": "3.332.0",
     "@aws-sdk/client-iam": "3.332.0",
     "@aws-sdk/credential-providers": "3.332.0",
     "@aws-sdk/node-config-provider": "3.329.0",
@@ -186,7 +187,6 @@
     "@aws-sdk/client-cloudtrail": "3.332.0",
     "@aws-sdk/client-cloudwatch": "3.332.0",
     "@aws-sdk/client-cloudwatch-events": "3.332.0",
-    "@aws-sdk/client-cloudwatch-logs": "3.332.0",
     "@aws-sdk/client-codeartifact": "3.332.0",
     "@aws-sdk/client-codebuild": "3.332.0",
     "@aws-sdk/client-codecommit": "3.332.0",
