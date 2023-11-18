@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-eks-simple",
-  "version": "12.15.4",
+  "version": "13.0.0-alpha.0",
   "description": "Example for the AWS EKS",
   "main": "iac.js",
   "private": true,
@@ -23,8 +23,8 @@
   "dependencies": {
     "@aws-sdk/client-ec2": "3.332.0",
     "@aws-sdk/client-eks": "3.332.0",
-    "@grucloud/core": "^12.15.4",
-    "@grucloud/provider-aws": "^12.15.4",
+    "@grucloud/core": "^13.0.0-alpha.0",
+    "@grucloud/provider-aws": "^13.0.0-alpha.0",
     "rubico": "1.9.6"
   }
 }

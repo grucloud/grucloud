@@ -1,6 +1,6 @@
 {
   "name": "apprunner-github",
-  "version": "12.15.4",
+  "version": "13.0.0-alpha.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -26,8 +26,8 @@
     "@aws-sdk/client-ecr": "3.332.0",
     "@aws-sdk/client-route-53": "3.332.0",
     "@aws-sdk/client-route-53-domains": "3.332.0",
-    "@grucloud/core": "^12.15.4",
-    "@grucloud/provider-aws": "^12.15.4",
+    "@grucloud/core": "^13.0.0-alpha.0",
+    "@grucloud/provider-aws": "^13.0.0-alpha.0",
     "rubico": "1.9.6"
   }
 }

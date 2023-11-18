@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-google",
-  "version": "12.15.4",
+  "version": "13.0.0-alpha.0",
   "description": "The GruCloud Google Cloud Platform provider",
   "main": "GoogleProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/google",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.15.4",
+    "@grucloud/core": "^13.0.0-alpha.0",
     "chance": "1.1.11",
     "change-case": "4.1.2",
     "deep-object-diff": "1.1.9",

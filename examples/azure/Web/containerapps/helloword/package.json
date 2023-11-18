@@ -1,6 +1,6 @@
 {
   "name": "helloword",
-  "version": "12.15.4",
+  "version": "13.0.0-alpha.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,8 +21,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^12.15.4",
-    "@grucloud/provider-azure": "^12.15.4",
+    "@grucloud/core": "^13.0.0-alpha.0",
+    "@grucloud/provider-azure": "^13.0.0-alpha.0",
     "rubico": "1.9.6"
   }
 }

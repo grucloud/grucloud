@@ -1,6 +1,6 @@
 {
   "name": "cur-simple",
-  "version": "12.15.4",
+  "version": "13.0.0-alpha.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -22,8 +22,8 @@
   "dependencies": {
     "@aws-sdk/client-cost-and-usage-report-service": "3.332.0",
     "@aws-sdk/client-s3": "3.332.0",
-    "@grucloud/core": "^12.15.4",
-    "@grucloud/provider-aws": "^12.15.4",
+    "@grucloud/core": "^13.0.0-alpha.0",
+    "@grucloud/provider-aws": "^13.0.0-alpha.0",
     "rubico": "1.9.6"
   }
 }

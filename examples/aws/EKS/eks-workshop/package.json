@@ -1,6 +1,6 @@
 {
   "name": "eks-workshop",
-  "version": "12.15.4",
+  "version": "13.0.0-alpha.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-amp": "3.332.0",
     "@aws-sdk/client-acm": "3.332.0",
+    "@aws-sdk/client-amp": "3.332.0",
     "@aws-sdk/client-auto-scaling": "3.332.0",
     "@aws-sdk/client-cloud9": "3.332.0",
     "@aws-sdk/client-cloudwatch": "3.332.0",
@@ -39,8 +39,8 @@
     "@aws-sdk/client-secrets-manager": "3.332.0",
     "@aws-sdk/client-sqs": "3.332.0",
     "@aws-sdk/client-ssm": "3.332.0",
-    "@grucloud/core": "^12.15.4",
-    "@grucloud/provider-aws": "^12.15.4",
+    "@grucloud/core": "^13.0.0-alpha.0",
+    "@grucloud/provider-aws": "^13.0.0-alpha.0",
     "rubico": "1.9.6"
   }
 }
