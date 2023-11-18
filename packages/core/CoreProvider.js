@@ -43,10 +43,7 @@ const {
   uniq,
 } = require("rubico/x");
 const memoize = require("lodash/memoize");
-const util = require("node:util");
-const fs = require("fs").promises;
 const { EOL } = require("os");
-
 const logger = require("./logger")({ prefix: "CoreProvider" });
 const { tos } = require("./tos");
 const { createSpec } = require("./SpecDefault");
@@ -1508,7 +1505,7 @@ function CoreProvider({
             ])(),
           (error, resource) => {
             logger.error(`error query resource ${resource.toString()}`);
-            logger.error(util.inspect(error, { depth: 8 }));
+            //logger.error(util.inspect(error, { depth: 8 }));
             error.stack && logger.error(error.stack);
             onStateChange({
               context: contextFromResource({
@@ -1695,11 +1692,10 @@ function CoreProvider({
   const servicesList = ({}) =>
     pipe([getSpecs, pluck("group"), uniq, callProp("join", EOL)])();
 
-  const resourcesList = ({ commandOptions }) =>
+  const resourcesList = () =>
     pipe([
       tap(() => {
         logger.debug(`resourcesList`);
-        assert(commandOptions);
       }),
       getSpecs,
       fork({
@@ -1729,7 +1725,6 @@ title: Resources List
 ---
 List of ${resourcesCount} resources in ${servicesCount} services for provider ${providerName}:\n
 ${content}`,
-      (content) => fs.writeFile(commandOptions.output, content),
     ])();
 
   const toString = () => ({ name: providerName, type: toType() });

@@ -45,7 +45,7 @@ const uploadFileToS3 =
         (command) => client.send(command),
       ]),
       (error) => {
-        logger.error(`uploadFileToS3 ${util.inspect(error)}`);
+        logger.error(`uploadFileToS3 ${error}`);
         return { error };
       }
     )();

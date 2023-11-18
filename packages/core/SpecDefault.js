@@ -11,10 +11,6 @@ const {
   isString,
 } = require("rubico/x");
 
-const logger = require("./logger")({
-  prefix: "Spec",
-});
-
 const { ResourceMaker } = require("./CoreResource");
 
 const buildGroupKey = unless(isEmpty, prepend("::"));

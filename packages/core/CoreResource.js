@@ -35,8 +35,7 @@ const {
   values,
 } = require("rubico/x");
 const generator = require("generate-password");
-const mergeWith = require("lodash/fp/mergeWith");
-const util = require("node:util");
+const mergeWith = require("lodash/mergeWith");
 const memoize = require("lodash/memoize");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -44,7 +43,7 @@ const { tos } = require("./tos");
 const { retryCall } = require("./Retry");
 const { convertError } = require("./Common");
 const { decorateLive } = require("./Client");
-const { deepDefaults } = require("./deepDefault");
+const { deepDefaults } = require("./utils/deepDefault");
 const { multiline } = require("./multiline");
 
 exports.ResourceMaker = ({
@@ -609,10 +608,15 @@ exports.ResourceMaker = ({
     ])();
 
   const customizerMergeArray = (objValue, srcValue) =>
-    when(
-      () => Array.isArray(objValue),
-      () => srcValue
-    )();
+    pipe([
+      tap((result) => {
+        assert(true);
+      }),
+      when(
+        () => Array.isArray(objValue),
+        () => srcValue
+      ),
+    ])();
 
   const resolveConfig = ({ live, resolvedDependencies, deep = false } = {}) =>
     pipe([
@@ -685,8 +689,15 @@ exports.ResourceMaker = ({
                 meta,
                 namespace,
                 properties: pipe([
-                  () => properties,
-                  mergeWith(customizerMergeArray, spec.propertiesDefault),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  () =>
+                    mergeWith(
+                      { ...spec.propertiesDefault },
+                      properties,
+                      customizerMergeArray
+                    ),
                   tap((params) => {
                     assert(true);
                   }),
@@ -850,11 +861,7 @@ exports.ResourceMaker = ({
                   }),
                 ]),
                 (error) => {
-                  logger.error(
-                    `error updating: ${toString()}, error: ${util.inspect(
-                      error
-                    )}`
-                  );
+                  logger.error(`error updating: ${toString()}`);
                   throw error;
                 }
               ),

@@ -9,8 +9,9 @@ const {
   axiosErrorToJSON,
   mapPoolSize,
   convertError,
-  md5FileBase64,
 } = require("@grucloud/core/Common");
+const { md5FileBase64 } = require("@grucloud/core/utils/md5");
+
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");

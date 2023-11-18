@@ -1,0 +1,14 @@
+node_modules/
+.env
+build
+.nyc_output
+coverage
+*.log
+.DS_Store
+test-results.xml
+.DS_Store
+.clinic
+*.bkp
+*.dtmp
+bun.lockb
+package-lock.json

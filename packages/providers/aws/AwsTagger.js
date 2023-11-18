@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap } = require("rubico");
-const { when, defaultsDeep } = require("rubico/x");
+const { when } = require("rubico/x");
 
 exports.createTagger =
   ({

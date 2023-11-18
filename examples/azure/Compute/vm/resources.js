@@ -31,7 +31,6 @@ exports.createResources = () => [
           computerName: "vm",
           adminUsername: "ops",
           linuxConfiguration: {
-            disablePasswordAuthentication: true,
             ssh: {
               publicKeys: [
                 {
@@ -118,7 +117,6 @@ exports.createResources = () => [
             name: "ipconfig1",
           },
         ],
-        enableIPForwarding: true,
         auxiliaryMode: "None",
       },
     }),

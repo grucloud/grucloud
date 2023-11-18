@@ -3,7 +3,7 @@ const { pipe, tap, get, switchCase, eq } = require("rubico");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { retryCall } = require("@grucloud/core/Retry");
-const { shellRun } = require("@grucloud/core/Common");
+const { shellRun } = require("@grucloud/core/utils/shellRun");
 
 const { createTagger } = require("../AwsTagger");
 

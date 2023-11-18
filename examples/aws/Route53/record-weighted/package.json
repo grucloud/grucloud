@@ -20,6 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-route-53": "3.332.0",
     "@grucloud/core": "^12.15.4",
     "@grucloud/provider-aws": "^12.15.4",
     "rubico": "1.9.6"

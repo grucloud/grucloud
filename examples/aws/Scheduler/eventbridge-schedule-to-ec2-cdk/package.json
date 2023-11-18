@@ -20,6 +20,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-cloudwatch": "3.332.0",
+    "@aws-sdk/client-cloudwatch-logs": "3.332.0",
+    "@aws-sdk/client-ec2": "3.332.0",
+    "@aws-sdk/client-scheduler": "3.332.0",
+    "@aws-sdk/client-sqs": "3.332.0",
     "@grucloud/core": "^12.15.4",
     "@grucloud/provider-aws": "^12.15.4",
     "rubico": "1.9.6"

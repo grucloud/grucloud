@@ -1,5 +1,5 @@
 const pkg = require("./package.json");
 module.exports = () => ({
   projectName: pkg.name,
-  includeGroups: ["Appflow", "S3"],
+  includeGroups: ["Appflow", "Redshift", "S3"],
 });

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { switchCase, not, eq, get, pipe, and } = require("rubico");
+const { switchCase, eq, get, pipe, and } = require("rubico");
 const { find } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsTagCheck" });
 const { tos } = require("@grucloud/core/tos");

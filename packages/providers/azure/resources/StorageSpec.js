@@ -13,7 +13,9 @@ const {
 } = require("rubico");
 const { defaultsDeep, callProp, flatten, prepend } = require("rubico/x");
 
-const { md5FileBase64, omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+const { md5FileBase64 } = require("@grucloud/core/utils/md5");
+
 const {
   getSharedAccessKeys,
   createContainerClient,

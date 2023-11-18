@@ -5,8 +5,8 @@ const { snakeCase } = require("change-case");
 const prettier = require("prettier");
 const prompts = require("prompts");
 const { ESLint } = require("eslint");
-const { deepOmit } = require("./deepOmit");
-const { deepOmitDefaults } = require("./deepOmitDefault");
+const { deepOmit } = require("./utils/deepOmit");
+const { deepOmitDefaults } = require("./utils/deepOmitDefault");
 
 const { differenceObject, omitIfEmpty } = require("./Common");
 const {

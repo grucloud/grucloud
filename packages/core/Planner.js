@@ -16,7 +16,6 @@ const {
   and,
   not,
   pick,
-  omit,
 } = require("rubico");
 
 const {
@@ -33,7 +32,6 @@ const {
   isDeepEqual,
   includes,
 } = require("rubico/x");
-const util = require("node:util");
 
 const { logError, convertError } = require("./Common");
 const STATES = {
@@ -80,12 +78,7 @@ exports.mapToGraph = (mapResource) =>
                       if (!dep) {
                         assert(dep, `no dependency for ${resource.name}`);
                       }
-                      assert(
-                        dep.toJSON,
-                        `dependency has no toJSON function: ${util.inspect(
-                          dep
-                        )}`
-                      );
+                      assert(dep.toJSON, `dependency has no toJSON function`);
                     }),
                     (dep) => dep.toJSON(),
                   ])

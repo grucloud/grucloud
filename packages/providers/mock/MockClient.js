@@ -2,7 +2,7 @@ const assert = require("assert");
 const { get } = require("rubico");
 
 const CoreClient = require("@grucloud/core/CoreClient");
-const logger = require("@grucloud/core").logger({ prefix: "MockClient" });
+const logger = require("@grucloud/core/logger")({ prefix: "MockClient" });
 
 module.exports = MockClient = ({
   spec,

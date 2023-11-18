@@ -25,7 +25,6 @@ const {
   isEmpty,
   identity,
   uniq,
-  unless,
   when,
 } = require("rubico/x");
 const os = require("os");
@@ -36,7 +35,8 @@ const yaml = require("js-yaml");
 const logger = require("@grucloud/core/logger")({ prefix: "K8sProvider" });
 const { tos } = require("@grucloud/core/tos");
 const CoreProvider = require("@grucloud/core/CoreProvider");
-const { compare, omitIfEmpty, shellRun } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { shellRun } = require("@grucloud/core/utils/shellRun");
 
 const {
   compareK8s,

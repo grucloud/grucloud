@@ -1,5 +1,4 @@
 const assert = require("assert");
-const md5File = require("md5-file");
 const {
   pipe,
   tap,
@@ -47,10 +46,10 @@ const {
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const Diff = require("diff");
-const shell = require("shelljs");
-const { deepOmit } = require("./deepOmit");
-const { deepPick } = require("./deepPick");
-const { deepDefaults } = require("./deepDefault");
+
+const { deepOmit } = require("./utils/deepOmit");
+const { deepPick } = require("./utils/deepPick");
+const { deepDefaults } = require("./utils/deepDefault");
 
 const logger = require("./logger")({ prefix: "Common" });
 const { tos } = require("./tos");
@@ -396,16 +395,6 @@ exports.logError = (prefix, error = {}) => {
   //logger.error(`${prefix} stack:${error.stack}`);
 };
 
-exports.md5FileBase64 = pipe([
-  md5File,
-  (md5) => new Buffer.from(md5, "hex").toString("base64"),
-]);
-
-exports.md5FileHex = pipe([
-  md5File,
-  (md5) => new Buffer.from(md5, "hex").toString("hex"),
-]);
-
 exports.buildTagsObject = ({ name, namespace, config, userTags = {} }) => {
   const {
     nameKey,
@@ -720,27 +709,6 @@ exports.replaceWithName =
           ])(),
       ]),
     ])();
-
-exports.shellRun = (fullCommand) =>
-  pipe([
-    tap(() => {
-      logger.debug(`shellRun: ${fullCommand}`);
-    }),
-    () =>
-      shell.exec(fullCommand, {
-        silent: true,
-      }),
-    switchCase([
-      eq(get("code"), 0),
-      get("stdout"),
-      (result) => {
-        throw {
-          message: `command '${fullCommand}' failed`,
-          ...result,
-        };
-      },
-    ]),
-  ])();
 
 const flattenObject =
   ({ filterKey = () => true, parentPath = [], accumulator = [] }) =>

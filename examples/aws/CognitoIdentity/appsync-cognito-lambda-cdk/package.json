@@ -20,6 +20,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-appsync": "3.332.0",
+    "@aws-sdk/client-cognito-identity": "3.332.0",
+    "@aws-sdk/client-cognito-identity-provider": "3.332.0",
+    "@aws-sdk/client-lambda": "3.332.0",
+    "@aws-sdk/client-signer": "3.332.0",
     "@grucloud/core": "^12.15.4",
     "@grucloud/provider-aws": "^12.15.4",
     "rubico": "1.9.6"

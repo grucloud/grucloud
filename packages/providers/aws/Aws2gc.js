@@ -25,7 +25,6 @@ const {
   isObject,
   unless,
 } = require("rubico/x");
-const mime = require("mime-types");
 
 const path = require("path");
 const Fs = require("fs");

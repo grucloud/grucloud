@@ -7,12 +7,12 @@
   "scripts": {
     "test": "mocha",
     "graph-target": "gc graph",
-    "graph-live": "gc list --graph",
-    "e2e": "gc d -f && gc d -f && gc l && gc a -f && gc a && gc d -f && gc d && gc l"
+    "graph-live": "gc list --graph"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-ec2": "3.332.0",
     "@grucloud/core": "^12.15.4",
     "@grucloud/provider-aws": "^12.15.4",
     "@grucloud/provider-azure": "^12.15.4",
