@@ -20,6 +20,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-datasync": "3.332.0",
+    "@aws-sdk/client-directory-service": "3.332.0",
+    "@aws-sdk/client-ec2": "3.332.0",
+    "@aws-sdk/client-fsx": "3.332.0",
+    "@aws-sdk/client-s3": "3.332.0",
     "@grucloud/core": "^12.15.4",
     "@grucloud/provider-aws": "^12.15.4",
     "rubico": "1.9.6"

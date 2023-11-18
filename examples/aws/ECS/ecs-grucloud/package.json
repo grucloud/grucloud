@@ -21,6 +21,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-ec2": "3.332.0",
+    "@aws-sdk/client-ecr": "3.332.0",
+    "@aws-sdk/client-efs": "3.332.0",
+    "@aws-sdk/client-kms": "3.332.0",
+    "@aws-sdk/client-s3": "3.332.0",
     "@grucloud/core": "^12.15.4",
     "@grucloud/provider-aws": "^12.15.4",
     "dotenv": "^16.3.1",

@@ -1,5 +1,5 @@
 {
-  "name": "servicecatalog-simple",
+  "name": "service-catalog-simple",
   "version": "12.15.4",
   "private": true,
   "description": "",
@@ -20,6 +20,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-cloudformation": "3.332.0",
+    "@aws-sdk/client-organizations": "3.332.0",
+    "@aws-sdk/client-service-catalog": "3.332.0",
+    "@aws-sdk/client-s3": "3.332.0",
+    "@aws-sdk/client-ssm": "3.332.0",
     "@grucloud/core": "^12.15.4",
     "@grucloud/provider-aws": "^12.15.4",
     "rubico": "1.9.6"

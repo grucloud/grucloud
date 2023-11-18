@@ -21,6 +21,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-cloudwatch-logs": "3.332.0",
+    "@aws-sdk/client-ec2": "3.332.0",
+    "@aws-sdk/client-kms": "3.332.0",
+    "@aws-sdk/client-network-firewall": "3.332.0",
+    "@aws-sdk/client-organizations": "3.332.0",
+    "@aws-sdk/client-ram": "3.332.0",
+    "@aws-sdk/client-route-53": "3.332.0",
+    "@aws-sdk/client-route53resolver": "3.332.0",
+    "@aws-sdk/client-ssm": "3.332.0",
     "@grucloud/core": "^12.15.4",
     "@grucloud/provider-aws": "^12.15.4",
     "rubico": "1.9.6"
