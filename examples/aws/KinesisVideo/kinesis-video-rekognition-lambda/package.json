@@ -20,7 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-kinesisvideo": "3.332.0",
+    "@aws-sdk/client-kinesis-video": "3.332.0",
     "@aws-sdk/client-lambda": "3.332.0",
     "@aws-sdk/client-rekognition": "3.332.0",
     "@aws-sdk/client-s3": "3.332.0",
