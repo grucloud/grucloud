@@ -27,7 +27,6 @@
     "rubico": "1.9.6"
   },
   "devDependencies": {
-    "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0"
+    "mocha": "10.2.0"
   }
 }

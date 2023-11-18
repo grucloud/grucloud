@@ -14,7 +14,6 @@ exports.createResources = () => [
           computerName: "vm",
           adminUsername: "ops",
           linuxConfiguration: {
-            disablePasswordAuthentication: true,
             ssh: {
               publicKeys: [
                 {
