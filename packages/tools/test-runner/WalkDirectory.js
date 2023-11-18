@@ -287,6 +287,10 @@ const ExcludeDirsDefault = [
   "kms-replica-key",
   "config-simple",
   "config-organization-custom-rule",
+  "appmesh-ram",
+  "s3-multiregion-accesspoint",
+  "cloud-wan",
+  "next-sst-grucloud",
 ];
 
 const fileExist = pipe([
@@ -396,7 +400,7 @@ exports.walkDirectory =
       filter(callProp("isDirectory")),
       filterExcludeFiles({ excludeDirs }),
       //filterIncludeDir({ IncludeList }),
-      filterIncludeDir({ IncludeList: IncludeListExpensive }),
+      //filterIncludeDir({ IncludeList: IncludeListExpensive }),
       flatMap(
         pipe([get("name"), walkDirectoryUnit({ excludeDirs, directory })])
       ),
