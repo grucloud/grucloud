@@ -3,7 +3,7 @@ const { pipe, tap, get, eq, switchCase } = require("rubico");
 
 const shell = require("shelljs");
 
-const logger = require("./logger")({ prefix: "Common" });
+const logger = require("../logger")({ prefix: "Common" });
 
 exports.shellRun = (fullCommand) =>
   pipe([
