@@ -20,7 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-application-autoscaling": "3.332.0",
+    "@aws-sdk/client-application-auto-scaling": "3.332.0",
     "@aws-sdk/client-cloudwatch": "3.332.0",
     "@aws-sdk/client-ec2": "3.332.0",
     "@aws-sdk/client-ecr": "3.332.0",

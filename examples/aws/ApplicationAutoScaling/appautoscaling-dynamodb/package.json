@@ -20,7 +20,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-application-autoscaling": "3.332.0",
     "@aws-sdk/client-dynamodb": "3.332.0",
     "@aws-sdk/client-application-auto-scaling": "3.332.0",
     "@grucloud/core": "^12.15.4",
