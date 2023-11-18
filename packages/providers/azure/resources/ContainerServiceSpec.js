@@ -1,19 +1,7 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  map,
-  pick,
-  omit,
-  assign,
-  get,
-  fork,
-  not,
-  eq,
-} = require("rubico");
+const { pipe, tap, map, pick, omit, assign, get, fork } = require("rubico");
 const { defaultsDeep, when, callProp } = require("rubico/x");
-const { compare, omitIfEmpty, shellRun } = require("@grucloud/core/Common");
-const { deepPick } = require("@grucloud/core/deepPick");
+const { shellRun } = require("@grucloud/core/utils/shellRun");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ContainerService" });
 

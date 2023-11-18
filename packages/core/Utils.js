@@ -1,8 +1,5 @@
 const assert = require("assert");
-const { isEmpty, isObject, isDeepEqual } = require("rubico/x");
-const { get, map, pipe, filter } = require("rubico");
-const logger = require("./logger")({ prefix: "MocCloud" });
-const { tos } = require("./tos");
+const { isEmpty } = require("rubico/x");
 
 exports.checkEnv = (mandatoryEnv = []) => {
   const missingEnv = mandatoryEnv.filter((env) => !process.env[env]);

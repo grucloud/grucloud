@@ -38,7 +38,6 @@ const {
   values,
 } = require("rubico/x");
 const { v4: uuidv4 } = require("uuid");
-const util = require("node:util");
 const Diff = require("diff");
 const { fromIni } = require("@aws-sdk/credential-providers");
 
@@ -1104,9 +1103,7 @@ exports.destroyNetworkInterfaces =
                 pipe([
                   tap(() => {
                     logger.info(
-                      `deleteNetworkInterface shouldRetryOnException: ${name}, error: ${util.inspect(
-                        error
-                      )}`
+                      `deleteNetworkInterface shouldRetryOnException: ${name} ${error}`
                     );
                   }),
                   () => error,

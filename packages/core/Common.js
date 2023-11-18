@@ -46,7 +46,6 @@ const {
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const Diff = require("diff");
-const shell = require("shelljs");
 
 const { deepOmit } = require("./utils/deepOmit");
 const { deepPick } = require("./utils/deepPick");
@@ -710,27 +709,6 @@ exports.replaceWithName =
           ])(),
       ]),
     ])();
-
-exports.shellRun = (fullCommand) =>
-  pipe([
-    tap(() => {
-      logger.debug(`shellRun: ${fullCommand}`);
-    }),
-    () =>
-      shell.exec(fullCommand, {
-        silent: true,
-      }),
-    switchCase([
-      eq(get("code"), 0),
-      get("stdout"),
-      (result) => {
-        throw {
-          message: `command '${fullCommand}' failed`,
-          ...result,
-        };
-      },
-    ]),
-  ])();
 
 const flattenObject =
   ({ filterKey = () => true, parentPath = [], accumulator = [] }) =>

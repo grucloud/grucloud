@@ -10,7 +10,8 @@
   "homepage": "https://www.grucloud.com",
   "scripts": {
     "test": "node --env-file ../../secrets/default.env  node_modules/mocha/bin/_mocha  './cli/**/*.test.js'  './test/**/*.test.js'",
-    "coverage": "npx nyc npm run test"
+    "coverage": "npx nyc npm run test",
+    "build": "bun build ./ProviderGru.js --outdir ./build"
   },
   "keywords": [
     "cloud",

@@ -36,7 +36,6 @@ const {
 } = require("rubico/x");
 const generator = require("generate-password");
 const mergeWith = require("lodash/mergeWith");
-const util = require("node:util");
 const memoize = require("lodash/memoize");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -862,11 +861,7 @@ exports.ResourceMaker = ({
                   }),
                 ]),
                 (error) => {
-                  logger.error(
-                    `error updating: ${toString()}, error: ${util.inspect(
-                      error
-                    )}`
-                  );
+                  logger.error(`error updating: ${toString()}`);
                   throw error;
                 }
               ),
