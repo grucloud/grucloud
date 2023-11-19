@@ -100,7 +100,7 @@ exports.createResources = () => [
         },
         FunctionName: "sam-app-LambdaProxy-3WUHNeLsP7OO",
         Handler: "app.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({

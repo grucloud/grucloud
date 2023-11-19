@@ -168,6 +168,10 @@ exports.findDependenciesRole = () =>
 //TODO retry listAttachedRolePolicies NoSuchEntity
 const listAttachedRolePolicies = ({ endpoint }) =>
   pipe([
+    tap(({ RoleName }) => {
+      assert(RoleName);
+      //logger.debug(`listAttachedRolePolicies: ${RoleName}`);
+    }),
     ({ RoleName }) => ({
       RoleName,
       MaxItems: 1e3,
@@ -176,7 +180,7 @@ const listAttachedRolePolicies = ({ endpoint }) =>
     get("AttachedPolicies"),
     sortPolicies,
     tap((policies) => {
-      //logger.debug(`getList listAttachedRolePolicies: ${tos(policies)}`);
+      //logger.debug(`listAttachedRolePolicies: ${tos(policies)}`);
     }),
   ]);
 
@@ -297,6 +301,7 @@ exports.IAMRole = ({ spec, config }) => {
         ]),
       ]),
     ]),
+    ignoreErrorCodes: ["NoSuchEntityException"],
     decorate,
   });
 

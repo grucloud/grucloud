@@ -97,7 +97,7 @@ exports.createResources = () => [
           "Lambda function that will recieve CloudWatch events and will trigger CodeBuild build job.",
         FunctionName: "TextRecognitionLambdaFunction",
         Handler: "app.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
         Timeout: 250,
       },
     }),

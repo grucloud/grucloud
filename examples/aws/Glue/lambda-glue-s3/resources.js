@@ -244,7 +244,7 @@ exports.createResources = () => [
         FunctionName:
           "CdkLambdaGlueS3Stack-CustomS3AutoDeleteObjectsCust-wGB7tRJC8sgA",
         Handler: "__entrypoint__.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
         Timeout: 900,
       },
     }),

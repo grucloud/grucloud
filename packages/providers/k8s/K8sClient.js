@@ -253,7 +253,7 @@ module.exports = K8sClient = ({
           retryCallOnError({
             name: `create ${type}/${name} path: ${fullPath}`,
             fn: () => axios().post(fullPath, payload),
-            config: { ...config, repeatCount: 0 },
+            config,
             shouldRetryOnException: ({ error }) =>
               pipe([
                 () => error,
@@ -318,7 +318,7 @@ module.exports = K8sClient = ({
           retryCallOnError({
             name: `update ${type}/${name} path: ${fullPath}`,
             fn: () => axios().put(fullPath, data),
-            config: { ...config, repeatCount: 0 },
+            config,
           }),
         tap((result) => {
           logger.info(`updated ${type}/${name}, status: ${result.status}`);

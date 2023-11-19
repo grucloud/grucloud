@@ -140,15 +140,29 @@ const decorate = ({ endpoint }) =>
   pipe([
     pick(["Configuration", "Code", "Tags"]),
     assign({
-      Configuration: pipe([
-        get("Configuration"),
-        unless(
-          pipe([get("Layers"), isEmpty]),
-          assign({
-            Layers: pipe([get("Layers"), pluck("Arn")]),
-          })
-        ),
-      ]),
+      Configuration: ({ Configuration }) =>
+        pipe([
+          () => Configuration,
+          unless(
+            pipe([get("Layers"), isEmpty]),
+            assign({
+              Layers: pipe([get("Layers"), pluck("Arn")]),
+            })
+          ),
+          when(
+            pipe([
+              get("LoggingConfig"),
+              and([
+                eq(get("LogFormat"), "Text"),
+                eq(
+                  get("LogGroup"),
+                  `/aws/lambda/${Configuration.FunctionName}`
+                ),
+              ]),
+            ]),
+            omit(["LoggingConfig"])
+          ),
+        ])(),
       EventInvokeConfig: tryCatch(
         pipe([
           get("Configuration"),

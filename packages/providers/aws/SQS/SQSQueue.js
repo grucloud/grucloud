@@ -172,7 +172,6 @@ exports.SQSQueue = () => ({
         ]),
       }),
     ]),
-    //config: { retryDelay: 65e3, retryCount: 2 },
     configIsUp: { repeatCount: 1, repeatDelay: 60e3 },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#updateQueue-property

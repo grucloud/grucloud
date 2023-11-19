@@ -35,7 +35,7 @@ const {
   values,
 } = require("rubico/x");
 const generator = require("generate-password");
-const mergeWith = require("lodash/mergeWith");
+const mergeWith = require("lodash/fp/mergeWith");
 const memoize = require("lodash/memoize");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -692,12 +692,8 @@ exports.ResourceMaker = ({
                   tap((params) => {
                     assert(true);
                   }),
-                  () =>
-                    mergeWith(
-                      { ...spec.propertiesDefault },
-                      properties,
-                      customizerMergeArray
-                    ),
+                  () => properties,
+                  mergeWith(customizerMergeArray, spec.propertiesDefault),
                   tap((params) => {
                     assert(true);
                   }),

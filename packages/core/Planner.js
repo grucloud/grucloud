@@ -430,7 +430,7 @@ exports.Planner = ({
       entry.state = STATES.DONE;
     } catch (error) {
       entry.error = convertError({ error });
-      logger.error(`runItem error with: ${tos(entry.item.resource)}`);
+      //logger.error(`runItem error with: ${tos(entry.item.resource)}`);
       logError("runItem", error);
       onStateChange({
         resource: entry.item.resource,

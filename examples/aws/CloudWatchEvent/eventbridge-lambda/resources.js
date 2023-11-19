@@ -65,7 +65,7 @@ exports.createResources = () => [
       Configuration: {
         FunctionName: "sam-app-ConsumerFunction-oP2n9mZPow7c",
         Handler: "app.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({

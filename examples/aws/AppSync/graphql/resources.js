@@ -217,7 +217,7 @@ exports.createResources = () => [
         FunctionName: "lambda-fns",
         Handler: "main.handler",
         MemorySize: 1024,
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({

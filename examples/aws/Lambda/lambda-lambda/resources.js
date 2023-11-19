@@ -118,7 +118,7 @@ exports.createResources = () => [
       Configuration: {
         FunctionName: "sam-app-OnFailureFunction-IFj57VVcPFjr",
         Handler: "app.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({
@@ -132,7 +132,7 @@ exports.createResources = () => [
       Configuration: {
         FunctionName: "sam-app-OnSuccessFunction-MZzIdxTUTmet",
         Handler: "app.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({
@@ -146,7 +146,7 @@ exports.createResources = () => [
       Configuration: {
         FunctionName: "sam-app-ProducerFunction-rCp6FupDywg8",
         Handler: "app.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
       EventInvokeConfig: {
         DestinationConfig: {

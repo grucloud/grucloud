@@ -86,7 +86,7 @@ exports.createResources = () => [
         },
         FunctionName: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
         Handler: "app.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({

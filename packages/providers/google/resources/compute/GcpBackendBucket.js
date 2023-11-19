@@ -45,7 +45,7 @@ exports.GcpBackendBucket = ({ spec, config }) => {
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${projectId}/global/backendBuckets`,
-    config: { ...config, repeatCount: 1 },
+    config,
     configDefault,
     isInstanceUp,
     findDependencies,
