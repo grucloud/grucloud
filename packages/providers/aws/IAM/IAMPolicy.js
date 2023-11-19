@@ -23,7 +23,6 @@ const {
   last,
   when,
 } = require("rubico/x");
-const moment = require("moment");
 const logger = require("@grucloud/core/logger")({ prefix: "IamPolicy" });
 const { tos } = require("@grucloud/core/tos");
 const { buildTags, findNamespaceInTags, isOurMinion } = require("../AwsCommon");
@@ -137,7 +136,6 @@ exports.IAMPolicy = ({ spec, config }) => {
         logger.debug(`getList: ${Policies.length}`);
       }),
       get("Policies"),
-      filter((policy) => moment(policy.CreateDate).isAfter("2020-09-11")),
       tap((policies) => {
         logger.debug(`getList: ${policies.length}`);
       }),

@@ -30,7 +30,6 @@ const {
   first,
   append,
 } = require("rubico/x");
-const moment = require("moment");
 const querystring = require("querystring");
 const logger = require("@grucloud/core/logger")({ prefix: "IamRole" });
 const { buildTags, removeRoleFromInstanceProfile } = require("../AwsCommon");
@@ -291,7 +290,7 @@ exports.IAMRole = ({ spec, config }) => {
     getParam: "Roles",
     filterResource: pipe([
       and([
-        ({ CreateDate }) => moment(CreateDate).isAfter("2021-09-11"),
+        ({ CreateDate }) => new Date(CreateDate) > new Date("2021-09-11"),
         pipe([
           get("RoleName"),
           or([
