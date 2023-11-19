@@ -1,6 +1,6 @@
 {
   "name": "apigw-http-api-lambda-rds-proxy",
-  "version": "13.0.3-alpha.0",
+  "version": "13.0.4-alpha.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -23,8 +23,8 @@
     "@aws-sdk/client-ec2": "3.332.0",
     "@aws-sdk/client-rds": "3.332.0",
     "@aws-sdk/client-secrets-manager": "3.332.0",
-    "@grucloud/core": "^13.0.3-alpha.0",
-    "@grucloud/provider-aws": "^13.0.3-alpha.0",
+    "@grucloud/core": "^13.0.4-alpha.0",
+    "@grucloud/provider-aws": "^13.0.4-alpha.0",
     "rubico": "1.9.6"
   }
 }

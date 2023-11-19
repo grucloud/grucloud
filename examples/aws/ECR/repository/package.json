@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-ecr-repository",
-  "version": "13.0.3-alpha.0",
+  "version": "13.0.4-alpha.0",
   "description": "AWS ECR Repository",
   "private": true,
   "main": "iac.js",
@@ -21,8 +21,8 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-ecr": "3.332.0",
-    "@grucloud/core": "^13.0.3-alpha.0",
-    "@grucloud/provider-aws": "^13.0.3-alpha.0",
+    "@grucloud/core": "^13.0.4-alpha.0",
+    "@grucloud/provider-aws": "^13.0.4-alpha.0",
     "rubico": "1.9.6"
   }
 }

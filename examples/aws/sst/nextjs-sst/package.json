@@ -1,6 +1,6 @@
 {
   "name": "nextjs-sst",
-  "version": "12.14.1",
+  "version": "13.0.4-alpha.0",
   "private": true,
   "scripts": {
     "dev": "sst bind next dev",
