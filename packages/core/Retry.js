@@ -1,28 +1,10 @@
 const assert = require("assert");
-const { of, iif, throwError } = require("rxjs");
-const {
-  pipe,
-  tryCatch,
-  switchCase,
-  or,
-  tap,
-  not,
-  eq,
-  get,
-  and,
-} = require("rubico");
+const { pipe, or, get } = require("rubico");
 const { identity, isIn } = require("rubico/x");
-const {
-  retryWhen,
-  repeatWhen,
-  mergeMap,
-  concatMap,
-  take,
-  delay,
-  catchError,
-} = require("rxjs/operators");
 const logger = require("./logger")({ prefix: "Retry" });
 const { convertError } = require("./Common");
+
+const sleep = (waitMs) => new Promise((resolve) => setTimeout(resolve, waitMs));
 
 const retryCall = async ({
   name = "",
@@ -48,86 +30,42 @@ const retryCall = async ({
   // logger.debug(
   //   `retryCall ${name}, retryCount: ${retryCount}, retryDelay: ${retryDelay}, repeatCount: ${repeatCount}, repeatDelay ${repeatDelay}`
   // );
-  return of({})
-    .pipe(
-      mergeMap(
-        tryCatch(
-          pipe([
-            () => fn(),
-            switchCase([
-              isExpectedResult,
-              pipe([
-                tap((result) => {
-                  //logger.info(`retryCall ${name}, expected result`);
-                }),
-                identity,
-              ]),
-              pipe([
-                tap((result) => {
-                  logger.info(`${name} not an expected result`);
-                }),
-                (result) => {
-                  throw {
-                    code: 503,
-                    type: "retryCall",
-                    message: `${name}: not expected result`,
-                    result,
-                  };
-                },
-              ]),
-            ]),
-          ]),
-          switchCase([
-            isExpectedException,
-            pipe([
-              tap((error) => {
-                logger.info(`${name} expected exception`);
-              }),
-              identity,
-            ]),
-            pipe([
-              tap((error) => {
-                //logger.error(`${name} not expected exception, ${error.stack}`);
-              }),
-              (error) => {
-                throw error;
-              },
-            ]),
-          ])
-        )
-      ),
-      repeatWhen((result) =>
-        result.pipe(delay(repeatDelay), take(repeatCount))
-      ),
-      retryWhen((errors) =>
-        errors.pipe(
-          concatMap((error, i) => {
-            logger.info(`retryCall ${name}, attempt ${i}/${retryCount}`);
-            const hasMaxCount = i >= retryCount;
-            return iif(
-              () =>
-                hasMaxCount ||
-                (!shouldRetryOnException({ error, name }) && error.code != 503),
-              throwError({ hasMaxCount, error }),
-              of(error).pipe(delay(retryDelay))
-            );
-          })
-        )
-      ),
-      catchError(
-        pipe([
-          switchCase([
-            and([not(get("hasMaxCount")), eq(get("error.code"), 503)]),
-            ({ error }) => of(error.result),
-            ({ error }) => {
-              return throwError(error);
-            },
-          ]),
-        ])
-      )
-    )
-    .toPromise();
+  let _error;
+  for (let index = 0; index < retryCount; index++) {
+    //console.log("retryCall", name, index, "/", retryCount);
+    try {
+      const res = await fn();
+      if (isExpectedResult(res)) {
+        //console.log("retryCall isExpectedResult");
+        return res;
+      } else {
+        //console.log("retryCall not Expected Result, retry");
+      }
+    } catch (error) {
+      _error = error;
+      if (isExpectedException(error)) {
+        return;
+      }
+      if (!shouldRetryOnException({ error, name })) {
+        //console.log("retryCall shouldRetryOnException ko");
+        throw error;
+      }
+    }
+
+    await sleep(retryDelay);
+  }
+
+  if (_error) {
+    throw _error;
+  } else {
+    throw {
+      code: 503,
+      type: "retryCall",
+      message: `${name}: not expected result`,
+    };
+  }
 };
+
 exports.retryCall = retryCall;
 
 const shouldRetryOnExceptionDefault = pipe([
