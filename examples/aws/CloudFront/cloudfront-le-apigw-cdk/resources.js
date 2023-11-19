@@ -259,7 +259,7 @@ exports.createResources = () => [
         FunctionName:
           "CloudfrontLeApigwCdkStack-LambdaEdge6A7A1843-EWePh7YaUkoR",
         Handler: "index.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({

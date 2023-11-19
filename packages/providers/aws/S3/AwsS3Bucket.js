@@ -736,12 +736,23 @@ exports.AwsS3Bucket = ({ spec, config }) => {
               config: { retryCount: 12, retryDelay: 5e3 },
             });
           }
-
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketPolicy-property
           if (Policy) {
-            await s3().putBucketPolicy({
-              Bucket,
-              Policy: JSON.stringify(Policy),
+            await retryCall({
+              name: `putBucketPolicy ${Bucket}`,
+              fn: pipe([
+                () => ({
+                  Bucket,
+                  Policy: JSON.stringify(Policy),
+                }),
+                s3().putBucketPolicy,
+              ]),
+              shouldRetryOnException: ({ error, name }) =>
+                pipe([
+                  () => ["Invalid principal in policy"],
+                  any(isIn(error.message)),
+                ])(),
+              config: { retryCount: 5, retryDelay: 2e3 },
             });
           }
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketReplication-property

@@ -81,7 +81,7 @@ exports.createResources = () => [
       Configuration: {
         FunctionName: "sam-app-ApplicationFunction-LL5g6gqeQgsc",
         Handler: "app.lambdaHandler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
         TracingConfig: {
           Mode: "Active",
         },

@@ -59,7 +59,7 @@ exports.createResources = () => [
         },
         FunctionName: "sam-app-QueuePublisherFunction-3oAO6gZ7WBN5",
         Handler: "app.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({

@@ -152,7 +152,7 @@ exports.createResources = () => [
       Configuration: {
         FunctionName: "sam-app-ExampleLambdaFunction-EE7UB1WbNVKM",
         Handler: "app.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({

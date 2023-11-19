@@ -748,6 +748,7 @@ const AwsClient =
       ({ name, live, lives }) =>
         pipe([
           tap(() => {
+            // logger.debug(`destroy ${type}, ${name}`);
             assert(isFunction(pickId), `no pickId for destroy ${groupType}`);
             assert(method);
             assert(ignoreError);

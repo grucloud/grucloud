@@ -97,8 +97,6 @@ const deleteRegistryPolicy = ({ endpoint }) =>
               }),
             ]),
             config: {
-              repeatCount: 1,
-              repeatDelay: 5e3,
               retryCount: 60,
               retryDelay: 2e3,
             },

@@ -59,7 +59,7 @@ exports.createResources = () => [
         },
         FunctionName: "sam-app-TopicPublisherFunction-3UFzSVBp2h7r",
         Handler: "app.handler",
-        Runtime: "nodejs12.x",
+        Runtime: "nodejs18.x",
       },
     }),
     dependencies: ({}) => ({
