@@ -22,7 +22,6 @@ const {
   when,
   isIn,
 } = require("rubico/x");
-const moment = require("moment");
 const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({
@@ -313,7 +312,7 @@ exports.getList = {
   transformListPost: () =>
     pipe([
       callProp("sort", (a, b) =>
-        moment(b.CreationDate).isAfter(a.CreationDate) ? 1 : -1
+        new Date(b.CreationDate) > new Date(a.CreationDate) ? 1 : -1
       ),
     ]),
   decorate: ({ getById }) => pipe([getById]),
