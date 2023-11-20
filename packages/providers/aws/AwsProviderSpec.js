@@ -240,7 +240,7 @@ const GROUPS = [
   ["LicenseManager", "license-manager"],
   ["Lightsail", "lightsail"],
   ["Location", "amazonlocationservice", "location"],
-  ["Macie", "macie", "macie2"],
+  ["Macie2", "macie", "macie2"],
   ["MediaConnect", "mediaconnect"],
   ["MediaConvert", "mediaconvert"],
   ["MediaLive", "medialive"],
@@ -292,7 +292,7 @@ const GROUPS = [
   ["ServiceCatalog", "servicecatalog", "service-catalog"],
   ["Signer", "signer"],
   ["Shield", "shield"],
-  ["StepFunctions", "sfn"],
+  ["StepFunctions", "stepfunctions", "sfn"],
   ["SNS", "sns"],
   ["SSOAdmin", "identity-center", "sso-admin"],
   ["SQS", "sqs"],
@@ -372,6 +372,9 @@ const doExcludeGroups = ({
       filter(isIn([...defaultIncludes, ...includeGroups])),
     ]),
     filterOut(isIn(excludeGroups)),
+    tap((params) => {
+      assert(true);
+    }),
   ]);
 
 const excludeResources = ({ config }) =>
