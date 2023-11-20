@@ -5072,6 +5072,7 @@
             "vpn",
             "waf",
             "waf-regional",
+            "workspaces",
             "xray"
         ]
     },

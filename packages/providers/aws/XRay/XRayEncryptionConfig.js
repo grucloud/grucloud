@@ -72,6 +72,9 @@ exports.XRayEncryptionConfig = () => ({
     method: "putEncryptionConfig",
     pickId: pipe([() => ({ Type: "NONE" })]),
     isInstanceDown: isInstanceUp,
+    shouldRetryOnExceptionMessages: [
+      "A previous change is currently being applied",
+    ],
   },
   getByName: getByNameCore,
   configDefault: ({

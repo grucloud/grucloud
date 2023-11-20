@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 810 resources in 166 services for provider aws:
+List of 820 resources in 166 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./AccessAnalyzer/Analyzer.md), [ArchiveRule](./AccessAnalyzer/ArchiveRule.md)
@@ -327,7 +327,7 @@ List of 810 resources in 166 services for provider aws:
 * Transfer: 
 [Access](./Transfer/Access.md), [Server](./Transfer/Server.md), [User](./Transfer/User.md), [Workflow](./Transfer/Workflow.md)
 * VpcLattice: 
-[AccessLogSubscription](./VpcLattice/AccessLogSubscription.md), [AuthPolicy](./VpcLattice/AuthPolicy.md), [Listener](./VpcLattice/Listener.md), [Rule](./VpcLattice/Rule.md), [ResourcePolicy](./VpcLattice/ResourcePolicy.md), [Service](./VpcLattice/Service.md), [ServiceNetwork](./VpcLattice/ServiceNetwork.md), [ServiceNetworkServiceAssociation](./VpcLattice/ServiceNetworkServiceAssociation.md), [ServiceNetworkVpcAssociation](./VpcLattice/ServiceNetworkVpcAssociation.md), [TargetGroup](./VpcLattice/TargetGroup.md)
+[AccessLogSubscription](./VpcLattice/AccessLogSubscription.md), [AuthPolicy](./VpcLattice/AuthPolicy.md), [Listener](./VpcLattice/Listener.md), [Rule](./VpcLattice/Rule.md), [ResourcePolicy](./VpcLattice/ResourcePolicy.md), [Service](./VpcLattice/Service.md), [ServiceNetwork](./VpcLattice/ServiceNetwork.md), [ServiceNetworkServiceAssociation](./VpcLattice/ServiceNetworkServiceAssociation.md), [ServiceNetworkVpcAssociation](./VpcLattice/ServiceNetworkVpcAssociation.md), [TargetGroup](./VpcLattice/TargetGroup.md), [AccessLogSubscription](./VpcLattice/AccessLogSubscription.md), [AuthPolicy](./VpcLattice/AuthPolicy.md), [Listener](./VpcLattice/Listener.md), [Rule](./VpcLattice/Rule.md), [ResourcePolicy](./VpcLattice/ResourcePolicy.md), [Service](./VpcLattice/Service.md), [ServiceNetwork](./VpcLattice/ServiceNetwork.md), [ServiceNetworkServiceAssociation](./VpcLattice/ServiceNetworkServiceAssociation.md), [ServiceNetworkVpcAssociation](./VpcLattice/ServiceNetworkVpcAssociation.md), [TargetGroup](./VpcLattice/TargetGroup.md)
 * WAFv2: 
 [IPSet](./WAFv2/IPSet.md), [LoggingConfiguration](./WAFv2/LoggingConfiguration.md), [RuleGroup](./WAFv2/RuleGroup.md), [RegexPatternSet](./WAFv2/RegexPatternSet.md), [WebACL](./WAFv2/WebACL.md), [WebACLCloudFront](./WAFv2/WebACLCloudFront.md), [WebACLAssociation](./WAFv2/WebACLAssociation.md)
 * WorkSpaces: 
