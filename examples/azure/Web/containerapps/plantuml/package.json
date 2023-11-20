@@ -1,6 +1,6 @@
 {
   "name": "plantuml",
-  "version": "13.0.9-alpha.0",
+  "version": "13.0.11-alpha.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -22,7 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^13.0.9-alpha.0",
-    "@grucloud/provider-azure": "^13.0.9-alpha.0",
+    "@grucloud/provider-azure": "^13.0.11-alpha.0",
     "rubico": "1.9.6"
   }
 }

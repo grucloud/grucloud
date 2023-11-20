@@ -1,6 +1,6 @@
 {
   "name": "txt-record",
-  "version": "13.0.10-alpha.0",
+  "version": "13.0.11-alpha.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@aws-sdk/client-route-53": "3.332.0",
     "@grucloud/core": "^13.0.9-alpha.0",
-    "@grucloud/provider-aws": "^13.0.10-alpha.0",
+    "@grucloud/provider-aws": "^13.0.11-alpha.0",
     "rubico": "1.9.6"
   }
 }
