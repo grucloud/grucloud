@@ -5,9 +5,9 @@ const { formatContent } = require("../generatorUtils");
 describe("generatorUtils", function () {
   it("formatContent exp1", () =>
     pipe([
-      formatContent({ content: "const a = 1;a++\n" }),
+      formatContent({ content: "console.log('toto');const a=1;\n" }),
       (result) => {
-        assert.equal(result, "const a = 1;\na++;\n");
+        assert.equal(result, 'console.log("toto");\n');
       },
     ])());
   it("formatContent remove unused variable", () =>

@@ -868,7 +868,7 @@ const formatContent = ({ content }) =>
             }),
             () => content,
           ]),
-          get("source", ""),
+          get("output", content),
         ]),
         tryCatch(
           (output) => prettier.format(output, { parser: "babel" }),
