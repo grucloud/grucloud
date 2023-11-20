@@ -140,7 +140,6 @@
     "@grucloud/core": "^13.0.4-alpha.0",
     "adm-zip": "git+https://github.com/FredericHeem/adm-zip.git#156162dfddf35545e23be28868fd7c52e04bb679",
     "axios": "1.4.0",
-    "chance": "1.1.11",
     "change-case": "4.1.2",
     "cidr-tools": "5.1.4",
     "deep-object-diff": "1.1.9",
@@ -148,7 +147,6 @@
     "js-yaml": "4.1.0",
     "lodash": "4.17.21",
     "mime-types": "2.1.35",
-    "prettier": "2.8.8",
     "rubico": "1.9.7",
     "shelljs": "0.8.5",
     "uuid": "9.0.0"
@@ -324,6 +322,7 @@
     "@aws-sdk/client-workspaces": "3.332.0",
     "@aws-sdk/client-workspaces-web": "3.332.0",
     "@aws-sdk/client-xray": "3.332.0",
+    "chance": "1.1.11",
     "dotenv": "16.0.3",
     "dotenv-cli": "7.2.1",
     "mocha": "10.2.0"
