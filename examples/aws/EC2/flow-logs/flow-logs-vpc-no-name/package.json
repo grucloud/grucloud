@@ -1,6 +1,6 @@
 {
   "name": "flow-logs-vpc-no-name",
-  "version": "13.0.8-alpha.0",
+  "version": "13.0.9-alpha.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,8 +21,8 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-ec2": "3.332.0",
-    "@grucloud/core": "^13.0.8-alpha.0",
-    "@grucloud/provider-aws": "^13.0.8-alpha.0",
+    "@grucloud/core": "^13.0.9-alpha.0",
+    "@grucloud/provider-aws": "^13.0.9-alpha.0",
     "rubico": "1.9.6"
   }
 }
