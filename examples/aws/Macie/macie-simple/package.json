@@ -20,6 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-macie2": "3.332.0",
     "@aws-sdk/client-organizations": "3.332.0",
     "@aws-sdk/client-s3": "3.332.0",
     "@grucloud/core": "^13.0.6-alpha.0",

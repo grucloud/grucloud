@@ -73,7 +73,6 @@ const walkDirectory =
 
 const findConfig = ({ dirent, packageJson }) => {
   let _content;
-  let _packageJson;
   return pipe([
     () => ["config.js", "primary/config.js"],
     any(
@@ -96,9 +95,12 @@ const findConfig = ({ dirent, packageJson }) => {
                 switchCase([
                   isEmpty,
                   pipe([
-                    tap(() => {
-                      console.log("cannot find ", group, "in", dirent.path);
-                    }),
+                    tap.if(
+                      () => group != "IAM",
+                      () => {
+                        console.log("cannot find ", group, "in", dirent.path);
+                      }
+                    ),
                     () => acc,
                   ]),
                   pipe([
@@ -129,7 +131,7 @@ const findConfig = ({ dirent, packageJson }) => {
             pipe([
               () => Path.resolve(dirent.path, "package.json"),
               tap((file) => {
-                console.log(file);
+                //console.log(file);
               }),
               tryCatch(
                 (file) => fs.writeFile(file, newPackageJson),

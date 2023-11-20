@@ -20,9 +20,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.332.0",
-    "@aws-sdk/client-cloudwatch": "3.332.0",
     "@aws-sdk/client-cloudwatch-logs": "3.332.0",
+    "@aws-sdk/client-cloudwatch": "3.332.0",
+    "@aws-sdk/client-cloudfront": "3.332.0",
     "@aws-sdk/client-kms": "3.332.0",
     "@aws-sdk/client-lambda": "3.332.0",
     "@aws-sdk/client-mediapackage": "3.332.0",

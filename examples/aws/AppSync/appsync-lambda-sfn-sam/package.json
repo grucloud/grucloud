@@ -23,6 +23,7 @@
     "@aws-sdk/client-appsync": "3.332.0",
     "@aws-sdk/client-dynamodb": "3.332.0",
     "@aws-sdk/client-lambda": "3.332.0",
+    "@aws-sdk/client-sfn": "3.332.0",
     "@aws-sdk/client-sns": "3.332.0",
     "@grucloud/core": "^13.0.6-alpha.0",
     "@grucloud/provider-aws": "^13.0.6-alpha.0",

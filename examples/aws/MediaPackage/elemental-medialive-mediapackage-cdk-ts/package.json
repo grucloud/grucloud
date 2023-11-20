@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-cloudwatch": "3.332.0",
     "@aws-sdk/client-cloudwatch-logs": "3.332.0",
+    "@aws-sdk/client-cloudwatch": "3.332.0",
     "@aws-sdk/client-kms": "3.332.0",
     "@aws-sdk/client-medialive": "3.332.0",
     "@aws-sdk/client-mediapackage": "3.332.0",

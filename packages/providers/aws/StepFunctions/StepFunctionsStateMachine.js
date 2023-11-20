@@ -24,7 +24,6 @@ const {
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, replaceEnv } = require("../AwsCommon");
-const { tagResource, untagResource } = require("./StepFunctionsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { cloneDeepWith } = require("lodash/fp");
 
