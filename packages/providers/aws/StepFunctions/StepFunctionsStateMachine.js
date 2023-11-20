@@ -25,7 +25,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, replaceEnv } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { cloneDeepWith } = require("lodash/fp");
+const { deepMap } = require("@grucloud/core/deepMap");
 
 const { flattenObject } = require("@grucloud/core/Common");
 
@@ -226,8 +226,9 @@ exports.StepFunctionsStateMachine = () => ({
       assign({
         definition: pipe([
           get("definition"),
-          cloneDeepWith(
+          deepMap(([key, value]) =>
             pipe([
+              () => value,
               switchCase([
                 and([
                   isString,
@@ -249,10 +250,11 @@ exports.StepFunctionsStateMachine = () => ({
                       },
                     },
                   }),
+                  (newValue) => [key, newValue],
                 ]),
-                () => undefined,
+                () => [key, value],
               ]),
-            ])
+            ])()
           ),
         ]),
       }),
