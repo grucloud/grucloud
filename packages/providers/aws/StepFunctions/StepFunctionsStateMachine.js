@@ -25,7 +25,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, replaceEnv } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { deepMap } = require("@grucloud/core/deepMap");
+const { deepMap } = require("@grucloud/core/utils/deepMap");
 
 const { flattenObject } = require("@grucloud/core/Common");
 

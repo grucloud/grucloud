@@ -39,8 +39,8 @@ const {
   omitIfEmpty,
   replaceWithName,
 } = require("@grucloud/core/Common");
-const { deepPick } = require("@grucloud/core/deepPick");
-const { deepDefaults } = require("@grucloud/core/deepDefault");
+const { deepPick } = require("@grucloud/core/utils/deepPick");
+const { deepDefaults } = require("@grucloud/core/utils/deepDefault");
 
 const AppSpec = require("./resources/AppSpec");
 const AuthorizationSpec = require("./resources/AuthorizationSpec");

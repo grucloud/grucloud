@@ -4,7 +4,7 @@ const { pipe, tap, get, fork, assign, tryCatch } = require("rubico");
 const { defaultsDeep, when, first, isIn } = require("rubico/x");
 const Json2yaml = require("@grucloud/core/cli/json2yaml");
 
-const { deepMap } = require("@grucloud/core/deepMap");
+const { deepMap } = require("@grucloud/core/utils/deepMap");
 
 const { createTagger } = require("../AwsTagger");
 

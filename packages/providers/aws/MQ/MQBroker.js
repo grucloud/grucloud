@@ -6,7 +6,7 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { envVarName } = require("@grucloud/core/generatorUtils");
-const { deepOmit } = require("@grucloud/core/deepOmit");
+const { deepOmit } = require("@grucloud/core/utils/deepOmit");
 
 const { Tagger } = require("./MQCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");

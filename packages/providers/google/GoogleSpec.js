@@ -16,14 +16,11 @@ const {
 } = require("rubico");
 const { callProp, find, identity, values, last, append } = require("rubico/x");
 
-const {
-  compare,
-  omitIfEmpty,
-  replaceWithName,
-} = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
-const { deepPick } = require("@grucloud/core/deepPick");
-const { deepDefaults } = require("@grucloud/core/deepDefault");
+const { deepPick } = require("@grucloud/core/utils/deepPick");
+const { deepDefaults } = require("@grucloud/core/utils/deepDefault");
+const { deepOmit } = require("@grucloud/core/utils/deepOmit");
 
 const GoogleClient = require("./GoogleClient");
 
@@ -34,7 +31,6 @@ const GcpDns = require("./resources/dns");
 const GcpRun = require("./resources/run");
 
 const Schema = require("./schema/GoogleSchema.json");
-const { deepOmit } = require("@grucloud/core/deepOmit");
 
 const createSpecsOveride = (config) =>
   pipe([
