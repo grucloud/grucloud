@@ -30,8 +30,8 @@ const {
 const util = require("node:util");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
-const { deepReject } = require("@grucloud/core/deepReject");
-const { deepSortKey } = require("@grucloud/core/deepSortKey");
+const { deepReject } = require("@grucloud/core/utils/deepReject");
+const { deepSortKey } = require("@grucloud/core/utils/deepSortKey");
 const { retryCall } = require("@grucloud/core/Retry");
 const { assignTagsSort, createEndpoint } = require("./AwsCommon");
 
