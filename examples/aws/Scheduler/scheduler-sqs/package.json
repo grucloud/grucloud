@@ -1,6 +1,6 @@
 {
   "name": "scheduler-sqs",
-  "version": "13.0.4-alpha.0",
+  "version": "13.0.5-alpha.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -23,7 +23,7 @@
     "@aws-sdk/client-scheduler": "3.332.0",
     "@aws-sdk/client-sqs": "3.332.0",
     "@grucloud/core": "^13.0.4-alpha.0",
-    "@grucloud/provider-aws": "^13.0.4-alpha.0",
+    "@grucloud/provider-aws": "^13.0.5-alpha.0",
     "rubico": "1.9.6"
   }
 }
