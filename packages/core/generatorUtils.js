@@ -868,7 +868,7 @@ const formatContent = ({ content }) =>
             }),
             () => content,
           ]),
-          get("output"),
+          get("source", ""),
         ]),
         tryCatch(
           (output) => prettier.format(output, { parser: "babel" }),
@@ -885,6 +885,7 @@ const formatContent = ({ content }) =>
         ),
       ])(),
   ]);
+exports.formatContent = formatContent;
 
 const loadCurrentAndTarget =
   ({ filename, programOptions, commandOptions }) =>
