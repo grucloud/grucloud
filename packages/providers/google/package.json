@@ -6,7 +6,7 @@
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/google",
   "scripts": {
     "test": "mocha --exit './test/**/*.test.js' '../../../examples/google/**/iac.test.js'",
-    "coverage": "nyc npm run test"
+    "coverage": "npx nyc npm run test"
   },
   "author": "",
   "license": "ISC",
@@ -18,15 +18,12 @@
     "jose": "4.15.4",
     "lodash": "4.17.21",
     "mime-types": "2.1.35",
-    "rubico": "1.9.6",
+    "rubico": "1.9.7",
     "shelljs": "0.8.5",
     "url-join": "4.0.1"
   },
   "devDependencies": {
-    "mocha": "10.2.0",
-    "mocha-junit-reporter": "2.2.0",
-    "mochawesome": "7.1.3",
-    "nyc": "15.1.0"
+    "mocha": "10.2.0"
   },
   "repository": {
     "type": "git",
