@@ -8,7 +8,7 @@ const { findNameInTagsOrId, getByIdCore, buildTags } = require("../AwsCommon");
 const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 exports.EC2Image = ({ spec, config }) => {
-  const ec2 = createEC2(config);
+  const ec2 = createEC2()(config);
 
   const findId = () => get("ImageId");
   const findName = findNameInTagsOrId({ findId });

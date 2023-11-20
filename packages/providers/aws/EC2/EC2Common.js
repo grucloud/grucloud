@@ -29,7 +29,7 @@ const {
   replaceOwner,
 } = require("../AwsCommon");
 
-const createEC2 = createEndpoint("ec2", "EC2");
+const createEC2 = () => createEndpoint("ec2", "EC2");
 exports.createEC2 = createEC2;
 
 const getTargetTags = pipe([get("TagSpecifications"), first, get("Tags")]);
@@ -113,7 +113,7 @@ exports.imageDescriptionFromId =
       }),
       () => ({ ImageIds: [ImageId] }),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeImages-property
-      createEC2(config)().describeImages,
+      createEC2()(config)().describeImages,
       get("Images"),
       first,
       pick(["Description"]),
@@ -141,7 +141,7 @@ exports.fetchImageIdFromDescription = ({ config }) =>
             },
           ],
         }),
-        createEC2(config)().describeImages,
+        createEC2()(config)().describeImages,
         get("Images"),
         first,
         get("ImageId"),

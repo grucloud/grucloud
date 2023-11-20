@@ -84,7 +84,7 @@ exports.createResources = () => [
           Description:
             "Amazon Linux 2 LTS Arm64 AMI 2.0.20220606.1 arm64 HVM gp2",
         },
-        InstanceType: "t2.micro",
+        InstanceType: "t4g.small",
       },
       Tags: [
         {

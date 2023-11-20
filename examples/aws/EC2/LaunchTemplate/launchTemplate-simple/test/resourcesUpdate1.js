@@ -22,7 +22,7 @@ exports.createResources = () => [
             })}`,
           },
         ],
-        InstanceType: "t2.small",
+        InstanceType: "t4g.small",
         UserData:
           "#!/bin/sh\nyum update -y\namazon-linux-extras install docker\nservice docker start\nusermod -a -G docker ec2-user\nchkconfig docker on",
         Image: {

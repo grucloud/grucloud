@@ -11,17 +11,9 @@ const {
   fork,
   assign,
 } = require("rubico");
-const {
-  first,
-  pluck,
-  isFunction,
-  size,
-  defaultsDeep,
-  when,
-  isEmpty,
-} = require("rubico/x");
-const { loadConfig } = require("@aws-sdk/node-config-provider");
+const { isFunction, size, defaultsDeep, when, isEmpty } = require("rubico/x");
 
+const { loadConfig } = require("@aws-sdk/node-config-provider");
 const path = require("path");
 
 const { STS } = require("@aws-sdk/client-sts");
@@ -41,35 +33,7 @@ const {
 } = require("@grucloud/core/cli/providers/createProjectAws");
 
 const { generateCode } = require("./Aws2gc");
-const { createEC2 } = require("./EC2/EC2Common");
 const { fnSpecs } = require("./AwsProviderSpec");
-
-const getAvailabilityZonesName = (config) =>
-  pipe([
-    () => createEC2(config),
-    tap((params) => {
-      assert(true);
-    }),
-    (ec2) => ec2().describeAvailabilityZones({}),
-    tap((params) => {
-      assert(true);
-    }),
-    get("AvailabilityZones"),
-    pluck("ZoneName"),
-    tap((ZoneNames) => {
-      logger.debug(
-        `AvailabilityZones: for region ${config.region}: ${ZoneNames}`
-      );
-    }),
-  ])();
-
-const validateConfig = ({ region, zone, zones }) => {
-  logger.debug(`region: ${region}, zone: ${zone}, zones: ${zones}`);
-  if (zone && !zones.includes(zone)) {
-    const message = `The configued zone '${zone}' is not part of region ${region}, available zones for this region: ${zones}`;
-    throw { code: 400, type: "configuration", message };
-  }
-};
 
 exports.AwsProvider = async ({
   name = "aws",
@@ -83,8 +47,6 @@ exports.AwsProvider = async ({
   assert(config ? isFunction(config) : true, "config must be a function");
 
   let accountId;
-  let zone;
-  let zones;
   let _credentials;
   //TODO wrap for retry
   const fetchAccountId = (config) =>
@@ -181,7 +143,6 @@ exports.AwsProvider = async ({
         configDefault: {
           credentials: _credentials,
           stage,
-          zone: () => zone,
           accountId: pipe([
             () => accountId,
             tap(() => {
@@ -195,8 +156,6 @@ exports.AwsProvider = async ({
         configs,
       }),
   ]);
-
-  const getZone = ({ zones, config }) => config.zone() || first(zones);
 
   const assumeRoleWebIdentity = ({ RoleArn, RoleSessionName }) =>
     pipe([
@@ -247,24 +206,13 @@ exports.AwsProvider = async ({
           credentials: { clientConfig: { region: "us-east-1" } },
         })
       );
-
-      zones = await getAvailabilityZonesName(merged);
-      assert(zones, `no zones for region ${region}`);
-      zone = getZone({ zones, config: merged });
-      assert(zone);
-      validateConfig({
-        region,
-        zone,
-        zones,
-      });
     }),
   ]);
 
   const information = () => ({
     accountId,
     region,
-    zone,
-    config: omit(["accountId", "zone"])(makeConfig()),
+    config: omit(["accountId"])(makeConfig()),
   });
 
   const init = ({ options, programOptions }) =>

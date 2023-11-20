@@ -4,8 +4,9 @@ const { findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
+// TODO
 exports.EC2NetworkAcl = ({ spec, config }) => {
-  const ec2 = createEC2(config);
+  const ec2 = createEC2()(config);
   const client = AwsClient({ spec, config })(ec2);
 
   const findId = () => get("NetworkAclId");
