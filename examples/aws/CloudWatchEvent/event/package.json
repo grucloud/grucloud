@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-cloudwatchevent",
-  "version": "13.0.6-alpha.0",
+  "version": "13.0.7-alpha.0",
   "description": "Cloud Watch Event GruCloud example",
   "private": true,
   "main": "iac.js",
@@ -21,8 +21,8 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "3.332.0",
-    "@grucloud/core": "^13.0.6-alpha.0",
-    "@grucloud/provider-aws": "^13.0.6-alpha.0",
+    "@grucloud/core": "^13.0.7-alpha.0",
+    "@grucloud/provider-aws": "^13.0.7-alpha.0",
     "rubico": "1.9.6"
   }
 }
