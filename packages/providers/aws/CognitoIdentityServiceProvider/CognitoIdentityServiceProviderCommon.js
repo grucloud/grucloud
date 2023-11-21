@@ -12,11 +12,6 @@ exports.Tagger = createTagger({
   UnTagsKey: "TagKeys",
 });
 
-exports.createCognitoIdentityProvider = createEndpoint(
-  "cognito-identity-provider",
-  "CognitoIdentityProvider"
-);
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#tagResource-property
 exports.tagResource =
   ({ cognitoIdentityServiceProvider }) =>

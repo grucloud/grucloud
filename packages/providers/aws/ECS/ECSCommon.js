@@ -18,7 +18,7 @@ exports.Tagger = createTagger({
   UnTagsKey: "tagKeys",
 });
 
-exports.createECS = createEndpoint("ecs", "ECS");
+exports.createECS = () => createEndpoint("ecs", "ECS");
 
 exports.buildTagsEcs = ({ name, config, namespace, tags }) =>
   buildTags({
