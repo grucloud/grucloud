@@ -68,7 +68,7 @@ exports.buildTagsS3Object = buildTagsS3Object;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Object = ({ spec, config }) => {
-  const s3 = createS3(config);
+  const s3 = createS3()(config);
   const client = AwsClient({ spec, config })(s3);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 

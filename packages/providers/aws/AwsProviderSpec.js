@@ -421,6 +421,9 @@ exports.fnSpecs = (config) =>
           assert(true);
         }),
         doExcludeGroups({ config }),
+        tap((params) => {
+          assert(true);
+        }),
         callProp("sort", (a, b) => a.localeCompare(b)),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
         tap((params) => {

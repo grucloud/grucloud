@@ -139,7 +139,7 @@ const getPublicAccessBlock = ({ endpoint }) =>
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
-  const s3 = createS3(config);
+  const s3 = createS3()(config);
 
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 

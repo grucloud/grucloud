@@ -11,11 +11,6 @@ exports.Tagger = createTagger({
   UnTagsKey: "TagKeys",
 });
 
-exports.createCloudWatchEvents = createEndpoint(
-  "cloudwatch-events",
-  "CloudWatchEvents"
-);
-
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#tagResource-property

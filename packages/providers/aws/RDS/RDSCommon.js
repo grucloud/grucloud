@@ -5,8 +5,6 @@ const { createTagger } = require("../AwsTagger");
 
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createRDS = createEndpoint("rds", "RDS");
-
 const isAuroraEngine = pipe([get("Engine"), callProp("startsWith", "aurora")]);
 exports.isAuroraEngine = isAuroraEngine;
 
