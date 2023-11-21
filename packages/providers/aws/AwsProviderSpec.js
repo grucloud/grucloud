@@ -8,6 +8,7 @@ const {
   map,
   switchCase,
   assign,
+  tryCatch,
 } = require("rubico");
 const {
   find,
@@ -425,7 +426,16 @@ exports.fnSpecs = (config) =>
           assert(true);
         }),
         callProp("sort", (a, b) => a.localeCompare(b)),
-        flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
+        flatMap(
+          tryCatch(
+            pipe([(group) => require(`./${group}`), (fn) => fn()]),
+            (error) => []
+          )
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        filterOut(isEmpty),
         tap((params) => {
           assert(true);
         }),
