@@ -399,7 +399,7 @@ exports.Route53RecordDependencies = Route53RecordDependencies;
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53Record = ({ spec, config }) => {
   const { providerName } = config;
-  const route53 = createRoute53(config);
+  const route53 = createRoute53()(config);
 
   const findNameInDependencies =
     ({ lives, config }) =>

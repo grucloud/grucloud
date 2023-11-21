@@ -3,8 +3,6 @@ const { pipe, tap, assign, omit, get, eq, or, tryCatch } = require("rubico");
 const { find, when, callProp, defaultsDeep } = require("rubico/x");
 const { createTagger } = require("../AwsTagger");
 
-const { createEndpoint } = require("../AwsCommon");
-
 const isAuroraEngine = pipe([get("Engine"), callProp("startsWith", "aurora")]);
 exports.isAuroraEngine = isAuroraEngine;
 

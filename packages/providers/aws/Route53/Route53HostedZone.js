@@ -192,8 +192,8 @@ const decorate =
     ])();
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53HostedZone = ({ spec, config }) => {
-  const route53 = createRoute53(config);
-  const route53Domains = createRoute53Domains(config);
+  const route53 = createRoute53()(config);
+  const route53Domains = createRoute53Domains()(config);
   const client = AwsClient({ spec, config })(route53);
 
   const getById = client.getById({

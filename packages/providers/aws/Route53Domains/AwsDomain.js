@@ -11,7 +11,7 @@ const pickId = pick(["DomainName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsDomain = ({ spec, config }) => {
-  const route53Domains = createRoute53Domains(config);
+  const route53Domains = createRoute53Domains()(config);
   const client = AwsClient({ spec, config })(route53Domains);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getDomain-property

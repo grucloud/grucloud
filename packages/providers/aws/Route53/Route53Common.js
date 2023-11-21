@@ -4,7 +4,7 @@ const { callProp, when, append } = require("rubico/x");
 const { createEndpoint } = require("../AwsCommon");
 const { createTagger } = require("../AwsTagger");
 
-exports.createRoute53 = createEndpoint("route-53", "Route53");
+exports.createRoute53 = () => createEndpoint("route-53", "Route53");
 
 exports.hostedZoneIdToResourceId = callProp("replace", "/hostedzone/", "");
 
