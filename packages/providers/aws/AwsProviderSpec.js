@@ -20,6 +20,9 @@ const {
   isIn,
   filterOut,
   identity,
+  first,
+  last,
+  prepend,
 } = require("rubico/x");
 
 const assert = require("assert");
@@ -219,6 +222,7 @@ const GROUPS = [
   ["FSx", "fsx"],
   ["Glacier", "glacier"],
   ["GlobalAccelerator", "global-accelerator"],
+  ["IAM", "iam"],
   ["Imagebuilder", "imagebuilder"],
   ["Iot", "iot"],
   ["IVS", "ivs"],
@@ -426,16 +430,23 @@ exports.fnSpecs = (config) =>
           assert(true);
         }),
         callProp("sort", (a, b) => a.localeCompare(b)),
-        flatMap(
-          tryCatch(
-            pipe([(group) => require(`./${group}`), (fn) => fn()]),
-            (error) => []
-          )
-        ),
+        flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
         tap((params) => {
           assert(true);
         }),
         filterOut(isEmpty),
+        filter(({ group }) =>
+          pipe([
+            () => GROUPS,
+            find(eq(first, group)),
+            last,
+            tap((packageName) => {
+              assert(packageName, `no packageName for ${group}`);
+            }),
+            prepend("@aws-sdk/client-"),
+            tryCatch(require, (error) => false),
+          ])()
+        ),
         tap((params) => {
           assert(true);
         }),
