@@ -115,7 +115,7 @@ exports.AppSyncResolver = ({ compare }) => ({
   }),
   filterLive: () => pipe([omitMaxBatchSize]),
   ignoreErrorCodes: ["NotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#getFunction-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#getResolver-property
   getById: {
     pickId,
     method: "getResolver",
@@ -123,7 +123,7 @@ exports.AppSyncResolver = ({ compare }) => ({
     ignoreErrorCodes,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listFunctions-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listResolvers-property
   getList: ({ client, endpoint, getById, config }) =>
     pipe([
       () =>
@@ -145,7 +145,7 @@ exports.AppSyncResolver = ({ compare }) => ({
             ]),
         }),
     ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createFunction-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createResolver-property
   create: {
     method: "createResolver",
     filterPayload,
@@ -167,7 +167,7 @@ exports.AppSyncResolver = ({ compare }) => ({
         defaultsDeep(pickId(live)),
       ])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteFunction-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteResolver-property
   destroy: {
     pickId,
     method: "deleteResolver",

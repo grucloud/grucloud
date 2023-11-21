@@ -14,8 +14,6 @@ exports.Tagger = createTagger({
   UnTagsKey: "tagKeys",
 });
 
-exports.createAppSync = createEndpoint("appsync", "AppSync");
-
 exports.ignoreErrorCodes = ["NotFoundException"];
 
 exports.findDependenciesGraphqlId =
