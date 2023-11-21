@@ -23,6 +23,7 @@ const {
   first,
   last,
   prepend,
+  uniq,
 } = require("rubico/x");
 
 const assert = require("assert");
@@ -429,6 +430,7 @@ exports.fnSpecs = (config) =>
         tap((params) => {
           assert(true);
         }),
+        uniq,
         callProp("sort", (a, b) => a.localeCompare(b)),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
         tap((params) => {
