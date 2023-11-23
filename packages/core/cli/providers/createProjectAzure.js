@@ -100,7 +100,7 @@ const promptSubscribtionId = (params) =>
           initial: pipe([
             () => accounts,
             findIndex(get("isDefault")),
-            when(eq(get("initial"), -1), () => 0),
+            when(eq(identity, -1), () => 0),
           ]),
         }),
         myPrompts,
