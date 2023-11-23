@@ -95,7 +95,13 @@ const promptSubscribtionId = (params) =>
           name: "subscriptionId",
           message: "Select the Subscription Id",
           choices,
-          initial: findIndex(get("isDefault"))(accounts),
+        }),
+        assign({
+          initial: pipe([
+            () => accounts,
+            findIndex(get("isDefault")),
+            when(eq(get("initial"), -1), () => 0),
+          ]),
         }),
         myPrompts,
         get("subscriptionId"),
