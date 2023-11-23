@@ -6,16 +6,20 @@ exports.createResources = () => [
   {
     type: "Instance",
     group: "EC2",
-    name: "grucloud-demo",
+    name: "console-demo",
     properties: ({ config, getId }) => ({
       BootMode: "uefi",
       CurrentInstanceBootMode: "uefi",
       EbsOptimized: true,
       Image: {
         Description:
-          "Canonical, Ubuntu, 22.04 LTS, arm64 jammy image build on 2023-05-16",
+          "Canonical, Ubuntu, 22.04 LTS, arm64 jammy image build on 2023-09-19",
       },
       InstanceType: "t4g.small",
+      MetadataOptions: {
+        HttpPutResponseHopLimit: 2,
+        HttpTokens: "required",
+      },
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -23,28 +27,13 @@ exports.createResources = () => [
             `${getId({
               type: "SecurityGroup",
               group: "EC2",
-              name: "sg::vpc-default::websocket-inside",
-            })}`,
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc-default::ssh",
-            })}`,
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc-default::default",
-            })}`,
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc-default::http",
+              name: "sg::vpc::launch-wizard-2",
             })}`,
           ],
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: "vpc-default::subnet-default-a",
+            name: `vpc::subnet-public1-${config.region}a`,
           })}`,
         },
       ],
@@ -52,25 +41,23 @@ exports.createResources = () => [
         AvailabilityZone: `${config.region}a`,
       },
     }),
-    dependencies: ({}) => ({
-      subnets: ["vpc-default::subnet-default-a"],
-      keyPair: "kp-grucloud-console-dev",
-      iamInstanceProfile: "role-ec2-to-s3",
-      securityGroups: [
-        "sg::vpc-default::default",
-        "sg::vpc-default::http",
-        "sg::vpc-default::ssh",
-        "sg::vpc-default::websocket-inside",
-      ],
+    dependencies: ({ config }) => ({
+      subnets: [`vpc::subnet-public1-${config.region}a`],
+      keyPair: "kp-console-demo",
+      iamInstanceProfile: "role-ec2-s3",
+      securityGroups: ["sg::vpc::launch-wizard-2"],
     }),
   },
+  { type: "InternetGateway", group: "EC2", name: "igw" },
   {
-    type: "InternetGateway",
+    type: "InternetGatewayAttachment",
     group: "EC2",
-    name: "ig-default",
-    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc",
+      internetGateway: "igw",
+    }),
   },
-  { type: "KeyPair", group: "EC2", name: "kp-grucloud-console-dev" },
+  { type: "KeyPair", group: "EC2", name: "kp-console-demo" },
   {
     type: "Route",
     group: "EC2",
@@ -78,152 +65,61 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      ig: "ig-default",
-      routeTable: "vpc-default::rt-default",
+      ig: "igw",
+      routeTable: "vpc::rtb-public",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "rt-default",
+    name: "rtb-public",
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "vpc::rtb-public",
+      subnet: `vpc::subnet-public1-${config.region}a`,
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc::default",
     isDefault: true,
     dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "vpc-default::rt-default",
-      subnet: "vpc-default::subnet-default-a",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "vpc-default::rt-default",
-      subnet: "vpc-default::subnet-default-b",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "vpc-default::rt-default",
-      subnet: "vpc-default::subnet-default-c",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "vpc-default::rt-default",
-      subnet: "vpc-default::subnet-default-d",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "vpc-default::rt-default",
-      subnet: "vpc-default::subnet-default-e",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "vpc-default::rt-default",
-      subnet: "vpc-default::subnet-default-f",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-default::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
+      vpc: "vpc",
     }),
   },
   {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
-      GroupName: "ecs-task-out",
-      Description: "ecs-task-out",
+      GroupName: "launch-wizard-2",
+      Description: "launch-wizard-2 created 2023-11-21T21:28:14.091Z",
     }),
     dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "http",
-      Description: "http https",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "ssh",
-      Description: "ssh",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "websocket-inside",
-      Description: "websocket from task ",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
+      vpc: "vpc",
     }),
   },
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      FromPort: 443,
+      FromPort: 0,
       IpProtocol: "tcp",
       IpRanges: [
         {
           CidrIp: "0.0.0.0/0",
         },
       ],
-      ToPort: 443,
+      ToPort: 0,
     }),
     dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::http",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 80,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 80,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::http",
+      securityGroup: "sg::vpc::launch-wizard-2",
     }),
   },
   {
@@ -240,7 +136,41 @@ exports.createResources = () => [
       ToPort: 22,
     }),
     dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::ssh",
+      securityGroup: "sg::vpc::launch-wizard-2",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 443,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc::launch-wizard-2",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc::launch-wizard-2",
     }),
   },
   {
@@ -249,111 +179,40 @@ exports.createResources = () => [
     properties: ({}) => ({
       FromPort: 9000,
       IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "172.0.0.0/8",
-        },
-      ],
       ToPort: 9000,
     }),
     dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::websocket-inside",
+      securityGroup: "sg::vpc::launch-wizard-2",
+      securityGroupFrom: ["sg::vpc::default"],
     }),
   },
   {
-    type: "SecurityGroupRuleEgress",
+    type: "Subnet",
     group: "EC2",
+    name: ({ config }) => `subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc",
     properties: ({}) => ({
-      FromPort: 443,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 443,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::default",
+      CidrBlock: "10.0.0.0/24",
+      DnsHostnames: true,
     }),
   },
-  {
-    type: "SecurityGroupRuleEgress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 443,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 443,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::websocket-inside",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-a",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-b",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-c",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-d",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-e",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-f",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "Cluster",
     group: "ECS",
     properties: ({}) => ({
-      clusterName: "grucloud-console-dev",
+      clusterName: "cluster-console-demo",
       capacityProviders: ["FARGATE", "FARGATE_SPOT"],
     }),
   },
@@ -365,7 +224,7 @@ exports.createResources = () => [
         {
           cpu: 0,
           essential: true,
-          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:12.13.0",
+          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:13.0.0",
           logConfiguration: {
             logDriver: "awslogs",
             options: {
@@ -375,15 +234,12 @@ exports.createResources = () => [
               "awslogs-stream-prefix": "ecs",
             },
           },
+          memory: 2048,
           name: "grucloud-cli",
           portMappings: [],
-          workingDirectory: "/app/artifacts",
         },
       ],
       cpu: "1024",
-      ephemeralStorage: {
-        sizeInGiB: 21,
-      },
       family: "grucloud-cli",
       memory: "2048",
       networkMode: "awsvpc",
@@ -394,15 +250,16 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
+      taskRole: "ecsTaskS3",
       executionRole: "ecsTaskExecutionRole",
     }),
   },
   {
     type: "InstanceProfile",
     group: "IAM",
-    name: "role-ec2-to-s3",
+    name: "role-ec2-s3",
     dependencies: ({}) => ({
-      roles: ["role-ec2-to-s3"],
+      roles: ["role-ec2-s3"],
     }),
   },
   {
@@ -444,7 +301,34 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "role-ec2-to-s3",
+      RoleName: "ecsTaskS3",
+      Description: "Allows ECS tasks to call AWS services on your behalf.",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "ecs-tasks.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "role-ec2-s3",
       Description: "Allows EC2 instances to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -471,7 +355,6 @@ exports.createResources = () => [
     group: "IAM",
     properties: ({ getId }) => ({
       RoleName: "role-grucloud",
-      Description: "role to allow GruCloud to call AWS",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -508,16 +391,8 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyArn: "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
-          PolicyName: "AmazonS3ReadOnlyAccess",
-        },
-        {
-          PolicyArn: "arn:aws:iam::aws:policy/AmazonVPCFullAccess",
-          PolicyName: "AmazonVPCFullAccess",
-        },
-        {
-          PolicyArn: "arn:aws:iam::aws:policy/IAMFullAccess",
-          PolicyName: "IAMFullAccess",
+          PolicyArn: "arn:aws:iam::aws:policy/AdministratorAccess",
+          PolicyName: "AdministratorAccess",
         },
       ],
     }),
@@ -530,38 +405,6 @@ exports.createResources = () => [
     group: "S3",
     properties: ({}) => ({
       Name: "grucloud-console-demo",
-      CORSConfiguration: {
-        CORSRules: [
-          {
-            AllowedHeaders: ["*"],
-            AllowedMethods: ["GET"],
-            AllowedOrigins: ["*"],
-            ExposeHeaders: [
-              "x-amz-server-side-encryption",
-              "x-amz-request-id",
-              "x-amz-id-2",
-            ],
-            MaxAgeSeconds: 3000,
-          },
-        ],
-      },
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "AES256",
-            },
-            BucketKeyEnabled: true,
-          },
-        ],
-      },
-    }),
-  },
-  {
-    type: "Bucket",
-    group: "S3",
-    properties: ({}) => ({
-      Name: "grucloud-console-dev",
       CORSConfiguration: {
         CORSRules: [
           {

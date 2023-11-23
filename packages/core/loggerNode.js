@@ -12,12 +12,12 @@ const formatTimestamp = format.combine(
 
 const transportFiles = [
   {
-    filename: "grucloud-error.log",
+    filename: "artifacts/grucloud-error.log",
     level: "error",
     format: formatTimestamp,
   },
   {
-    filename: "grucloud-debug.log",
+    filename: "artifacts/grucloud-debug.log",
     level: "debug",
     format: formatTimestamp,
   },
