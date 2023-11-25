@@ -1163,23 +1163,20 @@ const displayListSummaryResults = ({ providers, types, resources }) => {
     )}`
   );
 };
-const doGraphLive = ({
-  providerGru,
-  lives,
-  commandOptions,
-  programOptions = {},
-}) =>
-  tap.if(
-    () => commandOptions.graph,
-    pipe([
-      () =>
-        providerGru.buildGraphLive({
-          lives: lives.results,
-          options: commandOptions,
-        }),
-      (result) => dotToSvg({ commandOptions, programOptions, result }),
-    ])
-  )();
+const doGraphLive =
+  ({ providerGru, commandOptions, programOptions = {} }) =>
+  (lives) =>
+    tap.if(
+      () => commandOptions.graph,
+      pipe([
+        () =>
+          providerGru.buildGraphLive({
+            lives: lives.results,
+            options: commandOptions,
+          }),
+        (result) => dotToSvg({ commandOptions, programOptions, result }),
+      ])
+    )();
 
 const filterShow = pipe([
   tap(({ results }) => {
@@ -1301,14 +1298,13 @@ const listDoOk = ({
                               }),
                             options: commandOptions,
                           }),
-                          tap((lives) => {
+                          tap(
                             doGraphLive({
                               providerGru,
-                              lives,
                               commandOptions,
                               programOptions,
-                            });
-                          }),
+                            })
+                          ),
                           filterShow,
                           tap(displayLives),
                           tap(displayListResult),
