@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import Path from "node:path";
 
 const wsSendLogs = (ws, data) =>
-  ws.send(JSON.stringify({ commands: "logs", data: data.toString() }));
+  ws.send(JSON.stringify({ command: "logs", data: data.toString() }));
 
 export const runCommand =
   ({ ws, sql, stream, workingDirectory = "" }) =>

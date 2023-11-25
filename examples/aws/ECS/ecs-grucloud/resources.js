@@ -224,7 +224,7 @@ exports.createResources = () => [
         {
           cpu: 0,
           essential: true,
-          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:13.0.3",
+          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:13.0.4",
           logConfiguration: {
             logDriver: "awslogs",
             options: {
