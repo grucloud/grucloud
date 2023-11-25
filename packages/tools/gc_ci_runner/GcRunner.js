@@ -7,6 +7,7 @@ import { createS3Client, createUploadStream } from "./S3Client.js";
 
 import createSql from "./Sql.js";
 import createRunStep from "./RunStep.js";
+import { connectToWebSocketServer } from "./WebSocketClient.js";
 
 const sql = createSql();
 
@@ -41,8 +42,12 @@ const GcRunner = ({ flow, Bucket, Key }) =>
         }),
         createUploadStream,
       ]),
+      ws: pipe([
+        () => ({ wsUrl: process.env.WS_URL, wsRoom: process.env.WS_ROOM }),
+        connectToWebSocketServer,
+      ]),
     }),
-    ({ uploadStream }) =>
+    ({ uploadStream, ws }) =>
       pipe([
         () => flow,
         get("steps"),
@@ -51,7 +56,7 @@ const GcRunner = ({ flow, Bucket, Key }) =>
         }),
         tryCatch(
           //
-          map.series(createRunStep({ sql, stream })),
+          map.series(createRunStep({ sql, stream, ws })),
           (error) =>
             pipe([
               tap((params) => {
@@ -63,9 +68,12 @@ const GcRunner = ({ flow, Bucket, Key }) =>
         tap((params) => {
           assert(true);
         }),
-        () => stream.end(),
-        () => uploadStream.done(),
-        sql.close,
+        all({
+          streamEnd: () => stream.end(),
+          uploadStreamDone: () => uploadStream.done(),
+          sqlClose: () => sql.close(),
+          wsClose: () => ws.close(),
+        }),
       ])(),
   ])();
 

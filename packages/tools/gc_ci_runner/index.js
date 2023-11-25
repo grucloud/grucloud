@@ -12,6 +12,7 @@ assert(process.env.S3_AWSSecretKey);
 assert(process.env.S3_AWS_REGION);
 
 assert(process.env.GC_FLOW);
+assert(process.env.WS_URL);
 
 tryCatch(
   pipe([
@@ -21,6 +22,7 @@ tryCatch(
       console.log("GC_FLOW", process.env.GC_FLOW);
       console.log("S3_BUCKET", process.env.S3_BUCKET);
       console.log("S3_BUCKET_KEY", process.env.S3_BUCKET_KEY);
+      console.log("WS_URL", process.env.WS_URL);
     }),
     (flow) => ({
       flow,

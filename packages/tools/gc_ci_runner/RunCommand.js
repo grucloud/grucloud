@@ -2,11 +2,15 @@ import assert from "assert";
 import { spawn } from "node:child_process";
 import Path from "node:path";
 
+const wsSendLogs = (ws, data) =>
+  ws.send(JSON.stringify({ commands: "logs", data: data.toString() }));
+
 export const runCommand =
   ({ ws, sql, stream, workingDirectory = "" }) =>
   (command) =>
     new Promise((resolve, reject) => {
       assert(command);
+      assert(ws);
       const cwd = Path.resolve(process.cwd(), workingDirectory);
       console.log("runCommand", command, "cwd", cwd);
       const child = spawn(command, {
@@ -17,10 +21,12 @@ export const runCommand =
       });
       child.stderr.on("data", (x) => {
         console.error(x.toString());
+        wsSendLogs(ws, x);
         stream.write(x);
       });
       child.stdout.on("data", (x) => {
         console.log(x.toString());
+        wsSendLogs(ws, x);
         stream.write(x);
       });
       child.on("error", (code) => {

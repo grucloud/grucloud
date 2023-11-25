@@ -12,6 +12,7 @@ const RunStep =
         assert(sql);
         assert(step);
         assert(stream);
+        assert(ws);
       }),
       () => step,
       get("run"),
