@@ -55,13 +55,20 @@ const GcRunner = ({ flow, Bucket, Key }) =>
           assert(uploadStream);
         }),
         tryCatch(
-          //
-          map.series(createRunStep({ sql, stream, ws })),
+          pipe([
+            map.series(createRunStep({ sql, stream, ws })),
+            () => ({ command: "end", data: {} }),
+            JSON.stringify,
+            (x) => ws.send(x),
+          ]),
           (error) =>
             pipe([
               tap((params) => {
                 assert(true);
               }),
+              () => ({ command: "end", data: { error: true } }),
+              JSON.stringify,
+              (x) => ws.send(x),
               () => ({ error }),
             ])()
         ),

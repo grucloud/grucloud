@@ -6,13 +6,16 @@ const wsSendLogs = (ws, data) =>
   ws.send(JSON.stringify({ command: "logs", data: data.toString() }));
 
 export const runCommand =
-  ({ ws, sql, stream, workingDirectory = "" }) =>
+  ({ ws, stream, workingDirectory = "" }) =>
   (command) =>
     new Promise((resolve, reject) => {
       assert(command);
       assert(ws);
       const cwd = Path.resolve(process.cwd(), workingDirectory);
       console.log("runCommand", command, "cwd", cwd);
+      wsSendLogs(ws, command);
+      stream.write(command);
+
       const child = spawn(command, {
         cwd,
         shell: true,
