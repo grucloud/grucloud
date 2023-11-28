@@ -107,7 +107,9 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
-          // Please change this to your repo.
+          editUrl: ({ docPath }) => {
+            return `https://holocron.so/github/pr/grucloud/grucloud/main/editor/docusaurus/docs/${docPath}`
+          },
         },
         gtag: {
           trackingID: "UA-179962442-1",
