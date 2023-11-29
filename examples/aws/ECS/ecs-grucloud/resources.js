@@ -458,6 +458,7 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ config }) => ({
       Configuration: {
+        Architectures: ["arm64"],
         Code: {
           ImageUri: `${config.accountId()}.dkr.ecr.${
             config.region
