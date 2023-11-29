@@ -15,6 +15,7 @@ const {
   and,
   filter,
   or,
+  set,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -140,9 +141,16 @@ const decorate = ({ endpoint }) =>
   pipe([
     pick(["Configuration", "Code", "Tags"]),
     assign({
-      Configuration: ({ Configuration }) =>
+      Configuration: ({ Configuration, Code }) =>
         pipe([
           () => Configuration,
+          assign({
+            Code: pipe([
+              () => Code,
+              omit(["RepositoryType", "ResolvedImageUri", "Location"]),
+            ]),
+          }),
+          when(get("Code.ImageUri"), omit(["CodeSha256"])),
           unless(
             pipe([get("Layers"), isEmpty]),
             assign({
@@ -197,18 +205,22 @@ const decorate = ({ endpoint }) =>
         }
       ),
       Code: pipe([
+        tap((params) => {
+          assert(true);
+        }),
         get("Code"),
-        assign({
-          Data: pipe([get("Location"), fetchZip()]),
+        when(
+          get("Location"),
+          assign({
+            Data: pipe([get("Location"), fetchZip()]),
+          })
+        ),
+        omit(["RepositoryType", "ResolvedImageUri"]),
+        tap((params) => {
+          assert(true);
         }),
       ]),
       //TODO
-      CodeSigningConfig: pipe([
-        get("Configuration"),
-        pick(["FunctionName"]),
-        endpoint().getFunctionCodeSigningConfig,
-        get("CodeSigningConfigArn"),
-      ]),
       // ReservedConcurrentExecutions: pipe([
       //   get("Configuration"),
       //   pick(["FunctionName"]),
@@ -216,6 +228,24 @@ const decorate = ({ endpoint }) =>
       //   get("ReservedConcurrentExecutions"),
       // ]),
     }),
+    tap((params) => {
+      assert(true);
+    }),
+    // Code signing is not supported for functions created with container images.
+    unless(
+      get("Code.ImageUri"),
+      assign({
+        CodeSigningConfig: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          get("Configuration"),
+          pick(["FunctionName"]),
+          endpoint().getFunctionCodeSigningConfig,
+          get("CodeSigningConfigArn"),
+        ]),
+      })
+    ),
     omitIfEmpty(["Policy", "Layers"]),
     tap((params) => {
       assert(true);
@@ -233,15 +263,17 @@ const compareFunction = pipe([
         tap((params) => {
           assert(target);
         }),
-        defaultsDeep({
-          Configuration: {
-            CodeSha256: pipe([
+        when(
+          get("Configuration.Code.ZipFile"),
+          set(
+            "Configuration.CodeSha256",
+            pipe([
               () => target,
               get("Configuration.Code.ZipFile"),
               computeHash256,
-            ])(),
-          },
-        }),
+            ])
+          )
+        ),
       ])(),
   }),
   tap((diff) => {
@@ -269,9 +301,12 @@ exports.LambdaFunction = () => ({
   managedByOther,
   omitProperties: [
     "Code",
-    "Configuration.Code",
+    "Configuration.Code.RepositoryType",
+    "Configuration.Code.ResolvedImageUri",
+    "Configuration.Code.ZipFile",
     "Configuration.CodeSize",
     "Configuration.FunctionArn",
+    "Configuration.ImageConfigResponse",
     "Configuration.LastModified",
     "Configuration.LastUpdateStatus",
     "Configuration.LastUpdateStatusReason",
@@ -318,9 +353,18 @@ exports.LambdaFunction = () => ({
       pipe([
         tap(() => {
           assert(resource.name);
-          assert(live.Code.Data);
         }),
         () => live,
+        when(
+          get("Configuration.Code.ImageUri"),
+          set(
+            "Configuration.Code.ImageUri",
+            pipe([
+              get("Configuration.Code.ImageUri"),
+              replaceAccountAndRegion({ lives, providerConfig }),
+            ])
+          )
+        ),
         when(
           get("EventInvokeConfig"),
           assign({
@@ -372,6 +416,7 @@ exports.LambdaFunction = () => ({
           Configuration: pipe([
             get("Configuration"),
             omit(["CodeSha256"]),
+
             unless(
               pipe([get("Layers"), isEmpty]),
               assign({
@@ -427,15 +472,21 @@ exports.LambdaFunction = () => ({
           ]),
         }),
         omitIfEmpty(["FunctionUrlConfig"]),
+        tap((params) => {
+          assert(true);
+        }),
         tap(
-          pipe([
-            () => new AdmZip(Buffer.from(live.Code.Data, "base64")),
-            (zip) =>
-              zip.extractAllTo(
-                path.resolve(programOptions.workingDirectory, resource.name),
-                true
-              ),
-          ])
+          when(
+            get("Code.Data"),
+            pipe([
+              () => new AdmZip(Buffer.from(live.Code.Data, "base64")),
+              (zip) =>
+                zip.extractAllTo(
+                  path.resolve(programOptions.workingDirectory, resource.name),
+                  true
+                ),
+            ])
+          )
         ),
       ])(),
   // TODO SigningJobArn
@@ -515,7 +566,6 @@ exports.LambdaFunction = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
   getById: {
     method: "getFunction",
-    //getField: "MyResource",
     pickId,
     decorate,
   },
@@ -596,7 +646,7 @@ exports.LambdaFunction = () => ({
         ),
       ]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateFunctionCode-property
   update:
     ({ endpoint }) =>
     ({ name, payload, diff, live }) =>
@@ -605,9 +655,12 @@ exports.LambdaFunction = () => ({
           logger.info(`update function: ${name}`);
           assert(diff);
         }),
-        () => ({
-          FunctionName: payload.Configuration.FunctionName,
-          ZipFile: payload.Configuration.Code.ZipFile,
+        () => payload,
+        get("Configuration"),
+        ({ FunctionName, Architectures, Code }) => ({
+          FunctionName,
+          Architectures,
+          ...Code,
           Publish: true,
         }),
         // updateFunctionConfiguration
@@ -718,59 +771,64 @@ exports.LambdaFunction = () => ({
     pipe([
       tap(() => {
         assert(programOptions);
+        assert(otherProps);
         assert(role, "missing role dependencies");
       }),
-      () => ({
-        localPath: path.resolve(programOptions.workingDirectory, name),
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTagsObject({
+          config,
+          namespace,
+          name,
+          userTags: Tags,
+        }),
+        Configuration: {
+          FunctionName: name,
+          Role: getField(role, "Arn"),
+        },
       }),
-      createZipBuffer,
-      (ZipFile) =>
-        pipe([
-          () => otherProps,
-          defaultsDeep({
-            Tags: buildTagsObject({
-              config,
-              namespace,
-              name,
-              userTags: Tags,
+      unless(
+        get("Configuration.Code.ImageUri"),
+        set(
+          "Configuration.Code.ZipFile",
+          pipe([
+            () => ({
+              localPath: path.resolve(programOptions.workingDirectory, name),
             }),
-            Configuration: {
-              FunctionName: name,
-              Role: getField(role, "Arn"),
-              Code: { ZipFile },
+            createZipBuffer,
+          ])
+        )
+      ),
+      when(() => kmsKey, defaultsDeep({ KMSKeyArn: getField(kmsKey, "Arn") })),
+      when(
+        () => subnets,
+        defaultsDeep({
+          Configuration: {
+            VpcConfig: {
+              SubnetIds: pipe([
+                () => subnets,
+                map((subnet) => getField(subnet, "SubnetId")),
+              ])(),
             },
-          }),
-          when(
-            () => kmsKey,
-            defaultsDeep({ KMSKeyArn: getField(kmsKey, "Arn") })
-          ),
-          when(
-            () => subnets,
-            defaultsDeep({
-              Configuration: {
-                VpcConfig: {
-                  SubnetIds: pipe([
-                    () => subnets,
-                    map((subnet) => getField(subnet, "SubnetId")),
-                  ])(),
-                },
-              },
-            })
-          ),
-          when(
-            () => securityGroups,
-            defaultsDeep({
-              Configuration: {
-                VpcConfig: {
-                  SecurityGroupIds: pipe([
-                    () => securityGroups,
-                    map((sg) => getField(sg, "GroupId")),
-                  ])(),
-                },
-              },
-            })
-          ),
-        ])(),
+          },
+        })
+      ),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          Configuration: {
+            VpcConfig: {
+              SecurityGroupIds: pipe([
+                () => securityGroups,
+                map((sg) => getField(sg, "GroupId")),
+              ])(),
+            },
+          },
+        })
+      ),
+      tap((params) => {
+        assert(true);
+      }),
     ])(),
 });
 

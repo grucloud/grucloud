@@ -25,6 +25,7 @@
     "@aws-sdk/client-ecr": "3.332.0",
     "@aws-sdk/client-efs": "3.332.0",
     "@aws-sdk/client-kms": "3.332.0",
+    "@aws-sdk/client-lambda": "3.332.0",
     "@aws-sdk/client-s3": "3.332.0",
     "@grucloud/core": "^13.0.22-alpha.0",
     "@grucloud/provider-aws": "^13.0.22-alpha.0",

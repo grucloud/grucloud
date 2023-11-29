@@ -9,7 +9,7 @@ const {
   pick,
   fork,
 } = require("rubico");
-const { defaultsDeep, size, callProp } = require("rubico/x");
+const { defaultsDeep, size, callProp, when } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
@@ -39,9 +39,12 @@ const decorate = ({ endpoint }) =>
         () => ({ Arn: LayerVersionArn }),
         endpoint().getLayerVersionByArn,
         get("Content"),
-        assign({
-          Data: pipe([get("Location"), fetchZip()]),
-        }),
+        when(
+          get("Location"),
+          assign({
+            Data: pipe([get("Location"), fetchZip()]),
+          })
+        ),
       ])(),
     Policy: tryCatch(
       pipe([
