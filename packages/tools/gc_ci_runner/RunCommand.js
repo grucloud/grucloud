@@ -13,6 +13,7 @@ export const runCommand =
       assert(ws);
       const cwd = Path.resolve(process.cwd(), workingDirectory);
       console.log("runCommand", command, "cwd", cwd);
+      wsSendLogs(ws, `Working directory: ${workingDirectory}`);
       wsSendLogs(ws, command);
       stream.write(command);
 

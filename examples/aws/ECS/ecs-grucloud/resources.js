@@ -224,7 +224,7 @@ exports.createResources = () => [
         {
           cpu: 0,
           essential: true,
-          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:13.0.4",
+          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:13.0.5",
           logConfiguration: {
             logDriver: "awslogs",
             options: {
@@ -268,6 +268,34 @@ exports.createResources = () => [
     properties: ({}) => ({
       ClientIDList: ["aws.workload.identity"],
       Url: "demo.grucloud.com",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({ config }) => ({
+      PolicyName:
+        "AWSLambdaBasicExecutionRole-40e7ded5-bfa1-4f57-977c-7988b9f40514",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: "logs:CreateLogGroup",
+            Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
+          },
+          {
+            Effect: "Allow",
+            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/lambda/grucloud:*`,
+            ],
+          },
+        ],
+      },
+      Path: "/service-role/",
     }),
   },
   {
@@ -321,6 +349,31 @@ exports.createResources = () => [
           PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
           PolicyName: "AmazonS3FullAccess",
         },
+      ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "grucloud-role-v9orp2hp",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: [
+        "AWSLambdaBasicExecutionRole-40e7ded5-bfa1-4f57-977c-7988b9f40514",
       ],
     }),
   },
@@ -398,6 +451,26 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       openIdConnectProvider: "oidp::demo.grucloud.com",
+    }),
+  },
+  {
+    type: "Function",
+    group: "Lambda",
+    properties: ({ config }) => ({
+      Configuration: {
+        Code: {
+          ImageUri: `${config.accountId()}.dkr.ecr.${
+            config.region
+          }.amazonaws.com/grucloud-cli@sha256:4b0334a5625ae861d2dcbc8f231caa8af6b89b5624f56e1595a099afaf9a5785`,
+        },
+        FunctionName: "grucloud",
+        MemorySize: 256,
+        PackageType: "Image",
+        Timeout: 10,
+      },
+    }),
+    dependencies: ({}) => ({
+      role: "grucloud-role-v9orp2hp",
     }),
   },
   {
