@@ -4,6 +4,14 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "EgressOnlyInternetGateway",
+    group: "EC2",
+    name: "egress-only-ig",
+    dependencies: ({}) => ({
+      vpc: "vpc",
+    }),
+  },
+  {
     type: "Instance",
     group: "EC2",
     name: "console-demo",
@@ -194,6 +202,7 @@ exports.createResources = () => [
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
       NetworkNumber: 0,
+      Ipv6SubnetPrefix: "00",
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -206,6 +215,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/24",
       DnsHostnames: true,
+      AmazonProvidedIpv6CidrBlock: true,
     }),
   },
   {
@@ -370,6 +380,13 @@ exports.createResources = () => [
           },
         ],
       },
+      AttachedPolicies: [
+        {
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+          PolicyName: "AWSLambdaVPCAccessExecutionRole",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       policies: [
@@ -464,14 +481,26 @@ exports.createResources = () => [
             config.region
           }.amazonaws.com/grucloud-cli@sha256:4b0334a5625ae861d2dcbc8f231caa8af6b89b5624f56e1595a099afaf9a5785`,
         },
+        Environment: {
+          Variables: {
+            S3_AWS_REGION: `${config.region}`,
+            S3_BUCKET: "grucloud-console-dev",
+            WS_URL: "ws://10.0.0.11:9000",
+          },
+        },
         FunctionName: "grucloud",
         MemorySize: 256,
         PackageType: "Image",
-        Timeout: 10,
+        Timeout: 900,
+        VpcConfig: {
+          Ipv6AllowedForDualStack: true,
+        },
       },
     }),
-    dependencies: ({}) => ({
+    dependencies: ({ config }) => ({
       role: "grucloud-role-v9orp2hp",
+      subnets: [`vpc::subnet-public1-${config.region}a`],
+      securityGroups: ["sg::vpc::default"],
     }),
   },
   {
