@@ -16,6 +16,7 @@ export const runCommand =
       wsSendLogs(ws, `Working directory: ${workingDirectory}`);
       wsSendLogs(ws, command);
       stream.write(command);
+      stream.write("\n");
 
       const child = spawn(command, {
         cwd,

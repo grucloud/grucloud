@@ -3,7 +3,7 @@ import rubico from "rubico";
 const { pipe, tap } = rubico;
 import { describe, it } from "node:test";
 
-import GcRunner from "../GcRunner.js";
+import GcRunner from "../src/GcRunner.js";
 
 const flowSimple = {
   steps: [
@@ -24,9 +24,8 @@ describe("GcRunner", () => {
       }),
       () => ({
         argv: [""],
-        flow: flowSimple,
-        Bucket: process.env.S3_BUCKET,
-        Key: process.env.S3_BUCKET_KEY,
+        ...process.env,
+        GC_FLOW: flowSimple,
       }),
       GcRunner,
       tap((result) => {

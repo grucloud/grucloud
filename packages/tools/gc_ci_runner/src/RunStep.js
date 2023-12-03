@@ -5,19 +5,16 @@ const { pipe, tap, get } = rubico;
 import { runCommand } from "./RunCommand.js";
 
 const RunStep =
-  ({ sql, ws, stream }) =>
+  ({ ws, stream }) =>
   (step) =>
     pipe([
       tap(() => {
-        assert(sql);
         assert(step);
         assert(stream);
-        assert(ws);
       }),
       () => step,
       get("run"),
       runCommand({
-        sql,
         ws,
         workingDirectory: step.workingDirectory,
         stream,

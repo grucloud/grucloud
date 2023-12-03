@@ -46,7 +46,7 @@ exports.DynamoDBTable = () => ({
   type: "Table",
   package: "dynamodb",
   client: "DynamoDB",
-  propertiesDefault: {},
+  propertiesDefault: { DeletionProtectionEnabled: false },
   omitProperties: [
     "TableSizeBytes",
     "ItemCount",
@@ -98,6 +98,7 @@ exports.DynamoDBTable = () => ({
         "KeySchema",
         "ProvisionedThroughput",
         "BillingMode",
+        "DeletionProtectionEnabled",
         "GlobalSecondaryIndexes",
         "LocalSecondaryIndexes",
         "StreamSpecification",

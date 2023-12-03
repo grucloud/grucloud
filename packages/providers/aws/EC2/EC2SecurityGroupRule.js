@@ -404,7 +404,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
         securityGroupToRules({ IsEgress }),
         tap((rules) => {
-          logger.debug(`getByName ${name} rules: ${tos(rules)}`);
+          //logger.debug(`getByName ${name} rules: ${tos(rules)}`);
         }),
         //map(ruleDefaultToName({ kind, lives, config })),
         tap((params) => {
@@ -421,7 +421,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         ),
         find(eq(ruleDefaultToName({ kind, lives, config }), name)),
         tap((result) => {
-          logger.debug(`getByName ${name} result: ${tos(result)}`);
+          //logger.debug(`getByName ${name} result: ${tos(result)}`);
         }),
       ])();
 

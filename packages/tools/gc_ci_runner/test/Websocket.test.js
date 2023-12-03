@@ -3,7 +3,7 @@ import rubico from "rubico";
 const { pipe, tap } = rubico;
 import { describe, it } from "node:test";
 
-import { connectToWebSocketServer } from "../WebSocketClient.js";
+import { connectToWebSocketServer } from "../src/WebSocketClient.js";
 
 const promisifyWsClient = (ws) =>
   new Promise((resolve, reject) => {

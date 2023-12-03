@@ -24,10 +24,6 @@ exports.createResources = () => [
           "Canonical, Ubuntu, 22.04 LTS, arm64 jammy image build on 2023-09-19",
       },
       InstanceType: "t4g.small",
-      MetadataOptions: {
-        HttpPutResponseHopLimit: 2,
-        HttpTokens: "required",
-      },
       NetworkInterfaces: [
         {
           DeviceIndex: 0,
@@ -48,6 +44,7 @@ exports.createResources = () => [
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
+      SourceDestCheck: false,
     }),
     dependencies: ({ config }) => ({
       subnets: [`vpc::subnet-public1-${config.region}a`],
@@ -73,8 +70,38 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      ec2Instance: "console-demo",
+      routeTable: "vpc::rtb-private",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({}) => ({
+      egressOnlyInternetGateway: "egress-only-ig",
+      routeTable: "vpc::rtb-public",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
       ig: "igw",
       routeTable: "vpc::rtb-public",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "rtb-private",
+    dependencies: ({}) => ({
+      vpc: "vpc",
     }),
   },
   {
@@ -83,6 +110,14 @@ exports.createResources = () => [
     name: "rtb-public",
     dependencies: ({}) => ({
       vpc: "vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "vpc::rtb-private",
+      subnet: `vpc::subnet-private1-${config.region}a`,
     }),
   },
   {
@@ -121,13 +156,14 @@ exports.createResources = () => [
       IpProtocol: "tcp",
       IpRanges: [
         {
-          CidrIp: "0.0.0.0/0",
+          CidrIp: "10.0.0.0/16",
         },
       ],
-      ToPort: 0,
+      ToPort: 65535,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc::launch-wizard-2",
+      securityGroupFrom: ["sg::vpc::default"],
     }),
   },
   {
@@ -182,16 +218,16 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "SecurityGroupRuleIngress",
+    type: "Subnet",
     group: "EC2",
-    properties: ({}) => ({
-      FromPort: 9000,
-      IpProtocol: "tcp",
-      ToPort: 9000,
+    name: ({ config }) => `subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
-      securityGroup: "sg::vpc::launch-wizard-2",
-      securityGroupFrom: ["sg::vpc::default"],
+      vpc: "vpc",
     }),
   },
   {
@@ -233,8 +269,11 @@ exports.createResources = () => [
       containerDefinitions: [
         {
           cpu: 0,
+          entryPoint: ["/var/task/src/index.js"],
           essential: true,
-          image: "public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:13.0.5",
+          image: `${config.accountId()}.dkr.ecr.${
+            config.region
+          }.amazonaws.com/grucloud-cli:13.0.13`,
           logConfiguration: {
             logDriver: "awslogs",
             options: {
@@ -382,6 +421,10 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          PolicyName: "AmazonS3FullAccess",
+        },
+        {
           PolicyArn:
             "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
           PolicyName: "AWSLambdaVPCAccessExecutionRole",
@@ -479,27 +522,26 @@ exports.createResources = () => [
         Code: {
           ImageUri: `${config.accountId()}.dkr.ecr.${
             config.region
-          }.amazonaws.com/grucloud-cli@sha256:4b0334a5625ae861d2dcbc8f231caa8af6b89b5624f56e1595a099afaf9a5785`,
+          }.amazonaws.com/grucloud-cli@sha256:9c0372c983ad5481a8105282b71bcd70da08e8207b0a2961ea9cb3ec5f6b0cb6`,
         },
         Environment: {
           Variables: {
+            CONTINUOUS_INTEGRATION: "1",
+            HOME: "/tmp",
             S3_AWS_REGION: `${config.region}`,
-            S3_BUCKET: "grucloud-console-dev",
+            S3_BUCKET: "grucloud-console-demo",
             WS_URL: "ws://10.0.0.11:9000",
           },
         },
         FunctionName: "grucloud",
-        MemorySize: 256,
+        MemorySize: 1024,
         PackageType: "Image",
-        Timeout: 900,
-        VpcConfig: {
-          Ipv6AllowedForDualStack: true,
-        },
+        Timeout: 300,
       },
     }),
     dependencies: ({ config }) => ({
       role: "grucloud-role-v9orp2hp",
-      subnets: [`vpc::subnet-public1-${config.region}a`],
+      subnets: [`vpc::subnet-private1-${config.region}a`],
       securityGroups: ["sg::vpc::default"],
     }),
   },

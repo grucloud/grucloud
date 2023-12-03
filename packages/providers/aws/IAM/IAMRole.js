@@ -29,12 +29,15 @@ const {
   keys,
   first,
   append,
+  when,
+  filterOut,
 } = require("rubico/x");
 const querystring = require("querystring");
 const logger = require("@grucloud/core/logger")({ prefix: "IamRole" });
 const { buildTags, removeRoleFromInstanceProfile } = require("../AwsCommon");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { updateResourceObject } = require("@grucloud/core/updateResourceObject");
+const { updateResourceArray } = require("@grucloud/core/updateResourceArray");
 
 const { AwsClient } = require("../AwsClient");
 const {
@@ -231,7 +234,12 @@ const decorate = ({ endpoint }) =>
       ]),
       Tags: pipe([pick(["RoleName"]), endpoint().listRoleTags, get("Tags")]),
     }),
-    omitIfEmpty(["Policies", "AttachedPolicies", "InstanceProfiles"]),
+    omitIfEmpty([
+      "Description",
+      "Policies",
+      "AttachedPolicies",
+      "InstanceProfiles",
+    ]),
   ]);
 
 const attachRolePolicies = ({ endpoint, name }) =>
@@ -277,6 +285,28 @@ const updateRole = ({ endpoint, live }) =>
     pick(["Description", "MaxSessionDuration"]),
     defaultsDeep(pickId(live)),
     endpoint().updateRole,
+  ]);
+
+const addAttachedPolicies = ({ endpoint, live }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+      assert(live);
+    }),
+    pick(["PolicyArn"]),
+    defaultsDeep(pickId(live)),
+    endpoint().attachRolePolicy,
+  ]);
+
+const removeAttachedPolicies = ({ endpoint, live }) =>
+  pipe([
+    tap((params) => {
+      assert(endpoint);
+      assert(live);
+    }),
+    pick(["PolicyArn"]),
+    defaultsDeep(pickId(live)),
+    endpoint().detachRolePolicy,
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
@@ -357,8 +387,10 @@ exports.IAMRole = ({ spec, config }) => {
       ]),
     config,
   });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#updateAssumeRolePolicy-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#updateRole-property
+
   const update = (params) =>
     pipe([
       tap(() => {
@@ -377,6 +409,13 @@ exports.IAMRole = ({ spec, config }) => {
         onDeleted: updateRole,
         onAdded: updateRole,
         onUpdated: updateRole,
+      }),
+      () => params,
+      updateResourceArray({
+        endpoint: iam,
+        arrayPath: "AttachedPolicies",
+        onAdd: addAttachedPolicies,
+        onRemove: removeAttachedPolicies,
       }),
     ])();
 
@@ -444,7 +483,7 @@ exports.IAMRole = ({ spec, config }) => {
     name,
     properties: { Tags, ...otherProps },
     namespace,
-    dependencies: {},
+    dependencies: { policies },
     config,
   }) =>
     pipe([
@@ -459,6 +498,22 @@ exports.IAMRole = ({ spec, config }) => {
           namespace,
           UserTags: Tags,
         }),
+      }),
+      when(
+        () => policies,
+        assign({
+          AttachedPolicies: ({ AttachedPolicies = [] }) =>
+            pipe([
+              () => policies,
+              pluck("live"),
+              filterOut(isEmpty),
+              map(({ Arn, PolicyName }) => ({ PolicyArn: Arn, PolicyName })),
+              (policies) => [...policies, ...AttachedPolicies],
+            ])(),
+        })
+      ),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 

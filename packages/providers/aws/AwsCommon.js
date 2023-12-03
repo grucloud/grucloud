@@ -481,15 +481,6 @@ const createEndpointOption = (config) =>
         region: process.env.AWS_REGION,
       })
     ),
-    when(
-      () => process.env.AWSAccessKeyId,
-      defaultsDeep({
-        credentials: {
-          accessKeyId: process.env.AWSAccessKeyId,
-          secretAccessKey: process.env.AWSSecretKey,
-        },
-      })
-    ),
     switchCase([
       // from env var
       () => process.env.AWSAccessKeyId,

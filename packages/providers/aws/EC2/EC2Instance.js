@@ -410,8 +410,8 @@ const compare = pipe([
   })({
     filterAll: () =>
       pipe([
-        omit(["Tags"]),
         omit([
+          "Tags",
           "NetworkInterfaces",
           "TagSpecifications",
           "SubnetId",
@@ -591,8 +591,8 @@ exports.EC2Instance = () => ({
       Configured: false,
     },
     MetadataOptions: {
-      HttpTokens: "optional",
-      HttpPutResponseHopLimit: 1,
+      HttpTokens: "required",
+      HttpPutResponseHopLimit: 2,
       HttpEndpoint: "enabled",
       HttpProtocolIpv6: "disabled",
       InstanceMetadataTags: "disabled",

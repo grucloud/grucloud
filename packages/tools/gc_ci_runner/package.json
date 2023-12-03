@@ -5,11 +5,19 @@
   "main": "index.js",
   "type": "module",
   "bin": {
-    "gc-runner": "./index.js"
+    "gc-runner": "./src/index.js"
   },
   "scripts": {
-    "start": "node --env-file env index.js",
-    "test": "node --env-file env --test test/**.js"
+    "start": "node --env-file env src/index.js",
+    "test": "node --env-file env --test test/**.js",
+    "docker:build": "docker build  -t grucloud/grucloud-cli .",
+    "docker:login": "aws ecr-public get-login-password --region us-east-1 --profile console-demo | docker login --username AWS --password-stdin public.ecr.aws",
+    "docker:tag": "docker tag grucloud/grucloud-cli public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:13.0.5",
+    "docker:push": "docker push public.ecr.aws/a4o9b2p8/grucloud/grucloud-cli:13.0.5",
+    "docker:login-demo": "aws ecr get-login-password --region us-east-1 --profile console-demo| docker login --username AWS --password-stdin 548529576214.dkr.ecr.us-east-1.amazonaws.com",
+    "docker:tag-demo": "docker tag grucloud/grucloud-cli 548529576214.dkr.ecr.us-east-1.amazonaws.com/grucloud-cli:13.0.13",
+    "docker:push-demo": "docker push 548529576214.dkr.ecr.us-east-1.amazonaws.com/grucloud-cli:13.0.13",
+    "docker:btp": "npm run docker:build && npm run docker:tag-demo && npm run docker:push-demo"
   },
   "repository": {
     "type": "git",

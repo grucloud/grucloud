@@ -668,9 +668,9 @@ exports.ResourceMaker = ({
               }),
             get("live"),
             tap((live) => {
-              logger.debug(
-                `resolveConfig filterLives ${getResourceName()}: ${tos(live)}`
-              );
+              // logger.debug(
+              //   `resolveConfig filterLives ${getResourceName()}: ${tos(live)}`
+              // );
             }),
           ]),
           pipe([

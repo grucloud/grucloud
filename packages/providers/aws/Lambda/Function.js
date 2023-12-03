@@ -347,6 +347,9 @@ exports.LambdaFunction = () => ({
         ApplyOn: "None",
         OptimizationStatus: "Off",
       },
+      VpcConfig: {
+        Ipv6AllowedForDualStack: false,
+      },
     },
   },
   filterLive:

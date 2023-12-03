@@ -55,7 +55,7 @@ const shouldRetryOnExceptionCodesDefault =
       tap(() => {
         assert(error.name);
         logger.debug(
-          `shouldRetryOnExceptionCodesDefault ${name} ${util.inspect(error)}`
+          `shouldRetryOnExceptionCodesDefault ${name} ${error.message}`
         );
       }),
       () => shouldRetryOnExceptionCodes,

@@ -5,7 +5,7 @@ const { pipe, tap } = rubico;
 import postgres from "postgres";
 
 const Sql = () => {
-  assert(process.env.DB_URL);
+  // assert(process.env.DB_URL);
   return postgres(process.env.DB_URL);
 };
 

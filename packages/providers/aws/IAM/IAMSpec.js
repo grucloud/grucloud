@@ -109,6 +109,7 @@ module.exports = pipe([
           pipe([
             pick([
               "AssumeRolePolicyDocument",
+              "AttachedPolicies",
               "Policies",
               "Description",
               "MaxSessionDuration",

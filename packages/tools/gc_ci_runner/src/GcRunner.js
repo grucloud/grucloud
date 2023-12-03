@@ -5,37 +5,48 @@ import Stream from "node:stream";
 
 import { createS3Client, createUploadStream } from "./S3Client.js";
 
-import createSql from "./Sql.js";
+//import createSql from "./Sql.js";
 import createRunStep from "./RunStep.js";
 import { connectToWebSocketServer } from "./WebSocketClient.js";
 
-const sql = createSql();
+//const sql = createSql();
 
-const sqlConnect = () => sql`SELECT 1;`;
+//const sqlConnect = () => sql`SELECT 1;`;
 
 const stream = new Stream.PassThrough();
 
-const GcRunner = ({ flow, Bucket, Key }) =>
+const GcRunner = ({
+  GC_FLOW,
+  S3_BUCKET,
+  S3_BUCKET_KEY,
+  WS_URL,
+  WS_ROOM,
+  S3_AWS_REGION,
+  S3_AWSAccessKeyId,
+  S3_AWSSecretKey,
+}) =>
   pipe([
     tap((params) => {
-      assert(flow);
-      assert(Bucket);
-      assert(Key);
+      assert(GC_FLOW);
+      assert(S3_BUCKET);
+      assert(S3_BUCKET_KEY);
+      assert(WS_URL);
+      assert(WS_ROOM);
     }),
     all({
-      sqlInit: pipe([
-        sqlConnect,
-        tap((params) => {
-          assert(params.count);
-        }),
-      ]),
+      // sqlInit: pipe([
+      //   sqlConnect,
+      //   tap((params) => {
+      //     assert(params.count);
+      //   }),
+      // ]),
       uploadStream: pipe([
-        createS3Client,
+        createS3Client({ S3_AWS_REGION, S3_AWSAccessKeyId, S3_AWSSecretKey }),
         (s3Client) => ({
           s3Client,
           stream,
-          Bucket,
-          Key,
+          S3_BUCKET,
+          S3_BUCKET_KEY,
         }),
         tap((params) => {
           assert(true);
@@ -43,20 +54,23 @@ const GcRunner = ({ flow, Bucket, Key }) =>
         createUploadStream,
       ]),
       ws: pipe([
-        () => ({ wsUrl: process.env.WS_URL, wsRoom: process.env.WS_ROOM }),
+        () => ({ wsUrl: WS_URL, wsRoom: WS_ROOM }),
         connectToWebSocketServer,
       ]),
     }),
+    tap((params) => {
+      console.log("connected");
+    }),
     ({ uploadStream, ws }) =>
       pipe([
-        () => flow,
+        () => GC_FLOW,
         get("steps"),
         tap((params) => {
           assert(uploadStream);
         }),
         tryCatch(
           pipe([
-            map.series(createRunStep({ sql, stream, ws })),
+            map.series(createRunStep({ stream, ws })),
             () => ({ command: "end", data: {} }),
             JSON.stringify,
             (x) => ws.send(x),
@@ -65,11 +79,20 @@ const GcRunner = ({ flow, Bucket, Key }) =>
             pipe([
               tap((params) => {
                 assert(true);
+                console.error("GcRunner error", error);
+                console.error("message", error.message);
+                console.error("stack", error.stack);
               }),
-              () => ({ command: "end", data: { error: true } }),
+              () => ({
+                command: "end",
+                data: {
+                  error: { message: error.message },
+                  errorRaw: error.toString(),
+                },
+              }),
               JSON.stringify,
               (x) => ws.send(x),
-              () => ({ error }),
+              () => ({ error: error.toString() }),
             ])()
         ),
         tap((params) => {
@@ -78,7 +101,7 @@ const GcRunner = ({ flow, Bucket, Key }) =>
         all({
           streamEnd: () => stream.end(),
           uploadStreamDone: () => uploadStream.done(),
-          sqlClose: () => sql.close(),
+          //sqlClose: () => sql.close(),
           wsClose: () => ws.close(),
         }),
       ])(),

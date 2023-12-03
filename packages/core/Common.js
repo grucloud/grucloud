@@ -304,7 +304,7 @@ exports.getByNameCore =
         pipe([
           findName({ lives, config }),
           tap((currentName) => {
-            logger.debug(`getByNameCore ${name}: findName: ${currentName}`);
+            //logger.debug(`getByNameCore ${name}: findName: ${currentName}`);
           }),
           switchCase([
             isString,
@@ -556,6 +556,9 @@ exports.compare = ({
           }),
         ])(),
     }),
+    tap((params) => {
+      assert(true);
+    }),
     assign({
       targetDiff: pipe([
         ({ target, live }) => detailedDiff(target, live),
@@ -567,7 +570,7 @@ exports.compare = ({
       liveDiff: pipe([
         ({ target, live }) => detailedDiff(live, target),
         omitIfEmpty(["added", "updated", "deleted"]),
-        omit(["deleted"]),
+        // omit(["deleted"]),
         tap((params) => {
           assert(true);
         }),

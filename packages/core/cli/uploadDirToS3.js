@@ -1,9 +1,8 @@
 const assert = require("assert");
 const { pipe, tap, map, tryCatch, gt, assign, get } = require("rubico");
-const { when, size } = require("rubico/x");
+const { when, size, defaultsDeep } = require("rubico/x");
 const Path = require("path");
 const fs = require("fs").promises;
-const util = require("node:util");
 const mime = require("mime-types");
 
 const { walkDir } = require("./walkDir");
@@ -11,13 +10,25 @@ const { PutObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 
 const { S3_AWSAccessKeyId, S3_AWSSecretKey, S3_AWS_REGION } = process.env;
 
-const client = new S3Client({
-  region: S3_AWS_REGION,
-  credentials: {
-    accessKeyId: S3_AWSAccessKeyId,
-    secretAccessKey: S3_AWSSecretKey,
-  },
-});
+const createS3Client = (env) =>
+  pipe([
+    tap((params) => {
+      assert(env);
+      //assert(env.S3_AWS_REGION);
+    }),
+    () => ({ region: env.S3_AWS_REGION }),
+    when(
+      () => env.S3_AWSAccessKeyId,
+      defaultsDeep({
+        credentials: {
+          accessKeyId: env.S3_AWSAccessKeyId,
+          secretAccessKey: env.S3_AWSSecretKey,
+        },
+      })
+    ),
+    (params) => new S3Client(params),
+  ])();
+
 const logger = require("../logger")({ prefix: "uploadDirToS3" });
 
 const uploadFileToS3 =
@@ -42,7 +53,7 @@ const uploadFileToS3 =
           logger.debug(`uploadFileToS3 ${s3Bucket} ${Key}, ${ContentType}`);
         }),
         (input) => new PutObjectCommand(input),
-        (command) => client.send(command),
+        (command) => createS3Client(process.env).send(command),
       ]),
       (error) => {
         logger.error(`uploadFileToS3 ${error}`);

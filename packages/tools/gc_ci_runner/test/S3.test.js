@@ -4,23 +4,23 @@ import Stream from "node:stream";
 import rubico from "rubico";
 const { pipe, tap, tryCatch } = rubico;
 import { ListObjectsV2Command } from "@aws-sdk/client-s3";
-import { createS3Client, createUploadStream } from "../S3Client.js";
+import { createS3Client, createUploadStream } from "../src/S3Client.js";
 
 describe("S3", () => {
-  const Bucket = process.env.S3_BUCKET;
-  assert(Bucket);
+  const S3_BUCKET = process.env.S3_BUCKET;
+  assert(S3_BUCKET);
 
   let stream = new Stream.PassThrough();
 
   it("list s3 bucket", () =>
     pipe([
       () => ({}),
-      createS3Client,
+      createS3Client(process.env),
       (s3Client) =>
         pipe([
           () =>
             new ListObjectsV2Command({
-              Bucket,
+              Bucket: S3_BUCKET,
               MaxKeys: 1,
             }),
           (cmd) => s3Client.send(cmd),
@@ -34,14 +34,14 @@ describe("S3", () => {
     tryCatch(
       pipe([
         () => ({}),
-        createS3Client,
+        createS3Client(process.env),
         (s3Client) =>
           pipe([
             () => ({
               s3Client,
               stream,
-              Bucket,
-              Key: "test/stream-to-S3-test.txt",
+              S3_BUCKET,
+              S3_BUCKET_KEY: "test/stream-to-S3-test.txt",
             }),
             createUploadStream,
             (uploadStream) =>
