@@ -8,13 +8,10 @@ const mime = require("mime-types");
 const { walkDir } = require("./walkDir");
 const { PutObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 
-const { S3_AWSAccessKeyId, S3_AWSSecretKey, S3_AWS_REGION } = process.env;
-
 const createS3Client = (env) =>
   pipe([
     tap((params) => {
       assert(env);
-      //assert(env.S3_AWS_REGION);
     }),
     () => ({ region: env.S3_AWS_REGION }),
     when(
@@ -69,10 +66,6 @@ exports.uploadDirToS3 = ({ s3Bucket, s3Key, s3LocalDir = "artifacts" }) =>
         logger.debug(`uploadDirToS3 ${s3Bucket} ${s3Key}, from ${s3LocalDir}`);
         assert(s3Bucket);
         assert(s3Key);
-        assert(s3LocalDir);
-        assert(S3_AWSAccessKeyId);
-        assert(S3_AWSSecretKey);
-        assert(S3_AWS_REGION);
       }),
       () => "",
       walkDir({ baseDir: s3LocalDir }),
