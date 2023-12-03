@@ -1146,7 +1146,7 @@ const countResources = pipe([
     { providers: 0, types: 0, resources: 0 }
   ),
   tap((result) => {
-    logger.info(`countResources ${JSON.stringify(result)}`);
+    logger.debug(`countResources ${JSON.stringify(result)}`);
   }),
 ]);
 

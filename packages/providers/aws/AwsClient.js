@@ -341,7 +341,9 @@ const AwsClient =
           }),
           lives.getByType({ providerName: config.providerName, type, group }),
           tap((parents) => {
-            logger.info(`getListWithParent ${type} #parents: ${size(parents)}`);
+            logger.debug(
+              `getListWithParent ${type} #parents: ${size(parents)}`
+            );
           }),
           filter(filterParent),
           flatMap(({ live, name, managedByOther }) =>
@@ -437,7 +439,7 @@ const AwsClient =
           unless(() => noSortKey, map(myDeepSortKey)),
           map(myDeepReject),
           tap((items) => {
-            logger.info(`getListWithParent ${type} #items ${size(items)}`);
+            logger.debug(`getListWithParent ${type} #items ${size(items)}`);
           }),
         ])();
 

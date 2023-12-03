@@ -72,13 +72,13 @@ const buildNode =
         )}" [label=<
   <table color='${node.color}' border="0">
      <tr><td align="text"><FONT color='${node.type.fontColor}' POINT-SIZE="${
-          node.type.pointSize
-        }"><B>${resource.groupType}</B></FONT><br align="left" /></td></tr>
+       node.type.pointSize
+     }"><B>${resource.groupType}</B></FONT><br align="left" /></td></tr>
      <tr><td align="text"><FONT color='${node.name.fontColor}' POINT-SIZE="${
-          node.name.pointSize
-        }">${formatNodeName({
-          name: nodeNameFromResource(resource),
-        })}</FONT><br align="left" /></td></tr>
+       node.name.pointSize
+     }">${formatNodeName({
+       name: nodeNameFromResource(resource),
+     })}</FONT><br align="left" /></td></tr>
   </table>>];\n`,
     ])();
 
@@ -424,7 +424,7 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
 exports.buildGraphLive = ({ lives, options }) =>
   pipe([
     tap(() => {
-      logger.info(`buildGraphLive`);
+      logger.debug(`buildGraphLive`);
     }),
     () => `digraph graphname {
   ${buildGraphRootLabel({ options })}
@@ -445,6 +445,6 @@ exports.buildGraphLive = ({ lives, options }) =>
   ])(lives)}
 }`,
     tap((result) => {
-      logger.info(`buildGraphLive done`);
+      logger.debug(`buildGraphLive done`);
     }),
   ])();

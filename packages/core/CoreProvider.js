@@ -765,7 +765,7 @@ function CoreProvider({
         tap(() => {
           assert(title, "title");
           assert(Array.isArray(specs), "specs must be an array");
-          logger.info(`spinnersStartClient ${title}, #specs ${size(specs)}`);
+          logger.debug(`spinnersStartClient ${title}, #specs ${size(specs)}`);
         }),
         tap(() =>
           onStateChange({
@@ -1174,7 +1174,7 @@ function CoreProvider({
       tap(() => {}),
       getSpecs,
       tap((clients) => {
-        logger.info(
+        logger.debug(
           `listLives #clients: ${size(clients)}, ${JSON.stringify({
             providerName,
             title,
@@ -1195,7 +1195,7 @@ function CoreProvider({
         }),
       ]),
       tap((clients) => {
-        logger.info(`listLives #clients ${size(clients)}`);
+        logger.debug(`listLives #clients ${size(clients)}`);
       }),
       map((spec) => ({
         meta: pick(["type", "group", "groupType", "providerName"])(spec),

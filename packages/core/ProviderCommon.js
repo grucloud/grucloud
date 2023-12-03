@@ -351,11 +351,11 @@ exports.filterReadClient =
     pipe([
       tap(() => {
         assert(targetTypes);
-        logger.info(
-          `filterReadClient types: ${types}, all: ${all}, #specs ${size(
-            specs
-          )}, #targets: ${size(targetTypes)}, groups:${groups} `
-        );
+        // logger.debug(
+        //   `filterReadClient types: ${types}, all: ${all}, #specs ${size(
+        //     specs
+        //   )}, #targets: ${size(targetTypes)}, groups:${groups} `
+        // );
       }),
       () => specs,
       filter(not(get("isHide"))),
@@ -367,7 +367,7 @@ exports.filterReadClient =
         //   )} targetTypes: ${targetTypes}`
         // );
 
-        logger.info(
+        logger.debug(
           `filterReadClient #specs ${size(
             specs
           )}, final types: ${displayClientsType(specs)}`

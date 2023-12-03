@@ -619,7 +619,7 @@ exports.ProviderGru = ({
   const startProvider = ({ onStateChange }) =>
     pipe([
       tap(() => {
-        logger.info(`startProvider`);
+        logger.debug(`startProvider`);
         assert(onStateChange);
         assert(stacks);
       }),
@@ -628,12 +628,9 @@ exports.ProviderGru = ({
         ...runnerParams({ provider, isProviderUp, stacks }),
         executor: ({ results }) =>
           pipe([
-            tap(() => {
-              logger.info(`startProvider`);
-            }),
             () => provider.start({ onStateChange }),
             tap((params) => {
-              logger.info(`startProvider started`);
+              logger.debug(`startProvider started`);
             }),
             () => ({
               provider,
@@ -665,7 +662,7 @@ exports.ProviderGru = ({
       map(pick(["error", "providerName"])),
       addErrorToResults,
       tap(({ results }) => {
-        logger.info(`startProvider #providers ${size(results)}`);
+        logger.debug(`startProvider #providers ${size(results)}`);
       }),
     ])();
 
