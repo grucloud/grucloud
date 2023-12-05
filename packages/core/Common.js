@@ -193,7 +193,7 @@ const replaceName = ({
 exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
   pipe([
     tap(() => {
-      logger.debug("planToResourcesPerType");
+      // logger.debug("planToResourcesPerType");
       assert(providerName);
     }),
     () => plans,
@@ -207,7 +207,7 @@ exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
       resources,
     })),
     tap((obj) => {
-      logger.debug("planToResourcesPerType");
+      //logger.debug("planToResourcesPerType");
     }),
   ])();
 

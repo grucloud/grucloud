@@ -728,7 +728,7 @@ function CoreProvider({
             Array.isArray(resourcesPerType),
             "resourcesPerType must be an array"
           );
-          logger.info(
+          logger.debug(
             `spinnersStartResources ${title}, #resourcesPerType ${size(
               resourcesPerType
             )}`
@@ -793,7 +793,7 @@ function CoreProvider({
       pipe([
         tap(() => {
           assert(title, "title");
-          logger.info(`spinnersStopClient ${title}, error: ${error}`);
+          logger.debug(`spinnersStopClient ${title}, error: ${error}`);
         }),
         tap(() =>
           onStateChange({
@@ -1195,7 +1195,7 @@ function CoreProvider({
         }),
       ]),
       tap((clients) => {
-        logger.debug(`listLives #clients ${size(clients)}`);
+        //logger.debug(`listLives #clients ${size(clients)}`);
       }),
       map((spec) => ({
         meta: pick(["type", "group", "groupType", "providerName"])(spec),
@@ -1282,11 +1282,11 @@ function CoreProvider({
       }),
       assign({ providerName: () => providerName }),
       tap(({ results }) => {
-        logger.debug(
-          `listLives provider ${providerName}, ${size(
-            results
-          )} results: ${pluck("groupType")(results).join(", ")}`
-        );
+        // logger.debug(
+        //   `listLives provider ${providerName}, ${size(
+        //     results
+        //   )} results: ${pluck("groupType")(results).join(", ")}`
+        // );
       }),
     ])();
 
@@ -1307,26 +1307,26 @@ function CoreProvider({
       const { id } = resource;
 
       assert(direction);
-      logger.debug(
-        `filterDestroyResources ${JSON.stringify({
-          all,
-          types,
-          id,
-        })}`
-      );
+      // logger.debug(
+      //   `filterDestroyResources ${JSON.stringify({
+      //     all,
+      //     types,
+      //     id,
+      //   })}`
+      // );
       return switchCase([
         // Resource that cannot be deleted
         () => resource.cannotBeDeleted,
         () => {
-          logger.debug(
-            `filterDestroyResources ${type}/${id}, default resource cannot be deleted`
-          );
+          // logger.debug(
+          //   `filterDestroyResources ${type}/${id}, default resource cannot be deleted`
+          // );
           return false;
         },
         // Delete all resources
         and([() => all, () => isEmpty(types)]),
         () => {
-          logger.debug(`filterDestroyResources ${type}/${id}, delete all`);
+          //logger.debug(`filterDestroyResources ${type}/${id}, delete all`);
           return true;
         },
         // ManagedByOther, if types is specified, delete the resource regardless of managedByOther
@@ -1341,7 +1341,7 @@ function CoreProvider({
         // Not our minion
         () => isEmpty(types) && !resource.managedByUs,
         () => {
-          logger.debug(`filterDestroyResources ${type}::${id}, not our minion`);
+          // logger.debug(`filterDestroyResources ${type}::${id}, not our minion`);
           return false;
         },
         // Delete by type
@@ -1373,7 +1373,7 @@ function CoreProvider({
   }) =>
     pipe([
       tap(() => {
-        logger.info(
+        logger.debug(
           `planFindDestroy ${JSON.stringify({ options, direction })}`
         );
         assert(livesData);

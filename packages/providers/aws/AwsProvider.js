@@ -54,7 +54,7 @@ exports.AwsProvider = async ({
       pipe([
         tap(() => {
           assert(config);
-          logger.debug(`fetchAccountId ${name}`);
+          //logger.debug(`fetchAccountId ${name}`);
         }),
         createEndpointOption(config),
         (options) => new STS(options),

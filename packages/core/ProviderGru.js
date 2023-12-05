@@ -980,7 +980,7 @@ exports.ProviderGru = ({
       tap(() => {
         assert(hookType);
         assert(onStateChange);
-        logger.info(
+        logger.debug(
           `runCommandGlobal ${hookType}, hashookGlobal: ${!!hookGlobal}`
         );
       }),
@@ -1002,7 +1002,7 @@ exports.ProviderGru = ({
           tryCatch(
             pipe([
               tap(() => {
-                logger.info(
+                logger.debug(
                   `runCommandGlobal ${hookType}, hashookGlobal: ${!!hookGlobal}`
                 );
                 assert(isFunction(hookGlobal));
@@ -1049,7 +1049,7 @@ exports.ProviderGru = ({
         identity,
       ]),
       tap((result) => {
-        logger.info(`runCommandGlobal ${hookType}, done`);
+        logger.debug(`runCommandGlobal ${hookType}, done`);
       }),
     ])();
 

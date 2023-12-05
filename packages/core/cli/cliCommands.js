@@ -484,7 +484,7 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providerGru }) =>
 const runAsyncCommandHookGlobal = ({ hookType, commandTitle, providerGru }) =>
   pipe([
     tap(() => {
-      logger.info(`runAsyncCommandHookGlobal hookType: ${hookType}`);
+      logger.debug(`runAsyncCommandHookGlobal hookType: ${hookType}`);
       assert(providerGru);
     }),
     () =>
@@ -499,7 +499,7 @@ const runAsyncCommandHookGlobal = ({ hookType, commandTitle, providerGru }) =>
           ])({}),
       }),
     tap((xxx) => {
-      logger.info(`runAsyncCommandHookGlobal hookType: ${hookType} DONE`);
+      logger.debug(`runAsyncCommandHookGlobal hookType: ${hookType} DONE`);
     }),
     //throwIfError,
   ])();
