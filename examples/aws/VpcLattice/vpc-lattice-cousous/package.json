@@ -1,6 +1,6 @@
 {
   "name": "vpc-lattice-cousous",
-  "version": "13.0.28-alpha.0",
+  "version": "13.0.29-alpha.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -25,8 +25,8 @@
     "@aws-sdk/client-elastic-load-balancing-v2": "3.332.0",
     "@aws-sdk/client-lambda": "3.332.0",
     "@aws-sdk/client-vpc-lattice": "3.332.0",
-    "@grucloud/core": "^13.0.28-alpha.0",
-    "@grucloud/provider-aws": "^13.0.28-alpha.0",
+    "@grucloud/core": "^13.0.29-alpha.0",
+    "@grucloud/provider-aws": "^13.0.29-alpha.0",
     "rubico": "1.9.6"
   }
 }
