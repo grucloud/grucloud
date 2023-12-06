@@ -424,7 +424,7 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
 exports.buildGraphLive = ({ lives, options }) =>
   pipe([
     tap(() => {
-      logger.debug(`buildGraphLive`);
+      //logger.debug(`buildGraphLive`);
     }),
     () => `digraph graphname {
   ${buildGraphRootLabel({ options })}
@@ -445,6 +445,6 @@ exports.buildGraphLive = ({ lives, options }) =>
   ])(lives)}
 }`,
     tap((result) => {
-      logger.debug(`buildGraphLive done`);
+      //logger.debug(`buildGraphLive done`);
     }),
   ])();

@@ -195,7 +195,7 @@ exports.runAsyncCommand = runAsyncCommand;
 
 const displayProviderList = pipe([
   tap((xx) => {
-    logger.debug("displayProviderList");
+    //logger.debug("displayProviderList");
   }),
   pluck("name"),
   tap((list) => {
@@ -221,9 +221,9 @@ const filterProvider =
           )(providerOptions),
       ]),
       tap((keep) => {
-        logger.debug(
-          `filterProvider ${provider.name}: ${providerOptions}, keep: ${keep}`
-        );
+        // logger.debug(
+        //   `filterProvider ${provider.name}: ${providerOptions}, keep: ${keep}`
+        // );
       }),
     ])();
 
@@ -238,9 +238,9 @@ exports.setupProviders =
   (infra) =>
     pipe([
       tap(() => {
-        logger.debug(
-          `setupProviders ${JSON.stringify({ commandOptions, programOptions })}`
-        );
+        // logger.debug(
+        //   `setupProviders ${JSON.stringify({ commandOptions, programOptions })}`
+        // );
         assert(infra);
         assert(mapGloblalNameToResource);
       }),

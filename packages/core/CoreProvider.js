@@ -135,7 +135,7 @@ const getListHofDefault = ({ getList, spec }) =>
   tryCatch(
     pipe([
       tap(() => {
-        logger.debug(`getList ${spec.groupType}`);
+        logger.info(`getList ${spec.groupType}`);
         assert(getList);
       }),
       getList,
@@ -146,7 +146,7 @@ const getListHofDefault = ({ getList, spec }) =>
       }),
       (items) => ({ items, total: size(items) }),
       tap(({ total }) => {
-        logger.debug(`getList ${spec.groupType} ${total}`);
+        logger.info(`getList ${spec.groupType} ${total}`);
       }),
     ]),
     (error, params) =>
@@ -207,7 +207,7 @@ function CoreProvider({
   const getProviderConfig = () =>
     buildProviderConfig({ config: makeConfig(), providerName, programOptions });
 
-  logger.debug(`CoreProvider name: ${providerName}, type ${type}`);
+  //logger.debug(`CoreProvider name: ${providerName}, type ${type}`);
 
   const hookMap = new Map();
 
@@ -256,9 +256,9 @@ function CoreProvider({
       }),
       () => mapNameToResource.get(uri),
       tap((resource) => {
-        logger.debug(
-          `getResourceFromLive uri: ${uri}, hasResource: ${!!resource}`
-        );
+        // logger.debug(
+        //   `getResourceFromLive uri: ${uri}, hasResource: ${!!resource}`
+        // );
       }),
     ])();
 
@@ -728,11 +728,11 @@ function CoreProvider({
             Array.isArray(resourcesPerType),
             "resourcesPerType must be an array"
           );
-          logger.debug(
-            `spinnersStartResources ${title}, #resourcesPerType ${size(
-              resourcesPerType
-            )}`
-          );
+          // logger.debug(
+          //   `spinnersStartResources ${title}, #resourcesPerType ${size(
+          //     resourcesPerType
+          //   )}`
+          // );
         }),
         () =>
           onStateChange({
@@ -765,7 +765,7 @@ function CoreProvider({
         tap(() => {
           assert(title, "title");
           assert(Array.isArray(specs), "specs must be an array");
-          logger.debug(`spinnersStartClient ${title}, #specs ${size(specs)}`);
+          //logger.debug(`spinnersStartClient ${title}, #specs ${size(specs)}`);
         }),
         tap(() =>
           onStateChange({
@@ -793,7 +793,7 @@ function CoreProvider({
       pipe([
         tap(() => {
           assert(title, "title");
-          logger.debug(`spinnersStopClient ${title}, error: ${error}`);
+          //logger.debug(`spinnersStopClient ${title}, error: ${error}`);
         }),
         tap(() =>
           onStateChange({
@@ -809,7 +809,7 @@ function CoreProvider({
     pipe([
       () => [...hookMap.values()],
       tap((hooks) => {
-        logger.info(`spinnersStart #hooks ${hooks.length}`);
+        //logger.info(`spinnersStart #hooks ${hooks.length}`);
       }),
       tap(
         map(({ name, onDeployed, onDestroyed }) =>
@@ -834,18 +834,18 @@ function CoreProvider({
     pipe([
       () => [...mapTypeToResources.values()],
       tap((resourcesPerType) => {
-        logger.debug(
-          `spinnersStartQuery #resourcesPerType ${size(resourcesPerType)}`
-        );
+        // logger.debug(
+        //   `spinnersStartQuery #resourcesPerType ${size(resourcesPerType)}`
+        // );
       }),
       map(filter(not(get("spec.listOnly")))),
       filter(not(isEmpty)),
       tap((resourcesPerType) => {
-        logger.debug(
-          `spinnersStartQuery #resourcesPerType no listOnly ${size(
-            resourcesPerType
-          )}`
-        );
+        // logger.debug(
+        //   `spinnersStartQuery #resourcesPerType no listOnly ${size(
+        //     resourcesPerType
+        //   )}`
+        // );
       }),
       map((resources) => ({
         provider: providerName,
@@ -1048,12 +1048,12 @@ function CoreProvider({
               (name) => hookAdd({ name, hookInstance }),
             ])(),
           tap(() => {
-            logger.debug(`register done`);
+            //logger.debug(`register done`);
           }),
         ])()
       ),
       tap(() => {
-        logger.debug(`register done`);
+        //logger.debug(`register done`);
       }),
     ])();
 
@@ -1174,14 +1174,14 @@ function CoreProvider({
       tap(() => {}),
       getSpecs,
       tap((clients) => {
-        logger.debug(
-          `listLives #clients: ${size(clients)}, ${JSON.stringify({
-            providerName,
-            title,
-            readWrite,
-            options,
-          })}`
-        );
+        // logger.debug(
+        //   `listLives #clients: ${size(clients)}, ${JSON.stringify({
+        //     providerName,
+        //     title,
+        //     readWrite,
+        //     options,
+        //   })}`
+        // );
       }),
       switchCase([
         () => readWrite,
@@ -1373,9 +1373,9 @@ function CoreProvider({
   }) =>
     pipe([
       tap(() => {
-        logger.debug(
-          `planFindDestroy ${JSON.stringify({ options, direction })}`
-        );
+        // logger.debug(
+        //   `planFindDestroy ${JSON.stringify({ options, direction })}`
+        // );
         assert(livesData);
       }),
       () => livesData,
@@ -1420,16 +1420,16 @@ function CoreProvider({
       ),
       filter(not(isEmpty)),
       tap((results) => {
-        logger.debug(`planFindDestroy done`);
+        //logger.debug(`planFindDestroy done`);
       }),
     ])();
 
   const planQueryDestroy = ({ livesData, options = {} }) =>
     pipe([
       tap(() => {
-        logger.info(
-          `planQueryDestroy ${JSON.stringify({ providerName, options })}`
-        );
+        // logger.info(
+        //   `planQueryDestroy ${JSON.stringify({ providerName, options })}`
+        // );
         assert(livesData);
       }),
       () => ({ providerName }),
@@ -1439,14 +1439,14 @@ function CoreProvider({
       }),
       assign({ error: any(get("error")) }),
       tap((result) => {
-        logger.debug(`planQueryDestroy done`);
+        //logger.debug(`planQueryDestroy done`);
       }),
     ])();
 
   const planUpsert = ({ onStateChange = noop, lives }) =>
     pipe([
       tap(() => {
-        logger.info(`planUpsert`);
+        // logger.info(`planUpsert`);
       }),
       tap(() =>
         onStateChange({
@@ -1542,7 +1542,7 @@ function CoreProvider({
   } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`planQuery begins ${providerName}`);
+        // logger.info(`planQuery begins ${providerName}`);
         assert(livesData);
       }),
       providerRunning({ onStateChange, providerName }),
@@ -1574,7 +1574,7 @@ function CoreProvider({
         })
       ),
       tap((result) => {
-        logger.debug(`planQuery done ${providerName}`);
+        // logger.debug(`planQuery done ${providerName}`);
       }),
     ])({});
 

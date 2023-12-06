@@ -9,7 +9,7 @@ const websockerMock = { close: () => {}, send: (message) => {} };
 exports.connectToWebSocketServer = ({ wsUrl, wsRoom }) =>
   pipe([
     tap((params) => {
-      logger.debug("connectToWebSocketServer", wsUrl, "wsRoom", wsRoom);
+      //logger.debug("connectToWebSocketServer", wsUrl, "wsRoom", wsRoom);
     }),
     switchCase([
       () => wsUrl && wsRoom,

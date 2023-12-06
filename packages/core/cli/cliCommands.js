@@ -134,7 +134,7 @@ const hasPlans = pipe([
     ])
   ),
   tap((hasPlan) => {
-    logger.debug(`hasPlans ${hasPlan}`);
+    //logger.debug(`hasPlans ${hasPlan}`);
   }),
 ]);
 
@@ -313,7 +313,7 @@ const displayCommandHeader = ({ providers, verb }) =>
 const doPlanQuery = ({ commandOptions } = {}) =>
   pipe([
     tap((input) => {
-      logger.debug("doPlanQuery");
+      //logger.debug("doPlanQuery");
       assert(input.providerGru);
       assert(input.providerGru.getProviders().length > 0);
     }),
@@ -634,7 +634,7 @@ const doPlansDeploy =
   ({ resultQuery }) =>
     pipe([
       tap(() => {
-        logger.debug("doPlansDeploy ");
+        //logger.debug("doPlansDeploy ");
         assert(resultQuery);
       }),
       () => resultQuery,
@@ -723,7 +723,7 @@ const doPlanApply = async ({
     }),
     assign({ error: any(get("error")) }),
     tap((result) => {
-      logger.info(`doPlanApply done`);
+      //logger.info(`doPlanApply done`);
       //logger.debug(tos(result));
     }),
   ])();
@@ -828,7 +828,7 @@ const planApply = ({
             return result;
           },
           tap((result) => {
-            logger.info(`planApply done`);
+            //logger.info(`planApply done`);
           }),
           assign({
             resultHook: () =>
@@ -840,7 +840,7 @@ const planApply = ({
           }),
           assign({ error: any(get("error")) }),
           tap((result) => {
-            logger.info(`planApply done`);
+            // logger.info(`planApply done`);
           }),
           throwIfError,
         ])(),
@@ -873,7 +873,7 @@ const countDestroyed = reduce(
 
 const displayDestroySuccess = pipe([
   tap((x) => {
-    logger.debug(`displayDestroySuccess`);
+    // logger.debug(`displayDestroySuccess`);
   }),
   get("results"),
   map(get("resultDestroy")),
@@ -882,7 +882,7 @@ const displayDestroySuccess = pipe([
   }),
   countDestroyed,
   tap((stats) => {
-    logger.debug(`displayDestroySuccess ${tos(stats)}`);
+    //logger.debug(`displayDestroySuccess ${tos(stats)}`);
   }),
   ({ providers, types, resources }) =>
     console.log(
@@ -984,7 +984,7 @@ const doPlansDestroy = ({
       switchCase([get("error"), displayDestroyErrors, displayDestroySuccess])
     ),
     tap((result) => {
-      logger.debug(`doPlansDestroy finished, error: ${result.error}`);
+      //logger.debug(`doPlansDestroy finished, error: ${result.error}`);
     }),
   ])();
 
@@ -998,7 +998,7 @@ const processDestroyPlans = ({
   pipe([
     tap(() => {
       assert(Array.isArray(resultQueryDestroy.results));
-      logger.debug("processDestroyPlans");
+      //logger.debug("processDestroyPlans");
     }),
     () => resultQueryDestroy.results,
     switchCase([
@@ -1122,7 +1122,7 @@ const planDestroy = ({
           assign({ error: any(get("error")) }),
           throwIfError,
           tap((result) => {
-            logger.debug(`destroy done`);
+            //logger.debug(`destroy done`);
           }),
         ])(),
     ]),
@@ -1146,7 +1146,7 @@ const countResources = pipe([
     { providers: 0, types: 0, resources: 0 }
   ),
   tap((result) => {
-    logger.debug(`countResources ${JSON.stringify(result)}`);
+    //logger.debug(`countResources ${JSON.stringify(result)}`);
   }),
 ]);
 
@@ -1230,7 +1230,7 @@ const displayLives = (lives) =>
 
 const displayListResult = pipe([
   tap((params) => {
-    logger.debug(`displayListResult`);
+    //logger.debug(`displayListResult`);
   }),
   get("results"),
   tap((results) => {

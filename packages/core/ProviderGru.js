@@ -619,7 +619,7 @@ exports.ProviderGru = ({
   const startProvider = ({ onStateChange }) =>
     pipe([
       tap(() => {
-        logger.debug(`startProvider`);
+        //logger.debug(`startProvider`);
         assert(onStateChange);
         assert(stacks);
       }),
@@ -630,7 +630,7 @@ exports.ProviderGru = ({
           pipe([
             () => provider.start({ onStateChange }),
             tap((params) => {
-              logger.debug(`startProvider started`);
+              // logger.debug(`startProvider started`);
             }),
             () => ({
               provider,

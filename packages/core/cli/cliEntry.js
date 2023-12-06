@@ -18,7 +18,7 @@ const { main } = require("./cliMain");
 main({
   argv: process.argv,
   onExit: async ({ code }) => {
-    logger.info(`onExit ${code}`);
+    logger.debug(`onExit ${code}`);
 
     setTimeout(() => {
       try {

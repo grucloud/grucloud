@@ -19,7 +19,6 @@ const {
   identity,
   isEmpty,
   isFunction,
-  forEach,
   includes,
   find,
   size,
@@ -163,7 +162,7 @@ exports.Lister =
           map(({ key }) => resultMap.get(key)),
           fork({ error: any(get("error")), results: identity }),
           tap(({ error, results }) => {
-            logger.info(`Lister ${error && "error"}`);
+            //logger.info(`Lister ${error && "error"}`);
             error.stack && logger.error(error.stack);
           }),
         ])(),

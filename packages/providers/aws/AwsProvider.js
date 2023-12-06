@@ -73,7 +73,7 @@ exports.AwsProvider = async ({
     pipe([
       tap((params) => {
         assert(config);
-        logger.debug(`getRegionFromCredentialFiles ${name}`);
+        //logger.debug(`getRegionFromCredentialFiles ${name}`);
       }),
       () => config,
       get("credentials.profile", "default"),
@@ -92,7 +92,7 @@ exports.AwsProvider = async ({
           }),
         ])(),
       tap((region) => {
-        logger.debug(`getRegionFromCredentialFiles ${name} region: ${region}`);
+        //logger.debug(`getRegionFromCredentialFiles ${name} region: ${region}`);
       }),
     ])();
 

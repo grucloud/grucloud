@@ -274,9 +274,9 @@ const filterByType =
         ])()
       ),
       tap((specs) => {
-        logger.info(
-          `filterByType ${size(specs)} specs: ${pluck("groupType")(specs)}`
-        );
+        // logger.debug(
+        //   `filterByType ${size(specs)} specs: ${pluck("groupType")(specs)}`
+        // );
       }),
     ])();
 
@@ -328,20 +328,20 @@ const addDependentClients = (specsAll) => (specs) =>
     tap(() => {
       assert(specs);
       assert(specsAll);
-      logger.debug(
-        `addDependentClients #specsAll ${size(specsAll)}, #specs ${size(specs)}`
-      );
+      // logger.debug(
+      //   `addDependentClients #specsAll ${size(specsAll)}, #specs ${size(specs)}`
+      // );
     }),
     () => specs,
     flatMap(findClientDependencies({ specs: specsAll })),
     filter(not(isEmpty)),
     uniq,
     tap((clientsDependents) => {
-      logger.debug(
-        `addDependentClients #specsAll ${size(
-          specsAll
-        )}, #clientsDependents ${size(clientsDependents)}`
-      );
+      // logger.debug(
+      //   `addDependentClients #specsAll ${size(
+      //     specsAll
+      //   )}, #clientsDependents ${size(clientsDependents)}`
+      // );
     }),
   ])();
 
@@ -366,12 +366,11 @@ exports.filterReadClient =
         //     targetTypes
         //   )} targetTypes: ${targetTypes}`
         // );
-
-        logger.debug(
-          `filterReadClient #specs ${size(
-            specs
-          )}, final types: ${displayClientsType(specs)}`
-        );
+        // logger.debug(
+        //   `filterReadClient #specs ${size(
+        //     specs
+        //   )}, final types: ${displayClientsType(specs)}`
+        // );
       }),
       addDependentClients(specs),
     ])();

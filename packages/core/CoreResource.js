@@ -177,16 +177,16 @@ exports.ResourceMaker = ({
     ])
   );
 
-  logger.debug(
-    `ResourceMaker: ${JSON.stringify({
-      type,
-      group,
-      //resourceName: getResourceName(),
-      namespace,
-      meta,
-      programOptions,
-    })}`
-  );
+  // logger.debug(
+  //   `ResourceMaker: ${JSON.stringify({
+  //     type,
+  //     group,
+  //     //resourceName: getResourceName(),
+  //     namespace,
+  //     meta,
+  //     //  programOptions,
+  //   })}`
+  // );
 
   const getDependencies = pipe([
     () => dependencies,
