@@ -17,7 +17,7 @@ const runAsyncCommand = async ({ ws, text, command }) => {
   assert(text);
   assert(command);
   const spinnies = new Spinnies({ spinner });
-  logger.debug(`runAsyncCommand: ${JSON.stringify({ text })}`);
+  //logger.debug(`runAsyncCommand: ${JSON.stringify({ text })}`);
   const spinnerList = [];
   const spinnerMap = new Map();
 
@@ -43,10 +43,10 @@ const runAsyncCommand = async ({ ws, text, command }) => {
     // );
     assert(context, "onStateChange: missing context");
     const onDoneDefault = ({ state, spinnerMap }) => {
-      logger.debug(
-        `onDoneDefault: uri: ${uri} `,
-        JSON.stringify(spinnies.spinners.mock)
-      );
+      // logger.debug(
+      //   `onDoneDefault: uri: ${uri} `,
+      //   JSON.stringify(spinnies.spinners.mock)
+      // );
 
       spinnies.update(uri, {
         text: displayText(state),
@@ -180,12 +180,12 @@ const runAsyncCommand = async ({ ws, text, command }) => {
 
   try {
     const result = await command({ onStateChange });
-    logger.debug(`runAsyncCommand end of : ${text}`);
+    //logger.debug(`runAsyncCommand end of : ${text}`);
     spinnies.stopAll();
     return result;
   } catch (error) {
     spinnies.stopAll();
-    logger.debug(`runAsyncCommand: error for command: ${text}`);
+    logger.info(`runAsyncCommand: error for command: ${text}`);
     logger.debug(error);
 
     throw error;
@@ -194,14 +194,14 @@ const runAsyncCommand = async ({ ws, text, command }) => {
 exports.runAsyncCommand = runAsyncCommand;
 
 const displayProviderList = pipe([
-  tap((xx) => {
-    //logger.debug("displayProviderList");
+  tap((param) => {
+    assert(true);
   }),
   pluck("name"),
   tap((list) => {
     assert(list[0]);
   }),
-  (list) => list.join(", "),
+  callProp("join", ", "),
 ]);
 exports.displayProviderList = displayProviderList;
 
