@@ -1,6 +1,6 @@
 {
   "name": "ivschat-full",
-  "version": "13.1.0",
+  "version": "13.1.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -22,8 +22,8 @@
   "dependencies": {
     "@aws-sdk/client-cloudwatch-logs": "3.332.0",
     "@aws-sdk/client-ivschat": "3.332.0",
-    "@grucloud/core": "^13.1.0",
-    "@grucloud/provider-aws": "^13.1.0",
+    "@grucloud/core": "^13.1.1",
+    "@grucloud/provider-aws": "^13.1.1",
     "rubico": "1.9.6"
   }
 }
