@@ -1103,50 +1103,54 @@ function CoreProvider({
           })
         ),
         start,
-        tap(validate),
-        tap((result) =>
-          onStateChange({
-            context: contextFromProviderInit({ providerName }),
-            nextState: "DONE",
-            result,
-          })
-        ),
-        () => createResources,
-        unless(
-          isEmpty,
-          pipe([
-            flatMap((cr) =>
-              pipe([
-                tap(() => {
-                  assert(
-                    isFunction(cr),
-                    "createResources should be a function"
-                  );
-                }),
-                () => cr({ provider }),
-              ])()
-            ),
-            filter(not(isEmpty)),
-            targetResourcesBuildMap,
-          ])
-        ),
         tap((params) => {
-          logger.debug(`start done ${providerName}`);
+          assert(true);
         }),
-        getSpecs,
-        forEach(
-          when(
-            get("setup"),
-            pipe([
-              callProp("setup", { config: getProviderConfig() }),
-              (result = {}) => {
-                context = {
-                  ...context,
-                  ...result,
-                };
-              },
-            ])
-          )
+        tap(
+          pipe([
+            validate,
+            tap((result) =>
+              onStateChange({
+                context: contextFromProviderInit({ providerName }),
+                nextState: "DONE",
+                result,
+              })
+            ),
+            () => createResources,
+            unless(
+              isEmpty,
+              pipe([
+                flatMap((cr) =>
+                  pipe([
+                    tap(() => {
+                      assert(
+                        isFunction(cr),
+                        "createResources should be a function"
+                      );
+                    }),
+                    () => cr({ provider }),
+                  ])()
+                ),
+                filter(not(isEmpty)),
+                targetResourcesBuildMap,
+              ])
+            ),
+            getSpecs,
+            forEach(
+              when(
+                get("setup"),
+                pipe([
+                  callProp("setup", { config: getProviderConfig() }),
+                  (result = {}) => {
+                    context = {
+                      ...context,
+                      ...result,
+                    };
+                  },
+                ])
+              )
+            ),
+          ])
         ),
       ]),
       (error) => {

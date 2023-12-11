@@ -267,42 +267,39 @@ exports.setupProviders =
       }),
     ])();
 
-exports.saveToJson = ({
-  ws,
-  command,
-  commandOptions = {},
-  programOptions = {},
-  result,
-}) =>
-  pipe([
-    tap(() => {
-      ws &&
-        ws.send(
-          JSON.stringify({ command: command, programOptions, data: result })
-        );
-      assert(programOptions.workingDirectory);
-    }),
-    () => programOptions,
-    get("json", commandOptions.inventory),
-    when(
-      not(isEmpty),
-      pipe([
-        (filename) => path.resolve(programOptions.workingDirectory, filename),
-        tap((fullPath) => {
-          logger.debug(`saveToJson: ${fullPath}`);
-        }),
-        (fullPath) =>
-          fse.outputFile(
-            fullPath,
-            JSON.stringify(
-              { command, commandOptions, programOptions, result },
-              null,
-              4
-            )
-          ),
-      ])
-    ),
-  ])();
+exports.saveToJson =
+  ({ ws, command, commandOptions = {}, programOptions = {} }) =>
+  (result) =>
+    pipe([
+      tap(() => {
+        ws &&
+          ws.send(
+            JSON.stringify({ command: command, programOptions, data: result })
+          );
+        assert(programOptions.workingDirectory);
+      }),
+      () => programOptions,
+      get("json", commandOptions.inventory),
+      when(
+        not(isEmpty),
+        pipe([
+          (filename) => path.resolve(programOptions.workingDirectory, filename),
+          tap((fullPath) => {
+            logger.debug(`saveToJson: ${fullPath}`);
+          }),
+          (fullPath) =>
+            fse.outputFile(
+              fullPath,
+              JSON.stringify(
+                { command, commandOptions, programOptions, result },
+                null,
+                4
+              )
+            ),
+        ])
+      ),
+      () => result,
+    ])();
 
 exports.defaultTitle = (programOptions) =>
   pipe([

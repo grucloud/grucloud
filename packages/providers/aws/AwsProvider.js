@@ -181,6 +181,12 @@ exports.AwsProvider = async ({
       }),
     ]);
 
+  const information = () => ({
+    accountId,
+    region,
+    config: omit(["accountId"])(makeConfig()),
+  });
+
   const start = pipe([
     () => process.env,
     tap.if(
@@ -207,13 +213,8 @@ exports.AwsProvider = async ({
         })
       );
     }),
+    information,
   ]);
-
-  const information = () => ({
-    accountId,
-    region,
-    config: omit(["accountId"])(makeConfig()),
-  });
 
   const init = ({ options, programOptions }) =>
     pipe([

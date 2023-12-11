@@ -103,7 +103,7 @@ const buildDependsOnReverse = (stacks) =>
         })),
       ])(),
     tap((specDependsOn) => {
-      logger.info(`buildDependsOnReverse: ${tos(specDependsOn)}`);
+      //logger.info(`buildDependsOnReverse: ${tos(specDependsOn)}`);
     }),
   ])();
 
@@ -201,9 +201,9 @@ exports.ProviderGru = ({
         assert(resource);
         assert(resource.type);
         assert(resource.name);
-        logger.debug(
-          `plannerExecutor: executor ${resource.uri}, action: ${action}`
-        );
+        // logger.debug(
+        //   `plannerExecutor: executor ${resource.uri}, action: ${action}`
+        // );
       }),
       () => ({}),
       assign({ engine: () => getResource(resource) }),
@@ -367,7 +367,7 @@ exports.ProviderGru = ({
   }) =>
     pipe([
       tap((providers) => {
-        logger.info(`listLives ${JSON.stringify({ options, readWrite })}`);
+        //logger.info(`listLives ${JSON.stringify({ options, readWrite })}`);
         assert(onStateChange);
         assert(providers);
       }),
@@ -402,7 +402,7 @@ exports.ProviderGru = ({
   const planQuery = ({ onStateChange = identity, providers } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`planQuery`);
+        //logger.info(`planQuery`);
         assert(Array.isArray(providers));
       }),
       () => providers,
@@ -461,7 +461,7 @@ exports.ProviderGru = ({
             }),
             assignErrorToObject,
             tap((result) => {
-              logger.info(`planQuery done`);
+              //logger.info(`planQuery done`);
             }),
           ])(),
       ]),
@@ -473,7 +473,7 @@ exports.ProviderGru = ({
   const planApply = ({ plan, onStateChange }) =>
     pipe([
       tap(() => {
-        logger.info(`planApply`);
+        //logger.info(`planApply`);
         assert(Array.isArray(plan.results));
       }),
       () => plan,
@@ -485,11 +485,12 @@ exports.ProviderGru = ({
           get("plans"),
           map(
             tryCatch(
-              pipe([
-                pick(["providerName"]),
-                getProvider,
-                callProp("start", { onStateChange }),
-              ]),
+              ({ providerName }) =>
+                pipe([
+                  () => ({ providerName }),
+                  getProvider,
+                  callProp("start", { onStateChange }),
+                ])(),
               (error, { providerName }) => {
                 logger.error(
                   `planApply start error ${tos(convertError({ error }))}`
@@ -611,9 +612,6 @@ exports.ProviderGru = ({
         assert(true);
       }),
       assignErrorToObject,
-      tap((result) => {
-        logger.info(`planApply done`);
-      }),
     ])();
 
   const startProvider = ({ onStateChange }) =>
@@ -662,14 +660,14 @@ exports.ProviderGru = ({
       map(pick(["error", "providerName"])),
       addErrorToResults,
       tap(({ results }) => {
-        logger.debug(`startProvider #providers ${size(results)}`);
+        //logger.debug(`startProvider #providers ${size(results)}`);
       }),
     ])();
 
   const planQueryDestroy = ({ onStateChange, options, providers }) =>
     pipe([
       tap(() => {
-        logger.info(`planQueryDestroy ${JSON.stringify(options)}`);
+        //logger.info(`planQueryDestroy ${JSON.stringify(options)}`);
         assert(onStateChange);
         assert(Array.isArray(providers));
       }),
@@ -710,7 +708,7 @@ exports.ProviderGru = ({
           (resultQueryDestroy) => ({ lives: livesData, resultQueryDestroy }),
           assignErrorToObject,
           tap((results) => {
-            logger.info(`planQueryDestroy done`);
+            //logger.info(`planQueryDestroy done`);
           }),
         ])(),
     ]);
@@ -718,7 +716,7 @@ exports.ProviderGru = ({
   const planDestroy = ({ plan, onStateChange = identity, options }) =>
     pipe([
       tap(() => {
-        logger.info(`planDestroy`);
+        //logger.info(`planDestroy`);
         assert(plan);
       }),
       () => plan.results,
@@ -752,8 +750,8 @@ exports.ProviderGru = ({
                   resultHooks: () => provider.runOnDestroyed({ onStateChange }),
                 }),
                 assignErrorToObject,
-                tap((xxx) => {
-                  assert(xxx);
+                tap((params) => {
+                  assert(params);
                 }),
               ])(),
           }),
@@ -763,7 +761,7 @@ exports.ProviderGru = ({
         onStateChange: onStateChangeDefault({ onStateChange }),
       }),
       tap((result) => {
-        logger.debug(`planDestroy done`);
+        assert(true);
       }),
     ])();
 
@@ -777,7 +775,7 @@ exports.ProviderGru = ({
     pipe([
       tap(() => {
         assert(functionName);
-        logger.info(`runCommand ${functionName}`);
+        //logger.info(`runCommand ${functionName}`);
       }),
       () => stacks, //TODO provider up
       map(({ provider, isProviderUp }) => ({
@@ -807,14 +805,14 @@ exports.ProviderGru = ({
         name: functionName,
       }),
       tap((result) => {
-        logger.info(`runCommand result: ${JSON.stringify(result)}`);
+        //logger.info(`runCommand result: ${JSON.stringify(result)}`);
       }),
     ])();
 
   const startHookGlobalSpinners = ({ hookType, onStateChange, hookInstance }) =>
     pipe([
       () => {
-        logger.debug(`startHookGlobalSpinners: ${hookType}`);
+        //logger.debug(`startHookGlobalSpinners: ${hookType}`);
         assert(hookType);
         assert(onStateChange);
         assert(hookInstance[hookType]);
