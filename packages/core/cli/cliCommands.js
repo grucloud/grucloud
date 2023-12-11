@@ -1203,7 +1203,7 @@ const filterShow = pipe([
           results: pipe([
             get("results"),
             tap((results) => {
-              logger.debug(`filterShow : ${size(results)}`);
+              //logger.debug(`filterShow : ${size(results)}`);
             }),
             map(
               assign({

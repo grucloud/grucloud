@@ -892,7 +892,7 @@ function CoreProvider({
     tap(
       pipe([
         tap(() => {
-          logger.debug(`spinnersStopListLives ${error}`);
+          //logger.debug(`spinnersStopListLives ${error}`);
         }),
         spinnersStopClient({
           onStateChange,
@@ -908,7 +908,7 @@ function CoreProvider({
     tap(
       pipe([
         tap(() => {
-          logger.debug("spinnersStartDeploy");
+          //logger.debug("spinnersStartDeploy");
           assert(plan);
         }),
         spinnersStartProvider({ onStateChange }),
@@ -961,7 +961,7 @@ function CoreProvider({
   const spinnersStartDestroyQuery = ({ onStateChange, options }) =>
     pipe([
       tap(() => {
-        logger.debug(`spinnersStartDestroyQuery`);
+        //logger.debug(`spinnersStartDestroyQuery`);
       }),
       spinnersStartProvider({ onStateChange }),
       spinnersStartClient({
@@ -974,16 +974,17 @@ function CoreProvider({
       }),
     ])();
 
-  const spinnersStartDestroy = ({ onStateChange, plans }) => {
-    assert(plans, "plans");
-    assert(Array.isArray(plans), "plans !isArray");
+  const spinnersStartDestroy = ({ onStateChange, plans }) =>
+    pipe([
+      tap(() => {
+        assert(plans, "plans");
+        assert(Array.isArray(plans), "plans !isArray");
+        // const resources = pipe([filter(({ error }) => !error), pluck("resource")])(
+        //   plans
+        // );
 
-    const resources = pipe([filter(({ error }) => !error), pluck("resource")])(
-      plans
-    );
-
-    logger.debug(`spinnersStartDestroy #resources: ${resources.length}`);
-    return pipe([
+        //logger.debug(`spinnersStartDestroy #resources: ${resources.length}`);
+      }),
       spinnersStartProvider({ onStateChange }),
       spinnersStartResources({
         onStateChange,
@@ -998,7 +999,6 @@ function CoreProvider({
         hookType: HookType.ON_DESTROYED,
       }),
     ])();
-  };
 
   const spinnersStartHook = ({ onStateChange, hookType }) =>
     pipe([

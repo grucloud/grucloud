@@ -118,7 +118,7 @@ const filterResources =
   (resources) =>
     pipe([
       tap(() => {
-        logger.debug(`filterResources #resources ${size(resources)}`);
+        //logger.debug(`filterResources #resources ${size(resources)}`);
       }),
       () => resources,
       filter(not(isEmpty)),
@@ -142,7 +142,7 @@ const filterResources =
 const buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
   pipe([
     tap(() => {
-      logger.debug(`buildSubGraphLive ${providerName}`);
+      //logger.debug(`buildSubGraphLive ${providerName}`);
       assert(providerName);
       assert(Array.isArray(resourcesPerType));
     }),
@@ -312,7 +312,7 @@ const getResourceByType = ({ resourcesPerType, groupType }) =>
 const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
   pipe([
     tap(() => {
-      logger.debug(`buildGraphAssociationLive`);
+      //logger.debug(`buildGraphAssociationLive`);
       assert(Array.isArray(resourcesPerType));
     }),
     () => resourcesPerType,
@@ -417,7 +417,7 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
     flatten,
     callProp("join", "\n"),
     tap((result) => {
-      logger.debug(`buildGraphAssociationLive done`);
+      //logger.debug(`buildGraphAssociationLive done`);
     }),
   ])();
 
