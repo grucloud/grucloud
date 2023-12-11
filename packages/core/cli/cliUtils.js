@@ -238,9 +238,6 @@ exports.setupProviders =
   (infra) =>
     pipe([
       tap(() => {
-        // logger.debug(
-        //   `setupProviders ${JSON.stringify({ commandOptions, programOptions })}`
-        // );
         assert(infra);
         assert(mapGloblalNameToResource);
       }),
@@ -301,10 +298,11 @@ exports.saveToJson =
       () => result,
     ])();
 
-exports.defaultTitle = (programOptions) =>
-  pipe([
-    () => programOptions,
-    get("workingDirectory", process.cwd()),
-    callProp("split", path.sep),
-    last,
-  ])();
+exports.defaultTitle = pipe([
+  tap((programOptions) => {
+    assert(programOptions);
+  }),
+  get("workingDirectory", process.cwd()),
+  callProp("split", path.sep),
+  last,
+]);
