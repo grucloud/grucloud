@@ -609,20 +609,22 @@ function CoreProvider({
       () => !skip,
       () =>
         pipe([
+          () => [...hookMap.values()],
           tap((hooks) => {
-            logger.info(
-              `runHook hookType: ${hookType}, #hooks ${hooks.length}`
-            );
+            // logger.debug(
+            //   `runHook hookType: ${hookType}, #hooks ${hooks.length}`
+            // );
             assert(onStateChange);
             assert(hookType);
             assert(onHook);
           }),
+
           map((hook) =>
             pipe([
               tap(() => {
                 assert(hook.name, "name");
                 assert(hook[onHook], `hook[onHook]: ${onHook}`);
-                logger.info(`runHook start ${hook.name}`);
+                logger.debug(`runHook start ${hook.name}`);
               }),
               () => hook[onHook],
               runScriptCommands({
@@ -635,13 +637,13 @@ function CoreProvider({
               }),
             ])()
           ),
-          (results) => ({ error: any(get("error"))(results), results }),
+          assign({ error: any(get("error")), results: get("results") }),
           tap((result) => {
-            logger.info(`runHook DONE`);
+            assert(true);
           }),
-        ])([...hookMap.values()]),
+        ])(),
       () => {
-        logger.debug(`runHook skipped`);
+        //logger.debug(`runHook skipped`);
       },
     ])();
 
@@ -664,9 +666,9 @@ function CoreProvider({
   const setHookWaitingState = ({ onStateChange, hookType, hookName }) =>
     pipe([
       tap(({ actions }) => {
-        logger.debug(
-          `setHookWaitingState ${hookName}::${hookType}, #actions ${actions.length}`
-        );
+        // logger.debug(
+        //   `setHookWaitingState ${hookName}::${hookType}, #actions ${actions.length}`
+        // );
         assert(hookName, "hookName");
         assert(hookType, "hookType");
       }),
@@ -872,9 +874,9 @@ function CoreProvider({
   const spinnersStartListLives = ({ onStateChange, options }) =>
     tap(
       pipe([
-        tap(() => {
-          logger.debug(`spinnersStartListLives ${options.types}`);
-        }),
+        // tap(() => {
+        //   logger.debug(`spinnersStartListLives ${options.types}`);
+        // }),
         spinnersStartProvider({ onStateChange }),
         spinnersStartClient({
           onStateChange,
@@ -1003,7 +1005,7 @@ function CoreProvider({
   const spinnersStartHook = ({ onStateChange, hookType }) =>
     pipe([
       tap(() => {
-        logger.debug(`spinnersStartHook hookType: ${hookType}`);
+        //logger.debug(`spinnersStartHook hookType: ${hookType}`);
         assert(hookType);
       }),
       spinnersStartProvider({ onStateChange }),
@@ -1019,7 +1021,7 @@ function CoreProvider({
     pipe([
       () => hooks,
       tap(() => {
-        logger.debug(`register #hooks ${size(hooks)}`);
+        //logger.debug(`register #hooks ${size(hooks)}`);
       }),
       map((hook) =>
         pipe([
@@ -1060,8 +1062,8 @@ function CoreProvider({
   const validate = pipe([
     () => [...mapTypeToResources.values()],
     flatten,
-    tap((xxx) => {
-      logger.debug(``);
+    tap((params) => {
+      assert(true);
     }),
     map(
       tryCatch(

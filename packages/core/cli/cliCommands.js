@@ -446,7 +446,7 @@ const commandToFunction = (command) =>
 const runAsyncCommandHook = ({ hookType, commandTitle, providerGru }) =>
   pipe([
     tap(() => {
-      logger.debug(`runAsyncCommandHook hookType: ${hookType}`);
+      //logger.debug(`runAsyncCommandHook hookType: ${hookType}`);
       assert(providerGru);
     }),
     () =>
@@ -473,7 +473,7 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providerGru }) =>
           ])({}),
       }),
     tap((xxx) => {
-      logger.debug(`runAsyncCommandHook hookType: ${hookType} DONE`);
+      //logger.debug(`runAsyncCommandHook hookType: ${hookType} DONE`);
     }),
     throwIfError,
   ]);
@@ -481,24 +481,23 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providerGru }) =>
 const runAsyncCommandHookGlobal = ({ hookType, commandTitle, providerGru }) =>
   pipe([
     tap(() => {
-      logger.debug(`runAsyncCommandHookGlobal hookType: ${hookType}`);
+      //logger.debug(`runAsyncCommandHookGlobal hookType: ${hookType}`);
       assert(providerGru);
     }),
-    () =>
-      runAsyncCommand({
-        text: displayCommandHeader({
-          providers: providerGru.getProviders(),
-          verb: commandTitle,
-        }),
-        command: ({ onStateChange }) =>
-          pipe([
-            () => providerGru.runCommandGlobal({ onStateChange, hookType }),
-          ])({}),
+    () => ({
+      text: displayCommandHeader({
+        providers: providerGru.getProviders(),
+        verb: commandTitle,
       }),
-    tap((xxx) => {
-      logger.debug(`runAsyncCommandHookGlobal hookType: ${hookType} DONE`);
+      command: ({ onStateChange }) =>
+        pipe([() => providerGru.runCommandGlobal({ onStateChange, hookType })])(
+          {}
+        ),
     }),
-    //throwIfError,
+    runAsyncCommand,
+    tap((xxx) => {
+      //logger.debug(`runAsyncCommandHookGlobal hookType: ${hookType} DONE`);
+    }),
   ])();
 
 // planRunScript
@@ -558,7 +557,7 @@ const planRunScript = ({
           },
         ])(),
       tap((result) => {
-        logger.debug("planRunScript Done");
+        //logger.debug("planRunScript Done");
       }),
       saveToJson({
         ws,
@@ -611,7 +610,7 @@ const promptConfirmDeploy = (result) =>
 
 const displayDeploySuccess = pipe([
   tap((results) => {
-    logger.debug("displayDeploySuccess");
+    //logger.debug("displayDeploySuccess");
     assert(Array.isArray(results));
   }),
   countDeployResources,
@@ -906,7 +905,7 @@ const promptConfirmDestroy = (result) =>
     () => result,
     tap((result) => {
       assert(result);
-      logger.debug(`promptConfirmDestroy`);
+      //logger.debug(`promptConfirmDestroy`);
     }),
     countDestroyed,
     ({ providers, types, resources }) =>
@@ -944,7 +943,7 @@ const doPlansDestroy = ({
 }) =>
   pipe([
     tap(() => {
-      logger.debug(`doPlansDestroy`);
+      //logger.debug(`doPlansDestroy`);
       assert(resultQueryDestroy);
       assert(programOptions);
     }),
@@ -1450,7 +1449,7 @@ const DoCommand = ({
 }) =>
   pipe([
     tap(() => {
-      logger.debug(`DoCommand ${command}`);
+      //logger.debug(`DoCommand ${command}`);
     }),
     setupProviders({
       mapGloblalNameToResource,
@@ -1478,8 +1477,8 @@ const DoCommand = ({
       (result) => {
         throw result;
       },
-      tap((xxx) => {
-        logger.debug(`${command} done`);
+      tap((params) => {
+        //logger.debug(`${command} done`);
       }),
     ]),
   ]);
@@ -1609,7 +1608,7 @@ const graphTarget = ({
       () => infra,
       setupProviders({ mapGloblalNameToResource, commandOptions }),
       tap((input) => {
-        logger.debug(`graphTarget`);
+        //logger.debug(`graphTarget`);
         assert(input.providerGru);
       }),
       ({ providerGru }) =>
@@ -1643,7 +1642,7 @@ const pumlToSvg =
         assert(pumlFile);
         assert(plantumlJar);
         assert(type);
-        logger.debug(`pumlToSvg`);
+        //logger.debug(`pumlToSvg`);
       }),
       () => path.resolve(workingDirectory, pumlFile),
       (pumlFileFull) =>

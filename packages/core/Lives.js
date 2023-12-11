@@ -126,7 +126,7 @@ exports.createLives = () => {
     addResource: ({ groupType, resource }) =>
       pipe([
         tap((params) => {
-          logger.info(
+          logger.debug(
             `live addResource ${groupType}, ${JSON.stringify({
               providerName: resource.providerName,
               mapPerTypeSize: mapPerType.size,

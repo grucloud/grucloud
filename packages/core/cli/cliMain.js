@@ -20,11 +20,7 @@ exports.main = async ({ argv, onExit }) => {
     const duration = new Duration(startDate, new Date());
     const used = Math.ceil(process.memoryUsage().heapUsed / 1024 / 1024);
     if (!["output", "new", "gencode"].includes(commmand.args[0])) {
-      console.log(
-        `Command "${executableName} ${argv
-          .slice(2)
-          .join(" ")}" executed in ${duration.toString(1, 1)}, ${used} MB`
-      );
+      console.log(`Executed in ${duration.toString(1, 1)}, ${used} MB`);
     }
     await onExit({ code: 0 });
     return 0;

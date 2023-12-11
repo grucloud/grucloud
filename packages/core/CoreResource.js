@@ -652,11 +652,11 @@ exports.ResourceMaker = ({
               group,
               providerName: provider.name,
             }),
-            tap((resources) => {
-              logger.debug(
-                `resolveConfig ${type} #resources ${size(resources)}`
-              );
-            }),
+            // tap((resources) => {
+            //   logger.debug(
+            //     `resolveConfig ${type} #resources ${size(resources)}`
+            //   );
+            // }),
             (resources) =>
               filterLives({
                 name: getResourceName(),
@@ -721,7 +721,7 @@ exports.ResourceMaker = ({
   const create = ({ payload, resolvedDependencies }) =>
     pipe([
       tap(() => {
-        logger.info(`create ${tos({ resourceName: getResourceName(), type })}`);
+        //logger.info(`create ${tos({ resourceName: getResourceName(), type })}`);
         //logger.debug(`create ${tos({ payload })}`);
         assert(payload);
         assert(resolvedDependencies);
