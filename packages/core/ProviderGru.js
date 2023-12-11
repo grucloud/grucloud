@@ -978,9 +978,9 @@ exports.ProviderGru = ({
       tap(() => {
         assert(hookType);
         assert(onStateChange);
-        logger.debug(
-          `runCommandGlobal ${hookType}, hashookGlobal: ${!!hookGlobal}`
-        );
+        // logger.debug(
+        //   `runCommandGlobal ${hookType}, hashookGlobal: ${!!hookGlobal}`
+        // );
       }),
       switchCase([
         () => hookGlobal,
@@ -1047,7 +1047,7 @@ exports.ProviderGru = ({
         identity,
       ]),
       tap((result) => {
-        logger.debug(`runCommandGlobal ${hookType}, done`);
+        //logger.debug(`runCommandGlobal ${hookType}, done`);
       }),
     ])();
 

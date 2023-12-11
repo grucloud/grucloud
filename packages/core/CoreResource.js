@@ -210,7 +210,7 @@ exports.ResourceMaker = ({
         //assert(resolvedDependencies);
       }),
       tap(() => {
-        logger.info(`getLive ${toString()}, deep: ${deep}`);
+        //logger.info(`getLive ${toString()}, deep: ${deep}`);
       }),
       getResourceName,
       (name) =>
@@ -249,7 +249,7 @@ exports.ResourceMaker = ({
         )
       ),
       tap((live) => {
-        logger.info(`getLive ${toString()} hasLive: ${!!live}`);
+        //logger.info(`getLive ${toString()} hasLive: ${!!live}`);
         //logger.debug(`getLive ${toString()} live: ${tos(live)}`);
       }),
     ])();
@@ -343,14 +343,14 @@ exports.ResourceMaker = ({
   const getDependencyList = () =>
     pipe([
       tap(() => {
-        logger.info(`getDependencyList ${type} `);
+        // logger.info(`getDependencyList ${type} `);
       }),
       getDependencies(),
       filter(and([not(isString), not(isEmpty)])),
       transform(map(identity), () => []),
       //TODO filter(not(isEmpty))
       tap((result) => {
-        logger.info(`getDependencyList ${type} `);
+        //logger.info(`getDependencyList ${type} `);
       }),
       tap(
         forEach((dep) => {
@@ -876,7 +876,7 @@ exports.ResourceMaker = ({
   const planUpsert = ({ resource, lives, targetResources }) =>
     pipe([
       tap((params) => {
-        logger.info(`planUpsert resource: ${resource.toString()}`);
+        //logger.info(`planUpsert resource: ${resource.toString()}`);
         assert(lives);
         assert(targetResources);
       }),

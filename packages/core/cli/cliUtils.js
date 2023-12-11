@@ -125,7 +125,7 @@ const runAsyncCommand = async ({ ws, text, command }) => {
         if (!hide) {
           const spinny = spinnies.pick(uri);
           if (!spinny) {
-            logger.debug(`DONE event: ${uri} was not created`);
+            //logger.debug(`DONE event: ${uri} was not created`);
             return;
           }
         }

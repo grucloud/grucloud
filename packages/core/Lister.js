@@ -39,7 +39,7 @@ exports.Lister =
     assert(isFunction(onStateChange));
     const resultMap = new Map();
 
-    logger.debug(`Lister: ${name}, #inputs ${size(inputs)}`);
+    // logger.debug(`Lister: ${name}, #inputs ${size(inputs)}`);
 
     const runItem =
       ({ onEnd, inputsFiltered }) =>

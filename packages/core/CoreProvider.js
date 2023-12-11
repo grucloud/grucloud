@@ -1043,7 +1043,7 @@ function CoreProvider({
               () => hookInstance,
               get("name", "default"),
               tap((name) => {
-                logger.debug(`register hook ${name}`);
+                //logger.debug(`register hook ${name}`);
               }),
               (name) => hookAdd({ name, hookInstance }),
             ])(),
@@ -1535,7 +1535,7 @@ function CoreProvider({
         a.resource.groupType.localeCompare(b.resource.groupType)
       ),
       tap((result) => {
-        logger.info(`planUpsert done`);
+        //logger.info(`planUpsert done`);
       }),
     ])();
 
