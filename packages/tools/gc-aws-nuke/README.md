@@ -212,7 +212,7 @@ S3
 S3Control
 SageMaker
 Scheduler
-EventSchemas
+Schemas
 SecretsManager
 SecurityHub
 ServiceCatalog

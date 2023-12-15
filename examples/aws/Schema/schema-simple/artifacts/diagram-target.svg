@@ -33,7 +33,7 @@
 <g id="node2" class="node">
 <title>Discoverer::my&#45;event&#45;bus</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="270,-281 38,-281 38,-223 270,-223 270,-281"/>
-<text text-anchor="start" x="50" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EventSchemas::Discoverer</text>
+<text text-anchor="start" x="50" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Schemas::Discoverer</text>
 <text text-anchor="start" x="50" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;event&#45;bus</text>
 </g>
 <!-- Discoverer::my&#45;event&#45;bus&#45;&gt;EventBus::my&#45;event&#45;bus -->
@@ -46,14 +46,14 @@
 <g id="node3" class="node">
 <title>Registry::my&#45;registry</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="553,-167 340,-167 340,-109 553,-109 553,-167"/>
-<text text-anchor="start" x="352.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EventSchemas::Registry</text>
+<text text-anchor="start" x="352.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Schemas::Registry</text>
 <text text-anchor="start" x="352.5" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;registry</text>
 </g>
 <!-- RegistryPolicy::my&#45;registry -->
 <g id="node4" class="node">
 <title>RegistryPolicy::my&#45;registry</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="284,-205 24,-205 24,-147 284,-147 284,-205"/>
-<text text-anchor="start" x="36" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EventSchemas::RegistryPolicy</text>
+<text text-anchor="start" x="36" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Schemas::RegistryPolicy</text>
 <text text-anchor="start" x="36" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;registry</text>
 </g>
 <!-- RegistryPolicy::my&#45;registry&#45;&gt;Registry::my&#45;registry -->
@@ -66,7 +66,7 @@
 <g id="node5" class="node">
 <title>Schema::my&#45;registry::my&#45;schema</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="259.5,-129 48.5,-129 48.5,-71 259.5,-71 259.5,-129"/>
-<text text-anchor="start" x="61" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EventSchemas::Schema</text>
+<text text-anchor="start" x="61" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Schemas::Schema</text>
 <text text-anchor="start" x="61" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;registry::my&#45;schema</text>
 </g>
 <!-- Schema::my&#45;registry::my&#45;schema&#45;&gt;Registry::my&#45;registry -->

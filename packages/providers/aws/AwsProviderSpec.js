@@ -225,7 +225,7 @@ const GROUPS = [
   ["GlobalAccelerator", "global-accelerator"],
   ["IAM", "iam"],
   ["Imagebuilder", "imagebuilder"],
-  ["Iot", "iot"],
+  ["IoT", "iot"],
   ["IVS", "ivs"],
   ["Ivschat", "ivschat"],
   ["GuardDuty", "guardduty"],

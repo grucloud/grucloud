@@ -12,7 +12,7 @@ const { SchemasRegistry } = require("./SchemasRegistry");
 const { SchemasRegistryPolicy } = require("./SchemasRegistryPolicy");
 const { SchemasSchema } = require("./SchemasSchema");
 
-const GROUP = "EventSchemas";
+const GROUP = "Schemas";
 
 const compare = compareAws({});
 

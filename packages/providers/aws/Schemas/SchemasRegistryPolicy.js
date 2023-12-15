@@ -76,7 +76,7 @@ exports.SchemasRegistryPolicy = () => ({
   dependencies: {
     registry: {
       type: "Registry",
-      group: "EventSchemas",
+      group: "Schemas",
       parent: true,
       dependencyId: ({ lives, config }) =>
         pipe([
@@ -98,7 +98,7 @@ exports.SchemasRegistryPolicy = () => ({
     pipe([
       () =>
         client.getListWithParent({
-          parent: { type: "Registry", group: "EventSchemas" },
+          parent: { type: "Registry", group: "Schemas" },
           pickKey: pipe([
             pick(["RegistryName"]),
             tap(({ RegistryName }) => {
