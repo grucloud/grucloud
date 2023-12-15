@@ -1,6 +1,6 @@
 {
   "name": "codeartifact-simple",
-  "version": "13.1.2",
+  "version": "13.2.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -23,7 +23,7 @@
     "@aws-sdk/client-codeartifact": "3.332.0",
     "@aws-sdk/client-s3": "3.332.0",
     "@grucloud/core": "^13.1.2",
-    "@grucloud/provider-aws": "^13.1.2",
+    "@grucloud/provider-aws": "^13.2.0",
     "rubico": "1.9.6"
   }
 }

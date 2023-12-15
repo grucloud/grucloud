@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/docker-cli",
-  "version": "13.1.2",
+  "version": "13.2.0",
   "private": true,
   "description": "",
   "scripts": {
@@ -197,7 +197,7 @@
     "@aws-sdk/client-xray": "3.332.0",
     "@grucloud/ci-runner": "^13.0.28-alpha.0",
     "@grucloud/core": "^13.1.2",
-    "@grucloud/provider-aws": "^13.1.2",
+    "@grucloud/provider-aws": "^13.2.0",
     "@grucloud/provider-azure": "^13.1.2",
     "@grucloud/provider-google": "^13.1.2",
     "@grucloud/provider-k8s": "^13.1.2"
