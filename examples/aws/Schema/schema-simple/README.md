@@ -1,1 +1,1 @@
-# Aws EventSchemas
+# Aws Schemas

@@ -7,7 +7,7 @@ describe("Schemas", async function () {
   it("Discoverer", () =>
     pipe([
       () => ({
-        groupType: "EventSchemas::Discoverer",
+        groupType: "Schemas::Discoverer",
         livesNotFound: ({ config }) => [{ DiscovererId: "d123" }],
       }),
       awsResourceTest,
@@ -15,7 +15,7 @@ describe("Schemas", async function () {
   it("Registry", () =>
     pipe([
       () => ({
-        groupType: "EventSchemas::Registry",
+        groupType: "Schemas::Registry",
         livesNotFound: ({ config }) => [{ RegistryName: "r123" }],
       }),
       awsResourceTest,
@@ -23,7 +23,7 @@ describe("Schemas", async function () {
   it("RegistryPolicy", () =>
     pipe([
       () => ({
-        groupType: "EventSchemas::RegistryPolicy",
+        groupType: "Schemas::RegistryPolicy",
         livesNotFound: ({ config }) => [{ RegistryName: "123" }],
       }),
       awsResourceTest,
@@ -31,7 +31,7 @@ describe("Schemas", async function () {
   it("Schema", () =>
     pipe([
       () => ({
-        groupType: "EventSchemas::Schema",
+        groupType: "Schemas::Schema",
         livesNotFound: ({ config }) => [
           { SchemaName: "s123", RegistryName: "r13" },
         ],

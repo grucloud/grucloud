@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 820 resources in 166 services for provider aws:
+List of 806 resources in 165 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./AccessAnalyzer/Analyzer.md), [ArchiveRule](./AccessAnalyzer/ArchiveRule.md)
@@ -286,8 +286,8 @@ List of 820 resources in 166 services for provider aws:
 [App](./SageMaker/App.md), [AppImageConfig](./SageMaker/AppImageConfig.md), [CodeRepository](./SageMaker/CodeRepository.md), [Device](./SageMaker/Device.md), [DeviceFleet](./SageMaker/DeviceFleet.md), [DataQualityJobDefinition](./SageMaker/DataQualityJobDefinition.md), [Domain](./SageMaker/Domain.md), [Endpoint](./SageMaker/Endpoint.md), [EndpointConfig](./SageMaker/EndpointConfig.md), [FeatureGroup](./SageMaker/FeatureGroup.md), [FlowDefinition](./SageMaker/FlowDefinition.md), [HumanTaskUi](./SageMaker/HumanTaskUi.md), [Image](./SageMaker/Image.md), [ImageVersion](./SageMaker/ImageVersion.md), [Model](./SageMaker/Model.md), [ModelPackageGroup](./SageMaker/ModelPackageGroup.md), [ModelPackageGroupPolicy](./SageMaker/ModelPackageGroupPolicy.md), [MonitoringSchedule](./SageMaker/MonitoringSchedule.md), [NotebookInstance](./SageMaker/NotebookInstance.md), [NotebookInstanceLifecycleConfig](./SageMaker/NotebookInstanceLifecycleConfig.md), [Project](./SageMaker/Project.md), [ServiceCatalogPortfolio](./SageMaker/ServiceCatalogPortfolio.md), [Space](./SageMaker/Space.md), [StudioLifecycleConfig](./SageMaker/StudioLifecycleConfig.md), [UserProfile](./SageMaker/UserProfile.md), [Workforce](./SageMaker/Workforce.md), [Workteam](./SageMaker/Workteam.md)
 * Scheduler: 
 [Schedule](./Scheduler/Schedule.md), [ScheduleGroup](./Scheduler/ScheduleGroup.md)
-* EventSchemas: 
-[Discoverer](./EventSchemas/Discoverer.md), [Registry](./EventSchemas/Registry.md), [RegistryPolicy](./EventSchemas/RegistryPolicy.md), [Schema](./EventSchemas/Schema.md)
+* Schemas: 
+[Discoverer](./Schemas/Discoverer.md), [Registry](./Schemas/Registry.md), [RegistryPolicy](./Schemas/RegistryPolicy.md), [Schema](./Schemas/Schema.md)
 * SecretsManager: 
 [Secret](./SecretsManager/Secret.md), [SecretRotation](./SecretsManager/SecretRotation.md), [ResourcePolicy](./SecretsManager/ResourcePolicy.md)
 * SecurityHub: 
@@ -318,8 +318,6 @@ List of 820 resources in 166 services for provider aws:
 [AccountAssignment](./SSOAdmin/AccountAssignment.md), [Instance](./SSOAdmin/Instance.md), [InstanceAccessControlAttribute](./SSOAdmin/InstanceAccessControlAttribute.md), [PermissionSet](./SSOAdmin/PermissionSet.md)
 * StepFunctions: 
 [Activity](./StepFunctions/Activity.md), [StateMachine](./StepFunctions/StateMachine.md)
-* StorageGateway: 
-[Cache](./StorageGateway/Cache.md), [Gateway](./StorageGateway/Gateway.md), [TapePool](./StorageGateway/TapePool.md), [Volume](./StorageGateway/Volume.md)
 * Synthetics: 
 [Canary](./Synthetics/Canary.md), [Group](./Synthetics/Group.md)
 * TimestreamWrite: 
@@ -327,7 +325,7 @@ List of 820 resources in 166 services for provider aws:
 * Transfer: 
 [Access](./Transfer/Access.md), [Server](./Transfer/Server.md), [User](./Transfer/User.md), [Workflow](./Transfer/Workflow.md)
 * VpcLattice: 
-[AccessLogSubscription](./VpcLattice/AccessLogSubscription.md), [AuthPolicy](./VpcLattice/AuthPolicy.md), [Listener](./VpcLattice/Listener.md), [Rule](./VpcLattice/Rule.md), [ResourcePolicy](./VpcLattice/ResourcePolicy.md), [Service](./VpcLattice/Service.md), [ServiceNetwork](./VpcLattice/ServiceNetwork.md), [ServiceNetworkServiceAssociation](./VpcLattice/ServiceNetworkServiceAssociation.md), [ServiceNetworkVpcAssociation](./VpcLattice/ServiceNetworkVpcAssociation.md), [TargetGroup](./VpcLattice/TargetGroup.md), [AccessLogSubscription](./VpcLattice/AccessLogSubscription.md), [AuthPolicy](./VpcLattice/AuthPolicy.md), [Listener](./VpcLattice/Listener.md), [Rule](./VpcLattice/Rule.md), [ResourcePolicy](./VpcLattice/ResourcePolicy.md), [Service](./VpcLattice/Service.md), [ServiceNetwork](./VpcLattice/ServiceNetwork.md), [ServiceNetworkServiceAssociation](./VpcLattice/ServiceNetworkServiceAssociation.md), [ServiceNetworkVpcAssociation](./VpcLattice/ServiceNetworkVpcAssociation.md), [TargetGroup](./VpcLattice/TargetGroup.md)
+[AccessLogSubscription](./VpcLattice/AccessLogSubscription.md), [AuthPolicy](./VpcLattice/AuthPolicy.md), [Listener](./VpcLattice/Listener.md), [Rule](./VpcLattice/Rule.md), [ResourcePolicy](./VpcLattice/ResourcePolicy.md), [Service](./VpcLattice/Service.md), [ServiceNetwork](./VpcLattice/ServiceNetwork.md), [ServiceNetworkServiceAssociation](./VpcLattice/ServiceNetworkServiceAssociation.md), [ServiceNetworkVpcAssociation](./VpcLattice/ServiceNetworkVpcAssociation.md), [TargetGroup](./VpcLattice/TargetGroup.md)
 * WAFv2: 
 [IPSet](./WAFv2/IPSet.md), [LoggingConfiguration](./WAFv2/LoggingConfiguration.md), [RuleGroup](./WAFv2/RuleGroup.md), [RegexPatternSet](./WAFv2/RegexPatternSet.md), [WebACL](./WAFv2/WebACL.md), [WebACLCloudFront](./WAFv2/WebACLCloudFront.md), [WebACLAssociation](./WAFv2/WebACLAssociation.md)
 * WorkSpaces: 

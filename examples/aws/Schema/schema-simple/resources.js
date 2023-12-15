@@ -12,7 +12,7 @@ exports.createResources = () => [
   },
   {
     type: "Discoverer",
-    group: "EventSchemas",
+    group: "Schemas",
     properties: ({}) => ({
       CrossAccount: true,
     }),
@@ -22,14 +22,14 @@ exports.createResources = () => [
   },
   {
     type: "Registry",
-    group: "EventSchemas",
+    group: "Schemas",
     properties: ({}) => ({
       RegistryName: "my-registry",
     }),
   },
   {
     type: "RegistryPolicy",
-    group: "EventSchemas",
+    group: "Schemas",
     properties: ({ config }) => ({
       Policy: {
         Version: "2012-10-17",
@@ -59,7 +59,7 @@ exports.createResources = () => [
   },
   {
     type: "Schema",
-    group: "EventSchemas",
+    group: "Schemas",
     properties: ({}) => ({
       Content: {
         openapi: "3.0.0",
