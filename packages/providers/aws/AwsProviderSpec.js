@@ -305,7 +305,7 @@ const GROUPS = [
   ["SSM", "ssm"],
   ["SSMContacts", "ssm-contacts"],
   ["SSMIncidents", "ssm-incidents"],
-  ["StorageGateway", "storagegateway"],
+  ["StorageGateway", "storagegateway", "storage-gateway"],
   ["Synthetics", "synthetics"],
   ["TimestreamWrite", "timestream-write"],
   ["Transfer", "transfer"],
