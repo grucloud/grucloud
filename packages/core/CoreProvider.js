@@ -637,7 +637,7 @@ function CoreProvider({
               }),
             ])()
           ),
-          assign({ error: any(get("error")), results: get("results") }),
+          fork({ error: any(get("error")), results: identity }),
           tap((result) => {
             assert(true);
           }),
@@ -1302,7 +1302,7 @@ function CoreProvider({
       options: {
         all = false,
         name: nameToDelete = "",
-        id: idToDelete = "",
+        id: idsToDelete = [],
         types = [],
         group = [],
       } = {},
@@ -1339,8 +1339,8 @@ function CoreProvider({
         () => isEmpty(types) && resource.managedByOther,
         () => false,
         // Delete by id
-        () => !isEmpty(idToDelete),
-        () => id === idToDelete,
+        () => !isEmpty(idsToDelete),
+        () => idsToDelete.includes(id),
         // Delete by name
         () => !isEmpty(nameToDelete),
         () => resource.name === nameToDelete,

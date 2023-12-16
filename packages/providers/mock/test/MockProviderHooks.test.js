@@ -134,6 +134,7 @@ describe("MockProviderHooks", async function () {
       const resultsHook = error.resultDestroy.results[0].resultHooks;
       assert(resultsHook);
       assert(resultsHook.error);
+
       assert(resultsHook.results[0].error);
     }
   });

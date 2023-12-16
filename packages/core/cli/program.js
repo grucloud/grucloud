@@ -236,7 +236,7 @@ exports.createProgram = () => {
       "destroy all resources including those not managed by us"
     )
     .option("-n, --name <value>", "destroy by name")
-    .option("--id <value>", "destroy by id")
+    .option("--id <value>", "destroy by id", collect)
     .action(runCommand({ commandName: "planDestroy", program }));
 
   program

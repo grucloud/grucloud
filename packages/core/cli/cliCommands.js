@@ -993,7 +993,7 @@ const doPlansDestroy = ({
 
 const processDestroyPlans = ({
   providerGru,
-  commandOptions,
+  commandOptions = {},
   programOptions,
   ws,
   resultQueryDestroy,

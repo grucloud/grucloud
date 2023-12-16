@@ -1,13 +1,12 @@
 const assert = require("assert");
 const { tryCatch, map, pipe, tap } = require("rubico");
-const { forEach } = require("rubico/x");
+const { forEach, pluck } = require("rubico/x");
 const { createResources } = require("./MockStack");
 const prompts = require("prompts");
 const sinon = require("sinon");
 
 const { MockProvider } = require("../MockProvider");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
-const { createProviderMaker } = require("@grucloud/core/cli/infra");
 
 describe("MockProviderCli", async function () {
   before(async () => {});
@@ -111,14 +110,42 @@ describe("MockProviderCli", async function () {
       }),
     ])();
   });
-  //TODO
-  it.skip("abort deploy and destroy", async function () {
-    const provider = createProviderMaker({})(MockProvider, {
-      config: () => ({}),
-      createResources,
+  it("delete with multiple ids", async function () {
+    const cli = await Cli({
+      createStack: ({ createProvider }) => ({
+        provider: pipe([
+          () =>
+            createProvider(MockProvider, {
+              config: () => ({}),
+              createResources,
+            }),
+        ])(),
+      }),
     });
-    const infra = { provider };
+    const result = await cli.list({
+      commandOptions: {},
+    });
+    const { resources } = result.lives.results[0].results[0];
+    assert(resources);
+    const ids = pluck("id")(resources);
+    const resultDestroy = await cli.planDestroy({
+      commandOptions: { force: true, id: ids },
+    });
+    assert(resultDestroy);
+  });
 
+  it("abort deploy and destroy", async function () {
+    const cli = await Cli({
+      createStack: ({ createProvider }) => ({
+        provider: pipe([
+          () =>
+            createProvider(MockProvider, {
+              config: () => ({}),
+              createResources,
+            }),
+        ])(),
+      }),
+    });
     {
       const info = await cli.info({
         commandOptions: {},
@@ -137,12 +164,6 @@ describe("MockProviderCli", async function () {
         commandOptions: {},
       });
       assert(!unInit.error);
-    }
-    {
-      const output = await cli.output({
-        commandOptions: { type: "Ip", name: "myip", field: "id" },
-      });
-      assert(!output);
     }
     {
       const result = await cli.planDestroy({
@@ -164,21 +185,15 @@ describe("MockProviderCli", async function () {
 
     prompts.inject([true]);
 
-    await cli.planApply({});
-    {
-      const output = await cli.output({
-        infra,
-        commandOptions: { type: "Ip", name: "myip", field: "id" },
-        programOptions: {},
-      });
-      assert(output);
-    }
+    const resApply = await cli.planApply({});
+    assert(resApply);
+
     prompts.inject([false]);
-    await cli.planDestroy({});
+    await cli.planDestroy({ commandOptions: {} });
 
     prompts.inject([true]);
     {
-      const result = await cli.planDestroy({});
+      const result = await cli.planDestroy({ commandOptions: {} });
       assert(result);
     }
     {

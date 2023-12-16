@@ -2,7 +2,7 @@
 id: ResourcesList
 title: Resources List
 ---
-List of 806 resources in 165 services for provider aws:
+List of 810 resources in 166 services for provider aws:
 
 * AccessAnalyzer: 
 [Analyzer](./AccessAnalyzer/Analyzer.md), [ArchiveRule](./AccessAnalyzer/ArchiveRule.md)
@@ -318,6 +318,8 @@ List of 806 resources in 165 services for provider aws:
 [AccountAssignment](./SSOAdmin/AccountAssignment.md), [Instance](./SSOAdmin/Instance.md), [InstanceAccessControlAttribute](./SSOAdmin/InstanceAccessControlAttribute.md), [PermissionSet](./SSOAdmin/PermissionSet.md)
 * StepFunctions: 
 [Activity](./StepFunctions/Activity.md), [StateMachine](./StepFunctions/StateMachine.md)
+* StorageGateway: 
+[Cache](./StorageGateway/Cache.md), [Gateway](./StorageGateway/Gateway.md), [TapePool](./StorageGateway/TapePool.md), [Volume](./StorageGateway/Volume.md)
 * Synthetics: 
 [Canary](./Synthetics/Canary.md), [Group](./Synthetics/Group.md)
 * TimestreamWrite: 
