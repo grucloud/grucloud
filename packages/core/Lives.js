@@ -147,16 +147,16 @@ exports.createLives = () => {
         }),
         () => groupType,
         getMapByIdByGroupType,
-        tap((mapById) => {
-          logger.info(
-            `live addResource ${JSON.stringify({
-              id: resource.id,
-              providerName: resource.providerName,
-              groupType,
-              mapSize: mapById.size,
-            })}`
-          );
-        }),
+        // tap((mapById) => {
+        //   logger.info(
+        //     `live addResource ${JSON.stringify({
+        //       id: resource.id,
+        //       providerName: resource.providerName,
+        //       groupType,
+        //       mapSize: mapById.size,
+        //     })}`
+        //   );
+        // }),
         tap((mapById) => mapById.set(resource.id.toLowerCase(), resource)),
         tap((mapById) => {
           mapPerType.set(groupType, mapById);

@@ -290,7 +290,7 @@ exports.getByNameCore =
   ({ name, resources, lives, config = {} }) =>
     pipe([
       tap(() => {
-        logger.info(`getByNameCore ${name}`);
+        //logger.info(`getByNameCore ${name}`);
         assert(name, "name");
         assert(findName, "findName");
         assert(getList, "getList");
@@ -298,7 +298,7 @@ exports.getByNameCore =
       () => getList({ deep, lives, config, resources }),
       tap((items) => {
         assert(Array.isArray(items));
-        logger.debug(`getByNameCore ${name}: #${size(items)}`);
+        //logger.debug(`getByNameCore ${name}: #${size(items)}`);
       }),
       find(
         pipe([
@@ -314,7 +314,7 @@ exports.getByNameCore =
         ])
       ), //TODO check on meta
       tap((instance) => {
-        logger.info(`getByNameCore ${name}: ${instance ? "UP" : "DOWN"}`);
+        logger.debug(`getByNameCore ${name}: ${instance ? "UP" : "DOWN"}`);
         //logger.debug(`getByNameCore ${name}: ${tos({ instance })}`);
       }),
     ])();
@@ -322,7 +322,7 @@ exports.getByNameCore =
 exports.isUpByIdCore =
   ({ isInstanceUp, getById }) =>
   async ({ id, name, type, live }) => {
-    logger.debug(`isUpById ${JSON.stringify({ type, name, id })}`);
+    //logger.debug(`isUpById ${JSON.stringify({ type, name, id })}`);
     assert(id || live, "isUpByIdCore id");
     assert(getById, "isUpByIdCore getById");
     let up = false;
@@ -335,9 +335,9 @@ exports.isUpByIdCore =
         up = true;
       }
     }
-    logger.info(
-      `isUpById ${JSON.stringify({ type, name, id })} ${up ? "UP" : "NOT UP"}`
-    );
+    // logger.debug(
+    //   `isUpById ${JSON.stringify({ type, name, id })} ${up ? "UP" : "NOT UP"}`
+    // );
     return up ? instance : undefined;
   };
 
@@ -368,7 +368,7 @@ exports.isDownByIdCore =
       down = true;
     }
 
-    logger.info(
+    logger.debug(
       `isDownById ${JSON.stringify({ type, name, id })} ${
         down ? "DOWN" : "NOT DOWN"
       }`

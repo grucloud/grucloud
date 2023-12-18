@@ -52,7 +52,7 @@ exports.getWebIdentityToken = async ({ audience }) => {
     GRUCLOUD_OAUTH_CLIENT_SECRET &&
     GRUCLOUD_OAUTH_SUBJECT
   ) {
-    logger.info(`fetch a jwt from ${GRUCLOUD_OAUTH_SERVER}`);
+    logger.debug(`fetch a jwt from ${GRUCLOUD_OAUTH_SERVER}`);
     return requestJwt({
       tokenUrl: GRUCLOUD_OAUTH_SERVER,
       subject: GRUCLOUD_OAUTH_SUBJECT,
