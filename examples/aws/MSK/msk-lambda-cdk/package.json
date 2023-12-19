@@ -1,6 +1,6 @@
 {
   "name": "msk-lambda-cdk",
-  "version": "13.2.1",
+  "version": "13.2.2",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -23,8 +23,8 @@
     "@aws-sdk/client-ec2": "3.332.0",
     "@aws-sdk/client-kafka": "3.332.0",
     "@aws-sdk/client-lambda": "3.332.0",
-    "@grucloud/core": "^13.2.1",
-    "@grucloud/provider-aws": "^13.2.1",
+    "@grucloud/core": "^13.2.2",
+    "@grucloud/provider-aws": "^13.2.2",
     "rubico": "1.9.6"
   }
 }
