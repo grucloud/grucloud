@@ -37,6 +37,7 @@ const decorate =
       // }),
     ])();
 
+const ignoreErrorCodes = ["ParameterNotFound"];
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
 exports.SSMParameter = () => ({
   type: "Parameter",
@@ -71,7 +72,7 @@ exports.SSMParameter = () => ({
   ],
   filterLive: () =>
     pick(["Name", "Type", "Value", "Description", "Tier", "DataType"]),
-  ignoreErrorCodes: ["ParameterNotFound"],
+  ignoreErrorCodes,
   getById: {
     method: "describeParameters",
     getField: "Parameters",
@@ -84,6 +85,7 @@ exports.SSMParameter = () => ({
     method: "describeParameters",
     getParam: "Parameters",
     decorate,
+    ignoreErrorCodes: ["ParameterNotFound"],
   },
   create: {
     method: "putParameter",
