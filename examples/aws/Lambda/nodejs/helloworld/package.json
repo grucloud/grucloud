@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-lambda-nodejs-helloworld",
-  "version": "13.2.2",
+  "version": "13.2.3",
   "description": "",
   "private": true,
   "main": "iac.js",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@aws-sdk/client-lambda": "3.332.0",
     "@grucloud/core": "^13.2.2",
-    "@grucloud/provider-aws": "^13.2.2",
+    "@grucloud/provider-aws": "^13.2.3",
     "rubico": "1.9.6"
   }
 }

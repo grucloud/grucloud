@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-multi",
-  "version": "13.2.2",
+  "version": "13.2.3",
   "private": true,
   "description": "Run multiple GruCloud examples",
   "main": "iac.js",
@@ -14,7 +14,7 @@
   "dependencies": {
     "@aws-sdk/client-ec2": "3.332.0",
     "@grucloud/core": "^13.2.2",
-    "@grucloud/provider-aws": "^13.2.2",
+    "@grucloud/provider-aws": "^13.2.3",
     "@grucloud/provider-azure": "^13.2.2",
     "@grucloud/provider-google": "^13.2.2",
     "@grucloud/provider-k8s": "^13.2.2",
