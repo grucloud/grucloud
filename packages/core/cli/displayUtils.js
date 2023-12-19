@@ -45,6 +45,8 @@ const hasPlan = or([
 const displayManagedByUs = ({ managedByUs }) =>
   managedByUs ? colors.green("Yes") : colors.red("NO");
 
+const getColumnSize = () => process.stdout.columns || 140;
+
 exports.displayListSummary = pipe([
   tap((input) => {
     console.log("List Summary:");
@@ -59,7 +61,7 @@ exports.displayListSummary = pipe([
       () =>
         new Table({
           colWidths: tableSummaryDefs.colWidths({
-            columns: process.stdout.columns || 80,
+            columns: getColumnSize(),
             results,
           }),
           style: { head: [], border: [] },
@@ -173,7 +175,7 @@ exports.displayPlanSummary = pipe([
       () =>
         new Table({
           colWidths: tableSummaryDefs.colWidths({
-            columns: process.stdout.columns || 80,
+            columns: getColumnSize(),
             results: pluck("resource")([...resultCreate, ...resultDestroy]),
           }),
           wordWrap: true,
@@ -220,7 +222,7 @@ exports.displayPlanDestroySummary = forEach(({ providerName, error, plans }) =>
     () =>
       new Table({
         colWidths: tableSummaryDefs.colWidths({
-          columns: process.stdout.columns || 80,
+          columns: getColumnSize(),
           results: pluck("resource")(plans),
         }),
         wordWrap: true,
@@ -311,7 +313,7 @@ exports.displayPlan = async (plan) => {
     (result) =>
       map((fullType) => {
         const resources = result[fullType];
-        const columns = process.stdout.columns || 80;
+        const columns = getColumnSize();
         const table = new Table({
           colWidths: [columns - 2],
           style: {
@@ -554,7 +556,7 @@ const displayError = switchCase([get("stack"), identity, YAML.stringify]);
 
 const displayPlanItem = ({ table, resource }) => {
   assert(resource);
-  const columnsWidth = Math.floor(((process.stdout.columns || 80) - 8) / 2);
+  const columnsWidth = Math.floor((getColumnSize() - 8) / 2);
 
   const tableItem = new Table({
     colWidths: [columnsWidth, columnsWidth],
@@ -605,7 +607,7 @@ const displayTablePerType = ({
     find(eq(get("type")))(tablePerTypeDefinitions) || tablePerTypeDefault;
 
   const table = new Table({
-    colWidths: [(process.stdout.columns || 80) - 4],
+    colWidths: [getColumnSize() - 4],
     style: { head: [], border: [] },
   });
   tap.if(
