@@ -162,38 +162,39 @@ exports.ProviderGru = ({
         ),
       ])();
 
-  const upsertResources = ({ plans, onStateChange, title }) =>
-    pipe([
-      tap((params) => {
-        assert(onStateChange);
-        assert(title);
-        assert(Array.isArray(plans));
-        assert(plans);
-      }),
-      () => plans,
-      switchCase([
-        isEmpty,
-        pipe([() => ({ error: false, plans })]),
-        pipe([
-          () => ({
-            plans,
-            dependsOnType: getSpecs(),
-            dependsOnInstance: mapToGraph(mapGloblalNameToResource),
-            executor: plannerExecutor,
-            onStateChange: onStateChangeResource({
-              operation: TitleDeploying,
-              onStateChange,
+  const upsertResources =
+    ({ onStateChange, title }) =>
+    (plans) =>
+      pipe([
+        tap((params) => {
+          assert(onStateChange);
+          assert(title);
+          assert(Array.isArray(plans));
+          assert(plans);
+        }),
+        () => plans,
+        switchCase([
+          isEmpty,
+          pipe([() => ({ error: false, plans })]),
+          pipe([
+            () => ({
+              plans,
+              dependsOnType: getSpecs(),
+              dependsOnInstance: mapToGraph(mapGloblalNameToResource),
+              executor: plannerExecutor,
+              onStateChange: onStateChangeResource({
+                operation: TitleDeploying,
+                onStateChange,
+              }),
             }),
-          }),
-          Planner,
-          callProp("run"),
-          tap((params) => {
-            assert(true);
-          }),
-          //omit(["plans"]),
+            Planner,
+            callProp("run"),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
         ]),
-      ]),
-    ])();
+      ])();
 
   const plannerExecutor = ({ item: { resource, live, action, diff } }) =>
     pipe([
@@ -509,12 +510,10 @@ exports.ProviderGru = ({
           get("plans"),
           pluck("resultCreate"),
           flatten,
-          (plans) =>
-            upsertResources({
-              plans,
-              onStateChange,
-              title: TitleDeploying,
-            }),
+          upsertResources({
+            onStateChange,
+            title: TitleDeploying,
+          }),
           tap((params) => {
             assert(true);
           }),

@@ -133,6 +133,22 @@ describe("MockProviderCli", async function () {
     });
     assert(resultDestroy);
   });
+  it("apply", async function () {
+    const cli = await Cli({
+      createStack: ({ createProvider }) => ({
+        provider: pipe([
+          () =>
+            createProvider(MockProvider, {
+              config: () => ({}),
+              createResources,
+            }),
+        ])(),
+      }),
+    });
+
+    const result = await cli.planApply({ commandOptions: { force: true } });
+    assert(result);
+  });
 
   it("abort deploy and destroy", async function () {
     const cli = await Cli({

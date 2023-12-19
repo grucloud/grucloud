@@ -631,43 +631,46 @@ const doPlansDeploy =
         assert(resultQuery);
       }),
       () => resultQuery,
-      ({ results }) =>
-        runAsyncCommand({
-          text: displayCommandHeader({
-            providers: providerGru.getProviders(),
-            verb: "Deploying",
-          }),
-          command: ({ onStateChange }) =>
-            pipe([
-              tap(
-                pipe([
-                  () => results,
-                  filter(not(get("error"))),
-                  map.series((plan) =>
-                    providerGru
-                      .getProvider({ providerName: plan.providerName })
-                      .spinnersStartDeploy({
-                        onStateChange,
-                        plan,
-                      })
-                  ),
-                ])
-              ),
-              () =>
-                providerGru.planApply({
-                  onStateChange,
-                  plan: resultQuery,
-                  onProviderEnd: ({ provider, error }) =>
-                    provider.spinnersStopProvider({
-                      onStateChange,
-                      error,
-                    }),
-                }),
-              tap((params) => {
-                assert(true);
-              }),
-            ])(),
+      ({ results }) => ({
+        text: displayCommandHeader({
+          providers: providerGru.getProviders(),
+          verb: "Deploying",
         }),
+        command: ({ onStateChange }) =>
+          pipe([
+            tap(
+              pipe([
+                () => results,
+                filter(not(get("error"))),
+                map.series((plan) =>
+                  providerGru
+                    .getProvider({ providerName: plan.providerName })
+                    .spinnersStartDeploy({
+                      onStateChange,
+                      plan,
+                    })
+                ),
+              ])
+            ),
+            () => ({
+              onStateChange,
+              plan: resultQuery,
+              onProviderEnd: ({ provider, error }) =>
+                provider.spinnersStopProvider({
+                  onStateChange,
+                  error,
+                }),
+            }),
+            providerGru.planApply,
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
+      }),
+      runAsyncCommand,
+      tap((params) => {
+        assert(true);
+      }),
       saveToJson({
         ws,
         command: "apply",
@@ -835,6 +838,18 @@ const planApply = ({
           },
           tap((result) => {
             assert(result);
+          }),
+          assign({
+            lives: pipe([
+              () => infra,
+              listDoOk({
+                ws,
+                mapGloblalNameToResource,
+                commandOptions,
+                programOptions,
+              }),
+              get("lives"),
+            ]),
           }),
           assign({
             resultHook: () =>
@@ -1126,6 +1141,21 @@ const planDestroy = ({
           tap((result) => {
             assert(true);
           }),
+          assign({
+            lives: pipe([
+              () => infra,
+              listDoOk({
+                ws,
+                mapGloblalNameToResource,
+                commandOptions,
+                programOptions,
+              }),
+              tap((result) => {
+                assert(result);
+              }),
+              get("lives"),
+            ]),
+          }),
           saveToJson({
             ws,
             command: "destroy",
@@ -1262,8 +1292,8 @@ const listDoOk = ({
   ws,
 }) =>
   pipe([
-    tap((params) => {
-      assert(true);
+    tap((infra) => {
+      assert(infra);
     }),
     setupProviders({
       mapGloblalNameToResource,
@@ -1339,12 +1369,12 @@ const listDoOk = ({
           assert(lives);
         }),
         assign({ error: any(get("error")) }),
-        saveToJson({
-          ws,
-          command: "list",
-          commandOptions,
-          programOptions,
-        }),
+        // saveToJson({
+        //   ws,
+        //   command: "list",
+        //   commandOptions,
+        //   programOptions,
+        // }),
         throwIfError,
       ])(),
   ]);
@@ -1357,10 +1387,26 @@ const list = ({
   programOptions = {},
   ws,
 }) =>
-  tryCatch(
-    listDoOk({ ws, mapGloblalNameToResource, commandOptions, programOptions }),
-    DisplayAndThrow({ name: "List" })
-  )(infra);
+  pipe([
+    () => infra,
+    tryCatch(
+      pipe([
+        listDoOk({
+          ws,
+          mapGloblalNameToResource,
+          commandOptions,
+          programOptions,
+        }),
+        saveToJson({
+          ws,
+          command: "list",
+          commandOptions,
+          programOptions,
+        }),
+      ]),
+      DisplayAndThrow({ name: "List" })
+    ),
+  ])();
 
 //Output
 const OutputDoOk = ({
