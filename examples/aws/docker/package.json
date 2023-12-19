@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/docker-cli",
-  "version": "13.2.3",
+  "version": "13.2.4",
   "private": true,
   "description": "",
   "scripts": {
@@ -196,10 +196,10 @@
     "@aws-sdk/client-workspaces-web": "3.332.0",
     "@aws-sdk/client-xray": "3.332.0",
     "@grucloud/ci-runner": "^13.0.28-alpha.0",
-    "@grucloud/core": "^13.2.2",
-    "@grucloud/provider-aws": "^13.2.3",
-    "@grucloud/provider-azure": "^13.2.2",
-    "@grucloud/provider-google": "^13.2.2",
-    "@grucloud/provider-k8s": "^13.2.2"
+    "@grucloud/core": "^13.2.4",
+    "@grucloud/provider-aws": "^13.2.4",
+    "@grucloud/provider-azure": "^13.2.4",
+    "@grucloud/provider-google": "^13.2.4",
+    "@grucloud/provider-k8s": "^13.2.4"
   }
 }
