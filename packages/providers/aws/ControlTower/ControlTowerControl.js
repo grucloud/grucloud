@@ -83,6 +83,7 @@ exports.ControlTowerControl = () => ({
   ignoreErrorCodes: [
     "ResourceNotFoundException",
     "AuthorizerConfigurationException",
+    "ValidationException",
   ],
   filterLive: ({ lives, providerConfig }) =>
     pipe([

@@ -118,7 +118,10 @@ exports.DirectConnectVirtualInterface = ({ compare }) => ({
       dependencyId: () => pipe([get("directConnectGatewayId")]),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: [
+    "ResourceNotFoundException",
+    "DirectConnectClientException",
+  ],
   environmentVariables: [
     {
       path: "authKey",
