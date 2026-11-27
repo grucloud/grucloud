@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 const { inspect } = require("node:util");
-const Duration = require("duration");
+const { performance } = require("node:perf_hooks");
 const pkg = require("../package.json");
 const { createProgram } = require("./program");
 const logger = require("../logger")({ prefix: "CliMain" });
-const executableName = "gc";
+
 exports.main = async ({ argv, onExit }) => {
   const program = createProgram();
   const argsStr = argv.join(" ");
@@ -15,12 +15,12 @@ exports.main = async ({ argv, onExit }) => {
   const { STAGE } = process.env;
   logger.info(`stage: ${STAGE}`);
   try {
-    const startDate = new Date();
+    const startTime = performance.now();
     const commmand = await program.parseAsync(argv);
-    const duration = new Duration(startDate, new Date());
+    const durationMs = performance.now() - startTime;
     const used = Math.ceil(process.memoryUsage().heapUsed / 1024 / 1024);
     if (!["output", "new", "gencode"].includes(commmand.args[0])) {
-      console.log(`Executed in ${duration.toString(1, 1)}, ${used} MB`);
+      console.log(`Executed in ${(durationMs / 1000).toFixed(2)}s, ${used} MB`);
     }
     await onExit({ code: 0 });
     return 0;
