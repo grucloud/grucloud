@@ -1,3 +1,11 @@
+allowBuilds:
+  "@parcel/watcher": false
+  cpu-features: false
+  es5-ext: false
+  esbuild: false
+  nx: false
+  ssh2: false
+blockExoticSubdeps: false
 packages:
   # all packages in direct subdirs of packages/
   - "packages/**/*"
@@ -12,3 +20,4 @@ packages:
   - "!examples/aws/S3/s3-object-lambda/sam-app-ResizeFunction*"
   - "!examples/aws/StepFunctions/lambda-sfn/sam-app-LambdaProxy*"
   - "!packages/providers/azure/az-spec-api-gen"
+  - "!packages/providers/openstack"
